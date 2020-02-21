@@ -275,10 +275,44 @@ Date: Mon, 19 Aug 2019 12:34:14 GMT
         <key id="license_exist">false</key>
         <key id="crossref_enabled">no</key>
         <key id="Filtered">true</key>
-        <key id="Filter reason">Available for - No group for the incoming ip and AF line for the portfolio/service/package exists</key>
+        <key id="Filter reason">Date Filter</key>
         <key id="preferred_link">false</key>
       </keys>
       <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861810000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="971788650005972">
+      <keys>
+        <key id="package_name">Elsevier ScienceDirect</key>
+        <key id="package_public_name">Elsevier SD FREEDOM COLLECTION</key>
+        <key id="package_display_name">Elsevier SD FREEDOM COLLECTION</key>
+        <key id="package_internal_name">ELSEVIER_SD_FREEDOM_COLLECTION</key>
+        <key id="interface_name">Elsevier ScienceDirect</key>
+        <key id="db_id">.~1,8P~,AAOAW,ACRLP,AGUBO,AIKHN,BLXMC,EO8,EO9,EP2,EP3,G-Q,OAUVE,Q38,SDF</key>
+        <key id="package_pid">6139351080005972</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">iso-8859-1</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5344797220005972</key>
+        <key id="cz_link_id">531000000000042994</key>
+        <key id="electronic_material_type">JOURNAL</key>
+        <key id="Availability">Available from 1995 volume: 22 issue: 1.&lt;br></key>
+        <key id="static_url">true</key>
+        <key id="parser_program">ELSEVIER::SCIENCE_DIRECT</key>
+        <key id="parse_parameters">host=https://www.sciencedirect.com/science/&amp; prefsite = sd &amp; shib= &amp; u_shib=&amp;uis=03064549</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">true</key>
+        <key id="proxy_selected">ÅA Proxy</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">yes</key>
+        <key id="Filtered">true</key>
+        <key id="Filter reason">Available for - the ip groups are not part of the service AF groups</key>
+        <key id="preferred_link">true</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=971788650005972&amp;institutionId=561&amp;customerId=550</resolution_url>
     </context_service>
   </context_services>
   <performance_counters>

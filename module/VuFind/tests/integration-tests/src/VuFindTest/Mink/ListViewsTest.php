@@ -47,11 +47,11 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -59,11 +59,12 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -184,6 +185,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
 
         // Reload the page to close all results
         $session->reload();
+        $this->snooze();
         // Did our saved one open automatically?
         $this->findCss($page, '.result.embedded');
 
@@ -191,6 +193,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.result a.title');
         // Did our result stay closed?
         $session->reload();
+        $this->snooze();
         $result = $page->find('css', '.result.embedded');
         $this->assertFalse(is_object($result));
 
@@ -243,7 +246,7 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1']);
     }

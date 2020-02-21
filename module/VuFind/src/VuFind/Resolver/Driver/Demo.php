@@ -82,14 +82,17 @@ class Demo extends AbstractBase
                 'title' => 'Print',
                 'coverage' => 'fake1',
                 'service_type' => 'getHolding',
-                'access' => 'unknown'
+                'access' => 'unknown',
+                'notes' => 'General notes',
             ],
             [
                 'href' => 'https://vufind.org/wiki?' . $data . '#electronic',
                 'title' => 'Electronic',
                 'coverage' => 'fake2',
                 'service_type' => 'getFullTxt',
-                'access' => 'open'
+                'access' => 'open',
+                'authentication' => 'Authentication notes',
+                'notes' => 'General notes',
             ],
         ];
     }

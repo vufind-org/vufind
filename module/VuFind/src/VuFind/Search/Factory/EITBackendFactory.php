@@ -117,13 +117,10 @@ class EITBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
-        $prof = isset($this->config->General->prof)
-            ? $this->config->General->prof : null;
-        $pwd = isset($this->config->General->pwd)
-            ? $this->config->General->pwd : null;
+        $prof = $this->config->General->prof ?? null;
+        $pwd = $this->config->General->pwd ?? null;
         $base = "http://eit.ebscohost.com/Services/SearchService.asmx/Search";
-        $dbs =  isset($this->config->General->dbs)
-            ? $this->config->General->dbs : null;
+        $dbs = $this->config->General->dbs ?? null;
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $connector = new Connector($base, $client, $prof, $pwd, $dbs);

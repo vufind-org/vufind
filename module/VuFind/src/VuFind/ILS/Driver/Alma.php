@@ -2,7 +2,7 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -185,16 +185,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException($e->getMessage());
         }
 
+        // Get the HTTP status code and response
+        $statusCode = $result->getStatusCode();
+        $answer = $statusCode !== 204 ? $result->getBody() : '';
+        $answer = str_replace('xmlns=', 'ns=', $answer);
+
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $code = $result->getStatusCode();
+        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
         $this->debug(
-            "[$duration] $method request for $url?$urlParams results ($code):\n"
-            . $result->getBody()
+            "[$duration] $method request for $fullUrl results ($statusCode):\n"
+            . $answer
         );
-
-        // Get the HTTP status code
-        $statusCode = $result->getStatusCode();
 
         // Check for error
         if ($result->isServerError()) {
@@ -204,8 +206,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
-        $answer = $result->getBody();
-        $answer = str_replace('xmlns=', 'ns=', $answer);
         try {
             $xml = simplexml_load_string($answer);
         } catch (\Exception $e) {
@@ -226,7 +226,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
             $returnValue = $xml;
         } else {
-            $almaErrorMsg = $xml->errorList->error[0]->errorMessage;
+            $almaErrorMsg = $xml->errorList->error[0]->errorMessage
+                ?? '[could not parse error message]';
             error_log(
                 '[ALMA] ' . $almaErrorMsg . ' | Call to: ' . $client->getUri() .
                 '. GET params: ' . var_export($paramsGet, true) . '. POST params: ' .
@@ -281,7 +282,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Correct copy count in case of paging
         $copyCount = $options['offset'] ?? 0;
-        $patronId = $patron['id'] ?? null;
 
         // Paging parameters for paginated API call. The "limit" tells the API how
         // many items the call should return at once (e. g. 10). The "offset" defines
@@ -320,36 +320,15 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $status = 'Checked Out';
                 }
 
-                // Calculate request options if a user is logged-in
-                $addLink = false;
-                if ($patronId) {
-                    // Call the request-options API for the logged-in user
-                    $requestOptionsPath = '/bibs/' . urlencode($id)
-                       . '/holdings/' . urlencode($holdingId) . '/items/'
-                       . urlencode($itemId) . '/request-options?user_id='
-                       . urlencode($patronId);
-
-                    // Make the API request
-                    $requestOptions = $this->makeRequest($requestOptionsPath);
-
-                    // Get all possible request types from the API answer
-                    $requestTypes = $requestOptions->xpath(
-                        '/request_options/request_option//type'
-                    );
-
-                    // Add all allowed request types to an array
-                    $requestTypesArr = [];
-                    foreach ($requestTypes as $requestType) {
-                        $requestTypesArr[] = (string)$requestType;
-                    }
-
-                    // If HOLD is an allowed request type, add the link for placing
-                    // a hold
-                    $addLink = in_array('HOLD', $requestTypesArr);
-                }
-
                 $itemNotes = !empty($item->item_data->public_note)
                     ? [(string)$item->item_data->public_note] : null;
+
+                $processType = (string)($item->item_data->process_type ?? '');
+                if ($processType && 'LOAN' !== $processType) {
+                    $status = $this->getTranslatableStatusString(
+                        $item->item_data->process_type
+                    );
+                }
 
                 $description = null;
                 if (!empty($item->item_data->description)) {
@@ -362,9 +341,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
                     'status' => $status,
-                    'location' => (string)$item->item_data->location,
+                    'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
-                    'callnumber' => (string)$item->holding_data->call_number,
+                    'callnumber' => $this->getTranslatableString(
+                        $item->holding_data->call_number
+                    ),
                     'duedate' => $duedate,
                     'returnDate' => false, // TODO: support recent returns
                     'number' => $number,
@@ -372,7 +353,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
                     'holding_id' => $holdingId,
-                    'addLink' => $addLink ?? false,
+                    'holdtype' => 'auto',
+                    'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
                     'description' => $description ?? null
                 ];
@@ -398,6 +380,58 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
 
         return $results;
+    }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The record id
+     * @param array  $data   An array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        $patronId = $patron['id'];
+        $level = $data['level'] ?? 'copy';
+        if ('copy' === $level) {
+            // Call the request-options API for the logged-in user
+            $requestOptionsPath = '/bibs/' . urlencode($id)
+                . '/holdings/' . urlencode($data['holding_id']) . '/items/'
+                . urlencode($data['item_id']) . '/request-options?user_id='
+                . urlencode($patronId);
+
+            // Make the API request
+            $requestOptions = $this->makeRequest($requestOptionsPath);
+        } elseif ('title' === $level) {
+            $hmac = explode(':', $this->config['Holds']['HMACKeys'] ?? '');
+            if (!in_array('level', $hmac) || !in_array('description', $hmac)) {
+                return false;
+            }
+            // Call the request-options API for the logged-in user
+            $requestOptionsPath = '/bibs/' . urlencode($id)
+                . '/request-options?user_id=' . urlencode($patronId);
+
+            // Make the API request
+            $requestOptions = $this->makeRequest($requestOptionsPath);
+        } else {
+            return false;
+        }
+
+        // Check possible request types from the API answer
+        $requestTypes = $requestOptions->xpath(
+            '/request_options/request_option//type'
+        );
+        foreach ($requestTypes as $requestType) {
+            if ('HOLD' === (string)$requestType) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -616,33 +650,54 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $patron = [];
         $patronId = $username;
         if ('email' === $loginMethod) {
-            // Create parameters for API call
-            $getParams = [
-                'q' => 'email~' . $username
-            ];
-
-            // Try to find the user in Alma
-            $response = $this->makeRequest(
-                '/users/',
-                $getParams
+            // Try to find the user in Alma by an identifier
+            list($response, $status) = $this->makeRequest(
+                '/users/' . urlencode($username),
+                [
+                    'view' => 'full'
+                ],
+                [],
+                'GET',
+                null,
+                null,
+                [400],
+                true
             );
-
-            foreach (($response->user ?? []) as $user) {
-                if ((string)$user->status !== 'ACTIVE') {
-                    continue;
-                }
-                if ($patron) {
-                    // More than one match, cannot log in by email
-                    $this->debug(
-                        "Email $username matches more than one user, cannot login"
-                    );
-                    return null;
-                }
+            if (400 != $status) {
                 $patron = [
-                    'id' => (string)$user->primary_id,
+                    'id' => (string)$response->primary_id,
                     'cat_username' => trim($username),
-                    'email' => trim($username)
+                    'email' => $this->getPreferredEmail($response)
                 ];
+            } else {
+                // Try to find the user in Alma by unique email address
+                $getParams = [
+                    'q' => 'email~' . $username
+                ];
+
+                $response = $this->makeRequest(
+                    '/users/',
+                    $getParams
+                );
+
+                foreach (($response->user ?? []) as $user) {
+                    if ((string)$user->status !== 'ACTIVE') {
+                        continue;
+                    }
+                    if ($patron) {
+                        // More than one match, cannot log in by email
+                        $this->debug(
+                            "Email $username matches more than one user, cannot"
+                            . ' login'
+                        );
+                        return null;
+                    }
+                    $patron = [
+                        'id' => (string)$user->primary_id,
+                        'cat_username' => trim($username),
+                        'email' => trim($username)
+                    ];
+                }
             }
             if (!$patron) {
                 return null;
@@ -720,46 +775,46 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return [];
         }
         $profile = [
-            'firstname'  => (isset($xml->first_name))
-                                ? (string)$xml->first_name
-                                : null,
-            'lastname'   => (isset($xml->last_name))
-                                ? (string)$xml->last_name
-                                : null,
-            'group'      => (isset($xml->user_group['desc']))
-                                ? (string)$xml->user_group['desc']
-                                : null,
+            'firstname' => (isset($xml->first_name))
+                ? (string)$xml->first_name
+                : null,
+            'lastname' => (isset($xml->last_name))
+                ? (string)$xml->last_name
+                : null,
+            'group' => isset($xml->user_group)
+                ? $this->getTranslatableString($xml->user_group)
+                : null,
             'group_code' => (isset($xml->user_group))
-                                ? (string)$xml->user_group
-                                : null
+                ? (string)$xml->user_group
+                : null
         ];
         $contact = $xml->contact_info;
         if ($contact) {
             if ($contact->addresses) {
                 $address = $contact->addresses[0]->address;
-                $profile['address1'] =  (isset($address->line1))
-                                            ? (string)$address->line1
-                                            : null;
-                $profile['address2'] =  (isset($address->line2))
-                                            ? (string)$address->line2
-                                            : null;
-                $profile['address3'] =  (isset($address->line3))
-                                            ? (string)$address->line3
-                                            : null;
-                $profile['zip']      =  (isset($address->postal_code))
-                                            ? (string)$address->postal_code
-                                            : null;
-                $profile['city']     =  (isset($address->city))
-                                            ? (string)$address->city
-                                            : null;
-                $profile['country']  =  (isset($address->country))
-                                            ? (string)$address->country
-                                            : null;
+                $profile['address1'] = (isset($address->line1))
+                    ? (string)$address->line1
+                    : null;
+                $profile['address2'] = (isset($address->line2))
+                    ? (string)$address->line2
+                    : null;
+                $profile['address3'] = (isset($address->line3))
+                    ? (string)$address->line3
+                    : null;
+                $profile['zip'] = (isset($address->postal_code))
+                    ? (string)$address->postal_code
+                    : null;
+                $profile['city'] = (isset($address->city))
+                    ? (string)$address->city
+                    : null;
+                $profile['country'] = (isset($address->country))
+                    ? (string)$address->country
+                    : null;
             }
             if ($contact->phones) {
                 $profile['phone'] = (isset($contact->phones[0]->phone->phone_number))
-                                   ? (string)$contact->phones[0]->phone->phone_number
-                                   : null;
+                    ? (string)$contact->phones[0]->phone->phone_number
+                    : null;
             }
             $profile['email'] = $this->getPreferredEmail($xml);
         }
@@ -790,18 +845,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $created = (string)$fee->creation_time;
             $checkout = (string)$fee->status_time;
             $fineList[] = [
-                "title"   => (string)($fee->title ?? ''),
+                "title"    => (string)($fee->title ?? ''),
                 "amount"   => round(floatval($fee->original_amount) * 100),
                 "balance"  => round(floatval($fee->balance) * 100),
-                "createdate" => $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s.???T',
-                    $created
-                ),
-                "checkout" => $this->dateConverter->convertToDisplayDateAndTime(
-                    'Y-m-d\TH:i:s.???T',
-                    $checkout
-                ),
-                "fine"     => (string)$fee->type['desc']
+                "createdate" => $this->parseDate($created, true),
+                "checkout" => $this->parseDate($checkout, true),
+                "fine"     => $this->getTranslatableString($fee->type)
             ];
         }
         return $fineList;
@@ -826,11 +875,26 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $holdList = [];
         foreach ($xml as $request) {
+            $lastInterestDate = $request->last_interest_date
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-dT', (string)$request->last_interest_date
+                ) : null;
+            $available = (string)$request->request_status === 'On Hold Shelf';
+            $lastPickupDate = null;
+            if ($available) {
+                $lastPickupDate = $request->expiry_date
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-dT', (string)$request->expiry_date
+                    ) : null;
+            }
             $holdList[] = [
-                'create' => (string)$request->request_date,
-                'expire' => (string)$request->last_interest_date,
+                'create' => $this->dateConverter->convertToDisplayDate(
+                    'Y-m-dT', (string)$request->request_date
+                ),
+                'expire' => $lastInterestDate,
                 'id' => (string)$request->request_id,
-                'in_transit' => (string)$request->request_status !== 'On Hold Shelf',
+                'available' => $available,
+                'last_pickup_date' => $lastPickupDate,
                 'item_id' => (string)$request->mms_id,
                 'location' => (string)$request->pickup_location,
                 'processed' => $request->item_policy === 'InterlibraryLoan'
@@ -1111,12 +1175,14 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
-                $loan['institution_name'] = (string)$itemLoan->library;
+                $loan['institution_name']
+                    = $this->getTranslatableString($itemLoan->library);
                 //$loan['isbn'] = ;
                 //$loan['issn'] = ;
                 //$loan['oclc'] = ;
                 //$loan['upc'] = ;
-                $loan['borrowingLocation'] = (string)$itemLoan->circ_desk;
+                $loan['borrowingLocation']
+                    = $this->getTranslatableString($itemLoan->circ_desk);
 
                 // Calculate due status
                 $dueDateTS = strtotime($loan['duedate']);
@@ -1184,28 +1250,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 );
 
                 // Add information to the renewal array
-                $blocks = false;
-                $renewal[$loanId]['success'] = true;
-                $renewal[$loanId]['new_date'] = $this->parseDate(
-                    (string)$apiResult->due_date,
-                    true
-                );
-                //$renewal[$loanId]['new_time'] = ;
-                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
-                $renewal[$loanId]['sysMessage'] = 'renew_success';
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->parseDate(
+                        (string)$apiResult->due_date,
+                        true
+                    ),
+                    'item_id' => (string)$apiResult->loan_id,
+                    'sysMessage' => 'renew_success'
+                ];
 
                 // Add the renewal to the return array
-                $returnArray['details'] = $renewal;
+                $returnArray['details'][$loanId] = $renewal;
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
-                $returnArray['details'] = $renewal;
-
-                // Add a message that can be translated
-                $blocks[] = 'renew_fail';
+                $returnArray['details'][$loanId] = [
+                    'success' => false
+                ];
             }
         }
-
-        $returnArray['blocks'] = $blocks;
 
         return $returnArray;
     }
@@ -1281,10 +1344,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $functionConfig = $this->config[$function];
 
             // Set default value for "itemLimit" in Alma driver
-            if ($function === 'Holds') {
-                $functionConfig['itemLimit'] = $functionConfig['itemLimit']
-                    ?? 10
-                    ?: 10;
+            if ($function === 'Holdings') {
+                // Use itemLimit in Holds as fallback for backward compatibility
+                $functionConfig['itemLimit'] = ($functionConfig['itemLimit']
+                    ?? $this->config['Holds']['itemLimit']
+                    ?? 10) ?: 10;
             }
         } elseif ('getMyTransactions' === $function) {
             $functionConfig = [
@@ -1509,6 +1573,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $euroPad = "/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/"; // e. g. 13/07/2012
         $datestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"; // e. g. 2012-07-13
         $timestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/";
+        $timestampMs
+            = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/";
         // e. g. 2017-07-09T18:00:00
 
         if ($date == null || $date == '') {
@@ -1535,9 +1601,38 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     substr($date, 0, 10)
                 );
             }
+        } elseif (preg_match($timestampMs, $date) === 1) {
+            if ($withTime) {
+                return $this->dateConverter->convertToDisplayDateAndTime(
+                    'Y-m-d\TH:i:s#???T',
+                    $date
+                );
+            } else {
+                return $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d',
+                    substr($date, 0, 10)
+                );
+            }
         } else {
             throw new \Exception("Invalid date: $date");
         }
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        return is_callable([$this, $method]);
     }
 
     /**
@@ -1598,7 +1693,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $tmpl = [
                     'id' => (string)$bib->mms_id,
                     'source' => 'Solr',
-                    'callnumber' => (string)($bib->isbn ?? ''),
+                    'callnumber' => '',
                     'reserve' => 'N',
                 ];
                 if ($record = $marc->next()) {
@@ -1609,6 +1704,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
                         $item['location'] = $this->getMarcSubfield($field, 'c');
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         $status[] = $item;
                     }
                     // Electronic
@@ -1617,12 +1713,30 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $avail = $this->getMarcSubfield($field, 'e');
                         $item = $tmpl;
                         $item['availability'] = strtolower($avail) === 'available';
-                        $item['location'] = $this->getMarcSubfield($field, 'm');
+                        // Use the following subfields for location:
+                        // m (Collection name)
+                        // i (Available for library)
+                        // d (Available for library)
+                        // b (Available for library)
+                        $location = [
+                            $this->getMarcSubfield($field, 'm') ?: 'Get full text'
+                        ];
+                        foreach (['i', 'd', 'b'] as $code) {
+                            if ($content = $this->getMarcSubfield($field, $code)) {
+                                $location[] = $content;
+                            }
+                        }
+                        $item['location'] = implode(' - ', $location);
+                        $item['callnumber'] = $this->getMarcSubfield($field, 't');
                         $url = $this->getMarcSubfield($field, 'u');
                         if (preg_match('/^https?:\/\//', $url)) {
                             $item['locationhref'] = $url;
                         }
-                        $item['status'] = $this->getMarcSubfield($field, 's');
+                        $item['status'] = $this->getMarcSubfield($field, 's')
+                            ?: null;
+                        if ($note = $this->getMarcSubfield($field, 'n')) {
+                            $item['item_notes'] = [$note];
+                        }
                         $status[] = $item;
                     }
                     // Digital
@@ -1641,6 +1755,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         unset($item['callnumber']);
                         $item['availability'] = true;
                         $item['location'] = $this->getMarcSubfield($field, 'e');
+                        // Using subfield 'd' ('Repository Name') as callnumber
+                        $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         if ($deliveryUrl) {
                             $item['locationhref'] = str_replace(
                                 '%%id%%',
@@ -1682,6 +1798,41 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
+     * Gets a translatable string from an element with content and a desc attribute.
+     *
+     * @param SimpleXMLElement $element XML element
+     *
+     * @return \VuFind\I18n\TranslatableString
+     */
+    protected function getTranslatableString($element)
+    {
+        if (null === $element) {
+            return null;
+        }
+        $value = ($this->config['Catalog']['translationPrefix'] ?? '')
+            . (string)$element;
+        $desc = (string)($element->attributes()->desc ?? $element);
+        return new \VuFind\I18n\TranslatableString($value, $desc);
+    }
+
+    /**
+     * Gets a translatable string from an element with content and a desc attribute.
+     *
+     * @param SimpleXMLElement $element XML element
+     *
+     * @return \VuFind\I18n\TranslatableString
+     */
+    protected function getTranslatableStatusString($element)
+    {
+        if (null === $element) {
+            return null;
+        }
+        $value = 'status_' . strtolower((string)$element);
+        $desc = (string)($element->attributes()->desc ?? $element);
+        return new \VuFind\I18n\TranslatableString($value, $desc);
+    }
+
+    /**
      * Get a MARC subfield from a MARC field
      *
      * @param \File_MARC_Subfield $field    MARC Field
@@ -1693,6 +1844,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         $subfield = $field->getSubfield($subfield);
         return false === $subfield ? '' : $subfield->getData();
+    }
+
+    /**
+     * Get location for an item
+     *
+     * @param SimpleXMLElement $item Item
+     *
+     * @return \VuFind\I18n\TranslatableString|string
+     */
+    protected function getItemLocation($item)
+    {
+        return $this->getTranslatableString($item->item_data->location);
     }
 
     // @codingStandardsIgnoreStart

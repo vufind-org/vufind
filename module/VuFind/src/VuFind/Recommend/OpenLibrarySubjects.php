@@ -147,7 +147,7 @@ class OpenLibrarySubjects implements RecommendInterface,
     public function init($params, $request)
     {
         // Get and normalise $requestParam
-        $this->subject =  $request->get($this->requestParam);
+        $this->subject = $request->get($this->requestParam);
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
@@ -205,7 +205,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
         } elseif (is_object($params)) {
-            $currentFilters = $params->getFilters();
+            $currentFilters = $params->getRawFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);
             }

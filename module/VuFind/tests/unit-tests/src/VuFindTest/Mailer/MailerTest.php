@@ -27,7 +27,9 @@
  */
 namespace VuFindTest\Mailer;
 
+use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFindTest\Container\MockContainer;
 use Zend\Mail\Address;
 use Zend\Mail\AddressList;
 
@@ -42,6 +44,43 @@ use Zend\Mail\AddressList;
  */
 class MailerTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Test that the factory configures the object correctly.
+     *
+     * @return void
+     */
+    public function testFactoryConfiguration()
+    {
+        $config = new \Zend\Config\Config(
+            [
+                'Mail' => [
+                    'host' => 'vufindtest.localhost',
+                    'port' => 123,
+                    'connection_time_limit' => 600,
+                    'name' => 'foo',
+                    'username' => 'vufinduser',
+                    'password' => 'vufindpass',
+                ]
+            ]
+        );
+        $cm = new MockContainer($this);
+        $cm->set('config', $config);
+        $sm = new MockContainer($this);
+        $sm->set(\VuFind\Config\PluginManager::class, $cm);
+        $factory = new MailerFactory();
+        $mailer = $factory($sm, Mailer::class);
+        $options = $mailer->getTransport()->getOptions();
+        $this->assertEquals('vufindtest.localhost', $options->getHost());
+        $this->assertEquals('foo', $options->getName());
+        $this->assertEquals(123, $options->getPort());
+        $this->assertEquals(600, $options->getConnectionTimeLimit());
+        $this->assertEquals('login', $options->getConnectionClass());
+        $this->assertEquals(
+            ['username' => 'vufinduser', 'password' => 'vufindpass'],
+            $options->getConnectionConfig()
+        );
+    }
+
     /**
      * Test sending an email.
      *
@@ -199,11 +238,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Recipient Email Address
      */
     public function testBadTo()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Invalid Recipient Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
@@ -214,11 +254,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Reply-To Email Address
      */
     public function testBadReplyTo()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Invalid Reply-To Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
@@ -231,11 +272,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Recipient Email Address
      */
     public function testEmptyTo()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Invalid Recipient Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('', 'from@example.com', 'subject', 'body');
@@ -246,11 +288,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Too Many Email Recipients
      */
     public function testTooManyRecipients()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Too Many Email Recipients');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
@@ -261,11 +304,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Sender Email Address
      */
     public function testBadFrom()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Invalid Sender Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
@@ -276,11 +320,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Invalid Sender Email Address
      */
     public function testBadFromInAddressObject()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Invalid Sender Email Address');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
@@ -291,11 +336,12 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Boom
      */
     public function testTransportException()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Boom');
+
         $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
         $mailer = new Mailer($transport);
@@ -373,6 +419,19 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+    }
+
+    /**
+     * Test connection reset
+     *
+     * @return void
+     */
+    public function testResetConnection()
+    {
+        $transport = $this->createMock(\Zend\Mail\Transport\Smtp::class);
+        $transport->expects($this->once())->method('disconnect');
+        $mailer = new Mailer($transport);
+        $mailer->resetConnection();
     }
 }
 

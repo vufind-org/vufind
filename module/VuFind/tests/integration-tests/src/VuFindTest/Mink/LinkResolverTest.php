@@ -48,11 +48,12 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -117,7 +118,10 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
         // Confirm that the expected fake demo driver data is there:
         $electronic = $this->findCss($page, 'a.access-open');
         $this->assertEquals('Electronic', $electronic->getText());
-        $this->assertEquals('Electronic fake2', $electronic->getParent()->getText());
+        $this->assertEquals(
+            'Electronic fake2 General notes Authentication notes',
+            $electronic->getParent()->getText()
+        );
         $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004'
             . '&ctx_enc=info%3Aofi%2Fenc%3AUTF-8'
             . '&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator'
@@ -133,7 +137,9 @@ class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
 
         $print = $this->findCss($page, 'a.access-unknown');
         $this->assertEquals('Print', $print->getText());
-        $this->assertEquals('Print fake1', $print->getParent()->getText());
+        $this->assertEquals(
+            'Print fake1 General notes', $print->getParent()->getText()
+        );
         $this->assertEquals(
             'https://vufind.org/wiki?' . $openUrl . '#print',
             $print->getAttribute('href')

@@ -50,6 +50,20 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
     protected $hierarchyDriver = null;
 
     /**
+     * Collection page route.
+     *
+     * @var string
+     */
+    protected $collectionRoute = 'collection';
+
+    /**
+     * Record page route.
+     *
+     * @var string
+     */
+    protected $recordRoute = 'record';
+
+    /**
      * Get the hierarchy driver
      *
      * @return \VuFind\Hierarchy\Driver\AbstractBase
@@ -74,6 +88,26 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
     {
         $this->hierarchyDriver = $driver;
         return $this;
+    }
+
+    /**
+     * Get collection page route.
+     *
+     * @return string
+     */
+    public function getCollectionRoute()
+    {
+        return $this->collectionRoute;
+    }
+
+    /**
+     * Get recordpage route.
+     *
+     * @return string
+     */
+    public function getRecordRoute()
+    {
+        return $this->recordRoute;
     }
 
     /**
