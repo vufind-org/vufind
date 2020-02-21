@@ -103,6 +103,21 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get current value of slot. Returns null if unset.
+     *
+     * @param any $default Value to return if no value is set
+     *
+     * @return string|null
+     */
+    public function isset()
+    {
+        $name = array_pop($this->stack);
+        return isset($this->blockPrepends[$name]) ||
+            isset($this->blocks[$name]) ||
+            isset($this->blockAppends[$name]);
+    }
+
+    /**
      * Helper function to return blocks with prepends and appends.
      * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening
      *
