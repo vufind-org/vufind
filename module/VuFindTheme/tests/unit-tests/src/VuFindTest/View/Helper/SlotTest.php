@@ -54,6 +54,25 @@ class SlotTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test get value of slot.
+     *
+     * @return void
+     */
+    public function testGet()
+    {
+        $helper = $this->getHelper();
+
+        // test empty default
+        $this->assertEquals(null, $helper->__invoke('test')->get());
+        $this->assertEquals('default', $helper->__invoke('test')->get('default'));
+
+        // test populated over default
+        $helper->__invoke('test')->set('ONE');
+        $this->assertEquals('ONE', $helper->__invoke('test')->get());
+        $this->assertEquals('ONE', $helper->__invoke('test')->get('default'));
+    }
+
+    /**
      * Test setting value of slot blocking later sets.
      *
      * @return void

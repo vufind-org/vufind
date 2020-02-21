@@ -133,10 +133,11 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return string|null
      */
-    public function get()
+    public function get($default = null)
     {
         $name = array_pop($this->stack);
-        return $this->build($name);
+        $ret = $this->build($name);
+        return $ret === null ? $default : $ret;
     }
 
     /**
