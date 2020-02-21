@@ -202,7 +202,7 @@ class Results extends \VuFind\Search\Base\Results
     protected function formatFacetData($current)
     {
         // We'll need this in the loop below:
-        $filterList = $this->getParams()->getFilters();
+        $filterList = $this->getParams()->getRawFilters();
 
         // Should we translate values for the current facet?
         $field = $current['displayName'];

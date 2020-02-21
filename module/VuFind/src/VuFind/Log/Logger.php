@@ -114,7 +114,7 @@ class Logger extends BaseLogger
     }
 
     /**
-     * Log an exception triggered by ZF2 for administrative purposes.
+     * Log an exception triggered by the framework for administrative purposes.
      *
      * @param \Exception              $error  Exception to log
      * @param \Zend\Stdlib\Parameters $server Server metadata

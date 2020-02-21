@@ -30,7 +30,6 @@
 namespace VuFind\Session;
 
 use VuFind\Db\Table\DbTableAwareInterface;
-use Zend\Config\Config;
 use Zend\Session\SaveHandler\SaveHandlerInterface;
 
 /**
@@ -58,14 +57,4 @@ interface HandlerInterface extends SaveHandlerInterface, DbTableAwareInterface
      * @return void
      */
     public function disableWrites();
-
-    /**
-     * Set configuration.
-     *
-     * @param Config $config Session configuration ([Session] section of
-     * config.ini)
-     *
-     * @return void
-     */
-    public function setConfig(Config $config);
 }

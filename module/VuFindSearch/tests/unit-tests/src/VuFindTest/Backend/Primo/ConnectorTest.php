@@ -81,7 +81,7 @@ class ConnectorTest extends TestCase
         $terms = [];
         $result = $conn->query('dummyinst', $terms);
         $this->assertEquals(0, $result['recordCount']);
-        $this->assertEquals('Primo does not accept an empty query', $result['error']);
+        $this->assertEquals('empty_search_disallowed', $result['error']);
     }
 
     /**
@@ -125,11 +125,12 @@ class ConnectorTest extends TestCase
      *
      * @return void
      *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage Unauthorized access
      */
     public function testErrorInSuccessfulResponse()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unauthorized access');
+
         $conn = $this->createConnector('error-with-success-http');
         $terms = [
             ['index' => 'Title', 'lookfor' => 'dummy query'],

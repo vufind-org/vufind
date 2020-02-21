@@ -5,7 +5,7 @@
   <?=$this->flashmessages();?>
 
   <div id="popupDetails" class="confirmDialog">
-    <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post">
+    <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post" data-lightbox-onclose="VuFind.refreshPage">
       <?php if (isset($this->extras)): ?>
         <?php foreach ($this->extras as $extra => $value): ?>
           <?php if (is_array($value)): ?>

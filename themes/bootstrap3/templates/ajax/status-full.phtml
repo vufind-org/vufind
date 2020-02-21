@@ -8,7 +8,7 @@
     <?php if (++$i == 5) break; // Show no more than 5 items ?>
     <tr>
       <td class="fullLocation">
-        <?php $locationText = $this->transEsc('location_' . $item['location'], [], $item['location']); ?>
+        <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
         <?php if ($item['locationhref'] ?? false): ?>
           <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
         <?php else: ?>

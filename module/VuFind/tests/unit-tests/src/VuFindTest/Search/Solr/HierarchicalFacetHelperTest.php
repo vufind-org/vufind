@@ -112,7 +112,7 @@ class HierarchicalFacetHelperTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
         $this->helper = new HierarchicalFacetHelper();
     }

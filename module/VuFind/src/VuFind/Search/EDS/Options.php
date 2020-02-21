@@ -481,7 +481,7 @@ class Options extends \VuFind\Search\Base\Options
                     if (isset($expander['DefaultOn'])
                         && 'y' == $expander['DefaultOn']
                     ) {
-                        $this->defaultExpanders[] =  $expander['Id'];
+                        $this->defaultExpanders[] = $expander['Id'];
                     }
                 }
             }

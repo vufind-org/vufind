@@ -411,7 +411,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
             $qb->setFieldsToHighlight($input);
             $response = $qb->build($q);
             $hlfl = $response->get('hl.fl');
-            $this->assertEquals($output, $hlfl[0]);
+            $this->assertEquals($output, $hlfl[0] ?? null);
         }
     }
 
@@ -437,7 +437,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $qb->setCreateSpellingQuery(false);
         $response1 = $qb->build($q);
         $spQ1 = $response1->get('spellcheck.q');
-        $this->assertEquals(null, $spQ1[0]);
+        $this->assertFalse(isset($spQ1[0]));
 
         // spellcheck.q if spellcheck query enabled:
         $qb->setCreateSpellingQuery(true);

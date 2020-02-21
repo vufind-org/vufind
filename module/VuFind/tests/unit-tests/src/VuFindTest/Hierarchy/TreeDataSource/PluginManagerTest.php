@@ -58,11 +58,12 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Hierarchy\TreeDataSource\AbstractBase
      */
     public function testExpectedInterface()
     {
+        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Hierarchy\\TreeDataSource\\AbstractBase');
+
         $pm = new PluginManager(
             $this->createMock(\Interop\Container\ContainerInterface::class)
         );

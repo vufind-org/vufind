@@ -2306,7 +2306,11 @@ class Demo extends AbstractBase
                 'extraHoldFields' =>
                     'comments:requestGroup:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => 'driver:0:2:0',
-                'itemLimit' => $this->config['Holds']['itemLimit'] ?? null,
+            ];
+        }
+        if ($function == 'Holdings') {
+            return [
+                'itemLimit' => $this->config['Holdings']['itemLimit'] ?? null,
             ];
         }
         if ($function == 'StorageRetrievalRequests'
