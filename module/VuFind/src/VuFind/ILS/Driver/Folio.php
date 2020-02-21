@@ -499,7 +499,7 @@ class Folio extends AbstractAPI implements
      *
      * @return string
      */
-    protected function patronLoginWithCql($username, $password)
+    protected function getUserWithCql($username, $password)
     {
         // Construct user query using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
@@ -523,6 +523,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a CQL query, fetch a single user; if we get an unexpected count, treat
+     * that as an unsuccessful login by returning null.
+     *
+     * @param string $query CQL query
+     *
+     * @return object
+     */
+    protected function fetchUserWithCql($query)
+    {
+        $response = $this->makeRequest('GET', '/users', compact('query'));
+        $json = json_decode($response->getBody());
+        return count($json->users) === 1 ? $json->users[0] : null;
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -531,30 +546,45 @@ class Folio extends AbstractAPI implements
      * @param string $password The patron password
      *
      * @return mixed Associative array of patron info on successful login,
-     *               null on unsuccessful login.
+     * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
     {
-        // Depending on the configured login method, we either need to do an Okapi
-        // lookup now or else we need to build a CQL query specific enough to
-        // authenticate a user. Either way, we end up with a CQL query that will
-        // retrieve information about the logged-in user upon success.
-        if ($this->config['User']['okapi_login'] ?? false) {
+        $doOkapiLogin = $this->config['User']['okapi_login'] ?? false;
+        $usernameField = $this->config['User']['username_field'] ?? 'username';
+
+        // If the username field is not the default 'username' we will need to
+        // do a lookup to find the correct username value for Okapi login. We also
+        // need to do this lookup if we're skipping Okapi login entirely.
+        if (!$doOkapiLogin || $usernameField !== 'username') {
+            $query = $this->getUserWithCql($username, $password);
+            $profile = $this->fetchUserWithCql($query);
+            if ($profile === null) {
+                return null;
+            }
+        }
+
+        // If we need to do an Okapi login, we have the information we need to do
+        // it at this point.
+        if ($doOkapiLogin) {
             try {
-                $query = $this->patronLoginWithOkapi($username, $password);
+                // If we fetched the profile earlier, we want to use the username
+                // from there; otherwise, we'll use the passed-in version.
+                $query = $this->patronLoginWithOkapi(
+                    $profile->username ?? $username,
+                    $password
+                );
             } catch (Exception $e) {
                 return null;
             }
-        } else {
-            $query = $this->patronLoginWithCql($username, $password);
+            // If we didn't load a profile earlier, we should do so now:
+            if (!isset($profile)) {
+                $profile = $this->fetchUserWithCql($query);
+                if ($profile === null) {
+                    return null;
+                }
+            }
         }
-
-        $response = $this->makeRequest('GET', '/users', compact('query'));
-        $json = json_decode($response->getBody());
-        if (count($json->users) !== 1) {
-            throw new ILSException("Unexpected user count: " . count($json->users));
-        }
-        $profile = $json->users[0];
 
         return [
             'id' => $profile->id,
