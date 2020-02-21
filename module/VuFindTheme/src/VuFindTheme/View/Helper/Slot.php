@@ -131,6 +131,8 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     /**
      * Get current value of slot. Returns null if unset.
      *
+     * @param any $default Value to return if no value is set
+     *
      * @return string|null
      */
     public function get($default = null)
