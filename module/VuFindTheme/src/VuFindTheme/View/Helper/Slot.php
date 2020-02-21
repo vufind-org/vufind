@@ -210,7 +210,7 @@ class Slot extends \Zend\View\Helper\AbstractHelper
      *
      * @return string|any
      */
-    public function end($method = 'SET')
+    public function end($method = self::SET)
     {
         $method = strtoupper($method);
         $ret = null;
