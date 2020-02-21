@@ -92,9 +92,19 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         $ret = $helper->__invoke('test')->set('TWO');
         $this->assertEquals('ONE', $ret);
 
-        // test non-string
+        // test number
+        $ret = $helper->__invoke('array')->set(100);
+        $this->assertEquals(100, $ret);
+
+        // test array
+        $helper->__invoke('array')->clear();
         $ret = $helper->__invoke('array')->set([1, 2, 3]);
         $this->assertEquals([1, 2, 3], $ret);
+
+        // test object
+        $helper->__invoke('array')->clear();
+        $ret = $helper->__invoke('array')->set(new \SplStack());
+        $this->assertEquals('SplStack', get_class($ret));
 
         // test shortcuts
         $ret = $helper->__invoke('short', 'SUCCESS');
