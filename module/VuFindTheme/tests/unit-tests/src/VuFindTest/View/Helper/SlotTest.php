@@ -116,7 +116,10 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         $set1 = $helper->__invoke('test')->set('ONE');
         $this->assertEquals('ONE', $set1);
 
-        $helper->__invoke('test')->clear();
+        $ret = $helper->__invoke('test')->clear();
+
+        // test returns old content
+        $this->assertEquals('ONE', $ret);
 
         // test now null
         $this->assertEquals(null, $helper->__invoke('test')->get());
