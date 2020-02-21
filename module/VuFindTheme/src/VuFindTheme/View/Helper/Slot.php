@@ -103,11 +103,9 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get current value of slot. Returns null if unset.
+     * Checks for content to provide isset functionality.
      *
-     * @param any $default Value to return if no value is set
-     *
-     * @return string|null
+     * @return boolean
      */
     public function isset()
     {
