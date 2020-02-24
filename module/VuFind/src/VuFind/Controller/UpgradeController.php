@@ -31,7 +31,7 @@ namespace VuFind\Controller;
 
 use ArrayObject;
 use Exception;
-use VuFind\Cache\Manager;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
@@ -42,7 +42,7 @@ use VuFind\Crypt\Base62;
 use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\Search\Results\PluginManager;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 use Zend\Db\Adapter\Adapter;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -177,6 +177,7 @@ class UpgradeController extends AbstractBase
      * Figure out which version(s) are being used.
      *
      * @return mixed
+     * @throws Exception
      */
     public function establishversionsAction()
     {
@@ -320,8 +321,7 @@ class UpgradeController extends AbstractBase
      */
     protected function fixSearchChecksumsInDatabase()
     {
-        $manager = $this->serviceLocator
-            ->get(PluginManager::class);
+        $manager = $this->serviceLocator->get(ResultsManager::class);
         $search = $this->getTable('search');
         $searchWhere = ['checksum' => null, 'saved' => 1];
         $searchRows = $search->select($searchWhere);
@@ -348,6 +348,7 @@ class UpgradeController extends AbstractBase
      * @param Adapter $adapter Database adapter
      *
      * @return mixed
+     * @throws Exception
      */
     protected function upgradeMySQL($adapter)
     {
@@ -726,6 +727,7 @@ class UpgradeController extends AbstractBase
      * Fix missing metadata in the resource table.
      *
      * @return mixed
+     * @throws Exception
      */
     public function fixmetadataAction()
     {
@@ -815,6 +817,7 @@ class UpgradeController extends AbstractBase
      * Prompt the user for a source version (to upgrade from 2.x+).
      *
      * @return mixed
+     * @throws Exception
      */
     public function getsourceversionAction()
     {
@@ -853,7 +856,7 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = $this->serviceLocator->get(Manager::class);
+        $cache = $this->serviceLocator->get(CacheManager::class);
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }
