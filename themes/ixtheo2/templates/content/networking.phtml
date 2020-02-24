@@ -153,7 +153,7 @@
 
         // Initial drawing of the map
         function DrawMap() {
-            OpenStreetMapWrapper.DrawMap(12.810, 51.352, /* zoom */5);
+            OpenStreetMapWrapper.DrawMap(12.810, 51.352, /* zoom */ 5, /* proxy */ '/proxy/load?');
             AddMarkers();
             OpenStreetMapWrapper.BuildLocationLayer();
         }

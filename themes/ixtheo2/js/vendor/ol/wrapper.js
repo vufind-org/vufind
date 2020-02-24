@@ -3,13 +3,24 @@ var OpenStreetMapWrapper = {
     map: null,
     layer: null,
     locations: [],
-    DrawMap: function(lon, lat, zoom) {
+    DrawMap: function(lon, lat, zoom, proxy=null) {
+        // Proxy functionality
+        let source = new ol.source.OSM();
+        if (proxy != null) {
+            let rawUrls = source.getUrls();
+            var proxyUrls = [];
+            rawUrls.forEach(function(rawUrl) {
+                proxyUrls.push(proxy + rawUrl);
+            });
+            source.setUrls(proxyUrls);
+        }
+
         // Initialize map
         this.map = new ol.Map({
             target: 'map',
             layers: [
                 new ol.layer.Tile({
-                    source: new ol.source.OSM()
+                    source: source
                 })
             ],
             view: new ol.View({
