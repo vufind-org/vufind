@@ -93,7 +93,7 @@
     <?php if (is_object($account) && $account->loginEnabled()): ?>
       <?php $user = $account->isLoggedIn(); ?>
       <?php if (!$user): ?>
-        <ul role="menu" class="nav navbar-nav nav-login">
+        <ul <?php if($account->isLoggedIn()): ?>role="menu" <?php endif ?>class="nav navbar-nav nav-login">
           <li class="nav-login" id="loginOptions-navi"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
           <?php if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
             <a role="menuitem" href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-user" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
@@ -113,7 +113,7 @@
       <?php endif; ?>
     <?php endif; ?>
     </div>
-    <ul role="menubar" aria-label="<?=$this->transEsc('Your Account')?>" class="nav navbar-nav nav-absolute">
+    <ul <?php if ($this->auth()->isLoggedIn()): ?>role="menubar" <?php endif; ?>aria-label="<?=$this->transEsc('Your Account')?>" class="nav navbar-nav nav-absolute">
       <?php if (is_object($account) && $account->loginEnabled()): ?>
         <?php if ($this->auth()->isLoggedIn()): ?>
           <li class="logoutOptions">
