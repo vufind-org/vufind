@@ -57,16 +57,17 @@
   <?php else: ?>
     </span>
   <?php endif; ?>
-
   <?php if ($thisFacet['isApplied']): ?>
     <span class="status"><i class="fa fa-check" aria-hidden="true"></i></span>
   <?php else: ?>
-    <span class="badge">
-        <?= ($this->tuefind()->isUnassigned($thisFacet['displayText']) &&
-             !($thisFacet['operator'] == 'OR' && $this->tuefind()->atLeastOneFacetChosen($this->cluster['list']))) ?
-             $this->tuefind()->getLocalizedOverallPercentage($this, $thisFacet['count'], $results) . '%' :
-             $this->localizedNumber($thisFacet['count'])?>
-    </span>
+    <?php if (!in_array($this->title, $this->suppressCountFacets)):?>
+       <span class="badge">
+         <?= ($this->tuefind()->isUnassigned($thisFacet['displayText']) &&
+              !($thisFacet['operator'] == 'OR' && $this->tuefind()->atLeastOneFacetChosen($this->cluster['list']))) ?
+              $this->tuefind()->getLocalizedOverallPercentage($this, $thisFacet['count'], $results) . '%' :
+              $this->localizedNumber($thisFacet['count'])?>
+       </span>
+    <?php endif;?>
   <?php endif; ?>
 
   <?php if (!$thisFacet['isApplied'] && $this->allowExclude): ?>
