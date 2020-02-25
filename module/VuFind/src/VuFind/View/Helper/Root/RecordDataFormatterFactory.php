@@ -141,7 +141,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+             ['itemPrefix' => '<div property="availableLanguage" typeof="Language"><span property="name">', 'itemSuffix' => '</span></div>']
+        );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
@@ -159,8 +162,13 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine('Notes', 'getGeneralNotes');
         $spec->setLine('Production Credits', 'getProductionCredits');
-        $spec->setLine('ISBN', 'getISBNs');
-        $spec->setLine('ISSN', 'getISSNs');
+        $spec->setLine(
+            'ISBN', 'getISBNs', null,
+            ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
+        );
+        $spec->setLine('ISSN', 'getISSNs', null,
+            ['itemPrefix' => '<span property="issn">', 'itemSuffix' => '</span>']
+        );
         return $spec->getArray();
     }
 
@@ -176,7 +184,10 @@ class RecordDataFormatterFactory implements FactoryInterface
         $spec->setMultiLine(
             'Authors', 'getDeduplicatedAuthors', $this->getAuthorFunction()
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['itemPrefix' => '<div property="availableLanguage" typeof="Language"><span property="name">', 'itemSuffix' => '</span></div>']
+        );
         $spec->setLine(
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
@@ -210,7 +221,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['itemPrefix' => '<div property="availableLanguage" typeof="Language"><span property="name">', 'itemSuffix' => '</span></div>']
+        );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
@@ -253,9 +267,17 @@ class RecordDataFormatterFactory implements FactoryInterface
         $spec->setLine('Awards', 'getAwards');
         $spec->setLine('Production Credits', 'getProductionCredits');
         $spec->setLine('Bibliography', 'getBibliographyNotes');
-        $spec->setLine('ISBN', 'getISBNs');
-        $spec->setLine('ISSN', 'getISSNs');
-        $spec->setLine('DOI', 'getCleanDOI');
+        $spec->setLine(
+            'ISBN', 'getISBNs', null,
+            ['itemPrefix' => '<span property="isbn">', 'itemSuffix' => '</span>']
+        );
+	$spec->setLine('ISSN', 'getISSNs', null,
+            ['itemPrefix' => '<span property="issn">', 'itemSuffix' => '</span>']
+	);
+	$spec->setLine(
+            'DOI', 'getCleanDOI', null,
+            ['prefix' => '<span property="identifier">', 'suffix' => '</span>']
+        );
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');
         $spec->setLine('Finding Aid', 'getFindingAids');
