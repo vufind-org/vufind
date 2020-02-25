@@ -31,6 +31,9 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use VuFind\Db\Table\Shortlinks;
 use VuFind\UrlShortener\Database;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\Driver\ConnectionInterface;
+use Zend\Db\Adapter\Driver\DriverInterface;
 use Zend\Db\ResultSet;
 
 /**
@@ -81,9 +84,39 @@ class DatabaseTest extends TestCase
      */
     public function testShortener()
     {
-        $table = $this->getMockTable(['insert', 'select']);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)
+            ->setMethods(
+                [
+                    'beginTransaction', 'commit', 'connect', 'getResource',
+                    'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
+                    'execute', 'getLastGeneratedValue'
+                ]
+            )->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->once())->method('beginTransaction');
+        $connection->expects($this->once())->method('commit');
+        $driver = $this->getMockBuilder(DriverInterface::class)
+            ->setMethods(
+                [
+                    'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
+                    'createStatement', 'createResult', 'getPrepareType',
+                    'formatParameterName', 'getLastGeneratedValue'
+                ]
+            )->disableOriginalConstructor()
+            ->getMock();
+        $driver->expects($this->once())->method('getConnection')
+            ->will($this->returnValue($connection));
+        $adapter = $this->getMockBuilder(Adapter::class)
+            ->setMethods(['getDriver'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $adapter->expects($this->once())->method('getDriver')
+            ->will($this->returnValue($driver));
+        $table = $this->getMockTable(['insert', 'select', 'getAdapter']);
         $table->expects($this->once())->method('insert')
             ->with($this->equalTo(['path' => '/bar', 'hash' => 'a1e7812e2']));
+        $table->expects($this->once())->method('getAdapter')
+            ->will($this->returnValue($adapter));
         $mockResults = $this->getMockBuilder(ResultSet::class)
             ->setMethods(['count', 'current'])
             ->disableOriginalConstructor()
