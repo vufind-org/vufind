@@ -15,7 +15,7 @@ if (!isset($capabilityParams)) {
             echo '<div class="my-profile-col profile-title">' . $this->transEsc('messaging_settings_type_' . $service['type'], null, $service['type']) . ':</div>';
             echo '<div class="profile-text-value">';
             if (isset($service['sendMethods'])) {
-                // Axiell, Gemini
+                // Axiell
                 $activeMethods = 0;
                 foreach ($service['sendMethods'] as $method) {
                     if ($method['active']) {
