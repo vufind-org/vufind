@@ -42,7 +42,12 @@ use VuFind\Db\Table\Shortlinks as ShortlinksTable;
  */
 class Database implements UrlShortenerInterface
 {
-    const HASH_ALGO = 'md5';
+    /**
+     * Hash algorithm to use
+     *
+     * @var string
+     */
+    protected $hashAlgorithm;
 
     /**
      * Base URL of current VuFind site
@@ -66,20 +71,123 @@ class Database implements UrlShortenerInterface
     protected $salt;
 
     /**
+     * When using a hash algorithm other than base62, the preferred number of
+     * characters to use from the hash in the URL (more may be used for
+     * disambiguation when necessary).
+     *
+     * @var int
+     */
+    protected $preferredHashLength = 9;
+
+    /**
      * Constructor
      *
-     * @param string          $baseUrl Base URL of current VuFind site     *
-     * @param ShortlinksTable $table   Shortlinks database table
-     * @param string          $salt    HMacKey from config
+     * @param string          $baseUrl       Base URL of current VuFind site
+     * @param ShortlinksTable $table         Shortlinks database table
+     * @param string          $salt          HMacKey from config
+     * @param string          $hashAlgorithm Hash algorithm to use
      */
     public function __construct(
         string $baseUrl,
         ShortlinksTable $table,
-        string $salt
+        string $salt,
+        string $hashAlgorithm = 'md5'
     ) {
         $this->baseUrl = $baseUrl;
         $this->table = $table;
         $this->salt = $salt;
+        $this->hashAlgorithm = $hashAlgorithm;
+    }
+
+    /**
+     * Generate a short hash using the base62 algorithm (and write a row to the
+     * database).
+     *
+     * @param string $path Path to store in database
+     *
+     * @return string
+     */
+    protected function getBase62Hash(string $path): string
+    {
+        $this->table->insert(['path' => $path]);
+        $id = $this->table->getLastInsertValue();
+        $row = $this->table->select(['id' => $id])->current();
+        $b62 = new \VuFind\Crypt\Base62();
+        $row->hash = $b62->encode($id);
+        $row->save();
+        return $row->hash;
+    }
+
+    /**
+     * Support method for getGenericHash(): do the work of picking a short version
+     * of the hash and writing to the database as needed.
+     *
+     * @param string $path   Path to store in database
+     * @param string $hash   Hash of $path (generated in getGenericHash)
+     * @param int    $length Minimum number of characters from hash to use for
+     * lookups (may be increased to enforce uniqueness)
+     */
+    protected function saveAndShortenHash($path, $hash, $length)
+    {
+        $shorthash = str_pad(substr($hash, 0, $length), $length, '_');
+        $results = $this->table->select(['hash' => $shorthash]);
+
+        // Brand new hash? Create row and return:
+        if ($results->count() == 0) {
+            $this->table->insert(['path' => $path, 'hash' => $shorthash]);
+            return $shorthash;
+        }
+
+        // If we got this far, the hash already exists; let's check if it matches
+        // the path...
+        if ($results->current()['path'] === $path) {
+            return $shorthash;
+        }
+
+        // If we got here, we have encountered an unexpected hash collision. Let's
+        // disambiguate by making it one character longer:
+        return $this->saveAndShortenHash($path, $hash, $length + 1);
+    }
+
+    /**
+     * Generate a short hash using the configured algorithm (and write a row to the
+     * database if the link is new).
+     *
+     * @param string $path   Path to store in database
+     *
+     * @return string
+     */
+    protected function getGenericHash(string $path): string
+    {
+        $hash = hash($this->hashAlgorithm, $path . $this->salt);
+        // Generate short hash within a transaction to avoid odd timing-related
+        // problems:
+        $connection = $this->table->getAdapter()->getDriver()->getConnection();
+        $connection->beginTransaction();
+        $shortHash = $this
+            ->saveAndShortenHash($path, $hash, $this->preferredHashLength);
+        $connection->commit();
+        return $shortHash;
+    }
+
+    /**
+     * Given a URL, create a database entry (if necessary) and return the hash
+     * value for inclusion in the short URL.
+     *
+     * @param string $url URL
+     *
+     * @return string
+     */
+    protected function getShortHash(string $url): string
+    {
+        $path = str_replace($this->baseUrl, '', $url);
+
+        // We need to handle things differently depending on whether we're
+        // using the legacy base62 algorithm, or a different hash mechanism.
+        $shorthash = $this->hashAlgorithm === 'base62'
+            ? $this->getBase62Hash($path) : $this->getGenericHash($path);
+
+        return $shorthash;
     }
 
     /**
@@ -91,17 +199,7 @@ class Database implements UrlShortenerInterface
      */
     public function shorten($url)
     {
-        $path = str_replace($this->baseUrl, '', $url);
-        $hash = hash(static::HASH_ALGO, $path . $this->salt);
-        $shorthash = substr($hash, 0, 9);
-        $results = $this->table->select(['hash' => $shorthash]);
-
-        // this should almost never happen - we then return the existing hash
-        if ($results->count() == 0) {
-            $this->table->insert(['path' => $path, 'hash' => $shorthash]);
-        }
-
-        return $this->baseUrl . '/short/' . $shorthash;
+        return $this->baseUrl . '/short/' . $this->getShortHash($url);
     }
 
     /**
@@ -115,10 +213,9 @@ class Database implements UrlShortenerInterface
      */
     public function resolve($input)
     {
-        $shorthash = substr($input, 0, 9);
-        $results = $this->table->select(['hash' => $shorthash]);
+        $results = $this->table->select(['hash' => $input]);
         if ($results->count() !== 1) {
-            throw new Exception('Shortlink could not be resolved: ' . $shorthash);
+            throw new Exception('Shortlink could not be resolved: ' . $input);
         }
 
         return $this->baseUrl . $results->current()['path'];

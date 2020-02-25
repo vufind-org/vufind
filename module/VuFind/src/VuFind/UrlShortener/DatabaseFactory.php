@@ -63,7 +63,11 @@ class DatabaseFactory
             ->get('shortlinks');
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $salt = $config->get('Security')->get('HMACkey');
-        return new $requestedName(rtrim($baseUrl, '/'), $table, $salt);
+        $salt = $config->Security->HMACkey ?? '';
+        if (empty($salt)) {
+            throw new Exception('HMACkey missing from configuration.');
+        }
+        $hashType = $config->Mail->url_shortener_key_type ?? 'md5';
+        return new $requestedName(rtrim($baseUrl, '/'), $table, $salt, $hashType);
     }
 }
