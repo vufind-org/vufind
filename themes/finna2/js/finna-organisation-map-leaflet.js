@@ -81,7 +81,7 @@ finna.organisationMap = (function finnaOrganisationMap() {
         if (openTimes) {
           var schedules = finna.common.getField(openTimes, 'schedules');
           var openNow = finna.common.getField(openTimes, 'openNow');
-          icon = schedules && schedules.length > 0 && openNow ? icons.open : icons.closed;
+          icon = schedules && schedules.length > 0 ? (openNow ? icons.open : icons.closed) : icon;
         }
 
         var marker = L.marker(

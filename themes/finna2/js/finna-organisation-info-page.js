@@ -40,7 +40,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
 
   function updateConsortiumNotification(data) {
     if ('consortium' in data) {
-      if ('finna' in data.consortium && 'notification' in data.consortium.finna) {
+      if (data.consortium.finna.notification) {
         holder.find('.consortium-notification')
           .html(data.consortium.finna.notification).removeClass('hide');
       }
@@ -93,8 +93,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       var bubble = holder.find('.map-bubble-template').clone();
       bubble.find('.name').text(obj.name);
       var openNow = null;
-      if ('openTimes' in obj && 'openNow' in obj.openTimes) {
-        openNow = obj.openTimes.openNow;
+      if ('openNow' in obj) {
+        openNow = obj.openNow;
       }
 
       if ('openTimes' in obj && obj.openTimes.schedules.length) {
@@ -155,7 +155,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         var term = request.term.toLowerCase();
         var result = [];
         $.each(organisationList, function handleOrganisation(id, obj) {
-          if ((obj.type === 'library' || obj.type === 'other') && obj.name.toLowerCase().indexOf(term) !== -1) {
+          if (obj.name.toLowerCase().indexOf(term) !== -1) {
             result.push({value: id, label: obj.name});
           }
         });
@@ -217,10 +217,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         var cnt = 0;
         $.each(response.list, function countItem(ind, obj) {
           organisationList[obj.id] = obj;
-          if (obj.type === 'library' || obj.type === 'other'
-            || obj.type === 'museum') {
-            cnt++;
-          }
+          cnt++;
         });
 
         infoWidget.organisationListLoaded(response);
@@ -318,7 +315,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       var links = data.details.links;
       if (links.length) {
         $.each(links, function handleSocialButton(ind, obj) {
-          if (obj.name === 'Facebook') {
+          if (obj.name.includes('Facebook')) {
             var btn = holder.find('.social-button');
             btn.find('> a').attr('href', obj.url);
             btn.show();
@@ -333,26 +330,38 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         if ('today' in obj && 'times' in obj && obj.times.length) {
           openToday = obj.times[0];
 
+          var lastElement = obj.times[obj.times.length - 1];
           var timeOpen = holder.find('.time-open');
           timeOpen.find('.opening-times .opens').text(openToday.opens);
-          timeOpen.find('.opening-times .closes').text(openToday.closes);
+          timeOpen.find('.opening-times .closes').text(lastElement.closes);
           timeOpen.show();
-          var staffSchedule = obj.times[1];
+          var staffSchedule = [];
+          $.each(obj.times, function isSelfservice(index, object) {
+            if (object.selfservice === false) {
+              staffSchedule = {
+                opens: object.opens,
+                closes: object.closes
+              };
+            }
+            return staffSchedule;
+          });
           var staffTimes;
-          if (staffSchedule) {
+          if (staffSchedule && obj.times.length > 1) {
             staffTimes = timeOpen.find('.staff-times');
             var shift;
             staffTimes.find('.shift').remove();
             staffTimes.removeClass('hide');
-            for (var i = 1; i < obj.times.length; i++) {
+            for (var i = 0; i < obj.times.length; i++) {
               staffSchedule = obj.times[i];
-              shift = staffTimes.find('.shift-template').clone().addClass('shift').removeClass('shift-template hide');
-              shift.find('.opens').text(staffSchedule.opens);
-              shift.find('.closes').text(staffSchedule.closes);
-              if (i > 1) {
-                shift.prepend(', ');
+              if (staffSchedule.selfservice === false) {
+                shift = staffTimes.find('.shift-template').clone().addClass('shift').removeClass('shift-template hide');
+                shift.find('.opens').text(staffSchedule.opens);
+                shift.find('.closes').text(staffSchedule.closes);
+                if (i > 1) {
+                  shift.prepend(', ');
+                }
+                staffTimes.find('.shift-template').before(shift);
               }
-              staffTimes.find('.shift-template').before(shift);
             }
           } else {
             staffTimes = timeOpen.find('.staff-times');

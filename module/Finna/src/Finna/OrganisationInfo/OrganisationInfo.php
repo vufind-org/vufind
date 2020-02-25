@@ -86,11 +86,11 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     protected $language = null;
 
     /**
-     * Fallback language (use getFallbackLanguage())
+     * CleanHtml helper
      *
-     * @var string
+     * @var \Finna\View\Helper\Root\CleanHtml
      */
-    protected $fallbackLanguage = null;
+    protected $cleanHtml;
 
     /**
      * Constructor.
@@ -109,6 +109,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $this->cacheManager = $cacheManager;
         $this->viewRenderer = $viewRenderer;
         $this->dateConverter = $dateConverter;
+        $this->cleanHtml = $viewRenderer->plugin('cleanHtml');
     }
 
     /**
@@ -151,25 +152,6 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $this->language = $this->validateLanguage($language, $allLanguages);
         }
         return $this->language;
-    }
-
-    /**
-     * Get the fallback language to use if there are no results in active language
-     *
-     * @return string
-     */
-    protected function getFallbackLanguage()
-    {
-        if (null === $this->fallbackLanguage) {
-            $allLanguages = isset($this->config->General->languages)
-                ? $this->config->General->languages->toArray() : [];
-
-            $fallback = $this->config->General->fallbackLanguage ?? '';
-            $fallback = $this->validateLanguage($fallback, $allLanguages);
-            $this->fallbackLanguage = $fallback !== $this->getLanguage() ?
-                $fallback : '';
-        }
-        return $this->fallbackLanguage;
     }
 
     /**
@@ -367,8 +349,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             'finna:id' => $parent,
             'lang' => $this->getLanguage()
         ];
-        $params['with'] = 'finna';
-        $response = $this->fetchData('consortium', $params);
+        $response = $this->fetchData('finna_organisation', $params);
 
         if (!$response || $response['total'] == 0) {
             return false;
@@ -378,7 +359,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $url = $urlHelper('organisationinfo-home');
         $result = ['success' => true, 'items' => []];
         foreach ($response['items'] as $item) {
-            $id = $item['finna']['finna_id'];
+            $id = $item['finnaId'];
             $data = "{$url}?" . http_build_query(['id' => $id]);
             if ($link) {
                 $logo = null;
@@ -386,7 +367,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                     $logos = $response['items'][0]['logo'];
                     foreach (['small', 'medium'] as $size) {
                         if (isset($logos[$size])) {
-                            $logo = $logos[$size];
+                            $logo = $logos[$size]['url'];
                             break;
                         }
                     }
@@ -465,13 +446,12 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     ) {
         $params = [
             'finna:id' => $parent,
-            'with' => 'finna,link_groups'
+            'with' => 'links',
+            'lang' => $this->getLanguage()
         ];
-        if (!$this->getFallbackLanguage()) {
-            $params['lang'] = $this->getLanguage();
-        }
 
-        $response = $this->fetchData('consortium', $params);
+        $response = $this->fetchData('finna_organisation', $params);
+
         if (!$response
             || !$response['total'] || !isset($response['items'][0]['id'])
         ) {
@@ -487,98 +467,60 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $consortium = [];
         $finna = [];
 
-        if (isset($response['finna'])) {
-            $finna['service_point']
-                = $this->getField($response['finna'], 'service_point');
-        }
-
         if ($target == 'page') {
-            foreach (
-                ['name', 'description', 'homepage'] as $field
-            ) {
-                $val = $this->getField($response, $field);
-                if (!empty($val)) {
-                    if ('homepage' === $field) {
-                        $parts = parse_url($val);
-                        if (isset($parts['host'])) {
-                            $consortium['homepageLabel'] = $parts['host'];
-                        }
-                        if (!isset($parts['scheme'])) {
-                            $val = "http://$val";
-                        }
-                    }
-                    $consortium[$field] = $val;
+            $consortium['name'] = $response['name'];
+            $consortium['description'] = $response['description'];
+
+            if (isset($response['homepage'])) {
+                $parts = parse_url($response['homepage']);
+                if (isset($parts['host'])) {
+                    $consortium['homepageLabel'] = $parts['host'];
                 }
+                $consortium['homepage'] = $response['homepage'];
             }
             if (!empty($response['logo'])) {
-                $consortium['logo'] = $response['logo'];
+                $consortium['logo']['small'] = $response['logo']['small']['url']
+                ?? $response['logo']['medium']['url'];
             }
 
-            if (isset($response['finna'])) {
-                $finnaFields = [
-                   'usage_info', 'notification', 'finna_coverage',
-                ];
-                foreach ($finnaFields as $field) {
-                    $val = $this->getField($response['finna'], $field);
-                    if (!empty($val)) {
-                        $finna[$field] = $val;
-                    }
-                }
+            $consortium['finna'] = [
+                'usage_info' => $response['usageInfo'],
+                'notification' => $response['notification'],
+                'finna_coverage' => $response['finnaCoverage'],
+                'usage_perc' => $response['finnaCoverage'],
+            ];
 
-                if (isset($finna['finna_coverage'])) {
-                    $finna['usage_perc'] = $finna['finna_coverage'];
-                }
-
-                if (isset($response['link_groups'])) {
-                    foreach ($response['link_groups'] as $field) {
-                        $map = [
-                                'finna_materials' => 'links',
-                                'finna_usage_info' => 'finnaLink'
-                                ];
-                        foreach ($map as $from => $to) {
-                            if (empty($field['identifier'])) {
-                                continue;
-                            }
-                            if ($field['identifier'] == $from) {
-                                foreach ($field['links'] as $field) {
-                                    $name = $this->getField($field, 'name');
-                                    $url =  $this->getField($field, 'url');
-                                    $finna[$to][]
-                                        = ['name' => $name, 'value' => $url];
-                                }
-                            }
-                        }
-                    }
+            if (isset($response['links'])) {
+                foreach ($response['links'] as $field => $key) {
+                    $consortium['finna']['finnaLink'][$field]['name'] = $key['name'];
+                    $consortium['finna']['finnaLink'][$field]['value'] = $key['url'];
                 }
             }
         }
-        if (!empty($finna)) {
-            $consortium['finna'] = $finna;
-        }
-        $consortium['id'] = $consortiumId;
+
+        $consortium['finna']['service_point'] = $response['servicePoint'];
+        $consortium['id'] = $response['id'];
 
         // Organisation list for a consortium with schedules for the current week
         $params = [
-            'consortium' => $consortiumId,
-            'with' => 'schedules',
+            'consortium' => $response['id'],
+            'with' => 'schedules,primaryContactInfo',
             'period.start' => $startDate,
             'period.end' => $endDate,
-            'refs' => 'period'
+            'status' => '',
+            'lang' => $this->getLanguage(),
         ];
-        if (!$this->getFallbackLanguage()) {
-            $params['lang'] = $this->getLanguage();
-        }
+
         if (!empty($buildings)) {
             if (($buildings = implode(',', $buildings)) != '') {
                 $params['id'] = $buildings;
             }
         }
 
-        $response = $this->fetchData('organisation', $params);
+        $response = $this->fetchData('service_point', $params);
         if (!$response) {
             return false;
         }
-
         $result = ['consortium' => $consortium];
         $result['list'] = $this->parseList($target, $response);
 
@@ -608,7 +550,9 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         $with = 'schedules';
         if ($fullDetails) {
-            $with .= ',extra,phone_numbers,pictures,links,services';
+            $with .=
+                ',phoneNumbers,mailAddress,pictures,links,services,customData,
+                schedules';
         }
 
         $params = [
@@ -616,13 +560,12 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             'with' => $with,
             'period.start' => $startDate,
             'period.end' => $endDate,
+            'status' => '',
+            'lang' => $this->getLanguage(),
             'refs' => 'period'
         ];
-        if (!$this->getFallbackLanguage()) {
-            $params['lang'] = $this->getLanguage();
-        }
 
-        $response = $this->fetchData('organisation', $params);
+        $response = $this->fetchData('service_point', $params);
         if (!$response) {
             return false;
         }
@@ -631,12 +574,11 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             return false;
         }
 
-        // References
         $scheduleDescriptions = null;
-        if (isset($response['references']['period'])) {
+        if (isset($response['refs']['period'])) {
             $scheduleDescriptions = [];
-            foreach ($response['references']['period'] as $key => $period) {
-                $scheduleDesc = $this->getField($period, 'description');
+            foreach ($response['refs']['period'] as $key => $period) {
+                $scheduleDesc = $period['description'];
                 if (!empty($scheduleDesc)) {
                     $scheduleDescriptions[] = $scheduleDesc;
                 }
@@ -678,8 +620,8 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         } else {
             $params['limit'] = 1000;
             $apiUrl = $this->config->General->url;
-            if (!strpos($apiUrl, 'v3')) {
-                $apiUrl .= 'v3';
+            if (!strpos($apiUrl, 'v4')) {
+                $apiUrl .= 'v4';
             }
             $url = $apiUrl . '/' . $action
                 . '?' . http_build_query($params);
@@ -767,54 +709,43 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         $result = [];
         foreach ($response['items'] as $item) {
-            $name = $this->getField($item, 'name');
-            if (empty($name)) {
+            if (empty($item['name'])) {
                 continue;
             }
 
             $data = [
                 'id' => $item['id'],
-                'name' => $name,
-                'shortName' => $this->getField($item, 'short_name'),
+                'name' => $item['name'],
+                'shortName' => $item['shortName'],
                 'slug' => $item['slug'],
-                'type' => $item['type']
+                'type' => $item['type'],
+                'mobile' => $item['type'] == 'mobile' ? 1 : 0,
+                'email' => $item['primaryContactInfo']['email']['email'] ?? null,
+                'homepage' => $item['primaryContactInfo']['homepage']['url'] ?? null
             ];
 
-            if ($item['branch_type'] == 'mobile') {
-                $data['mobile'] = 1;
-            }
-
-            $fields = ['homepage', 'email'];
-            foreach ($fields as $field) {
-                if ($val = $this->getField($item, $field)) {
-                    if ('homepage' === $field) {
-                        $parts = parse_url($val);
-                        if (empty($parts['scheme'])) {
-                            $val = "http://$val";
-                        }
-                    }
-                    $data[$field] = $val;
-                }
-            }
-
             if (!empty($item['address'])) {
-                $address = [];
-                foreach (['street', 'zipcode', 'city', 'area'] as $addressField) {
-                    $address[$addressField]
-                        = $this->getField($item['address'], $addressField);
-                }
-                if (!empty($item['address']['coordinates'])) {
-                    $coordinates = $item['address']['coordinates'];
-                    $coordinates['lat'] = isset($coordinates['lat'])
-                        ? (float)$coordinates['lat'] : null;
-                    $coordinates['lon'] = isset($coordinates['lon'])
-                        ? (float)$coordinates['lon'] : null;
+                $address = [
+                    'street' => $item['address']['street'],
+                    'zipcode' => $item['address']['zipcode'],
+                ];
 
-                    $address['coordinates'] = $coordinates;
+                if (!empty($item['address']['area'])) {
+                    $address['city']
+                        = "{$item['address']['area']} / {$item['address']['city']}";
+                } else {
+                    $address['city'] = $item['address']['city'];
                 }
-                if (!empty($address)) {
-                    $data['address'] = $address;
-                }
+            }
+
+            if (!empty($item['coordinates'])) {
+                $address['coordinates']['lat'] = $item['coordinates']['lat']
+                    ?? null;
+                $address['coordinates']['lon'] = $item['coordinates']['lon']
+                    ?? null;
+            }
+            if (!empty($address)) {
+                $data['address'] = $address;
             }
 
             if (!empty($item['address'])) {
@@ -823,7 +754,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                     if (!empty($mapConf['params'])) {
                         $replace = [];
                         foreach ($mapConf['params'] as $param) {
-                            $val = $this->getField($item['address'], $param, 'fi');
+                            $val = $item['address'][$param];
                             if (!empty($val)) {
                                 $replace[$param] = $val;
                             }
@@ -837,11 +768,14 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                     $data[$map] = $mapUrl;
                 }
             }
+            $schedules = [
+                'schedule' => $item['schedules'],
+                'status' => $item['liveStatus']
+            ];
+            $data['openTimes'] = $this->parseSchedules($schedules);
 
-            $data['openTimes'] = $this->parseSchedules($item['schedules']);
+            $data['openNow'] = $item['liveStatus'] >= 1;
 
-            $data['openNow'] = $data['openTimes']['openNow'] ?? false
-            ;
             $result[] = $data;
         }
         usort($result, [$this, 'sortList']);
@@ -876,19 +810,22 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $target, $response, $schedules, $includeAllServices = false
     ) {
         $result = [];
-
+        $scheduleData = [
+            'schedule' => $response['schedules'],
+            'status' => $response['liveStatus']
+        ];
         if ($schedules) {
-            $result['openTimes'] = $this->parseSchedules($response['schedules']);
+            $result['openTimes'] = $this->parseSchedules($scheduleData);
         }
 
-        if (!empty($response['phone_numbers'])) {
+        if (!empty($response['phoneNumbers'])) {
             $phones = [];
-            foreach ($response['phone_numbers'] as $phone) {
+            foreach ($response['phoneNumbers'] as $phone) {
                 // Check for email data in phone numbers
                 if (strpos($phone['number'], '@') !== false) {
                     continue;
                 }
-                $name = $this->getField($phone, 'name');
+                $name = $phone['name'];
                 if ($name) {
                     $phones[]
                         = ['name' => $name, 'number' => $phone['number']];
@@ -907,19 +844,26 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         if (!empty($response['pictures'])) {
             $pics = [];
             foreach ($response['pictures'] as $pic) {
-                $picResult = ['url' => $pic['files']['medium']];
-                $pics[] = $picResult;
+                $pics[] = $pic['files']['medium'];
             }
             if (!empty($pics)) {
                 $result['pictures'] = $pics;
             }
         }
 
+        if (!empty($response['slogan'])) {
+            $result['slogan'] = $this->cleanHtml->__invoke($response['slogan']);
+        }
+        if (!empty($response['description'])) {
+            $result['description']
+                = $this->cleanHtml->__invoke($response['description']);
+        }
+
         if (!empty($response['links'])) {
             $links = [];
             foreach ($response['links'] as $link) {
-                $name = $this->getField($link, 'name');
-                $url = $this->getField($link, 'url');
+                $name = $link['name'];
+                $url = $link['url'];
                 if ($name && $url) {
                     $links[] = ['name' => $name, 'url' => $url];
                 }
@@ -944,12 +888,10 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                     }
                 }
                 if ($includeAllServices) {
-                    $name = $this->getField($service, 'custom_name');
-                    if (!$name) {
-                        $name = $this->getField($service, 'name');
-                    }
+                    $name = empty($service['name'])
+                        ? $service['standardName'] : $service['name'];
                     $data = [$name];
-                    $desc = $this->getField($service, 'short_description');
+                    $desc = $this->cleanHtml->__invoke($service['shortDescription']);
                     if ($desc) {
                         $data[] = $desc;
                     }
@@ -964,39 +906,19 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             }
         }
 
-        if (isset($response['extra'])) {
-            $extra = $response['extra'];
-            $desc = $this->getField($extra, 'description');
-            if (!empty($desc)) {
-                $result['description']
-                    = html_entity_decode($desc);
-            }
-
-            $slogan = $this->getField($extra, 'slogan');
-            if (!empty($slogan)) {
-                $result['slogan']
-                    = html_entity_decode($slogan);
-            }
-
-            if (!empty($response['extra']['building']['construction_year'])) {
-                if ($year = $response['extra']['building']['construction_year']) {
-                    $result['buildingYear'] = $year;
+        if (isset($response['customData'])) {
+            $rssLinks = [];
+            foreach ($response['customData'] as $link) {
+                if (in_array($link['id'], ['news', 'events'])) {
+                    $rssLinks[] = [
+                       'id' => $link['id'],
+                       'url' => $link['value']
+                    ];
                 }
             }
 
-            if (!empty($response['extra']['data'])) {
-                $rssLinks = [];
-                foreach ($response['extra']['data'] as $link) {
-                    if (in_array($link['id'], ['news', 'events'])) {
-                        $rssLinks[] = [
-                           'id' => $link['id'],
-                           'url' => $this->getField($link, 'value')
-                        ];
-                    }
-                }
-                if (!empty($rssLinks)) {
-                    $result['rss'] = $rssLinks;
-                }
+            if (!empty($rssLinks)) {
+                $result['rss'] = $rssLinks;
             }
         }
 
@@ -1020,15 +942,9 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             'friday', 'saturday', 'sunday'
         ];
 
-        $openNow = null;
         $openToday = false;
         $currentWeek = false;
-        foreach ($data as $day) {
-            if (!isset($day['times'])
-                && !isset($day['sections']['selfservice']['times'])
-            ) {
-                continue;
-            }
+        foreach ($data['schedule'] as $day) {
             if (!$periodStart) {
                 $periodStart = $day['date'];
             }
@@ -1047,50 +963,26 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 continue;
             }
 
-            $weekDay = date('N', $dayTime);
+            $weekDay = date('l', $dayTime);
             $weekDayName = $this->translator->translate(
-                'day-name-short-' . $dayNames[($day['day']) - 1]
+                'day-name-short-' . lcfirst($weekDay)
             );
 
             $times = [];
             $now = time();
-            $closed
-                = isset($day['sections']['selfservice']['closed']) ? true : false;
-
-            $info = $this->getField($day, 'info');
-
-            $staffTimes = $selfserviceTimes = [];
-            // Self service times
-            if (!empty($day['sections']['selfservice']['times'])) {
-                foreach ($day['sections']['selfservice']['times'] as $time) {
-                    $res = $this->extractDayTime($now, $time, $today, true);
-                    if (isset($res['openNow'])) {
-                        $openNow = $res['openNow'];
-                    }
-                    if (empty($day['times'])) {
-                        $res['result']['selfserviceOnly'] = true;
-                    }
-                    if (!empty($info)) {
-                        $res['result']['info'] = $info;
-                        $info = null;
-                    }
-                    $times[] = $res['result'];
-                }
-            }
+            $closed = $day['closed'];
 
             // Staff times
             foreach ($day['times'] as $time) {
-                $res = $this->extractDayTime($now, $time, $today);
-                if (null === $openNow || !empty($res['openNow'])) {
-                    $openNow = $res['openNow'];
+                if (!empty($day['info'])) {
+                    $result['info'] = $day['info'];
                 }
-                if (!empty($info)) {
-                    $res['result']['info'] = $info;
-                    $info = null;
-                }
-
-                $times[] = $res['result'];
+                $result['opens'] = $this->formatTime($time['from']);
+                $result['closes'] = $this->formatTime($time['to']);
+                $result['selfservice'] = $time['status'] === 2 ? true : false;
+                $times[] = $result;
             }
+
             if ($today && !empty($times)) {
                 $openToday = $times;
             }
@@ -1101,20 +993,12 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                'day' => $weekDayName,
             ];
 
-            $closed = $day['closed']
-                && (!isset($day['sections']['selfservice']['closed'])
-                    || $day['sections']['selfservice']['closed']);
-
             if ($closed) {
                 $scheduleData['closed'] = $closed;
             }
 
             if ($today) {
                 $scheduleData['today'] = true;
-            }
-
-            if ($info) {
-                $scheduleData['info'] = $info;
             }
 
             $schedules[] = $scheduleData;
@@ -1125,45 +1009,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
 
         $result = compact('schedules', 'openToday', 'currentWeek');
-        $result['openNow'] = $openNow ?: false;
-        return $result;
-    }
-
-    /**
-     * Augment a schedule (pair of opens/closes times) object.
-     *
-     * @param DateTime $now         Current time
-     * @param array    $time        Schedule object
-     * @param boolean  $today       Is the schedule object for today?
-     * @param boolean  $selfService Is the schedule object a self service time?
-     *
-     * @return array
-     */
-    protected function extractDayTime($now, $time, $today, $selfService = false)
-    {
-        $opens = $this->formatTime($time['opens']);
-        $closes = $this->formatTime($time['closes']);
-        $result = [
-           'opens' => $opens, 'closes' => $closes
-        ];
-        if ($selfService) {
-            $result['selfservice'] = true;
-        }
-
-        $openNow = false;
-
-        if ($today) {
-            $opensTime = strtotime($time['opens']);
-            $closesTime = strtotime($time['closes']);
-            $openNow = $now >= $opensTime && $now <= $closesTime;
-            if ($openNow) {
-                $result['openNow'] = true;
-            }
-        }
-        $result = ['result' => $result];
-        if ($today) {
-            $result['openNow'] = $openNow;
-        }
+        $result['openNow'] = $data['status'];
         return $result;
     }
 
@@ -1184,44 +1030,6 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             return $parts[0];
         }
         return $this->dateConverter->convertToDisplayTime('H:i', $time);
-    }
-
-    /**
-     * Return object field.
-     *
-     * @param array  $obj      Object
-     * @param string $field    Field
-     * @param string $language Language to use. If not defined,
-     * the configured language is used.
-     *
-     * @return string|null
-     */
-    protected function getField($obj, $field, $language = false)
-    {
-        if (!isset($obj[$field])) {
-            return null;
-        }
-
-        if (!$language) {
-            $language = $this->getLanguage();
-        }
-
-        $data = $obj[$field];
-
-        if (!is_array($data)) {
-            return $data;
-        }
-
-        if (!empty($data[$language])) {
-            return $data[$language];
-        }
-
-        $fallback = $this->getFallbackLanguage();
-        if ($fallback && !empty($data[$fallback])) {
-            return $data[$fallback];
-        }
-
-        return null;
     }
 
     /**
@@ -1249,7 +1057,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             'name' =>  $json['name'][$language],
             'description' => $json['description'][$language],
             'finna' => [
-                'service_point' => $id,
+                'service_point' => $params['id'],
                 'finna_coverage' => $json['coverage'],
                 'usage_perc' => $json['coverage'],
                 'usage_info' => $json['usage_rights'][$language]
@@ -1291,7 +1099,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         foreach ($days as $day => $key) {
             $details['openTimes']['schedules'][$day]
                 = $this->getMuseumDaySchedule($key, $json);
-            if ($details['openTimes']['schedules'][$day]['openNow'] == true) {
+            if ($details['openTimes']['schedules'][$day]['openNow'] ?? false) {
                 $details['openNow'] = true;
                 $details['openTimes']['openNow'] = true;
             }

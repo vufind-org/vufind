@@ -1,9 +1,10 @@
 <?php
   $this->headScript()->appendFile("finna-organisation-info.js");
   $this->headScript()->appendFile("finna-organisation-info-widget.js");
+  $widget = $this->target == 'widget';
 ?>
-<div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$this->target == 'widget' ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
-<?php if ($this->target == 'widget'): ?>
+<div class="organisation-info<?=$this->showDetails ? ' with-details' : ''?><?=$widget ? ' organisation-info-widget' : ''?>" data-parent="<?=$this->escapeHtmlAttr($this->id)?>" data-target="<?=$this->escapeHtmlAttr($this->target)?>" data-init="<?=$widget ? '1' : '0'?>"<?=!empty($this->buildings) ? (' data-buildings="' . implode(',', $this->buildings) . '"') : ''?>>
+<?php if ($widget): ?>
   <div>
     <h2><?=$this->transEsc('organisation_info_title');?></h2>
   </div>
@@ -54,7 +55,7 @@
         <div class="mobile-schedules info-element"></div>
       </div>
       <div class="schedules-info info-element"></div>
-<?php if ($this->target == 'widget' && $this->showDetails): ?>
+<?php if ($widget && $this->showDetails): ?>
     </div>
     <div class="details details-col">
       <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>

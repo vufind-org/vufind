@@ -13,6 +13,10 @@
     }
 }
 
+.organisation-info.with-details.organisation-info-widget {
+    display: inline-block;
+}
+
 .organisation-info {
     padding-bottom: 20px;
     & .loader {
@@ -121,8 +125,9 @@
                             margin-left: 5px;
                             margin-right: 5px;
                         }
-                        & .name-staff {
+                        & .name-staff, .selfservice-only {
                             color: @gray-light;
+                            font-size: .94em;
                         }
                     }
                     .time-container {

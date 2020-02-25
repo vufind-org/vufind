@@ -86,12 +86,13 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
           var currentDate = null;
 
           var selfserviceAvail = false;
-          var staffAvail = false;
           var currentTimeRow = null;
+          var addFullOpeningTimes = true;
+          var firstElement = obj.times[0];
+          var lastElement = obj.times[obj.times.length - 1];
           $.each(obj.times, function handleOpenTimes(tind, time) {
             var selfservice = !!time.selfservice;
             selfserviceAvail = selfserviceAvail || 'selfservice' in time;
-            staffAvail = staffAvail || !selfservice;
 
             var date = dayCnt === 0 ? obj.date : '';
             var day = dayCnt === 0 ? obj.day : '';
@@ -103,35 +104,47 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
 
             var timeOpens = time.opens;
             var timeCloses = time.closes;
+            if (!selfservice || obj.times.length === 1) {
+              if (currentSelfservice === null || selfservice !== currentSelfservice) {
+                var timeRow = timeRowTpl.clone();
+                timeRow.find('.date').text(date);
+                timeRow.find('.name').text(day);
+                if (addFullOpeningTimes && obj.times.length > 1) {
+                  timeRow.find('.opens').text(firstElement.opens);
+                  timeRow.find('.closes').text(lastElement.closes);
+                  dayRow.append(timeRow);
+                  timeRow = timeRowTpl.clone();
+                  addFullOpeningTimes = false;
+                }
+                if (info == null) {
+                  timeRow.find('.info').hide();
+                } else {
+                  timeRow.find('.info').text(info);
+                }
+                timeRow.find('.opens').text(timeOpens);
+                timeRow.find('.closes').text(timeCloses);
 
-            if (currentSelfservice === null || selfservice !== currentSelfservice) {
-              var timeRow = timeRowTpl.clone();
-              timeRow.find('.date').text(date);
-              timeRow.find('.name').text(day);
-              timeRow.find('.info').text(info);
-
-              timeRow.find('.opens').text(timeOpens);
-              timeRow.find('.closes').text(timeCloses);
-
-              if (selfserviceAvail && selfservice !== currentSelfservice) {
-                timeRow.toggleClass('staff', !selfservice);
+                if (selfserviceAvail && selfservice !== currentSelfservice) {
+                  timeRow.toggleClass('staff', !selfservice);
+                }
+                if (time.selfservice === true) {
+                  timeRow.find('.name-staff').hide();
+                  timeRow.find('.selfservice-only').removeClass('hide');
+                }
+                dayRow.append(timeRow);
+                currentTimeRow = timeRow;
+              } else {
+                var timePeriod = currentTimeRow.find('.time-template').eq(0).clone();
+                timePeriod.find('.opens').text(timeOpens);
+                timePeriod.find('.closes').text(timeCloses);
+                currentTimeRow.find('.time-container').append(timePeriod);
               }
-              if ('selfserviceOnly' in time) {
-                timeRow.find('.selfservice-only').removeClass('hide');
-              }
-              dayRow.append(timeRow);
-              currentTimeRow = timeRow;
-            } else {
-              var timePeriod = currentTimeRow.find('.time-template').eq(0).clone();
-              timePeriod.find('.opens').text(timeOpens);
-              timePeriod.find('.closes').text(timeCloses);
-              currentTimeRow.find('.time-container').append(timePeriod);
+
+              currentSelfservice = selfservice;
+              currentDate = obj.date;
+
+              dayCnt++;
             }
-
-            currentSelfservice = selfservice;
-            currentDate = obj.date;
-
-            dayCnt++;
           });
         } else {
           var timeRow = timeRowTpl.clone();
@@ -235,7 +248,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
       var links = response.links;
       if (links.length) {
         $.each(links, function handleLink(ind, obj) {
-          if (obj.name === 'Facebook') {
+          if (obj.name.includes('Facebook')) {
             holder.find('.facebook').attr('href', obj.url).show();
           }
         });

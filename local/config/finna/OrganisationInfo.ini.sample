@@ -11,9 +11,6 @@ url = "https://api.kirjastot.fi/"
 ; If defined, this overrides the current user language.
 ; language = fi
 
-; Fallback language version to use when no translation has been defined for the current language.
-fallbackLanguage = 'fi'
-
 ; Allowed language versions
 languages[] = fi
 languages[] = sv
