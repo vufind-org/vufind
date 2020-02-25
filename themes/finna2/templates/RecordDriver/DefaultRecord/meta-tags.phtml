@@ -20,7 +20,7 @@
   $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html
   $this->headMeta()->setProperty('og:title', $this->driver->getShortTitle());
   if ($summary) {
-    $this->headMeta()->setProperty('og:description', mb_strimwidth($summary[0], 0, 156, '...', 'utf-8')); // max 156
+    $this->headMeta()->setProperty('og:description', mb_strimwidth($this->stripTags($summary[0]), 0, 156, '...', 'utf-8')); // max 156
   }
   if ($authors) {
     $authNames = [];
@@ -40,5 +40,5 @@
   $this->headMeta()->appendName('twitter:site', '@finnafi');
   $this->headMeta()->appendName('twitter:title', $this->driver->getShortTitle());
   if ($summary) {
-    $this->headMeta()->appendName('twitter:description', mb_strimwidth($summary[0], 0, 200, '...', 'utf-8')); // max 200
+    $this->headMeta()->appendName('twitter:description', mb_strimwidth($this->stripTags($summary[0]), 0, 200, '...', 'utf-8')); // max 200
   }
