@@ -34,12 +34,12 @@
                                                    document.getElementById('itemFTTextTypeScope').value);
   return false; /*Prevent refresh of entire page even on first load*/">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
-     <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
+    <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
      <div class="input-group-btn">
         <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search"></i></button>
      </div>
   </div>
 </form>
 <span id="fulltext_snippets">
-    <div id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"></div>
+  <div id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"></div>
 </span>
