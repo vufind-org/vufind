@@ -6,6 +6,7 @@
   $this->options = $options = $results->getOptions();
   $collapsedFacets = $this->recommend->getCollapsedFacets();
   $forceUncollapsedFacets = [];
+  $suppressCountFacets =  $this->recommend->getSuppressCountFacets();
 
   // Make sure facets with active selections are not collapsed:
   $filterList = $results->getParams()->getFilterList(true);
@@ -80,7 +81,8 @@
           [
             'facet' => $title,
             'cluster' => $cluster,
-            'collapsedFacets' => $collapsedFacets
+            'collapsedFacets' => $collapsedFacets,
+            'suppressCountFacets' => $suppressCountFacets
           ]
         ); ?>
       </div>
