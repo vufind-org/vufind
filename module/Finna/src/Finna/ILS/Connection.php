@@ -67,6 +67,32 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check driver capability -- return true if the driver supports the specified
+     * method; false otherwise.
+     *
+     * @param string $method Method to check
+     * @param array  $params Array of passed parameters (optional)
+     * @param bool   $throw  Whether to throw exceptions instead of returning false
+     *
+     * @return bool
+     * @throws ILSException
+     */
+    public function checkCapability($method, $params = [], $throw = false)
+    {
+        // Alma driver calls the ILS for getConfig. Avoid useless calls by checking
+        // the sources beforehand.
+        if ('getConfig' === $method && 'Holds' === ($params[0] ?? '')) {
+            // Check source of record id vs. patron id
+            list($recordSource) = explode('.', $params[1]['id'] ?? '');
+            list($patronSource) = explode('.', $params[1]['patron']['id'] ?? '');
+            if ($patronSource && $patronSource !== $recordSource) {
+                return false;
+            }
+        }
+        return parent::checkCapability($method, $params, $throw);
+    }
+
+    /**
      * Check Holds
      *
      * A support method for checkFunction(). This is responsible for checking
