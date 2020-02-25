@@ -5,40 +5,40 @@
     <select id="itemFTTextTypeScope" class="selectpicker">
 <?php foreach ($this->driver->getFulltextTypes() as $fulltext_type):
         switch ($fulltext_type) {
-            case 'Fulltext':
-                echo '<option value="Fulltext">' . $this->translate('Fulltext') . '</option>';
-                break;
-            case 'Table of Contents':
-                echo '<option value="Table of Contents">' . $this->translate('Table of Contents') . '</option>';
-                break;
-            case 'Abstract':
-                echo '<option value="Abstract">' . $this->translate('Abstract') . '</option>';
-                break;
+          case 'Fulltext':
+              echo '<option value="Fulltext">' . $this->translate('Fulltext') . '</option>';
+              break;
+          case 'Table of Contents':
+              echo '<option value="Table of Contents">' . $this->translate('Table of Contents') . '</option>';
+              break;
+          case 'Abstract':
+              echo '<option value="Abstract">' . $this->translate('Abstract') . '</option>';
+              break;
         }
       endforeach;
 ?>
     </select>
     <select id="itemFTSearchScope" class="selectpicker">
-        <option value=""><?=$this->translate('Fulltext Only')?></option>
-        <option value="lang"><?=$this->translate('Fulltext With Language Synonyms')?></option>
-        <option value="all"><?=$this->translate('Fulltext With All Synonyms')?></option>
+       <option value=""><?=$this->translate('Fulltext Only')?></option>
+       <option value="lang"><?=$this->translate('Fulltext With Language Synonyms')?></option>
+       <option value="all"><?=$this->translate('Fulltext With All Synonyms')?></option>
     </select>
 </span>
 
 <form class="searchForm form-horizontal" name="ItemFulltextSearchForm" autocomplete="off"
-      onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;,
-                                                       &quot;<?=$this->driver->getUniqueID()?>&quot;,
-                                                       this.searchForm_fulltext.value,
-                                                       true,
-                                                       document.getElementById('itemFTSearchScope').value,
-                                                       document.getElementById('itemFTTextTypeScope').value);
-      return false; /*Prevent refresh of entire page even on first load*/">
+  onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;,
+                                                   &quot;<?=$this->driver->getUniqueID()?>&quot;,
+                                                   this.searchForm_fulltext.value,
+                                                   true /* be verbose, i.e. return all results*/,
+                                                   document.getElementById('itemFTSearchScope').value,
+                                                   document.getElementById('itemFTTextTypeScope').value);
+  return false; /*Prevent refresh of entire page even on first load*/">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
-      <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
-            <div class="input-group-btn">
-          <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search"></i></button>
-      </div>
-   </div>
+     <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
+     <div class="input-group-btn">
+        <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search"></i></button>
+     </div>
+  </div>
 </form>
 <span id="fulltext_snippets">
     <div id="snippet_place_holder_<?=$this->driver->getUniqueID()?>"></div>
