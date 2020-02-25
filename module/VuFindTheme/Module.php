@@ -29,6 +29,7 @@ namespace VuFindTheme;
 
 use Zend\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
 use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Module definition for the VuFind theme system.
@@ -69,7 +70,7 @@ class Module
                 ZendInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                InjectTemplateListener::class => InvokableFactory::class,
+                InjectTemplateListener::class => InjectTemplateListenerFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,
