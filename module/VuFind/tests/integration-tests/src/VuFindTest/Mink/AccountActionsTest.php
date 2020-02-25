@@ -147,6 +147,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that changing email is disabled by default.
      *
+     * @depends testChangePassword
+     *
      * @return void
      */
     public function testChangeEmailDisabledByDefault()
@@ -169,6 +171,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test changing an email.
+     *
+     * @depends testChangePassword
      *
      * @return void
      */
