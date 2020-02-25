@@ -3,13 +3,13 @@
     <?php
       switch($type) {
       case "URN":
-        print 'URN: <a target="_blank" href="https://doi.org/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> '.$persistent_identifier.'</a><br />';
+        print 'URN: <a target="_blank" property="sameAs" href="https://doi.org/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> <span property="identifier">'.$persistent_identifier.'</span></a><br />';
         break;
       case "DOI":
-        print 'DOI: <a target="_blank" href="https://nbn-resolving.de/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> '.$persistent_identifier.'</a><br />';
+        print 'DOI: <a target="_blank" property="sameAs" href="https://nbn-resolving.de/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> <span property="identifier">'.$persistent_identifier.'</span></a><br />';
         break;
       case "HDL":
-        print 'HDL: <a target="_blank" href="https://hdl.handle.net/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> '.$persistent_identifier.'</a><br />';
+        print 'HDL: <a target="_blank" property="sameAs" href="https://hdl.handle.net/'.$persistent_identifier.'"><i class="fa fa-external-link"></i> <span property="identifier">'.$persistent_identifier.'</span></a><br />';
         break;
       }
     ?>

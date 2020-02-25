@@ -113,9 +113,16 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $spec->setLine('Awards', 'getAwards');
         $spec->setLine('Production Credits', 'getProductionCredits');
         $spec->setLine('Bibliography', 'getBibliographyNotes');
-        // Clean ISBN (IxTheo-specific)
-        $spec->setLine('ISBN', 'getCleanISBN');
-        $spec->setLine('ISSN', 'getISSNs');
+        // Clean ISBN with schema.org-property (IxTheo-specific)
+        $spec->setLine(
+            'ISBN', 'getCleanISBN', null,
+            ['prefix' => '<span property="isbn">', 'suffix' => '</span>']
+        );
+        // ISSN with schema.org-property (IxTheo-specific)
+        $spec->setLine(
+            'ISSN', 'getISSNs', null,
+            ['prefix' => '<span property="issn">', 'suffix' => '</span>']
+        );
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');
         $spec->setLine('Finding Aid', 'getFindingAids');
