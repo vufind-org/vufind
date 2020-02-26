@@ -606,7 +606,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'id == "' . $patron['id'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
