@@ -319,7 +319,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /*******************
-     * Test cases 
+     * Test cases
      ***************/
     /*
      ok changePassword

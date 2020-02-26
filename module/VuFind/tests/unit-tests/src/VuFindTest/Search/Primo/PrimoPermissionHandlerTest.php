@@ -374,7 +374,7 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /*****************
-     * Tests with configuration without default 
+     * Tests with configuration without default
      ************/
 
     /**
@@ -534,7 +534,7 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /*****************
-     * Tests with configuration with default and onCampusRule for default 
+     * Tests with configuration with default and onCampusRule for default
      ************/
 
     /**
@@ -656,7 +656,7 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /*****************
-     * Tests with configuration with one member and onCampusRule 
+     * Tests with configuration with one member and onCampusRule
      ************/
 
     /**
@@ -786,7 +786,7 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /*****************
-     * Tests with configuration with one member and onCampusRule 
+     * Tests with configuration with one member and onCampusRule
      ************/
 
     /**
@@ -888,7 +888,7 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /*****************
-     * Tests with configuration with default only (no default onCampusRule) 
+     * Tests with configuration with default only (no default onCampusRule)
      ************/
 
     /**
@@ -930,7 +930,7 @@ class PrimoPermissionHandlerTest extends TestCase
     }
 
     /*****************
-     * Callback helper functions    
+     * Callback helper functions
      ************/
 
     /**
