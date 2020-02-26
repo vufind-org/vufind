@@ -90,9 +90,9 @@ class DoiLookup extends AbstractBase
     public function handleRequest(Params $params)
     {
         $response = [];
+        $dois = (array)$params->fromQuery('doi', []);
         foreach ($this->resolvers as $resolver) {
             if ($this->pluginManager->has($resolver)) {
-                $dois = (array)$params->fromQuery('doi', []);
                 $next = $this->pluginManager->get($resolver)->getLinks($dois);
                 if (empty($response)) {
                     $response = $next;
@@ -104,6 +104,13 @@ class DoiLookup extends AbstractBase
                             $response[$doi] = array_merge($response[$doi], $data);
                         }
                     }
+                }
+                // If all DOIs have been found and we're not in merge mode, we
+                // can short circuit out of here.
+                if ($this->multiMode !== 'merge'
+                    && count(array_diff($dois, array_keys($response))) == 0
+                ) {
+                    break;
                 }
             }
         }

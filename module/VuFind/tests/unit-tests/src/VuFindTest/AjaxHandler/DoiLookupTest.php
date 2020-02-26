@@ -64,20 +64,24 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Create a mock plugin.
      *
-     * @param mixed $value Value to return in response to DOI request.
+     * @param mixed  $value    Value to return in response to DOI request.
+     * @param string $times    How many times do we expect this method to be called?
+     * @param string $doi      What DOI does this handler return data for?
+     * @param array  $expected What is the expected DOI request?
      *
      * @return DoiLinkerInterface
      */
-    protected function getMockPlugin($value)
-    {
+    protected function getMockPlugin($value, $times = 'once', $doi = 'bar',
+        $expected = ['bar']
+    ) {
         $mockPlugin = $this->container
             ->createMock(DoiLinkerInterface::class, ['getLinks']);
-        $mockPlugin->expects($this->once())->method('getLinks')
-            ->with($this->equalTo(['bar']))
+        $mockPlugin->expects($this->$times())->method('getLinks')
+            ->with($this->equalTo($expected))
             ->will(
                 $this->returnValue(
                     [
-                        'bar' => [['link' => 'http://' . $value, 'label' => $value]]
+                        $doi => [['link' => 'http://' . $value, 'label' => $value]]
                     ]
                 )
             );
@@ -104,13 +108,15 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      * After setupConfig() and setupPluginManager() have been called, run the
      * standard default test.
      *
+     * @param array $requested DOI(s) to test request with
+     *
      * @return array
      */
-    protected function getHandlerResults()
+    protected function getHandlerResults($requested = ['bar'])
     {
         $factory = new DoiLookupFactory();
         $handler = $factory($this->container, DoiLookup::class);
-        $params = $this->getParamsHelper(['doi' => ['bar']]);
+        $params = $this->getParamsHelper(['doi' => $requested]);
         return $handler->handleRequest($params);
     }
 
@@ -150,7 +156,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->setupPluginManager(
             [
                 'foo' => $this->getMockPlugin('baz'),
-                'foo2' => $this->getMockPlugin('baz2')
+                'foo2' => $this->getMockPlugin('baz2', 'never')
             ]
         );
 
@@ -177,7 +183,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->setupPluginManager(
             [
                 'foo' => $this->getMockPlugin('baz'),
-                'foo2' => $this->getMockPlugin('baz2')
+                'foo2' => $this->getMockPlugin('baz2', 'never')
             ]
         );
 
@@ -185,6 +191,43 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->assertEquals(
             [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
             $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "first" mode turned on explicitly,
+     * where each handler returns results for a different DOI.
+     *
+     * @return void
+     */
+    public function testFirstExplicitLookupMultipleDOIs()
+    {
+        // Set up config manager:
+        $this->setupConfig(
+            ['DOI' => ['resolver' => 'foo,foo2,foo3', 'multi_resolver_mode' => 'first']]
+        );
+
+        // Set up plugin manager:
+        $request = ['bar', 'bar2'];
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz', 'once', 'bar', $request),
+                'foo2' => $this->getMockPlugin('baz2', 'once', 'bar2', $request),
+                // The previous handlers will satisfy the request, so this one will
+                // never be called; included to verify short-circuit behavior:
+                'foo3' => $this->getMockPlugin('baz', 'never', 'bar', $request),
+            ]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [
+                [
+                    'bar' => [['link' => 'http://baz', 'label' => 'baz']],
+                    'bar2' => [['link' => 'http://baz2', 'label' => 'baz2']],
+                ]
+            ],
+            $this->getHandlerResults($request)
         );
     }
 
