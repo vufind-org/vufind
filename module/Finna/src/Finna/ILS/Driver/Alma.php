@@ -2418,8 +2418,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     protected function statusSortFunction($a, $b)
     {
-        $orderA = $this->holdingsLocationOrder[$a['location_code']] ?? 999;
-        $orderB = $this->holdingsLocationOrder[$b['location_code']] ?? 999;
+        $orderA = $this->holdingsLocationOrder[$a['location_code'] ?? ''] ?? 999;
+        $orderB = $this->holdingsLocationOrder[$b['location_code'] ?? ''] ?? 999;
         $result = $orderA - $orderB;
 
         if (0 === $result) {
