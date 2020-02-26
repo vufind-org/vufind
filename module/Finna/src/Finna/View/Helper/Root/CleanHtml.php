@@ -55,10 +55,9 @@ class CleanHtml extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param string $cacheDir Cache directory. Defaults to empty for compatibility
-     * with previous factory-less version.
+     * @param string $cacheDir Cache directory
      */
-    public function __construct($cacheDir = '')
+    public function __construct($cacheDir)
     {
         $this->cacheDir = $cacheDir;
     }
