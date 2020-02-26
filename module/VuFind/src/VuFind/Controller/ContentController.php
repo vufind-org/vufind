@@ -91,9 +91,9 @@ class ContentController extends AbstractBase
             }
         }
 
-        $method = 'getViewFor' . ucwords($renderer);
+        $method = isset($renderer) ? 'getViewFor' . ucwords($renderer) : false;
 
-        return is_callable([$this, $method])
+        return $method && is_callable([$this, $method])
             ? $this->$method($page, $path)
             : $this->notFoundAction($this->getResponse());
     }
