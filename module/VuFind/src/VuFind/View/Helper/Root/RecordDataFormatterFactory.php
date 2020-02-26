@@ -150,7 +150,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine(
             'Edition', 'getEdition', null,
-            ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
+            ['itemPrefix' => '<span property="bookEdition">', 'itemSuffix' => '</span>']
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -230,7 +230,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine(
             'Edition', 'getEdition', null,
-            ['prefix' => '<span property="bookEdition">', 'suffix' => '</span>']
+            ['itemPrefix' => '<span property="bookEdition">', 'itemSuffix' => '</span>']
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -276,7 +276,7 @@ class RecordDataFormatterFactory implements FactoryInterface
 	);
 	$spec->setLine(
             'DOI', 'getCleanDOI', null,
-            ['prefix' => '<span property="identifier">', 'suffix' => '</span>']
+            ['itemPrefix' => '<span property="identifier">', 'itemSuffix' => '</span>']
         );
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');

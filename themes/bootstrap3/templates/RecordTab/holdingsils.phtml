@@ -55,7 +55,7 @@
   <h3><?=$this->transEsc("Internet")?></h3>
   <?php if (!empty($urls)): ?>
     <?php foreach ($urls as $current): ?>
-      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" property="sameAs"><?=$this->escapeHtml($current['desc'])?></a><br/>
+      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><?php endif; ?>
