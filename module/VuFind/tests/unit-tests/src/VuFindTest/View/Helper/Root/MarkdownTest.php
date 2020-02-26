@@ -50,10 +50,14 @@ class MarkdownTest extends \VuFindTest\Unit\ViewHelperTestCase
     protected function getHelper()
     {
         $view = $this->getPhpRenderer();
-        $markdown = new Markdown(new GithubFlavoredMarkdownConverter([
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
-        ]));
+        $markdown = new Markdown(
+            new GithubFlavoredMarkdownConverter(
+                [
+                    'html_input' => 'strip',
+                    'allow_unsafe_links' => false,
+                ]
+            )
+        );
         $markdown->setView($view);
         return $markdown;
     }
