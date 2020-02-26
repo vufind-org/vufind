@@ -110,7 +110,6 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      * Test that resolve errors correctly when given bad input
      *
      * @return void
-     *
      */
     public function testResolutionOfBadInput()
     {

@@ -91,7 +91,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
      * Test that the class blocks unknown form IDs.
      *
      * @return void
-     *
      */
     public function testUndefinedFormId()
     {

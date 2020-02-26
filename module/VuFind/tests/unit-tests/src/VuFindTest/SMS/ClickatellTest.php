@@ -92,7 +92,6 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unexpected response
      *
      * @return void
-     *
      */
     public function testUnexpectedResponse()
     {
@@ -115,7 +114,6 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful query
      *
      * @return void
-     *
      */
     public function testFailureResponse()
     {
@@ -137,7 +135,6 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test an exception in the mail client
      *
      * @return void
-     *
      */
     public function testClientException()
     {

@@ -45,7 +45,6 @@ class UserListTest extends \VuFindTest\Unit\DbTestCase
      * list.
      *
      * @return void
-     *
      */
     public function testLoginRequiredToCreateList()
     {

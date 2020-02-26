@@ -85,7 +85,6 @@ class ConnectorTest extends TestCase
      * Test RemoteErrorException is thrown on a remote 5xx error.
      *
      * @return void
-     *
      */
     public function testInternalServerError()
     {
@@ -100,7 +99,6 @@ class ConnectorTest extends TestCase
      * Test RequestErrorException is thrown on a remote 4xx error.
      *
      * @return void
-     *
      */
     public function testBadRequestError()
     {
@@ -115,7 +113,6 @@ class ConnectorTest extends TestCase
      * Test InvalidArgumentException invalid adapter object.
      *
      * @return void
-     *
      */
     public function testSetAdapterThrowsInvalidObject()
     {
@@ -130,7 +127,6 @@ class ConnectorTest extends TestCase
      * Test InvalidArgumentException unknown serialization format.
      *
      * @return void
-     *
      */
     public function testSaveThrowsUnknownFormat()
     {

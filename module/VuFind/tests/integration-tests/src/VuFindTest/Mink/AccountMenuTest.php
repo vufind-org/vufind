@@ -66,7 +66,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
             return;
         }
         // Setup config
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'Demo' => $this->getDemoIniOverrides(),
             'config' => [
                 'Catalog' => ['driver' => 'Demo'],
@@ -75,7 +76,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                     'enableDropdown' => false
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**

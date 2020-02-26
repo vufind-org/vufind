@@ -82,7 +82,6 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      * Test new catalog login failure (caused by exception).
      *
      * @return void
-     *
      */
     public function testNewCatalogFailureByException()
     {
@@ -157,7 +156,6 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      * Test an exception during stored login attempt.
      *
      * @return void
-     *
      */
     public function testExceptionDuringStoredLoginAttempt()
     {

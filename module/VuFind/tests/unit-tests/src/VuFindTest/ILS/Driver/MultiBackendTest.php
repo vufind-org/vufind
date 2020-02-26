@@ -48,7 +48,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      * Test that driver complains about missing configuration.
      *
      * @return void
-     *
      */
     public function testMissingConfiguration()
     {
@@ -77,7 +76,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     /**
      *  Tests that logging works correctly
      *
-     *  @return void
+     * @return void
      */
     public function testLogging()
     {
@@ -193,7 +192,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     /**
      *  Tests that getDriverConfig works correctly
      *
-     *  @return void
+     * @return void
      */
     public function testGetDriverConfig()
     {
@@ -2491,8 +2490,8 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws \VuFind\Exception\ILS

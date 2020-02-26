@@ -53,7 +53,6 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
-     *
      */
     public function testUtterFailure()
     {

@@ -144,7 +144,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
-     * @depends testSaveSearch
+     * @depends       testSaveSearch
      * @retryCallback removeUsername2
      *
      * @return void

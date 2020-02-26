@@ -57,7 +57,6 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * Test expected interface.
      *
      * @return void
-     *
      */
     public function testExpectedInterface()
     {

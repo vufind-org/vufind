@@ -78,7 +78,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingMethodOrder()
     {
@@ -111,7 +110,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with handler configured to load a service which does not exist.
      *
      * @return void
-     *
      */
     public function testLoginWithBadService()
     {
@@ -130,7 +128,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * as an arbitrary inappropriate class).
      *
      * @return void
-     *
      */
     public function testLoginWithBadClass()
     {
@@ -147,7 +144,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -161,7 +157,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {
