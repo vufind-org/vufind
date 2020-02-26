@@ -74,7 +74,13 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->createMock(DoiLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->once())->method('getLinks')
             ->with($this->equalTo(['bar']))
-            ->will($this->returnValue(['bar' => $value]));
+            ->will(
+                $this->returnValue(
+                    [
+                        'bar' => [['link' => 'http://' . $value, 'label' => $value]]
+                    ]
+                )
+            );
         return $mockPlugin;
     }
 
@@ -88,7 +94,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     protected function setupPluginManager($plugins)
     {
         $pm = new PluginManager($this->container);
-        foreach($plugins as $name => $plugin) {
+        foreach ($plugins as $name => $plugin) {
             $pm->setService($name, $plugin);
         }
         $this->container->set(PluginManager::class, $pm);
@@ -109,7 +115,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     }
 
     /**
-     * Test a DOI lookup.
+     * Test a single DOI lookup.
      *
      * @return void
      */
@@ -124,6 +130,94 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         );
 
         // Test the handler:
-        $this->assertEquals([['bar' => 'baz']], $this->getHandlerResults());
+        $this->assertEquals(
+            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "first" mode turned on by default.
+     *
+     * @return void
+     */
+    public function testFirstDefaultLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(['DOI' => ['resolver' => 'foo,foo2']]);
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz'),
+                'foo2' => $this->getMockPlugin('baz2')
+            ]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "first" mode turned on explicitly.
+     *
+     * @return void
+     */
+    public function testFirstExplicitLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(
+            ['DOI' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'first']]
+        );
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz'),
+                'foo2' => $this->getMockPlugin('baz2')
+            ]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "merge" mode turned on.
+     *
+     * @return void
+     */
+    public function testMergeLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(
+            ['DOI' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'merge']]
+        );
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz'),
+                'foo2' => $this->getMockPlugin('baz2')
+            ]
+        );
+        // Test the handler:
+        $this->assertEquals(
+            [
+                [
+                    'bar' => [
+                        ['link' => 'http://baz', 'label' => 'baz'],
+                        ['link' => 'http://baz2', 'label' => 'baz2'],
+                    ]
+                ]
+            ],
+            $this->getHandlerResults()
+        );
     }
 }
