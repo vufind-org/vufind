@@ -68,7 +68,7 @@ class DoiLookupFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         return new $requestedName(
             $pluginManager,
             $config->DOI->resolver ?? null,
-            $config->DOI->multi_resolver_mode ?? 'first',
+            $config->DOI->multi_resolver_mode ?? 'first'
         );
     }
 }
