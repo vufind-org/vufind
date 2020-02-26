@@ -41,6 +41,11 @@ use Zend\View\Helper\AbstractHelper;
  */
 class Markdown extends AbstractHelper
 {
+    /**
+     * Markdown converter
+     *
+     * @var \League\CommonMark\ConverterInterface
+     */
     protected $converter;
 
     /**
