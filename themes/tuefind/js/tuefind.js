@@ -39,6 +39,11 @@ var TueFind = {
         });
     },
 
+    ResetSearchHandlers: function() {
+        sessionStorage.removeItem("tuefind_saved_search_handler_search");
+        sessionStorage.removeItem("tuefind_saved_search_handler_search2");
+    },
+
     EscapeHTML: function(text) {
         return text
         .replace(/&/g, "&amp;")

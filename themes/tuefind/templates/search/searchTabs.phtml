@@ -1,5 +1,5 @@
 <?php if (isset($searchTabs) && count($searchTabs) > 0): ?>
-  <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs" onClick=TueFind.ResetSearchHandlers()>
     <?php foreach ($searchTabs as $tab): ?>
         <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
           <li<?=$tab['selected'] ? ' class="active"' : ''?>>
