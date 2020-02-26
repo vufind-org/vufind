@@ -47,11 +47,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -59,11 +59,12 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -167,6 +168,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      * Test adding a record to favorites (from the record page) using an existing
      * account that is not yet logged in.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testAddRecordToFavoritesLogin()
@@ -216,6 +219,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test adding a record to favorites (from the record page) using an existing
      * account that is already logged in.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -308,6 +313,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is not yet logged in.
      *
+     * @depends testAddSearchItemToFavoritesNewAccount
+     *
      * @return void
      */
     public function testAddSearchItemToFavoritesLogin()
@@ -355,6 +362,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test adding a record to favorites (from the search results) using an existing
      * account that is already logged in.
+     *
+     * @depends testAddSearchItemToFavoritesNewAccount
      *
      * @return void
      */
@@ -447,6 +456,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the email control works.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testBulkEmail()
@@ -477,6 +488,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that the export control works.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -510,6 +523,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the print control works.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testBulkPrint()
@@ -537,6 +552,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that it is possible to email a public list.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -585,6 +602,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the bulk delete control works.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testBulkDelete()
@@ -629,7 +648,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2']);
     }

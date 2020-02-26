@@ -91,12 +91,12 @@ class FormTest extends \VuFindTest\Unit\TestCase
      * Test that the class blocks unknown form IDs.
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\RecordMissing
-     * @expectedExceptionMessage Form 'foo' not found
      */
     public function testUndefinedFormId()
     {
+        $this->expectException(\VuFind\Exception\RecordMissing::class);
+        $this->expectExceptionMessage('Form \'foo\' not found');
+
         $form = new Form(new YamlReader());
         $form->setFormId('foo');
     }

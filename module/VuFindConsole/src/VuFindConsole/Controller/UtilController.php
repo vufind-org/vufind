@@ -188,12 +188,13 @@ class UtilController extends AbstractBase
     protected function buildReservesIndex($instructors, $courses, $departments,
         $reserves
     ) {
+        $requiredKeys = ['INSTRUCTOR_ID', 'COURSE_ID', 'DEPARTMENT_ID'];
         foreach ($reserves as $record) {
-            if (!isset($record['INSTRUCTOR_ID']) || !isset($record['COURSE_ID'])
-                || !isset($record['DEPARTMENT_ID'])
-            ) {
+            $requiredKeysFound
+                = count(array_intersect(array_keys($record), $requiredKeys));
+            if ($requiredKeysFound < count($requiredKeys)) {
                 throw new \Exception(
-                    'INSTRUCTOR_ID and/or COURSE_ID and/or DEPARTMENT_ID fields ' .
+                    implode(' and/or ', $requiredKeys) . ' fields ' .
                     'not present in reserve records. Please update ILS driver.'
                 );
             }
@@ -301,12 +302,8 @@ class UtilController extends AbstractBase
         }
 
         // Build sitemap and display appropriate warnings if needed:
-        $configLoader = $this->serviceLocator
-            ->get(\VuFind\Config\PluginManager::class);
-        $generator = new Sitemap(
-            $this->serviceLocator->get(\VuFind\Search\BackendManager::class),
-            $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
-        );
+        $generator = $this->serviceLocator->get(\VuFind\Sitemap\Generator::class);
+        $request = $this->getRequest();
         $generator->setVerbose($request->getParam('verbose', false));
         if ($url = $request->getParam('baseurl', false)) {
             $generator->setBaseUrl($url);

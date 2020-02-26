@@ -29,6 +29,8 @@
  */
 namespace VuFind\Controller;
 
+use Zend\View\Model\ViewModel;
+
 /**
  * Controller for mostly static pages that doesn't fall under any particular
  * function.
@@ -43,9 +45,19 @@ namespace VuFind\Controller;
 class ContentController extends AbstractBase
 {
     /**
+     * Types/formats of content
+     *
+     * @var array $types
+     */
+    protected $types = [
+        'phtml',
+        'md',
+    ];
+
+    /**
      * Default action if none provided
      *
-     * @return Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function contentAction()
     {
@@ -59,32 +71,39 @@ class ContentController extends AbstractBase
         // 1.) Current language suffix
         // 2.) Default language suffix
         // 3.) No language suffix
-        $currentTpl = "templates/content/{$page}_$language.phtml";
-        $defaultTpl = "templates/content/{$page}_$defaultLanguage.phtml";
-        if (null !== $themeInfo->findContainingTheme($currentTpl)) {
-            $page = "{$page}_$language";
-        } elseif (null !== $themeInfo->findContainingTheme($defaultTpl)) {
-            $page = "{$page}_$defaultLanguage";
+        $templates = [
+            "{$page}_$language",
+            "{$page}_$defaultLanguage",
+            $page,
+        ];
+
+        $pathPrefix = "templates/content/";
+
+        foreach ($templates as $template) {
+            foreach ($this->types as $type) {
+                $filename = "$pathPrefix$template.$type";
+                $path = $themeInfo->findContainingTheme($filename, true);
+                if (null != $path) {
+                    $page = $template;
+                    $renderer = $type;
+                    break 2;
+                }
+            }
         }
 
-        if (empty($page) || 'content' === $page
-            || null === $themeInfo->findContainingTheme(
-                "templates/content/$page.phtml"
-            )
-        ) {
-            return $this->notFoundAction($this->getResponse());
-        }
+        $method = isset($renderer) ? 'getViewFor' . ucwords($renderer) : false;
 
-        $view = $this->createViewModel(['page' => $page]);
-        return $view;
+        return $method && is_callable([$this, $method])
+            ? $this->$method($page, $path)
+            : $this->notFoundAction($this->getResponse());
     }
 
     /**
      * Action called if matched action does not exist
      *
-     * @return array
+     * @return ViewModel
      */
-    public function notFoundAction()
+    public function notFoundAction(): ViewModel
     {
         $response   = $this->response;
 
@@ -92,5 +111,33 @@ class ContentController extends AbstractBase
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);
+    }
+
+    /**
+     * Get ViewModel for markdown based page
+     *
+     * @param string $page Page name/route (if applicable)
+     * @param string $path Full path to file with content (if applicable)
+     *
+     * @return ViewModel
+     */
+    protected function getViewForMd(string $page, string $path): ViewModel
+    {
+        $view = $this->createViewModel(['data' => file_get_contents($path)]);
+        $view->setTemplate('content/markdown');
+        return $view;
+    }
+
+    /**
+     * Get ViewModel for phtml base page
+     *
+     * @param string $page Page name/route (if applicable)
+     * @param string $path Full path to file with content (if applicable)
+     *
+     * @return ViewModel
+     */
+    protected function getViewForPhtml(string $page, string $path): ViewModel
+    {
+        return $this->createViewModel(['page' => $page]);
     }
 }

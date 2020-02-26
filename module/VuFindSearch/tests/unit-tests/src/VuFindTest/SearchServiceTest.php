@@ -31,6 +31,7 @@ namespace VuFindTest;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
@@ -84,12 +85,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing retrieve action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
@@ -109,12 +110,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing search action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testSearchException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
@@ -126,6 +127,59 @@ class SearchServiceTest extends TestCase
         $em->expects($this->at(1))->method('trigger')
             ->with($this->equalTo('error'), $this->equalTo($exception));
         $service->search('foo', new Query('test'));
+    }
+
+    /**
+     * Test that when a backend doesn't implement the "get IDs" feature
+     * interface, the getIds method of the search service simply proxies search.
+     * We'll test this by mimicing the testSearchException test above.
+     *
+     * @return void
+     */
+    public function testGetIdsProxyingSearchException()
+    {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->getIds('foo', new Query('test'));
+    }
+
+    /**
+     * Test that when a backend DOES implement the "get IDs" feature
+     * interface, the appropriate method gets called.
+     * We'll test this by mimicing the testSearchException test above.
+     *
+     * @return void
+     */
+    public function testGetIdsException()
+    {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
+        // Use a special backend for this test...
+        $this->backend = $this->createMock(\VuFindTest\TestClassForGetIdsInterface::class);
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('getIds')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->getIds('foo', new Query('test'));
     }
 
     /**
@@ -191,12 +245,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveBatchInterfaceException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestClassForRetrieveBatchInterface::class);
 
@@ -224,12 +278,12 @@ class SearchServiceTest extends TestCase
      * RetrieveBatchInterface).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveBatchNoInterfaceException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
@@ -284,12 +338,12 @@ class SearchServiceTest extends TestCase
      * Test random (with RandomInterface) exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomInterfaceWithException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestClassForRandomInterface::class);
 
@@ -456,12 +510,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtFirstSearch()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
@@ -483,12 +537,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception at item retrieval search.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtItemSearch()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $limit = 10;
         $total = 20;
         $service = $this->getService();
@@ -526,12 +580,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception with less results than limit.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceExceptionWithLessResultsThanLimit()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $limit = 10;
         $total = 5;
         $service = $this->getService();
@@ -599,12 +653,12 @@ class SearchServiceTest extends TestCase
      * Test similar action on bad backend.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage foo does not support similar()
      */
     public function testSimilarOnNonSupportingBackend()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('foo does not support similar()');
+
         $service = $this->getService();
         $params = new ParamBag(['x' => 'y']);
         $service->similar('foo', 'bar', $params);
@@ -614,12 +668,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing similar action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testSimilarException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestBackendClassForSimilar::class);
 
@@ -645,12 +699,12 @@ class SearchServiceTest extends TestCase
      * Test a failure to resolve.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\RuntimeException
-     * @expectedExceptionMessage Unable to resolve backend: retrieve, junk
      */
     public function testFailedResolve()
     {
+        $this->expectException(\VuFindSearch\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Unable to resolve backend: retrieve, junk');
+
         $mockResponse = $this->createMock(\Zend\EventManager\ResponseCollection::class);
         $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
         $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
@@ -703,6 +757,14 @@ class SearchServiceTest extends TestCase
     {
         return $this->createMock(\VuFindSearch\Response\AbstractRecordCollection::class);
     }
+}
+
+/**
+ * Stub class to test multiple interfaces.
+ */
+abstract class TestClassForGetIdsInterface
+    implements BackendInterface, GetIdsInterface
+{
 }
 
 /**

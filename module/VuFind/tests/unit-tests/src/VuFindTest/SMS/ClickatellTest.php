@@ -45,7 +45,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Without SOAP functionality, we can't proceed:
         if (!function_exists('iconv')) {
@@ -92,12 +92,12 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unexpected response
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage badbadbad
      */
     public function testUnexpectedResponse()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('badbadbad');
+
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
         $response = new \Zend\Http\Response();
@@ -114,12 +114,12 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful query
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Problem sending text.
      */
     public function testFailureResponse()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Problem sending text.');
+
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
         $response = new \Zend\Http\Response();
@@ -135,12 +135,12 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test an exception in the mail client
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Mail
-     * @expectedExceptionMessage Foo
      */
     public function testClientException()
     {
+        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectExceptionMessage('Foo');
+
         $client = $this->getMockClient();
         $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
         $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));

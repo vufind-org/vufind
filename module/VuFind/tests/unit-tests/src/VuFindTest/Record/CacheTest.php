@@ -52,7 +52,7 @@ class CacheTest extends TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $cache = $this->getRecordCache();
         $this->recordTable = [

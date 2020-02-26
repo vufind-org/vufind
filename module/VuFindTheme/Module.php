@@ -96,8 +96,12 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\HeadScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
+                View\Helper\ParentTemplate::class =>
+                    View\Helper\ParentTemplateFactory::class,
                 View\Helper\InlineScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
+                View\Helper\TemplatePath::class =>
+                    View\Helper\TemplatePathFactory::class,
             ],
             'aliases' => [
                 'headThemeResources' => View\Helper\HeadThemeResources::class,
@@ -106,6 +110,8 @@ class Module
                 \Zend\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
                 \Zend\View\Helper\InlineScript::class =>
                     View\Helper\InlineScript::class,
+                'parentTemplate' => View\Helper\ParentTemplate::class,
+                'templatePath' => View\Helper\TemplatePath::class,
             ],
         ];
     }

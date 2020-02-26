@@ -78,11 +78,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingMethodOrder()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->MultiAuth->method_order);
         $this->getAuthObject($config)->getConfig();
@@ -110,11 +110,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with handler configured to load a service which does not exist.
      *
      * @return void
-     *
-     * @expectedException Zend\ServiceManager\Exception\ServiceNotFoundException
      */
     public function testLoginWithBadService()
     {
+        $this->expectException(\Zend\ServiceManager\Exception\ServiceNotFoundException::class);
+
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
 
@@ -128,11 +128,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * as an arbitrary inappropriate class).
      *
      * @return void
-     *
-     * @expectedException Zend\ServiceManager\Exception\InvalidServiceException
      */
     public function testLoginWithBadClass()
     {
+        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';
 
@@ -144,11 +144,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -157,11 +157,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }

@@ -52,7 +52,7 @@ class DemoTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $session = $this->getMockBuilder(\Zend\Session\Container::class)
             ->disableOriginalConstructor()->getMock();

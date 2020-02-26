@@ -53,12 +53,12 @@ class LoaderTest extends TestCase
      * Test exception for missing record.
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\RecordMissing
-     * @expectedExceptionMessage Record Solr:test does not exist.
      */
     public function testMissingRecord()
     {
+        $this->expectException(\VuFind\Exception\RecordMissing::class);
+        $this->expectExceptionMessage('Record Solr:test does not exist.');
+
         $collection = $this->getCollection([]);
         $service = $this->createMock(\VuFindSearch\Service::class);
         $service->expects($this->once())->method('retrieve')
@@ -275,8 +275,8 @@ class LoaderTest extends TestCase
     /**
      * Build a loader to test.
      *
-     * @param SearchService  $service Search service
-     * @param RecordFactory  $factory Record factory (optional)
+     * @param SearchService  $service        Search service
+     * @param RecordFactory  $factory        Record factory (optional)
      * @param Cache          $recordCache    Record Cache
      * @param FallbackLoader $fallbackLoader Fallback record loader
      *

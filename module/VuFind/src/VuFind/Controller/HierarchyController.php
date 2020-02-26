@@ -124,7 +124,7 @@ class HierarchyController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getRecordLoader();
         try {
             if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()->render(
@@ -159,7 +159,7 @@ class HierarchyController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getRecordLoader();
         try {
             if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()
@@ -191,7 +191,7 @@ class HierarchyController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getRecordLoader();
         try {
             $record = $loader->load($id, $source);
             $result = $this->getViewRenderer()->record($record)

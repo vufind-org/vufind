@@ -77,7 +77,7 @@ class ConditionalFilterListenerTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
         $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
         $connector      = new Connector('http://example.org/', $handlermap);

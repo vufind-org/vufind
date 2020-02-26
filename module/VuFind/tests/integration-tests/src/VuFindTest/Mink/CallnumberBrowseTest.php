@@ -53,11 +53,12 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -99,28 +100,32 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     {
         $this->assertTrue(is_object($link));
         $href = $link->getAttribute('href');
-        $this->assertContains($type, $href);
+        $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
-        $this->assertContains($link->getText(), $href);
+        $this->assertStringContainsString($link->getText(), $href);
     }
 
     protected function setupMultipleCallnumbers()
     {
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Catalog' => ['driver' => 'Demo']
             ],
             'Demo' => [
                 'Holdings' => [
-                    $this->id => json_encode([
+                    $this->id => json_encode(
+                        [
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberTwo', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberThree', 'location' => 'Phobos'],
                         ['callnumber' => 'CallNumberFour', 'location' => 'Phobos']
-                    ])
+                        ]
+                    )
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**
@@ -135,12 +140,14 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     protected function activateAndTestLinks($type, $page, $expectLinks)
     {
         // Single callnumbers (Sample)
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Catalog' => ['driver' => 'Sample'],
                 'Item_Status' => ['callnumber_handler' => $type]
             ]
-        ]);
+            ]
+        );
         $this->getMinkSession()->reload();
         $this->snooze();
         $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
@@ -188,9 +195,11 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testFirstAndMsg()
     {
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => ['Item_Status' => ['show_full_status' => false]]
-        ]);
+            ]
+        );
         $this->validateSetting('first');
     }
 

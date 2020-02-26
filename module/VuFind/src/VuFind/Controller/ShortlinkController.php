@@ -28,6 +28,8 @@
 namespace VuFind\Controller;
 
 use VuFind\UrlShortener\UrlShortenerInterface;
+use Zend\Config\Config;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Short link controller
@@ -41,6 +43,66 @@ use VuFind\UrlShortener\UrlShortenerInterface;
 class ShortlinkController extends AbstractBase
 {
     /**
+     * Amount of seconds after which HTML redirect is performed.
+     *
+     * @var int
+     */
+    protected $redirectDelayHtml = 3;
+
+    /**
+     * Which redirect mechanism to use (html, http, threshold:<urlLength>)
+     *
+     * @var string
+     */
+    protected $redirectMethod = 'threshold:1000';
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm     Service manager
+     * @param Config                  $config VuFind configuration
+     */
+    public function __construct(ServiceLocatorInterface $sm, Config $config)
+    {
+        // Call standard record controller initialization:
+        parent::__construct($sm);
+
+        // Set redirect method, if specified:
+        if (isset($config->Mail->url_shortener_redirect_method)) {
+            $this->redirectMethod = strtolower(
+                trim($config->Mail->url_shortener_redirect_method)
+            );
+        }
+    }
+
+    /**
+     * Redirect to given URL by using a HTML meta redirect mechanism.
+     *
+     * @param string $url Redirect target
+     *
+     * @return mixed
+     */
+    protected function redirectViaHtml($url)
+    {
+        $view = $this->createViewModel();
+        $view->redirectTarget = $url;
+        $view->redirectDelay = $this->redirectDelayHtml;
+        return $view;
+    }
+
+    /**
+     * Redirect to given URL by using a HTTP header.
+     *
+     * @param string $url Redirect target
+     *
+     * @return mixed
+     */
+    protected function redirectViaHttp($url)
+    {
+        return $this->redirect()->toUrl($url);
+    }
+
+    /**
      * Resolve full version of shortlink & redirect to target.
      *
      * @return mixed
@@ -50,7 +112,19 @@ class ShortlinkController extends AbstractBase
         if ($id = $this->params('id')) {
             $resolver = $this->serviceLocator->get(UrlShortenerInterface::class);
             if ($url = $resolver->resolve($id)) {
-                return $this->redirect()->toUrl($url);
+                $threshRegEx = '"^threshold:(\d+)$"i';
+                if (preg_match($threshRegEx, $this->redirectMethod, $hits)) {
+                    $threshold = $hits[1];
+                    $method = (strlen($url) > $threshold) ? 'Html' : 'Http';
+                } else {
+                    $method = ucwords($this->redirectMethod);
+                }
+                if (!is_callable([$this, 'redirectVia' . $method])) {
+                    throw new \VuFind\Exception\BadConfig(
+                        'Invalid redirect method: ' . $method
+                    );
+                }
+                return $this->{'redirectVia' . $method}($url);
             }
         }
 

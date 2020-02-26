@@ -67,7 +67,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // Create test files:
         $parentPath = Locator::getLocalConfigPath('unit-test-parent.ini', null, true);
@@ -120,7 +120,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->factory = new \VuFind\Config\PluginFactory();
     }
@@ -236,7 +236,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      * Test that the plugin factory omits the Parent_Config section from the
      * merged configuration.
      *
-     * @void
+     * @return void
      */
     public function testParentConfigOmission()
     {
@@ -251,11 +251,11 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      * Test configuration is read-only.
      *
      * @return void
-     *
-     * @expectedException Zend\Config\Exception\RuntimeException
      */
     public function testReadOnlyConfig()
     {
+        $this->expectException(\Zend\Config\Exception\RuntimeException::class);
+
         if (self::$writeFailed) {
             $this->markTestSkipped('Could not write test configurations.');
         }
@@ -268,7 +268,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // Clean up test files:
         array_map('unlink', self::$filesToDelete);

@@ -157,12 +157,12 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      * Test missing path stack.
      *
      * @return void
-     *
-     * @expectedException        Zend\I18n\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Ini file 'en.ini' not found
      */
     public function testMissingPathStack()
     {
+        $this->expectException(\Zend\I18n\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Ini file \'en.ini\' not found');
+
         $loader = new ExtendedIni();
         $loader->load('en', null);
     }
