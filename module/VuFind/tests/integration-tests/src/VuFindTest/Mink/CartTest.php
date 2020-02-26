@@ -579,6 +579,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the save control works.
      *
+     * @depends testCartEmail
+     *
      * @return void
      */
     public function testCartSave()

@@ -92,6 +92,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test search history.
      *
+     * @depends testSaveSearch
+     *
      * @return void
      */
     public function testSearchHistory()
@@ -142,6 +144,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
+     * @depends testSaveSearch
      * @retryCallback removeUsername2
      *
      * @return void
@@ -191,6 +194,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that notification settings work correctly.
+     *
+     * @depends testSaveSearch
      *
      * @return void
      */
