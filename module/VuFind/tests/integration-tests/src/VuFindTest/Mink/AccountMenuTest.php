@@ -66,7 +66,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
             return;
         }
         // Setup config
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'Demo' => $this->getDemoIniOverrides(),
             'config' => [
                 'Catalog' => ['driver' => 'Demo'],
@@ -75,7 +76,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                     'enableDropdown' => false
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**
@@ -164,6 +166,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      * Test that the menu is absent when enableAjax is false and enableDropdown
      * is false.
      *
+     * @depends testMenuOffAjaxNoDropdown
+     *
      * @return void
      */
     public function testMenuOffNoAjaxNoDropdown()
@@ -192,6 +196,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      * Test that the menu is absent when enableAjax is false and enableDropdown
      * is true.
      *
+     * @depends testMenuOffAjaxNoDropdown
+     *
      * @return void
      */
     public function testMenuOffNoAjaxDropdown()
@@ -218,6 +224,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the menu is absent when enableAjax is true and enableDropdown
      * is true.
+     *
+     * @depends testMenuOffAjaxNoDropdown
      *
      * @return void
      */

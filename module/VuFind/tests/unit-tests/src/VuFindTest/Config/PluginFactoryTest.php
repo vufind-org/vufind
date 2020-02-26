@@ -251,7 +251,6 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      * Test configuration is read-only.
      *
      * @return void
-     *
      */
     public function testReadOnlyConfig()
     {

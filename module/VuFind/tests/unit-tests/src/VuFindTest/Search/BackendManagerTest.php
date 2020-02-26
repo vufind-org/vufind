@@ -48,7 +48,6 @@ class BackendManagerTest extends TestCase
      * Test that get() throws on a non-object.
      *
      * @return void
-     *
      */
     public function testGetThrowsOnNonObject()
     {
@@ -67,7 +66,6 @@ class BackendManagerTest extends TestCase
      * Test that get() throws on a non-backend.
      *
      * @return void
-     *
      */
     public function testGetThrowsOnNonBackend()
     {

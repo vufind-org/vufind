@@ -120,7 +120,6 @@ class BackendTest extends TestCase
      * Test retrieve exception handling.
      *
      * @return void
-     *
      */
     public function testRetrieveWrapsSummonException()
     {
@@ -173,7 +172,6 @@ class BackendTest extends TestCase
      * Test search exception handling.
      *
      * @return void
-     *
      */
     public function testSearchWrapsSummonException()
     {

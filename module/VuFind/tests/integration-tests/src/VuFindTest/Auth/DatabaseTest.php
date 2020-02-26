@@ -137,7 +137,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test blank username.
      *
      * @return void
-     *
      */
     public function testCreationWithBlankUsername()
     {
@@ -151,7 +150,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test blank password.
      *
      * @return void
-     *
      */
     public function testCreationWithBlankPassword()
     {
@@ -165,7 +163,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test password mismatch.
      *
      * @return void
-     *
      */
     public function testCreationWithPasswordMismatch()
     {
@@ -179,7 +176,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test invalid email.
      *
      * @return void
-     *
      */
     public function testCreationWithInvalidEmail()
     {
@@ -210,7 +206,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test duplicate username.
      *
      * @return void
-     *
      */
     public function testCreationWithDuplicateUsername()
     {
@@ -224,7 +219,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test duplicate email.
      *
      * @return void
-     *
      */
     public function testCreationWithDuplicateEmail()
     {
@@ -238,7 +232,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -252,7 +245,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {
@@ -266,7 +258,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with unknown username.
      *
      * @return void
-     *
      */
     public function testLoginWithUnrecognizedUsername()
     {
@@ -280,7 +271,6 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with bad password.
      *
      * @return void
-     *
      */
     public function testLoginWithBadPassword()
     {

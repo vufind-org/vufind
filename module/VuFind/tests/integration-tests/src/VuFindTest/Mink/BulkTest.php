@@ -178,6 +178,8 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the save control works.
      *
+     * @depends testBulkEmail
+     *
      * @return void
      */
     public function testBulkSave()

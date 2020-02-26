@@ -82,7 +82,6 @@ class ThemeInfoTest extends Unit\TestCase
      * Test setting invalid theme
      *
      * @return void
-     *
      */
     public function testInvalidTheme()
     {

@@ -138,7 +138,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -152,7 +151,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {
@@ -166,7 +164,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      * Test a configuration with a missing attribute value.
      *
      * @return void
-     *
      */
     public function testWithMissingAttributeValue()
     {
@@ -181,7 +178,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      * Test a configuration with missing username.
      *
      * @return void
-     *
      */
     public function testWithoutUsername()
     {
@@ -196,7 +192,6 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      * Test a configuration with missing login setting.
      *
      * @return void
-     *
      */
     public function testWithoutLoginSetting()
     {
