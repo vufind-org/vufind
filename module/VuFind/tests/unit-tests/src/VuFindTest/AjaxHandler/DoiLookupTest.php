@@ -46,33 +46,84 @@ use Zend\Config\Config;
 class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
     /**
-     * Test a DOI lookup.
+     * Set up configuration for a test.
+     *
+     * @param array $config Configuration to set.
      *
      * @return void
      */
-    public function testLookup()
+    protected function setupConfig($config)
     {
-        // Set up config manager:
-        $config = new Config(['DOI' => ['resolver' => 'foo']]);
+        $config = new Config($config);
         $cm = $this->container->createMock(ConfigManager::class, ['get']);
         $cm->expects($this->once())->method('get')->with($this->equalTo('config'))
             ->will($this->returnValue($config));
         $this->container->set(ConfigManager::class, $cm);
+    }
 
-        // Set up plugin manager:
-        $pm = new PluginManager($this->container);
+    /**
+     * Create a mock plugin.
+     *
+     * @param mixed $value Value to return in response to DOI request.
+     *
+     * @return DoiLinkerInterface
+     */
+    protected function getMockPlugin($value)
+    {
         $mockPlugin = $this->container
             ->createMock(DoiLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->once())->method('getLinks')
             ->with($this->equalTo(['bar']))
-            ->will($this->returnValue(['bar' => 'baz']));
-        $pm->setService('foo', $mockPlugin);
-        $this->container->set(PluginManager::class, $pm);
+            ->will($this->returnValue(['bar' => $value]));
+        return $mockPlugin;
+    }
 
-        // Test the handler:
+    /**
+     * Set up a plugin manager for a test.
+     *
+     * @param array $plugins Plugins to insert into container.
+     *
+     * @return void
+     */
+    protected function setupPluginManager($plugins)
+    {
+        $pm = new PluginManager($this->container);
+        foreach($plugins as $name => $plugin) {
+            $pm->setService($name, $plugin);
+        }
+        $this->container->set(PluginManager::class, $pm);
+    }
+
+    /**
+     * After setupConfig() and setupPluginManager() have been called, run the
+     * standard default test.
+     *
+     * @return array
+     */
+    protected function getHandlerResults()
+    {
         $factory = new DoiLookupFactory();
         $handler = $factory($this->container, DoiLookup::class);
         $params = $this->getParamsHelper(['doi' => ['bar']]);
-        $this->assertEquals([['bar' => 'baz']], $handler->handleRequest($params));
+        return $handler->handleRequest($params);
+    }
+
+    /**
+     * Test a DOI lookup.
+     *
+     * @return void
+     */
+    public function testSingleLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(['DOI' => ['resolver' => 'foo']]);
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            ['foo' => $this->getMockPlugin('baz')]
+        );
+
+        // Test the handler:
+        $this->assertEquals([['bar' => 'baz']], $this->getHandlerResults());
     }
 }
