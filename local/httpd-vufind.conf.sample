@@ -1,18 +1,3 @@
-# Cached split CSS files for Internet Explorer:
-AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/css/([^\/]+_part\d+\.css)$ /path-to/NDL-VuFind2/local/cache/stylesheets/$1/$2
-
-# Access permissions for the css cache directory for Internet Explorer:
-<Directory ~ "^/path-to/NDL-VuFind2/local/cache/stylesheets/([0-9a-zA-Z-_]*)/">
-  <IfModule !mod_authz_core.c>
-    Order allow,deny
-    Allow from all
-  </IfModule>
-  <IfModule mod_authz_core.c>
-    Require all granted
-  </IfModule>
-  AllowOverride All
-</Directory>
-
 # Configuration for theme-specific resources:
 AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/css/(.*)$ /path-to/NDL-VuFind2/themes/$1/css/$2
 AliasMatch ^/vufind2/themes/([0-9a-zA-Z-_]*)/files/(.*)$ /path-to/NDL-VuFind2/themes/$1/files/$2
