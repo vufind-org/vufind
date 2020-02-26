@@ -11,10 +11,15 @@ var TueFind = {
         });
     },
 
+    GetSearchboxSearchContext: function() {
+        return $("#searchForm").attr('action').replace(/\/(.*)\/Results/, "$1").toLowerCase();
+    },
+
     AdjustSearchHandlers: function() {
         // Make sure that a selection of the search handler is transparently adjusted for a potential reload
         // i.e. when changing the sort order
-        var saved_search_handler = sessionStorage.getItem("tuefind_saved_search_handler");
+        var search_context = TueFind.GetSearchboxSearchContext();
+        var saved_search_handler = sessionStorage.getItem("tuefind_saved_search_handler_" + search_context);
         if (saved_search_handler != null) {
             $("#searchForm_type option:selected").removeAttr('selected');
             $("#searchForm_type").val(saved_search_handler);
@@ -27,7 +32,7 @@ var TueFind = {
             previous_search_handler = this.value;
         }).change(function adjustSearchHandler(e) {
             current_search_handler = $("#searchForm_type").val();
-            sessionStorage.setItem("tuefind_saved_search_handler", current_search_handler);
+            sessionStorage.setItem("tuefind_saved_search_handler_" + search_context, current_search_handler);
             $("#searchForm_type [value=" + previous_search_handler + "]").removeAttr('selected');
             $("#searchForm_type [value=" + current_search_handler + "]").attr('selected', 'selected');
             $('[name=type]:not([data-type-protected="1"])').val(current_search_handler);
