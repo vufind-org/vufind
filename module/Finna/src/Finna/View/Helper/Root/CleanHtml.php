@@ -43,7 +43,25 @@ class CleanHtml extends \Zend\View\Helper\AbstractHelper
      *
      * @var \HTMLPurifier
      */
-    protected $purifier = null;
+    protected $purifier;
+
+    /**
+     * Cache directory
+     *
+     * @var string
+     */
+    protected $cacheDir;
+
+    /**
+     * Constructor
+     *
+     * @param string $cacheDir Cache directory. Defaults to empty for compatibility
+     * with previous factory-less version.
+     */
+    public function __construct($cacheDir = '')
+    {
+        $this->cacheDir = $cacheDir;
+    }
 
     /**
      * Clean up HTML
@@ -59,6 +77,10 @@ class CleanHtml extends \Zend\View\Helper\AbstractHelper
         }
         if (null === $this->purifier) {
             $config = \HTMLPurifier_Config::createDefault();
+            // Set cache path to the object cache
+            if ($this->cacheDir) {
+                $config->set('Cache.SerializerPath', $this->cacheDir);
+            }
             // Details & summary elements not supported by default, add them:
             $def = $config->getHTMLDefinition(true);
             $def->addElement(

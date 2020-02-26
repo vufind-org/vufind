@@ -10,7 +10,7 @@ return [
             'Finna\View\Helper\Root\Browse' => 'Finna\View\Helper\Root\BrowseFactory',
             'Finna\View\Helper\Root\Callnumber' => 'Finna\View\Helper\Root\CallNumberFactory',
             'Finna\View\Helper\Root\Citation' => 'Finna\View\Helper\Root\CitationFactory',
-            'Finna\View\Helper\Root\CleanHtml' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'Finna\View\Helper\Root\CleanHtml' => 'Finna\View\Helper\Root\CleanHtmlFactory',
             'Finna\View\Helper\Root\Combined' => 'Finna\View\Helper\Root\CombinedFactory',
             'Finna\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'Finna\View\Helper\Root\Content' => 'Zend\ServiceManager\Factory\InvokableFactory',
