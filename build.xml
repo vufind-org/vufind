@@ -182,6 +182,11 @@
     <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
+  <!-- PHPUnit without logging output, stopping at first error or failure -->
+  <target name="phpunitfaster" description="Run tests until first failure">
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+  </target>
+
   <target name="installsolr" description="Install Solr">
     <!-- load previously installed version from marker file, if present -->
     <if>
