@@ -84,7 +84,8 @@
         "phpmd/phpmd": "2.8.1",
         "phpunit/phpunit": "7.5.20",
         "sebastian/phpcpd": "4.1.0",
-        "squizlabs/php_codesniffer": "3.5.3"
+        "squizlabs/php_codesniffer": "3.5.3",
+        "dmore/chrome-mink-driver": "^2.7"
     },
     "extra": {
         "merge-plugin": {
