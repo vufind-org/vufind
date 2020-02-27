@@ -687,14 +687,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $select->selectOption('Google');
 
         // Do the export:
+        $windowCount = count($this->getMinkSession()->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
         $this->snooze();
         $windows = $this->getMinkSession()->getWindowNames();
-        $this->assertEquals(2, count($windows));
-        $this->getMinkSession()->switchToWindow($windows[1]);
+        $this->assertEquals($windowCount + 1, count($windows));
+        $this->getMinkSession()->switchToWindow($windows[$windowCount]);
         $this->assertEquals(
-            'https://www.google.com/', $this->getMinkSession()->getCurrentUrl()
+            'https://www.google.com/',
+            $this->getMinkSession()->getCurrentUrl()
         );
     }
 
