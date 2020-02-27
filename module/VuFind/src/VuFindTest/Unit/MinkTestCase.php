@@ -155,11 +155,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function getMinkDriver()
     {
-        $env = getenv('VUFIND_SELENIUM_BROWSER');
-        $browser = $env ? $env : 'headless';
-        if ($browser === 'headless') {
+        $driver = getenv('VUFIND_MINK_DRIVER') ?? 'selenium';
+        if ($driver === 'chrome') {
             return new ChromeDriver('http://localhost:9222', null, 'data:;');
         }
+        $browser = getenv('VUFIND_SELENIUM_BROWSER') ?? 'firefox';
         return new Selenium2Driver($browser);
     }
 
