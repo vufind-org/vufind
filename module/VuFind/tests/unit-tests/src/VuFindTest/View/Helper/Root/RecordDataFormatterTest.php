@@ -344,7 +344,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 
         // Check for exact markup in representative example:
         $this->assertEquals(
-            'Italian<br />Latin', $this->findResult('Language', $results)['value']
+            '<div property="availableLanguage" typeof="Language"><span property="name">Italian</span></div><br /><div property="availableLanguage" typeof="Language"><span property="name">Latin</span></div>', $this->findResult('Language', $results)['value']
         );
 
         // Check for context in Building:
