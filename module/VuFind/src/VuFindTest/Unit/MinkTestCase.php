@@ -31,6 +31,7 @@ namespace VuFindTest\Unit;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
+use DMore\ChromeDriver\ChromeDriver;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -155,7 +156,10 @@ abstract class MinkTestCase extends DbTestCase
     protected function getMinkDriver()
     {
         $env = getenv('VUFIND_SELENIUM_BROWSER');
-        $browser = $env ? $env : 'firefox';
+        $browser = $env ? $env : 'headless';
+        if ($browser === 'headless') {
+            return new ChromeDriver('http://localhost:9222', null, 'data:;');
+        }
         return new Selenium2Driver($browser);
     }
 
