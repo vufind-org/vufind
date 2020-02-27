@@ -16,6 +16,7 @@ class PluginManager extends \VuFind\Search\Results\PluginManager {
      */
     protected function _addAliasesAndFactories() {
         $this->aliases['solr'] = \TueFind\Search\Solr\Results::class;
+        $this->aliases['search2'] = \TueFind\Search\Search2\Results::class;
         $this->factories[\TueFind\Search\Solr\Results::class] = \VuFind\Search\Solr\ResultsFactory::class;
     }
 }
