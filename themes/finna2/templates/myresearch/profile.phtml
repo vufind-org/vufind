@@ -21,7 +21,7 @@
       $linkText = $this->translate(($updatePhone || $updateEmail || $updateSmsNumber) ? 'request_address_change' : 'request_contact_information_change');
       ob_start();
 ?>
-        <?php if ($updateAddress['method'] == 'email' || $updateAddress['method'] == 'driver'): ?>
+        <?php if (in_array($updateAddress['method'], ['database', 'driver'])): ?>
           <i class="fa fa-pen"></i>
           <a class="profile-library-info-address-update" href="<?=$this->escapeHtmlAttr($this->url('myresearch-changeprofileaddress')) ?>" data-lightbox title="<?=$this->escapeHtmlAttr($linkText) ?>"><?=$this->escapeHtml($linkText) ?></a>
         <?php elseif ($updateAddress['method'] == 'url'): ?>

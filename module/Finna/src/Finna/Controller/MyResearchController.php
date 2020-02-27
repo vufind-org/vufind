@@ -655,19 +655,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }
             } else {
-                if (!isset($updateConfig['emailAddress'])) {
-                    throw new \Exception(
-                        'Missing emailAddress in ILS updateAddress settings'
-                    );
-                }
-                $recipient = $updateConfig['emailAddress'];
-
-                $this->sendChangeRequestEmail(
-                    $patron, $profile, $data, $fields, $recipient,
-                    'Yhteystietojen muutospyyntö', 'change-address'
+                $result = $this->saveChangeRequestFeedback(
+                    $patron, $profile, $data, $fields,
+                    'finna_UpdatePersonalInformation'
                 );
-                $this->flashMessenger()
-                    ->addSuccessMessage('request_change_done');
+                if ($result) {
+                    $this->flashMessenger()
+                        ->addSuccessMessage('request_change_done');
+                }
                 $view->requestCompleted = true;
             }
         }
@@ -728,11 +723,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $this->flashMessenger()->addErrorMessage($result['status']);
                 }
             } else {
-                if (!isset($config['emailAddress'])) {
-                    throw new \Exception(
-                        'Missing emailAddress in ILS updateMessagingSettings'
-                    );
-                }
                 $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                 $data['pickUpNotice'] = $this->translate(
                     'messaging_settings_method_' . $data['pickUpNotice'],
@@ -757,14 +747,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     );
                 }
 
-                $recipient = $config['emailAddress'];
-
-                $this->sendChangeRequestEmail(
-                    $patron, $profile, $data, [], $recipient,
-                    'Viestiasetusten muutospyyntö', 'change-messaging-settings'
+                $result = $this->saveChangeRequestFeedback(
+                    $patron, $profile, $data, [],
+                    'finna_UpdateMessagingSettings'
                 );
-                $this->flashMessenger()
-                    ->addSuccessMessage('request_change_done');
+                if ($result) {
+                    $this->flashMessenger()
+                        ->addSuccessMessage('request_change_done');
+                }
                 $view->requestCompleted = true;
             }
         }
@@ -1287,54 +1277,123 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Send a change request message (e.g. address change) to the library
+     * Save a feedback to database for library
      *
-     * @param array  $patron    Patron
-     * @param array  $profile   Patron profile
-     * @param array  $data      Change data
-     * @param array  $fields    Form fields for address change request
-     * @param string $recipient Email recipient
-     * @param string $subject   Email subject
-     * @param string $template  Email template
+     * @param array  $patron  Patron
+     * @param array  $profile Patron profile
+     * @param array  $data    Change data
+     * @param array  $fields  Form fields for address change request
+     * @param string $subject Email subject
      *
-     * @return void
+     * @return bool
      */
-    protected function sendChangeRequestEmail($patron, $profile, $data, $fields,
-        $recipient, $subject, $template
+    protected function saveChangeRequestFeedback($patron, $profile, $data,
+        $fields, $subject
     ) {
         list($library, $username) = explode('.', $patron['cat_username']);
-        $library = $this->translate("source_$library", null, $library);
+        $catalog = $this->getILS();
+        $config = $catalog->getConfig('Feedback', $patron);
+
+        if (!isset($config['domain'])) {
+            $this->flashMessenger()->addErrorMessage('An error has occurred');
+            return false;
+        }
+
+        $urlParsed = parse_url($this->getRequest()->getUri());
+        $host = $urlParsed['host'];
+        $url = $config['domain'];
+        $url .= (substr_count($host, '.') > 1) ? strstr($host, '.') : ".$host";
+
         $name = trim(
             ($patron['firstname'] ?? '')
             . ' '
             . ($patron['lastname'] ?? '')
         );
-        $email = $patron['email'] ?? '';
-        if (!$email) {
-            $user = $this->getUser();
-            if (!empty($user['email'])) {
-                $email = $user['email'];
+        $user = $this->getUser();
+        $email = $patron['email'] ?? $user['email'] ?? '';
+        $userId = $user->id;
+        $homeLibrary = $user->home_library ?? '';
+        $formId = $subject;
+
+        $userData = [
+            'Library' => $library,
+            'Username' => $username,
+            'Name' => $name,
+            'Email' => $email
+        ];
+
+        $message = [];
+        $oldMessage = [];
+        $messageString = '';
+
+        $ignoredTypes = [
+            'layout',
+            'messaging_update_request'
+        ];
+        if (!empty($fields)) {
+            foreach ($fields as $field => $fieldData) {
+                $key = $this->translate($fieldData['label']);
+                $value = $data[$field] ?? '';
+                $message[$key] = $value;
+
+                if (isset($profile[$field])) {
+                    $oldMessage[$key] = $profile[$field];
+                }
+            }
+        } else {
+            foreach ($data as $type => $sendMethod) {
+                if (!in_array(strtolower($type), $ignoredTypes)) {
+                    $key = $this->translate("messaging_settings_type_$type");
+                    $message[$key] = $sendMethod;
+                }
             }
         }
 
-        $params = [
-            'library' => $library,
-            'username' => $patron['cat_username'],
-            'name' => $name,
-            'email' => $email,
-            'patron' => $patron,
-            'profile' => $profile,
-            'data' => $data,
-            'fields' => $fields
-        ];
-        $renderer = $this->getViewRenderer();
-        $message = $renderer->render("Email/$template.phtml", $params);
-        $subject = $this->getConfig()->Site->title . ": $subject";
-        $from = $this->getConfig()->Site->email;
+        $mergedArrays = array_merge($userData, $message);
+        $messageJson = json_encode($mergedArrays);
 
-        $this->serviceLocator->get(\VuFind\Mailer\Mailer::class)->send(
-            $recipient, $from, $subject, $message
+        $messageString = $this->getMessageString($userData, $message, $oldMessage);
+        $feedback = $this->getTable('feedback');
+        $feedback->saveFeedback(
+            $url, $formId, $userId, $messageString, $messageJson
         );
+
+        return true;
+    }
+
+    /**
+     * Function to get feedback message string from arrays
+     *
+     * @param array $userData   containing personal information
+     * @param array $message    containing data about new values
+     * @param array $oldMessage containing data about old values
+     *
+     * @return string
+     */
+    protected function getMessageString($userData, $message, $oldMessage = [])
+    {
+        $messageString = 'User information:' . PHP_EOL
+            . '--------------' . PHP_EOL;
+        foreach ($userData as $key => $value) {
+            $messageString .= $key . ': ' . $value . PHP_EOL;
+        }
+
+        $messageString .= PHP_EOL;
+        $messageString .= 'New information:' . PHP_EOL
+            . '--------------' . PHP_EOL;
+        foreach ($message as $key => $value) {
+            $messageString .= $key . ': ' . $value . PHP_EOL;
+        }
+        $messageString .= PHP_EOL;
+        if (!empty($oldMessage)) {
+            $messageString .= 'Old information:' . PHP_EOL
+            . '--------------' . PHP_EOL;
+            foreach ($oldMessage as $key => $value) {
+                $messageString .= $key . ': ' . $value . PHP_EOL;
+            }
+        }
+
+        return $messageString;
     }
 
     /**

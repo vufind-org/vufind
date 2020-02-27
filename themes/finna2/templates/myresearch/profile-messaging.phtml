@@ -76,7 +76,7 @@ if (!isset($capabilityParams)) {
     <div class="clearfix"></div>
     <?php if ($updateSettings): ?>
       <div class="messaging-last">
-        <?php if (in_array($updateSettings['method'], ['email', 'driver'])): ?>
+        <?php if (in_array($updateSettings['method'], ['database', 'driver'])): ?>
           <i class="fa fa-pen"></i> <a class="profile-messaging-update" data-lightbox href="<?=$this->escapeHtmlAttr($this->url('myresearch-changemessagingsettings')) ?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
         <?php else: ?>
           <i class="fa fa-external-link"></i> <a class="profile-messaging-update" href="<?=$this->escapeHtmlAttr($this->translation()->getStringFromMixed($updateSettings['url'])) ?>" target="_blank"><?= $this->transEsc('request_messaging_settings_change') ?></a>

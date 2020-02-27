@@ -91,6 +91,10 @@
 
 forms:
 
+  # These forms are reserved for finna internal use and should not be used:
+  # - finna_UpdatePersonalInformation
+  # - finna_UpdateMessagingSettings
+
   # Main Feedback form
   FeedbackSite:
     allowLocalOverride: true
