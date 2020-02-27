@@ -129,11 +129,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
-        if ($snoozeMultiplier < 1) {
+        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
-        sleep($secs * $snoozeMultiplier);
+        usleep(1000000 * $secs * $snoozeMultiplier);
     }
 
     /**
