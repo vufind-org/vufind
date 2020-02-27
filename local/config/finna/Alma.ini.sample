@@ -10,6 +10,9 @@ apiKey = "your-key-here"
 ; password  Use password authentication with Alma internal users
 ; email     Username needs to be a valid email address for the user
 loginMethod = email
+; Whether to group patron's fees by type, status, title and barcode. This allows
+; grouping of similar fines to a single line. Disabled by default.
+;groupFees = true
 
 ; Translation prefix to use for codes coming from Alma. By default a prefix is not
 ; used, but a prefix may be used to distinguish the codes from any other
