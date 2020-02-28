@@ -2053,8 +2053,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     protected function getItemLocation($item)
     {
-        $value = ($this->config['Catalog']['translationPrefix'] ?? '')
-            . (string)$item->item_data->location;
         // Yes, temporary location is in holding data while permanent location is in
         // item data.
         if ('true' === (string)$item->holding_data->in_temp_location) {
@@ -2066,6 +2064,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $library = $item->item_data->library;
             $location = $item->item_data->location;
         }
+        $value = ($this->config['Catalog']['translationPrefix'] ?? '') . $location;
         $desc = $this->getLocationExternalName((string)$library, (string)$location);
         if (null === $desc) {
             $desc
