@@ -145,7 +145,8 @@ class Form extends \Zend\Form\Form implements
      *
      * @param string $translationKey Translation key
      * @param bool   $escape         Whether to escape the output.
-     * Default behaviour is to escape when the translation key does not end with '_html'.
+     * Default behaviour is to escape when the translation key does
+     * not end with '_html'.
      *
      * @return string
      */
