@@ -2055,10 +2055,18 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     {
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$item->item_data->location;
-        $desc = $this->getLocationExternalName(
-            (string)$item->item_data->library,
-            (string)$item->item_data->location
-        );
+        // Yes, temporary location is in holding data while permanent location is in
+        // item data.
+        if ('true' === (string)$item->holding_data->in_temp_location) {
+            $library = $item->holding_data->temp_library
+                ?: $item->item_data->library;
+            $location = $item->holding_data->temp_location
+                ?: $item->item_data->location;
+        } else {
+            $library = $item->item_data->library;
+            $location = $item->item_data->location;
+        }
+        $desc = $this->getLocationExternalName((string)$library, (string)$location);
         if (null === $desc) {
             $desc
                 = (string)($item->item_data->location->attributes()->desc ?? $value);
@@ -2095,7 +2103,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             }
             $this->putCachedData($cacheId, $locations);
         }
-        return $locations[$location]['externalName'] ?? null;
+        return !empty($locations[$location]['externalName'])
+            ? $locations[$location]['externalName']
+            : ($locations[$location]['name'] ?? null);
     }
 
     /**
