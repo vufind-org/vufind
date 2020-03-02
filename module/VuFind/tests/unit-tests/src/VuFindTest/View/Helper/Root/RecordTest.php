@@ -45,12 +45,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Test attempting to display a template that does not exist.
      *
      * @return void
-     *
-     * @expectedException        Zend\View\Exception\RuntimeException
-     * @expectedExceptionMessage Cannot find RecordDriver/AbstractBase/core.phtml template for class: VuFind\RecordDriver\SolrMarc
      */
     public function testMissingTemplate()
     {
+        $this->expectException(\Zend\View\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot find RecordDriver/AbstractBase/core.phtml template for class: VuFind\\RecordDriver\\SolrMarc');
+
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $record->getView()->resolver()->expects($this->at(0))->method('resolve')
             ->with($this->equalTo('RecordDriver/SolrMarc/core.phtml'))
@@ -438,12 +438,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Test getLinkDetails with invalid details
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Invalid URL array.
      */
     public function testGetLinkDetailsFailure()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Invalid URL array.');
+
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
             [

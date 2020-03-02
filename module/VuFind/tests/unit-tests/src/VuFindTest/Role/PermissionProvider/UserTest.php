@@ -125,8 +125,8 @@ class UserTest extends \VuFindTest\Unit\TestCase
     {
         $authorizationService
             = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
         $authorizationService
             ->method('getIdentity')
             ->will($this->returnValue($this->getMockUser()));

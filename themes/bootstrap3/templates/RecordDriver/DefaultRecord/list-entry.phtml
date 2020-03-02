@@ -105,7 +105,7 @@
             <?php endforeach; ?>
           <?php endif; ?>
 
-          <?php if (count($this->lists) > 0): ?>
+          <?php if (count($this->lists ?? []) > 0): ?>
               <strong><?=$this->transEsc('Saved in')?>:</strong>
               <?php $i = 0;foreach($this->lists as $current): ?>
                   <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>

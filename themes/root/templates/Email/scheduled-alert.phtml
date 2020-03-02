@@ -1,0 +1,34 @@
+<?=$this->translate('New results found for search') ?>:
+  <?=empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
+
+<?php if (count($info['checkboxFilters']) || count($info['filters'])): ?>
+
+<?=$this->translate('history_limits') ?>:
+<?php foreach ($info['checkboxFilters'] as $checkbox): ?>
+  <?=$this->translate($checkbox['desc']) ?>
+<?php endforeach; ?>
+
+<?php foreach ($info['filters'] as $format => $filters): ?>
+  <?=$this->translate($format) . ': ' ?>
+<?php $index = 0; ?>
+<?php foreach ($filters as $f): ?>
+<?=(($f['operator'] == 'NOT' || $index++ > 0) ? ($index > 0 ? ' ' : '') . $this->translate($f['operator']) . ' ' : '') . $f['displayText']; ?>
+<?php endforeach; ?>
+
+<?php endforeach; ?>
+<?php endif; ?>
+
+<?=$this->translate('Link to full results') ?>:
+<?=$info['url'] ?>
+
+
+
+<?=$this->translate('new_results_heading', ['%%count%%' => $info['recordCount']]) ?>:
+
+<?php foreach ($records as $result): ?>
+  <?=$this->record($result)->getSearchResult('email') . PHP_EOL; ?>
+<?php endforeach; ?>
+
+
+<?=$this->translate('unsubscribe_description') ?>:
+<?=$info['unsubscribeUrl'] ?>

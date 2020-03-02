@@ -57,12 +57,12 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * Test expected interface.
      *
      * @return void
-     *
-     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\RecordDriver\AbstractBase
      */
     public function testExpectedInterface()
     {
+        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\RecordDriver\\AbstractBase');
+
         $pm = new PluginManager(
             $this->createMock(\Interop\Container\ContainerInterface::class)
         );

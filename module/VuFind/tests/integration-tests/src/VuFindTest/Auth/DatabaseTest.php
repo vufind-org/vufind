@@ -52,11 +52,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -64,11 +64,12 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
         $this->auth = $this->getAuthManager()->get('Database');
     }
@@ -136,11 +137,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test blank username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getAccountCreationRequest(['username' => '']);
         $this->auth->create($request);
     }
@@ -149,11 +150,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test blank password.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getAccountCreationRequest(['password' => '']);
         $this->auth->create($request);
     }
@@ -162,11 +163,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test password mismatch.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithPasswordMismatch()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getAccountCreationRequest(['password2' => '']);
         $this->auth->create($request);
     }
@@ -175,11 +176,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test invalid email.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithInvalidEmail()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getAccountCreationRequest(['email' => 'garbage']);
         $this->auth->create($request);
     }
@@ -205,11 +206,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test duplicate username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithDuplicateUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getAccountCreationRequest(['email' => 'user2@test.com']);
         $this->auth->create($request);
     }
@@ -218,11 +219,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test duplicate email.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testCreationWithDuplicateEmail()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getAccountCreationRequest(['username' => 'testuser2']);
         $this->auth->create($request);
     }
@@ -231,11 +232,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->auth->authenticate($request);
     }
@@ -244,11 +245,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->auth->authenticate($request);
     }
@@ -257,11 +258,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with unknown username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithUnrecognizedUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => 'unknown']);
         $this->auth->authenticate($request);
     }
@@ -270,11 +271,11 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      * Test login with bad password.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBadPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => "' OR 1=1 LIMIT 1"]);
         $this->auth->authenticate($request);
     }
@@ -296,7 +297,7 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers('testuser');
     }

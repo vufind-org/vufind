@@ -28,7 +28,7 @@
 namespace VuFindTheme;
 
 /**
- * VuFind "Inject Template" Listener -- this extends the core ZF2 class to adjust
+ * VuFind "Inject Template" Listener -- this extends the core MVC class to adjust
  * default template configurations to something more appropriate for VuFind.
  *
  * @category VuFind

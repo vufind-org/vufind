@@ -59,7 +59,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $sessionFactory = function ($namespace) {
             return new \Zend\Session\Container($namespace);

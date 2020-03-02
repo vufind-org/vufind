@@ -30,6 +30,7 @@ namespace VuFind\Cover;
 
 use VuFind\Content\Covers\PluginManager as ApiManager;
 use VuFindCode\ISBN;
+use VuFindCode\ISMN;
 
 /**
  * Book Cover Generator
@@ -120,6 +121,20 @@ class Loader extends \VuFind\ImageLoader
      * @var string
      */
     protected $upc = null;
+
+    /**
+     * User National bibliography number parameter
+     *
+     * @var array
+     */
+    protected $nbn = null;
+
+    /**
+     * User ISMN parameter
+     *
+     * @var ISMN
+     */
+    protected $ismn = null;
 
     /**
      * User record id number parameter
@@ -232,6 +247,8 @@ class Loader extends \VuFind\ImageLoader
             'upc' => null,
             'recordid' => null,
             'source' => null,
+            'nbn' => null,
+            'ismn' => null,
         ];
     }
 
@@ -268,6 +285,7 @@ class Loader extends \VuFind\ImageLoader
     protected function storeSanitizedSettings($settings)
     {
         $this->isbn = new ISBN($settings['isbn']);
+        $this->ismn = new ISMN($settings['ismn']);
         if (!empty($settings['issn'])) {
             $rawissn = preg_replace('/[^0-9X]/', '', strtoupper($settings['issn']));
             $this->issn = substr($rawissn, 0, 8);
@@ -278,6 +296,7 @@ class Loader extends \VuFind\ImageLoader
         $this->upc = $settings['upc'];
         $this->recordid = $settings['recordid'];
         $this->source = $settings['source'];
+        $this->nbn = $settings['nbn'];
         $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
         $this->size = $settings['size'];
     }
@@ -289,7 +308,8 @@ class Loader extends \VuFind\ImageLoader
      * contain any or all of these keys: 'isbn' (ISBN), 'size' (requested size),
      * 'type' (content type), 'title' (title of book, for dynamic covers), 'author'
      * (author of book, for dynamic covers), 'callnumber' (unique ID, for dynamic
-     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number).
+     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number),
+     * 'nbn' (national bibliography number), 'ismn' (ISMN).
      *
      * @return void
      */
@@ -347,6 +367,10 @@ class Loader extends \VuFind\ImageLoader
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
         } elseif (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
+        } elseif (isset($ids['nbn'])) {
+            return $this->getCachePath($this->size, 'NBN' . $ids['nbn']);
+        } elseif (isset($ids['ismn'])) {
+            return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']->get13());
         } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
                 $this->size,
@@ -375,6 +399,12 @@ class Loader extends \VuFind\ImageLoader
         }
         if ($this->upc && strlen($this->upc) > 0) {
             $ids['upc'] = $this->upc;
+        }
+        if ($this->nbn && strlen($this->nbn) > 0) {
+            $ids['nbn'] = $this->nbn;
+        }
+        if ($this->ismn && $this->ismn->isValid()) {
+            $ids['ismn'] = $this->ismn;
         }
         if ($this->recordid && strlen($this->recordid) > 0) {
             $ids['recordid'] = $this->recordid;
@@ -599,7 +629,7 @@ class Loader extends \VuFind\ImageLoader
             $imagePath = substr($url, 7);
 
             // Display the image:
-            $this->contentType =  mime_content_type($imagePath);
+            $this->contentType = mime_content_type($imagePath);
             $this->image = file_get_contents($imagePath);
             return true;
         } else {

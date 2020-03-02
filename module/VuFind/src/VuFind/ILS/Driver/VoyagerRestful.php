@@ -1505,7 +1505,7 @@ EOT;
         }
 
         // Build request
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
   xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -1971,7 +1971,7 @@ EOT;
         }
 
         try {
-            $checkTime =  $this->dateFormat->convertFromDisplayDate(
+            $checkTime = $this->dateFormat->convertFromDisplayDate(
                 'U', $holdDetails['requiredBy']
             );
             if (!is_numeric($checkTime)) {
@@ -2738,7 +2738,7 @@ EOT;
             return false;
         }
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -2947,7 +2947,7 @@ EOT;
         $barcode = $this->encodeXML($catUsername);
         $pickupLib = $this->encodeXML($pickupLib);
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -3060,7 +3060,7 @@ EOT;
         }
 
         // Attempt Request
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -3317,7 +3317,7 @@ EOT;
         }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
