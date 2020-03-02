@@ -124,7 +124,6 @@ class ConnectorTest extends TestCase
      * status.
      *
      * @return void
-     *
      */
     public function testErrorInSuccessfulResponse()
     {

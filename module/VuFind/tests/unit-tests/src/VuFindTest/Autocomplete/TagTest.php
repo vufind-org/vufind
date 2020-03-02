@@ -44,7 +44,6 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
      * Test that missing plugin manager causes exception.
      *
      * @return void
-     *
      */
     public function testMissingDependency()
     {

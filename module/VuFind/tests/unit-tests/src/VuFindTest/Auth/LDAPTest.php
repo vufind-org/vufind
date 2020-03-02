@@ -80,7 +80,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingHost()
     {
@@ -95,7 +94,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing port causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingPort()
     {
@@ -110,7 +108,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing baseDN causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingBaseDN()
     {
@@ -125,7 +122,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing UID causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingUid()
     {
@@ -191,7 +187,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -205,7 +200,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {
