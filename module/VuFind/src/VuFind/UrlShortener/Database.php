@@ -126,6 +126,8 @@ class Database implements UrlShortenerInterface
      * @param string $hash   Hash of $path (generated in getGenericHash)
      * @param int    $length Minimum number of characters from hash to use for
      * lookups (may be increased to enforce uniqueness)
+     *
+     * @return string
      */
     protected function saveAndShortenHash($path, $hash, $length)
     {
@@ -153,7 +155,7 @@ class Database implements UrlShortenerInterface
      * Generate a short hash using the configured algorithm (and write a row to the
      * database if the link is new).
      *
-     * @param string $path   Path to store in database
+     * @param string $path Path to store in database
      *
      * @return string
      */
