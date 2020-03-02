@@ -1770,23 +1770,15 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $results = [];
         foreach ($this->getMarcRecord()->getFields('243') as $field) {
+            $fields = [];
             foreach ($field->getSubfields('a') as $title) {
-                if ($field->getIndicator(2)) {
-                    $results[] = $this->stripTrailingPunctuation(
-                        substr($title->getData(), $field->getIndicator(2))
-                    );
-                } else {
-                    $results[] = $this->stripTrailingPunctuation($title->getData());
-                }
+                $fields[] = $title->getData();
             }
             foreach ($field->getSubfields('k') as $form) {
-                if ($field->getIndicator(2)) {
-                    $results[] = $this->stripTrailingPunctuation(
-                        substr($form, $field->getIndicator(2))
-                    );
-                } else {
-                    $results[] = $this->stripTrailingPunctuation($form->getData());
-                }
+                $fields[] = $form->getData();
+            }
+            if ($fields) {
+                $results[] = $this->stripTrailingPunctuation(implode(' ', $fields));
             }
         }
         return $results;
