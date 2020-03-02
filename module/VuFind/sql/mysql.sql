@@ -177,7 +177,7 @@ CREATE TABLE `external_session` (
 CREATE TABLE `shortlinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `path` mediumtext NOT NULL,
-  `hash` varchar(9),
+  `hash` varchar(32),
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `shortlinks_hash_IDX` USING HASH (`hash`)
