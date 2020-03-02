@@ -85,7 +85,6 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing retrieve action.
      *
      * @return void
-     *
      */
     public function testRetrieveException()
     {
@@ -111,7 +110,6 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing search action.
      *
      * @return void
-     *
      */
     public function testSearchException()
     {
@@ -137,7 +135,6 @@ class SearchServiceTest extends TestCase
      * We'll test this by mimicing the testSearchException test above.
      *
      * @return void
-     *
      */
     public function testGetIdsProxyingSearchException()
     {
@@ -163,7 +160,6 @@ class SearchServiceTest extends TestCase
      * We'll test this by mimicing the testSearchException test above.
      *
      * @return void
-     *
      */
     public function testGetIdsException()
     {
@@ -249,7 +245,6 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
-     *
      */
     public function testRetrieveBatchInterfaceException()
     {
@@ -283,7 +278,6 @@ class SearchServiceTest extends TestCase
      * RetrieveBatchInterface).
      *
      * @return void
-     *
      */
     public function testRetrieveBatchNoInterfaceException()
     {
@@ -344,7 +338,6 @@ class SearchServiceTest extends TestCase
      * Test random (with RandomInterface) exception.
      *
      * @return void
-     *
      */
     public function testRandomInterfaceWithException()
     {
@@ -517,7 +510,6 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception.
      *
      * @return void
-     *
      */
     public function testRandomNoInterfaceWithExceptionAtFirstSearch()
     {
@@ -545,7 +537,6 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception at item retrieval search.
      *
      * @return void
-     *
      */
     public function testRandomNoInterfaceWithExceptionAtItemSearch()
     {
@@ -589,7 +580,6 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception with less results than limit.
      *
      * @return void
-     *
      */
     public function testRandomNoInterfaceExceptionWithLessResultsThanLimit()
     {
@@ -663,7 +653,6 @@ class SearchServiceTest extends TestCase
      * Test similar action on bad backend.
      *
      * @return void
-     *
      */
     public function testSimilarOnNonSupportingBackend()
     {
@@ -679,7 +668,6 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing similar action.
      *
      * @return void
-     *
      */
     public function testSimilarException()
     {
@@ -711,7 +699,6 @@ class SearchServiceTest extends TestCase
      * Test a failure to resolve.
      *
      * @return void
-     *
      */
     public function testFailedResolve()
     {

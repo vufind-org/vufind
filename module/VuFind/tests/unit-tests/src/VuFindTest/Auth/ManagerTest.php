@@ -199,7 +199,6 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test security features of switching between auth options (part 2).
      *
      * @return void
-     *
      */
     public function testSwitchingFailure()
     {
@@ -394,7 +393,6 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\PasswordSecurity)
      *
      * @return void
-     *
      */
     public function testPasswordSecurityException()
     {
@@ -415,7 +413,6 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\Auth)
      *
      * @return void
-     *
      */
     public function testAuthException()
     {
@@ -436,7 +433,6 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test that unexpected exceptions get mapped to technical errors.
      *
      * @return void
-     *
      */
     public function testUnanticipatedException()
     {

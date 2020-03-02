@@ -157,7 +157,6 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      * Test missing path stack.
      *
      * @return void
-     *
      */
     public function testMissingPathStack()
     {

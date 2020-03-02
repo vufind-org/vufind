@@ -76,7 +76,6 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      * Test missing hierarchical facet helper
      *
      * @return void
-     *
      */
     public function testMissingHierarchicalFacetHelper()
     {

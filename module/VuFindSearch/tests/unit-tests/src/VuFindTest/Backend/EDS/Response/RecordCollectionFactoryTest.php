@@ -46,7 +46,6 @@ class RecordCollectionFactoryTest extends TestCase
      * Test constructor exceptions.
      *
      * @return void
-     *
      */
     public function testConstructorRequiresFactoryFunction()
     {
@@ -60,7 +59,6 @@ class RecordCollectionFactoryTest extends TestCase
      * Test constructor exceptions.
      *
      * @return void
-     *
      */
     public function testFactoryRequiresArray()
     {

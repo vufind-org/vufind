@@ -152,7 +152,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -166,7 +165,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {
@@ -180,7 +178,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with technical error.
      *
      * @return void
-     *
      */
     public function testBadLoginResponse()
     {
@@ -220,7 +217,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test failure caused by missing cat_id.
      *
      * @return void
-     *
      */
     public function testLoginWithMissingCatId()
     {
@@ -247,7 +243,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test updating a user's password with mismatched new password values.
      *
      * @return void
-     *
      */
     public function testUpdateUserPasswordWithEmptyValue()
     {
@@ -269,7 +264,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test updating a user's password with mismatched new password values.
      *
      * @return void
-     *
      */
     public function testUpdateUserPasswordWithoutLoggedInUser()
     {
@@ -290,7 +284,6 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test updating a user's password with mismatched new password values.
      *
      * @return void
-     *
      */
     public function testUpdateUserPasswordWithMismatch()
     {

@@ -72,7 +72,6 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      * Test "get holdings" HTTP failure
      *
      * @return void
-     *
      */
     public function testGetHoldingsHttpFailure()
     {

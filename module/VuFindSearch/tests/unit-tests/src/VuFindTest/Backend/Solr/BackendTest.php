@@ -170,7 +170,6 @@ class BackendTest extends TestCase
      * Test handling of a bad JSON response.
      *
      * @return void
-     *
      */
     public function testBadJson()
     {
@@ -189,7 +188,6 @@ class BackendTest extends TestCase
      * Test injectResponseWriter throws on incompatible response writer.
      *
      * @return void
-     *
      */
     public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
     {
@@ -205,7 +203,6 @@ class BackendTest extends TestCase
      * Test injectResponseWriter throws on incompatible named list setting.
      *
      * @return void
-     *
      */
     public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
     {
@@ -284,7 +281,6 @@ class BackendTest extends TestCase
      * Test refining an alphabrowse exception (string 1).
      *
      * @return void
-     *
      */
     public function testRefineAlphaBrowseException()
     {
@@ -298,7 +294,6 @@ class BackendTest extends TestCase
      * Test refining an alphabrowse exception (string 2).
      *
      * @return void
-     *
      */
     public function testRefineAlphaBrowseExceptionWithAltString()
     {
@@ -312,7 +307,6 @@ class BackendTest extends TestCase
      * Test that we don't refine a non-alphabrowse-related exception.
      *
      * @return void
-     *
      */
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()
     {

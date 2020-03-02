@@ -137,6 +137,8 @@ class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that we can save a favorite from accordion mode.
      *
+     * @depends testFavoritesInTabMode
+     *
      * @return void
      */
     public function testFavoritesInAccordionMode()

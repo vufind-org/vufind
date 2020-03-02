@@ -48,7 +48,6 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test config validation
      *
      * @return void
-     *
      */
     public function testBadConfiguration()
     {
@@ -63,7 +62,6 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test default getPluginManager behavior
      *
      * @return void
-     *
      */
     public function testMissingPluginManager()
     {
@@ -180,7 +178,6 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test an illegal auth method
      *
      * @return void
-     *
      */
     public function testIllegalMethod()
     {

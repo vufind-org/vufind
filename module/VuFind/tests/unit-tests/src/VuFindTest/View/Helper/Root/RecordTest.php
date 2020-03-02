@@ -45,7 +45,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Test attempting to display a template that does not exist.
      *
      * @return void
-     *
      */
     public function testMissingTemplate()
     {
@@ -439,7 +438,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Test getLinkDetails with invalid details
      *
      * @return void
-     *
      */
     public function testGetLinkDetailsFailure()
     {

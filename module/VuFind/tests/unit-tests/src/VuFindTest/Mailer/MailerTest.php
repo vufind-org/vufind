@@ -237,7 +237,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test bad to address.
      *
      * @return void
-     *
      */
     public function testBadTo()
     {
@@ -253,7 +252,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test bad reply-to address.
      *
      * @return void
-     *
      */
     public function testBadReplyTo()
     {
@@ -271,7 +269,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test empty to address.
      *
      * @return void
-     *
      */
     public function testEmptyTo()
     {
@@ -287,7 +284,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test that we only accept one recipient by default
      *
      * @return void
-     *
      */
     public function testTooManyRecipients()
     {
@@ -303,7 +299,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test bad from address.
      *
      * @return void
-     *
      */
     public function testBadFrom()
     {
@@ -319,7 +314,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test bad from address in Address object.
      *
      * @return void
-     *
      */
     public function testBadFromInAddressObject()
     {
@@ -335,7 +329,6 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test transport exception.
      *
      * @return void
-     *
      */
     public function testTransportException()
     {

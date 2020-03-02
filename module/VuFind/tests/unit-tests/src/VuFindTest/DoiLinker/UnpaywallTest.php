@@ -46,7 +46,6 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
      * Test configuration validation.
      *
      * @return void
-     *
      */
     public function testConfigValidation()
     {
@@ -66,7 +65,8 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $adapter = new TestAdapter();
         $testData = [
             [
-                'filename' => realpath(__DIR__
+                'filename' => realpath(
+                    __DIR__
                     . '/../../../../../tests/fixtures/unpaywall/goodresponsepdf'
                 ),
                 'response' => [
@@ -79,7 +79,8 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
                 ]
             ],
             [
-                'filename' => realpath(__DIR__
+                'filename' => realpath(
+                    __DIR__
                     . '/../../../../../tests/fixtures/unpaywall/goodresponseonline'
                 ),
                 'response' => [
@@ -92,7 +93,8 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
                 ]
             ],
             [
-                'filename' => realpath(__DIR__
+                'filename' => realpath(
+                    __DIR__
                     . '/../../../../../tests/fixtures/unpaywall/badresponse'
                 ),
                 'response' => []

@@ -465,7 +465,6 @@ class SpellingProcessorTest extends TestCase
      * Test detection of bad Solr response format.
      *
      * @return void
-     *
      */
     public function testDetectionOfMissingExtendedResultsSetting()
     {

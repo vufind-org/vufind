@@ -46,7 +46,6 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of empty create request.
      *
      * @return void
-     *
      */
     public function testEmptyCreateRequest()
     {
@@ -61,7 +60,6 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/blank password.
      *
      * @return void
-     *
      */
     public function testEmptyPasswordCreateRequest()
     {
@@ -78,7 +76,6 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/mismatched passwords.
      *
      * @return void
-     *
      */
     public function testMismatchedPasswordCreateRequest()
     {
@@ -95,7 +92,6 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test missing table manager.
      *
      * @return void
-     *
      */
     public function testCreateWithMissingTableManager()
     {
@@ -110,7 +106,6 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate email.
      *
      * @return void
-     *
      */
     public function testCreateDuplicateEmail()
     {
@@ -135,7 +130,6 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate username.
      *
      * @return void
-     *
      */
     public function testCreateDuplicateUsername()
     {

@@ -52,7 +52,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieving a record (not supported).
      *
      * @return void
-     *
      */
     public function testRetrieve()
     {
