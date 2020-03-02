@@ -65,6 +65,7 @@ class RecordFactory implements FactoryInterface
             ->get('config');
         $helper = new $requestedName($config);
         $helper->setCoverRouter($container->get(\VuFind\Cover\Router::class));
+        $helper->setCoverLoader($container->get(\VuFind\Cover\Loader::class));
         return $helper;
     }
 }

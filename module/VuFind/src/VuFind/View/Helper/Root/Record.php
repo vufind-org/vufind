@@ -27,6 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Cover\Loader as CoverLoader;
 use VuFind\Cover\Router as CoverRouter;
 
 /**
@@ -69,6 +70,13 @@ class Record extends AbstractClassBasedTemplateRenderer
     protected $config;
 
     /**
+     * Cover loader
+     *
+     * @var CoverLoader
+     */
+    protected $coverLoader;
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config $config VuFind configuration
@@ -88,6 +96,18 @@ class Record extends AbstractClassBasedTemplateRenderer
     public function setCoverRouter($router)
     {
         $this->coverRouter = $router;
+    }
+
+    /**
+     * Inject the cover loader
+     *
+     * @param CoverRouter $loader Cover router
+     *
+     * @return void
+     */
+    public function setCoverLoader($loader)
+    {
+        $this->coverLoader = $loader;
     }
 
     /**
@@ -570,9 +590,19 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
-        return $this->coverRouter
-            ? $this->coverRouter->getUrl($this->driver, $size)
-            : false;
+        $directUrl = $this->config->Content->coversUrlOnlyMode ?? false;
+        $url = $this->coverRouter ? $this->coverRouter->getUrl(
+            $this->driver, $size
+        ) : false;
+        if ($directUrl && $this->coverLoader) {
+            $this->coverLoader->storeSanitizedSettings(
+                array_merge($this->driver->getThumbnail(), ['size' => $size])
+            );
+            $directUrls = $this->coverLoader->getCoverUrls();
+            $directUrl = $directUrls->current();
+            $url = $directUrl['url'] ?? $url ?? false;
+        }
+        return $url;
     }
 
     /**
