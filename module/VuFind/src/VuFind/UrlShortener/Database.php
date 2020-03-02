@@ -80,6 +80,15 @@ class Database implements UrlShortenerInterface
     protected $preferredHashLength = 9;
 
     /**
+     * The maximum allowed hash length (tied to the width of the database hash
+     * column); if we can't generate a unique hash under this length, something
+     * has gone very wrong.
+     *
+     * @var int
+     */
+    protected $maxHashLength = 32;
+
+    /**
      * Constructor
      *
      * @param string          $baseUrl       Base URL of current VuFind site
@@ -131,6 +140,13 @@ class Database implements UrlShortenerInterface
      */
     protected function saveAndShortenHash($path, $hash, $length)
     {
+        // Validate hash length:
+        if ($length > $this->maxHashLength) {
+            throw new \Exception(
+                'Could not generate unique hash under ' . $this->maxHashLength
+                . ' characters in length.'
+            );
+        }
         $shorthash = str_pad(substr($hash, 0, $length), $length, '_');
         $results = $this->table->select(['hash' => $shorthash]);
 
