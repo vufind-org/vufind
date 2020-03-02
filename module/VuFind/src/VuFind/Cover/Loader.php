@@ -672,7 +672,7 @@ class Loader extends \VuFind\ImageLoader
             $key = isset($provider[1]) ? trim($provider[1]) : null;
             try {
                 $handler = $this->apiManager->get($apiName);
-                 // Is the current provider appropriate for the available data?
+                // Is the current provider appropriate for the available data?
                 if ($handler->supports($ids)) {
                     if ($url = $handler->getUrl($key, $this->size, $ids)) {
                         yield [
