@@ -129,16 +129,16 @@ class Slot extends \Zend\View\Helper\AbstractHelper
     protected function build($name)
     {
         $pre = $this->blockPrepends[$name] ?? [];
-        $block = $this->blocks[$name] ?? '';
         $post = $this->blockAppends[$name] ?? [];
         if (!empty($pre) || !empty($post)) {
+            $block = $this->blocks[$name] ?? '';
             $ret = implode(' ', $pre) . ' ' . $block . ' ' . implode(' ', $post);
             return trim($ret);
         }
-        if (empty($block)) {
+        if (!isset($this->blocks[$name])) {
             return null;
         }
-        return $block;
+        return $this->blocks[$name];
     }
 
     /**
