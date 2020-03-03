@@ -195,7 +195,7 @@ class ScheduledSearchController extends AbstractBase
     {
         $schedule = $s->notification_frequency;
         if (!isset($this->scheduleOptions[$schedule])) {
-            $this->err('Search ' . $s->id . ': unknown schedule: ' . $s->schedule);
+            $this->err('Search ' . $s->id . ": unknown schedule: $schedule");
             return false;
         }
         $diff = $todayTime->diff($lastTime);

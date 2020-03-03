@@ -318,7 +318,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'canWrite' => true
     ];
 
-    /******************* Test cases ***************/
+    /*******************
+     * Test cases
+     ***************/
     /*
      ok changePassword
      ok checkRequestIsValid
@@ -339,7 +341,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = $this->createConnector();
     }
@@ -617,13 +619,17 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ->setMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
-            ->will($this->returnValue([
-                'write_items',
-                'change_password',
-                'read_fees',
-                'read_items',
-                'read_patron'
-            ]));
+            ->will(
+                $this->returnValue(
+                    [
+                    'write_items',
+                    'change_password',
+                    'read_fees',
+                    'read_items',
+                    'read_patron'
+                    ]
+                )
+            );
         $conn->setHttpService($service);
         $conn->setConfig($this->validConfig);
         $conn->init();

@@ -125,30 +125,6 @@ class Bootstrapper
     }
 
     /**
-     * Initialize dynamic debug mode (debug initiated by a ?debug=true parameter).
-     *
-     * @return void
-     */
-    protected function initDynamicDebug()
-    {
-        // Query parameters do not apply in console mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
-        $app = $this->event->getApplication();
-        $sm = $app->getServiceManager();
-        $debugOverride = $sm->get('Request')->getQuery()->get('debug');
-        if ($debugOverride) {
-            $auth = $sm->get(\ZfcRbac\Service\AuthorizationService::class);
-            if ($auth->isGranted('access.DebugMode')) {
-                $logger = $sm->get(\VuFind\Log\Logger::class);
-                $logger->addDebugWriter($debugOverride);
-            }
-        }
-    }
-
-    /**
      * If the system is offline, set up a handler to override the routing output.
      *
      * @return void

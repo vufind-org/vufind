@@ -85,12 +85,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing retrieve action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
@@ -110,12 +110,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing search action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testSearchException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
@@ -135,12 +135,12 @@ class SearchServiceTest extends TestCase
      * We'll test this by mimicing the testSearchException test above.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testGetIdsProxyingSearchException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
@@ -160,12 +160,12 @@ class SearchServiceTest extends TestCase
      * We'll test this by mimicing the testSearchException test above.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testGetIdsException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestClassForGetIdsInterface::class);
 
@@ -245,12 +245,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveBatchInterfaceException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestClassForRetrieveBatchInterface::class);
 
@@ -278,12 +278,12 @@ class SearchServiceTest extends TestCase
      * RetrieveBatchInterface).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveBatchNoInterfaceException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
@@ -338,12 +338,12 @@ class SearchServiceTest extends TestCase
      * Test random (with RandomInterface) exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomInterfaceWithException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestClassForRandomInterface::class);
 
@@ -510,12 +510,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtFirstSearch()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
@@ -537,12 +537,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception at item retrieval search.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtItemSearch()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $limit = 10;
         $total = 20;
         $service = $this->getService();
@@ -580,12 +580,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception with less results than limit.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceExceptionWithLessResultsThanLimit()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $limit = 10;
         $total = 5;
         $service = $this->getService();
@@ -653,12 +653,12 @@ class SearchServiceTest extends TestCase
      * Test similar action on bad backend.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage foo does not support similar()
      */
     public function testSimilarOnNonSupportingBackend()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('foo does not support similar()');
+
         $service = $this->getService();
         $params = new ParamBag(['x' => 'y']);
         $service->similar('foo', 'bar', $params);
@@ -668,12 +668,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing similar action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testSimilarException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
         $this->backend = $this->createMock(\VuFindTest\TestBackendClassForSimilar::class);
 
@@ -699,12 +699,12 @@ class SearchServiceTest extends TestCase
      * Test a failure to resolve.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\RuntimeException
-     * @expectedExceptionMessage Unable to resolve backend: retrieve, junk
      */
     public function testFailedResolve()
     {
+        $this->expectException(\VuFindSearch\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Unable to resolve backend: retrieve, junk');
+
         $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
         $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
         $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);

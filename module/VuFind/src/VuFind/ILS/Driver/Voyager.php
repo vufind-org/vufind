@@ -1211,25 +1211,27 @@ EOT;
      *
      * This is responsible for authenticating a patron against the catalog.
      *
-     * @param string $barcode The patron barcode
-     * @param string $login   The patron's last name or PIN (depending on config)
+     * @param string $username The patron barcode or institution ID (depending on
+     * config)
+     * @param string $login    The patron's last name or PIN (depending on config)
      *
      * @throws ILSException
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($barcode, $login)
+    public function patronLogin($username, $login)
     {
         // Load the field used for verifying the login from the config file, and
         // make sure there's nothing crazy in there:
-        $login_field = isset($this->config['Catalog']['login_field'])
-            ? $this->config['Catalog']['login_field'] : 'LAST_NAME';
-        $login_field = preg_replace('/[^\w]/', '', $login_field);
-        $fallback_login_field
-            = isset($this->config['Catalog']['fallback_login_field'])
-            ? preg_replace(
-                '/[^\w]/', '', $this->config['Catalog']['fallback_login_field']
-            ) : '';
+        $usernameField = preg_replace(
+            '/[^\w]/', '',
+            $this->config['Catalog']['username_field'] ?? 'PATRON_BARCODE'
+        );
+        $loginField = $this->config['Catalog']['login_field'] ?? 'LAST_NAME';
+        $loginField = preg_replace('/[^\w]/', '', $loginField);
+        $fallbackLoginField = preg_replace(
+            '/[^\w]/', '', $this->config['Catalog']['fallback_login_field'] ?? ''
+        );
 
         // Turns out it's difficult and inefficient to handle the mismatching
         // character sets of the Voyager database in the query (in theory something
@@ -1240,22 +1242,22 @@ EOT;
         // characters and check login verification fields here.
 
         $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, " .
-               "PATRON.{$login_field} as LOGIN";
-        if ($fallback_login_field) {
-            $sql .= ", PATRON.{$fallback_login_field} as FALLBACK_LOGIN";
+               "PATRON.{$loginField} as LOGIN";
+        if ($fallbackLoginField) {
+            $sql .= ", PATRON.{$fallbackLoginField} as FALLBACK_LOGIN";
         }
         $sql .= " FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
-               "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
-               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
+               "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND ";
+        $sql .= $usernameField === 'PATRON_BARCODE'
+            ? "lower(PATRON_BARCODE.PATRON_BARCODE) = :username"
+            : "lower(PATRON.{$usernameField}) = :username";
 
         // Limit the barcode statuses that allow logging in. By default only
         // 1 (active) and 4 (expired) are allowed.
         $allowedStatuses = preg_replace(
             '/[^:\d]*/',
             '',
-            isset($this->config['Catalog']['allowed_barcode_statuses'])
-                ? $this->config['Catalog']['allowed_barcode_statuses']
-                : '1:4'
+            $this->config['Catalog']['allowed_barcode_statuses'] ?? '1:4'
         );
         if ($allowedStatuses) {
             $sql .= ' AND PATRON_BARCODE.BARCODE_STATUS IN ('
@@ -1263,30 +1265,30 @@ EOT;
         }
 
         try {
-            $bindBarcode = strtolower(utf8_decode($barcode));
+            $bindUsername = strtolower(utf8_decode($username));
             $compareLogin = mb_strtolower($login, 'UTF-8');
 
-            $sqlStmt = $this->executeSQL($sql, [':barcode' => $bindBarcode]);
+            $sqlStmt = $this->executeSQL($sql, [':username' => $bindUsername]);
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $primary = null !== $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8')
                     : null;
-                $fallback = $fallback_login_field && null === $row['LOGIN']
+                $fallback = $fallbackLoginField && null === $row['LOGIN']
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
                 if ((null !== $primary && ($primary == $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
-                    || ($fallback_login_field && null === $primary
+                    || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)
                 ) {
                     return [
                         'id' => utf8_encode($row['PATRON_ID']),
                         'firstname' => utf8_encode($row['FIRST_NAME']),
                         'lastname' => utf8_encode($row['LAST_NAME']),
-                        'cat_username' => $barcode,
+                        'cat_username' => $username,
                         'cat_password' => $login,
                         // There's supposed to be a getPatronEmailAddress stored
                         // procedure in Oracle, but I couldn't get it to work here;

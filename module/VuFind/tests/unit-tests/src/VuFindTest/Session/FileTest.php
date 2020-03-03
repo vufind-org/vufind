@@ -52,7 +52,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $tempdir = function_exists('sys_get_temp_dir')
             ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
@@ -64,7 +64,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         rmdir($this->path);
     }

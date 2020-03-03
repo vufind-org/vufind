@@ -53,12 +53,12 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieving a record (not supported).
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage retrieve() not supported by LibGuides.
      */
     public function testRetrieve()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('retrieve() not supported by LibGuides.');
+
         $conn = $this->getConnector();
         $back = new Backend($conn, $this->getRCFactory());
         $back->retrieve('foo');
@@ -143,11 +143,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
-     *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsLibGuidesException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')

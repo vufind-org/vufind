@@ -52,7 +52,7 @@ class SampleTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = new Sample();
         $this->driver->init();

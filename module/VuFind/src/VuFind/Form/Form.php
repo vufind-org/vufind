@@ -30,6 +30,7 @@ namespace VuFind\Form;
 use Laminas\InputFilter\InputFilter;
 use Laminas\Validator\EmailAddress;
 use Laminas\Validator\NotEmpty;
+use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
 
 /**
@@ -92,19 +93,31 @@ class Form extends \Laminas\Form\Form implements
     protected $yamlReader;
 
     /**
+     * View helper manager.
+     *
+     * @var HelperPluginManager
+     */
+    protected $viewHelperManager;
+
+    /**
      * Constructor
      *
-     * @param YamlReader $yamlReader    YAML reader
-     * @param array      $defaultConfig Default Feedback configuration (optional)
+     * @param YamlReader          $yamlReader        YAML reader
+     * @param HelperPluginManager $viewHelperManager View helper manager
+     * @param array               $defaultConfig     Default Feedback configuration
+     * (optional)
      *
      * @throws \Exception
      */
-    public function __construct(YamlReader $yamlReader, array $defaultConfig = null)
-    {
+    public function __construct(
+        YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+        array $defaultConfig = null
+    ) {
         parent::__construct();
 
         $this->defaultFormConfig = $defaultConfig;
         $this->yamlReader = $yamlReader;
+        $this->viewHelperManager = $viewHelperManager;
     }
 
     /**
@@ -125,6 +138,23 @@ class Form extends \Laminas\Form\Form implements
             = $this->parseConfig($formId, $config);
 
         $this->buildForm($this->formElementConfig);
+    }
+
+    /**
+     * Get display string.
+     *
+     * @param string $translationKey Translation key
+     * @param bool   $escape         Whether to escape the output.
+     * Default behaviour is to escape when the translation key does
+     * not end with '_html'.
+     *
+     * @return string
+     */
+    public function getDisplayString($translationKey, $escape = null)
+    {
+        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        return $this->viewHelperManager->get($escape ? 'transEsc' : 'translate')
+            ->__invoke($translationKey);
     }
 
     /**

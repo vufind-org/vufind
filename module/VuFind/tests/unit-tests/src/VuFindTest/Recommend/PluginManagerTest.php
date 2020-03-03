@@ -57,12 +57,12 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * Test expected interface.
      *
      * @return void
-     *
-     * @expectedException        Laminas\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Recommend\RecommendInterface
      */
     public function testExpectedInterface()
     {
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Recommend\\RecommendInterface');
+
         $pm = new PluginManager(
             $this->createMock(\Interop\Container\ContainerInterface::class)
         );

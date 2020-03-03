@@ -61,8 +61,10 @@ class ResultScrollerTest extends TestCase
             'currentPosition' => null, 'resultTotal' => null
         ];
 
-        $this->assertEquals($expected, $plugin->getScrollData(
-            $results->getMockRecordDriver('sorted20'))
+        $this->assertEquals(
+            $expected, $plugin->getScrollData(
+                $results->getMockRecordDriver('sorted20')
+            )
         );
     }
 
@@ -330,8 +332,10 @@ class ResultScrollerTest extends TestCase
             'previousRecord' => 'Solr|sorted19', 'nextRecord' => 'Solr|sorted21',
             'currentPosition' => 20, 'resultTotal' => 30
         ];
-        $this->assertEquals($expected, $plugin->getScrollData(
-            $results->getMockRecordDriver('sorted20'))
+        $this->assertEquals(
+            $expected, $plugin->getScrollData(
+                $results->getMockRecordDriver('sorted20')
+            )
         );
     }
 
