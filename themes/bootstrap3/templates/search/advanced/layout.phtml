@@ -111,7 +111,10 @@
                         <option value="<?=$this->escapeHtml($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
                       <?php endforeach; ?>
                     </select>
-                    <a href="#" class="adv-term-remove hidden">&times;</a>
+                    <a href="#" class="adv-term-remove hidden">
+                      <i class="fa fa-times" aria-hidden="true"></i>
+                      <span class="sr-only"><?=$this->transEsc('remove') ?></span>
+                    </a>
                   </div>
                   <?php if($group == 0 && $search == 0): ?>
                       </div>
