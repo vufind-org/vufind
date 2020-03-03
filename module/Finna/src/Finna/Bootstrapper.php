@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -43,6 +43,8 @@ use Zend\Mvc\MvcEvent;
  */
 class Bootstrapper
 {
+    use \VuFind\I18n\Translator\LanguageInitializerTrait;
+
     /**
      * Main VuFind configuration
      *
@@ -136,10 +138,6 @@ class Bootstrapper
                 $event->stopPropagation(true);
                 return $response;
             }
-            $delay = defined('VUFIND_CRAWLER_DELAY') ? VUFIND_CRAWLER_DELAY : 0;
-            if ($delay) {
-                sleep($delay);
-            }
         };
 
         // Attach with a high priority
@@ -179,10 +177,10 @@ class Bootstrapper
             }
 
             try {
-                $sm->get(\Zend\Mvc\I18n\Translator::class)
-                    ->addTranslationFile('ExtendedIni', null, 'default', $language)
-                    ->setLocale($language);
-            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+                $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+                $translator->setLocale($language);
+                $this->addLanguageToTranslator($translator, $language);
+            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'
