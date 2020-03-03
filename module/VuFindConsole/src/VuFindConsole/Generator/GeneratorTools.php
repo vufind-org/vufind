@@ -63,6 +63,74 @@ class GeneratorTools
     }
 
     /**
+     * Given a namespace exploded into an array, figure out the appropriate plugin
+     * manager to use.
+     *
+     * @param array $namespace Exploded namespace array
+     *
+     * @return string
+     */
+    protected function getPluginManagerFromExplodedNamespace($namespace)
+    {
+        $namespace[0] = 'VuFind';
+        $namespace[] = 'PluginManager';
+        $pmClass = implode('\\', $namespace);
+        // Special case: no such service; use framework core service instead:
+        if ($pmClass === 'VuFind\Controller\PluginManager') {
+            return 'ControllerManager';
+        }
+        return $pmClass;
+    }
+
+    /**
+     * Given a plugin manager object, return the interface plugins of that type must
+     * implement.
+     *
+     * @param ContainerInterface $pm Plugin manager
+     *
+     * @return string
+     */
+    protected function getExpectedInterfaceFromPluginManager($pm)
+    {
+        // Special case: controllers
+        if ($pm instanceof \Laminas\Mvc\Controller\ControllerManager) {
+            return \VuFind\Controller\AbstractBase::class;
+        }
+
+        // Default case: look it up:
+        if (!method_exists($pm, 'getExpectedInterface')) {
+            throw new \Exception(
+                get_class($pm) . ' does not implement getExpectedInterface!'
+            );
+        }
+
+        // Force getExpectedInterface() to be public so we can read it:
+        $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
+        $reflectionMethod->setAccessible(true);
+        return $reflectionMethod->invoke($pm);
+    }
+
+    /**
+     * Given a plugin manager class name, return the configuration path for that
+     * plugin manager.
+     *
+     * @param string $class Class name
+     *
+     * @return array
+     */
+    protected function getConfigPathForClass($class)
+    {
+        // Special case: controller
+        if ($class === \Laminas\Mvc\Controller\ControllerManager::class) {
+            return ['controllers'];
+        }
+        // Default case: VuFind internal plugin manager
+        $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
+        $pmKey = $apmFactory->getConfigKey($class);
+        return ['vufind', 'plugin_managers', $pmKey];
+    }
+
+    /**
      * Create a plugin class.
      *
      * @param ContainerInterface $container Service manager
@@ -80,9 +148,8 @@ class GeneratorTools
         $classParts = explode('\\', $class);
         $module = $classParts[0];
         $shortName = strtolower(array_pop($classParts));
-        $classParts[0] = 'VuFind';
-        $classParts[] = 'PluginManager';
-        $pmClass = implode('\\', $classParts);
+        $pmClass = $this->getPluginManagerFromExplodedNamespace($classParts);
+
         // Set a flag for whether to generate a factory, and create class name
         // if necessary. If existing factory specified, ensure it really exists.
         if ($generateFactory = empty($factory)) {
@@ -96,16 +163,7 @@ class GeneratorTools
             throw new \Exception('Cannot find expected plugin manager: ' . $pmClass);
         }
         $pm = $container->get($pmClass);
-        if (!method_exists($pm, 'getExpectedInterface')) {
-            throw new \Exception(
-                $pmClass . ' does not implement getExpectedInterface!'
-            );
-        }
-
-        // Force getExpectedInterface() to be public so we can read it:
-        $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
-        $reflectionMethod->setAccessible(true);
-        $interface = $reflectionMethod->invoke($pm);
+        $interface = $this->getExpectedInterfaceFromPluginManager($pm);
 
         // Figure out whether the plugin requirement is an interface or a
         // parent class so we can create the right thing....
@@ -116,9 +174,7 @@ class GeneratorTools
             $parent = $interface;
             $interfaces = [];
         }
-        $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
-        $pmKey = $apmFactory->getConfigKey(get_class($pm));
-        $configPath = ['vufind', 'plugin_managers', $pmKey];
+        $configPath = $this->getConfigPathForClass(get_class($pm));
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
