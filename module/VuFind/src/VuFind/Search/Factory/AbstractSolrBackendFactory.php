@@ -339,11 +339,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createConnector()
     {
         $config = $this->config->get($this->mainConfig);
+        $searchConfig = $this->config->get($this->searchConfig);
+        $defaultFields = $searchConfig->General->default_solr_fields ?? '*,score';
 
         $handlers = [
             'select' => [
                 'fallback' => true,
-                'defaults' => ['fl' => '*,score'],
+                'defaults' => ['fl' => $defaultFields],
                 'appends'  => ['fq' => []],
             ],
             'terms' => [
