@@ -292,11 +292,11 @@ class SlotTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a fake view object.
      *
-     * @return \Zend\View\Renderer\PhpRenderer
+     * @return \Laminas\View\Renderer\PhpRenderer
      */
     protected function getMockView()
     {
-        $view = $this->createMock(\Zend\View\Renderer\PhpRenderer::class);
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
         return $view;
     }
 }
