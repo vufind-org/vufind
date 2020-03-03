@@ -141,7 +141,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['translate' => true, 'translationTextDomain' => 'language::']
+        );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
@@ -176,7 +179,10 @@ class RecordDataFormatterFactory implements FactoryInterface
         $spec->setMultiLine(
             'Authors', 'getDeduplicatedAuthors', $this->getAuthorFunction()
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['translate' => true, 'translationTextDomain' => 'language::']
+        );
         $spec->setLine(
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
@@ -210,7 +216,10 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Format', 'getFormats', 'RecordHelper',
             ['helperMethod' => 'getFormatList']
         );
-        $spec->setLine('Language', 'getLanguages');
+        $spec->setLine(
+            'Language', 'getLanguages', null,
+            ['translate' => true, 'translationTextDomain' => 'language::']
+        );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
