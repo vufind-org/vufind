@@ -9,14 +9,18 @@ if (is_array($formats)) {
                 break;
             case "journal":
             case "article":
+            case "journal article":
                 $format = "JOUR";
                 break;
             case "thesis":
+            case "dissertation":
                 $format = "THES";
                 break;
+            case "book chapter":
+            case "conference proceeding":
+                // TODO: Find better code for these
             default:
                 $format = "GEN";
-                break;
         }
 
         echo "TY  - $format\n";
