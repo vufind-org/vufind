@@ -145,7 +145,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language', 'getLanguages', null,
             ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
                            . '<span property="name">',
-             'itemSuffix' => '</span></span>', 'translate' => true]
+             'itemSuffix' => '</span></span>']
         );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
@@ -192,7 +192,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language', 'getLanguages', null,
             ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
                            . '<span property="name">',
-             'itemSuffix' => '</span></span>', 'translate' => true]
+             'itemSuffix' => '</span></span>']
         );
         $spec->setLine(
             'Format', 'getFormats', 'RecordHelper',
@@ -231,7 +231,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             'Language', 'getLanguages', null,
             ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
                            . '<span property="name">',
-             'itemSuffix' => '</span></span>', 'translate' => true]
+             'itemSuffix' => '</span></span>']
         );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
