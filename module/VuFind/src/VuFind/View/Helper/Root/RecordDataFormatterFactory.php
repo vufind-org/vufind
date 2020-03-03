@@ -143,14 +143,17 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine(
             'Language', 'getLanguages', null,
-            ['itemPrefix' => '<div property="availableLanguage" typeof="Language"><span property="name">', 'itemSuffix' => '</span></div>']
+            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                           . '<span property="name">',
+             'itemSuffix' => '</span></span>', 'translate' => true]
         );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
         $spec->setLine(
             'Edition', 'getEdition', null,
-            ['itemPrefix' => '<span property="bookEdition">', 'itemSuffix' => '</span>']
+            ['itemPrefix' => '<span property="bookEdition">',
+             'itemSuffix' => '</span>']
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -187,7 +190,9 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine(
             'Language', 'getLanguages', null,
-            ['itemPrefix' => '<div property="availableLanguage" typeof="Language"><span property="name">', 'itemSuffix' => '</span></div>']
+            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                           . '<span property="name">',
+             'itemSuffix' => '</span></span>', translate => true]
         );
         $spec->setLine(
             'Format', 'getFormats', 'RecordHelper',
@@ -224,14 +229,17 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine(
             'Language', 'getLanguages', null,
-            ['itemPrefix' => '<div property="availableLanguage" typeof="Language"><span property="name">', 'itemSuffix' => '</span></div>']
+            ['itemPrefix' => '<span property="availableLanguage" typeof="Language">'
+                           . '<span property="name">',
+             'itemSuffix' => '</span></span>', translate => true]
         );
         $spec->setTemplateLine(
             'Published', 'getPublicationDetails', 'data-publicationDetails.phtml'
         );
         $spec->setLine(
             'Edition', 'getEdition', null,
-            ['itemPrefix' => '<span property="bookEdition">', 'itemSuffix' => '</span>']
+            ['itemPrefix' => '<span property="bookEdition">',
+             'itemSuffix' => '</span>']
         );
         $spec->setTemplateLine('Series', 'getSeries', 'data-series.phtml');
         $spec->setTemplateLine(
@@ -278,7 +286,8 @@ class RecordDataFormatterFactory implements FactoryInterface
         );
         $spec->setLine(
             'DOI', 'getCleanDOI', null,
-            ['itemPrefix' => '<span property="identifier">', 'itemSuffix' => '</span>']
+            ['itemPrefix' => '<span property="identifier">',
+             'itemSuffix' => '</span>']
         );
         $spec->setLine('Related Items', 'getRelationshipNotes');
         $spec->setLine('Access', 'getAccessRestrictions');
