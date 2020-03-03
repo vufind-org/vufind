@@ -340,7 +340,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $config = $this->config->get($this->mainConfig);
         $searchConfig = $this->config->get($this->searchConfig);
-        $defaultFields = $searchConfig->General->default_solr_fields ?? '*,score';
+        $defaultFields = $searchConfig->General->default_record_fields ?? '*,score';
 
         $handlers = [
             'select' => [
