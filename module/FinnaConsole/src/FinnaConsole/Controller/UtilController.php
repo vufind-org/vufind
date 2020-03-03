@@ -148,7 +148,10 @@ class UtilController extends \VuFindConsole\Controller\UtilController
      */
     public function scheduledAlertsAction()
     {
-        return $this->runService('Finna\ScheduledAlerts');
+        $controller = $this->serviceLocator->get('ControllerManager')
+            ->get(\VuFindConsole\Controller\ScheduledSearchController::class);
+        $controller->setRequest($this->getRequest());
+        return $controller->notifyAction();
     }
 
     /**

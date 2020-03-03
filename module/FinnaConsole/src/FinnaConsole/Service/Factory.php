@@ -140,7 +140,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \FinnaConsole\Service\ScheduledAlerts
+     * @return \FinnaConsole\Service\OnlinePaymentMonitor
      */
     public static function getOnlinePaymentMonitor(ServiceManager $sm)
     {
@@ -156,18 +156,6 @@ class Factory
             $catalog, $transactionTable, $userTable, $configReader, $sm,
             $viewManager, $viewRenderer
         );
-    }
-
-    /**
-     * Construct the console service for sending scheduled alerts.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \FinnaConsole\Service\ScheduledAlerts
-     */
-    public static function getScheduledAlerts(ServiceManager $sm)
-    {
-        return new ScheduledAlerts($sm);
     }
 
     /**

@@ -514,7 +514,7 @@ class AccountExpirationReminders extends AbstractService
             $urlInstitution = 'www';
         }
         $serviceAddress = $urlInstitution . '.finna.fi';
-        if ($urlView != $this::DEFAULT_PATH) {
+        if (!$this->isDefaultViewPath($urlView)) {
             $serviceAddress .= "/$urlView";
         }
 

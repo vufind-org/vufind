@@ -27,8 +27,6 @@
  */
 namespace Finna\Db\Row;
 
-use VuFind\Crypt\HMAC;
-
 /**
  * Row Definition for search
  *

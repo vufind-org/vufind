@@ -4,9 +4,11 @@ namespace FinnaConsole\Module\Configuration;
 $config = [
     'controllers' => [
         'factories' => [
+            'FinnaConsole\Controller\ScheduledSearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'FinnaConsole\Controller\UtilController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
+            'VuFindConsole\Controller\ScheduledSearchController' => 'FinnaConsole\Controller\ScheduledSearchController',
             'VuFindConsole\Controller\UtilController' => 'FinnaConsole\Controller\UtilController',
         ]
     ],
@@ -19,7 +21,6 @@ $config = [
             'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
             'Finna\ImportComments' => 'FinnaConsole\Service\Factory::getImportComments',
             'Finna\OnlinePaymentMonitor' => 'FinnaConsole\Service\Factory::getOnlinePaymentMonitor',
-            'Finna\ScheduledAlerts' => 'FinnaConsole\Service\Factory::getScheduledAlerts',
             'Finna\UpdateSearchHashes' => 'FinnaConsole\Service\Factory::getUpdateSearchHashes',
             'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks',
             'Finna\VerifyResourceMetadata' => 'FinnaConsole\Service\Factory::getVerifyResourceMetadata'
