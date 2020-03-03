@@ -144,6 +144,8 @@
     <field name="fulltext_toc_unstemmed" type="textProper" indexed="true" stored="false"/>
     <field name="fulltext_abstract" type="text" indexed="true" stored="false"/>
     <field name="fulltext_abstract_unstemmed" type="textProper" indexed="true" stored="false"/>
+    <field name="fulltext_summary" type="text" indexed="true" stored="false"/>
+    <field name="fulltext_summary_unstemmed" type="textProper" indexed="true" stored="false"/>
     <field name="fulltext_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_synonyms_fr" type="fulltext_syn_fr" indexed="true" stored="false" multiValued="false"/>
@@ -177,6 +179,18 @@
     <field name="fulltext_abstract_synonyms_hans" type="fulltext_syn_hans" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_abstract_synonyms_hant" type="fulltext_syn_hant" indexed="true" stored="false" multiValued="false"/>
     <field name="fulltext_abstract_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_de" type="fulltext_syn_de" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_en" type="fulltext_syn_en" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_fr" type="fulltext_syn_fr" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_it" type="fulltext_syn_it" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_es" type="fulltext_syn_es" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_pt" type="fulltext_syn_pt" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_ru" type="fulltext_syn_ru" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_el" type="fulltext_syn_el" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_hans" type="fulltext_syn_hans" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_hant" type="fulltext_syn_hant" indexed="true" stored="false" multiValued="false"/>
+    <field name="fulltext_summary_synonyms_all" type="fulltext_syn_all" indexed="true" stored="false" multiValued="false"/>
+
 
 
     <!-- COMMON copyFields-->
@@ -286,4 +300,16 @@
     <copyField source="fulltext_abstract" dest="fulltext_abstract_synonyms_hans"/>
     <copyField source="fulltext_abstract" dest="fulltext_abstract_synonyms_hant"/>
     <copyField source="fulltext_abstract" dest="fulltext_abstract_synonyms_all"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_unstemmed"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_de"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_en"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_fr"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_it"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_es"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_pt"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_ru"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_el"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_hans"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_hant"/>
+    <copyField source="fulltext_summary" dest="fulltext_summary_synonyms_all"/>
 </fields>
