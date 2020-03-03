@@ -96,6 +96,11 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         $ret = $helper->__invoke('array')->set(100);
         $this->assertEquals(100, $ret);
 
+        // test empty string (not null)
+        $helper->__invoke('array')->clear();
+        $ret = $helper->__invoke('array')->set('');
+        $this->assertEquals('', $ret);
+
         // test array
         $helper->__invoke('array')->clear();
         $ret = $helper->__invoke('array')->set([1, 2, 3]);
@@ -187,6 +192,15 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         // test clear
         $helper->__invoke('test')->clear();
         $this->assertEquals(null, $helper->__invoke('test')->get());
+
+        // test empty strings
+        $ret = $helper->__invoke('test')->set('');
+        $ret = $helper->__invoke('test')->prepend('PRE1');
+        $this->assertEquals('PRE1', $ret);
+        $helper->__invoke('test')->clear();
+        $ret = $helper->__invoke('test')->set('BASE');
+        $ret = $helper->__invoke('test')->prepend('');
+        $this->assertEquals('BASE', $ret);
     }
 
     /**
@@ -218,6 +232,15 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         // test clear
         $helper->__invoke('test')->clear();
         $this->assertEquals(null, $helper->__invoke('test')->get());
+
+        // test empty strings
+        $ret = $helper->__invoke('test')->set('');
+        $ret = $helper->__invoke('test')->append('POST');
+        $this->assertEquals('POST', $ret);
+        $helper->__invoke('test')->clear();
+        $ret = $helper->__invoke('test')->set('BASE');
+        $ret = $helper->__invoke('test')->append('');
+        $this->assertEquals('BASE', $ret);
     }
 
     /**
