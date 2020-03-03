@@ -55,7 +55,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config    $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      * @param \VuFindTheme\ThemeInfo $theme  VuFind theme tools
      */
     public function __construct($config, \VuFindTheme\ThemeInfo $theme)

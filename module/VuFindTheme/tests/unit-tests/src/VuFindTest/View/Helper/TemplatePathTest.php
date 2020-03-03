@@ -67,7 +67,7 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
     {
         // Get mock TemplateStack
         $stackMock =
-            $this->getMockBuilder(\Zend\View\Resolver\TemplatePathStack::class)
+            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
             ->disableOriginalConstructor()->getMock();
 
         $return = new \SplStack();

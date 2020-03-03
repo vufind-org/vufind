@@ -29,13 +29,13 @@
 namespace VuFind\DigitalContent;
 
 use Exception;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Config\Config;
+use Laminas\Http\Client;
+use Laminas\Log\LoggerAwareInterface;
+use Laminas\Session\Container;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
-use Zend\Cache\Storage\StorageInterface;
-use Zend\Config\Config;
-use Zend\Http\Client;
-use Zend\Log\LoggerAwareInterface;
-use Zend\Session\Container;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
@@ -139,7 +139,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Loads the session container
      *
-     * @return \Zend\Session\Container
+     * @return \Laminas\Session\Container
      */
     protected function getSessionContainer()
     {
@@ -1410,7 +1410,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      *
      * @param string $url URL for client to use
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      * @throws Exception
      */
     protected function getHttpClient($url = null)

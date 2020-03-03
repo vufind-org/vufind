@@ -139,7 +139,7 @@ class PaginationHelper
      * @param int   $count       Result count
      * @param array $records     Result records
      *
-     * @return false|\Zend\Paginator\Paginator
+     * @return false|\Laminas\Paginator\Paginator
      */
     public function getPaginator($pageOptions, $count, $records)
     {
@@ -149,13 +149,13 @@ class PaginationHelper
             throw new \VuFind\Exception\BadRequest('Page number out of range.');
         }
         if ($pageOptions['ilsPaging'] && $limit < $count) {
-            $adapter = new \Zend\Paginator\Adapter\NullFill($count);
+            $adapter = new \Laminas\Paginator\Adapter\NullFill($count);
         } elseif ($limit > 0 && $limit < $count) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($records);
+            $adapter = new \Laminas\Paginator\Adapter\ArrayAdapter($records);
         } else {
             return false;
         }
-        $paginator = new \Zend\Paginator\Paginator($adapter);
+        $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
         $paginator->setCurrentPageNumber($page);
         return $paginator;

@@ -27,9 +27,9 @@
  */
 namespace VuFind;
 
-use Zend\Console\Console;
-use Zend\Mvc\MvcEvent;
-use Zend\Router\Http\RouteMatch;
+use Laminas\Console\Console;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -47,7 +47,7 @@ class Bootstrapper
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
@@ -61,14 +61,14 @@ class Bootstrapper
     /**
      * Event manager
      *
-     * @var \Zend\EventManager\EventManagerInterface
+     * @var \Laminas\EventManager\EventManagerInterface
      */
     protected $events;
 
     /**
      * Constructor
      *
-     * @param MvcEvent $event Zend MVC Event object
+     * @param MvcEvent $event Laminas MVC Event object
      */
     public function __construct(MvcEvent $event)
     {
@@ -206,7 +206,7 @@ class Bootstrapper
             $helperManager = $serviceManager->get('ViewHelperManager');
             $headTitle = $helperManager->get('headtitle');
             $headTitle->setDefaultAttachOrder(
-                \Zend\View\Helper\Placeholder\Container\AbstractContainer::SET
+                \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET
             );
         };
         $this->events->attach('dispatch', $callback);
@@ -307,10 +307,10 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+                $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
                 $translator->setLocale($language);
                 $this->addLanguageToTranslator($translator, $language);
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
+            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'
@@ -413,7 +413,7 @@ class Bootstrapper
                     // Console request does not include server,
                     // so use a dummy in that case.
                     $server = Console::isConsole()
-                        ? new \Zend\Stdlib\Parameters(['env' => 'console'])
+                        ? new \Laminas\Stdlib\Parameters(['env' => 'console'])
                         : $event->getRequest()->getServer();
                     if (!empty($exception)) {
                         $log->logException($exception, $server);

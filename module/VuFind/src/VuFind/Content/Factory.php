@@ -40,7 +40,7 @@ use Interop\Container\ContainerInterface;
  *
  * @codeCoverageIgnore
  */
-class Factory implements \Zend\ServiceManager\Factory\FactoryInterface
+class Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Get the configuration setting name to get content provider settings.

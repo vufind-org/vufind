@@ -28,8 +28,8 @@
 namespace VuFind\Cookie;
 
 use Interop\Container\ContainerInterface;
-use Zend\Console\Console;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\Console\Console;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cookie Manager factory.

@@ -28,10 +28,10 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\BackendInterface;
+use Laminas\EventManager\EventInterface;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
+use VuFindSearch\Backend\BackendInterface;
 
 /**
  * Solr highlighting listener.

@@ -29,7 +29,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 
 /**
  * Controller for mostly static pages that doesn't fall under any particular
@@ -63,7 +63,7 @@ class ContentController extends AbstractBase
     {
         $page = $this->params()->fromRoute('page');
         $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
-        $language = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class)
+        $language = $this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class)
             ->getLocale();
         $defaultLanguage = $this->getConfig()->Site->language;
 
@@ -107,7 +107,7 @@ class ContentController extends AbstractBase
     {
         $response   = $this->response;
 
-        if ($response instanceof \Zend\Http\Response) {
+        if ($response instanceof \Laminas\Http\Response) {
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);

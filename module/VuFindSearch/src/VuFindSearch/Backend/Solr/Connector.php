@@ -32,21 +32,21 @@ namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 
+use Laminas\Http\Client\Adapter\AdapterInterface;
+use Laminas\Http\Client\Adapter\Exception\TimeoutException;
+use Laminas\Http\Client as HttpClient;
+use Laminas\Http\Request;
+
 use VuFindSearch\Backend\Exception\BackendException;
+
 use VuFindSearch\Backend\Exception\HttpErrorException;
+
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
-
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\AdapterInterface;
-use Zend\Http\Client\Adapter\Exception\TimeoutException;
-use Zend\Http\Client as HttpClient;
-
-use Zend\Http\Request;
 
 /**
  * SOLR connector.
@@ -59,7 +59,7 @@ use Zend\Http\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Zend\Log\LoggerAwareInterface
+class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -116,7 +116,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @var string|AdapterInterface
      */
-    protected $adapter = 'Zend\Http\Client\Adapter\Socket';
+    protected $adapter = 'Laminas\Http\Client\Adapter\Socket';
 
     /**
      * Constructor

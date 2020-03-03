@@ -80,13 +80,13 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param \Zend\Config\Config $searchConfig Search config
-     * @param string              $uniqueKey    Solr field used to store unique
+     * @param \Laminas\Config\Config $searchConfig Search config
+     * @param string                 $uniqueKey    Solr field used to store unique
      * identifier
      *
      * @return void
      */
-    public function __construct(\Zend\Config\Config $searchConfig = null,
+    public function __construct(\Laminas\Config\Config $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;

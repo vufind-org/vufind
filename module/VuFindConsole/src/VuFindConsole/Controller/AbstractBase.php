@@ -28,9 +28,9 @@
  */
 namespace VuFindConsole\Controller;
 
-use Zend\Console\Console;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Console\Console;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -91,7 +91,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Indicate failure.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     protected function getFailureResponse()
     {
@@ -101,7 +101,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Indicate success.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     protected function getSuccessResponse()
     {
@@ -113,7 +113,7 @@ class AbstractBase extends AbstractActionController
      *
      * @param string $id Configuration identifier (default = main VuFind config)
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function getConfig($id = 'config')
     {
