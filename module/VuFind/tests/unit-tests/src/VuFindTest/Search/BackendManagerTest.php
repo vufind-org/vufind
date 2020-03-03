@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Search;
 
+use Laminas\EventManager\SharedEventManager;
 use VuFind\Search\BackendManager;
-use VuFindTest\Unit\TestCase as TestCase;
 
-use Zend\EventManager\SharedEventManager;
+use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * BackendManager unit tests.
@@ -54,7 +54,7 @@ class BackendManagerTest extends TestCase
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('Expected backend registry to return object');
 
-        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $registry = $this->getMockForAbstractClass(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $registry->expects($this->once())
             ->method('get')
             ->will($this->returnValue('not-an-object'));
@@ -72,7 +72,7 @@ class BackendManagerTest extends TestCase
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('does not implement the expected interface');
 
-        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $registry = $this->getMockForAbstractClass(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $registry->expects($this->once())
             ->method('get')
             ->will($this->returnValue($this));
@@ -87,7 +87,7 @@ class BackendManagerTest extends TestCase
      */
     public function testAttachDetachShared()
     {
-        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $registry = $this->getMockForAbstractClass(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $events   = new SharedEventManager();
         $manager  = new BackendManager($registry);
         $manager->attachShared($events);

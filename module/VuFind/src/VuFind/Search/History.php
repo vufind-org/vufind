@@ -64,7 +64,7 @@ class History
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -74,10 +74,10 @@ class History
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param \Zend\Config\Config                  $config         Configuration
+     * @param \Laminas\Config\Config               $config         Configuration
      */
     public function __construct($searchTable, $sessionId, $resultsManager,
-        \Zend\Config\Config $config = null
+        \Laminas\Config\Config $config = null
     ) {
         $this->searchTable = $searchTable;
         $this->sessionId = $sessionId;

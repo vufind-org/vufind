@@ -27,14 +27,14 @@
  */
 namespace VuFind\Sitemap;
 
+use Laminas\Config\Config;
+use Laminas\Console\Console;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
-use Zend\Config\Config;
-use Zend\Console\Console;
 
 /**
  * Class for generating sitemaps

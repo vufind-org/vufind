@@ -27,11 +27,11 @@
  */
 namespace VuFind\ContentBlock;
 
+use Laminas\Config\Config;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\ContentBlock\PluginManager as BlockManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
-use Zend\Config\Config;
 
 /**
  * Content block plugin manager

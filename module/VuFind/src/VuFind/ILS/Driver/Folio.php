@@ -74,7 +74,7 @@ class Folio extends AbstractAPI implements
     /**
      * Session cache
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
@@ -121,10 +121,11 @@ class Folio extends AbstractAPI implements
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
-     * @param \Zend\Http\Headers $req_headers Headers object
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
+     * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
      */
@@ -160,12 +161,12 @@ class Folio extends AbstractAPI implements
      *
      * Add X-Okapi headers and Content-Type to every request
      *
-     * @param \Zend\Http\Headers $headers the request headers
-     * @param object             $params  the parameters object
+     * @param \Laminas\Http\Headers $headers the request headers
+     * @param object                $params  the parameters object
      *
      * @return array
      */
-    public function preRequest(\Zend\Http\Headers $headers, $params)
+    public function preRequest(\Laminas\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
         if (!$headers->has('Content-Type')) {

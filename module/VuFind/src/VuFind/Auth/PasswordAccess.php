@@ -48,7 +48,7 @@ class PasswordAccess extends AbstractBase
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function getConfig()
     {
@@ -64,7 +64,7 @@ class PasswordAccess extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException

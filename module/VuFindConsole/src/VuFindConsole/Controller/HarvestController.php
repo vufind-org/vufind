@@ -27,8 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 
+use Laminas\Console\Console;
 use VuFindHarvest\OaiPmh\HarvesterConsoleRunner;
-use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -69,7 +69,7 @@ class HarvestController extends AbstractBase
     /**
      * Harvest OAI-PMH records.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function harvestoaiAction()
     {
@@ -98,7 +98,7 @@ class HarvestController extends AbstractBase
     /**
      * Merge harvested MARC records into a single <collection>
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      * @author Thomas Schwaerzler <thomas.schwaerzler@uibk.ac.at>
      */
     public function mergemarcAction()

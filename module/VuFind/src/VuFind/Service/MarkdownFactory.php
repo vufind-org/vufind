@@ -30,10 +30,10 @@ namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * VuFind HTTP Service factory.

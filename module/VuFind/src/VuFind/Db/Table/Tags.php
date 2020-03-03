@@ -27,11 +27,11 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Select;
 
 /**
  * Table Definition for tags
@@ -56,7 +56,7 @@ class Tags extends Gateway
      *
      * @param Adapter       $adapter       Database adapter
      * @param PluginManager $tm            Table manager
-     * @param array         $cfg           Zend Framework configuration
+     * @param array         $cfg           Laminas configuration
      * @param RowGateway    $rowObj        Row prototype object (null for default)
      * @param bool          $caseSensitive Are tags case sensitive?
      * @param string        $table         Name of database table to interface with
@@ -275,7 +275,7 @@ class Tags extends Gateway
      * @param string $source     Filter for tags tied to a specific record source
      * (null for no filter).
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getForUser($userId, $resourceId = null, $listId = null,
         $source = null

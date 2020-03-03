@@ -221,8 +221,8 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
      */
     protected function checkServerParams($headers, $options, $expectedResult)
     {
-        $request = new \Zend\Http\PhpEnvironment\Request();
-        $request->setServer(new \Zend\Stdlib\Parameters($headers));
+        $request = new \Laminas\Http\PhpEnvironment\Request();
+        $request->setServer(new \Laminas\Stdlib\Parameters($headers));
         $header = new ServerParam($request);
         $result = $header->getPermissions($options);
         $this->assertEquals($result, $expectedResult);

@@ -27,8 +27,8 @@
  */
 namespace VuFindAdmin\Controller;
 
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind Admin Controller Base
@@ -75,7 +75,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         $config = $this->getConfig();
         if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
             $pluginManager  = $this->serviceLocator
-                ->get(\Zend\Mvc\Controller\PluginManager::class);
+                ->get(\Laminas\Mvc\Controller\PluginManager::class);
             $redirectPlugin = $pluginManager->get('redirect');
             return $redirectPlugin->toRoute('admin/disabled');
         }
@@ -87,7 +87,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
     /**
      * Display disabled message.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function disabledAction()
     {

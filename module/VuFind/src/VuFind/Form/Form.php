@@ -27,11 +27,11 @@
  */
 namespace VuFind\Form;
 
+use Laminas\InputFilter\InputFilter;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\NotEmpty;
+use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
-use Zend\InputFilter\InputFilter;
-use Zend\Validator\EmailAddress;
-use Zend\Validator\NotEmpty;
-use Zend\View\HelperPluginManager;
 
 /**
  * Configurable form.
@@ -42,7 +42,7 @@ use Zend\View\HelperPluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class Form extends \Zend\Form\Form implements
+class Form extends \Laminas\Form\Form implements
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -491,14 +491,14 @@ class Form extends \Zend\Form\Form implements
     protected function getFormElementClass($type)
     {
         $map = [
-            'checkbox' => '\Zend\Form\Element\MultiCheckbox',
-            'text' => '\Zend\Form\Element\Text',
-            'url' => '\Zend\Form\Element\Url',
-            'email' => '\Zend\Form\Element\Email',
-            'textarea' => '\Zend\Form\Element\Textarea',
-            'radio' => '\Zend\Form\Element\Radio',
-            'select' => '\Zend\Form\Element\Select',
-            'submit' => '\Zend\Form\Element\Submit'
+            'checkbox' => '\Laminas\Form\Element\MultiCheckbox',
+            'text' => '\Laminas\Form\Element\Text',
+            'url' => '\Laminas\Form\Element\Url',
+            'email' => '\Laminas\Form\Element\Email',
+            'textarea' => '\Laminas\Form\Element\Textarea',
+            'radio' => '\Laminas\Form\Element\Radio',
+            'select' => '\Laminas\Form\Element\Select',
+            'submit' => '\Laminas\Form\Element\Submit'
         ];
 
         return $map[$type] ?? null;
@@ -679,7 +679,7 @@ class Form extends \Zend\Form\Form implements
     /**
      * Retrieve input filter used by this form
      *
-     * @return \Zend\InputFilter\InputFilterInterface
+     * @return \Laminas\InputFilter\InputFilterInterface
      */
     public function getInputFilter()
     {

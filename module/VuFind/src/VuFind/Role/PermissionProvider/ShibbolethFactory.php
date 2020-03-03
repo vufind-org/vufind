@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShibbolethFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

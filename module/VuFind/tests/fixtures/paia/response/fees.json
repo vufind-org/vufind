@@ -24,7 +24,7 @@ Content-Type: application/json; charset=UTF-8
     "amount": "0.80 EUR",
     "date": "2016-05-23T15:31:34+02:00",
     "feetype": "Vormerkgebuehr",
-    "about": "Zend framework in action / Allen, Rob (2009)",
+    "about": "Test framework in action / Allen, Rob (2009)",
     "item": "http://uri.gbv.de/document/opac-de-830:bar:830$28323471"
   }, {
     "feetypeid": "de-830:fee-type:3",

@@ -110,4 +110,4 @@
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
   </div>
 </div>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

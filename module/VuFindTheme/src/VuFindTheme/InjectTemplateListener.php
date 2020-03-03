@@ -37,7 +37,7 @@ namespace VuFindTheme;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class InjectTemplateListener extends \Zend\Mvc\View\Http\InjectTemplateListener
+class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListener
 {
     /**
      * Inflect a name to a normalized value

@@ -27,6 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
 use VuFind\Search\Base\Results;
@@ -35,8 +37,6 @@ use VuFind\Search\SearchRunner;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Side Facets" AJAX handler
@@ -48,7 +48,7 @@ use Zend\View\Renderer\RendererInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
-    implements \Zend\Log\LoggerAwareInterface
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -94,13 +94,13 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
      * @param RecommendPluginManager  $rpm      Recommend plugin manager
      * @param SearchRunner            $sr       Search runner
      * @param HierarchicalFacetHelper $fh       Facet helper
-     * @param \Zend\Config\Config     $fc       Facet config
+     * @param \Laminas\Config\Config  $fc       Facet config
      * @param RendererInterface       $renderer View renderer
      */
     public function __construct(SessionSettings $ss,
         \VuFind\Recommend\PluginManager $rpm,
         SearchRunner $sr, HierarchicalFacetHelper $fh,
-        \Zend\Config\Config $fc, RendererInterface $renderer
+        \Laminas\Config\Config $fc, RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->recommendPluginManager = $rpm;

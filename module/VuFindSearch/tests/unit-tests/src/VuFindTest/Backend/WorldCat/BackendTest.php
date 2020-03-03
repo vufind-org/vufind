@@ -149,7 +149,7 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['fake', $client])

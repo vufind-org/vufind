@@ -27,7 +27,7 @@
  */
 namespace VuFindConsole\Controller;
 
-use Zend\Console\Console;
+use Laminas\Console\Console;
 
 /**
  * This controller handles the command-line tool for compiling themes.

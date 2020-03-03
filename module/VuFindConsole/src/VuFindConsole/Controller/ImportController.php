@@ -27,8 +27,8 @@
  */
 namespace VuFindConsole\Controller;
 
+use Laminas\Console\Console;
 use VuFind\XSLT\Importer;
-use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -44,7 +44,7 @@ class ImportController extends AbstractBase
     /**
      * XSLT Import Tool
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function importXslAction()
     {
@@ -131,7 +131,7 @@ class ImportController extends AbstractBase
     /**
      * Tool to crawl website for special index.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function webcrawlAction()
     {

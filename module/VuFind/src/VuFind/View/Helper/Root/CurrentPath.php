@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Current path view helper
