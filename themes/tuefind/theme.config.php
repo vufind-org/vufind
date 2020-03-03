@@ -4,7 +4,7 @@ return [
     'helpers' => [
         'factories' => [
             'VuFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
-            'TueFind\View\Helper\Root\HelpText' => 'TueFind\View\Helper\Root\HelpTextFactory',
+            'TueFind\View\Helper\Root\HelpText' => 'VuFind\View\Helper\Root\HelpTextFactory',
             'TueFind\View\Helper\Root\RecordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatterFactory',
             'TueFind\View\Helper\Root\SearchTabs' => 'VuFind\View\Helper\Root\SearchTabsFactory',
             'TueFind\View\Helper\Bootstrap3\Recaptcha' => 'TueFind\View\Helper\Bootstrap3\RecaptchaFactory',
