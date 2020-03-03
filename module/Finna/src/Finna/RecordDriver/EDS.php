@@ -200,8 +200,8 @@ class EDS extends \VuFind\RecordDriver\EDS
     /**
      * Get identifiers of the specified type.
      *
-     * @param $string $type   Identifier type
-     * @param $bool   $parent Whether to look for parent identifiers
+     * @param string $type   Identifier type
+     * @param bool   $parent Whether to look for parent identifiers
      *
      * @return array
      */
@@ -367,7 +367,7 @@ class EDS extends \VuFind\RecordDriver\EDS
     /**
      * Get a field from record fields with the given path
      *
-     * @param $string $fieldPath Slash-separated field path
+     * @param string $fieldPath Slash-separated field path
      *
      * @return mixed
      */
@@ -387,7 +387,7 @@ class EDS extends \VuFind\RecordDriver\EDS
     /**
      * Get a numbering field value
      *
-     * @param $string $type Field type
+     * @param string $type Field type
      *
      * @return string
      */
