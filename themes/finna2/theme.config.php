@@ -26,7 +26,7 @@ return [
             'Finna\View\Helper\Root\ImageSrc' => 'Finna\View\Helper\Root\HelperWithThemeInfoFactory',
             'Finna\View\Helper\Root\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'Finna\View\Helper\Root\Linkify' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'Finna\View\Helper\Root\Markdown' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'Finna\View\Helper\Root\Markdown' => 'VuFind\View\Helper\Root\MarkdownFactory',
             'Finna\View\Helper\Root\MetaLib' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Navibar' => 'Finna\View\Helper\Root\NavibarFactory',
             'Finna\View\Helper\Root\OnlinePayment' => 'Zend\ServiceManager\Factory\InvokableFactory',
