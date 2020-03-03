@@ -18,9 +18,12 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     const FULLTEXT_TOC_ALL_LANGUAGE_SYNONYMS_FIELD = 'fulltext_toc_synonyms_all';
     const FULLTEXT_ABSTRACT_ONE_LANGUAGE_SYNONYMS_FIELD = 'fulltext_abstract_synonyms'; // Language selection is done by SOLR itself
     const FULLTEXT_ABSTRACT_ALL_LANGUAGE_SYNONYMS_FIELD = 'fulltext_abstract_synonyms_all';
+    const FULLTEXT_SUMMARY_ONE_LANGUAGE_SYNONYMS = 'fulltext_summary_synonyms'; // Language selection is done by SOLR itself
+    const FULLTEXT_SUMMARY_ALL_LANGUAGE_SYNONYMS_FIELD = 'fulltext_summary_synonyms_all';
     const FULLTEXT_TYPE_FULLTEXT = "Fulltext";
     const FULLTEXT_TYPE_ABSTRACT = "Abstract";
     const FULLTEXT_TYPE_TOC = "Table of Contents";
+    const FULLTEXT_TYPE_SUMMARY = "Summary";
     protected $includeFulltextSnippets = false;
     protected $selectedFulltextTypes = [];
 
@@ -59,6 +62,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                         return self::FULLTEXT_TOC_ONE_LANGUAGE_SYNONYMS_FIELD;
                     case self::FULLTEXT_TYPE_ABSTRACT:
                         return self::FULLTEXT_ABSTRACT_ONE_LANGUAGE_SYNONYMS_FIELD;
+                    case self::FULLTEXT_TYPE_SUMMARY:
+                        return self::FULLTEXT_SUMMARY_ONE_LANGUAGE_SYNONYMS_FIELD;
                     break;
                 }
             }
@@ -70,6 +75,8 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                          return self::FULLTEXT_TOC_ALL_LANGUAGE_SYNONYMS_FIELD;
                      case self::FULLTEXT_TYPE_ABSTRACT:
                          return self::FULLTEXT_ABSTRACT_ALL_LANGUAGE_SYNONYMS_FIELD;
+                     case seld::FULLTEXT_TYPE_SUMMARY:
+                         return self::FULLTEXT_SUMMARY_ALL_LANGUAGE_SYNONYMS_FIELD;
                      break;
                 }
             }
@@ -101,6 +108,13 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                                     : '';
            $previous_expression_empty = false;
        }
+       if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_SUMMARY, $this->selectedFulltextTypes)) {
+           $synonyms_expression .=  $this->useSynonyms($search_handler)
+                                    ? ($previous_expression_empty ? '' : ' OR ') .
+                                    $this->getSynonymQueryField($search_handler, self::FULLTEXT_TYPE_SUMMARY) . ':' . $query_terms
+                                    : '';
+           $previous_expression_empty = false;
+       }
        return $synonyms_expression;
     }
 
@@ -128,6 +142,10 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
              $query_string .= (empty($query_string) ? '' : ' OR ') .
                                'fulltext_abstract:' . $query_terms .
                                ' OR fulltext_abstract_unstemmed:' . $query_terms;
+         if (empty($this->selectedFulltextTypes) || in_array(self::FULLTEXT_TYPE_SUMMARY, $this->selectedFulltextTypes))
+             $query_string .= (empty($query_string) ? '' : ' OR ') .
+                               'fulltext_summary:' . $query_terms .
+                               ' OR fulltext_summary_unstemmed:' . $query_terms;
          $query_string .= $this->getSynonymsPartialExpressionOrEmpty($handler, $query_terms, empty($query_string));
          return $query_string;
     }
