@@ -35,11 +35,4 @@ class Factory extends \TueFind\Controller\Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
-
-    public static function getClassificationController(ServiceManager $sm)
-    {
-       return new ClassificationController(
-            $sm->getServiceLocator()
-       );
-    }
 }
