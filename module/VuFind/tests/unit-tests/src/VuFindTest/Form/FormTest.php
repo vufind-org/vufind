@@ -48,7 +48,10 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testDefaultsWithoutConfiguration()
     {
-        $form = new Form(new YamlReader());
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Zend\View\HelperPluginManager::class)
+        );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
@@ -80,7 +83,11 @@ class FormTest extends \VuFindTest\Unit\TestCase
             'recipient_name' => 'me',
             'email_subject' => 'subject',
         ];
-        $form = new Form(new YamlReader(), $defaults);
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Zend\View\HelperPluginManager::class),
+            $defaults
+        );
         $this->assertEquals(
             [['name' => 'me', 'email' => 'me@example.com']], $form->getRecipient()
         );
@@ -97,7 +104,10 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\RecordMissing::class);
         $this->expectExceptionMessage('Form \'foo\' not found');
 
-        $form = new Form(new YamlReader());
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Zend\View\HelperPluginManager::class)
+        );
         $form->setFormId('foo');
     }
 
@@ -108,8 +118,12 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testDefaultsWithFormSet()
     {
-        $form = new Form(new YamlReader());
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Zend\View\HelperPluginManager::class)
+        );
         $form->setFormId('FeedbackSite');
+
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
@@ -144,9 +158,11 @@ class FormTest extends \VuFindTest\Unit\TestCase
             ],
             $form->getElements()
         );
+
         $this->assertEquals(
             [['email' => null, 'name' => null]], $form->getRecipient()
         );
+
         $this->assertEquals('Send us your feedback!', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));

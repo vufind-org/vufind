@@ -38,6 +38,7 @@ use VuFind\Config\Version;
 use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
+use VuFind\Crypt\Base62;
 use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
@@ -551,6 +552,9 @@ class UpgradeController extends AbstractBase
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
 
+            // fix shortlinks
+            $this->fixshortlinks();
+
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
         } catch (Exception $e) {
@@ -923,5 +927,40 @@ class UpgradeController extends AbstractBase
         $storage[$this->session->getName()]
             = new ArrayObject([], ArrayObject::ARRAY_AS_PROPS);
         return $this->forwardTo('Upgrade', 'Home');
+    }
+
+    /**
+     * Generate base62 encoding to migrate old shortlinks
+     *
+     * @throws Exception
+     *
+     * @return void
+     */
+    protected function fixshortlinks()
+    {
+        $shortlinksTable = $this->getTable('shortlinks');
+        $base62 = new Base62();
+
+        try {
+            $results = $shortlinksTable->select(['hash' => null]);
+
+            foreach ($results as $result) {
+                $id = $result['id'];
+                $shortlinksTable->update(
+                    ['hash' => $base62->encode($id)],
+                    ['id' => $id]
+                );
+            }
+
+            $this->session->warnings->append(
+                'Added hash value(s) to ' . count($results) . ' short links.'
+            );
+        } catch (Exception $e) {
+            $this->session->warnings->append(
+                'Could not fix hashes in table shortlinks - maybe column ' .
+                'hash is missing? Exception thrown with ' .
+                'message: ' . $e->getMessage()
+            );
+        }
     }
 }
