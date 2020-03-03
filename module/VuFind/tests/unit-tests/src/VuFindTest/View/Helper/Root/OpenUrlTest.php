@@ -290,8 +290,8 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     protected function getOpenUrl($rules = null, $config = [], $mockContext = null)
     {
         if (null === $rules) {
-            $json = __DIR__
-                . '/../../../../../../../../../config/vufind/OpenUrlRules.json';
+            $json = __DIR__ . '/../../../../../../..'
+                . '/fixtures/configs/openurlhelper/OpenUrlRules.json';
             $rules = json_decode(file_get_contents($json), true);
         }
         if (null === $mockContext) {
