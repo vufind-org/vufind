@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller\Plugin;
 
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Session\Container as SessionContainer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Session\Container as SessionContainer;
 
 /**
  * Class for managing "next" and "previous" navigation within result sets.

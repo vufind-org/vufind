@@ -38,7 +38,7 @@ use VuFind\Config\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Config extends \Zend\View\Helper\AbstractHelper
+class Config extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Configuration plugin manager
@@ -62,7 +62,7 @@ class Config extends \Zend\View\Helper\AbstractHelper
      *
      * @param string $config Name of configuration
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function get($config)
     {

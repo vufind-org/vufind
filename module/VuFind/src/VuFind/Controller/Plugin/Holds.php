@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 /**
- * Zend action helper to perform holds-related actions
+ * Action helper to perform holds-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

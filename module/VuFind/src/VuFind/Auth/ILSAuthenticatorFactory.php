@@ -28,7 +28,7 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * ILS Authenticator factory.

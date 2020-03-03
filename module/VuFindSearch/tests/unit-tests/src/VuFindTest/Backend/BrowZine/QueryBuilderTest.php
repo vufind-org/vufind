@@ -62,7 +62,6 @@ class QueryBuilderTest extends TestCase
      * Test advanced query parsing (not currently supported)
      *
      * @return void
-     *
      */
     public function testAdvanced()
     {

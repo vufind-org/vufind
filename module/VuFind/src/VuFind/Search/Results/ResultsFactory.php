@@ -28,8 +28,8 @@
 namespace VuFind\Search\Results;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory for search results objects.

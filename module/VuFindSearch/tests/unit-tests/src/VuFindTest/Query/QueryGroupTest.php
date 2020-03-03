@@ -139,7 +139,6 @@ class QueryGroupTest extends TestCase
      * Test setting an invalid operator.
      *
      * @return void
-     *
      */
     public function testIllegalOperator()
     {

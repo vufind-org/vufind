@@ -28,10 +28,10 @@
  */
 namespace VuFind\Search;
 
+use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
-use Zend\StdLib\Parameters;
 
 /**
  * Legacy adapter: search query parameters to AbstractQuery object

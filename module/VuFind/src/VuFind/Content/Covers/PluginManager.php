@@ -27,7 +27,7 @@
  */
 namespace VuFind\Content\Covers;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Covers content loader plugin manager

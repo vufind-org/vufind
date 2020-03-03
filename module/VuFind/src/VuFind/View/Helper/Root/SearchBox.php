@@ -38,7 +38,7 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Zend\View\Helper\AbstractHelper
+class SearchBox extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Configuration for search box.

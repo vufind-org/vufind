@@ -28,11 +28,11 @@
 namespace VuFind\XSLT;
 
 use DOMDocument;
+use Laminas\Console\Console;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
-use Zend\Console\Console;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind XSLT importer

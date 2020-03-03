@@ -1,6 +1,6 @@
 <?php
 /**
- * Zend\Feed\Renderer\Feed extension for Open Search
+ * Laminas\Feed\Renderer\Feed extension for Open Search
  *
  * PHP version 7
  *
@@ -29,10 +29,10 @@ namespace VuFind\Feed\Writer\Extension\OpenSearch\Renderer;
 
 use DOMDocument;
 use DOMElement;
-use Zend\Feed\Writer\Extension\AbstractRenderer;
+use Laminas\Feed\Writer\Extension\AbstractRenderer;
 
 /**
- * Zend\Feed\Renderer\Feed extension for Open Search
+ * Laminas\Feed\Renderer\Feed extension for Open Search
  *
  * @category VuFind
  * @package  Feed_Plugins
