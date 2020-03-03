@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,7 +33,6 @@ use Finna\Db\Table\Search;
 use Zend\Config\Config;
 use Zend\Config\Reader\Ini as IniReader;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Stdlib\Parameters;
 
 use Zend\Stdlib\RequestInterface as Request;
 
@@ -46,7 +45,7 @@ use Zend\Stdlib\RequestInterface as Request;
  *    it is set to master VuFind configuration directory
  *    and the script is called again.
  *
- * 2. If no view URL (field 'finna_schedule_base_url' in table search)
+ * 2. If no view URL (field 'notification_base_url' in table search)
  *    to process scheduled alerts for is supplied, all distinct view
  *    URLs are retrieved, and the script is called again for each URL.
  *
@@ -61,6 +60,13 @@ use Zend\Stdlib\RequestInterface as Request;
  */
 class ScheduledAlerts extends AbstractService
 {
+    /**
+     * Useful date format value
+     *
+     * @var string
+     */
+    protected $iso8601 = 'Y-m-d\TH:i:s\Z';
+
     /**
      * Local configuration directory name
      *
@@ -139,6 +145,13 @@ class ScheduledAlerts extends AbstractService
     protected $serviceManager = null;
 
     /**
+     * Configured schedule options
+     *
+     * @var array
+     */
+    protected $scheduleOptions;
+
+    /**
      * Constructor
      *
      * @param ServiceManager $sm ServiceManager
@@ -159,6 +172,10 @@ class ScheduledAlerts extends AbstractService
         $tableManager = $sm->get(\VuFind\Db\Table\PluginManager::class);
         $this->searchTable = $tableManager->get('Search');
         $this->userTable = $tableManager->get('User');
+
+        $this->scheduleOptions = $sm
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
     }
 
     /**
@@ -301,8 +318,6 @@ class ScheduledAlerts extends AbstractService
             . "(base: {$this->scheduleBaseUrl})"
         );
 
-        $iso8601 = 'Y-m-d\TH:i:s\Z';
-
         $this->iniReader = new IniReader();
         $this->iniReader->setNestSeparator(chr(0));
         $hmac = $this->serviceManager->get(\VuFind\Crypt\HMAC::class);
@@ -324,37 +339,13 @@ class ScheduledAlerts extends AbstractService
         $this->msg(sprintf('    Processing %d searches', count($scheduled)));
 
         foreach ($scheduled as $s) {
-            $lastTime = new \DateTime($s->finna_last_executed);
-            $schedule = $s->finna_schedule;
-            if ($schedule == 1) {
-                // Daily
-                if ($todayTime->format('Y-m-d') == $lastTime->format('Y-m-d')) {
-                    $this->msg(
-                        '      Bypassing search ' . $s->id
-                        . ': previous execution too recent (daily, '
-                        . $lastTime->format($iso8601) . ')'
-                    );
-                    continue;
-                }
-            } elseif ($schedule == 2) {
-                $diff = $todayTime->diff($lastTime);
-                if ($diff->days < 6) {
-                    $this->msg(
-                        '      Bypassing search ' . $s->id
-                        . ': previous execution too recent (weekly, '
-                        . $lastTime->format($iso8601) . ')'
-                    );
-                    continue;
-                }
-            } else {
-                $this->err(
-                    'Search ' . $s->id . ': unknown schedule: ' . $s->schedule, '='
-                );
+            $lastTime = new \DateTime($s->last_notification_sent);
+            if (!$this->validateSchedule($todayTime, $lastTime, $s)) {
                 continue;
             }
 
             if ($user === false || $s->user_id != $user->id) {
-                if (!$user = $this->userTable->getById($s->user_id)) {
+                if (!($user = $this->userTable->getById($s->user_id))) {
                     $this->warn(
                         'Search ' . $s->id . ': user ' . $s->user_id
                         . ' does not exist '
@@ -371,7 +362,7 @@ class ScheduledAlerts extends AbstractService
                 continue;
             }
 
-            $scheduleUrl = parse_url($s->finna_schedule_base_url);
+            $scheduleUrl = parse_url($s->notification_base_url);
             if (!isset($scheduleUrl['host'])) {
                 $this->err(
                     'Could not resolve institution for search ' . $s->id
@@ -437,8 +428,8 @@ class ScheduledAlerts extends AbstractService
             }
 
             $newestRecordDate
-                = date($iso8601, strtotime($records[0]->getFirstIndexed()));
-            $lastExecutionDate = $lastTime->format($iso8601);
+                = date($this->iso8601, strtotime($records[0]->getFirstIndexed()));
+            $lastExecutionDate = $lastTime->format($this->iso8601);
             if ($newestRecordDate < $lastExecutionDate) {
                 $this->msg(
                     "      No new results for search {$s->id} ($searchId): "
@@ -456,7 +447,8 @@ class ScheduledAlerts extends AbstractService
             // after previous scheduled alert run
             $newRecords = [];
             foreach ($records as $record) {
-                $recDate = date($iso8601, strtotime($record->getFirstIndexed()));
+                $recDate
+                    = date($this->iso8601, strtotime($record->getFirstIndexed()));
                 if ($recDate < $lastExecutionDate) {
                     break;
                 }
@@ -464,17 +456,20 @@ class ScheduledAlerts extends AbstractService
             }
 
             // Prepare email content
-            $viewBaseUrl = $searchUrl = $s->finna_schedule_base_url;
-            $searchUrl .= $urlHelper($searchObject->getOptions()->getSearchAction())
+            $viewBaseUrl = $s->notification_base_url;
+            $searchUrl = $viewBaseUrl
+                . $urlHelper($searchObject->getOptions()->getSearchAction())
                 . $searchObject->getUrlQuery()->getParams(false);
 
             $secret = $s->getUnsubscribeSecret($hmac, $user);
 
-            $unsubscribeUrl = $s->finna_schedule_base_url;
-            $unsubscribeUrl .=
-                $urlHelper->__invoke('myresearch-unsubscribe')
+            $unsubscribeUrl = $viewBaseUrl . $urlHelper('myresearch-unsubscribe')
                 . "?id={$s->id}&key=$secret";
             $userInstitution = $this->mainConfig->Site->institution;
+            // Filter function to only pass along selected checkboxes:
+            $selectedCheckboxes = function ($data) {
+                return $data['selected'] ?? false;
+            };
             $params = [
                 'records' => $newRecords,
                 'info' => [
@@ -483,7 +478,10 @@ class ScheduledAlerts extends AbstractService
                     'recordCount' => count($newRecords),
                     'url' => $searchUrl,
                     'unsubscribeUrl' => $unsubscribeUrl,
-                    'filters' => $params->getFilterList(),
+                    'checkboxFilters' => array_filter(
+                        $params->getCheckboxFacets(), $selectedCheckboxes
+                    ),
+                    'filters' => $params->getFilterList(true),
                     'userInstitution' => $userInstitution,
                 ],
                 'params' => $params,
@@ -537,5 +535,34 @@ For example:
   php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
 
 EOT;
+    }
+
+    /**
+     * Validate the schedule (return true if we should send a message).
+     *
+     * @param \DateTime             $todayTime The time the notification job started.
+     * @param \DateTime             $lastTime  Last time notification was sent.
+     * @param \VuFind\Db\Row\Search $s         Search row to validate.
+     *
+     * @return bool
+     */
+    protected function validateSchedule($todayTime, $lastTime, $s)
+    {
+        $schedule = $s->notification_frequency;
+        if (!isset($this->scheduleOptions[$schedule])) {
+            $this->err('Search ' . $s->id . ': unknown schedule: ' . $schedule);
+            return false;
+        }
+        $diff = $todayTime->diff($lastTime);
+        if ($diff->days < $schedule) {
+            $this->msg(
+                '  Bypassing search ' . $s->id
+                . ': previous execution too recent ('
+                . $this->scheduleOptions[$schedule] . ', '
+                . $lastTime->format($this->iso8601) . ')'
+            );
+            return false;
+        }
+        return true;
     }
 }

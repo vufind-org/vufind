@@ -48,8 +48,8 @@ class Search extends \VuFind\Db\Table\Search
     public function getScheduleBaseUrls()
     {
         $sql
-            = "SELECT distinct finna_schedule_base_url as url FROM {$this->table}"
-            . " WHERE finna_schedule_base_url != '';";
+            = "SELECT distinct notification_base_url as url FROM {$this->table}"
+            . " WHERE notification_base_url != '';";
 
         $result = $this->getAdapter()->query(
             $sql,
@@ -69,13 +69,13 @@ class Search extends \VuFind\Db\Table\Search
      *
      * @return array Array of Finna\Db\Row\Search objects.
      */
-    public function getScheduledSearches($baseUrl)
+    public function getScheduledSearches($baseUrl = '')
     {
         $callback = function ($select) use ($baseUrl) {
             $select->columns(['*']);
             $select->where->equalTo('saved', 1);
-            $select->where('finna_schedule > 0');
-            $select->where->equalTo('finna_schedule_base_url', $baseUrl);
+            $select->where('notification_frequency > 0');
+            $select->where->equalTo('notification_base_url', $baseUrl);
             $select->order('user_id');
         };
 

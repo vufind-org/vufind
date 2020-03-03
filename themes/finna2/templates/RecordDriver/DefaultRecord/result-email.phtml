@@ -25,26 +25,26 @@
 <?php if (!empty($organisation)): ?>
 <?= PHP_EOL . $this->translate('Organisation') . ': ' . $organisation; ?>
 <?php endif; ?>
-<?php if (!empty($publicationDate)) : ?>
+<?php if (!empty($publicationDate)): ?>
 <?= PHP_EOL . $this->translate('Published') . ': ' . $publicationDate[0]; ?>
 <?php endif; ?>
-<?php if (!empty($journalTitle)) : ?>
+<?php if (!empty($journalTitle)): ?>
 <?= PHP_EOL . $this->translate('Published in') . ": $journalTitle"; ?>
 <?php endif; ?>
-<?php if (!empty($isbn)) : ?>
+<?php if (!empty($isbn)): ?>
 <?= PHP_EOL . $this->translate('ISBN') . ': ' . implode(', ', $isbn); ?>
 <?php endif; ?>
-<?php if (!empty($issn)) : ?>
+<?php if (!empty($issn)): ?>
 <?= PHP_EOL . $this->translate('ISSN') . ': ' . implode(', ', $issn); ?>
 <?php endif; ?>
-<?php if (!empty($collection)) : ?>
+<?php if (!empty($collection)): ?>
 <?php foreach ($collection as $collId => $collText): ?>
 <?= PHP_EOL . $this->translate("in_collection_label") . ' ' . $collText; ?>
 <?php endforeach; ?>
-<?php elseif (!empty($containerTitle)) : ?>
+<?php elseif (!empty($containerTitle)): ?>
 <?= PHP_EOL . $this->translate('component_is_part_of') . ": $containerTitle" . !empty($containerReference) ? " $containerReference" : '' ?>
 <?php endif; ?>
-<?php if (!empty($format)) : ?>
+<?php if (!empty($format)): ?>
 <?= PHP_EOL . $this->translate($format) ?>
 <?php endif; ?>
 

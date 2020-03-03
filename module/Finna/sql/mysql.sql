@@ -19,14 +19,6 @@ ALTER TABLE comments ADD COLUMN `finna_updated` datetime DEFAULT NULL;
 ALTER TABLE comments ADD INDEX `finna_visible` (`finna_visible`);
 ALTER TABLE comments ADD INDEX `finna_rating` (`finna_rating`);
 --
--- Additional columns for search
---
-ALTER TABLE search ADD COLUMN `finna_schedule` int(1) NOT NULL DEFAULT '0';
-ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '2000-01-01 00:00:00';
-ALTER TABLE search ADD COLUMN `finna_schedule_base_url` varchar(255) NOT NULL DEFAULT '';
-ALTER TABLE search ADD INDEX `finna_schedule` (`finna_schedule`);
-ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url`);
---
 -- Additional columns for user
 --
 ALTER TABLE `user` ADD COLUMN `finna_due_date_reminder` int(11) NOT NULL DEFAULT 0;

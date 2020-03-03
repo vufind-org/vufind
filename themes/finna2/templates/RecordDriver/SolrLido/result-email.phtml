@@ -15,10 +15,10 @@
 <?php if (!empty($authors)): ?>
 <?= PHP_EOL . $this->translate('by') . ': ' . $authors[0]; ?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
 <?php endif; ?>
-<?php if (!empty($dates)) : ?>
+<?php if (!empty($dates)): ?>
 <?= PHP_EOL . $this->translate('Main Year') . ': ' . $this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>–<?=$this->escapeHtml($dates[1])?><?php endif; ?>
 <?php endif; ?>
-<?php if (!empty($format)) : ?>
+<?php if (!empty($format)): ?>
 <?= PHP_EOL . $this->translate($format) ?>
 <?php endif; ?>
 

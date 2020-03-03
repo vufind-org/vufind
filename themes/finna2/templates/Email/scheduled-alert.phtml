@@ -1,9 +1,13 @@
 <?=$this->translate('New results found for search') ?>:
   <?=empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
 
-<?php if (count($info['filters'])): ?>
+<?php if (count($info['checkboxFilters']) || count($info['filters'])): ?>
 
 <?=$this->translate('history_limits') ?>:
+<?php foreach ($info['checkboxFilters'] as $checkbox): ?>
+  <?=$this->translate($checkbox['desc']) ?>
+<?php endforeach; ?>
+
 <?php foreach ($info['filters'] as $format => $filters): ?>
   <?=$this->translate($format) . ((!is_callable([$this->params, 'isGeographicFilter']) || !$this->params->isGeographicFilter($filters)) ? ': ' : ' ') ?>
 <?php $index = 0; ?>
@@ -19,7 +23,7 @@
 
 
 
-<?=$info['recordCount'] . ' ' . $this->translate('Newest Results') ?>:
+<?=$this->translate('new_results_heading', ['%%count%%' => $info['recordCount']]) ?>:
 
 <?php foreach ($records as $result): ?>
   <?=$this->record($result)->getSearchResult('email') . PHP_EOL; ?>
