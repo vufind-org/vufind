@@ -156,7 +156,7 @@
             </div>
           <?php endif;?>
         </div>
-        <?php if (count($this->lists) > 0 && !$list): ?>
+        <?php if (count($this->lists ?? []) > 0 && !$list): ?>
           <div class="saved-lists">
             <strong><?=$this->transEsc('Saved in')?>:</strong>
             <?php $i = 0;foreach($this->lists as $current): ?>
