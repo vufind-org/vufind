@@ -1,6 +1,5 @@
 <footer class="hidden-print">
   <div class="footer-container">
-    <?php $this->slot('footer')->start(); ?>
     <div class="footer-column">
       <?php $this->slot('footer-left')->start(); ?>
         <p><strong><?=$this->transEsc('Search Options')?></strong></p>
@@ -32,7 +31,6 @@
         </ul>
       <?=$this->slot('footer-right')->end(); ?>
     </div>
-    <?=$this->slot('footer')->end(); ?>
   </div>
   <div class="poweredby">
     <?=$this->layout()->poweredBy ?>
