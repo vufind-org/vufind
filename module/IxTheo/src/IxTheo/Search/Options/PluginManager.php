@@ -4,7 +4,7 @@ namespace IxTheo\Search\Options;
 
 use VuFind\Search\Options\OptionsFactory;
 
-class PluginManager extends \VuFind\Search\Options\PluginManager {
+class PluginManager extends \TueFind\Search\Options\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {

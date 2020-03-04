@@ -73,8 +73,8 @@
         <?php endif; ?>
         <button type="submit" class="btn btn-primary form-control"><i class="fa fa-search" aria-hidden="true"></i> <?=$this->transEsc("Find")?></button>
       </section>
-    <?php if ($advSearch): ?>
       <ul class="nav nav-pills">
+        <?php if ($advSearch): ?>
           <li>
             <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced Search")?></a>
           </li>
@@ -100,6 +100,7 @@
           <li>
             <a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a>
           </li>
+        <?php endif; ?>
           <li class="dropdown pull-right">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                   <?=$this->transEsc('Virtual Keyboard')?> <span class="caret"></span>
@@ -113,7 +114,6 @@
             </ul>
           </li>
       </ul>
-    <?php endif; ?>
     <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
         <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
     <?php endif; ?>

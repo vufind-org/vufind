@@ -156,7 +156,9 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
         $params = parent::build($query);
         if ($this->includeFulltextSnippets) {
             if (!empty($this->selectedFulltextTypes)) {
-                $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query), $query->getNormalizedString());
+                $query_terms = !empty($query->getNormalizedString()) ? $query->getNormalizedString() :  '[* TO *]';
+                $fulltext_type_query_filter = $this->assembleFulltextTypesQuery($this->getHandler($query),
+                                                                                $query_terms);
                 if (!empty($fulltext_type_query_filter))
                     $params->set('fq', $fulltext_type_query_filter);
             }
