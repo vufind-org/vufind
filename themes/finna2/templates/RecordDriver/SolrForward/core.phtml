@@ -226,13 +226,32 @@
       <?php
         $this->record($this->driver)->setRenderedUrls($renderedURLs);
         $formatter = $this->recordDataFormatter();
-        $coreFields = $formatter->getData(
-            $driver, $formatter->filterForwardFields($formatter->getDefaults('core'))
-        );
+        $coreFields = $formatter->filterForwardFields($formatter->getDefaults('core'));
+        $coreFields['Distribution']['context']['title'] = 'Distributor';
+        $coreFields['Description FWD']['context']['title'] = '';
+        $coreFieldGroups = $formatter->getGroupedData($driver, $formatter->getGroupedFields([
+          ['lines' => ['Genre', 'Age Limit', 'Actors', 'Secondary Authors']],
+          ['label' => 'Production Information',
+            'lines' => ['Production', 'Production Costs', 'Published'],
+            'options' => ['context' => ['class' => 'field-group-production']]],
+          ['label' => 'Distribution Information',
+            'lines' => ['Distribution', 'Premiere Night', 'Premiere Theaters',
+              'Film Copies', 'Other Screenings', 'Broadcasting Dates'],
+            'options' => ['context' => ['class' => 'field-group-distribution']]],
+          ['label' => 'Description FWD',
+            'lines' => ['Description FWD', 'Subjects'],
+            'options' => ['context' => ['class' => 'field-group-content-description']]],
+          ['lines' => ['Press Reviews', 'Item Description FWD', 'Music']],
+          ['lines' => ['Inspection Details']],
+          ['label' => 'Technical Data',
+            'lines' => ['Color', 'Sound', 'Aspect Ratio', 'Playing Time'],
+            'options' => ['context' => ['class' => 'field-group-rating-technical-data']]],
+          ['lines' => ['Access']]
+        ], $coreFields));
       ?>
-      <?php if (!empty($coreFields)): ?>
-        <table class="table table-finna-record record-details record-details-more">
-          <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
+      <?php if (!empty($coreFieldGroups)): ?>
+        <table class="table table-finna-record record-details record-details-more record-field-groups">
+          <?=$this->record($this->driver)->renderTemplate('core-field-groups.phtml', ['data' => $coreFieldGroups]);?>
         </table>
       <?php endif; ?>
       <button class="btn show-details-button hidden"><?=$this->transEsc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>

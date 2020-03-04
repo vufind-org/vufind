@@ -6,18 +6,15 @@ $fields = [
 ];
 ?>
 <?php if(!empty($data)): ?>
-  <div class="truncate-field" data-rows="5" data-row-height="25">
-    <table class="record-data">
-      <?php foreach($data as $d): ?>
-        <?php foreach ($fields as $key): ?>
-          <?php if (empty($d[$key])) { continue; } ?>
-          <tr>
-            <td><?=$this->transEsc("kavi_{$key}")?></td>
-            <td><?=$this->escapeHtml($d[$key])?></td>
-          </tr>
-        <?php endforeach; ?>
-        <tr><td colspan="2">&nbsp;</td></tr>
+  <?php foreach($data as $d): ?>
+    <dl class="switcher-line-xxxs">
+      <?php foreach ($fields as $key): ?>
+        <?php if (empty($d[$key])) { continue; } ?>
+        <div>
+          <dt><?=$this->transEsc("kavi_{$key}")?></dt>
+          <dd><?=$this->escapeHtml($d[$key])?></dd>
+        </div>
       <?php endforeach; ?>
-    </table>
-  </div>
+    </dl>
+  <?php endforeach; ?>
 <?php endif; ?>

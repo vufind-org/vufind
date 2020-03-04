@@ -1,11 +1,16 @@
 <?php //Don't add START and END comments ?>
 <?php if (!empty($data)): ?>
-  <?php foreach ($data as $fields => $keys): ?>
-    <?php if (!empty($keys['name'])): ?>
-      <?=$this->escapeHtml($keys['name'])?><?php if (!empty($keys['region'])): ?>, <?=$this->escapeHtml($keys['region'])?><?php endif; ?>
-      <?php if (!empty($keys['date'])): ?>
-        <?=$this->escapeHtml($keys['date'])?>
-      <?php endif; ?><br/>
-    <?php endif; ?>
-  <?php endforeach; ?>
+  <div class="truncate-field" data-rows="6">
+    <ul class="switcher-line-xxs">
+      <?php foreach ($data as $fields => $keys): ?>
+        <?php if (!empty($keys['name'])): ?>
+          <li>
+            <span class="record-other-screenings-date"><?php if (!empty($keys['date'])): ?><?=$this->escapeHtml($keys['date'])?><?php endif; ?></span>
+            <span class="record-other-screenings-region"><?php if (!empty($keys['region'])): ?><?=$this->escapeHtml($keys['region'])?><?php endif; ?></span>
+            <span class="record-other-screenings-name"><?=$this->escapeHtml($keys['name'])?></span>
+          </li>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    </ul>
+  </div>
 <?php endif; ?>

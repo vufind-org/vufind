@@ -1,8 +1,16 @@
 <?php //Don't add START and END comments ?>
-<div class="truncate-field">
-  <?php foreach ($data as $fields => $keys): ?>
-    <?php if (!empty($keys['time'])): ?>
-       <?=$this->escapeHtml($keys['place'])?>, <?=$this->escapeHtml($keys['time'])?><?php if (!empty($keys['viewers'])): ?>, <?=$this->transEsc('Amount of Viewers') ?>: <?=$this->escapeHtml($keys['viewers']);?> <?php endif;?><br/>
-    <?php endif; ?>
-  <?php endforeach; ?>
-</div>
+<?php if (!empty($data)): ?>
+  <div class="truncate-field" data-rows="6">
+    <ul class="switcher-line-xxs">
+      <?php foreach ($data as $fields => $keys): ?>
+        <li>
+          <?php if (!empty($keys['time'])): ?>
+            <span class="record-broadcasting-info-time"><?=$this->escapeHtml($keys['time'])?></span>
+            <span class="record-broadcasting-info-place"><?=$this->escapeHtml($keys['place'])?></span>
+            <span class="record-broadcasting-info-viewers"><?php if (!empty($keys['viewers'])): ?><?=$this->transEsc('Amount of Viewers') ?>: <?=str_replace(' ', '&nbsp;', $this->escapeHtml($keys['viewers']));?><?php endif;?></span>
+          <?php endif; ?>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+<?php endif; ?>

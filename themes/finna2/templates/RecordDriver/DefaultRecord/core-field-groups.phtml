@@ -1,0 +1,25 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/core-field-groups.phtml -->
+<?php foreach ($data as $current): ?>
+  <?php $header = $this->transEsc($current['context']['title'] ?? $current['label']); ?>
+  <?php if ($header): ?>
+    <?php if ($class = $current['context']['class'] ?? null): ?>
+      <tbody class="<?=$this->escapeHtmlAttr($class)?>">
+    <?php else: ?>
+      <tbody>
+    <?php endif; ?>
+      <tr>
+        <th scope="rowgroup" class="record-field-group-header"><?=$header?></th>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <?=$current['value']?>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  <?php else: ?>
+    <?=$current['value']?>
+  <?php endif; ?>
+<?php endforeach; ?>
+<!-- END of: finna - RecordDriver/DefaultRecord/core-field-groups.phtml -->

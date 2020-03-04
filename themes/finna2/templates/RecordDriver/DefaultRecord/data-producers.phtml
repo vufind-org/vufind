@@ -4,11 +4,5 @@
     <?php foreach ($data as $index => $item): ?>
       <?=$index > 0 ? '<br/>' : '' ?><?=$this->record($this->driver)->getAuthorityLinkElement('author', $item['name'], $item, ['date' => true, 'role' => true, 'authorityType' => $item['type'] ?? null, 'showInlineInfo' => true])?>
     <?php endforeach; ?>
-    <?php $cost = $this->driver->getProductionCost(); if (!empty($cost)): ?><br/>
-      <tr>
-        <th><?=$this->transEsc('Production Costs') ?>:</th>
-        <td><?=$this->cleanHtml($cost);?></td>
-      </tr>
-    <?php endif; ?>
   </div>
 <?php endif; ?>

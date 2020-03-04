@@ -30,6 +30,9 @@
  */
 namespace Finna\View\Helper\Root;
 
+use Finna\View\Helper\Root\RecordDataFormatter\FieldGroupBuilder;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
 /**
  * Record driver data formatting view helper
  *
@@ -182,7 +185,7 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     {
         $filter = [
             'Publisher','Edition', 'Extent', 'Archive', 'Published in', 'Format',
-            'Other Titles', 'Presenters', 'Organisation', 'Published', 'Authors',
+            'Other Titles', 'Presenters', 'Organisation', 'Authors',
             'Access Restrictions', 'Item Description', 'Publisher', 'Relations',
             'Source Collection'
         ];
@@ -216,5 +219,61 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
             : $this->filterEAD3Fields($coreFields);
 
         return $coreFields;
+    }
+
+    /**
+     * Helper method for getting a spec of field groups.
+     *
+     * @param array  $groups        Array specifying the groups.
+     * @param array  $lines         All lines used in the groups.
+     * @param string $template      Default group template to use if not
+     *                              specified (optional).
+     * @param array  $options       Additional options to use if not specified
+     *                              for a group (optional).
+     * @param array  $unusedOptions Additional options for unused lines
+     *                              (optional).
+     *
+     * @return array
+     */
+    public function getGroupedFields($groups, $lines,
+        $template = 'core-field-group-fields.phtml', $options = [],
+        $unusedOptions = []
+    ) {
+        $fieldGroups = new FieldGroupBuilder();
+        $fieldGroups->setGroups(
+            $groups, $lines, $template, $options, $unusedOptions
+        );
+        return $fieldGroups->getArray();
+    }
+
+    /**
+     * Create formatted key/value data based on a record driver and grouped
+     * field spec.
+     *
+     * @param RecordDriver $driver Record driver object.
+     * @param array        $groups Grouped formatting specification.
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function getGroupedData(RecordDriver $driver, array $groups)
+    {
+        // Apply the group spec.
+        $result = [];
+        foreach ($groups as $group) {
+            $lines = $group['lines'];
+            $data = $this->getData($driver, $lines);
+            // Render the fields in the group as the value for the group.
+            $value = $this->renderRecordDriverTemplate(
+                $driver, $data, ['template' => $group['template']]
+            );
+            $result[] = [
+                'label' => $group['label'],
+                'value' => $value,
+                'context' => $group['context'],
+            ];
+        }
+        return $result;
     }
 }

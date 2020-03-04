@@ -223,6 +223,38 @@ table.content-table {
 .table.citation {
   table-layout: fixed;
 }
+.table.record-field-groups {
+  > tbody > tr > th {
+    text-transform: uppercase;
+    @media (min-width: @screen-sm-min) {
+      text-transform: none;
+    }
+  }
+  > tbody > tr > td {
+    @media (min-width: @screen-sm-min) {
+      padding-left: 80px;
+    }
+    > table {
+      > thead,
+      > tbody,
+      > tfoot {
+        > tr {
+          > th,
+          > td {
+            padding: @table-finna-record-cell-padding;
+            word-wrap: break-word;
+          }
+        }
+      }
+    }
+  }
+  .subheading {
+    margin: 0;
+    padding: 6px 0;
+    font-weight: bold;
+    text-transform: none;
+  }
+}
 
 table#componentparts {
   & th {
@@ -296,4 +328,47 @@ ol {
 .btn-unstyled {
   border: none;
   background-color: transparent;
+}
+
+// A general-purpose flexbox layout mixin for switching between a horizontal
+// and a vertical layout at a given, container-based breakpoint.
+//
+// @switcher-breakpoint - A vertical layout will be used if the width of the
+//                        container is less than this. A horizontal layout
+//                        will be used otherwise.
+.switcher-layout(@switcher-breakpoint) {
+  // Flex container.
+  & > * {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  // Flex items.
+  // By default all flex items are the same size but it it is possible to set a
+  // different flex-grow for specific items.
+  & > * > * {
+    flex-grow: 1;
+    flex-basis: calc(~'('@switcher-breakpoint ~'- 100%) * 999');
+  }
+  // These rules provide additional robustness for horizontal layouts containing
+  // many (five or more) elements.
+  & > * > :nth-last-child(n+5),
+  & > * > :nth-last-child(n+5) ~ * {
+    flex-basis: 100%;
+  }
+}
+
+// A switcher layout helper mixin adding spacing useful for lines.
+.switcher-line-layout(@switcher-breakpoint) {
+  .switcher-layout(@switcher-breakpoint);
+  & > * > * + * {
+    padding-left: 1.5em;
+  }
+}
+
+// Utility classes for setting switcher layouts.
+.switcher-line-xxs {
+  .switcher-line-layout(@screen-xxs);
+}
+.switcher-line-xxxs {
+  .switcher-line-layout(280px);
 }
