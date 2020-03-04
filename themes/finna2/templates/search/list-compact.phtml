@@ -1,0 +1,16 @@
+<!-- START of: finna - search/list-compact.phtml -->
+<?php if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<?php $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive() ?>
+<?php $i = $this->indexStart; foreach ($this->results->getResults() as $current):
+  $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
+  <div id="result<?=$i++ ?>" class="result compact-list-view clearfix<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
+    <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+      <div class="record-checkbox">
+        <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
+      </div>
+    <?php endif; ?>
+    <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
+    <?=$this->record($current)->getSearchResult('compact')?>
+  </div>
+<?php endforeach; ?>
+<!-- END of: finna - search/list-compact.phtml -->

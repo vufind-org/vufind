@@ -1,0 +1,137 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/result-compact.phtml -->
+<?php
+  $formats = $this->driver->tryMethod('getFormats');
+  $database = $this->record($this->driver)->getFormatClass(end($formats)) === '0database';
+  $ejournal = $this->record($this->driver)->getFormatClass(end($formats)) === '1journaleserial';
+?>
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
+  <div class="main-content">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <div class="compact-body">
+      <h2 class="title">
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+          <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+        </a>
+      </h2>
+      <?php if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
+        <div class="result-uniform-titles">
+          <?=implode(' &ndash; ', array_map($this->escapeHtml, $uniformTitles)) ?>
+        </div>
+      <?php endif; ?>
+      <div class="resultOtherLinks">
+        <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
+          <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
+            <?php $prevOtherLinkHeading = ''; ?>
+            <?php foreach ($results as $result): ?>
+              <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('default::link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
+              <?php if (!empty($result['isn'])): ?>
+                <?php $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+                <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
+                  <?=$this->escapeHtml($otherLinkTitle); ?>
+                </a>
+              <?php elseif (!empty($result['title'])): ?>
+                <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
+                  <?=$this->escapeHtml($result['title']); ?>
+                </a>
+              <?php endif; ?>
+              <?php if (!empty($result['author'])): ?>
+                (<?=$this->escapeHtml($result['author']); ?>)
+              <?php endif; ?>
+            <?php endforeach; ?>
+          <?php endif; ?>
+          <?php if ($this->driver->isCollection()): ?>
+            <?=implode('<br>', $this->driver->getSummary()); ?>
+          <?php else: ?>
+            <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles'); if (!empty($authors)): ?>
+              <?php $author = $authors[0]; ?>
+              <?=$this->record($this->driver)->getAuthorityLinkElement('author', $author['name'], $author, ['authorityType' => $author['type'] ?? null])?>
+              <?php if (count($authors) > 1): ?> <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+            <?php endif; ?>
+            <?php $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+            <?php if (!empty($journalTitle)): ?>
+              <?=!empty($summAuthor) ? '' : ' '?>
+              <?php
+                $parentSource = $this->driver->getSourceIdentifier();
+                $parentId = $this->driver->tryMethod('getHierarchyParentId');
+                $parentLink = false;
+                if ($parentId) {
+                  try {
+                    $parentLink = $this->recordLink()->getUrl("$parentSource|{$parentId[0]}");
+                  } catch (Exception $e) {
+                    // Probably parent record doesn't exist, fall back to linking by title
+                  }
+                }
+                if ($parentLink === false) {
+                  $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle));
+                }
+              ?>
+              <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $parentLink . '">' . $this->highlight($journalTitle) . '</a>';?>
+              <?php $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
+                <?=$this->escapeHtml($ref); ?>
+              <?php else: ?>
+                <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+              <?php endif; ?>
+            <?php elseif (!empty($summDate)): ?>
+              <?=!empty($summAuthor) ? '' : ' '?>
+              <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
+    </div>
+    <div class="compact-links">
+      <?=$this->record($this->driver)->getOnlineUrls('results')?>
+      <?php $formats = $this->driver->getFormats(); ?>
+      <?=$this->record($this->driver)->getPreviews()?>
+      <?php /* Hierarchy tree link */ ?>
+      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+        <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+          <div class="hierarchyTreeLink">
+            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+              <i class="fa fa-sitemap"></i>
+              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID])?>" data-lightbox-post="tab=hierarchytree">
+                <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
+              </a>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <div class="hidden-print hidden-xs add-to-favorite-col">
+        <?php /* Add to favorites */ ?>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+        <?php /* Display qrcode if appropriate: */ ?>
+        <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+          <?php
+            // Add JS Variables for QrCode
+            $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
+          ?>
+          <div>
+            <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink" title="<?=$this->transEsc('qrcode_show')?>" rel="nofollow">
+              <i class="fa fa-qr-code" aria-hidden="true"><span class="sr-only"><?=$this->transEsc('QR Code')?></span></i>
+            </a>
+            <div class="qrcode hidden">
+              <script type="text/template" class="qrCodeImgTag">
+                <img alt="" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+              </script>
+            </div><br/>
+          </div>
+        <?php endif; ?>
+      </div>
+      <?php /* Saved lists */ ?>
+    <?php endif; ?>
+  </div>
+  <div class="add-to-favorite-col visible-xs">
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Add to favorites */ ?>
+      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+    <?php endif; ?>
+    <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+  </div>
+  <div class="clearfix"></div>
+  <div class="savedLists">
+    <strong><?=$this->transEsc("Saved in")?>:</strong>
+  </div>
+  <?=$this->render('list/list-notes.phtml')?>
+</div>
+<!-- END of: finna - RecordDriver/DefaultRecord/result-compact.phtml -->

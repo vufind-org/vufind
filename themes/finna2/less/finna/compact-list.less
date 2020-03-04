@@ -1,0 +1,44 @@
+.result.compact-list-view {
+  background-color: initial;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 0;
+  position: relative;
+
+  .main-content {
+    display: flex;
+  }
+  .resultItemFormat {
+      display: inline-block;
+  }
+  .compact-body {
+    width: 65%;
+  }
+  .compact-links {
+    width: 35%;
+  }
+  .available-online-header {
+    display: none;
+  }
+  .record-container {
+    .add-to-favorite-col {
+      @media (min-width: @screen-sm) {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        text-align: right;
+      }
+      .qr-box {
+        position: absolute;
+        right: 0px;
+        z-index: 1000;
+      }
+    }
+  }
+  .list-view {
+    .publish-year {
+      margin: 3px;
+      display: inline-block;
+    }
+  }
+}
