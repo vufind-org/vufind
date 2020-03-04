@@ -535,7 +535,7 @@ class EDS extends DefaultRecord
     {
         $groupsToReplace = ['au','su'];
         if (in_array($group, $groupsToReplace)) {
-            $br =  '/<br \/>/';
+            $br = '/<br \/>/';
             $comma = ', ';
             return preg_replace($br, $comma, $data);
         }

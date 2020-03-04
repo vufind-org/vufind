@@ -301,4 +301,15 @@ class Options extends \VuFind\Search\Base\Options
     {
         return $this->hierarchicalFacetSeparators;
     }
+
+    /**
+     * Does this search backend support scheduled searching?
+     *
+     * @return bool
+     */
+    public function supportsScheduledSearch()
+    {
+        // Solr supports this!
+        return true;
+    }
 }

@@ -884,8 +884,8 @@ class Server
         if (!empty($this->setQueries)) {
             foreach ($this->setQueries as $setName => $solrQuery) {
                 $set = $xml->addChild('set');
-                $set->setSpec = $solrQuery;
-                $set->setName = $setName;
+                $set->setName = $set->setSpec = $setName;
+                $set->setDescription = $solrQuery;
             }
         }
 

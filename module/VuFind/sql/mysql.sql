@@ -121,10 +121,15 @@ CREATE TABLE `search` (
   `saved` int(1) NOT NULL DEFAULT '0',
   `search_object` blob,
   `checksum` int(11) DEFAULT NULL,
+  `notification_frequency` int(11) NOT NULL DEFAULT '0',
+  `last_notification_sent` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `notification_base_url` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
-  KEY `session_id` (`session_id`)
+  KEY `session_id` (`session_id`),
+  KEY `notification_frequency` (`notification_frequency`),
+  KEY `notification_base_url` (`notification_base_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -172,8 +177,10 @@ CREATE TABLE `external_session` (
 CREATE TABLE `shortlinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `path` mediumtext NOT NULL,
+  `hash` varchar(32),
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `shortlinks_hash_IDX` USING HASH (`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

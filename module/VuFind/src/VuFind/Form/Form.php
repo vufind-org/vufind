@@ -31,6 +31,7 @@ use VuFind\Config\YamlReader;
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\EmailAddress;
 use Zend\Validator\NotEmpty;
+use Zend\View\HelperPluginManager;
 
 /**
  * Configurable form.
@@ -54,11 +55,14 @@ class Form extends \Zend\Form\Form implements
     protected $inputFilter;
 
     /**
-     * Validation messages
+     * Default, untranslated validation messages
      *
      * @var array
      */
-    protected $messages;
+    protected $messages = [
+        'empty' => 'This field is required',
+        'invalid_email' => 'Email address is invalid',
+    ];
 
     /**
      * Default form config (from config.ini > Feedback)
@@ -89,19 +93,31 @@ class Form extends \Zend\Form\Form implements
     protected $yamlReader;
 
     /**
+     * View helper manager.
+     *
+     * @var HelperPluginManager
+     */
+    protected $viewHelperManager;
+
+    /**
      * Constructor
      *
-     * @param YamlReader $yamlReader    YAML reader
-     * @param array      $defaultConfig Default Feedback configuration (optional)
+     * @param YamlReader          $yamlReader        YAML reader
+     * @param HelperPluginManager $viewHelperManager View helper manager
+     * @param array               $defaultConfig     Default Feedback configuration
+     * (optional)
      *
      * @throws \Exception
      */
-    public function __construct(YamlReader $yamlReader, array $defaultConfig = null)
-    {
+    public function __construct(
+        YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+        array $defaultConfig = null
+    ) {
         parent::__construct();
 
         $this->defaultFormConfig = $defaultConfig;
         $this->yamlReader = $yamlReader;
+        $this->viewHelperManager = $viewHelperManager;
     }
 
     /**
@@ -118,17 +134,27 @@ class Form extends \Zend\Form\Form implements
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
 
-        $this->messages = [];
-        $this->messages['empty']
-            = $this->translate('This field is required');
-
-        $this->messages['invalid_email']
-            = $this->translate('Email address is invalid');
-
         $this->formElementConfig
             = $this->parseConfig($formId, $config);
 
         $this->buildForm($this->formElementConfig);
+    }
+
+    /**
+     * Get display string.
+     *
+     * @param string $translationKey Translation key
+     * @param bool   $escape         Whether to escape the output.
+     * Default behaviour is to escape when the translation key does
+     * not end with '_html'.
+     *
+     * @return string
+     */
+    public function getDisplayString($translationKey, $escape = null)
+    {
+        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        return $this->viewHelperManager->get($escape ? 'transEsc' : 'translate')
+            ->__invoke($translationKey);
     }
 
     /**
@@ -637,6 +663,20 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
+     * Get translated validation message.
+     *
+     * @param string $messageId Message identifier
+     *
+     * @return string
+     */
+    protected function getValidationMessage($messageId)
+    {
+        return $this->translate(
+            $this->messages[$messageId] ?? $messageId
+        );
+    }
+
+    /**
      * Retrieve input filter used by this form
      *
      * @return \Zend\InputFilter\InputFilterInterface
@@ -653,14 +693,14 @@ class Form extends \Zend\Form\Form implements
             'email' => [
                 'name' => EmailAddress::class,
                 'options' => [
-                    'message' => $this->messages['invalid_email']
+                    'message' => $this->getValidationMessage('invalid_email'),
                 ]
             ],
             'notEmpty' => [
                 'name' => NotEmpty::class,
                 'options' => [
                     'message' => [
-                        NotEmpty::IS_EMPTY => $this->messages['empty']
+                        NotEmpty::IS_EMPTY => $this->getValidationMessage('empty'),
                     ]
                 ]
             ]

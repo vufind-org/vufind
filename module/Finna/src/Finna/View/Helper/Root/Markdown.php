@@ -36,8 +36,15 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Markdown extends \Zend\View\Helper\AbstractHelper
+class Markdown extends \VuFind\View\Helper\Root\Markdown
 {
+    /**
+     * Parsedown parser
+     *
+     * @var \Parsedown
+     */
+    protected $parsedown = null;
+
     /**
      * Return HTML.
      *
@@ -48,9 +55,25 @@ class Markdown extends \Zend\View\Helper\AbstractHelper
     public function toHtml($markdown)
     {
         $cleanHtml = $this->getView()->plugin('cleanHtml');
-        $parser = new \Parsedown();
-        $parser->setBreaksEnabled(true);
-        $text = $parser->text($markdown);
+        if (null === $this->parsedown) {
+            $this->parsedown = new \Parsedown();
+            $this->parsedown->setBreaksEnabled(true);
+        }
+        $text = $this->parsedown->text($markdown);
         return $cleanHtml($text);
+    }
+
+    /**
+     * Converts markdown to html
+     *
+     * Finna: back-compatibility with default param and call logic
+     *
+     * @param string $markdown Markdown formatted text
+     *
+     * @return string
+     */
+    public function __invoke(string $markdown = null)
+    {
+        return null === $markdown ? $this : parent::__invoke($markdown);
     }
 }

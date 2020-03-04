@@ -322,6 +322,27 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get just the first listed national bibliography number (or false if none
+     * available).
+     *
+     * @return mixed
+     */
+    public function getCleanNBN()
+    {
+        return false;
+    }
+
+    /**
+     * Get just the base portion of the first listed ISMN (or false if no ISSMs).
+     *
+     * @return mixed
+     */
+    public function getCleanISMN()
+    {
+        return false;
+    }
+
+    /**
      * Get the main corporate authors (if any) for the record.
      *
      * @return array
@@ -1230,10 +1251,17 @@ class DefaultRecord extends AbstractBase
         if ($upc = $this->getCleanUPC()) {
             $arr['upc'] = $upc;
         }
+        if ($nbn = $this->getCleanNBN()) {
+            $arr['nbn'] = $nbn['nbn'];
+        }
+        if ($ismn = $this->getCleanISMN()) {
+            $arr['ismn'] = $ismn;
+        }
+
         // If an ILS driver has injected extra details, check for IDs in there
         // to fill gaps:
         if ($ilsDetails = $this->getExtraDetail('ils_details')) {
-            foreach (['isbn', 'issn', 'oclc', 'upc'] as $key) {
+            foreach (['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn'] as $key) {
                 if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
                     $arr[$key] = $ilsDetails[$key];
                 }

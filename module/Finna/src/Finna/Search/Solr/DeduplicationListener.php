@@ -55,9 +55,8 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             $context = $event->getParam('context');
-            if ($params
-                && in_array($context, ['search', 'similar', 'workExpressions'])
-            ) {
+            $allowedContexts = ['search', 'similar', 'workExpressions', 'getids'];
+            if ($params && in_array($context, $allowedContexts)) {
                 // Check for a special filter that enables deduplication
                 $fq = $params->get('fq');
                 if ($fq) {

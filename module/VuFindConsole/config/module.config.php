@@ -10,6 +10,7 @@ $config = [
             'VuFindConsole\Controller\ImportController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindConsole\Controller\LanguageController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindConsole\Controller\RedirectController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindConsole\Controller\ScheduledSearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindConsole\Controller\UtilController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
@@ -19,6 +20,7 @@ $config = [
             'import' => 'VuFindConsole\Controller\ImportController',
             'language' => 'VuFindConsole\Controller\LanguageController',
             'redirect' => 'VuFindConsole\Controller\RedirectController',
+            'scheduledsearch' => 'VuFindConsole\Controller\ScheduledSearchController',
             'util' => 'VuFindConsole\Controller\UtilController',
         ],
     ],
@@ -40,6 +42,7 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
+            'VuFind\Sitemap\Generator' => 'VuFind\Sitemap\GeneratorFactory',
             'VuFindConsole\Generator\GeneratorTools' => 'VuFindConsole\Generator\GeneratorToolsFactory',
         ],
     ],
@@ -68,6 +71,7 @@ $routes = [
     'language/copystring' => 'language copystring [<source>] [<target>]',
     'language/delete' => 'language delete [<target>]',
     'language/normalize' => 'language normalize [<target>]',
+    'scheduledsearch/notify' => 'scheduledsearch notify',
     'util/cleanup_record_cache' => 'util (cleanuprecordcache|cleanup_record_cache) [--help|-h]',
     'util/commit' => 'util commit [<core>]',
     'util/createHierarchyTrees' => 'util createHierarchyTrees [--skip-xml|-sx] [--skip-json|-sj] [<backend>] [--help|-h]',

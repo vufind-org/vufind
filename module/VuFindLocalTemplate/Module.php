@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for ZF2 module for storing local overrides.
+ * Template for code module for storing local overrides.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\MvcEvent;
 
 /**
- * Template for ZF2 module for storing local overrides.
+ * Template for code module for storing local overrides.
  *
  * @category VuFind
  * @package  Module

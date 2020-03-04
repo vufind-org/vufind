@@ -78,11 +78,16 @@ title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
 checksum int DEFAULT NULL,
+notification_frequency int NOT NULL DEFAULT '0',
+last_notification_sent timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+notification_base_url varchar(255) NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);
 CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
+CREATE INDEX notification_frequency_idx ON search (notification_frequency);
+CREATE INDEX notification_base_url_idx ON search (notification_base_url);
 
 -- --------------------------------------------------------
 
@@ -95,10 +100,11 @@ DROP TABLE IF EXISTS "shortlinks";
 CREATE TABLE shortlinks (
 id SERIAL,
 path text,
+hash varchar(32),
 created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (id)
 );
-
+CREATE UNIQUE INDEX shortlinks_hash_idx ON shortlinks (hash);
 
 -- --------------------------------------------------------
 

@@ -465,12 +465,12 @@ class SpellingProcessorTest extends TestCase
      * Test detection of bad Solr response format.
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage Unexpected suggestion format; spellcheck.extendedResults must be set to true.
      */
     public function testDetectionOfMissingExtendedResultsSetting()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
+
         $sp = new SpellingProcessor(new Config([]));
         $spelling = $this->getFixture('spell5');
         $query = $this->getFixture('query5');

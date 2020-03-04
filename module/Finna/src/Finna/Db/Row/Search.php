@@ -27,8 +27,6 @@
  */
 namespace Finna\Db\Row;
 
-use VuFind\Crypt\HMAC;
-
 /**
  * Row Definition for search
  *
@@ -40,52 +38,4 @@ use VuFind\Crypt\HMAC;
  */
 class Search extends \VuFind\Db\Row\Search
 {
-    /**
-     * Set last executed time for scheduled alert.
-     *
-     * @param DateTime $time Time.
-     *
-     * @return mixed
-     */
-    public function setLastExecuted($time)
-    {
-        $this->finna_last_executed = $time;
-        return $this->save();
-    }
-
-    /**
-     * Set schedule for scheduled alert.
-     *
-     * @param int    $schedule Schedule.
-     * @param string $url      Site base URL
-     *
-     * @return mixed
-     */
-    public function setSchedule($schedule, $url = null)
-    {
-        $this->finna_schedule = $schedule;
-        if ($url) {
-            $this->finna_schedule_base_url = $url;
-        }
-        return $this->save();
-    }
-
-    /**
-     * Utility function for generating a token for unsubscribing a
-     * saved search.
-     *
-     * @param VuFind\Crypt\HMAC $hmac HMAC hash generator
-     * @param object            $user User object
-     *
-     * @return string token
-     */
-    public function getUnsubscribeSecret(HMAC $hmac, $user)
-    {
-        $data = [
-            'id' => $this->id,
-            'user_id' => $user->id,
-            'created' => $user->created
-        ];
-        return $hmac->generate(array_keys($data), $data);
-    }
 }

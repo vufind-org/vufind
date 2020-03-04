@@ -225,7 +225,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     protected function getConnectorMock(array $mock = [])
     {
         $client = $this->createMock(\Zend\Http\Client::class);
-        return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Zend2::class)
+        return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs([[], $client])
             ->getMock();
@@ -234,7 +234,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     /**
      * Return backend
      *
-     * @param \VuFindSearch\Backend\EDS\Zend2                         $connector Connector
+     * @param \VuFindSearch\Backend\EDS\Connector                     $connector Connector
      * @param \VuFindSearch\Response\RecordCollectionFactoryInterface $factory   Record collection factory
      * @param \Zend\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
      * @param \Zend\Session\Container                                 $container Session container

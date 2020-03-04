@@ -80,9 +80,9 @@ finna.imagePaginator = (function imagePaginator() {
 
   /**
    * Function to create a new paginator with given images object and settings object
-   * 
-   * @param {object} images 
-   * @param {object} settings 
+   *
+   * @param {object} images
+   * @param {object} settings
    */
   function initPaginator(images, settings) {
     if (translations.isSet === false) {
@@ -396,7 +396,7 @@ finna.imagePaginator = (function imagePaginator() {
       var w = this.naturalWidth;
       var leafletHolderWidth = $('#leaflet-map-image').width();
       var leafletHolderHeight = $('#leaflet-map-image').height();
-      
+
       var zoomLevel = 1;
       var alt = h === 10 && w === 10 ? translations.no_cover : image.data('alt');
 
@@ -412,7 +412,7 @@ finna.imagePaginator = (function imagePaginator() {
           newHeight = boundHeight - (boundHeight / 100 * offsetPercentage);
           heightPercentage = 100 - (newHeight / imageHeight * 100);
         }
-        
+
         if (imageWidth >= boundWidth) {
           newWidth = boundWidth - (boundWidth / 100 * offsetPercentage);
           widthPercentage = 100 - (newWidth / imageWidth * 100);
@@ -447,7 +447,7 @@ finna.imagePaginator = (function imagePaginator() {
 
   /**
    * Function to browse images presented in image holder object
-   * 
+   *
    * @param int direction to try and find an image from
    */
   FinnaPaginator.prototype.onBrowseButton = function onBrowseButton(direction) {
@@ -636,7 +636,7 @@ finna.imagePaginator = (function imagePaginator() {
     _.imageDetail.html(imagePopup.data('description'));
 
     img.unveil(100, function handleLoading() {
-      $(this).load(function handleImage() {
+      $(this).on('load', function handleImage() {
         setImageProperties(this);
       });
     });
@@ -940,7 +940,7 @@ finna.imagePaginator = (function imagePaginator() {
 
           var previousRecord = $(previousRecordButton).clone();
           var nextRecord = $(nextRecordButton).clone();
-          
+
           mfpContent.addClass('loaded ' + _.settings.recordType);
           mfpContainer.append(previousRecord, nextRecord);
 
@@ -1055,7 +1055,7 @@ finna.imagePaginator = (function imagePaginator() {
 
   /**
    * Function to find an image element from imageHolder track
-   * 
+   *
    * @param index int index of wanted image element
    */
   FinnaPaginator.prototype.findSmallImage = function findSmallImage(index) {

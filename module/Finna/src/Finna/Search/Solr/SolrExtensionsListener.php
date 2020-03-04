@@ -148,9 +148,12 @@ class SolrExtensionsListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $this->addDataSourceFilter($event);
-            if ($event->getParam('context') == 'search') {
+            $context = $event->getParam('context');
+            if (in_array($context, ['search', 'getids'])) {
                 $this->addHiddenComponentPartFilter($event);
                 $this->handleAvailabilityFilters($event);
+            }
+            if ('search' === $context) {
                 $this->addGeoFilterBoost($event);
             }
         }

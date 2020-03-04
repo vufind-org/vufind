@@ -1,3 +1,9 @@
+vufind 6.1 distribution; urgency=low
+
+  * VuFind 6.1 release (see http://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 3 Feb 2020 10:00:00 UTC
+
 vufind 6.0.1 distribution; urgency=low
 
   * VuFind 6.0.1 release (see http://vufind.org/wiki/changelog for details)

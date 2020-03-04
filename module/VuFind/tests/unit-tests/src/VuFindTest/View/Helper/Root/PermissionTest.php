@@ -80,13 +80,15 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testMessageDisplay()
     {
-        $mockPmdMessage = $this->getMockPmd([
+        $mockPmdMessage = $this->getMockPmd(
+            [
                 'deniedTemplateBehavior' => [
                     'action' => 'showMessage',
                     'value' => 'dl_translatable_test',
                     'params' => [],
                 ],
-            ]);
+            ]
+        );
 
         $helper = new Permission($this->getMockPm(false), $mockPmdMessage);
         $helper->setView($this->getMockView());
@@ -99,11 +101,11 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      * Test the template display
      *
      * @return void
-     *
-     * @expectedException Zend\View\Exception\RuntimeException
      */
     public function testTemplateDisplay()
     {
+        $this->expectException(\Zend\View\Exception\RuntimeException::class);
+
         // Template does not exist, expect an exception, though
         $mockPmd = $this->getMockPmd(
             [
@@ -128,13 +130,15 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testExistingTemplateDisplay()
     {
-        $mockPmd = $this->getMockPmd([
+        $mockPmd = $this->getMockPmd(
+            [
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
                     'value' => 'ajax/status-available.phtml',
                     'params' => [],
                 ],
-            ]);
+            ]
+        );
 
         $helper = new Permission($this->getMockPm(false), $mockPmd);
         $helper->setView($this->getMockView());

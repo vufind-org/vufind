@@ -53,12 +53,12 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Could not load default fail image.');
+
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));

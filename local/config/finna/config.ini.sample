@@ -289,6 +289,16 @@ library_cards = true
 ; Whether to display the item barcode for each loan. Default is false.
 display_checked_out_item_barcode = true
 
+; This section controls features related to user accounts
+[Account]
+; Allow the user to set a home library through the Profile screen, which will
+; override ILS-provided default pickup locations throughout the system.
+set_home_library = true
+
+; Allow the user to "subscribe" to search history entries in order to receive
+; email notifications of new search results.
+schedule_searches = true
+
 ; This section allows you to determine how the users will authenticate.
 ; You can use an LDAP directory, the local ILS, the VuFind database (Database),
 ; Shibboleth, SIP2, CAS or some combination of these (via the MultiAuth option).

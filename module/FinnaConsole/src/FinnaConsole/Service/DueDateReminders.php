@@ -496,7 +496,7 @@ class DueDateReminders extends AbstractService
         }
 
         $baseUrl = 'https://' . $urlInstitution . '.finna.fi';
-        if ($urlView != $this::DEFAULT_PATH) {
+        if (!$this->isDefaultViewPath($urlView)) {
             $baseUrl .= "/$urlView";
         }
         $serviceName = $urlInstitution . '.finna.fi';

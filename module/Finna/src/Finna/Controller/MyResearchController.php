@@ -862,41 +862,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Save alert schedule for a saved search into DB
-     *
-     * @return mixed
-     */
-    public function savesearchAction()
-    {
-        $user = $this->getUser();
-        if ($user == false) {
-            return $this->forceLogin();
-        }
-        $schedule = $this->params()->fromQuery('schedule', false);
-        $sid = $this->params()->fromQuery('searchid', false);
-
-        if ($schedule !== false && $sid !== false) {
-            $search = $this->getTable('Search');
-            $baseurl = rtrim($this->getServerUrl('home'), '/');
-            $savedRow = $search->select(
-                ['id' => $sid, 'user_id' => $user->id, 'saved' => 1]
-            )->current();
-            if ($savedRow) {
-                $savedRow->setSchedule($schedule, $baseurl);
-            } else {
-                $this->setSavedFlagSecurely($sid, true, $user->id);
-                $historyRow = $search->select(
-                    ['id' => $sid, 'user_id' => $user->id]
-                )->current();
-                $historyRow->setSchedule($schedule, $baseurl);
-            }
-            return $this->redirect()->toRoute('search-history');
-        } else {
-            return parent::savesearchAction();
-        }
-    }
-
-    /**
      * Send list of storage retrieval requests to view
      *
      * @return mixed
@@ -972,9 +937,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function unsubscribeAction()
     {
+        $type = $this->params()->fromQuery('type', 'alert');
+        if ('alert' === $type) {
+            return parent::unsubscribeAction();
+        }
+
         $id = $this->params()->fromQuery('id', false);
         $key = $this->params()->fromQuery('key', false);
-        $type = $this->params()->fromQuery('type', 'alert');
 
         if ($id === false || $key === false) {
             throw new \Exception('Missing parameters.');
@@ -983,22 +952,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view = $this->createViewModel();
 
         if ($this->params()->fromQuery('confirm', false) == 1) {
-            if ($type == 'alert') {
-                $search
-                    = $this->getTable('Search')->select(['id' => $id])->current();
-                if (!$search) {
-                    throw new \Exception('Invalid parameters.');
-                }
-                $user = $this->getTable('User')->getById($search->user_id);
-
-                $secret = $search->getUnsubscribeSecret(
-                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class), $user
-                );
-                if ($key !== $secret) {
-                    throw new \Exception('Invalid parameters.');
-                }
-                $search->setSchedule(0);
-            } elseif ($type == 'reminder') {
+            if ($type == 'reminder') {
                 $user = $this->getTable('User')->select(['id' => $id])->current();
                 if (!$user) {
                     throw new \Exception('Invalid parameters.');
@@ -1021,8 +975,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                         $card->save();
                     }
                 }
+                $view->success = true;
             }
-            $view->success = true;
         } else {
             $view->unsubscribeUrl
                 = $this->getRequest()->getRequestUri() . '&confirm=1';

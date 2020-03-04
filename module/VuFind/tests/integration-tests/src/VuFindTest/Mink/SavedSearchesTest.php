@@ -47,9 +47,9 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -57,11 +57,12 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -90,6 +91,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test search history.
+     *
+     * @depends testSaveSearch
      *
      * @return void
      */
@@ -141,6 +144,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
+     * @depends       testSaveSearch
      * @retryCallback removeUsername2
      *
      * @return void
@@ -189,6 +193,68 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test that notification settings work correctly.
+     *
+     * @depends testSaveSearch
+     *
+     * @return void
+     */
+    public function testNotificationSettings()
+    {
+        // Add a search to history...
+        $page = $this->performSearch('journal');
+
+        // Now log in and go to search history...
+        $this->clickCss($page, '#loginOptions a');
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+        $this->findAndAssertLink($page, 'Search History')->click();
+        $this->snooze();
+
+        // By default, there should be no alert option at all:
+        $scheduleSelector = 'select[name="schedule"]';
+        $this->assertNull($page->find('css', $scheduleSelector));
+
+        // Now reconfigure to allow alerts, and refresh the page:
+        $this->changeConfigs(
+            [
+                'config' => ['Account' => ['schedule_searches' => true]]
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->reload();
+        $this->snooze();
+        $page = $session->getPage();
+
+        // Now there should be two alert options visible (one in saved, one in
+        // unsaved):
+        $this->assertEquals(2, count($page->findAll('css', $scheduleSelector)));
+        $this->assertEquals(
+            1, count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+        );
+        $this->assertEquals(
+            1, count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+        );
+
+        // At this point, our journals search should be in the unsaved list; let's
+        // set it up for alerts and confirm that this auto-saves it.
+        $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
+        $select->selectOption(7);
+        $this->snooze();
+        $this->assertEquals(
+            2, count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+        );
+
+        // Now let's delete the saved search and confirm that this clears the
+        // alert subscription.
+        $this->findAndAssertLink($page, 'Delete')->click();
+        $this->snooze();
+        $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
+        $this->assertEquals(0, $select->getValue());
+    }
+
+    /**
      * Retry cleanup method in case of failure during testSavedSearchSecurity.
      *
      * @return void
@@ -203,7 +269,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2']);
     }

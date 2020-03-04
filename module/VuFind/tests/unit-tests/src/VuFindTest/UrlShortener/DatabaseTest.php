@@ -27,7 +27,14 @@
  */
 namespace VuFindTest\UrlShortener;
 
+use Exception;
+use PHPUnit\Framework\TestCase;
+use VuFind\Db\Table\Shortlinks;
 use VuFind\UrlShortener\Database;
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\Driver\ConnectionInterface;
+use Zend\Db\Adapter\Driver\DriverInterface;
+use Zend\Db\ResultSet;
 
 /**
  * "Database" URL shortener test.
@@ -35,33 +42,34 @@ use VuFind\UrlShortener\Database;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DatabaseTest extends \PHPUnit\Framework\TestCase
+class DatabaseTest extends TestCase
 {
     /**
      * Get the object to test.
      *
-     * @param object $table Database table object/mock
+     * @param  object $table Database table object/mock
      *
      * @return Database
      */
     public function getShortener($table)
     {
-        return new Database('http://foo', $table);
+        return new Database('http://foo', $table, 'RAnD0mVuFindSa!t');
     }
 
     /**
      * Get the mock table object.
      *
-     * @param array $methods Methods to mock.
+     * @param  array $methods Methods to mock.
      *
      * @return object
      */
     public function getMockTable($methods)
     {
-        return $this->getMockBuilder(\VuFind\Db\Table\Shortlinks::class)
+        return $this->getMockBuilder(Shortlinks::class)
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
@@ -71,39 +79,80 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      * Test that the shortener works correctly under "happy path."
      *
      * @return void
+     *
+     * @throws Exception
      */
     public function testShortener()
     {
-        $table = $this->getMockTable(['insert', 'getLastInsertValue']);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)
+            ->setMethods(
+                [
+                    'beginTransaction', 'commit', 'connect', 'getResource',
+                    'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
+                    'execute', 'getLastGeneratedValue'
+                ]
+            )->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->once())->method('beginTransaction');
+        $connection->expects($this->once())->method('commit');
+        $driver = $this->getMockBuilder(DriverInterface::class)
+            ->setMethods(
+                [
+                    'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
+                    'createStatement', 'createResult', 'getPrepareType',
+                    'formatParameterName', 'getLastGeneratedValue'
+                ]
+            )->disableOriginalConstructor()
+            ->getMock();
+        $driver->expects($this->once())->method('getConnection')
+            ->will($this->returnValue($connection));
+        $adapter = $this->getMockBuilder(Adapter::class)
+            ->setMethods(['getDriver'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $adapter->expects($this->once())->method('getDriver')
+            ->will($this->returnValue($driver));
+        $table = $this->getMockTable(['insert', 'select', 'getAdapter']);
         $table->expects($this->once())->method('insert')
-            ->with($this->equalTo(['path' => '/bar']));
-        $table->expects($this->once())->method('getLastInsertValue')
-            ->will($this->returnValue('10'));
+            ->with($this->equalTo(['path' => '/bar', 'hash' => 'a1e7812e2']));
+        $table->expects($this->once())->method('getAdapter')
+            ->will($this->returnValue($adapter));
+        $mockResults = $this->getMockBuilder(ResultSet::class)
+            ->setMethods(['count', 'current'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockResults->expects($this->once())->method('count')
+            ->will($this->returnValue(0));
+        $table->expects($this->once())->method('select')
+            ->with($this->equalTo(['hash' => 'a1e7812e2']))
+            ->will($this->returnValue($mockResults));
         $db = $this->getShortener($table);
-        $this->assertEquals('http://foo/short/A', $db->shorten('http://foo/bar'));
+        $this->assertEquals('http://foo/short/a1e7812e2', $db->shorten('http://foo/bar'));
     }
 
     /**
      * Test that resolve is supported.
      *
      * @return void
+     *
+     * @throws Exception
      */
     public function testResolution()
     {
         $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)
+        $mockResults = $this->getMockBuilder(ResultSet::class)
             ->setMethods(['count', 'current'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
             ->will($this->returnValue(1));
         $mockResults->expects($this->once())->method('current')
-            ->will($this->returnValue(['path' => '/bar']));
+            ->will($this->returnValue(['path' => '/bar', 'hash' => '8ef580184']));
         $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['id' => 10]))
+            ->with($this->equalTo(['hash' => '8ef580184']))
             ->will($this->returnValue($mockResults));
         $db = $this->getShortener($table);
-        $this->assertEquals('http://foo/bar', $db->resolve('A'));
+        $this->assertEquals('http://foo/bar', $db->resolve('8ef580184'));
     }
 
     /**
@@ -111,22 +160,48 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Shortlink could not be resolved: B
+     * @throws Exception
      */
     public function testResolutionOfBadInput()
     {
+        $this->expectExceptionMessage('Shortlink could not be resolved: abcd12?');
+
         $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(\Zend\Db\ResultSet::class)
+        $mockResults = $this->getMockBuilder(ResultSet::class)
             ->setMethods(['count'])
             ->disableOriginalConstructor()
             ->getMock();
         $mockResults->expects($this->once())->method('count')
             ->will($this->returnValue(0));
         $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['id' => 11]))
+            ->with($this->equalTo(['hash' => 'abcd12?']))
             ->will($this->returnValue($mockResults));
         $db = $this->getShortener($table);
-        $db->resolve('B');
+        $db->resolve('abcd12?');
+    }
+
+    /**
+     * Test that resolve errors correctly when given bad input
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    public function testResolutionOfOldIds()
+    {
+        $table = $this->getMockTable(['select']);
+        $mockResults = $this->getMockBuilder(ResultSet::class)
+            ->setMethods(['count', 'current'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockResults->expects($this->once())->method('count')
+            ->will($this->returnValue(1));
+        $mockResults->expects($this->once())->method('current')
+            ->will($this->returnValue(['path' => '/bar', 'hash' => 'A']));
+        $table->expects($this->once())->method('select')
+            ->with($this->equalTo(['hash' => 'A']))
+            ->will($this->returnValue($mockResults));
+        $db = $this->getShortener($table);
+        $this->assertEquals('http://foo/bar', $db->resolve('A'));
     }
 }
