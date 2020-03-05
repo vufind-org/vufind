@@ -50,7 +50,9 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     const description_to_text_type_map = [ 'Fulltext' => '1', 'Table of Contents' => '2',
                                            'Abstract' => '4', 'Summary' => '8',
                                            'Unknown' => '0' ];
-
+    const CONTENT_LENGTH_TARGET_UPPER_LIMIT = 100;
+    const CONTENT_LENGTH_TARGET_LOWER_LIMIT = 20;
+    const DOTS = '...';
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \Zend\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
@@ -209,14 +211,26 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function isSkipSiblings($node) {
+       $text_content_length = strlen($node->textContent);
+       return $text_content_length >= self::CONTENT_LENGTH_TARGET_UPPER_LIMIT &&
+              !$text_content_length <= self::CONTENT_LENGTH_TARGET_LOWER_LIMIT;
+    }
+
+
     protected function assembleSnippet($dom, $node, $left_sibling, $right_sibling, $snippet_tree) {
-        if (!is_null($left_sibling)) {
+        $skip_siblings = $this->isSkipSiblings($node);
+        if (!is_null($left_sibling) && !$skip_siblings) {
+            $left_sibling->nodeValue = self::DOTS . $left_sibling->nodeValue;
             $import_node_left = $snippet_tree->importNode($left_sibling, true);
             $snippet_tree->appendChild($import_node_left);
         }
+        if ($skip_siblings)
+            $node->nodeValue = self::DOTS . $node->nodeValue . self::DOTS;
         $import_node = $snippet_tree->importNode($node, true /*deep*/);
         $snippet_tree->appendChild($import_node);
-        if (!is_null($right_sibling)) {
+        if (!is_null($right_sibling) && !$skip_siblings) {
+            $right_sibling->nodeValue = $right_sibling->nodeValue . self::DOTS;
             $import_node_right = $snippet_tree->importNode($right_sibling, true /*deep*/);
             $snippet_tree->appendChild($import_node_right);
         }
@@ -269,8 +283,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
             array_push($snippet_trees, $snippet_tree);
         }
 
-        array_walk($snippet_trees, function($snippet_tree) { $snippet_tree->appendChild($snippet_tree->createTextNode('...'));
-                                                             return $snippet_tree; } );
         $snippets_html = array_map(function($snippet_tree) { return $snippet_tree->saveHTML(); }, $snippet_trees );
 
         return implode("", $snippets_html);
