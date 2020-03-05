@@ -239,7 +239,7 @@ class Form extends \VuFind\Form\Form
             }
         }
 
-        if ($this->formId === 'FeedbackRecord') {
+        if ($this->formId === 'FeedbackRecord' && null !== $this->record) {
             // Append receiver info after general record feedback instructions
             // (translation key for this is defined in FeedbackForms.yaml)
             if (!$translationEmpty->__invoke('feedback_recipient_info_record')) {
