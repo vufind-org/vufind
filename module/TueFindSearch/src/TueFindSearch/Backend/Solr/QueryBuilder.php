@@ -75,7 +75,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
                          return self::FULLTEXT_TOC_ALL_LANGUAGE_SYNONYMS_FIELD;
                      case self::FULLTEXT_TYPE_ABSTRACT:
                          return self::FULLTEXT_ABSTRACT_ALL_LANGUAGE_SYNONYMS_FIELD;
-                     case seld::FULLTEXT_TYPE_SUMMARY:
+                     case self::FULLTEXT_TYPE_SUMMARY:
                          return self::FULLTEXT_SUMMARY_ALL_LANGUAGE_SYNONYMS_FIELD;
                      break;
                 }
