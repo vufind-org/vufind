@@ -27,17 +27,17 @@ return [
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
+            'VuFind\View\Helper\Bootstrap3\Captcha' => 'VuFind\View\Helper\Root\CaptchaFactory',
             'VuFind\View\Helper\Bootstrap3\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
-            'VuFind\View\Helper\Bootstrap3\Recaptcha' => 'VuFind\View\Helper\Root\RecaptchaFactory',
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
+            'captcha' => 'VuFind\View\Helper\Bootstrap3\Captcha',
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
-            'recaptcha' => 'VuFind\View\Helper\Bootstrap3\Recaptcha',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
     ]

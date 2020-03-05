@@ -6,7 +6,7 @@
   <label class="control-label"><?=$this->transEsc('recovery_by_email') ?>:</label>
   <input type="email" name="email" class="form-control"/>
 </div>
-<?=$this->recaptcha()->html($this->useRecaptcha) ?>
+<?=$this->captcha()->html($this->useCaptcha) ?>
 <div class="form-group">
   <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Recover Account') ?>"/>
 </div>

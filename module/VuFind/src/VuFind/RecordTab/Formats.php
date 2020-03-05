@@ -50,9 +50,9 @@ class Formats extends AbstractBase
      * Constructor
      *
      * @param bool $enabled is this tab enabled?
-     * @param bool $urc     use recaptcha?
+     * @param bool $uc     use captcha?
      */
-    public function __construct($enabled = true, $urc = false)
+    public function __construct($enabled = true, $uc = false)
     {
         $this->enabled = $enabled;
     }

@@ -63,22 +63,22 @@ class ReCaptchaFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $siteKey = isset($config->Captcha->siteKey)
-            ? $config->Captcha->siteKey
-            : (isset($config->Captcha->publicKey)
-                ? $config->Captcha->publicKey
+        $siteKey = isset($config->Captcha->recaptcha_siteKey)
+            ? $config->Captcha->recaptcha_siteKey
+            : (isset($config->Captcha->recaptcha_publicKey)
+                ? $config->Captcha->recaptcha_publicKey
                 : '');
-        $secretKey = isset($config->Captcha->secretKey)
-            ? $config->Captcha->secretKey
-            : (isset($config->Captcha->privateKey)
-                ? $config->Captcha->privateKey
+        $secretKey = isset($config->Captcha->recaptcha_secretKey)
+            ? $config->Captcha->recaptcha_secretKey
+            : (isset($config->Captcha->recaptcha_privateKey)
+                ? $config->Captcha->recaptcha_privateKey
                 : '');
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
         $rcOptions = ['lang' => $translator->getLocale()];
-        if (isset($config->Captcha->theme)) {
-            $rcOptions['theme'] = $config->Captcha->theme;
+        if (isset($config->Captcha->recaptcha_theme)) {
+            $rcOptions['theme'] = $config->Captcha->recaptcha_theme;
         }
         return new $requestedName(
             $siteKey, $secretKey, ['ssl' => true], $rcOptions, null, $httpClient

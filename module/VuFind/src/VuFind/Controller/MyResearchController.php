@@ -254,12 +254,12 @@ class MyResearchController extends AbstractBase
         // Password policy
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy($method);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('newAccount');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
         $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
@@ -1547,9 +1547,9 @@ class MyResearchController extends AbstractBase
             $user = $table->getByUsername($username, false);
         }
         $view = $this->createViewModel();
-        $view->useRecaptcha = $this->recaptcha()->active('passwordRecovery');
+        $view->useCaptcha = $this->captcha()->active('passwordRecovery');
         // If we have a submitted form
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             if ($user) {
                 $this->sendRecoveryEmail($user, $this->getConfig());
             } else {
@@ -1759,8 +1759,8 @@ class MyResearchController extends AbstractBase
                         = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->username;
-                    $view->useRecaptcha
-                        = $this->recaptcha()->active('changePassword');
+                    $view->useCaptcha
+                        = $this->captcha()->active('changePassword');
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
@@ -1849,13 +1849,13 @@ class MyResearchController extends AbstractBase
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
-        // View, password policy and reCaptcha
+        // View, password policy and Captcha
         $view = $this->createViewModel($post);
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy();
-        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
-        // Check reCaptcha
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        $view->useCaptcha = $this->captcha()->active('changePassword');
+        // Check Captcha
+        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
             $this->setUpAuthenticationFromRequest();
             return $this->resetNewPasswordForm($userFromHash, $view);
         }
@@ -1924,9 +1924,9 @@ class MyResearchController extends AbstractBase
         $user = $this->getUser();
         $view->email = $user->email;
         // Identification
-        $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
+        $view->useCaptcha = $this->captcha()->active('changeEmail');
         // Special case: form was submitted:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -2005,7 +2005,7 @@ class MyResearchController extends AbstractBase
         $user->updateHash();
         $view->hash = $user->verify_hash;
         $view->setTemplate('myresearch/newpassword');
-        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
+        $view->useCaptcha = $this->captcha()->active('changePassword');
         return $view;
     }
 

@@ -201,8 +201,8 @@ JS;
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <?php if ($this->recaptcha()->active()): ?>
-      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
-    <?php endif; ?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+    <?php endforeach; ?>
   </body>
 </html>
