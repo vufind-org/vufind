@@ -28,7 +28,7 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * OpenIDConnect authentication plugin factory.
@@ -61,8 +61,8 @@ class OpenIDConnectFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Zend\Session\Container(
-            'OpenIDConnect', $container->get(\Zend\Session\SessionManager::class)
+        $session = new \Laminas\Session\Container(
+            'OpenIDConnect', $container->get(\Laminas\Session\SessionManager::class)
         );
         return new OpenIDConnect($session);
     }

@@ -48,7 +48,7 @@ class OpenIDConnect extends AbstractBase implements
     /**
      * Session container
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
@@ -62,10 +62,10 @@ class OpenIDConnect extends AbstractBase implements
     /**
      * Constructor
      *
-     * @param \Zend\Session\Container $container Session container for persisting
+     * @param \Laminas\Session\Container $container Session container for persisting
      * state information.
      */
-    public function __construct(\Zend\Session\Container $container)
+    public function __construct(\Laminas\Session\Container $container)
     {
         $this->session = $container;
     }
@@ -119,7 +119,7 @@ class OpenIDConnect extends AbstractBase implements
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
