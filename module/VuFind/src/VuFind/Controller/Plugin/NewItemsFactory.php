@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for NewItems controller plugin.
@@ -63,7 +63,7 @@ class NewItemsFactory implements FactoryInterface
         }
         $search
             = $container->get(\VuFind\Config\PluginManager::class)->get('searches');
-        $config = $search->NewItem ?? new \Zend\Config\Config([]);
+        $config = $search->NewItem ?? new \Laminas\Config\Config([]);
         return new $requestedName($config);
     }
 }

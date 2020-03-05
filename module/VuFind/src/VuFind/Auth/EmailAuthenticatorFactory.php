@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class EmailAuthenticatorFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,11 +62,11 @@ class EmailAuthenticatorFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Validator\Csrf::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $container->get(\Zend\Http\PhpEnvironment\RemoteAddress::class),
+            $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $container->get(\VuFind\Db\Table\PluginManager::class)
                 ->get(\VuFind\Db\Table\AuthHash::class)

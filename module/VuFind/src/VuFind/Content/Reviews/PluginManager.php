@@ -62,8 +62,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Amazon::class => \VuFind\Content\AbstractAmazonFactory::class,
         AmazonEditorial::class => \VuFind\Content\AbstractAmazonFactory::class,
         Booksite::class => BooksiteFactory::class,
-        Demo::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
-        Guardian::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+        Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+        Guardian::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
         SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];

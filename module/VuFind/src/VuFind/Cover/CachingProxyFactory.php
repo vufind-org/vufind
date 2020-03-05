@@ -28,7 +28,7 @@
 namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cover caching proxy factory.

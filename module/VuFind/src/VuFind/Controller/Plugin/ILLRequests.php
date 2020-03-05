@@ -30,7 +30,7 @@
 namespace VuFind\Controller\Plugin;
 
 /**
- * Zend action helper to perform ILL request related actions
+ * Action helper to perform ILL request related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

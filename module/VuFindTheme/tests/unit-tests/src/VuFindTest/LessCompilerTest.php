@@ -54,7 +54,7 @@ class LessCompilerTest extends Unit\TestCase
      */
     protected $compiler;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
@@ -93,7 +93,7 @@ class LessCompilerTest extends Unit\TestCase
         );
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $temp = sys_get_temp_dir();
         $perms = fileperms($temp);
@@ -106,7 +106,7 @@ class LessCompilerTest extends Unit\TestCase
         $this->compiler->setTempPath($temp . '/vufind_less_comp_test/cache');
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';

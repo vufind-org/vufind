@@ -82,7 +82,7 @@ class AbstractRecord extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -423,7 +423,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Email action - Allows the email form to appear.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function emailAction()
     {
@@ -484,7 +484,7 @@ class AbstractRecord extends AbstractBase
     /**
      * SMS action - Allows the SMS form to appear.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function smsAction()
     {
@@ -531,7 +531,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Show citations for the current record.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function citeAction()
     {

@@ -28,8 +28,8 @@
 namespace VuFindTheme\View\Helper;
 
 use Interop\Container\ContainerInterface;
-use Zend\Config\Config;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for helpers relying on asset pipeline configuration.

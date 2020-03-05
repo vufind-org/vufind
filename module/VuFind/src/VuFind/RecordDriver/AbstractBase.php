@@ -64,14 +64,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $mainConfig;
 
     /**
      * Record-specific configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $recordConfig;
 
@@ -85,9 +85,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig   VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
+     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
+     * for built-in defaults)
+     * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)

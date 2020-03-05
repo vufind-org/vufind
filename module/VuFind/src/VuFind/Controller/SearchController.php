@@ -341,7 +341,7 @@ class SearchController extends AbstractSolrSearch
      */
     public function reservessearchAction()
     {
-        $request = new \Zend\Stdlib\Parameters(
+        $request = new \Laminas\Stdlib\Parameters(
             $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray()
         );
@@ -444,7 +444,7 @@ class SearchController extends AbstractSolrSearch
     /**
      * Handle OpenSearch.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function opensearchAction()
     {
@@ -471,7 +471,7 @@ class SearchController extends AbstractSolrSearch
      * Provide OpenSearch suggestions as specified at
      * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function suggestAction()
     {

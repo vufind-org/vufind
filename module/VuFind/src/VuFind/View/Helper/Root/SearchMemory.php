@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\Search\Memory;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * View helper for remembering recent user searches/parameters.
@@ -142,7 +142,7 @@ class SearchMemory extends AbstractHelper
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
-        $request = new \Zend\StdLib\Parameters();
+        $request = new \Laminas\Stdlib\Parameters();
         $request->fromString($queryParams);
         $paramsPlugin = $this->getView()->plugin('searchParams');
         $params = $paramsPlugin($searchClassId);

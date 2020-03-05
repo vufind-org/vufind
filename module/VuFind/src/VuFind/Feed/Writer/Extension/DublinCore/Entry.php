@@ -1,6 +1,6 @@
 <?php
 /**
- * Zend\Feed\Entry extension for Dublin Core
+ * Laminas\Feed\Entry extension for Dublin Core
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFind\Feed\Writer\Extension\DublinCore;
 
-use Zend\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
+use Laminas\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
 
 /**
- * Zend\Feed\Entry extension for Dublin Core
+ * Laminas\Feed\Entry extension for Dublin Core
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to

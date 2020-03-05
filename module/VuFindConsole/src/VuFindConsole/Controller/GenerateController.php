@@ -27,7 +27,7 @@
  */
 namespace VuFindConsole\Controller;
 
-use Zend\Console\Console;
+use Laminas\Console\Console;
 
 /**
  * This controller handles various command-line tools for dealing with language files
@@ -43,7 +43,7 @@ class GenerateController extends AbstractBase
     /**
      * Add a new dynamic route definition
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function dynamicrouteAction()
     {
@@ -90,7 +90,7 @@ class GenerateController extends AbstractBase
     /**
      * Extend an existing class
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function extendclassAction()
     {
@@ -133,7 +133,7 @@ class GenerateController extends AbstractBase
     /**
      * Extend an existing service
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function extendserviceAction()
     {
@@ -169,7 +169,7 @@ class GenerateController extends AbstractBase
     /**
      * Add a new non-tab record action to all existing record routes
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function nontabrecordactionAction()
     {
@@ -225,7 +225,7 @@ class GenerateController extends AbstractBase
     /**
      * Create a new plugin class
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function pluginAction()
     {
@@ -262,7 +262,7 @@ class GenerateController extends AbstractBase
     /**
      * Add a new record route definition
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function recordrouteAction()
     {
@@ -305,7 +305,7 @@ class GenerateController extends AbstractBase
     /**
      * Add a new static route definition
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function staticrouteAction()
     {
@@ -344,7 +344,7 @@ class GenerateController extends AbstractBase
     /**
      * Create a custom theme from the template, configure.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function themeAction()
     {
@@ -371,7 +371,7 @@ class GenerateController extends AbstractBase
     /**
      * Create a custom theme from the template.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function thememixinAction()
     {

@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Authority Controller
@@ -54,7 +54,7 @@ class AuthorityController extends AbstractSearch
     /**
      * Home action
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -71,7 +71,7 @@ class AuthorityController extends AbstractSearch
     /**
      * Record action -- display a record
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function recordAction()
     {

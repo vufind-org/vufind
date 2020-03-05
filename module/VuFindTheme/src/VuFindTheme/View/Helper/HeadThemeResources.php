@@ -36,7 +36,7 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
+class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Theme resource container

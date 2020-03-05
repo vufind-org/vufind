@@ -28,7 +28,7 @@
 namespace VuFind\ContentBlock;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * FacetList content block factory.
