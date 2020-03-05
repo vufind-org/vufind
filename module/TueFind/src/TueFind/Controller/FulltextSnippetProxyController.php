@@ -213,14 +213,14 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
 
     protected function isSkipSiblings($node) {
-       $text_content_length = strlen($node->textContent);
-       return $text_content_length >= self::CONTENT_LENGTH_TARGET_UPPER_LIMIT &&
-              !$text_content_length <= self::CONTENT_LENGTH_TARGET_LOWER_LIMIT;
+        $text_content_length = strlen($node->textContent);
+        return $text_content_length >= self::CONTENT_LENGTH_TARGET_UPPER_LIMIT &&
+               !$text_content_length <= self::CONTENT_LENGTH_TARGET_LOWER_LIMIT;
     }
 
 
     protected function chunkTooSmall($node) {
-       return strlen($node->textContent) < self::CHUNK_LENGTH_MIN_SIZE;
+        return strlen($node->textContent) < self::CHUNK_LENGTH_MIN_SIZE;
     }
 
 
