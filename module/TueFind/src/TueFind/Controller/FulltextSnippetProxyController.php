@@ -52,6 +52,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                                            'Unknown' => '0' ];
     const CONTENT_LENGTH_TARGET_UPPER_LIMIT = 100;
     const CONTENT_LENGTH_TARGET_LOWER_LIMIT = 20;
+    const CHUNK_LENGTH_MIN_SIZE = 10;
     const DOTS = '...';
 
 
@@ -218,21 +219,33 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function chunkTooSmall($node) {
+       return strlen($node->textContent) < self::CHUNK_LENGTH_MIN_SIZE;
+    }
+
+
     protected function assembleSnippet($dom, $node, $left_sibling, $right_sibling, $snippet_tree) {
         $skip_siblings = $this->isSkipSiblings($node);
         if (!is_null($left_sibling) && !$skip_siblings) {
-            $left_sibling->nodeValue = self::DOTS . $left_sibling->nodeValue;
-            $import_node_left = $snippet_tree->importNode($left_sibling, true);
-            $snippet_tree->appendChild($import_node_left);
+            if (!$this->chunkTooSmall($left_sibling)) {
+                $left_sibling->nodeValue = self::DOTS . $left_sibling->nodeValue;
+                $import_node_left = $snippet_tree->importNode($left_sibling, true);
+                $snippet_tree->appendChild($import_node_left);
+            } else
+                $node->nodeValue = self::DOTS . $node->nodeValue;
         }
         if ($skip_siblings)
             $node->nodeValue = self::DOTS . $node->nodeValue . self::DOTS;
         $import_node = $snippet_tree->importNode($node, true /*deep*/);
         $snippet_tree->appendChild($import_node);
         if (!is_null($right_sibling) && !$skip_siblings) {
-            $right_sibling->nodeValue = $right_sibling->nodeValue . self::DOTS;
-            $import_node_right = $snippet_tree->importNode($right_sibling, true /*deep*/);
-            $snippet_tree->appendChild($import_node_right);
+            if (!$this->chunkTooSmall($right_sibling)) {
+                $right_sibling->nodeValue = $right_sibling->nodeValue . self::DOTS;
+                $import_node_right = $snippet_tree->importNode($right_sibling, true /*deep*/);
+                $snippet_tree->appendChild($import_node_right);
+            } else {
+                $import_node->nodeValue = $import_node->nodeValue . self::DOTS;
+            }
         }
         return $snippet_tree;
     }
