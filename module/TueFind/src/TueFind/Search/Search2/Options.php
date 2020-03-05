@@ -8,4 +8,10 @@ class Options extends \VuFind\Search\Search2\Options
     {
         parent::__construct($configLoader);
     }
+
+
+    public function getAdvancedSearchAction()
+    {
+        return false;
+    }
 }
