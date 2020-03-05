@@ -1,0 +1,16 @@
+HTTP/1.1 404 NOT FOUND
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Date: Tue, 11 Feb 2020 11:38:17 GMT
+Content-Type: application/json
+Content-Length: 157
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE, PATCH
+Access-Control-Allow-Headers: origin, content-type, accept, x-requested-with
+Via: 1.1 vegur
+
+{
+    "HTTP_status_code": 404, 
+    "error": true, 
+    "message": "'10.1032228/nature12373' is an invalid doi. See https://doi.org/10.1032228/nature12373"
+}

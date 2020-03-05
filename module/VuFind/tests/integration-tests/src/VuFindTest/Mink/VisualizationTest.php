@@ -68,6 +68,6 @@ class VisualizationTest extends \VuFindTest\Unit\MinkTestCase
         $text = $this->findCss($page, '#visualResults')->getText();
         // Confirm that some content has been dynamically loaded into the
         // visualization area:
-        $this->assertContains('A - General Works', $text);
+        $this->assertStringContainsString('A - General Works', $text);
     }
 }

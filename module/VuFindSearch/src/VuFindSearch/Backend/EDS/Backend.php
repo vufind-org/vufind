@@ -29,16 +29,15 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Exception;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Config\Config;
+use Laminas\Session\Container as SessionContainer;
 use VuFindSearch\Backend\AbstractBackend;
-use VuFindSearch\Backend\EDS\Zend2 as ApiClient;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
-use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
-use Zend\Config\Config;
-use Zend\Session\Container as SessionContainer;
 
 /**
  *  EDS API Backend
@@ -54,7 +53,7 @@ class Backend extends AbstractBackend
     /**
      * Client user to make the actually requests to the EdsApi
      *
-     * @var ApiClient
+     * @var Connector
      */
     protected $client;
 
@@ -139,14 +138,14 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param ApiClient                        $client  EdsApi client to use
+     * @param Connector                        $client  EdsApi client to use
      * @param RecordCollectionFactoryInterface $factory Record collection factory
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
      * @param Config                           $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
-    public function __construct(ApiClient $client,
+    public function __construct(Connector $client,
         RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
         SessionContainer $session, Config $config = null, $isGuest = true
     ) {

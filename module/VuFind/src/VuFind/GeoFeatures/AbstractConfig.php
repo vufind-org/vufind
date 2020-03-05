@@ -27,7 +27,7 @@
  */
 namespace VuFind\GeoFeatures;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * MapTab Configuration Class

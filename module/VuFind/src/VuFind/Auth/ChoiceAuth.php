@@ -27,9 +27,9 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
-use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth Authentication plugin
@@ -71,17 +71,17 @@ class ChoiceAuth extends AbstractBase
     /**
      * Session container
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
      * Constructor
      *
-     * @param \Zend\Session\Container $container Session container for retaining
+     * @param \Laminas\Session\Container $container Session container for retaining
      * user choices.
      */
-    public function __construct(\Zend\Session\Container $container)
+    public function __construct(\Laminas\Session\Container $container)
     {
         // Set up session container and load cached strategy (if found):
         $this->session = $container;
@@ -112,7 +112,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Zend\Config\Config $config Configuration to set
+     * @param \Laminas\Config\Config $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -130,7 +130,7 @@ class ChoiceAuth extends AbstractBase
      * essentially an event hook which most auth modules can ignore. See
      * ChoiceAuth for a use case example.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @throws AuthException
      * @return void
@@ -326,13 +326,13 @@ class ChoiceAuth extends AbstractBase
     /**
      * Returns any authentication method this request should be delegated to.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return string|bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    public function getDelegateAuthMethod(Request $request)
     {
         return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
     }
@@ -430,8 +430,7 @@ class ChoiceAuth extends AbstractBase
      * of the current logged-in user. Return true for valid credentials, false
      * otherwise.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return bool
@@ -452,7 +451,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Whether this authentication method needs CSRF checking for the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return bool
      *

@@ -28,8 +28,8 @@
  */
 namespace VuFind\Config;
 
+use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
-use Zend\Config\Config;
 
 /**
  * Class to determine which account capabilities are available, based on

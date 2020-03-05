@@ -27,7 +27,7 @@
  */
 namespace VuFind\ContentBlock;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Content block plugin manager

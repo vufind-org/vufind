@@ -27,10 +27,11 @@
  */
 namespace VuFind\Form;
 
+use Laminas\InputFilter\InputFilter;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\NotEmpty;
+use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
-use Zend\InputFilter\InputFilter;
-use Zend\Validator\EmailAddress;
-use Zend\Validator\NotEmpty;
 
 /**
  * Configurable form.
@@ -41,7 +42,7 @@ use Zend\Validator\NotEmpty;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class Form extends \Zend\Form\Form implements
+class Form extends \Laminas\Form\Form implements
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -92,19 +93,31 @@ class Form extends \Zend\Form\Form implements
     protected $yamlReader;
 
     /**
+     * View helper manager.
+     *
+     * @var HelperPluginManager
+     */
+    protected $viewHelperManager;
+
+    /**
      * Constructor
      *
-     * @param YamlReader $yamlReader    YAML reader
-     * @param array      $defaultConfig Default Feedback configuration (optional)
+     * @param YamlReader          $yamlReader        YAML reader
+     * @param HelperPluginManager $viewHelperManager View helper manager
+     * @param array               $defaultConfig     Default Feedback configuration
+     * (optional)
      *
      * @throws \Exception
      */
-    public function __construct(YamlReader $yamlReader, array $defaultConfig = null)
-    {
+    public function __construct(
+        YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+        array $defaultConfig = null
+    ) {
         parent::__construct();
 
         $this->defaultFormConfig = $defaultConfig;
         $this->yamlReader = $yamlReader;
+        $this->viewHelperManager = $viewHelperManager;
     }
 
     /**
@@ -125,6 +138,23 @@ class Form extends \Zend\Form\Form implements
             = $this->parseConfig($formId, $config);
 
         $this->buildForm($this->formElementConfig);
+    }
+
+    /**
+     * Get display string.
+     *
+     * @param string $translationKey Translation key
+     * @param bool   $escape         Whether to escape the output.
+     * Default behaviour is to escape when the translation key does
+     * not end with '_html'.
+     *
+     * @return string
+     */
+    public function getDisplayString($translationKey, $escape = null)
+    {
+        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        return $this->viewHelperManager->get($escape ? 'transEsc' : 'translate')
+            ->__invoke($translationKey);
     }
 
     /**
@@ -461,14 +491,14 @@ class Form extends \Zend\Form\Form implements
     protected function getFormElementClass($type)
     {
         $map = [
-            'checkbox' => '\Zend\Form\Element\MultiCheckbox',
-            'text' => '\Zend\Form\Element\Text',
-            'url' => '\Zend\Form\Element\Url',
-            'email' => '\Zend\Form\Element\Email',
-            'textarea' => '\Zend\Form\Element\Textarea',
-            'radio' => '\Zend\Form\Element\Radio',
-            'select' => '\Zend\Form\Element\Select',
-            'submit' => '\Zend\Form\Element\Submit'
+            'checkbox' => '\Laminas\Form\Element\MultiCheckbox',
+            'text' => '\Laminas\Form\Element\Text',
+            'url' => '\Laminas\Form\Element\Url',
+            'email' => '\Laminas\Form\Element\Email',
+            'textarea' => '\Laminas\Form\Element\Textarea',
+            'radio' => '\Laminas\Form\Element\Radio',
+            'select' => '\Laminas\Form\Element\Select',
+            'submit' => '\Laminas\Form\Element\Submit'
         ];
 
         return $map[$type] ?? null;
@@ -649,7 +679,7 @@ class Form extends \Zend\Form\Form implements
     /**
      * Retrieve input filter used by this form
      *
-     * @return \Zend\InputFilter\InputFilterInterface
+     * @return \Laminas\InputFilter\InputFilterInterface
      */
     public function getInputFilter()
     {

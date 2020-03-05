@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscWithPrefix extends \Zend\View\Helper\AbstractHelper
+class TransEscWithPrefix extends \Laminas\View\Helper\AbstractHelper
     implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

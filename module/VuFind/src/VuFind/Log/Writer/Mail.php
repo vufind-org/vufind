@@ -28,7 +28,7 @@
 namespace VuFind\Log\Writer;
 
 /**
- * This class extends the Zend Logging towards Mail systems
+ * This class extends the Laminas Logging towards Mail systems
  *
  * @category VuFind
  * @package  Error_Logging
@@ -36,7 +36,7 @@ namespace VuFind\Log\Writer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Mail extends \Zend\Log\Writer\Mail
+class Mail extends \Laminas\Log\Writer\Mail
 {
     use VerbosityTrait;
 
@@ -46,7 +46,7 @@ class Mail extends \Zend\Log\Writer\Mail
      * @param array $event event data
      *
      * @return void
-     * @throws \Zend\Log\Exception\RuntimeException
+     * @throws \Laminas\Log\Exception\RuntimeException
      */
     protected function doWrite(array $event)
     {

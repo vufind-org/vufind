@@ -27,6 +27,7 @@
  */
 namespace VuFind\UrlShortener;
 
+use Exception;
 use VuFind\Db\Table\Shortlinks as ShortlinksTable;
 
 /**
@@ -35,14 +36,18 @@ use VuFind\Db\Table\Shortlinks as ShortlinksTable;
  * @category VuFind
  * @package  UrlShortener
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Database implements UrlShortenerInterface
 {
-    const BASE62_ALPHABET
-        = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const BASE62_BASE = 62;
+    /**
+     * Hash algorithm to use
+     *
+     * @var string
+     */
+    protected $hashAlgorithm;
 
     /**
      * Base URL of current VuFind site
@@ -59,68 +64,148 @@ class Database implements UrlShortenerInterface
     protected $table;
 
     /**
+     * HMacKey from config
+     *
+     * @var string
+     */
+    protected $salt;
+
+    /**
+     * When using a hash algorithm other than base62, the preferred number of
+     * characters to use from the hash in the URL (more may be used for
+     * disambiguation when necessary).
+     *
+     * @var int
+     */
+    protected $preferredHashLength = 9;
+
+    /**
+     * The maximum allowed hash length (tied to the width of the database hash
+     * column); if we can't generate a unique hash under this length, something
+     * has gone very wrong.
+     *
+     * @var int
+     */
+    protected $maxHashLength = 32;
+
+    /**
      * Constructor
      *
-     * @param string          $baseUrl Base URL of current VuFind site
-     * @param ShortlinksTable $table   Shortlinks database table
+     * @param string          $baseUrl       Base URL of current VuFind site
+     * @param ShortlinksTable $table         Shortlinks database table
+     * @param string          $salt          HMacKey from config
+     * @param string          $hashAlgorithm Hash algorithm to use
      */
-    public function __construct(string $baseUrl, ShortlinksTable $table)
-    {
+    public function __construct(
+        string $baseUrl,
+        ShortlinksTable $table,
+        string $salt,
+        string $hashAlgorithm = 'md5'
+    ) {
         $this->baseUrl = $baseUrl;
         $this->table = $table;
+        $this->salt = $salt;
+        $this->hashAlgorithm = $hashAlgorithm;
     }
 
     /**
-     * Common base62 encoding function.
-     * Implemented here so we don't need additional PHP modules like bcmath.
+     * Generate a short hash using the base62 algorithm (and write a row to the
+     * database).
      *
-     * @param string $base10Number Number to encode
+     * @param string $path Path to store in database
      *
      * @return string
-     *
-     * @throws \Exception
      */
-    protected function base62Encode($base10Number)
+    protected function getBase62Hash(string $path): string
     {
-        $binaryNumber = intval($base10Number);
-        if ($binaryNumber === 0) {
-            throw new \Exception('not a base10 number: "' . $base10Number . '"');
-        }
-
-        $base62Number = '';
-        while ($binaryNumber != 0) {
-            $base62Number = self::BASE62_ALPHABET[$binaryNumber % self::BASE62_BASE]
-                . $base62Number;
-            $binaryNumber = intdiv($binaryNumber, self::BASE62_BASE);
-        }
-
-        return ($base62Number == '') ? '0' : $base62Number;
+        $this->table->insert(['path' => $path]);
+        $id = $this->table->getLastInsertValue();
+        $row = $this->table->select(['id' => $id])->current();
+        $b62 = new \VuFind\Crypt\Base62();
+        $row->hash = $b62->encode($id);
+        $row->save();
+        return $row->hash;
     }
 
     /**
-     * Common base62 decoding function.
-     * Implemented here so we don't need additional PHP modules like bcmath.
+     * Support method for getGenericHash(): do the work of picking a short version
+     * of the hash and writing to the database as needed.
      *
-     * @param string $base62Number Number to decode
+     * @param string $path   Path to store in database
+     * @param string $hash   Hash of $path (generated in getGenericHash)
+     * @param int    $length Minimum number of characters from hash to use for
+     * lookups (may be increased to enforce uniqueness)
      *
-     * @return int
-     *
-     * @throws \Exception
+     * @return string
      */
-    protected function base62Decode($base62Number)
+    protected function saveAndShortenHash($path, $hash, $length)
     {
-        $binaryNumber = 0;
-        for ($i = 0; $i < strlen($base62Number); ++$i) {
-            $digit = $base62Number[$i];
-            $strpos = strpos(self::BASE62_ALPHABET, $digit);
-            if ($strpos === false) {
-                throw new \Exception('not a base62 digit: "' . $digit . '"');
-            }
-
-            $binaryNumber *= self::BASE62_BASE;
-            $binaryNumber += $strpos;
+        // Validate hash length:
+        if ($length > $this->maxHashLength) {
+            throw new \Exception(
+                'Could not generate unique hash under ' . $this->maxHashLength
+                . ' characters in length.'
+            );
         }
-        return $binaryNumber;
+        $shorthash = str_pad(substr($hash, 0, $length), $length, '_');
+        $results = $this->table->select(['hash' => $shorthash]);
+
+        // Brand new hash? Create row and return:
+        if ($results->count() == 0) {
+            $this->table->insert(['path' => $path, 'hash' => $shorthash]);
+            return $shorthash;
+        }
+
+        // If we got this far, the hash already exists; let's check if it matches
+        // the path...
+        if ($results->current()['path'] === $path) {
+            return $shorthash;
+        }
+
+        // If we got here, we have encountered an unexpected hash collision. Let's
+        // disambiguate by making it one character longer:
+        return $this->saveAndShortenHash($path, $hash, $length + 1);
+    }
+
+    /**
+     * Generate a short hash using the configured algorithm (and write a row to the
+     * database if the link is new).
+     *
+     * @param string $path Path to store in database
+     *
+     * @return string
+     */
+    protected function getGenericHash(string $path): string
+    {
+        $hash = hash($this->hashAlgorithm, $path . $this->salt);
+        // Generate short hash within a transaction to avoid odd timing-related
+        // problems:
+        $connection = $this->table->getAdapter()->getDriver()->getConnection();
+        $connection->beginTransaction();
+        $shortHash = $this
+            ->saveAndShortenHash($path, $hash, $this->preferredHashLength);
+        $connection->commit();
+        return $shortHash;
+    }
+
+    /**
+     * Given a URL, create a database entry (if necessary) and return the hash
+     * value for inclusion in the short URL.
+     *
+     * @param string $url URL
+     *
+     * @return string
+     */
+    protected function getShortHash(string $url): string
+    {
+        $path = str_replace($this->baseUrl, '', $url);
+
+        // We need to handle things differently depending on whether we're
+        // using the legacy base62 algorithm, or a different hash mechanism.
+        $shorthash = $this->hashAlgorithm === 'base62'
+            ? $this->getBase62Hash($path) : $this->getGenericHash($path);
+
+        return $shorthash;
     }
 
     /**
@@ -132,26 +217,23 @@ class Database implements UrlShortenerInterface
      */
     public function shorten($url)
     {
-        $path = str_replace($this->baseUrl, '', $url);
-        $this->table->insert(['path' => $path]);
-        $id = $this->table->getLastInsertValue();
-
-        $shortUrl = $this->baseUrl . '/short/' . $this->base62Encode($id);
-        return $shortUrl;
+        return $this->baseUrl . '/short/' . $this->getShortHash($url);
     }
 
     /**
      * Resolve URL from Database via id.
      *
-     * @param string $id ID to resolve
+     * @param string $input hash
      *
      * @return string
+     *
+     * @throws Exception
      */
-    public function resolve($id)
+    public function resolve($input)
     {
-        $results = $this->table->select(['id' => $this->base62Decode($id)]);
+        $results = $this->table->select(['hash' => $input]);
         if ($results->count() !== 1) {
-            throw new \Exception('Shortlink could not be resolved: ' . $id);
+            throw new Exception('Shortlink could not be resolved: ' . $input);
         }
 
         return $this->baseUrl . $results->current()['path'];

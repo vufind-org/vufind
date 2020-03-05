@@ -27,7 +27,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use Zend\Http\PhpEnvironment\Request;
+use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * IpRegEx permission provider for VuFind.

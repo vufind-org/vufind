@@ -133,7 +133,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getBackendManagerWithMockSolr()
     {
-        $sm = new \Zend\ServiceManager\ServiceManager();
+        $sm = new \Laminas\ServiceManager\ServiceManager();
         $pm = new BackendManager($sm);
         $mockBackend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()

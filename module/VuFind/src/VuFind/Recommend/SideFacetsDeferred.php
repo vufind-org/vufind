@@ -74,8 +74,8 @@ class SideFacetsDeferred extends SideFacets
      * search is done.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
-     *                                            request.
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */

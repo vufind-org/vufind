@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Mvc\Controller\AbstractActionController;
 use VuFind\AjaxHandler\PluginManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * This controller handles global AJAX functionality
@@ -61,7 +61,7 @@ class AjaxController extends AbstractActionController
     /**
      * Make an AJAX call with a JSON-formatted response.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function jsonAction()
     {
@@ -71,7 +71,7 @@ class AjaxController extends AbstractActionController
     /**
      * Load a recommendation module via AJAX.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function recommendAction()
     {
@@ -83,7 +83,7 @@ class AjaxController extends AbstractActionController
      *
      * A simple OK as text/plain is returned if everything works properly.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function systemStatusAction()
     {

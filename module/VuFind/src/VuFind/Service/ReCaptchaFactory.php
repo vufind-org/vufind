@@ -28,7 +28,7 @@
 namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * ReCaptcha factory.
@@ -75,7 +75,7 @@ class ReCaptchaFactory implements FactoryInterface
                 : '');
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $translator = $container->get(\Zend\Mvc\I18n\Translator::class);
+        $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
         $rcOptions = ['lang' => $translator->getLocale()];
         if (isset($config->Captcha->theme)) {
             $rcOptions['theme'] = $config->Captcha->theme;

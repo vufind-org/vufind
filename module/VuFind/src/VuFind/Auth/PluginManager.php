@@ -27,7 +27,7 @@
  */
 namespace VuFind\Auth;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Auth handler plugin manager
