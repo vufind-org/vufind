@@ -28,7 +28,7 @@
  */
 namespace VuFind\Security;
 
-use Zend\Http\Header\ContentSecurityPolicy;
+use Laminas\Http\Header\ContentSecurityPolicy;
 
 /**
  * VuFind class for generating Content Security Policy http headers
@@ -46,7 +46,7 @@ class CspHeaderGenerator
     /**
      * Configuration for generator from contensecuritypolicy.ini
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -60,7 +60,7 @@ class CspHeaderGenerator
     /**
      * CspHeaderGenerator constructor.
      *
-     * @param \Zend\Config\Config             $config         Configuration
+     * @param \Laminas\Config\Config          $config         Configuration
      * @param \VuFind\Security\NonceGenerator $nonceGenerator Nonce generator
      */
     public function __construct($config, $nonceGenerator)

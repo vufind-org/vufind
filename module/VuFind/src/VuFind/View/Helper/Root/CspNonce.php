@@ -39,7 +39,7 @@ use VuFind\Security\NonceGenerator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CspNonce extends \Zend\View\Helper\AbstractHelper
+class CspNonce extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Nonce generator object
