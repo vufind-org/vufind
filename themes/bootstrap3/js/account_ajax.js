@@ -31,7 +31,7 @@ VuFind.register('account', function Account() {
 
   // Clearing save forces AJAX update next page load
   var clearCache = function clearCache(name) {
-    if (typeof name === "undefined") {
+    if (typeof name === "undefined" || name === '') {
       for (var sub in _submodules) {
         if (_submodules.hasOwnProperty(sub)) {
           clearCache(sub);
@@ -122,11 +122,14 @@ VuFind.register('account', function Account() {
 
   var init = function init() {
     // Update information when certain actions are performed
-    $("[data-clear-account-cache]").submit(function dataClearCache() {
+    $("form[data-clear-account-cache]").submit(function dataClearCacheForm() {
       clearCache($(this).attr("data-clear-account-cache"));
     });
-    $("#library_card").change(function clearChangeLibraryCard() {
-      clearCache(/* all */);
+    $("a[data-clear-account-cache]").click(function dataClearCacheLink() {
+      clearCache($(this).attr("data-clear-account-cache"));
+    });
+    $("select[data-clear-account-cache]").change(function dataClearCacheSelect() {
+      clearCache($(this).attr("data-clear-account-cache"));
     });
   };
 
