@@ -682,10 +682,10 @@ finna.layout = (function finnaLayout() {
       for (var itemNeeded in needed) {
         if (needed.hasOwnProperty(itemNeeded)) {
           $(needed[itemNeeded])
-            .load(scriptLoaded)
+            .on('load', scriptLoaded)
             .attr('async', 'true')
             .appendTo($('head'))
-            .load();
+            .on('load');
         }
       }
     } else if (typeof callback === 'function') {
