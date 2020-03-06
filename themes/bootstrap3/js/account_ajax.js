@@ -173,16 +173,17 @@ $(document).ready(function registerAccountAjax() {
     render: function render($element, status, ICON_LEVELS) {
       var html = '';
       var level = ICON_LEVELS.NONE;
-      if (status.ok > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + status.ok + '</span>';
-      }
-      if (status.warn > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + status.warn + '</span>';
-        level = ICON_LEVELS.WARNING;
-      }
-      if (status.overdue > 0) {
-        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + status.overdue + '</span>';
-        level = ICON_LEVELS.DANGER;
+      var total = status.ok + status.warn + status.overdue;
+      if (total > 0) {
+        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + total + '</span>';
+        if (status.warn > 0) {
+          html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + status.warn + '</span>';
+          level = ICON_LEVELS.WARNING;
+        }
+        if (status.overdue > 0) {
+          html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + status.overdue + '</span>';
+          level = ICON_LEVELS.DANGER;
+        }
       }
       $element.html(html);
       $('[data-toggle="tooltip"]', $element).tooltip();
