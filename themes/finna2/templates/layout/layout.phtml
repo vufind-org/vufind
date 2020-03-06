@@ -93,6 +93,7 @@
             'collection_empty' => 'collection_empty',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
+            'hold_available' => 'hold_available',
             'libphonenumber_invalid' => 'libphonenumber_invalid',
             'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
             'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
@@ -200,7 +201,7 @@
            }
         }
 
-        $this->headScript()->appendScript(
+        $this->headScript()->prependScript(
           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
@@ -210,6 +211,22 @@
           $this->headScript()->appendScript('var keepAliveInterval = '
             . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
+      }
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->headScript()->appendFile("account_ajax.js");
+        $this->jsTranslations()->addStrings(
+          [
+            'account_checkouts_due' => 'account_checkouts_due',
+            'account_checkouts_overdue' => 'account_checkouts_overdue',
+            'account_has_alerts' => 'account_has_alerts',
+            'account_normal_checkouts' => 'account_normal_checkouts',
+            'account_requests_available' => 'account_requests_available',
+            'account_requests_in_transit' => 'account_requests_in_transit',
+          ]
+        );
       }
     ?>
     <?php

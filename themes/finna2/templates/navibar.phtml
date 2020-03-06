@@ -93,21 +93,21 @@
     <?php if (is_object($account) && $account->loginEnabled()): ?>
       <?php $user = $account->isLoggedIn(); ?>
       <?php if (!$user): ?>
-        <ul <?php if($account->isLoggedIn()): ?>role="menu" <?php endif ?>class="nav navbar-nav nav-login">
-          <li class="nav-login" id="loginOptions-navi"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
-          <?php if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-            <a role="menuitem" href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-user" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
-          <?php else: ?>
-            <?php if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
-              <div>
-                <a class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
-              </div>
+        <ul class="nav navbar-nav nav-login">
+          <li class="nav-login" id="loginOptions-navi">
+            <?php if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+              <a role="menuitem" href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-user" aria-hidden="true"></i> <?=$this->transEsc("Institutional Login")?></a>
             <?php else: ?>
-              <div>
-                <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
-              </div>
+              <?php if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
+                <div>
+                  <a class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
+                </div>
+              <?php else: ?>
+                <div>
+                  <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
+                </div>
+              <?php endif; ?>
             <?php endif; ?>
-          <?php endif; ?>
           </li>
         </ul>
       <?php endif; ?>
@@ -115,25 +115,28 @@
     </div>
     <ul <?php if ($this->auth()->isLoggedIn()): ?>role="menubar" <?php endif; ?>aria-label="<?=$this->transEsc('Your Account')?>" class="nav navbar-nav nav-absolute">
       <?php if (is_object($account) && $account->loginEnabled()): ?>
-        <?php if ($this->auth()->isLoggedIn()): ?>
+        <?php if ($user): ?>
           <li class="logoutOptions">
-            <a href="#" role="menuitem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user fa-lg" aria-hidden="true"></i> <span class="username login-text"><?=$user ? $this->escapeHtml($this->truncate($user->getDisplayName(), 20)) : $this->transEsc("Your Account")?></span><b class="caret"></b></a>
+            <a href="#" role="menuitem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i id="account-icon" class="fa fa-user fa-lg" aria-hidden="true"></i> <span class="username login-text"><?=$user ? $this->escapeHtml($this->truncate($user->getDisplayName(), 20)) : $this->transEsc("Your Account")?></span><b class="caret"></b></a>
             <ul role="menu" id="my-info-dropdown-menu" class="dropdown-menu">
               <?php if ($user->getLibraryCards()->count() > 0): ?>
                 <li>
                   <a role="menuitem" href="<?=$this->url('myresearch-checkedout')?>">
                     <?=$this->transEsc('Checked Out Items')?>
                   </a>
+                  <span class="checkedout-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
                 </li>
                 <li>
                   <a role="menuitem" href="<?=$this->url('myresearch-holds')?>">
                     <?=$this->transEsc('Holds and Recalls')?>
                   </a>
+                  <span class="holds-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
                 </li>
                 <li>
                   <a role="menuitem" href="<?=$this->url('myresearch-fines')?>">
                     <?=$this->transEsc('Fines')?>
                   </a>
+                  <span class="fines-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
                 </li>
               <?php endif; ?>
               <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'loginMenu' => 'true', 'label' => 'Library Cards','limit' => 0]);?>

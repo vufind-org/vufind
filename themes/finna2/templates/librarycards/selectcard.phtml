@@ -25,7 +25,7 @@
               }
             ?>
             <?php $selectedCard = (!isset($this->displaySelected) || $this->displaySelected) && (strcasecmp($card->cat_username, $this->user->cat_username) === 0); ?>
-            <a aria-describedby="select-card-label-dropdown" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>"><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ?><?=$display ?></a>
+            <a aria-describedby="select-card-label-dropdown" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id)?>" data-clear-account-cache><?=$selectedCard ? '<i class="fa fa-check"></i><span class="sr-only">(' . $this->transEsc("selected") . ')</span> ' : '' ?><?=$display ?></a>
           <?php endforeach; ?>
         <?php endif; ?>
       </li>
@@ -79,7 +79,7 @@
               }
             ?>
             <li>
-              <a aria-describedby="select-card-label-maincontent" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id);?>"><?=$display ?></a>
+              <a aria-describedby="select-card-label-maincontent" role="menuitem" href="<?=$this->url('librarycards-selectcard')?>?cardID=<?=$this->escapeHtmlAttr($card->id);?>" data-clear-account-cache><?=$display ?></a>
             </li>
         <?php endforeach; ?>
         </ul>

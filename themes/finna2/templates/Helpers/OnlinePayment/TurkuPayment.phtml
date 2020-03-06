@@ -1,6 +1,6 @@
 <!-- START of: finna - Helpers/OnlinePayment/TurkuPayment.phtml -->
 <div class="online-payment-area">
-  <form id="paytrail-form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox>
+  <form id="paytrail-form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox data-clear-account-cache="fines">
     <input name="transactionId" type="hidden" value="<?=$this->transactionId?>">
     <input type="submit" name="pay" class="btn btn-primary btn-lg" value="<?=$this->transEsc('online_payment_go_to_pay', ['%%amount%%' => $this->safeMoneyFormat($this->amount / 100.00)])?>" />
   </form>

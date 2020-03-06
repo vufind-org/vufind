@@ -271,7 +271,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     (string)$itemLoan->loan_date,
                     false
                 );
-                $loan['dueStatus'] = null; // Calculated below
+                $loan['dueStatus'] = false; // Calculated below
                 $loan['id'] = (string)$itemLoan->mms_id;
                 //$loan['source'] = 'Solr';
                 $loan['barcode'] = (string)$itemLoan->item_barcode;

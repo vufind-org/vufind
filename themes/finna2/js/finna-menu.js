@@ -42,6 +42,40 @@ finna.menu = (function finnaMenu() {
       });
   }
 
+  function initStatusObserver() {
+    if (!window.MutationObserver) {
+      // No browser support
+      return;
+    }
+
+    // Callback function to execute when mutations are observed
+    var callback = function observerCallback(mutationsList/*, observer*/) {
+      $.each(mutationsList, function checkMutation() {
+        if (this.type === 'childList' && this.addedNodes) {
+          $(this.addedNodes).each(function checkNode() {
+            if ($(this).hasClass('warn') || $(this).hasClass('overdue') || $(this).hasClass('fa-bell') || $(this).hasClass('fa-clock-o')) {
+              $('.loans-menu-status')
+                .attr("data-toggle", "tooltip")
+                .attr("data-placement", "bottom")
+                .attr("title", VuFind.translate("account_has_alerts"))
+                .tooltip()
+                .html('<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>')
+                .removeClass('hidden');
+              return false;
+            }
+          });
+        }
+      });
+    };
+
+    var observer = new MutationObserver(callback);
+    $('.checkedout-status').each(function setupCheckedout() {
+      observer.observe(this, { childList: true, subtree: true });
+    });
+    $('.holds-status').each(function setupHolds() {
+      observer.observe(this, { childList: true, subtree: true });
+    });
+  }
 
   function init() {
     listHolder = $('.mylist-bar');
@@ -73,6 +107,8 @@ finna.menu = (function finnaMenu() {
       $('#myLoans').toggleClass('in');
       $('#open-loans').toggleClass('collapsed');
     });
+
+    initStatusObserver();
   }
 
   var my = {

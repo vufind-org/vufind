@@ -27,7 +27,8 @@
       $menuListItems = [
         'checkedout' => [
           'url' => 'myresearch-checkedout',
-          'translation' => 'Checked Out Items'
+          'translation' => 'Checked Out Items',
+          'statusKey' => 'checkedout',
         ],
         'historicloans' => [
           'url' => 'myresearch-historicloans',
@@ -36,21 +37,25 @@
         ],
         'holds' => [
           'url' => 'myresearch-holds',
-          'translation' => 'Holds and Recalls'
+          'translation' => 'Holds and Recalls',
+          'statusKey' => 'holds',
         ],
         'storageretrievalrequests' => [
           'url' => 'myresearch-storageretrievalrequests',
           'translation' => 'Storage Retrieval Requests',
-          'show' => $this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)
+          'show' => $this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams),
+          'statusKey' => 'storageretrievalrequests',
         ],
         'illrequests' => [
           'url' => 'myresearch-illrequests',
           'translation' => 'Interlibrary Loan Requests',
-          'show' => $this->ils()->checkFunction('ILLRequests', $capabilityParams)
+          'show' => $this->ils()->checkFunction('ILLRequests', $capabilityParams),
+          'statusKey' => 'illrequests',
         ],
         'fines' => [
           'url' => 'myresearch-fines',
-          'translation' => 'Fines'
+          'translation' => 'Fines',
+          'statusKey' => 'fines',
         ],
         'librarycards' => [
           'url' => 'librarycards-home',
@@ -99,7 +104,8 @@
           'holds',
           'storageretrievalrequests',
           'illrequests'
-        ]
+        ],
+        'statusKey' => 'loans-menu',
       ],
       'fines',
       'librarycards',
@@ -137,8 +143,11 @@
         <?php if (!isset($listItem['show']) || $listItem['show'] !== false): ?>
           <li role="menuitem" class="<?=$id?><?= $activeToLower === $id ? ' active' : ''?>">
             <a href="<?=$this->escapeHtmlAttr($this->url($listItem['url']) . ($listItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $id ? 'aria-current="page"' : ''?>>
-            <?=$this->transEsc($listItem['translation'])?>
+              <?=$this->transEsc($listItem['translation'])?>
             </a>
+            <?php if (!empty($listItem['statusKey'])): ?>
+              <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+            <?php endif; ?>
           </li>
         <?php endif; ?>
       <?php endforeach; ?>
@@ -176,6 +185,9 @@
           <?php endif; ?>
           <span class="caret"></span>
         </a>
+        <?php if (!empty($listItem['statusKey'])): ?>
+          <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+        <?php endif; ?>
         <?php if ($hasPartial) : ?>
           <div class="<?= $value['partial']['wrapperClass'] ?? 'ajax-wrapper'?>">
             <?php if ($listItem['active']): ?>
@@ -193,6 +205,9 @@
                   <a href="<?=$this->escapeHtmlAttr($this->url($childItem['url']) . ($childItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $childKey ? 'aria-current="page"' : ''?>>
                     <?=$this->transEsc($childItem['translation'])?>
                   </a>
+                  <?php if (!empty($childItem['statusKey'])): ?>
+                    <span class="<?=$childItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+                  <?php endif; ?>
                 </li>
             <?php endforeach; ?>
           </ul>
@@ -206,6 +221,9 @@
             <i class="<?=$listItem['iconClass']?>" aria-hidden="true"></i>
           <?php endif; ?>
         </a>
+        <?php if (!empty($listItem['statusKey'])): ?>
+          <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+        <?php endif; ?>
       </li>
     <?php endif; ?>
   <?php endforeach; ?>
