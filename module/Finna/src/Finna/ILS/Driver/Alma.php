@@ -2,9 +2,9 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -73,6 +73,26 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     protected $hiddenProcessTypes = [];
 
     /**
+     * Mappings from fee types
+     *
+     * @var array
+     */
+    protected $feeTypeMappings = [
+        'OVERDUEFINE' => 'Overdue',
+        'OVERDUENOTIFICATIONFINE' => 'Overdue',
+        'RECALLEDOVERDUEFINE' => 'Overdue',
+        'LOSTITEMREPLACEMENTFEE' => 'Lost Item Replacement',
+        'LOSTITEMPROCESSFEE' => 'Lost Item Processing',
+        'LIBRARYCARDREPLACEMENT' => 'New Card',
+        'CARDRENEWAL' => 'New Card',
+        'ISSUELIBRARYCARD' => 'New Card',
+        'SERVICEFEE' => 'Service Fee',
+        'LOCKERKEY' => 'Locker Key',
+        'OTHER' => 'Other',
+        'DAMAGEDITEMFINE' => 'Damaged Item'
+    ];
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -107,6 +127,12 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 $this->hiddenProcessTypes[$key] = explode(':', $value);
             }
         }
+
+        if (!empty($this->config['FeeTypeMappings'])) {
+            $this->feeTypeMappings = array_merge(
+                $this->feeTypeMappings, $this->config['FeeTypeMappings']
+            );
+        }
     }
 
     /**
@@ -133,13 +159,15 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 $type = (string)$fee->type;
                 $payable = !in_array($type, $blockedTypes);
             }
+            $feeType = $this->feeTypeMappings[(string)$fee->type]
+                ?? (string)$fee->type['desc'];
             $fineList[] = [
                 'id'       => (string)$fee->id,
                 "title"    => (string)($fee->title ?? ''),
                 "amount"   => round(floatval($fee->original_amount) * 100),
                 "balance"  => round(floatval($fee->balance) * 100),
                 "createdate" => $this->parseDate($created, true),
-                "fine"     => (string)$fee->type['desc'],
+                "fine"     => $feeType,
                 'payableOnline' => $payable,
                 '_create_time' => (string)$fee->creation_time,
                 '_status_time' => (string)$fee->status_time,
