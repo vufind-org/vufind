@@ -228,23 +228,16 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $skip_siblings = $this->isSkipSiblings($node);
         if (!is_null($left_sibling) && !$skip_siblings) {
             if (!$this->chunkTooSmall($left_sibling)) {
-                $left_sibling->nodeValue = self::DOTS . $left_sibling->nodeValue;
                 $import_node_left = $snippet_tree->importNode($left_sibling, true);
                 $snippet_tree->appendChild($import_node_left);
-            } else
-                $node->nodeValue = self::DOTS . $node->nodeValue;
+            }
         }
-        if ($skip_siblings)
-            $node->nodeValue = self::DOTS . $node->nodeValue . self::DOTS;
         $import_node = $snippet_tree->importNode($node, true /*deep*/);
         $snippet_tree->appendChild($import_node);
         if (!is_null($right_sibling) && !$skip_siblings) {
             if (!$this->chunkTooSmall($right_sibling)) {
-                $right_sibling->nodeValue = $right_sibling->nodeValue . self::DOTS;
                 $import_node_right = $snippet_tree->importNode($right_sibling, true /*deep*/);
                 $snippet_tree->appendChild($import_node_right);
-            } else {
-                $import_node->nodeValue = $import_node->nodeValue . self::DOTS;
             }
         }
         return $snippet_tree;
@@ -295,6 +288,11 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
             array_push($snippet_trees, $snippet_tree);
         }
+
+        array_walk($snippet_trees, function($snippet_tree, $index) use ($snippet_trees) {
+                                            if ($index != array_key_last($snippet_trees))
+                                                $snippet_tree->appendChild($snippet_tree->createTextNode(self::DOTS));
+                                            return $snippet_tree; } );
 
         $snippets_html = array_map(function($snippet_tree) { return $snippet_tree->saveHTML(); }, $snippet_trees );
 
