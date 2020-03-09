@@ -2,8 +2,6 @@
 
 namespace VuFind\Captcha;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
@@ -13,6 +11,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'figlet' => Figlet::class,
+        'image' => Image::class,
         'recaptcha' => ReCaptcha::class,
     ];
 
@@ -22,7 +21,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Figlet::class => InvokableFactory::class,
+        Figlet::class => FigletFactory::class,
+        Image::class => ImageFactory::class,
         ReCaptcha::class => ReCaptchaFactory::class,
     ];
 
