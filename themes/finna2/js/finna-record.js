@@ -367,7 +367,7 @@ finna.record = (function finnaRecord() {
             }
             $elem.removeClass('loading');
           })
-          .fail(function onGetSimilarRecordsFail() {
+          .fail(function onGetVersionsFail() {
             $elem.text(VuFind.translate('error_occurred'));
             $elem.removeClass('loading');
           });
