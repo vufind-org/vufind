@@ -135,7 +135,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     public function testTokens()
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
-        $profile = $this->driver->getMyProfile(['username' => 'whatever']);
+        $profile = $this->driver->getMyProfile(['id' => 'whatever']);
         // Get token
         // - Right URL
         $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
