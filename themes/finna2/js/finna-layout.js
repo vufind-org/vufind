@@ -685,7 +685,7 @@ finna.layout = (function finnaLayout() {
             .on('load', scriptLoaded)
             .attr('async', 'true')
             .appendTo($('head'))
-            .on('load');
+            .trigger('load');
         }
       }
     } else if (typeof callback === 'function') {
