@@ -29,6 +29,7 @@ namespace VuFindTest\Form;
 
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Form Test Class
@@ -218,11 +219,24 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testElementOptions()
     {
+        $config = Yaml::parse(
+            file_get_contents(
+                __DIR__ . '/../../../../fixtures/configs/feedbackforms/test.yaml'
+            )
+        );
+        $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+        $mock->expects($this->any())->method('get')
+            ->with($this->equalTo('FeedbackForms.yaml'))
+            ->will($this->returnValue($config));
+
         $form = new Form(
-            new YamlReader(),
+            $mock,
             $this->createMock(\Zend\View\HelperPluginManager::class)
         );
-        $form->setFormId('__ForTesting__');
+        $form->setFormId('TestElementOptions');
 
         $getElement = function ($name, $elements) {
             foreach ($elements as $el) {
