@@ -246,8 +246,7 @@ class Form extends \Laminas\Form\Form implements
             $element = [];
 
             $required = ['type', 'name'];
-            $optional
-                = ['required', 'help','value', 'inputType', 'group', 'placeholder'];
+            $optional = $this->getFormElementSettingFields();
             foreach (array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
@@ -287,13 +286,15 @@ class Form extends \Laminas\Form\Form implements
                         ];
                     }
                     foreach ($el['options'] as $option) {
+                        $value = $option['value'] ?? $option;
+                        $label = $option['label'] ?? $option;
                         if ($isSelect) {
                             $options[] = [
-                                'value' => $option,
-                                'label' => $this->translate($option)
+                                'value' => $value,
+                                'label' => $this->translate($label)
                             ];
                         } else {
-                            $options[$option] = $this->translate($option);
+                            $options[$value] = $label;
                         }
                     }
                     $element['options'] = $options;
@@ -305,7 +306,10 @@ class Form extends \Laminas\Form\Form implements
                         }
                         $options = [];
                         foreach ($group['options'] as $option) {
-                            $options[$option] = $this->translate($option);
+                            $value = $option['value'] ?? $option;
+                            $label = $option['label'] ?? $option;
+
+                            $options[$value] = $this->translate($label);
                         }
                         $label = $this->translate($group['label']);
                         $groups[$label] = ['label' => $label, 'options' => $options];
@@ -363,6 +367,18 @@ class Form extends \Laminas\Form\Form implements
         return [
             'recipient', 'title', 'help', 'submit', 'response', 'useCaptcha',
             'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
+        ];
+    }
+
+    /**
+     * Return a list of field names to read from form element settings.
+     *
+     * @return array
+     */
+    protected function getFormElementSettingFields()
+    {
+        return [
+            'required', 'help','value', 'inputType', 'group', 'placeholder'
         ];
     }
 
@@ -434,9 +450,11 @@ class Form extends \Laminas\Form\Form implements
             }
             $optionElements = [];
             foreach ($options as $key => $val) {
+                $label = $val['label'] ?? $val;
+                $value = $val['value'] ?? $key;
                 $optionElements[] = [
-                    'label' => $val,
-                    'value' => $key,
+                    'label' => $this->translate($label),
+                    'value' => $value,
                     'attributes' => ['id' => $val]
                 ];
             }
@@ -450,11 +468,13 @@ class Form extends \Laminas\Form\Form implements
             $optionElements = [];
             $first = true;
             foreach ($options as $key => $val) {
+                $label = $val['label'] ?? $val;
+                $value = $val['value'] ?? $key;
                 $optionElements[] = [
-                    'label' => $val,
-                    'value' => $key,
-                    'label_attributes' => ['for' => $val],
-                    'attributes' => ['id' => $val],
+                    'label' => $this->translate($label),
+                    'value' => $value,
+                    'label_attributes' => ['for' => $label],
+                    'attributes' => ['id' => $label],
                     'selected' => $first
                 ];
                 $first = false;
@@ -548,10 +568,12 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Return form recipient(s).
      *
+     * @param array $postParams Posted form data
+     *
      * @return array of reciepients, each consisting of an array with
      * name, email or null if not configured
      */
-    public function getRecipient()
+    public function getRecipient($postParams = null)
     {
         $recipient = $this->formConfig['recipient'] ?? [null];
         $recipients = isset($recipient['email']) || isset($recipient['name'])
@@ -607,7 +629,11 @@ class Form extends \Laminas\Form\Form implements
 
         $translated = [];
         foreach ($postParams as $key => $val) {
-            $translated["%%{$key}%%"] = $this->translate($val);
+            $translatedVals = [];
+            foreach (!is_array($val) ? [$val] : $val as $v) {
+                $translatedVals[] = $this->translate($v);
+            }
+            $translated["%%{$key}%%"] = implode(', ', $translatedVals);
         }
 
         return str_replace(
@@ -647,7 +673,7 @@ class Form extends \Laminas\Form\Form implements
 
             if (in_array($type, ['radio', 'select'])) {
                 $value = $this->translate($value);
-            } elseif ($type === 'checkbox') {
+            } elseif ($type === 'checkbox' && !empty($value)) {
                 $translated = [];
                 foreach ($value as $val) {
                     $translated[] = $this->translate($val);
