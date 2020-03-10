@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Form;
 
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Form Test Class
