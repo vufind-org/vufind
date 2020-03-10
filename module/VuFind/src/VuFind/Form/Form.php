@@ -378,7 +378,7 @@ class Form extends \Laminas\Form\Form implements
     protected function getFormElementSettingFields()
     {
         return [
-            'required', 'help','value', 'inputType', 'group', 'placeholder'
+            'required', 'help', 'value', 'inputType', 'group', 'placeholder'
         ];
     }
 
