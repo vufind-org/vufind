@@ -30,9 +30,9 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
+use Laminas\Console\Console;
+use Laminas\Stdlib\RequestInterface;
 use VuFind\Net\IpAddressUtils;
-use Zend\Console\Console;
-use Zend\Stdlib\RequestInterface;
 
 /**
  * IpRange permission provider for VuFind.

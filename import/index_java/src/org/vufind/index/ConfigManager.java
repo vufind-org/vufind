@@ -38,7 +38,7 @@ public class ConfigManager
     static Logger logger = Logger.getLogger(ConfigManager.class.getName());
     private static ConcurrentHashMap<String, Ini> configCache = new ConcurrentHashMap<String, Ini>();
     private Properties vuFindConfigs = null;
-    private static ThreadLocal<ConfigManager> managerCache = 
+    private static ThreadLocal<ConfigManager> managerCache =
         new ThreadLocal<ConfigManager>()
         {
             @Override

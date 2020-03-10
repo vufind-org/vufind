@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Exception\RuntimeException;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Exception\RuntimeException;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Authentication view helper

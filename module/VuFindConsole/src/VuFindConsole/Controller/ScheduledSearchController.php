@@ -29,8 +29,8 @@
  */
 namespace VuFindConsole\Controller;
 
-use Zend\Console\Console;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Console\Console;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * CLI Controller Module (scheduled search tools)
@@ -66,14 +66,14 @@ class ScheduledSearchController extends AbstractBase
     /**
      * View renderer
      *
-     * @var \Zend\View\Renderer\PhpRenderer
+     * @var \Laminas\View\Renderer\PhpRenderer
      */
     protected $renderer;
 
     /**
      * URL helper
      *
-     * @var \Zend\View\Helper\Url
+     * @var \Laminas\View\Helper\Url
      */
     protected $urlHelper;
 
@@ -94,7 +94,7 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Top-level VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $mainConfig;
 
@@ -138,7 +138,7 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Send notifications.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function notifyAction()
     {
@@ -195,7 +195,7 @@ class ScheduledSearchController extends AbstractBase
     {
         $schedule = $s->notification_frequency;
         if (!isset($this->scheduleOptions[$schedule])) {
-            $this->err('Search ' . $s->id . ': unknown schedule: ' . $s->schedule);
+            $this->err('Search ' . $s->id . ": unknown schedule: $schedule");
             return false;
         }
         $diff = $todayTime->diff($lastTime);

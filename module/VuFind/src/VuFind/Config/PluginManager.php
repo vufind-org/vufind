@@ -27,7 +27,7 @@
  */
 namespace VuFind\Config;
 
-use Zend\ServiceManager\AbstractPluginManager as Base;
+use Laminas\ServiceManager\AbstractPluginManager as Base;
 
 /**
  * VuFind Config Manager
@@ -79,7 +79,7 @@ class PluginManager extends Base
      *
      * @param string $id Service identifier
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function reload($id)
     {

@@ -52,7 +52,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $tempdir = function_exists('sys_get_temp_dir')
             ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
@@ -64,7 +64,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         rmdir($this->path);
     }
@@ -126,14 +126,14 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Zend\Config\Config $config Optional configuration
+     * @param \Laminas\Config\Config $config Optional configuration
      *
      * @return Database
      */
     protected function getHandler($config = null)
     {
         if (null === $config) {
-            $config = new \Zend\Config\Config(
+            $config = new \Laminas\Config\Config(
                 ['file_save_path' => $this->path]
             );
         }
