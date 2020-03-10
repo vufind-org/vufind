@@ -99,7 +99,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'compile theme' => 'Flatten a theme hierarchy for improved performance',
             'generate dynamicroute' => 'Add a dynamic route',
             'generate extendclass' => 'Subclass a service, w/ lookup by class name',
             'generate extendservice' => 'Override a service with a new child class',
