@@ -627,7 +627,6 @@ class Form extends \Laminas\Form\Form implements
 
         $translated = [];
         foreach ($postParams as $key => $val) {
-            $translatedVals = [];
             $translatedVals = array_map([$this, 'translate'], (array)$val);
             $translated["%%{$key}%%"] = implode(', ', $translatedVals);
         }
