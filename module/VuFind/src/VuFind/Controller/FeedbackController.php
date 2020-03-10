@@ -13,9 +13,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Mail\Address;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
-use Zend\Mail\Address;
 
 /**
  * Controller for configurable forms (feedback etc).
@@ -32,7 +32,7 @@ class FeedbackController extends AbstractBase
     /**
      * Display Feedback home form.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

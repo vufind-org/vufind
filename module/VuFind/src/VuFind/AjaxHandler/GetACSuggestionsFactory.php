@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetACSuggestionsFactory implements
-    \Zend\ServiceManager\Factory\FactoryInterface
+    \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

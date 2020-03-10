@@ -75,9 +75,9 @@ if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
 }
 
-if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load Zend Framework autoloader.');
+if (!class_exists('Laminas\Loader\AutoloaderFactory')) {
+    throw new RuntimeException('Unable to load Laminas autoloader.');
 }
 
 // Run the application!
-Zend\Mvc\Application::init(require 'config/application.config.php')->run();
+Laminas\Mvc\Application::init(require 'config/application.config.php')->run();

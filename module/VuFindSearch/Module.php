@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ZF2 module definition for the VF2 search service.
+ * Code module containing the VuFind search service.
  *
  * PHP version 7
  *
@@ -29,7 +29,7 @@
 namespace VuFindSearch;
 
 /**
- * ZF2 module definition for the VF2 search service.
+ * Code module containing the VuFind search service.
  *
  * PHP version 7
  *
@@ -64,7 +64,7 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],

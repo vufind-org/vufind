@@ -79,11 +79,12 @@ class TabManager
     protected $pluginManager;
 
     /**
-     * Overall framework configuration
+     * Overall framework configuration (used for fetching configurations "the old
+     * way" -- can eventually be deprecated).
      *
      * @var array
      */
-    protected $zendConfig;
+    protected $legacyConfig;
 
     /**
      * Current active context (defaults to 'record')
@@ -95,16 +96,17 @@ class TabManager
     /**
      * Constructor
      *
-     * @param PluginManager $pm         RecordTab plugin manager
-     * @param ConfigManager $cm         Configuration plugin manager
-     * @param array         $zendConfig Zend Framework configuration
+     * @param PluginManager $pm           RecordTab plugin manager
+     * @param ConfigManager $cm           Configuration plugin manager
+     * @param array         $legacyConfig Overall framework configuration (only
+     * used for legacy config loading; optional)
      */
     public function __construct(PluginManager $pm, ConfigManager $cm,
-        $zendConfig = []
+        $legacyConfig = []
     ) {
         $this->pluginManager = $pm;
         $this->configManager = $cm;
-        $this->zendConfig = $zendConfig;
+        $this->legacyConfig = $legacyConfig;
 
         // Initialize default context.
         $this->initializeCurrentContext();
@@ -137,7 +139,7 @@ class TabManager
         if (!isset($this->config[$this->context])) {
             $key = $this->contextSettings[$this->context]['legacyConfigSection']
                 ?? 'recorddriver_tabs';
-            $legacyConfig = $this->zendConfig['vufind'][$key] ?? [];
+            $legacyConfig = $this->legacyConfig['vufind'][$key] ?? [];
             $iniConfig = $this->configManager->get(
                 $this->contextSettings[$this->context]['configFile']
             )->toArray();
@@ -234,9 +236,9 @@ class TabManager
      * Convenience method to load tab information, including default, in a
      * single pass. Returns an associative array with 'tabs' and 'default' keys.
      *
-     * @param AbstractRecordDriver $driver   Record driver
-     * @param \Zend\Http\Request   $request  User request (optional)
-     * @param string               $fallback Fallback default tab to use if no
+     * @param AbstractRecordDriver  $driver   Record driver
+     * @param \Laminas\Http\Request $request  User request (optional)
+     * @param string                $fallback Fallback default tab to use if no
      * tab specified or matched.
      *
      * @return array
@@ -252,8 +254,8 @@ class TabManager
     /**
      * Get an array of valid tabs for the provided record driver.
      *
-     * @param AbstractRecordDriver $driver  Record driver
-     * @param \Zend\Http\Request   $request User request (optional)
+     * @param AbstractRecordDriver  $driver  Record driver
+     * @param \Laminas\Http\Request $request User request (optional)
      *
      * @return array               service name => tab object
      */
@@ -269,7 +271,7 @@ class TabManager
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
-            if ($request instanceof \Zend\Http\Request
+            if ($request instanceof \Laminas\Http\Request
                 && method_exists($newTab, 'setRequest')
             ) {
                 $newTab->setRequest($request);

@@ -97,7 +97,7 @@ trait AjaxResponseTrait
      * @param mixed  $data     The response data
      * @param int    $httpCode A custom HTTP Status Code
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      * @throws \Exception
      */
     protected function getAjaxResponse($type, $data, $httpCode = null)
@@ -120,7 +120,7 @@ trait AjaxResponseTrait
      * @param string     $type Content type to output
      * @param \Exception $e    Exception to output.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function getExceptionResponse($type, \Exception $e)
     {
@@ -139,7 +139,7 @@ trait AjaxResponseTrait
      * @param string $method AJAX method to call
      * @param string $type   Content type to output
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function callAjaxMethod($method, $type = 'application/javascript')
     {

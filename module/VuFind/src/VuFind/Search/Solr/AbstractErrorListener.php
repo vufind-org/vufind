@@ -28,12 +28,12 @@
  */
 namespace VuFind\Search\Solr;
 
+use Laminas\EventManager\EventInterface;
+
+use Laminas\EventManager\SharedEventManagerInterface;
 use SplObjectStorage;
 
 use VuFindSearch\Backend\BackendInterface;
-use Zend\EventManager\EventInterface;
-
-use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * Abstract base class of SOLR error listeners.

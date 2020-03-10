@@ -14,14 +14,14 @@ $config = [
     ],
     'service_manager' => [
         'factories' => [
-            'VuFindApi\Formatter\FacetFormatter' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFindApi\Formatter\FacetFormatter' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
         ],
     ],
     'router' => [
         'routes' => [
             'apiHome' => [
-                'type' => 'Zend\Router\Http\Segment',
+                'type' => 'Laminas\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api[/v1][/]',
@@ -32,7 +32,7 @@ $config = [
                 ],
             ],
             'searchApiv1' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/search',
@@ -43,7 +43,7 @@ $config = [
                 ]
             ],
             'recordApiv1' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/record',

@@ -136,7 +136,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
      *
-     * @var \Zend\Http\Response\Header\SetCookie[]
+     * @var \Laminas\Http\Response\Header\SetCookie[]
      */
     protected $cookies = false;
 

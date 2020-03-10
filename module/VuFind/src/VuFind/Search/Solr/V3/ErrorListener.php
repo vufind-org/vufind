@@ -28,11 +28,11 @@
  */
 namespace VuFind\Search\Solr\V3;
 
+use Laminas\EventManager\EventInterface;
+
 use VuFind\Search\Solr\AbstractErrorListener;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
-use Zend\EventManager\EventInterface;
 
 /**
  * SOLR 3.x error listener.

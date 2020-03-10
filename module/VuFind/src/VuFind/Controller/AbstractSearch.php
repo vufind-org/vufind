@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Session\SessionManager;
+use Laminas\Stdlib\Parameters;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
-use Zend\Session\SessionManager;
-use Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -81,7 +81,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Handle an advanced search
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function advancedAction()
     {
@@ -107,7 +107,7 @@ class AbstractSearch extends AbstractBase
                 ->get(\VuFind\Search\Results\PluginManager::class)
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
-                new \Zend\StdLib\Parameters([])
+                new \Laminas\Stdlib\Parameters([])
             );
         }
 
@@ -260,7 +260,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Send search results to results view
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function resultsAction()
     {
@@ -340,7 +340,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
      *
-     * @return bool|\Zend\View\Model\ViewModel
+     * @return bool|\Laminas\View\Model\ViewModel
      */
     protected function processJumpTo($results)
     {

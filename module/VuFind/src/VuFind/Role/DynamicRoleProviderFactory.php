@@ -28,8 +28,8 @@
 namespace VuFind\Role;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Config;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Config;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * VuFind dynamic role provider factory.
