@@ -63,10 +63,13 @@ class ThemeCommand extends Command
      * Constructor
      *
      * @param ThemeCompiler $compiler Theme compiler
+     * @param string|null   $name     The name of the command; passing null means it
+     * must be set in configure()
      */
-    public function __construct(ThemeCompiler $compiler)
+    public function __construct(ThemeCompiler $compiler, $name = null)
     {
         $this->compiler = $compiler;
+        parent::__construct($name);
     }
 
     /**
@@ -87,12 +90,12 @@ class ThemeCommand extends Command
                 'target',
                 InputArgument::OPTIONAL,
                 'the target name for the compiled theme '
-                . '(defaults to source with _compiled appended)'
+                . '(defaults to <source> with _compiled appended)'
             )->addOption(
                 'force',
                 'f',
                 InputOption::VALUE_NONE,
-                'If target exists, it will only be overwritten when this is set'
+                'If <target> exists, it will only be overwritten when this is set'
             );
     }
 
@@ -113,7 +116,7 @@ class ThemeCommand extends Command
         }
         $force = $input->getOption('force') ? true : false;
         if (!$this->compiler->compile($source, $target, $force)) {
-            $output->writeln($compiler->getLastError());
+            $output->writeln($this->compiler->getLastError());
             return 1;
         }
         $output->writeln('Success.');
