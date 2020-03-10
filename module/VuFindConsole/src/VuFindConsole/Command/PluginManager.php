@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'compile/theme' => Compile\ThemeCommand::class,
+        'generate/plugin' => Generate\PluginCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
         'generate/dynamicroute' =>
@@ -58,7 +59,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'generate extendservice [<source>] [<target>]',
         'generate/nontabrecordaction' =>
             'generate nontabrecordaction [<newAction>] [<module>]',
-        'generate/plugin' => 'generate plugin [<class>] [<factory>]',
         'generate/recordroute' =>
             'generate recordroute [<base>] [<newController>] [<module>]',
         'generate/staticroute' =>
@@ -113,6 +113,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Compile\ThemeCommand::class => Compile\ThemeCommandFactory::class,
+        Generate\PluginCommand::class => Generate\PluginCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 
