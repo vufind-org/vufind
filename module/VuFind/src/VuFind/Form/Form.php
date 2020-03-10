@@ -294,7 +294,7 @@ class Form extends \Laminas\Form\Form implements
                                 'label' => $this->translate($label)
                             ];
                         } else {
-                            $options[$value] = $label;
+                            $options[$value] = $this->translate($label);
                         }
                     }
                     $element['options'] = $options;
