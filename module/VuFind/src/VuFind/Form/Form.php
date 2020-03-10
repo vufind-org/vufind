@@ -450,11 +450,9 @@ class Form extends \Laminas\Form\Form implements
             }
             $optionElements = [];
             foreach ($options as $key => $val) {
-                $label = $val['label'] ?? $val;
-                $value = $val['value'] ?? $key;
                 $optionElements[] = [
-                    'label' => $label,
-                    'value' => $value,
+                    'label' => $val,
+                    'value' => $key,
                     'attributes' => ['id' => $val]
                 ];
             }
@@ -468,13 +466,11 @@ class Form extends \Laminas\Form\Form implements
             $optionElements = [];
             $first = true;
             foreach ($options as $key => $val) {
-                $label = $val['label'] ?? $val;
-                $value = $val['value'] ?? $key;
                 $optionElements[] = [
-                    'label' => $label,
-                    'value' => $value,
-                    'label_attributes' => ['for' => $label],
-                    'attributes' => ['id' => $label],
+                    'label' => $val,
+                    'value' => $key,
+                    'label_attributes' => ['for' => $val],
+                    'attributes' => ['id' => $val],
                     'selected' => $first
                 ];
                 $first = false;
