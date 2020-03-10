@@ -98,7 +98,7 @@ class FeedbackController extends AbstractBase
             $user ? $user->email : null
         );
 
-        $recipients = $form->getRecipient();
+        $recipients = $form->getRecipient($params->fromPost());
 
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
