@@ -568,6 +568,8 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array of reciepients, each consisting of an array with
      * name, email or null if not configured
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRecipient($postParams = null)
     {
