@@ -70,7 +70,7 @@ class PluginCommand extends AbstractCommand
     public function __construct(GeneratorTools $tools, ContainerInterface $container,
         $name = null
     ) {
-        $this->generatorTools = $tools;
+        $this->container = $container;
         parent::__construct($tools, $name);
     }
 
