@@ -453,7 +453,7 @@ class Form extends \Laminas\Form\Form implements
                 $label = $val['label'] ?? $val;
                 $value = $val['value'] ?? $key;
                 $optionElements[] = [
-                    'label' => $this->translate($label),
+                    'label' => $label,
                     'value' => $value,
                     'attributes' => ['id' => $val]
                 ];
@@ -471,7 +471,7 @@ class Form extends \Laminas\Form\Form implements
                 $label = $val['label'] ?? $val;
                 $value = $val['value'] ?? $key;
                 $optionElements[] = [
-                    'label' => $this->translate($label),
+                    'label' => $label,
                     'value' => $value,
                     'label_attributes' => ['for' => $label],
                     'attributes' => ['id' => $label],
