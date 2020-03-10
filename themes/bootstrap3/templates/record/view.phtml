@@ -6,10 +6,16 @@
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
+  // Use combined search script for versions tab results
+  if (isset($this->tabs['Versions'])) {
+    $this->headScript()->appendFile('combined-search.js');
+    $this->headScript()->appendFile('check_item_statuses.js');
+    $this->headScript()->appendFile('record_versions.js');
+  }
 
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
-    $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+      $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
   }
 
   // Set up breadcrumbs:

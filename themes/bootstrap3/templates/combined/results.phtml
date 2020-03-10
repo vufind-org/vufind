@@ -42,8 +42,7 @@
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_item_statuses.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->render('search/results-scripts.phtml');
   $this->headScript()->appendFile("combined-search.js");
   // Style
   $this->headLink()->appendStylesheet('combined-search.css');

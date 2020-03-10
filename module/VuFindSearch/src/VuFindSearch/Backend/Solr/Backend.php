@@ -39,6 +39,7 @@ use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
+use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 
@@ -58,7 +59,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
  */
 class Backend extends AbstractBackend
     implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface
+    GetIdsInterface, WorkExpressionsInterface
 {
     /**
      * Connector.
@@ -334,6 +335,35 @@ class Backend extends AbstractBackend
             $this->refineBrowseException($e);
         }
         return $this->deserialize($response);
+    }
+
+    /**
+     * Return work expressions.
+     *
+     * @param string   $id            Id of record to compare with
+     * @param array    $workKeys      Work identification keys
+     * @param ParamBag $defaultParams Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function workExpressions($id, $workKeys, ParamBag $defaultParams = null)
+    {
+        $params = $defaultParams ? clone $defaultParams
+            : new \VuFindSearch\ParamBag();
+        $this->injectResponseWriter($params);
+        $query = [];
+        foreach ($workKeys as $key) {
+            $key = addcslashes($key, '+-&|!(){}[]^"~*?:\\/');
+            $query[] = "work_keys_str_mv:(\"$key\")";
+        }
+        $params->set('q', implode(' OR ', $query));
+        $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
+        $params->add('rows', 100);
+        $params->add('sort', 'main_date_str desc, title_sort asc');
+        $response = $this->connector->search($params);
+        $collection = $this->createRecordCollection($response);
+        $this->injectSourceIdentifier($collection);
+        return $collection;
     }
 
     /**
