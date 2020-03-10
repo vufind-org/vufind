@@ -2,11 +2,11 @@
 
 @font-face {
     font-family: 'finnaicons';
-    src:url('../../../themes/finna2/css/fonts/finnaicons.eot?89353229');
-    src:url('../../../themes/finna2/css/fonts/finnaicons.eot?89353229#iefix') format('embedded-opentype'),
-    url('../../../themes/finna2/css/fonts/finnaicons.woff?89353229') format('woff'),
-    url('../../../themes/finna2/css/fonts/finnaicons.ttf?89353229') format('truetype'),
-    url('../../../themes/finna2/css/fonts/finnaicons.svg?89353229#finnaicons') format('svg');
+    src:url('../../../themes/finna2/css/fonts/finnaicons.eot?33815464#');
+    src:url('../../../themes/finna2/css/fonts/finnaicons.eot?33815464#iefix') format('embedded-opentype'),
+    url('../../../themes/finna2/css/fonts/finnaicons.woff?33815464#') format('woff'),
+    url('../../../themes/finna2/css/fonts/finnaicons.ttf?33815464#') format('truetype'),
+    url('../../../themes/finna2/css/fonts/finnaicons.svg?33815464#finnaicons') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -806,7 +806,7 @@ table .iconlabel {
 /* HIDING ICONS and custom styles for some occurences */
 // Item statuses
 .fa-ok {
-    color: #00B370;
+    color: @brand-success;
 }
 .fa-x:before {
     content:"" !important;
@@ -987,4 +987,109 @@ i.bigger {
 .fa-pagebreak:before {
     font-family: finnaicons;
     content: "\e8ab";
+}
+/* STATUS styles */
+// Badges
+.status {
+    .fa {
+        float: right;
+    }
+    .badge {
+        font-weight: 600;
+        float: right;
+        margin-left: 4px;
+        &.ok {
+            color: @brand-success;
+            &:before {
+                font-family: finnaicons;
+                content:"\e8b2";
+                color: @brand-success;
+                margin-right: 4px;
+            }
+        }
+        &.overdue {
+            color: @brand-danger;
+            &:before {
+                font-family: finnaicons;
+                content:"\e8b3";
+                color: @brand-danger;
+                margin-right: 4px;
+            }
+        }
+    }
+}
+// Status none
+#account-icon.fa-user-circle {
+    font-family: finnaicons;
+    font-size: 20px;
+    color: @action-link-color;
+    &:before {
+        content:"\e00e";
+    }
+}
+// Status success
+.status .fa-bell.text-success:before {
+    font-family: finnaicons;
+    color: @brand-success;
+    content:"\e8b2";
+}
+#account-icon.fa-bell.text-success {
+    font-family: finnaicons;
+    font-size: 20px;
+    color: @action-link-color;
+    &:after {
+        content:"\e00e";
+    }
+    &:before {
+        content:"\e8b1";
+        font-size: 14px;
+        position: absolute;
+        margin-left: 14px;
+        margin-top: 10px;
+        color: @brand-success;
+    }
+}
+// Status warning
+.status .fa-bell.text-warning:before {
+    font-family: finnaicons;
+    color: @brand-warning;
+    content:"\e8b2";
+}
+#account-icon.fa-bell.text-warning {
+    font-family: finnaicons;
+    font-size: 20px;
+    color: @action-link-color;
+    &:after {
+        content:"\e00e";
+    }
+    &:before {
+        content:"\e8b1";
+        font-size: 14px;
+        position: absolute;
+        margin-left: 14px;
+        margin-top: 10px;
+        color: @brand-warning;
+    }
+}
+// Status danger
+.status .fa-exclamation-triangle:before {
+    font-family: finnaicons;
+    color: @brand-danger;
+    content:"\e8b0";
+}
+#account-icon.fa-exclamation-triangle {
+    font-family: finnaicons;
+    font-size: 20px;
+    color: @action-link-color;
+    &:after {
+        content:"\e00e";
+    }
+    &:before {
+        content:"\e8b0";
+        font-size: 14px;
+        position: absolute;
+        margin-left: 14px;
+        margin-top: 10px;
+        color: @brand-danger;
+    }
 }

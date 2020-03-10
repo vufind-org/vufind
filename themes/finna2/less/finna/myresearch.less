@@ -557,7 +557,9 @@
   border-top: none;
   box-shadow: 2px 2px 3px 0 @gray-lighter;
   display: table;
-
+  .status {
+    padding-left: 5px;
+  }
   .dropdown-menu {
     border-left: none;
     border-right: none;
@@ -615,16 +617,9 @@
     border-top: 1px solid @gray-lighter;
     float: left;
     width: 100%;
-
     &:first-child {
       border-top: none;
     }
-    &.menu-logout i {
-      position: absolute;
-      right: 14px;
-      top: 14px;
-    }
-
     &.menu-header {
       background-color: @brand-third;
       > h1 {
@@ -651,10 +646,12 @@
       margin-right: 0px;
       &#open-loans {
         display: flex;
+        align-items: center;
         span {
-          margin-left: auto;
-          display: inline-block;
           cursor: pointer;
+          &.caret {
+            margin-left: auto;
+          }
         }
       }
 

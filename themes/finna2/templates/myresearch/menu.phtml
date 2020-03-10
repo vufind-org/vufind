@@ -143,11 +143,11 @@
         <?php if (!isset($listItem['show']) || $listItem['show'] !== false): ?>
           <li role="menuitem" class="<?=$id?><?= $activeToLower === $id ? ' active' : ''?>">
             <a href="<?=$this->escapeHtmlAttr($this->url($listItem['url']) . ($listItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $id ? 'aria-current="page"' : ''?>>
-              <?=$this->transEsc($listItem['translation'])?>
+            <?=$this->transEsc($listItem['translation'])?>
+              <?php if (!empty($listItem['statusKey'])): ?>
+                <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+              <?php endif; ?>
             </a>
-            <?php if (!empty($listItem['statusKey'])): ?>
-              <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-            <?php endif; ?>
           </li>
         <?php endif; ?>
       <?php endforeach; ?>
@@ -183,11 +183,11 @@
           <?php if ($showSpinner) : ?>
             <i class="hidden fa fa-spinner fa-spin"></i><span class="ajax-error hidden"><small> <?=$this->translate('An error has occurred'); ?></small></span>
           <?php endif; ?>
+          <?php if (!empty($listItem['statusKey'])): ?>
+            <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+          <?php endif; ?>
           <span class="caret"></span>
         </a>
-        <?php if (!empty($listItem['statusKey'])): ?>
-          <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-        <?php endif; ?>
         <?php if ($hasPartial) : ?>
           <div class="<?= $value['partial']['wrapperClass'] ?? 'ajax-wrapper'?>">
             <?php if ($listItem['active']): ?>
@@ -204,10 +204,10 @@
                 <li role="menuitem" class="<?="menu-$name"?>  <?=$activeToLower === $childKey ? ' active' : ''?>">
                   <a href="<?=$this->escapeHtmlAttr($this->url($childItem['url']) . ($childItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $childKey ? 'aria-current="page"' : ''?>>
                     <?=$this->transEsc($childItem['translation'])?>
+                    <?php if (!empty($childItem['statusKey'])): ?>
+                      <span class="<?=$childItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+                    <?php endif; ?>
                   </a>
-                  <?php if (!empty($childItem['statusKey'])): ?>
-                    <span class="<?=$childItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-                  <?php endif; ?>
                 </li>
             <?php endforeach; ?>
           </ul>
@@ -220,10 +220,10 @@
           <?php if (isset($listItem['iconClass'])): ?>
             <i class="<?=$listItem['iconClass']?>" aria-hidden="true"></i>
           <?php endif; ?>
+          <?php if (!empty($listItem['statusKey'])): ?>
+            <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
+          <?php endif; ?>
         </a>
-        <?php if (!empty($listItem['statusKey'])): ?>
-          <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-        <?php endif; ?>
       </li>
     <?php endif; ?>
   <?php endforeach; ?>
