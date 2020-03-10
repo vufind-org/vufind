@@ -74,7 +74,7 @@ public class WorkKeys
                 for (String author : authors) {
                     final String normalizedAuthor = normalizeWorkKey(author, includeRegEx, excludeRegEx);
                     if (!normalizedAuthor.isEmpty()) {
-                        workKeys.add("AT ".concat(normalizedTitle).concat(" "). concat(normalizedAuthor));
+                        workKeys.add("AT ".concat(normalizedAuthor).concat(" ").concat(normalizedTitle));
                     }
                 }
             }
