@@ -28,7 +28,6 @@
 namespace VuFindConsole\Command\Generate;
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for console command: Compile themes.
