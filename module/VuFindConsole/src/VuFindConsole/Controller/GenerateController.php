@@ -176,45 +176,6 @@ class GenerateController extends AbstractBase
     }
 
     /**
-     * Add a new static route definition
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function staticrouteAction()
-    {
-        $request = $this->getRequest();
-        $route = $request->getParam('name');
-        $module = $request->getParam('module');
-        if (empty($module)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' generate staticroute'
-                . ' [route_definition] [target_module]'
-            );
-            Console::writeLine(
-                "\troute_definition - a Controller/Action string, e.g. Search/Home"
-            );
-            Console::writeLine(
-                "\ttarget_module - the module where the new route will be generated"
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Create backup of configuration
-        $generator = $this->getGeneratorTools();
-        $configPath = $generator->getModuleConfigPath($module);
-        $generator->backUpFile($configPath);
-
-        // Append the route
-        $config = include $configPath;
-        $routeGenerator = new \VuFind\Route\RouteGenerator();
-        $routeGenerator->addStaticRoute($config, $route);
-
-        // Write updated configuration
-        $generator->writeModuleConfig($configPath, $config);
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Create a custom theme from the template, configure.
      *
      * @return \Laminas\Console\Response
