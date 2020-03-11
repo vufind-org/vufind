@@ -56,11 +56,6 @@ class DynamicRouteCommand extends AbstractRouteCommand
      */
     protected function configure()
     {
-        /*
-                'generate/dynamicroute' =>
-            'generate dynamicroute [<name>] [<newController>]
-            [<newAction>] [<module>]',
-*/
         $this
             ->setDescription('Dynamic route generator')
             ->setHelp('Adds a dynamic route.')
