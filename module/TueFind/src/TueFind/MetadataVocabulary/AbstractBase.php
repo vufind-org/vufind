@@ -10,12 +10,8 @@ abstract class AbstractBase implements MetadataVocabularyInterface {
         $this->metaHelper = $metaHelper;
     }
 
-    public function addMetatags(\VuFind\RecordDriver\AbstractBase $driver) {
-        $genericFieldsToValuesMap = ['author' => array_merge(
-                                        $driver->tryMethod('getPrimaryAuthors') ?? [],
-                                        $driver->tryMethod('getSecondaryAuthors') ?? [],
-                                        $driver->tryMethod('getCorporateAuthors') ?? []
-                                     ),
+    public function addMetatags(\TueFind\RecordDriver\SolrMarc $driver) {
+        $genericFieldsToValuesMap = ['author' => $driver->getAuthorNames(),
                                      'container_title' => $driver->tryMethod('getContainerTitle'),
                                      'date' => $driver->tryMethod('getPublicationDates'),
                                      'doi' => $driver->tryMethod('getCleanDOI'),
