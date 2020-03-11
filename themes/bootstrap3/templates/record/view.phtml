@@ -1,115 +1,121 @@
 <?php
-  // Set up standard record scripts:
-  $this->headScript()->appendFile("record.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
-  // Activate Syndetics Plus if necessary:
-  if ($this->syndeticsPlus()->isActive()) {
+// Set up standard record scripts:
+$this->headScript()->appendFile("record.js");
+$this->headScript()->appendFile("check_save_statuses.js");
+// Activate Syndetics Plus if necessary:
+if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
-  }
+}
 
-  // Add RDF header link if applicable:
-  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+// Add RDF header link if applicable:
+if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
     $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
-  }
+}
 
-  // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
     '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
-  $this->layout()->title = $this->driver->getShortTitle();
+$this->layout()->title = $this->driver->getShortTitle();
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
-  <ul class="pager hidden-print">
-    <?php if ($this->scrollData['previousRecord']): ?>
-      <?php if ($this->scrollData['firstRecord']): ?>
-        <li>
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('First')?></a>
-        </li>
-      <?php endif; ?>
-      <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a>
-      </li>
-    <?php else: ?>
-      <?php if ($this->scrollData['firstRecord']): ?>
-        <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('First')?></a></li>
-      <?php endif; ?>
-      <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
-    <?php endif; ?>
-    <?=$this->transEsc('of_num_results', [
-      '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
-      '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
-    ]) ?>
-    <?php if ($this->scrollData['nextRecord']): ?>
-      <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a>
-      </li>
-      <?php if ($this->scrollData['lastRecord']): ?>
-        <li>
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> <span aria-hidden="true">&raquo;</span></a>
-        </li>
-      <?php endif; ?>
-     <?php else: ?>
-      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
-      <?php if ($this->scrollData['lastRecord']): ?>
-        <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> <span aria-hidden="true">&raquo;</span></a></li>
-      <?php endif; ?>
-    <?php endif; ?>
-  </ul>
+  <nav aria-label="<?=$this->transEsc('pagination_navigation')?>">
+    <ul class="pager hidden-print">
+        <?php if ($this->scrollData['previousRecord']): ?>
+            <?php if ($this->scrollData['firstRecord']): ?>
+            <li>
+              <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow" aria-label="<?=$this->transEsc('go_to')?> <?=$this->transEsc('First Search Result')?>">&laquo; <?=$this->transEsc('First')?></a>
+            </li>
+            <?php endif; ?>
+          <li>
+            <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow" aria-label="<?=$this->transEsc('go_to')?> <?=$this->transEsc('Previous Search Result')?>">&laquo; <?=$this->transEsc('Prev')?></a>
+          </li>
+        <?php else: ?>
+            <?php if ($this->scrollData['firstRecord']): ?>
+            <li class="disabled" aria-hidden="true"><a href="#">&laquo; <?=$this->transEsc('First')?></a></li>
+            <?php endif; ?>
+          <li class="disabled" aria-hidden="true"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+        <?php endif; ?>
+        <?=$this->transEsc('of_num_results', [
+            '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
+            '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
+        ])?>
+        <?php if ($this->scrollData['nextRecord']): ?>
+          <li>
+            <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow" aria-label="<?=$this->transEsc('go_to')?> <?=$this->transEsc('Next Search Result')?>"><?=$this->transEsc('Next')?> &raquo;</a>
+          </li>
+            <?php if ($this->scrollData['lastRecord']): ?>
+            <li>
+              <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow" aria-label="<?=$this->transEsc('go_to')?> <?=$this->transEsc('Last Search Result')?>"><?=$this->transEsc('Last')?> &raquo;</a>
+            </li>
+            <?php endif; ?>
+        <?php else: ?>
+          <li class="disabled" aria-hidden="true"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+            <?php if ($this->scrollData['lastRecord']): ?>
+            <li class="disabled" aria-hidden="true"><a href="#"><?=$this->transEsc('Last')?> &raquo;</a></li>
+            <?php endif; ?>
+        <?php endif; ?>
+    </ul>
+  </nav>
 <?php endif; ?>
 
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-  <?php $sidebarList = $this->related()->getList($this->driver); ?>
-  <div class="<?=$this->layoutClass('mainbody')?><?=count($sidebarList) < 1 ? ' solo' : '' ?>">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
-    <?=$this->flashmessages()?>
-    <?=$this->record($this->driver)->getCoreMetadata()?>
+    <?php $sidebarList = $this->related()->getList($this->driver); ?>
+  <div class="<?=$this->layoutClass('mainbody')?><?=count($sidebarList) < 1 ? ' solo' : ''?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId"/>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource"/>
+      <?=$this->flashmessages()?>
+      <?=$this->record($this->driver)->getCoreMetadata()?>
+      
+      <?php if (count($this->tabs) > 0): ?>
+        <a name="tabnav"></a>
+        <div class="record-tabs">
+          <ul class="nav nav-tabs">
+              <?php foreach ($this->tabs as $tab => $obj): ?>
+                  <?php // add current tab to breadcrumbs if applicable:
+                  $desc = $obj->getDescription();
+                  $tabName = preg_replace("/\W/", "-", strtolower($tab));
+                  $tabClasses = ['record-tab', $tabName];
+                  if (0 === strcasecmp($this->activeTab, $tab)) {
+                      if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                          $tabClasses[] = 'active';
+                      }
+                      $tabClasses[] = 'initiallyActive';
+                      $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                      $activeTabObj = $obj;
+                  }
+                  if (!$obj->isVisible()) {
+                      $tabClasses[] = 'hidden';
+                  }
+                  if (!$obj->supportsAjax()) {
+                      $tabClasses[] = 'noajax';
+                  }
+                  ?>
+                <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)): ?> data-background<?php endif ?>>
+                  <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+                </li>
+              <?php endforeach; ?>
+          </ul>
 
-    <?php if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
-      <div class="record-tabs">
-        <ul class="nav nav-tabs">
-          <?php foreach ($this->tabs as $tab => $obj): ?>
-            <?php // add current tab to breadcrumbs if applicable:
-              $desc = $obj->getDescription();
-              $tabName = preg_replace("/\W/", "-", strtolower($tab));
-              $tabClasses = [ 'record-tab', $tabName ];
-              if (0 === strcasecmp($this->activeTab, $tab)) {
-                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-                  $tabClasses[] = 'active';
-                }
-                $tabClasses[] = 'initiallyActive';
-                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-                $activeTabObj = $obj;
-              }
-              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
-            ?>
-            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-              <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-
-        <div class="tab-content">
-          <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
-              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-            </div>
-          <?php endif; ?>
+          <div class="tab-content">
+              <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+                <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab)?>-tab">
+                    <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : ''?>
+                </div>
+              <?php endif; ?>
+          </div>
         </div>
-      </div>
-    <?php endif; ?>
-
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+      <?php endif; ?>
+      
+      <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?php foreach ($sidebarList as $current): ?>
-      <?=$this->related()->render($current)?>
-    <?php endforeach; ?>
+      <?php foreach ($sidebarList as $current): ?>
+          <?=$this->related()->render($current)?>
+      <?php endforeach; ?>
   </div>
 </div>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET');?>
