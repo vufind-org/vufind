@@ -119,11 +119,7 @@ class Captcha extends AbstractHelper
      */
     public function js(): array
     {
-        if (isset($this->captcha)) {
-            return $this->captcha->getJsIncludes();
-        } else {
-            return [];
-        }
+        return isset($this->captcha) ? $this->captcha->getJsIncludes() : [];
     }
 
     /**

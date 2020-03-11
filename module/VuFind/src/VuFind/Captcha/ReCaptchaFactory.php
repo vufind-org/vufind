@@ -63,7 +63,7 @@ class ReCaptchaFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get('ViewManager')->getViewModel()
+            $container->get(\Laminas\Mvc\I18n\Translator::class)->getLocale()
         );
     }
 }
