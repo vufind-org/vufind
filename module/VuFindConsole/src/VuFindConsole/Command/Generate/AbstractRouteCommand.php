@@ -32,6 +32,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Route\RouteGenerator;
+use VuFindConsole\Generator\GeneratorTools;
 
 /**
  * Abstract base class for route generator commands.
