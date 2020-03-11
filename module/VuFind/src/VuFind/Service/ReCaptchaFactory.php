@@ -63,8 +63,10 @@ class ReCaptchaFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $siteKey = $config->Captcha->recaptcha_siteKey ?? $config->Captcha->recaptcha_publicKey ?? '';
-        $secretKey = $config->Captcha->recaptcha_secretKey ?? $config->Captcha->recaptcha_privateKey ?? '';
+        $siteKey = $config->Captcha->recaptcha_siteKey ??
+            $config->Captcha->recaptcha_publicKey ?? '';
+        $secretKey = $config->Captcha->recaptcha_secretKey ??
+            $config->Captcha->recaptcha_privateKey ?? '';
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);

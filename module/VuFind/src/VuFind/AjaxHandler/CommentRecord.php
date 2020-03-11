@@ -77,10 +77,10 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource  $table     Resource database table
-     * @param Captcha $captcha Captcha controller plugin
-     * @param User|bool $user      Logged in user (or false)
-     * @param bool      $enabled   Are comments enabled?
+     * @param Resource  $table   Resource database table
+     * @param Captcha   $captcha Captcha controller plugin
+     * @param User|bool $user    Logged in user (or false)
+     * @param bool      $enabled Are comments enabled?
      */
     public function __construct(Resource $table, Captcha $captcha, $user,
         $enabled = true

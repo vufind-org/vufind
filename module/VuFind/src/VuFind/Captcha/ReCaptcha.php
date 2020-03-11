@@ -58,11 +58,11 @@ class ReCaptcha extends AbstractBase
      * Constructor
      *
      * @param \VuFind\Service\ReCaptcha $recaptcha ReCaptcha Service
-     * @param string                    $language Translator locale
+     * @param string                    $language  Translator locale
      */
     public function __construct(\VuFind\Service\ReCaptcha $recaptcha,
-                                string $language)
-    {
+        string $language
+    ) {
         $this->recaptcha = $recaptcha;
         $this->language = $language;
     }
@@ -74,7 +74,8 @@ class ReCaptcha extends AbstractBase
      */
     public function getJsIncludes(): array
     {
-        return ['https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=' . $this->language];
+        return ['https://www.google.com/recaptcha/api.js'
+              . '?onload=recaptchaOnLoad&render=explicit&hl=' . $this->language];
     }
 
     /**

@@ -44,11 +44,11 @@ class Captcha extends \VuFind\View\Helper\Root\Captcha
      * Constructor
      *
      * @param \VuFind\Captcha\AbstractBase|null $captcha Captcha object
-     * @param \Laminas\Config\Config            $config Config object
+     * @param \Laminas\Config\Config            $config  Config object
      */
     public function __construct(?\VuFind\Captcha\AbstractBase $captcha,
-                                \Laminas\Config\Config $config)
-    {
+        \Laminas\Config\Config $config
+    ) {
         $this->prefixHtml = '<div class="form-group">';
         $this->suffixHtml = '</div>';
         parent::__construct($captcha, $config);

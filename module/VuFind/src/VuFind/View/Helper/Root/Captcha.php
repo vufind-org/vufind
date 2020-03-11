@@ -73,12 +73,12 @@ class Captcha extends AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\Captcha\AbstractBase|null $captcha
-     * @param \Laminas\Config\Config $config
+     * @param \VuFind\Captcha\AbstractBase|null $captcha Captcha
+     * @param \Laminas\Config\Config            $config  Config
      */
     public function __construct(?\VuFind\Captcha\AbstractBase $captcha,
-                                \Laminas\Config\Config $config)
-    {
+        \Laminas\Config\Config $config
+    ) {
         $this->captcha = $captcha;
         $this->config = $config;
     }
@@ -97,7 +97,7 @@ class Captcha extends AbstractHelper
      * Generate HTML depending on CAPTCHA type (empty if not active).
      *
      * @param bool $useCaptcha Boolean of active state, for compact templating
-     * @param bool $wrapHtml     Include prefix and suffix?
+     * @param bool $wrapHtml   Include prefix and suffix?
      *
      * @return string
      */

@@ -68,7 +68,7 @@ class Captcha extends AbstractPlugin
      * Constructor
      *
      * @param \VuFind\Captcha\AbstractBase|null $captcha CAPTCHA object
-     * @param \VuFind\Config                    $config Config file
+     * @param \VuFind\Config                    $config  Config file
      *
      * @return void
      */
@@ -113,7 +113,8 @@ class Captcha extends AbstractPlugin
             return true;
         }
         try {
-            $captchaPassed = $this->captcha->verify($this->getController()->params());
+            $captchaPassed = $this->captcha
+                ->verify($this->getController()->params());
         } catch (\Exception $e) {
             $captchaPassed = false;
         }

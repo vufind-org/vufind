@@ -538,7 +538,7 @@ class AbstractBase extends AbstractActionController
      * Also validate the Captcha, if it's activated
      *
      * @param string $submitElement Name of the post field of the submit button
-     * @param bool   $useCaptcha  Are we using captcha in this situation?
+     * @param bool   $useCaptcha    Are we using captcha in this situation?
      *
      * @return bool
      */

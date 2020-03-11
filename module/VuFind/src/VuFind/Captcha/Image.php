@@ -49,8 +49,10 @@ class Image extends LaminasBase
         $imgUrl = '/vufind/cache/' . $id . $this->captcha->getSuffix();
         $html = '<img src="' . $imgUrl . '">';
         $html .= '<br/><br/>';
-        $html .= '<input name="' . $this->captchaHtmlInputId . '" required="required">';
-        $html .= '<input type="hidden" name="' . $this->captchaHtmlInternalId . '" value="' . $id . '">';
+        $html .= '<input name="' . $this->captchaHtmlInputId
+               . '" required="required">';
+        $html .= '<input type="hidden" name="'
+               . $this->captchaHtmlInternalId . '" value="' . $id . '">';
         return $html;
     }
 }
