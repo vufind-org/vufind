@@ -1,27 +1,29 @@
 <?php if ($this->pageCount): ?>
+<nav aria-label="<?=$this->transEsc('pagination_navigation')?>">
   <ul class="pagination">
     <?php if (isset($this->previous)): ?>
       <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
-        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEsc('go_to_first_page')?>">[1]</a></li>
       <?php endif; ?>
-      <li><a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
+      <li><a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('go_to_prev_page')?></span><span aria-hidden="true">&laquo; <?=$this->transEsc('Prev')?></span></a></li>
     <?php endif; ?>
 
     <?php if (count($this->pagesInRange) > 1): ?>
       <?php foreach ($this->pagesInRange as $page): ?>
         <?php if ($page != $this->current): ?>
-          <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+          <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>" aria-label="<?=$this->transEsc('go_to_page')?> <?=$page?>"><?=$page?></a></li>
         <?php else: ?>
-          <li class="active"><span><?=$page?></span></li>
+          <li class="active" aria-current="true" aria-label="<?=$this->transEsc('current_page')?>, <?=$this->transEsc('page')?> <?=$page?>"><span><?=$page?></span></li>
         <?php endif; ?>
       <?php endforeach; ?>
     <?php endif; ?>
 
     <?php if (isset($this->next)): ?>
-      <li><a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> <span aria-hidden="true">&raquo;</span></a></li>
+      <li><a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"> <span class="sr-only"><?=$this->transEsc('go_to_next_page')?></span> <span aria-hidden="true"><?=$this->transEsc('Next');?> &raquo;</span></a></li>
       <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
-        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEsc('go_to_last_page')?>, <?=$this->transEsc('page')?> <?=$this->pageCount?>">[<?=$this->pageCount?>]</a></li>
       <?php endif; ?>
     <?php endif; ?>
   </ul>
+</nav>
 <?php endif; ?>
