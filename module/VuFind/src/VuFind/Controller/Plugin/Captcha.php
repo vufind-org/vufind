@@ -1,19 +1,62 @@
 <?php
-
+/**
+ * VuFind Action Helper - Captcha handler
+ *
+ * PHP version 7
+ *
+ * Copyright (C) Villanova University 2020.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Controller_Plugins
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
+/**
+ * Action helper to manage Captcha fields
+ *
+ * @category VuFind
+ * @package  Controller_Plugins
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
 class Captcha extends AbstractPlugin
 {
-    
-    protected $captcha;
-    
     /**
-     * String array of forms where ReCaptcha is active
+     * Captcha service
+     *
+     * @var \VuFind\Captcha\AbstractBase
+     */
+    protected $captcha;
+
+    /**
+     * String array of forms where Captcha is active
      */
     protected $domains = [];
 
+    /**
+     * Captcha activated in config
+     */
     protected $active = false;
 
     /**
@@ -21,6 +64,14 @@ class Captcha extends AbstractPlugin
      */
     protected $errorMode = 'flash';
 
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Captcha\AbstractBase|null $captcha CAPTCHA object
+     * @param \VuFind\Config                    $config Config file
+     *
+     * @return void
+     */
     public function __construct(?\VuFind\Captcha\AbstractBase $captcha, $config)
     {
         $this->captcha = $captcha;
@@ -42,7 +93,7 @@ class Captcha extends AbstractPlugin
      *
      * @return bool
      */
-    public function setErrorMode($mode)
+    public function setErrorMode($mode): bool
     {
         if (in_array($mode, ['flash', 'throw', 'none'])) {
             $this->errorMode = $mode;
@@ -50,8 +101,13 @@ class Captcha extends AbstractPlugin
         }
         return false;
     }
-    
-    public function verify()
+
+    /**
+     * Pull the captcha field from controller params and check them for accuracy
+     *
+     * @return bool
+     */
+    public function verify(): bool
     {
         if (!$this->active()) {
             return true;
@@ -79,7 +135,7 @@ class Captcha extends AbstractPlugin
      *
      * @return bool
      */
-    public function active($domain = false)
+    public function active($domain = false): bool
     {
         return $this->active
         && ($domain == false || $this->domains === true
