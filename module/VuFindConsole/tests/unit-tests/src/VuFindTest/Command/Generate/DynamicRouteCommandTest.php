@@ -55,7 +55,8 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
             \Symfony\Component\Console\Exception\RuntimeException::class
         );
         $this->expectExceptionMessage(
-            'Not enough arguments (missing: "route").'
+            'Not enough arguments '
+            . '(missing: "route, controller, action, target_module").'
         );
         $command = new DynamicRouteCommand(
             $this->getMockGeneratorTools(),
