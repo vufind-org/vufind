@@ -10,7 +10,7 @@ interface MetadataVocabularyInterface {
      * for higher flexibility. That's why all implementations need to use "tryMethod"
      * instead of calling the methods directly.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver
+     * @param \TueFind\RecordDriver\SolrMarc $driver
      */
-    public function addMetatags(\VuFind\RecordDriver\AbstractBase $driver);
+    public function addMetatags(\TueFind\RecordDriver\SolrMarc $driver);
 }

@@ -12,7 +12,7 @@ class Eprints extends AbstractBase {
                                                'eprints.title' => 'title',
                                             ];
 
-    public function addMetatags(\VuFind\RecordDriver\AbstractBase $driver) {
+    public function addMetatags(\TueFind\RecordDriver\SolrMarc $driver) {
         parent::addMetatags($driver);
 
         // special handling for pagerange
