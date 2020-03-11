@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'compile/theme' => Compile\ThemeCommand::class,
         'generate/dynamicroute' => Generate\DynamicRouteCommand::class,
         'generate/plugin' => Generate\PluginCommand::class,
+        'generate/recordroute' => Generate\RecordRouteCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
         'generate/extendclass' =>
@@ -57,8 +58,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'generate extendservice [<source>] [<target>]',
         'generate/nontabrecordaction' =>
             'generate nontabrecordaction [<newAction>] [<module>]',
-        'generate/recordroute' =>
-            'generate recordroute [<base>] [<newController>] [<module>]',
         'generate/staticroute' =>
             'generate staticroute [<name>] [<module>]',
         'generate/theme' => 'generate theme [<themename>]',
@@ -114,6 +113,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Generate\DynamicRouteCommand::class =>
             Generate\AbstractRouteCommandFactory::class,
         Generate\PluginCommand::class => Generate\PluginCommandFactory::class,
+        Generate\RecordRouteCommand::class =>
+            Generate\AbstractRouteCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 

@@ -102,7 +102,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
             'generate extendclass' => 'Subclass a service, w/ lookup by class name',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
-            'generate recordroute' => 'Add a record route',
             'generate staticroute' => 'Add a static route',
             'generate theme' => 'Create and configure a new theme',
             'harvest harvest_oai' => 'OAI-PMH harvester',

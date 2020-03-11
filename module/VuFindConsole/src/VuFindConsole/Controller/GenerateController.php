@@ -176,49 +176,6 @@ class GenerateController extends AbstractBase
     }
 
     /**
-     * Add a new record route definition
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function recordrouteAction()
-    {
-        $request = $this->getRequest();
-        $base = $request->getParam('base');
-        $controller = $request->getParam('newController');
-        $module = $request->getParam('module');
-        if (empty($module)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' generate recordroute'
-                . ' [base] [controller] [target_module]'
-            );
-            Console::writeLine(
-                "\tbase - the base route name (used by router), e.g. record"
-            );
-            Console::writeLine(
-                "\tcontroller - the controller name (used in URL), e.g. Record"
-            );
-            Console::writeLine(
-                "\ttarget_module - the module where the new route will be generated"
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Create backup of configuration
-        $generator = $this->getGeneratorTools();
-        $configPath = $generator->getModuleConfigPath($module);
-        $generator->backUpFile($configPath);
-
-        // Append the route
-        $config = include $configPath;
-        $routeGenerator = new \VuFind\Route\RouteGenerator();
-        $routeGenerator->addRecordRoute($config, $base, $controller);
-
-        // Write updated configuration
-        $generator->writeModuleConfig($configPath, $config);
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Add a new static route definition
      *
      * @return \Laminas\Console\Response
