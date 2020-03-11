@@ -47,12 +47,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'compile/theme' => Compile\ThemeCommand::class,
+        'generate/dynamicroute' => Generate\DynamicRouteCommand::class,
         'generate/plugin' => Generate\PluginCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'generate/dynamicroute' =>
-            'generate dynamicroute [<name>] [<newController>]
-            [<newAction>] [<module>]',
         'generate/extendclass' =>
             'generate extendclass [--extendfactory] [<class>] [<target>]',
         'generate/extendservice' =>
@@ -113,6 +111,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Compile\ThemeCommand::class => Compile\ThemeCommandFactory::class,
+        Generate\DynamicRouteCommand::class =>
+            Generate\AbstractRouteCommandFactory::class,
         Generate\PluginCommand::class => Generate\PluginCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];

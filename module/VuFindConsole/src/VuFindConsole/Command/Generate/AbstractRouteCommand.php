@@ -1,6 +1,6 @@
 <?php
 /**
- * Shared factory for generator commands.
+ * Abstract base class for route generator commands.
  *
  * PHP version 7
  *
@@ -28,10 +28,13 @@
 namespace VuFindConsole\Command\Generate;
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Route\RouteGenerator;
 
 /**
- * Shared factory for generator commands.
+ * Abstract base class for route generator commands.
  *
  * @category VuFind
  * @package  Console
@@ -39,28 +42,27 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractCommandFactory implements FactoryInterface
+abstract class AbstractRouteCommand extends AbstractCommand
 {
     /**
-     * Create an object
+     * Route generator
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @var RouteGenerator
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
+    protected $routeGenerator;
+
+    /**
+     * Constructor
+     *
+     * @param GeneratorTools $tools     Generator tools
+     * @param RouteGenerator $routeGen  Route generator
+     * @param string|null    $name      The name of the command; passing null
+     * means it must be set in configure()
+     */
+    public function __construct(GeneratorTools $tools, RouteGenerator $routeGen,
+        $name = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFindConsole\Generator\GeneratorTools::class),
-            ...($options ?? [])
-        );
+        $this->routeGenerator = $routeGen;
+        parent::__construct($tools, $name);
     }
 }

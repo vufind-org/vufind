@@ -41,53 +41,6 @@ use Laminas\Console\Console;
 class GenerateController extends AbstractBase
 {
     /**
-     * Add a new dynamic route definition
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function dynamicrouteAction()
-    {
-        $request = $this->getRequest();
-        $route = $request->getParam('name');
-        $controller = $request->getParam('newController');
-        $action = $request->getParam('newAction');
-        $module = $request->getParam('module');
-        if (empty($module)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' generate dynamicroute'
-                . ' [route] [controller] [action] [target_module]'
-            );
-            Console::writeLine(
-                "\troute - the route name (used by router), e.g. customList"
-            );
-            Console::writeLine(
-                "\tcontroller - the controller name (used in URL), e.g. MyResearch"
-            );
-            Console::writeLine(
-                "\taction - the action and segment params, e.g. CustomList/[:id]"
-            );
-            Console::writeLine(
-                "\ttarget_module - the module where the new route will be generated"
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Create backup of configuration
-        $generator = $this->getGeneratorTools();
-        $configPath = $generator->getModuleConfigPath($module);
-        $generator->backUpFile($configPath);
-
-        // Append the route
-        $config = include $configPath;
-        $routeGenerator = new \VuFind\Route\RouteGenerator();
-        $routeGenerator->addDynamicRoute($config, $route, $controller, $action);
-
-        // Write updated configuration
-        $generator->writeModuleConfig($configPath, $config);
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Extend an existing class
      *
      * @return \Laminas\Console\Response

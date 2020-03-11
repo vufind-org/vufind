@@ -1,6 +1,6 @@
 <?php
 /**
- * Shared factory for generator commands.
+ * Shared factory for route generator commands.
  *
  * PHP version 7
  *
@@ -28,10 +28,10 @@
 namespace VuFindConsole\Command\Generate;
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\Route\RouteGenerator;
 
 /**
- * Shared factory for generator commands.
+ * Shared factory for route generator commands.
  *
  * @category VuFind
  * @package  Console
@@ -39,7 +39,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractCommandFactory implements FactoryInterface
+class PluginCommandFactory extends AbstractCommandFactory
 {
     /**
      * Create an object
@@ -58,9 +58,7 @@ class AbstractCommandFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        return new $requestedName(
-            $container->get(\VuFindConsole\Generator\GeneratorTools::class),
-            ...($options ?? [])
-        );
+        $generator = new RouteGenerator();
+        return parent::__invoke($container, $requestedName, [$generator]);
     }
 }
