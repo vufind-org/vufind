@@ -62,6 +62,6 @@ class NextPrevNavTest extends \VuFindTest\Unit\MinkTestCase
         $session->visit($this->getVuFindUrl() . "/Record/geo20001");
 
         // should fail if exception is thrown
-        $this->assertContains("Test Publication 20001", $this->findCss($page, "div.media-body > h3[property=name]")->getText());
+        $this->assertContains("Test Publication 20001", $this->findCss($page, "div.media-body > h1[property=name]")->getText());
     }
 }
