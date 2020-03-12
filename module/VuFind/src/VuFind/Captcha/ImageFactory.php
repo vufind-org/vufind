@@ -64,7 +64,7 @@ class ImageFactory implements FactoryInterface
 
         $imageOptions = [
             'font' => getenv('VUFIND_HOME')
-                      . '/vendor/endroid/qr-code/assets/fonts/open_sans.ttf',
+                    . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
             'imgDir' => getenv('VUFIND_LOCAL_DIR') . '/cache/public'
         ];
 
