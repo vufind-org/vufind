@@ -402,7 +402,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             'finna-activity-code=fnd',
             [
                 'amount' => 'elokuva-elorahoitusyhtio-summa',
-                'type' => 'elokuva-elorahoitusyhtio-rahoitustapa'
+                'fundingType' => 'elokuva-elorahoitusyhtio-rahoitustapa'
             ]
         );
     }

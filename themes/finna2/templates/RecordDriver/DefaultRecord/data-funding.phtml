@@ -1,17 +1,18 @@
 <?php //Don't add START and END comments ?>
 <?php if (!empty($data)): ?>
-  <div class="truncate-field">
+  <ul class="truncate-field">
     <?php foreach ($data as $index => $item): ?>
       <?php
         $additional = [];
-        if (!empty($item['type'])) {
-          $additional[] = $this->escapeHtml($item['type']);
+        if (!empty($item['fundingType'])) {
+          $additional['funding-type'] = $this->escapeHtml($item['fundingType']);
         }
         if (!empty($item['amount'])) {
-          $additional[] = $this->escapeHtml($item['amount']);
+          $additional['amount'] = $this->escapeHtml($item['amount']);
         }
+        $additional = $this->record($this->driver)->getAuthorityLinkAdditionalData($additional);
       ?>
-      <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><?php if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><?php endif; ?>
+      <li><?=$this->record($this->driver)->getAuthorityLinkElement('author', $item['name'], $item, ['authorityType' => $item['type'] ?? null, 'additionalData' => $additional, 'showInlineInfo' => true])?></li>
     <?php endforeach; ?>
-  </div>
+  </ul>
 <?php endif; ?>

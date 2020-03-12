@@ -26,6 +26,7 @@
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -42,6 +43,7 @@ use Finna\Search\Solr\AuthorityHelper;
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -285,6 +287,35 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
+     * Render additional data for an authority link.
+     *
+     * @param array  $additionalData Additional data to render
+     * @param string $format         Format (optional)
+     *
+     * @return string
+     */
+    public function getAuthorityLinkAdditionalData($additionalData, $format = null)
+    {
+        if (empty($additionalData)) {
+            return '';
+        }
+        $escaper = $this->getView()->plugin('escapeHtml');
+        foreach ($additionalData as $key => &$item) {
+            $item = $escaper($item);
+            if (!is_numeric($key)) {
+                $item = '<span class="author-'
+                    . preg_replace('/[^A-Za-z0-9_-]/', '', $key)
+                    . '">' . $item . '</span>';
+            }
+        }
+        if ($format) {
+            return vsprintf($format, $additionalData);
+        } else {
+            return ', ' . implode(', ', $additionalData);
+        }
+    }
+
+    /**
      * Render a authority search link or fallback to Author search.
      * This returns an a-tag.
      *
@@ -320,12 +351,27 @@ class Record extends \VuFind\View\Helper\Root\Record
            'record' => $this->driver
         ];
 
-        if (isset($params['role'])) {
-            $elementParams['roleName'] = $data['roleName'] ?? null;
-            $elementParams['role'] = $data['role'] ?? null;
-        }
-        if (isset($params['date'])) {
-            $elementParams['date'] = $data['date'] ?? null;
+        if (isset($params['additionalData'])) {
+            $elementParams['additionalData'] = $params['additionalData'];
+        } else {
+            // Special handling for backwards compatibility.
+            $additionalData = [];
+            if (isset($params['role'])) {
+                if (!empty($data['roleName'])) {
+                    $additionalData['role'] = $data['roleName'];
+                } elseif (!empty($data['role'])) {
+                    $translator = $this->getView()->plugin('translate');
+                    $additionalData['role']
+                        = $translator('CreatorRoles::' . $data['role']);
+                }
+            }
+            if (isset($params['date']) && !empty($data['date'])) {
+                $additionalData['date'] = $data['date'];
+            }
+            if (!empty($additionalData)) {
+                $elementParams['additionalData']
+                    = $this->getAuthorityLinkAdditionalData($additionalData);
+            }
         }
 
         return $this->renderTemplate(

@@ -1,17 +1,21 @@
 <?php //Don't add START and END comments ?>
 <?php if(!empty($data)): ?>
-  <div class="truncate-field">
+  <ul class="truncate-field">
     <?php foreach ($data as $index => $item): ?>
       <?php
         $additional = [];
+        $format = '';
         if (!empty($item['method'])) {
-          $additional[] = $this->escapeHtml($item['method']);
+          $additional['method'] = $this->escapeHtml($item['method']);
+          $format .= ' %s';
         }
         if (!empty($item['date'])) {
-          $additional[] = $this->escapeHtml($item['date']);
+          $additional['date'] = $this->escapeHtml($item['date']);
+          $format .= ' (%s)';
         }
+        $additional = $this->record($this->driver)->getAuthorityLinkAdditionalData($additional, $format);
       ?>
-      <?=$index > 0 ? '<br/>' : '' ?><?=$this->escapeHtml($item['name']) ?><?php if (!empty($additional)): ?>, <?=implode(' ', $additional) ?><?php endif; ?>
+      <li><?=$this->record($this->driver)->getAuthorityLinkElement('author', $item['name'], $item, ['authorityType' => $item['type'] ?? null, 'additionalData' => $additional, 'showInlineInfo' => true])?></li>
     <?php endforeach; ?>
-  </div>
+  </ul>
 <?php endif; ?>

@@ -232,7 +232,7 @@
         $coreFieldGroups = $formatter->getGroupedData($driver, $formatter->getGroupedFields([
           ['lines' => ['Genre', 'Age Limit', 'Actors', 'Secondary Authors']],
           ['label' => 'Production Information',
-            'lines' => ['Production', 'Production Costs', 'Published'],
+            'lines' => ['Production', 'Production Costs', 'Funding', 'Published'],
             'options' => ['context' => ['class' => 'field-group-production']]],
           ['label' => 'Distribution Information',
             'lines' => ['Distribution', 'Premiere Night', 'Premiere Theaters',
@@ -241,8 +241,7 @@
           ['label' => 'Description FWD',
             'lines' => ['Description FWD', 'Subjects'],
             'options' => ['context' => ['class' => 'field-group-content-description']]],
-          ['lines' => ['Press Reviews', 'Item Description FWD', 'Music']],
-          ['lines' => ['Inspection Details']],
+          ['lines' => ['Press Reviews', 'Item Description FWD', 'Music', 'Inspection Details']],
           ['label' => 'Technical Data',
             'lines' => ['Color', 'Sound', 'Aspect Ratio', 'Playing Time'],
             'options' => ['context' => ['class' => 'field-group-rating-technical-data']]],
