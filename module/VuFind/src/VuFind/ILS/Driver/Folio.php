@@ -436,6 +436,9 @@ class Folio extends AbstractAPI implements
             $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
+            $notesFormatter = function ($note) {
+                return $note->note ?? '';
+            };
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
@@ -446,7 +449,7 @@ class Folio extends AbstractAPI implements
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
-                    'notes' => $item->notes ?? [],
+                    'notes' => array_map($notesFormatter, $item->notes ?? []),
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
