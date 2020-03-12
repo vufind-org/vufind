@@ -1,10 +1,10 @@
 <?php
 /**
- * Holdings Settings Mode Helper
+ * Holdings Helper
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -40,7 +40,7 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class HoldingsSettings extends AbstractHelper
+class Holdings extends AbstractHelper
 {
     /**
      * VuFind configuration
@@ -160,5 +160,44 @@ class HoldingsSettings extends AbstractHelper
         return !isset($this->config->Item_Status->truncate_limit)
             ? false
             : $this->config->Item_Status->truncate_limit;
+    }
+
+    /**
+     * Get grouped unique call numbers for an items list
+     *
+     * @param array $items Items
+     *
+     * @return array
+     */
+    public function getGroupedCallNumbers($items)
+    {
+        $callnumbers = [];
+        $callNos = [];
+        foreach ($items as $item) {
+            if (isset($item['callnumber']) && strlen($item['callnumber']) > 0) {
+                $callNos[] = $item['callnumber'];
+            }
+        }
+        sort($callNos);
+
+        foreach (array_unique($callNos) as $callNo) {
+            $collection = null;
+            $location = null;
+            foreach ($items as $item) {
+                if ($item['callnumber'] === $callNo) {
+                    if (!$collection && isset($item['collection'])) {
+                        $collection = $item['collection'];
+                    }
+                    if (!$location && isset($item['location'])) {
+                        $location = $item['location'];
+                    }
+                    if ($collection && $location) {
+                        break;
+                    }
+                }
+            }
+            $callnumbers[] = compact('callNo', 'collection', 'location');
+        }
+        return $callnumbers;
     }
 }

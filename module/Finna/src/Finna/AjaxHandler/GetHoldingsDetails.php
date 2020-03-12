@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,8 +28,9 @@
 namespace Finna\AjaxHandler;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\Holds as HoldLogic;
+use VuFind\Record\Loader;
 use VuFind\Session\Settings as SessionSettings;
 use Zend\Mvc\Controller\Plugin\Params;
 use Zend\View\Renderer\RendererInterface;
@@ -53,6 +54,20 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
     protected $renderer;
 
     /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Hold Logic
+     *
+     * @var HoldLogic
+     */
+    protected $holdLogic;
+
+    /**
      * Constructor
      *
      * @param SessionSettings   $ss               Session settings
@@ -60,14 +75,18 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
      * @param ILSAuthenticator  $ilsAuthenticator ILS authenticator
      * @param User|bool         $user             Logged in user (or false)
      * @param RendererInterface $renderer         View renderer
+     * @param Loader            $loader           Record loader
+     * @param HoldLogic         $holdLogic        Hold Logic
      */
     public function __construct(SessionSettings $ss, Connection $ils,
         ILSAuthenticator $ilsAuthenticator, $user,
-        RendererInterface $renderer
+        RendererInterface $renderer, Loader $loader, HoldLogic $holdLogic
     ) {
         parent::__construct($ss, $ils, $ilsAuthenticator, $user);
 
         $this->renderer = $renderer;
+        $this->recordLoader = $loader;
+        $this->holdLogic = $holdLogic;
     }
 
     /**
@@ -81,21 +100,23 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
     {
         $this->disableSessionWrites(); // avoid session write timing bug
 
-        $id = $params->fromPost('id', $params->fromQuery('id'));
-        $key = $params->fromPost('key', $params->fromQuery('key'));
-        if (empty($id) || empty($key)) {
+        $detailsGroupKey = $params->fromPost('key', $params->fromQuery('key'));
+        $page = $params->fromPost('page', $params->fromQuery('page', 1));
+        $recordId = $params->fromPost('recordId', $params->fromQuery('recordId'));
+        $recordSource = $params->fromPost(
+            'recordSource',
+            $params->fromQuery('recordSource', DEFAULT_SEARCH_BACKEND)
+        );
+        if (empty($detailsGroupKey) || empty($recordId)) {
             return $this->formatResponse(
                 $this->translate('Missing parameters'),
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        try {
-            $patron = $this->ilsAuthenticator->storedCatalogLogin();
-        } catch (ILSException $e) {
-            $patron = false;
-        }
 
-        $holding = $this->ils->getHoldingsDetails($id, $key, $patron);
+        $params = compact('page', 'detailsGroupKey', 'details');
+        $result = $this->holdLogic->getHoldings($recordId, null, $params);
+        $holding = $result['details'];
         $textFieldNames = $this->ils->getHoldingsTextFieldNames();
         foreach ($textFieldNames as $fieldName) {
             if (in_array($fieldName, ['notes', 'holdings_notes'])) {
@@ -120,10 +141,24 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         }
 
         $mode = 'expanded';
-        $result = $this->renderer->partial(
+        $details = $this->renderer->partial(
             'RecordTab/holdings-details.phtml', compact('holding', 'mode')
         );
+        $holdingItems = reset($result['holdings']);
+        $moreLinkPage = $result['page'] * $result['itemLimit'] < $result['total']
+            ? $result['page'] + 1 : null;
+        $items = $this->renderer->partial(
+            'RecordTab/holdings-items.phtml',
+            [
+                'driver'
+                    => $this->recordLoader->load($recordId, $recordSource, true),
+                'holding' => $holdingItems,
+                'mode' => 'expanded',
+                'moreLinkPage' => $moreLinkPage,
+                'moreLinkKey' => $key
+            ]
+        );
 
-        return $this->formatResponse(['html' => $result]);
+        return $this->formatResponse(compact('details', 'items'));
     }
 }

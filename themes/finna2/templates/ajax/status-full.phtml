@@ -62,7 +62,7 @@ if ($groupBranches) {
     }
   }
 
-  $collapseThreshold = $this->holdingsSettings()->getCollapseThreshold();
+  $collapseThreshold = $this->holdings()->getCollapseThreshold();
   $collapseLocations = isset($collapseThreshold['location'])
     ? $locations > $collapseThreshold['location'] : null;
   $collapseBranches = isset($collapseThreshold['branch'])
@@ -90,7 +90,7 @@ if ($groupBranches) {
     }
   }
   $this->statusItems = array_values($statusItemsFiltered);
-  if ($this->holdingsSettings()->overrideSortOrder()) {
+  if ($this->holdings()->overrideSortOrder()) {
     $items = $this->statusItems;
     usort($items, function ($a, $b) {
       if ($a['availability'] != $b['availability']) {
@@ -150,7 +150,7 @@ if ($groupBranches) {
     </span>
     </div>
   </div>
-  <?php $truncateLimit = $this->holdingsSettings()->getTruncateLimit(); ?>
+  <?php $truncateLimit = $this->holdings()->getTruncateLimit(); ?>
   <div class="holdings<?=!empty($truncateLimit) ? (' truncate-field" data-rows="' . $truncateLimit) : ''?>">
 <?php endif; ?>
 
@@ -272,7 +272,7 @@ $holdingsLink = $this->recordLink()->getUrl($driver);
 $disableTitleHold = isset($summary['holdable']) && !$summary['holdable'];
 
 if (!$disableTitleHold
-  && ($this->holdingsSettings()->showSearchResultsTitleHold() || !empty($holdingsConfig['display_title_hold_in_results']))
+  && ($this->holdings()->showSearchResultsTitleHold() || !empty($holdingsConfig['display_title_hold_in_results']))
   && $driver && $driver->tryMethod('getHoldsAllowed')
 ) {
     $account = $this->auth()->getManager();
@@ -311,7 +311,7 @@ if (!$disableTitleHold
 <?php
 }
 ?>
-<?php if ($this->holdingsSettings()->showLinkToRecordPage()): ?>
+<?php if ($this->holdings()->showLinkToRecordPage()): ?>
   <div class="all-holdings">
     <a href="<?=$this->escapeHtmlAttr($holdingsLink)?>"><?=$this->transEsc('See all holdings')?></a>
   </div>

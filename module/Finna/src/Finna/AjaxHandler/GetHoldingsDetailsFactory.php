@@ -66,6 +66,8 @@ class GetHoldingsDetailsFactory
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
             $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $container->get('ViewRenderer'),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\ILS\Logic\Holds::class),
             ...($options ?: [])
         );
     }

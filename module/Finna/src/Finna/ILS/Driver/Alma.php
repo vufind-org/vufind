@@ -1113,12 +1113,26 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     = explode(':', $config['titleHoldBibLevels']);
             }
             if (!empty($params['id']) && !empty($params['patron']['id'])) {
-                // Check if we require the part_issue (description) field
-                $requestOptionsPath = '/bibs/' . urlencode($params['id'])
-                    . '/request-options?user_id='
-                    . urlencode($params['patron']['id']);
-                // Make the API request
-                $requestOptions = $this->makeRequest($requestOptionsPath);
+                // Kludge to allow caching for two minutes
+                $cacheLifeTime = $this->cacheLifetime;
+                $this->cacheLifetime = 120;
+                $cacheKey = md5(
+                    'request-options-' . $params['id'] . '-'
+                    . $params['patron']['id']
+                );
+                $requestOptions = $this->getCachedData($cacheKey);
+                $this->cacheLifetime = $cacheLifeTime;
+                if (null === $requestOptions) {
+                    // Check if we require the part_issue (description) field
+                    $requestOptionsPath = '/bibs/' . urlencode($params['id'])
+                        . '/request-options?user_id='
+                        . urlencode($params['patron']['id']);
+                    // Make the API request
+                    $requestOptions = $this->makeRequest($requestOptionsPath);
+                    $this->putCachedData($cacheKey, $requestOptions->asXML());
+                } else {
+                    $requestOptions = simplexml_load_string($requestOptions);
+                }
                 // Check possible request types from the API answer
                 $requestTypes = $requestOptions->xpath(
                     '/request_options/request_option//type'
@@ -1674,45 +1688,352 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     public function getHolding($id, $patron = null, array $options = [])
     {
-        // Prepare result array with default values. If no API result can be received
-        // these will be returned.
-        $results['total'] = 0;
-        $results['holdings'] = [];
+        // Check if the request is for more details
+        if (!empty($options['detailsGroupKey'])) {
+            return $this->getHoldingsDetails(
+                $id, $options['detailsGroupKey'], $patron, $options
+            );
+        }
 
+        $total = 0;
+        $totalAvailable = 0;
+        $requests = 0;
+        $locations = [];
+        $holdings = [];
+        $needFixup = false;
+
+        // Summary holdings
+        $params = [
+            'mms_id' => $id,
+            'expand' => implode(',', $this->getInventoryTypes())
+        ];
+        if (!isset($this->config['Holdings']['displayTotalHoldCount'])
+            || $this->config['Holdings']['displayTotalHoldCount']
+        ) {
+            $params['expand'] .= ',requests';
+            $displayRequests = true;
+        }
+        if ($bibs = $this->makeRequest('/bibs', $params)) {
+            $bib = reset($bibs);
+            $requests = (int)$bib->requests ?? 0;
+            $marc = new \File_MARCXML(
+                $bib->record->asXML(),
+                \File_MARCXML::SOURCE_STRING
+            );
+            $sort = 0;
+            $tmpl = [
+                'id' => (string)$bib->mms_id,
+                'source' => 'Solr',
+                'callnumber' => '',
+                'reserve' => 'N',
+            ];
+            if ($record = $marc->next()) {
+                // Physical
+                $physicalItems = $record->getFields('AVA');
+                foreach ($physicalItems as $field) {
+                    // Filter out suggestions for other records
+                    $mmsId = $this->getMarcSubfield($field, '0');
+                    if ($mmsId !== (string)$bib->mms_id) {
+                        continue;
+                    }
+                    $status = $this->getMarcSubfield($field, 'e');
+                    $libraryCode = $this->getMarcSubfield($field, 'b');
+                    $locationCode = $this->getMarcSubfield($field, 'j');
+                    $location = $this->getMarcSubfield($field, 'c');
+                    $items = $this->getMarcSubfield($field, 'f') ?: 0;
+                    $unavailable = $this->getMarcSubfield($field, 'g') ?: 0;
+                    $available = $items - $unavailable;
+                    $holdingId = $this->getMarcSubfield($field, '8');
+                    $total += $items;
+                    $totalAvailable += $available;
+                    $locations[$locationCode] = 1;
+                    switch ($status) {
+                    case 'available':
+                        $status = 'Available';
+                        break;
+                    case 'unavailable':
+                        $status = 'Not Available';
+                        break;
+                    case 'check_holdings':
+                        $status = '';
+                        break;
+                    }
+
+                    $holdings[] = [
+                        'id' => $holdingId,
+                        'source' => 'Solr',
+                        'availability' => $available,
+                        'status' => $status,
+                        'location' => $this->getTranslatableStringForCode(
+                            $locationCode,
+                            $location
+                        ),
+                        'location_code' => $locationCode,
+                        'reserve' => 'N',   // TODO: support reserve status
+                        'callnumber' => $this->getMarcSubfield($field, 'd'),
+                        'duedate' => null,
+                        'returnDate' => false, // TODO: support recent returns
+                        'barcode' => '',
+                        'holding_id' => $holdingId,
+                        'detailsGroupKey'
+                            => "$holdingId||$libraryCode||$locationCode",
+                        'sort' => $sort++
+                    ];
+                }
+                // Electronic
+                $electronicItems = $record->getFields('AVE');
+                foreach ($electronicItems as $field) {
+                    $avail = $this->getMarcSubfield($field, 'e');
+                    $item = $tmpl;
+                    $item['availability'] = strtolower($avail) === 'available';
+                    // Use the following subfields for location:
+                    // m (Collection name)
+                    // i (Available for library)
+                    // d (Available for library)
+                    // b (Available for library)
+                    $location = [
+                        $this->getMarcSubfield($field, 'm') ?: 'Get full text'
+                    ];
+                    foreach (['i', 'd', 'b'] as $code) {
+                        if ($content = $this->getMarcSubfield($field, $code)) {
+                            $location[] = $content;
+                        }
+                    }
+                    $item['location'] = implode(' - ', $location);
+                    $item['callnumber'] = $this->getMarcSubfield($field, 't');
+                    $url = $this->getMarcSubfield($field, 'u');
+                    if (preg_match('/^https?:\/\//', $url)) {
+                        $item['locationhref'] = $url;
+                    }
+                    $item['status'] = $this->getMarcSubfield($field, 's')
+                        ?: null;
+                    if ($note = $this->getMarcSubfield($field, 'n')) {
+                        $item['item_notes'] = [$note];
+                    }
+                    $item['sort'] = $sort++;
+                    $holdings[] = $item;
+                }
+                // Digital
+                $deliveryUrl
+                    = $this->config['Holdings']['digitalDeliveryUrl'] ?? '';
+                $digitalItems = $record->getFields('AVD');
+                if ($digitalItems && !$deliveryUrl) {
+                    $this->logWarning(
+                        'Digital items exist for ' . (string)$bib->mms_id
+                        . ', but digitalDeliveryUrl not set -- unable to'
+                        . ' generate links'
+                    );
+                }
+                foreach ($digitalItems as $field) {
+                    $item = $tmpl;
+                    unset($item['callnumber']);
+                    $item['availability'] = true;
+                    $item['location'] = $this->getMarcSubfield($field, 'e');
+                    // Using subfield 'd' ('Repository Name') as callnumber
+                    $item['callnumber'] = $this->getMarcSubfield($field, 'd');
+                    if ($deliveryUrl) {
+                        $item['locationhref'] = str_replace(
+                            '%%id%%',
+                            $this->getMarcSubfield($field, 'b'),
+                            $deliveryUrl
+                        );
+                    }
+                    $item['sort'] = $sort++;
+                    $holdings[] = $item;
+                }
+            }
+            usort($holdings, [$this, 'statusSortFunction']);
+
+            // Return locations to strings
+            foreach ($holdings as &$item) {
+                $item['location'] = $this->translate($item['location']);
+            }
+            unset($item);
+        }
+
+        // The AVA field might be borked...
+        $total = max($total, count($holdings));
+
+        // Add summary
+        $summary = [
+           'available' => $totalAvailable,
+           'total' => $total,
+           'locations' => count($locations),
+           'availability' => null,
+           'callnumber' => null,
+           'location' => '__HOLDINGSSUMMARYLOCATION__'
+        ];
+        if ($displayRequests) {
+            $summary['reservations'] = $requests;
+        }
+        $holdings[] = $summary;
+
+        return compact('total', 'holdings');
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        if ('registerPatron' === $method) {
+            $config = $this->config['NewUser'] ?? [];
+            $required = [
+                'recordType', 'accountType', 'status', 'userGroup',
+                'emailType', 'termsUrl'
+            ];
+            foreach ($required as $key) {
+                if (empty($config[$key])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return parent::supportsMethod($method, $params);
+    }
+
+    /**
+     * Get detailed holding information for a single holdings record
+     *
+     * @param string $id       Bib record id
+     * @param string $groupKey Details group key
+     * @param array  $patron   Patron data
+     * @param array  $params   Params (offset, itemLimit etc.)
+     *
+     * @return array
+     */
+    protected function getHoldingsDetails($id, $groupKey, $patron = null,
+        $params = []
+    ) {
+        list($holdingId, $libraryCode, $locationCode) = explode('||', $groupKey);
+
+        // Summary holdings
+        if ($holdingId) {
+            $holding = $this->makeRequest(
+                '/bibs/' . urlencode($id) . '/holdings/' . urlencode($holdingId)
+            );
+
+            if ('true' === (string)$holding->suppress_from_publishing) {
+                return [
+                    'holdingsDetails' => [],
+                    'items' => [],
+                    'totalItems' => 0
+                ];
+            }
+        } else {
+            // For checking for suppressed holdings. This is a bit complicated,
+            // but the holding information in items is missing this crucial bit.
+            $almaHoldings = [];
+            $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
+            foreach ($records->holding ?? [] as $record) {
+                $almaHoldings[(string)$record->holding_id] = $record;
+            }
+        }
+
+        $marcDetails = [];
+        if ($params['page'] == 1) {
+            $marc = $holding->record;
+
+            // Get Notes
+            $data = $this->getHoldingsMarc(
+                $marc,
+                isset($this->config['Holdings']['notes'])
+                ? $this->config['Holdings']['notes']
+                : '852z'
+            );
+            if ($data) {
+                $marcDetails['notes'] = $data;
+            }
+
+            // Get Summary (may be multiple lines)
+            $data = $this->getHoldingsMarc(
+                $marc,
+                isset($this->config['Holdings']['summary'])
+                ? $this->config['Holdings']['summary']
+                : '866a'
+            );
+            if ($data) {
+                $marcDetails['summary'] = $data;
+            }
+
+            // Get Supplements
+            if (isset($this->config['Holdings']['supplements'])) {
+                $data = $this->getHoldingsMarc(
+                    $marc,
+                    $this->config['Holdings']['supplements']
+                );
+                if ($data) {
+                    $marcDetails['supplements'] = $data;
+                }
+            }
+
+            // Get Indexes
+            if (isset($this->config['Holdings']['indexes'])) {
+                $data = $this->getHoldingsMarc(
+                    $marc,
+                    $this->config['Holdings']['indexes']
+                );
+                if ($data) {
+                    $marcDetails['indexes'] = $data;
+                }
+            }
+
+            // Get links
+            if (isset($this->config['Holdings']['links'])) {
+                $data = $this->getHoldingsMarc(
+                    $marc,
+                    $this->config['Holdings']['links']
+                );
+                if ($data) {
+                    $marcDetails['links'] = $data;
+                }
+            }
+        }
+
+        // Make sure to return an empty array unless we have details to display
+        if (!empty($marcDetails)) {
+            $marcDetails['holding_id'] = $holdingId;
+        }
+
+        // Items
         $itemHolds = $this->config['Holds']['enableItemHolds'] ?? null;
 
-        $holdings = [];
-        $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
-        foreach ($records->holding ?? [] as $record) {
-            $holdings[(string)$record->holding_id] = $record;
-        }
+        $itemLimit = min(
+            $params['itemLimit'] ?? 100,
+            $this->config['Holdings']['itemLimit'] ?? 100
+        );
+        $page = ($params['page'] ?? 1) - 1;
+        // NOTE: According to documentation offset is 0-based, but in reality it
+        // seems to be 1-based.
+        $queryParams = [
+            'offset' => $page * $itemLimit + 1,
+            'limit' => $itemLimit,
+            'current_library' => $libraryCode,
+            'current_location' => $locationCode,
+            'order_by' => 'description,enum_a,enum_b',
+            'direction' => 'desc',
+            'expand' => 'due_date',
+        ];
 
-        // Paging parameters for paginated API call. The "limit" tells the API how
-        // many items the call should return at once (e. g. 10). The "offset" defines
-        // the range (e. g. get items 30 to 40). With these parameters we are able to
-        // use a paginator for paging through many items.
-        $apiPagingParams = '';
-        if ($options['itemLimit'] ?? null) {
-            $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
-                . '&offset=' . urlencode($options['offset'] ?? 0);
-        }
-
-        // The path for the API call. We call "ALL" available items, but not at once
-        // as a pagination mechanism is used. If paging params are not set for some
-        // reason, the first 10 items are called which is the default API behaviour.
         $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
-            . $apiPagingParams
-            . '&order_by=library,location,enum_a,enum_b&direction=desc'
-            . '&expand=due_date';
+            . http_build_query($queryParams);
 
         $sort = 0;
-        if ($items = $this->makeRequest($itemsPath)) {
-            // Get the total number of items returned from the API call and set it to
-            // a class variable. It is then used in VuFind\RecordTab\HoldingsILS for
-            // the items paginator.
-            $results['total'] = (int)$items->attributes()->total_record_count;
+        $items = [];
+        $totalItems = 0;
+        if ($itemsResult = $this->makeRequest($itemsPath)) {
+            $totalItems = (int)$itemsResult->attributes()->total_record_count;
 
-            foreach ($items->item as $item) {
+            foreach ($itemsResult->item as $item) {
                 $processType = (string)($item->item_data->process_type ?? '');
                 $format = (string)($item->item_data->physical_material_type ?? '');
                 if (in_array($processType, $this->hiddenProcessTypes[$format] ?? [])
@@ -1721,8 +2042,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     continue;
                 }
                 $holdingId = (string)$item->holding_data->holding_id;
-                if ($holding = $holdings[$holdingId] ?? null) {
-                    if ('true' === (string)$holding->suppress_from_publishing) {
+                if ($almaHolding = $almaHoldings[$holdingId] ?? null) {
+                    if ('true' === (string)$almaHolding->suppress_from_publishing) {
                         continue;
                     }
                 }
@@ -1762,7 +2083,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     }
                 }
 
-                $results['holdings'][] = [
+                $items[] = [
                     'id' => $id,
                     'source' => 'Solr',
                     'availability' => $this->getAvailabilityFromItem($item),
@@ -1780,7 +2101,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
                     'holding_id' => $holdingId,
-                    'details_ajax' => $holdingId,
                     'holdtype' => 'auto',
                     'addLink' => $addLink,
                     // For Alma title-level hold requests
@@ -1790,215 +2110,12 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             }
         }
 
-        // Fetch also digital and/or electronic inventory if configured
-        $types = $this->getInventoryTypes();
-        if (in_array('d_avail', $types) || in_array('e_avail', $types)) {
-            // No need for physical items
-            $key = array_search('p_avail', $types);
-            if (false !== $key) {
-                unset($types[$key]);
-            }
-            $statuses = $this->getStatusesForInventoryTypes((array)$id, $types);
-            $electronic = [];
-            foreach ($statuses as $record) {
-                foreach ($record as $status) {
-                    $electronic[] = $status;
-                }
-            }
-            $results['electronic_holdings'] = $electronic;
-        }
-
-        // The rest is completely Finna-specific:
-
-        $itemsTotal = $results['total'];
-
-        // Add holdings without items if we have a single page of holdings.
-        // Otherwise we don't know all the items.
-        $paged = isset($options['itemLimit'])
-            && $results['total'] > $options['itemLimit'];
-        if (!$paged) {
-            $noItemsHoldings = [];
-            foreach ($holdings as $record) {
-                if ('true' === (string)$record->suppress_from_publishing) {
-                    continue;
-                }
-                foreach ($results['holdings'] as $holding) {
-                    if ($holding['holding_id'] === (string)$record->holding_id) {
-                        continue 2;
-                    }
-                }
-                $noItemsHoldings[] = $record;
-            }
-
-            foreach ($noItemsHoldings as $record) {
-                $entry = $this->createHoldingEntry($id, $record);
-                $entry['details_ajax'] = $entry['holding_id'];
-                $entry['sort'] = $sort++;
-                $results['holdings'][] = $entry;
-                ++$results['total'];
-            }
-        }
-
-        // Add summary
-        $availableTotal = 0;
-        $locations = [];
-        if (!$paged) {
-            foreach ($results['holdings'] as $item) {
-                if (!empty($item['availability'])) {
-                    $availableTotal++;
-                }
-                $locations[(string)$item['location']] = true;
-            }
-        }
-
-        usort($results['holdings'], [$this, 'statusSortFunction']);
-
-        // Use a stupid location name to make sure this doesn't get mixed with
-        // real items that don't have a proper location.
-        $result = [
-           'available' => $paged ? null : $availableTotal,
-           'total' => $itemsTotal,
-           'locations' => $paged ? null : count($locations),
-           'availability' => null,
-           'callnumber' => null,
-           'location' => '__HOLDINGSSUMMARYLOCATION__'
+        return [
+            'details' => $marcDetails,
+            'holdings' => $items,
+            'total' => $totalItems,
+            'detailsGroupKey' => "||$libraryCode||$locationCode",
         ];
-        if (!isset($this->config['Holdings']['displayTotalHoldCount'])
-            || $this->config['Holdings']['displayTotalHoldCount']
-        ) {
-            $bibs = $this->makeRequest(
-                '/bibs', ['mms_id' => $id, 'expand' => 'requests']
-            );
-            $result['reservations'] = $bibs->bib->requests ?? 0;
-        }
-        $results['holdings'][] = $result;
-
-        return $results;
-    }
-
-    /**
-     * Get detailed holding information for a single holdings record
-     *
-     * @param string $id     Bib record id
-     * @param string $key    Retrieval key
-     * @param array  $patron Patron data
-     *
-     * @return array
-     */
-    public function getHoldingsDetails($id, $key, $patron = null)
-    {
-        return $this->getHoldingsData($id, $key);
-    }
-
-    /**
-     * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
-     *
-     * @param string $method The name of the called method.
-     * @param array  $params Array of passed parameters
-     *
-     * @return bool True if the method can be called with the given parameters,
-     * false otherwise.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function supportsMethod($method, $params)
-    {
-        if ('registerPatron' === $method) {
-            $config = $this->config['NewUser'] ?? [];
-            $required = [
-                'recordType', 'accountType', 'status', 'userGroup',
-                'emailType', 'termsUrl'
-            ];
-            foreach ($required as $key) {
-                if (empty($config[$key])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return parent::supportsMethod($method, $params);
-    }
-
-    /**
-     * Get holdings data from a holdings record
-     *
-     * @param string $id         Bib ID
-     * @param array  $holdingsId Holdings record ID
-     *
-     * @return array
-     */
-    protected function getHoldingsData($id, $holdingsId)
-    {
-        $record = $this->makeRequest(
-            '/bibs/' . urlencode($id) . '/holdings/'
-            . urlencode($holdingsId)
-        );
-        $marc = $record->record;
-
-        $marcDetails = [];
-
-        // Get Notes
-        $data = $this->getHoldingsMarc(
-            $marc,
-            isset($this->config['Holdings']['notes'])
-            ? $this->config['Holdings']['notes']
-            : '852z'
-        );
-        if ($data) {
-            $marcDetails['notes'] = $data;
-        }
-
-        // Get Summary (may be multiple lines)
-        $data = $this->getHoldingsMarc(
-            $marc,
-            isset($this->config['Holdings']['summary'])
-            ? $this->config['Holdings']['summary']
-            : '866a'
-        );
-        if ($data) {
-            $marcDetails['summary'] = $data;
-        }
-
-        // Get Supplements
-        if (isset($this->config['Holdings']['supplements'])) {
-            $data = $this->getHoldingsMarc(
-                $marc,
-                $this->config['Holdings']['supplements']
-            );
-            if ($data) {
-                $marcDetails['supplements'] = $data;
-            }
-        }
-
-        // Get Indexes
-        if (isset($this->config['Holdings']['indexes'])) {
-            $data = $this->getHoldingsMarc(
-                $marc,
-                $this->config['Holdings']['indexes']
-            );
-            if ($data) {
-                $marcDetails['indexes'] = $data;
-            }
-        }
-
-        // Get links
-        if (isset($this->config['Holdings']['links'])) {
-            $data = $this->getHoldingsMarc(
-                $marc,
-                $this->config['Holdings']['links']
-            );
-            if ($data) {
-                $marcDetails['links'] = $data;
-            }
-        }
-
-        // Make sure to return an empty array unless we have details to display
-        if (!empty($marcDetails)) {
-            $marcDetails['holding_id'] = $record['holding_id'];
-        }
-
-        return $marcDetails;
     }
 
     /**

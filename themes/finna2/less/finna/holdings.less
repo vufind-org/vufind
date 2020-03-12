@@ -272,9 +272,6 @@
     .copy-details {
         .clearfix();
         padding: 8px 15px;
-        &.collapsed {
-           display: none;
-        }
         &:nth-child(odd):not(.group-heading) {
             background-color: @gray-ultralight;
         }
@@ -346,6 +343,9 @@
         @media (max-width: @screen-xs-max) {
             margin-top: 2px;
         }
+    }
+    .collapsed {
+        display: none;
     }
 }
 .callnumAndLocation {

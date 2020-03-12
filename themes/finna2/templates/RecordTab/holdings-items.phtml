@@ -1,0 +1,155 @@
+  <?php
+    $callnumbers = $this->holdings()->getGroupedCallNumbers($holding['items']);
+    $dialogTitle = ': ' . $this->driver->getTitle();
+    $titleLocation = isset($holding['location']) ? $this->transEscWithPrefix('location_', $holding['location']) : '';
+    if ($titleLocation) {
+        $dialogTitle .= " - $titleLocation";
+    }
+    $formats = $this->driver->getFormats();
+    $holdsAllowed = $holdsAllowed ?? $this->driver->tryMethod('getHoldsAllowed');
+
+    $branches = false;
+    foreach ($holding['items'] as $row) {
+      if (isset($row['branch'])) {
+        $branches = true;
+      }
+    }
+    $journal = isset($holding['items'][0]['journalInfo']);
+  ?>
+  <?php if (!empty($holding['items'][0]['order_statuses']) && !in_array(end($formats), ['1/Book/eBook/', '1/Journal/eJournal/', '1/Journal/eArticle/'])): ?>
+    <div class="copy-details <?=$this->mode?>">
+      <div><?=$this->transEsc("Order Information") ?>:</div>
+      <div>
+        <?php foreach ($holding['items'][0]['order_statuses'] as $orderStatus): ?>
+          <?=$this->transEsc('order_status_' . $orderStatus['status'], null, $orderStatus['status']) ?> <?=$this->escapeHtml($orderStatus['order_update_date']) ?>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  <?php endif; ?>
+  <?php foreach ($holding['items'] as $rowNum => $row): ?>
+    <?php
+      // AJAX Check record?
+      $check = isset($row['check']) && $row['check'];
+      $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
+      $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
+      // AJAX block record?
+      $block = !$check && isset($row['addLink']) && $row['addLink'] === 'block';
+      $blockStorageRetrievalRequest = !$checkStorageRetrievalRequest && isset($row['addStorageRetrievalRequestLink']) && $row['addStorageRetrievalRequestLink'] === 'block';
+      $blockILLRequest = !$checkILLRequest && isset($row['addILLRequestLink']) && $row['addILLRequestLink'] === 'block';
+      $currentDepartment = '';
+    ?>
+    <div vocab="http://schema.org/" typeof="Offer" class="copy-details <?=$this->mode?>">
+      <?php if (isset($row['branch']) || isset($row['department'])): ?>
+        <?php
+          $parts = [];
+          if (!empty($row['branch'])) {
+            $parts[] = '<span class="branch">' . $this->escapeHtml($row['branch']) . '</span>';
+          }
+          if (!empty($row['department'])) {
+            $parts[] = '<span class="department">' . $this->escapeHtml($row['department']) . '</span>';
+          }
+          if (!empty($row['callnumber']) && count($callnumbers) > 1) {
+            $parts[] = '<span class="callnumber">' . $this->transEsc($row['callnumber']) . '</span>';
+          }
+        ?>
+        <div class="copy-title">
+          <?php if (!$branches): ?>
+            <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
+          <?php endif; ?>
+          <?=implode(', ', $parts);?>
+        </div>
+      <?php else: ?>
+        <div class="copy-title">
+          <span class="copy-number"><?=!empty($row['number']) ? $this->escapeHtml($row['number']) : $this->transEsc("Copy") ?></span>
+        </div>
+      <?php endif; ?>
+      <div class="copy-info">
+        <?php if (isset($row['reserve']) && $row['reserve'] == "Y"): ?>
+          <link property="availability" href="http://schema.org/InStoreOnly" />
+          <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+        <?php endif; ?>
+        <?php if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+          <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
+        <?php else: ?>
+          <?php if ($row['availability']): ?>
+            <?php /* Begin Available Items (Holds) */ ?>
+            <span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
+            <?php if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
+              &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
+            <?php endif; ?>
+            <div class="pull-right">
+            <?php if (!$journal): ?>
+              <?php if (!$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
+                <a class="<?=$check ? "{$this->mode}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("Place a Hold") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+              <?php endif; ?>
+              <?php if (!$blockStorageRetrievalRequest && isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
+                <a class="<?=$checkStorageRetrievalRequest ? "{$this->mode}CheckStorageRetrievalRequest " : ''?>inlineblock placeStorageRetrievalRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("storage_retrieval_request_place_text") . $dialogTitle); ?>"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+              <?php endif; ?>
+              <?php if (!$blockILLRequest && isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
+                <a class="<?=$checkILLRequest ? "{$this->mode}CheckILLRequest " : ''?>inlineblock placeILLRequest btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"  data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("ill_request_place_text") . $dialogTitle); ?>"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+              <?php endif; ?>
+            <?php endif; ?>
+            </div>
+          <?php else: ?>
+            <?php /* Begin Unavailable Items (Recalls) */ ?>
+            <span class="text-danger"><?=$row['status'] == 'Ordered' ? '' : '<i class="fa fa-remove" aria-hidden="true"></i>';?> <?=$this->transEsc('status_' . $row['status'], null, $this->translate($row['status']))?><link property="availability" href="http://schema.org/OutOfStock" /> </span>
+            <?php if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><?php endif; ?>
+            <?php if (isset($row['duedate']) && $row['duedate']): ?>
+              &ndash;&nbsp;<span class="small"><?=$this->transEsc('Due')?>:&nbsp;<?=$this->escapeHtml($row['duedate'])?></span>
+            <?php endif; ?>
+            <?php if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
+              &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
+            <?php endif; ?>
+            <?php if (!$journal && !$block && isset($row['link']) && $row['link'] && $holdsAllowed): ?>
+              <div class="pull-right">
+                <a class="<?=$check ? "{$this->mode}CheckRequest " : ''?>inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['link'])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate("Recall This") . $dialogTitle); ?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+              </div>
+            <?php endif; ?>
+          <?php endif; ?>
+          <?php if (isset($row['item_notes'])): ?>
+            <div class="item-notes">
+              <ul>
+                <?php foreach ($row['item_notes'] as $item_note): ?>
+                  <li><?=$this->escapeHtml($item_note) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endif; ?>
+        <?php endif; ?>
+        <?php /* Embed item structured data: library, barcode, call number */ ?>
+        <?php if ($row['location']): ?>
+          <meta property="seller" content="<?=$this->escapeHtmlAttr($row['location'])?>" />
+        <?php endif; ?>
+        <?php if ($row['barcode']): ?>
+          <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($row['barcode'])?>" />
+        <?php endif; ?>
+        <?php if ($row['callnumber']): ?>
+          <meta property="sku" content="<?=$this->escapeHtmlAttr($row['callnumber'])?>" />
+        <?php endif; ?>
+        <?php /* Declare that the item is to be borrowed, not for sale */ ?>
+          <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
+          <link property="itemOffered" href="#record" />
+        <?php if (isset($row['availabilityInfo'])): ?>
+          <div class="copy-available">
+            <?php if (!empty($row['availabilityInfo']['ordered'])): ?>
+              <div class="ordered">
+                <?=$this->translate('status_Ordered')?>: <?=$row['availabilityInfo']['ordered']?>
+              </div>
+            <?php endif; ?>
+            <?php if (!empty($row['availabilityInfo']['available'])): ?>
+              <div class="available"><?=$this->translate('Available items')?>: <?=$row['availabilityInfo']['available']?> / <?=$row['availabilityInfo']['total']?></div>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+  <?php if (null !== $this->moreLinkPage): ?>
+    <div class="copy-details <?=$this->mode?>" data-key="<?=$this->escapeHtmlAttr($this->moreLinkKey)?>" data-page="<?=$this->escapeHtmlAttr($this->moreLinkPage)?>" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-record-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+      <button class="more-link load-more-items-ajax" type="button">
+        <?=$this->transEsc('show_more')?> <i class="fa fa-arrow-down"></i>
+      </button>
+      <span class="load-more-indicator-ajax hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...</span>
+    </div>
+    <div class="holdings-items-ajax hidden"></div>
+  <?php endif; ?>

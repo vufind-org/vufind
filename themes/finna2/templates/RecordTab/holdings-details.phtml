@@ -1,10 +1,6 @@
 <!-- START of: finna - RecordTab/holdings-details.phtml -->
-<?php if (isset($holding['items'][0]['details_ajax'])): ?>
-  <span class="holdings-details-ajax <?=$this->escapeHtmlAttr($this->mode)?>GetDetails" data-id="<?=$this->escapeHtmlAttr($holding['items'][0]['id'])?>" data-key="<?=$this->escapeHtmlAttr($holding['items'][0]['details_ajax'])?>">
-    <span class="holdings-load-indicator hidden">
-      <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
-    </span>
-  </span>
+<?php if (isset($holding['items'][0]['detailsGroupKey'])): ?>
+  <div class="holdings-details-ajax <?=$this->escapeHtmlAttr($this->mode)?> hidden"></div>
 <?php endif; ?>
 <?php if (isset($holding['textfields'])): ?>
   <?php foreach ($holding['textfields'] as $textFieldName => $textFields): ?>

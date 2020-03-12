@@ -22,7 +22,7 @@ return [
             'Finna\View\Helper\Root\FinnaSurvey' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'Finna\View\Helper\Root\HtmlElement' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\HeadTitle' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
-            'Finna\View\Helper\Root\HoldingsSettings' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
+            'Finna\View\Helper\Root\Holdings' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'Finna\View\Helper\Root\ImageSrc' => 'Finna\View\Helper\Root\HelperWithThemeInfoFactory',
             'Finna\View\Helper\Root\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'Finna\View\Helper\Root\Linkify' => 'Zend\ServiceManager\Factory\InvokableFactory',
@@ -78,7 +78,9 @@ return [
             'fileSrc' => 'Finna\View\Helper\Root\FileSrc',
             'finnaSurvey' => 'Finna\View\Helper\Root\FinnaSurvey',
             'headTitle' => 'Finna\View\Helper\Root\HeadTitle',
-            'holdingsSettings' => 'Finna\View\Helper\Root\HoldingsSettings',
+            'holdings' => 'Finna\View\Helper\Root\Holdings',
+            // For back-compatibility
+            'holdingsSettings' => 'Finna\View\Helper\Root\Holdings',
             'htmlElement' => 'Finna\View\Helper\Root\HtmlElement',
             //use root highlight so search results use span instead of mark
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
