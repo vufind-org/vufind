@@ -13,7 +13,7 @@
         <?php if ($page != $this->current): ?>
           <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>" aria-label="<?=$this->transEsc('go_to_page')?> <?=$page?>"><?=$page?></a></li>
         <?php else: ?>
-          <li class="active" aria-current="true" aria-label="<?=$this->transEsc('current_page')?>, <?=$this->transEsc('page')?> <?=$page?>"><span><?=$page?></span></li>
+          <li class="active" aria-current="true" aria-label="<?=$this->transEsc('current_page')?>, <?=$this->transEsc('page_no', ['%%page%%' => $page])?>"><span><?=$page?></span></li>
         <?php endif; ?>
       <?php endforeach; ?>
     <?php endif; ?>
