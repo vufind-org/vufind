@@ -7,6 +7,7 @@
 .vagrant
 .vscode/*
 /downloads
+/Gruntfile.local.js
 /solr/vendor
 /vendor
 ChangeLog
@@ -16,4 +17,3 @@ import/solrmarc.log*
 lessphp_*.list
 node_modules
 public/swagger-ui
-Gruntfile.local.js
