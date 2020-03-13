@@ -178,7 +178,7 @@ forms:
           - feedback_category_general
           - feedback_category_accessibility
         label: Subject
-      - name: from
+      - name: email
         type: email
         label: email_from
         required: true
