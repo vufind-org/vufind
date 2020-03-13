@@ -97,9 +97,10 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(100, $ret);
 
         // test empty string (not null)
-        $helper->__invoke('array')->clear();
-        $ret = $helper->__invoke('array')->set('');
+        $helper->__invoke('empty')->clear();
+        $ret = $helper->__invoke('empty')->set('');
         $this->assertEquals('', $ret);
+        $this->assertEquals('', $helper->__invoke('empty')->get('default'));
 
         // test array
         $helper->__invoke('array')->clear();
@@ -175,6 +176,8 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         // test no block
         $ret = $helper->__invoke('test')->prepend('PRE1');
         $this->assertEquals('PRE1', $ret);
+        // default only returns of all are unset
+        $this->assertEquals('PRE1', $helper->__invoke('test')->get('default'));
 
         // test with block
         $ret = $helper->__invoke('test')->set('BLOCK');
@@ -215,6 +218,8 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         // test no block
         $ret = $helper->__invoke('test')->append('POST1');
         $this->assertEquals('POST1', $ret);
+        // default only returns of all are unset
+        $this->assertEquals('POST1', $helper->__invoke('test')->get('default'));
 
         // test with block
         $ret = $helper->__invoke('test')->set('BLOCK');
