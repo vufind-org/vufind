@@ -1695,26 +1695,59 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             );
         }
 
+        $displayRequests = !isset($this->config['Holdings']['displayTotalHoldCount'])
+            || $this->config['Holdings']['displayTotalHoldCount'];
+
+        // Two cases: if there aren't too many items, fetch everything and be done
+        // with it. Otherwise fetch only summary availability first.
+        $itemLimit = $this->config['Holdings']['itemLimit'] ?? 100;
+        $itemsResult = $this->makeRequest(
+            '/bibs/' . urlencode($id) . '/holdings/ALL/items',
+            [
+                'limit' => $itemLimit,
+                'expand' => 'due_date',
+            ]
+        );
+        if ($itemsResult) {
+            $totalItems = (int)$itemsResult->attributes()->total_record_count;
+            if ($totalItems <= $itemLimit) {
+                $items = $this->getHoldingsItems(
+                    $itemsResult,
+                    $id,
+                    $patron,
+                    true
+                );
+
+                $result = [
+                    'holdings' => $items['items'],
+                    'total' => $totalItems
+                ];
+
+                if ($displayRequests) {
+                    $bib = $this->makeRequest(
+                        '/bibs/' . urlencode($id) . '?expand=requests'
+                    );
+                    $result['reservations'] = (int)$bib->requests ?? 0;
+                }
+
+                return $result;
+            }
+        }
+
         $total = 0;
         $totalAvailable = 0;
         $requests = 0;
         $locations = [];
         $holdings = [];
-        $needFixup = false;
 
         // Summary holdings
         $params = [
-            'mms_id' => $id,
             'expand' => implode(',', $this->getInventoryTypes())
         ];
-        if (!isset($this->config['Holdings']['displayTotalHoldCount'])
-            || $this->config['Holdings']['displayTotalHoldCount']
-        ) {
+        if ($displayRequests) {
             $params['expand'] .= ',requests';
-            $displayRequests = true;
         }
-        if ($bibs = $this->makeRequest('/bibs', $params)) {
-            $bib = reset($bibs);
+        if ($bib = $this->makeRequest('/bibs/' . urlencode($id), $params)) {
             $requests = (int)$bib->requests ?? 0;
             $marc = new \File_MARCXML(
                 $bib->record->asXML(),
@@ -1844,9 +1877,10 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             }
             usort($holdings, [$this, 'statusSortFunction']);
 
-            // Return locations to strings
+            // Return locations to strings and add flags to skip items list
             foreach ($holdings as &$item) {
                 $item['location'] = $this->translate($item['location']);
+                $item['skipItemsList'] = true;
             }
             unset($item);
         }
@@ -1929,14 +1963,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'totalItems' => 0
                 ];
             }
-        } else {
-            // For checking for suppressed holdings. This is a bit complicated,
-            // but the holding information in items is missing this crucial bit.
-            $almaHoldings = [];
-            $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
-            foreach ($records->holding ?? [] as $record) {
-                $almaHoldings[(string)$record->holding_id] = $record;
-            }
         }
 
         $marcDetails = [];
@@ -2005,38 +2031,74 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         }
 
         // Items
-        $itemHolds = $this->config['Holds']['enableItemHolds'] ?? null;
-
-        $itemLimit = min(
-            $params['itemLimit'] ?? 100,
-            $this->config['Holdings']['itemLimit'] ?? 100
-        );
-        $page = ($params['page'] ?? 1) - 1;
-        // NOTE: According to documentation offset is 0-based, but in reality it
-        // seems to be 1-based.
-        $queryParams = [
-            'offset' => $page * $itemLimit + 1,
-            'limit' => $itemLimit,
-            'current_location' => $locationCode,
-            'order_by' => 'description,enum_a,enum_b',
-            'direction' => 'desc',
-            'expand' => 'due_date',
+        $items = [
+            'items' => [],
+            'total' => 0
         ];
+        if ($libraryCode && $locationCode) {
+            $itemLimit = min(
+                $params['itemLimit'] ?? 100,
+                $this->config['Holdings']['itemLimit'] ?? 100
+            );
+            $page = ($params['page'] ?? 1) - 1;
+            // NOTE: According to documentation offset is 0-based, but in reality it
+            // seems to be 1-based.
+            $queryParams = [
+                'offset' => $page * $itemLimit + 1,
+                'limit' => $itemLimit,
+                'current_location' => $locationCode,
+                'order_by' => 'description,enum_a,enum_b',
+                'direction' => 'desc',
+                'expand' => 'due_date',
+            ];
 
-        if ($holdingId) {
-            $itemsPath = '/bibs/' . urlencode($id) . '/holdings/'
-                . urlencode($holdingId) . '/items?' . http_build_query($queryParams);
-        } else {
-            $queryParams['current_library'] = $libraryCode;
-            $queryParams['current_location'] = $locationCode;
-            $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
-                . http_build_query($queryParams);
+            if ($holdingId) {
+                $itemsReq = '/bibs/' . urlencode($id) . '/holdings/'
+                    . urlencode($holdingId) . '/items';
+            } else {
+                $queryParams['current_library'] = $libraryCode;
+                $queryParams['current_location'] = $locationCode;
+                $itemsReq = '/bibs/' . urlencode($id) . '/holdings/ALL/items';
+            }
+
+            $itemsResult = $this->makeRequest($itemsReq, $queryParams);
+            $items = $this->getHoldingsItems($itemsResult, $id, $patron, false);
+        }
+
+        return [
+            'details' => $marcDetails,
+            'holdings' => $items['items'],
+            'total' => $items['total'],
+            'detailsGroupKey' => "||$libraryCode||$locationCode",
+        ];
+    }
+
+    /**
+     * Get items as holdings entries
+     *
+     * @param \SimpleXMLElement $itemsResult Items from Alma
+     * @param string            $id          Record id
+     * @param array             $patron      Patron
+     * @param bool              $sortItems   Whether to sort the items
+     *
+     * @return array
+     */
+    protected function getHoldingsItems($itemsResult, $id, $patron = null,
+        $sortItems = false
+    ) {
+        // For checking for suppressed holdings. This is a bit complicated,
+        // but the holding information in items is missing this crucial bit.
+        $almaHoldings = [];
+        $records = $this->makeRequest('/bibs/' . urlencode($id) . '/holdings');
+        foreach ($records->holding ?? [] as $record) {
+            $almaHoldings[(string)$record->holding_id] = $record;
         }
 
         $sort = 0;
         $items = [];
         $totalItems = 0;
-        if ($itemsResult = $this->makeRequest($itemsPath)) {
+        $itemHolds = $this->config['Holds']['enableItemHolds'] ?? null;
+        if ($itemsResult) {
             $totalItems = (int)$itemsResult->attributes()->total_record_count;
 
             foreach ($itemsResult->item as $item) {
@@ -2111,16 +2173,24 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'addLink' => $addLink,
                     // For Alma title-level hold requests
                     'description' => $description ?? null,
+                    'detailsGroupKey' => $holdingId ? "$holdingId||||" : '',
                     'sort' => $sort++
                 ];
             }
+            if ($sortItems) {
+                usort($items, [$this, 'statusSortFunction']);
+            }
+
+            // Return locations to strings
+            foreach ($items as &$item) {
+                $item['location'] = $this->translate($item['location']);
+            }
+            unset($item);
         }
 
         return [
-            'details' => $marcDetails,
-            'holdings' => $items,
+            'items' => $items,
             'total' => $totalItems,
-            'detailsGroupKey' => "||$libraryCode||$locationCode",
         ];
     }
 

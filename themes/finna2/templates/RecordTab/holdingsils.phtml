@@ -299,7 +299,8 @@
     <?php endif; ?>
     <?php if (isset($holding['items'][0]['detailsGroupKey'])): ?>
       <div class="holdings-items-ajax <?=$this->escapeHtmlAttr($holdingsDetails)?> hidden"></div>
-    <?php else: ?>
+    <?php endif; ?>
+    <?php if (empty($holding['items'][0]['skipItemsList'])): ?>
       <?=$this->render('RecordTab/holdings-items.phtml', ['holding' => $holding, 'driver' => $driver, 'mode' => $holdingsDetails, 'holdsAllowed' => $holdsAllowed])?>
     <?php endif; ?>
     <?php if (!empty($holding['purchase_history'])): ?>

@@ -144,15 +144,6 @@
       </div>
     </div>
   <?php endforeach; ?>
-  <?php if (empty($holding['items'])): ?>
-    <div class="copy-details <?=$this->mode?>">
-      <div class="copy-title">
-      </div>
-      <div class="copy-info">
-        <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
-      </div>
-    </div>
-  <?php endif; ?>
   <?php if (null !== $this->moreLinkPage): ?>
     <div class="copy-details <?=$this->mode?>" data-key="<?=$this->escapeHtmlAttr($this->moreLinkKey)?>" data-page="<?=$this->escapeHtmlAttr($this->moreLinkPage)?>" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-record-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
       <button class="more-link load-more-items-ajax" type="button">

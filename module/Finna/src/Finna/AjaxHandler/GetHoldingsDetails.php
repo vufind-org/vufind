@@ -155,7 +155,7 @@ class GetHoldingsDetails extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
                 'holding' => $holdingItems,
                 'mode' => 'expanded',
                 'moreLinkPage' => $moreLinkPage,
-                'moreLinkKey' => $key
+                'moreLinkKey' => $detailsGroupKey
             ]
         );
 
