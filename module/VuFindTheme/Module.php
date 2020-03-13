@@ -100,6 +100,8 @@ class Module
                     View\Helper\ParentTemplateFactory::class,
                 View\Helper\InlineScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
+                View\Helper\Slot::class =>
+                    View\Helper\PipelineInjectorFactory::class,
                 View\Helper\TemplatePath::class =>
                     View\Helper\TemplatePathFactory::class,
             ],
@@ -112,6 +114,7 @@ class Module
                 \Laminas\View\Helper\InlineScript::class =>
                     View\Helper\InlineScript::class,
                 'parentTemplate' => View\Helper\ParentTemplate::class,
+                'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,
             ],
         ];
