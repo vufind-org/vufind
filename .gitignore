@@ -16,3 +16,4 @@ import/solrmarc.log*
 lessphp_*.list
 node_modules
 public/swagger-ui
+Gruntfile.local.js
