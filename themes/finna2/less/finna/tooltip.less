@@ -28,7 +28,9 @@
     color: @tooltip-header-color;
   }
 }
-
+.list-group-item .tooltip-inner, .logoutOptions .tooltip-inner, .status .tooltip-inner {
+  min-width: 150px;
+}
 .tooltip {
   &.bottom .tooltip-inner{
     box-shadow: 0px 5px 20px -4px @gray;
@@ -37,7 +39,6 @@
     box-shadow: 0px -5px 20px -4px @gray;
   }
 }
-
 .tooltip-tabs_local {
   display: @tooltip-tabs-local;
 }
