@@ -2017,15 +2017,21 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $queryParams = [
             'offset' => $page * $itemLimit + 1,
             'limit' => $itemLimit,
-            'current_library' => $libraryCode,
             'current_location' => $locationCode,
             'order_by' => 'description,enum_a,enum_b',
             'direction' => 'desc',
             'expand' => 'due_date',
         ];
 
-        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
-            . http_build_query($queryParams);
+        if ($holdingId) {
+            $itemsPath = '/bibs/' . urlencode($id) . '/holdings/'
+                . urlencode($holdingId) . '/items?' . http_build_query($queryParams);
+        } else {
+            $queryParams['current_library'] = $libraryCode;
+            $queryParams['current_location'] = $locationCode;
+            $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
+                . http_build_query($queryParams);
+        }
 
         $sort = 0;
         $items = [];
