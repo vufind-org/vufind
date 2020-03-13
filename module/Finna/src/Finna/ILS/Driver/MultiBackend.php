@@ -521,6 +521,34 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Get Renew Details
+     *
+     * In order to renew an item, the ILS requires information on the item and
+     * patron. This function returns the information as a string which is then used
+     * as submitted form data in checkedOut.php. This value is then extracted by
+     * the RenewMyItems function.
+     *
+     * @param array $checkoutDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getRenewDetails($checkoutDetails)
+    {
+        if (empty($checkoutDetails['id'])) {
+            return '';
+        }
+        $source = $this->getSource($checkoutDetails['id']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $details = $driver->getRenewDetails(
+                $this->stripIdPrefixes($checkoutDetails, $source)
+            );
+            return $this->addIdPrefixes($details, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Get configuration for the ILS driver.  We will load an .ini file named
      * after the driver class and number if it exists;
      * otherwise we will return an empty array.
