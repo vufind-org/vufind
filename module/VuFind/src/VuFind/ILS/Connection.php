@@ -1056,13 +1056,23 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $holdings = $this->__call('getHolding', [$id, $patron, $finalOptions]);
 
         // Return all the necessary details:
-        return [
-            'total' => $holdings['total'] ?? count($holdings),
-            'holdings' => $holdings['holdings'] ?? $holdings,
-            'electronic_holdings' => $holdings['electronic_holdings'] ?? [],
-            'page' => $finalOptions['page'],
-            'itemLimit' => $finalOptions['itemLimit'],
-        ];
+        if (!isset($holdings['holdings'])) {
+            $holdings = [
+                'total' => count($holdings),
+                'holdings' => $holdings,
+                'electronic_holdings' => [],
+            ];
+        } else {
+            if (!isset($holdings['total'])) {
+                $holdings['total'] = count($holdings['holdings']);
+            }
+            if (!isset($holdings['electronic_holdings'])) {
+                $holdings['electronic_holdings'] = [];
+            }
+        }
+        $holdings['page'] = $finalOptions['page'];
+        $holdings['itemLimit'] = $finalOptions['itemLimit'];
+        return $holdings;
     }
 
     /**
