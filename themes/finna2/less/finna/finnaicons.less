@@ -621,6 +621,21 @@ table .iconlabel {
 .fa-qrcode:before {
     content: "\f029";
 }
+.cc-cc:before {
+    content: "\e905";
+}
+.cc-by:before {
+    content: "\e862";
+}
+.cc-sa:before {
+    content: "\e800";
+}
+.cc-nd:before {
+    content: "\e864";
+}
+.cc-nd-eu:before {
+    content: "\e865";
+}
 .iconlabel.format-1bookebook:before, .iconlabel.format-1bookebooksection:before, .iconlabel.format-1otherelectronic:before, .iconlabel.format-ebook:before {
     content: "\e617";
 }
@@ -730,6 +745,20 @@ table .iconlabel {
 }
 .nav-pills > li > a:first-child {
     margin-left: 0;
+}
+
+/** CC icons **/
+.imagepopup-holder .image-information-holder .access-rights .image-rights i {
+  padding-right: 0;
+}
+.access-rights .iconlabel {
+  font-size: @content-font-size-base;
+  line-height: @content-font-size-base;
+  margin-right: 0;
+  padding: 0;
+  &:before {
+    padding-right: 0;
+  }
 }
 
 @media(max-width: @screen-sm-max) {

@@ -12,7 +12,7 @@
 ?>
 <?php if (isset($displayIcons[$key])): ?>
   <?php foreach ($displayIcons[$key] as $icon): ?>
-    <img class="creative-commons" src="<?=$this->imageLink('cc_' . $icon . '_black.png')?>" alt="">
+    <i class="iconlabel cc-<?=$icon ?>" aria-hidden="true"></i>
   <?php endforeach; ?>
 <?php endif; ?>
 <!-- END of: finna - Helpers/copyright-icons.phtml -->
