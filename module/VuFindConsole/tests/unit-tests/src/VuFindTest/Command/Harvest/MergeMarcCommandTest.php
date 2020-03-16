@@ -77,6 +77,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
 <!-- $directory/b.xml -->
 <record id="b" />
 </collection>
+
 EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
