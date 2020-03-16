@@ -104,7 +104,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
             'generate theme' => 'Create and configure a new theme',
             'harvest harvest_oai' => 'OAI-PMH harvester',
-            'harvest merge-marc' => 'MARC merge tool',
             'import import-xsl' => 'XSLT importer',
             'import webcrawl' => 'Web crawler',
             'language addusingtemplate' => 'Build new language strings from '
