@@ -1,6 +1,6 @@
 <?php
 /**
- * LintMarc command test.
+ * MergeMarc command test.
  *
  * PHP version 7
  *
@@ -25,13 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Command\Util;
+namespace VuFindTest\Command\Harvest;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFindConsole\Command\Util\LintMarcCommand;
+use VuFindConsole\Command\Harvest\MergeMarcCommand;
 
 /**
- * LintMarc command test.
+ * MergeMarc command test.
  *
  * @category VuFind
  * @package  Tests
@@ -39,7 +39,7 @@ use VuFindConsole\Command\Util\LintMarcCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LintMarcCommandTest extends \PHPUnit\Framework\TestCase
+class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that missing parameters yield an error message.
@@ -52,31 +52,49 @@ class LintMarcCommandTest extends \PHPUnit\Framework\TestCase
             \Symfony\Component\Console\Exception\RuntimeException::class
         );
         $this->expectExceptionMessage(
-            'Not enough arguments (missing: "filename").'
+            'Not enough arguments (missing: "directory").'
         );
-        $command = new LintMarcCommand();
+        $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
     }
 
     /**
-     * Test that linting a file yields useful messages.
+     * Test that merging a directory yields valid results.
      *
      * @return void
      */
-    public function testLintingFile()
+    public function testMergingDirectory()
     {
-        $command = new LintMarcCommand();
+        $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
-        $filename = __DIR__ . '/../../../../../../../../tests/data/heb.mrc';
-        $commandTester->execute(compact('filename'));
+        $directory = __DIR__ . '/../../../../../fixtures/xml';
+        $commandTester->execute(compact('directory'));
         $expected = <<<EXPECTED
-Checking record 1 (001 = testbug1)...
-Warnings: 245: Must end with . (period).
-245: Subfield _b should be preceded by space-colon, space-semicolon, or space-equals sign.
-
+<collection>
+<!-- $directory/a.xml -->
+<record id="a" />
+<!-- $directory/b.xml -->
+<record id="b" />
+</collection>
 EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test that merging a non-existent directory yields an error message.
+     *
+     * @return void
+     */
+    public function testMissingDirectory()
+    {
+        $command = new MergeMarcCommand();
+        $commandTester = new CommandTester($command);
+        $directory = __DIR__ . '/../../../../../fixtures/does-not-exist';
+        $commandTester->execute(compact('directory'));
+        $expected = "Cannot open directory: $directory\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(1, $commandTester->getStatusCode());
     }
 }
