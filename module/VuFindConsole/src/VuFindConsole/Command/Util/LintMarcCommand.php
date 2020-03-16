@@ -27,10 +27,10 @@
  */
 namespace VuFindConsole\Command\Util;
 
-use VuFindConsole\Command\RelativeFileAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: Lint MARC records.

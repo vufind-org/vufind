@@ -28,10 +28,10 @@
  */
 namespace VuFindConsole\Command\Harvest;
 
-use VuFindConsole\Command\RelativeFileAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: Merge MARC records.
