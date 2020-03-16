@@ -55,6 +55,10 @@ trait FinnaOptions
             && $searchSettings->General->default_limit_condensed
         ) {
             $defaultLimit = $searchSettings->General->default_limit_condensed;
+        } elseif ($view == 'compact'
+            && $searchSettings->General->default_limit_compact
+        ) {
+            $defaultLimit = $searchSettings->General->default_limit_compact;
         } else {
             $defaultLimit = $this->getDefaultLimit();
         }

@@ -30,6 +30,7 @@ view_options_icons   = true
 default_limit        = 20
 default_limit_grid   = 50
 default_limit_condensed = 100;
+default_limit_compact = 100;
 limit_options        = 20,50,100
 
 ; If this setting is true, boolean operators in searches (AND/OR/NOT) will only
