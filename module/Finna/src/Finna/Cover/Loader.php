@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
- * Copyright (C) The National Library of Finland 2015-2018.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +25,7 @@
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
@@ -40,6 +41,7 @@ use VuFindCode\ISBN;
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Kalle Pyykkönen <kalle.pyykkonen@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
@@ -167,6 +169,53 @@ class Loader extends \VuFind\Cover\Loader
                 $this->loadUnavailable();
             }
         }
+    }
+
+    /**
+     * Loads an external image from provider and sends it to browser
+     * in chunks. Used for big image files
+     *
+     * @param string $url    to load
+     * @param string $format type of the image to load
+     *
+     * @return bool
+     */
+    public function loadExternalImage($url, $format)
+    {
+        $contentType = '';
+        switch ($format) {
+        case 'tif':
+        case 'tiff':
+            $contentType = 'image/tiff';
+            break;
+        default:
+            $contentType = 'image/jpeg';
+            break;
+        }
+        header("Content-Type: $contentType");
+        $client = $this->httpService->createClient(
+            $url, \Zend\Http\Request::METHOD_GET, 300
+        );
+        $client->setStream();
+        $adapter = $client->getAdapter();
+        $adapter->setOptions(
+            [
+                'curloptions' => [
+                    CURLOPT_WRITEFUNCTION => function ($ch, $str) {
+                        echo $str;
+                        return strlen($str);
+                    }
+                ]
+            ]
+        );
+        $result = $client->send();
+
+        if (!$result->isSuccess()) {
+            $this->debug("Failed to retrieve image from $url");
+            return false;
+        }
+
+        return true;
     }
 
     /**

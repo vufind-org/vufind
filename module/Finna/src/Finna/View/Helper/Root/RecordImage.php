@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2017.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -34,6 +35,7 @@ namespace Finna\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
@@ -185,6 +187,19 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         ) . '?' . http_build_query($imageParams);
         $pdf = $images[$index]['pdf'] ?? false;
         return compact('url', 'pdf');
+    }
+
+    /**
+     * Returns an array containing all the high resolution images for record image
+     *
+     * @param int $index Record image index
+     *
+     * @return array|false
+     */
+    public function getHighResolutionImages($index)
+    {
+        $images = $this->record->getAllImages($this->view->layout()->userLang);
+        return $images[$index]['highResolution'] ?? false;
     }
 
     /**

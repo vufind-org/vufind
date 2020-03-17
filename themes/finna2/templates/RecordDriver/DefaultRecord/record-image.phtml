@@ -14,35 +14,16 @@
   ); ?>
   </div>
   <?php if ($type != 'list' && $type != 'list grid'): ?>
-    <?php $ind = -1; ?>
+    <?php $ind = 0; ?>
     <?php foreach ($images as $image): ?>
-      <?php ++$ind; ?>
+      <?php $rights = $image['rights']; ?>
       <div class="image-details-container<?=$ind > 0 ? ' hidden' : '' ?> text-left" data-img-index="<?=$ind ?>">
-        <?php
-          $recordImage = $this->recordImage($this->record($this->driver));
-          $originalImage = $recordImage->getMasterImage($ind);
-          $formats = $this->driver->tryMethod('getFormats');
-          $translatedFormat = $this->transEsc(end($formats));
-          $rights = $image['rights'];
-        ?>
         <?php if ($this->record($this->driver)->allowRecordImageDownload()): ?>
-          <div class="image-link">
-            <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
-              <div class="open-link">
-                <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download>
-                  <i aria-hidden="true" class="fa fa-download"></i>
-                  <span><?=$this->transEsc('Download the image') ?></span>
-                </a>
-                <span class="image-dimensions"></span>
-              </div>
-            <?php endif ?>
-          </div>
-          <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-            <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
-          <?php endif; ?>
+          <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
         <?php endif; ?>
       <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights]); ?>
       </div>
+      <?php $ind++; ?>
     <?php endforeach; ?>
   <?php endif; ?>
 </div>

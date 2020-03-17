@@ -1,0 +1,64 @@
+<!-- START of Finna - RecordDriver/DefaultRecord/image-download.phtml -->
+<div class="image-link">
+    <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
+        <?php
+            $urls = $image['urls'];
+            $links = [];
+        ?>
+        <?php if ($hiRes): ?>
+            <i aria-hidden="true" class="fa fa-download"></i>
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle download" type="button" id="downloadMenu-<?=$index?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?=$this->transEsc('Download the image') ?> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu download" aira-labelledby="downloadMenu-<?=$index?>">
+                    <?php if (isset($urls['large'])): ?>
+                        <li class="display-image"><a href="<?= $this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank"><?= $this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
+                    <?php endif; ?>
+                    <?php foreach ($hiRes as $size => $img): ?>
+                        <?php foreach ($img as $key => $info): ?>
+                            <?php
+                                $data = $info['data'];
+                                $imageSize = '';
+                                if (isset($data['size'])) {
+                                    $converted = '';
+                                    $convertedTo = '';
+                                    switch ($data['size']['unit']) {
+                                    case 'tavua':
+                                    case 'bytes':
+                                        $bytes = (int)$data['size']['value'];
+                                        if (($converted = number_format($bytes / 1024 / 1024, 2)) > 1) {
+                                            $convertedTo = 'MB';
+                                        } else {
+                                            $converted = number_format($bytes / 1024, 2);
+                                            $convertedTo = 'KB';
+                                        }
+                                        $imageSize = "($converted $convertedTo)";
+                                        break;
+                                    }
+                                }
+                                $dimensions = '';
+                                if (isset($data['width']) && isset($data['height'])) {
+                                    $dimensions = "({$data['width']['value']} x {$data['height']['value']} px)";
+                                }
+                                $downloadName = str_replace('.', '-', $this->driver->getUniqueID()) . '-' . ($info['resourceID'] ?? $index) . '-' . $size;
+                            ?>
+                            <li><a download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('cover-download', [], ['query' => $info['params']]))?>"> <?= $this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$dimensions?></span> <span class="image-size"><?=$imageSize?></span>  <?=$key?></a></li>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php else: ?>
+            <div class="open-link">
+                <a target="_blank" href="<?=$this->escapeHtmlAttr($urls['master'] ?? $urls['large']) ?>" download>
+                  <i aria-hidden="true" class="fa fa-download"></i>
+                  <span><?=$this->transEsc('Download the image') ?></span>
+                </a>
+                <span class="image-dimensions"></span>
+              </div>
+        <?php endif; ?>
+    <?php elseif (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+        <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
+    <?php endif; ?>
+</div>
+<!-- END of Finna - RecordDriver/DefaultRecord/image-download.phtml -->

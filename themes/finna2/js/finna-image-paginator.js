@@ -744,16 +744,7 @@ finna.imagePaginator = (function imagePaginator() {
       }
       VuFind.lightbox.bind('.imagepopup-holder');
       if (typeof $('.open-link a').attr('href') !== 'undefined') {
-        var img = document.createElement('img');
-        img.src = $('.open-link a').attr('href');
-        img.onload = function onLoadImg() {
-          if (this.width === 10 && this.height === 10) {
-            $('.open-link').hide();
-          }
-          else {
-            $('.open-link .image-dimensions').text( '(' + this.width + ' X ' + this.height + ')');
-          }
-        };
+        _.setDimensions();
       }
       $('.collapse-content-holder').find('[data-embed-video]').click(function onClickVideoLink(){
         var videoSources = $(this).data('videoSources');
@@ -883,7 +874,7 @@ finna.imagePaginator = (function imagePaginator() {
   FinnaPaginator.prototype.setDimensions = function setDimensions() {
     var popupHidden = $('.mfp-content').length === 0;
     var container = popupHidden ? $('.image-details-container').not('.hidden') : $('.image-information-holder');
-    var openLink = container.find('.open-link a').attr('href');
+    var openLink = container.find('.open-link a, .display-image a').attr('href');
     if (typeof openLink !== 'undefined') {
       var img = new Image();
       img.src = openLink;
@@ -892,9 +883,8 @@ finna.imagePaginator = (function imagePaginator() {
         var height = this.height;
         if (width === 10 && height === 10) {
           $('.open-link').hide();
-        }
-        else {
-          container.find('.open-link .image-dimensions').text( '(' + width + ' X ' + height + ')');
+        } else {
+          container.find('.open-link .image-dimensions, .display-image .image-dimensions').text( '(' + width + ' x ' + height + ' px)');
         }
       };
     }

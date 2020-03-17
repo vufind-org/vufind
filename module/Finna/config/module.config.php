@@ -757,7 +757,7 @@ $dynamicRoutes = [
 ];
 
 $staticRoutes = [
-    'Browse/Database', 'Browse/Journal',
+    'Browse/Database', 'Browse/Journal', 'Cover/Download',
     'LibraryCards/Recover', 'LibraryCards/Register',
     'LibraryCards/RegistrationDone', 'LibraryCards/RegistrationForm',
     'LibraryCards/ResetPassword',

@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015-2019.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -552,9 +552,9 @@ class Record extends \VuFind\View\Helper\Root\Record
      *
      * @param string $language   Language for description and rights
      * @param bool   $thumbnails Whether to include thumbnail links if no image links
-     * are found
+     *                           are found
      * @param bool   $includePdf Whether to include first PDF file when no image
-     * links are found
+     *                           links are found
      *
      * @return array
      */
@@ -605,6 +605,20 @@ class Record extends \VuFind\View\Helper\Root\Record
                     ];
                     $image['urls'][$size] = $params;
                 }
+                if (isset($image['highResolution'])
+                    && !empty($image['highResolution'])
+                ) {
+                    foreach ($image['highResolution'] as $size => &$values) {
+                        foreach ($values as $format => &$data) {
+                            $data['params'] = [
+                                'id' => $recordId,
+                                'index' => $idx,
+                                'size' => $size,
+                                'format' => $format ?? 'jpg'
+                            ];
+                        }
+                    }
+                }
             }
         }
         return $this->cachedImages = $images;
@@ -621,7 +635,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getNumOfRecordImages($size, $includePdf = true)
     {
-        $images = $this->driver->trymethod('getAllImages', ['', $includePdf]);
+        $images = $this->driver->tryMethod('getAllImages', ['', $includePdf]);
         return count($images);
     }
 
@@ -661,7 +675,7 @@ class Record extends \VuFind\View\Helper\Root\Record
     public function getRating()
     {
         if ($this->ratingAllowed()
-            && $average = $this->driver->trymethod('getAverageRating')
+            && $average = $this->driver->tryMethod('getAverageRating')
         ) {
             return $this->getView()->render(
                 'Helpers/record-rating.phtml',
