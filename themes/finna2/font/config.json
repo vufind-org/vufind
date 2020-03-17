@@ -2458,7 +2458,7 @@
     },
     {
       "uid": "8868bf04f4c3c20c5c7ff54d0891e31b",
-      "css": "exclamation-circle-fill",
+      "css": "exclamation-circle",
       "code": 59568,
       "src": "custom_icons",
       "selected": true,
@@ -2467,12 +2467,12 @@
         "width": 1000
       },
       "search": [
-        "exclamation-circle-fill"
+        "exclamation-circle"
       ]
     },
     {
       "uid": "205662919dcfabafcb58360d02a820cd",
-      "css": "bell-circle-solid",
+      "css": "bell-circle",
       "code": 59569,
       "src": "custom_icons",
       "selected": true,
@@ -2481,7 +2481,7 @@
         "width": 1000
       },
       "search": [
-        "bell-circle-solid"
+        "bell-circle"
       ]
     },
     {
@@ -2500,7 +2500,7 @@
     },
     {
       "uid": "3b06f6282203b2cc1fea563a54a416e6",
-      "css": "exclamation-solid",
+      "css": "exclamation",
       "code": 59571,
       "src": "custom_icons",
       "selected": true,
@@ -2509,12 +2509,12 @@
         "width": 375
       },
       "search": [
-        "exclamation-solid"
+        "exclamation"
       ]
     },
     {
       "uid": "a8027f39de1134686dc3e9b046037891",
-      "css": "exclamation-triangle-solid",
+      "css": "exclamation-triangle",
       "code": 59572,
       "src": "custom_icons",
       "selected": true,
@@ -2523,7 +2523,21 @@
         "width": 1125
       },
       "search": [
-        "exclamation-triangle-solid"
+        "exclamation-triangle"
+      ]
+    },
+    {
+      "uid": "70b34b53f9bfc805cd62516c2fcf7aab",
+      "css": "later",
+      "code": 59397,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M433.3 820.8C433.3 858.3 433.3 895.8 433.3 933.3 254.2 937.5 41.7 800 4.2 566.7-33.3 316.7 150 95.8 387.5 70.8 641.7 41.7 866.7 241.7 866.7 500 908.3 500 954.2 500 1000 500 937.5 587.5 875 675 812.5 766.7 750 679.2 687.5 591.7 625 504.2 670.8 504.2 712.5 504.2 754.2 504.2 762.5 383.3 675 220.8 491.7 187.5 308.3 154.2 141.7 279.2 116.7 458.3 91.7 650 237.5 820.8 433.3 820.8ZM395.8 504.2C395.8 520.8 400 533.3 408.3 550 420.8 566.7 429.2 583.3 441.7 600 458.3 620.8 470.8 645.8 487.5 666.7 508.3 654.2 529.2 637.5 550 625 525 587.5 500 554.2 475 516.7 470.8 512.5 470.8 504.2 470.8 500 470.8 445.8 470.8 325 470.8 316.7 445.8 316.7 420.8 316.7 395.8 316.7L395.8 504.2Z",
+        "width": 1000
+      },
+      "search": [
+        "later"
       ]
     }
   ]

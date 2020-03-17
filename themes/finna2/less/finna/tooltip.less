@@ -28,8 +28,30 @@
     color: @tooltip-header-color;
   }
 }
-.list-group-item .tooltip-inner, .logoutOptions .tooltip-inner, .status .tooltip-inner {
-  min-width: 150px;
+.list-group-item , .logoutOptions , .status {
+  .tooltip-inner {
+    min-width: auto;
+    padding: 4px 8px;
+    text-align: left;
+    font-size: 0.9em;
+    font-weight: normal;
+    box-shadow: none !important;
+    color: #fff;
+    background: @gray;
+    border-radius: 4px;
+  }
+  .tooltip.top .tooltip-arrow, .tooltip.top-left .tooltip-arrow, .tooltip.top-right .tooltip-arrow  {
+    border-top-color: @gray;
+  }
+  .tooltip.right .tooltip-arrow {
+    border-right-color: @gray;
+  }
+  .tooltip.left .tooltip-arrow {
+    border-left-color: @gray;
+  }
+  .tooltip.bottom .tooltip-arrow, .tooltip.bottom-left .tooltip-arrow, .tooltip.bottom-right .tooltip-arrow {
+    border-bottom-color: @gray;
+  }
 }
 .tooltip {
   &.bottom .tooltip-inner{
@@ -87,7 +109,6 @@
     font-size: 36px;
   }
 }
-
 
 .searchbox-home {
   .tooltip-search-pci, .tooltip-search-local {
