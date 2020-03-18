@@ -50,7 +50,7 @@
             </div>
         <?php else: ?>
             <div class="open-link">
-                <a target="_blank" href="<?=$this->escapeHtmlAttr($urls['master'] ?? $urls['large']) ?>" download>
+                <a target="_blank" href="<?=$this->escapeHtmlAttr($urls['master'] ?? $urls['large'] ?? $urls['medium'] ?? $urls['small']) ?>" download>
                   <i aria-hidden="true" class="fa fa-download"></i>
                   <span><?=$this->transEsc('Download the image') ?></span>
                 </a>
