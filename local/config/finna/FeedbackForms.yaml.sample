@@ -69,9 +69,22 @@
 #                        To include HTML formatting, use a translation key ending
 #                        in '_html' here, and define markup in the language files.
 #     
-#     And for checkbox, select and radio elements:
+#     And for select, radio and checkbox elements:
 # 
 #     options (array) List of select values (translation keys)
+#                     or a list of options with 'value' and 'label' (translation) keys.
+#                       Examples:
+#                         options:
+#                           - option-1
+#                           - option-2
+#
+#                         or
+#
+#                         options:
+#                           - value: value-1
+#                             label: label-1
+#                           - value: value-2
+#                             label: label-2
 #
 #     or for select elements alternatively:
 #
@@ -87,6 +100,19 @@
 #       settings:
 #         - [placeholder, Please select...]
 #
+#
+#     Only for select-elements:
+#
+#     recipient (boolean) Use the submitted value of this element as the form recipient.
+#                         Each recipient is configured as an option element with
+#                         'value' (recipient email address) and 'label', for example:
+#                            options:
+#                               - value: recipient-1@email.com
+#                                 label: Recipient 1
+#                               - value: recipient-2@email.com
+#                                 label: Recipient 2
+#
+#                         This overrrides other recipient settings.
 #-----------------------------------------------------------------------------------
 
 forms:

@@ -102,6 +102,13 @@ class Form extends \VuFind\Form\Form
     protected $record;
 
     /**
+     * Form settings (from YAML without parsing)
+     *
+     * @var array
+     */
+    protected $formSettings = [];
+
+    /**
      * Set form id
      *
      * @param string $formId Form id
@@ -111,7 +118,12 @@ class Form extends \VuFind\Form\Form
      */
     public function setFormId($formId)
     {
+        if (!$config = $this->getFormConfig($formId)) {
+            throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
+        }
+
         $this->formId = $formId;
+        $this->formSettings = $config;
         parent::setFormId($formId);
         $this->setName($formId);
     }
@@ -181,10 +193,16 @@ class Form extends \VuFind\Form\Form
     /**
      * Return form recipient.
      *
+     * @param array $postParams Posted form data
+     *
      * @return array with name, email or null if not configured
      */
-    public function getRecipient()
+    public function getRecipient($postParams = null)
     {
+        if ($recipient = $this->getRecipientFromFormData($postParams)) {
+            return [$recipient];
+        }
+
         $recipients = parent::getRecipient();
 
         if (! $this->useEmailHandler()) {
@@ -200,6 +218,58 @@ class Form extends \VuFind\Form\Form
         }
 
         return $recipients;
+    }
+
+    /**
+     * Resolve email recipient based on posted form data.
+     *
+     * @param array $postParams Posted form data
+     *
+     * @return array with 'name' and 'email' keys or null if no form element
+     * is configured to carry recipient address.
+     */
+    protected function getRecipientFromFormData($postParams)
+    {
+        if (!$recipientField = $this->getRecipientField($this->formElementConfig)) {
+            return null;
+        }
+
+        $recipientValue = $postParams[$recipientField] ?? null;
+        if ($recipientValue === null) {
+            return null;
+        }
+
+        foreach ($this->formSettings['fields'] ?? [] as $el) {
+            if (($el['name'] ?? null) !== $recipientField) {
+                continue;
+            }
+
+            // Selected recipient is posted as a numeric index.
+            // Find the related option element.
+            $selected = (int)$recipientValue;
+            $option = null;
+            if (isset($el['options'])) {
+                $option = $el['options'][$selected];
+            } elseif (isset($el['optionGroups'])) {
+                $ind = 0;
+                foreach ($el['optionGroups'] as $group => $groupData) {
+                    foreach ($groupData['options'] as $opt) {
+                        if ($selected === $ind++) {
+                            $option = $opt;
+                            break;
+                        }
+                    }
+                }
+            }
+            $recipientName = $option['label'] ?? null;
+            $recipientEmail = $option['value'] ?? null;
+            if ($recipientName && $recipientEmail) {
+                return
+                    ['email' => $recipientEmail, 'name' => $recipientName];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -308,6 +378,25 @@ class Form extends \VuFind\Form\Form
         if ($this->formId === 'FeedbackRecord') {
             foreach (['record', 'record_id'] as $key) {
                 unset($requestParams[$key]);
+            }
+        }
+
+        if ($recipientField = $this->getRecipientField(
+            $this->formSettings['fields'] ?? []
+        )
+        ) {
+            $recipient = $this->getRecipientFromFormData($requestParams);
+            if (!$recipientName = $recipient['name'] ?? null) {
+                unset($requestParams[$recipientField]);
+            } else {
+                // Convert posted recipient value from a numerical index to
+                // configured label.
+                foreach ($requestParams as $key => &$val) {
+                    if ($key === $recipientField) {
+                        $val = $this->translate($recipientName);
+                        break;
+                    }
+                }
             }
         }
 
@@ -444,7 +533,57 @@ class Form extends \VuFind\Form\Form
             }
         }
 
+        if ($recipientField = $this->getRecipientField($config['fields'])) {
+            // Form recipient email address is taken from a select element value.
+            // Change element option values to numeric indexes so that email
+            // addresses are not exposed in the UI.
+            foreach ($elements as &$el) {
+                if ($el['name'] === $recipientField) {
+                    $ind = 0;
+                    if (isset($el['options'])) {
+                        // Select element with options
+                        foreach ($el['options'] as &$opt) {
+                            if (empty($opt['label']) || empty($opt['value'])) {
+                                continue;
+                            }
+                            $opt['value'] = $ind++;
+                        }
+                    } elseif (isset($el['optionGroups'])) {
+                        // Select element with option-groups
+                        $optionGroups = [];
+                        foreach ($el['optionGroups'] as $label => $groupData) {
+                            $groupOptions = [];
+                            foreach ($groupData['options'] as $key => $val) {
+                                $groupOptions[$ind++] = $val;
+                            }
+                            $optionGroups[$label] = $groupData;
+                            $optionGroups[$label]['options'] = $groupOptions;
+                        }
+                        $el['optionGroups'] = $optionGroups;
+                    }
+                }
+            }
+        }
+
         return $elements;
+    }
+
+    /**
+     * Return name of form element that is used as email recipient.
+     *
+     * @param array $config Form elements configuration.
+     *
+     * @return string|null
+     */
+    protected function getRecipientField($config)
+    {
+        foreach ($config as $el) {
+            // Allow only select elements
+            if ($el['recipient'] ?? false && $el['type'] === 'select') {
+                return $el['name'];
+            }
+        }
+        return null;
     }
 
     /**
@@ -460,6 +599,19 @@ class Form extends \VuFind\Form\Form
             $fields,
             ['hideSenderInfo', 'sendMethod', 'senderInfoHelp']
         );
+
+        return $fields;
+    }
+
+    /**
+     * Return a list of field names to read from form element settings.
+     *
+     * @return array
+     */
+    protected function getFormElementSettingFields()
+    {
+        $fields = parent::getFormSettingFields();
+        $fields[] = 'recipient';
 
         return $fields;
     }
