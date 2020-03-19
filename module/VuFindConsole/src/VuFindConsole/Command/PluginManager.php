@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'generate/plugin' => Generate\PluginCommand::class,
         'generate/recordroute' => Generate\RecordRouteCommand::class,
         'generate/staticroute' => Generate\StaticRouteCommand::class,
+        'harvest/harvest_oai' => Harvest\HarvestOaiCommand::class,
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
@@ -62,7 +63,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'generate nontabrecordaction [<newAction>] [<module>]',
         'generate/theme' => 'generate theme [<themename>]',
         'generate/thememixin' => 'generate thememixin [<name>]',
-        'harvest/harvest_oai' => 'harvest harvest_oai [...params]',
         'import/import-xsl' =>
             'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
         'import/webcrawl' => 'import webcrawl [--test-only] [--index=]',
@@ -117,6 +117,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Generate\StaticRouteCommand::class =>
             Generate\AbstractRouteCommandFactory::class,
         Harvest\MergeMarcCommand::class => InvokableFactory::class,
+        Harvest\HarvestOaiCommand::class => Harvest\HarvestOaiCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 

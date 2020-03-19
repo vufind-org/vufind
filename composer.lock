@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a0fad766869043b591ae3a0558b0e3d",
+    "content-hash": "9c70c16a16e8ba7c2e6c6606b5477387",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1916,16 +1916,16 @@
         },
         {
             "name": "laminas/laminas-mime",
-            "version": "2.7.2",
+            "version": "2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mime.git",
-                "reference": "2dbace2c69542e5a251af3becb6d7209ac9fb42b"
+                "reference": "e844abb02e868fae154207929190292ad25057cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mime/zipball/2dbace2c69542e5a251af3becb6d7209ac9fb42b",
-                "reference": "2dbace2c69542e5a251af3becb6d7209ac9fb42b",
+                "url": "https://api.github.com/repos/laminas/laminas-mime/zipball/e844abb02e868fae154207929190292ad25057cc",
+                "reference": "e844abb02e868fae154207929190292ad25057cc",
                 "shasum": ""
             },
             "require": {
@@ -1939,7 +1939,7 @@
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
                 "laminas/laminas-mail": "^2.6",
-                "phpunit/phpunit": "^5.7.21 || ^6.3"
+                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.5.20"
             },
             "suggest": {
                 "laminas/laminas-mail": "Laminas\\Mail component"
@@ -1966,7 +1966,7 @@
                 "laminas",
                 "mime"
             ],
-            "time": "2019-12-31T17:25:27+00:00"
+            "time": "2020-03-06T08:38:03+00:00"
         },
         {
             "name": "laminas/laminas-modulemanager",
@@ -5283,22 +5283,22 @@
         },
         {
             "name": "vufind-org/vufindharvest",
-            "version": "v3.0.0",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindharvest.git",
-                "reference": "f0cb7188be3f6edd68f89962d7d3d771b2108775"
+                "reference": "c12449b1da435d0b51572aa348b232f304c29190"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/f0cb7188be3f6edd68f89962d7d3d771b2108775",
-                "reference": "f0cb7188be3f6edd68f89962d7d3d771b2108775",
+                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/c12449b1da435d0b51572aa348b232f304c29190",
+                "reference": "c12449b1da435d0b51572aa348b232f304c29190",
                 "shasum": ""
             },
             "require": {
-                "laminas/laminas-console": ">=2.2",
                 "laminas/laminas-http": ">=2.2",
-                "php": ">=7.0.8"
+                "php": ">=7.0.8",
+                "symfony/console": "^4.0||^5.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "2.16.1",
@@ -5306,8 +5306,8 @@
                 "phing/phing": "2.16.2",
                 "phploc/phploc": "4.0.1",
                 "phpmd/phpmd": "2.8.1",
-                "phpunit/phpunit": "6.5.14",
-                "sebastian/phpcpd": "3.0.1",
+                "phpunit/phpunit": "8.5.2",
+                "sebastian/phpcpd": "4.1.0",
                 "squizlabs/php_codesniffer": "3.5.3"
             },
             "type": "library",
@@ -5329,7 +5329,7 @@
             ],
             "description": "VuFind Harvest Tools",
             "homepage": "https://vufind.org/",
-            "time": "2020-01-27T21:06:16+00:00"
+            "time": "2020-03-18T20:16:02+00:00"
         },
         {
             "name": "vufind-org/vufindhttp",
@@ -6882,16 +6882,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "v1.10.2",
+            "version": "v1.10.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "b4400efc9d206e83138e2bb97ed7f5b14b831cd9"
+                "reference": "451c3cd1418cf640de218914901e51b064abb093"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/b4400efc9d206e83138e2bb97ed7f5b14b831cd9",
-                "reference": "b4400efc9d206e83138e2bb97ed7f5b14b831cd9",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/451c3cd1418cf640de218914901e51b064abb093",
+                "reference": "451c3cd1418cf640de218914901e51b064abb093",
                 "shasum": ""
             },
             "require": {
@@ -6941,7 +6941,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2020-01-20T15:57:02+00:00"
+            "time": "2020-03-05T15:02:03+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

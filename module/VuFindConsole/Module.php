@@ -103,7 +103,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
             'generate theme' => 'Create and configure a new theme',
-            'harvest harvest_oai' => 'OAI-PMH harvester',
             'import import-xsl' => 'XSLT importer',
             'import webcrawl' => 'Web crawler',
             'language addusingtemplate' => 'Build new language strings from '

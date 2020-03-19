@@ -70,7 +70,7 @@
         "swagger-api/swagger-ui": "2.2.10",
         "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.0.0",
-        "vufind-org/vufindharvest": "3.0.0",
+        "vufind-org/vufindharvest": "4.0.0",
         "vufind-org/vufindhttp": "3.0.0",
         "wikimedia/composer-merge-plugin": "1.4.1",
         "yajra/laravel-pdo-via-oci8": "2.1.1",
