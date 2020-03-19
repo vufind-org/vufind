@@ -43,6 +43,13 @@ use VuFindHarvest\OaiPmh\HarvesterFactory;
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
     /**
+     * The name of the command
+     *
+     * @var string
+     */
+    protected static $defaultName = 'harvest/harvest_oai';
+
+    /**
      * Warn the user if VUFIND_LOCAL_DIR is not set.
      *
      * @param OutputInterface $output Output object
