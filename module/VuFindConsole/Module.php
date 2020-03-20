@@ -99,7 +99,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'generate extendclass' => 'Subclass a service, w/ lookup by class name',
             'generate extendservice' => 'Override a service with a new child class',
             'generate nontabrecordaction' => 'Add routes for non-tab record action',
             'generate theme' => 'Create and configure a new theme',

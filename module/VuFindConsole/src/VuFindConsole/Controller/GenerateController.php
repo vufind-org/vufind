@@ -41,49 +41,6 @@ use Laminas\Console\Console;
 class GenerateController extends AbstractBase
 {
     /**
-     * Extend an existing class
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function extendclassAction()
-    {
-        // Display help message if parameters missing:
-        $request = $this->getRequest();
-        $class = $request->getParam('class');
-        $target = $request->getParam('target');
-        $extendFactory = $request->getParam('extendfactory');
-
-        if (empty($class) || empty($target)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' generate extendclass'
-                . ' [--extendfactory] [class_name] [target_module]'
-            );
-            Console::writeLine(
-                "\t--extendfactory - optional switch; when set, subclass "
-                . 'the factory; otherwise, use existing factory'
-            );
-            Console::writeLine(
-                "\tclass_name - the name of the class you wish to extend"
-            );
-            Console::writeLine(
-                "\ttarget_module - the module where the new class will be generated"
-            );
-            return $this->getFailureResponse();
-        }
-
-        try {
-            $this->getGeneratorTools()->extendClass(
-                $this->serviceLocator, $class, $target, $extendFactory
-            );
-        } catch (\Exception $e) {
-            Console::writeLine($e->getMessage());
-            return $this->getFailureResponse();
-        }
-
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Extend an existing service
      *
      * @return \Laminas\Console\Response

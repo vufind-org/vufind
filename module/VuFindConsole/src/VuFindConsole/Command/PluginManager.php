@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'compile/theme' => Compile\ThemeCommand::class,
         'generate/dynamicroute' => Generate\DynamicRouteCommand::class,
+        'generate/extendclass' => Generate\ExtendClassCommand::class,
         'generate/plugin' => Generate\PluginCommand::class,
         'generate/recordroute' => Generate\RecordRouteCommand::class,
         'generate/staticroute' => Generate\StaticRouteCommand::class,
@@ -55,8 +56,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'generate/extendclass' =>
-            'generate extendclass [--extendfactory] [<class>] [<target>]',
         'generate/extendservice' =>
             'generate extendservice [<source>] [<target>]',
         'generate/nontabrecordaction' =>
@@ -111,7 +110,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Compile\ThemeCommand::class => Compile\ThemeCommandFactory::class,
         Generate\DynamicRouteCommand::class =>
             Generate\AbstractRouteCommandFactory::class,
-        Generate\PluginCommand::class => Generate\PluginCommandFactory::class,
+        Generate\ExtendClassCommand::class =>
+            Generate\AbstractContainerAwareCommandFactory::class,
+        Generate\PluginCommand::class =>
+            Generate\AbstractContainerAwareCommandFactory::class,
         Generate\RecordRouteCommand::class =>
             Generate\AbstractRouteCommandFactory::class,
         Generate\StaticRouteCommand::class =>

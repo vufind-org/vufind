@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for console command: Compile themes.
+ * Factory for console generator commands that rely on a service container.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFindConsole\Command\Generate;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for console command: Compile themes.
+ * Factory for console generator commands that rely on a service container.
  *
  * @category VuFind
  * @package  Console
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginCommandFactory extends AbstractCommandFactory
+class AbstractContainerAwareCommandFactory extends AbstractCommandFactory
 {
     /**
      * Create an object
@@ -57,6 +57,8 @@ class PluginCommandFactory extends AbstractCommandFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        return parent::__invoke($container, $requestedName, [$container]);
+        return parent::__invoke(
+            $container, $requestedName, array_merge([$container], $options ?? [])
+        );
     }
 }

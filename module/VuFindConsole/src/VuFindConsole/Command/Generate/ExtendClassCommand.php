@@ -1,6 +1,6 @@
 <?php
 /**
- * Console command: Generate plugin.
+ * Console command: extend class.
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Console command: Generate plugin.
+ * Console command: extend class.
  *
  * @category VuFind
  * @package  Console
@@ -40,14 +40,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginCommand extends AbstractContainerAwareCommand
+class ExtendClassCommand extends AbstractContainerAwareCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
      *
      * @var string
      */
-    protected static $defaultName = 'generate/plugin';
+    protected static $defaultName = 'generate/extendclass';
 
     /**
      * Configure the command.
@@ -57,16 +57,21 @@ class PluginCommand extends AbstractContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setDescription('Plugin generator')
-            ->setHelp('Creates a new plugin class.')
+            ->setDescription('Subclass generator')
+            ->setHelp('Subclasses a service, with lookup by class name.')
             ->addArgument(
                 'class_name',
                 InputArgument::REQUIRED,
-                'the name of the class you wish to create'
+                'the name of the class you wish to extend'
             )->addArgument(
-                'factory',
-                InputArgument::OPTIONAL,
-                'an existing factory to use (omit to generate a new one)'
+                'target_module',
+                InputArgument::REQUIRED,
+                'the module where the new class will be generated'
+            )->addOption(
+                'extendfactory',
+                null,
+                InputOption::VALUE_NONE,
+                'when set, subclass the factory; otherwise, use existing factory'
             );
     }
 
@@ -81,14 +86,18 @@ class PluginCommand extends AbstractContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $class = $input->getArgument('class_name');
-        $factory = $input->getArgument('factory');
+        $target = $input->getArgument('target_module');
+        $extendFactory = $input->getOption('extendfactory')
+
         try {
-            $this->generatorTools->setOutputInterface($output);
-            $this->generatorTools->createPlugin($this->container, $class, $factory);
+            $this->generatorTools->extendClass(
+                $this->container, $class, $target, $extendFactory
+            );
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
         }
+
         return 0;
     }
 }
