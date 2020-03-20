@@ -56,8 +56,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
             'Not enough arguments (missing: "config_path, target_module").'
         );
         $command = new ExtendServiceCommand(
-            $this->getMockGeneratorTools(),
-            $this->getMockContainer()
+            $this->getMockGeneratorTools()
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
