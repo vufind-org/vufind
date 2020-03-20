@@ -76,8 +76,10 @@ class GetUserList extends \VuFind\AjaxHandler\AbstractBase
         $offset = $params->fromPost('offset', $params->fromQuery('offset'));
         $indexStart
             = $params->fromPost('indexStart', $params->fromQuery('indexStart'));
+        $sort
+            = $params->fromPost('sort', $params->fromQuery('sort'));
 
-        $html = $this->helper->loadMore($id, $offset, $indexStart);
+        $html = $this->helper->loadMore($id, $offset, $indexStart, $sort);
         return $this->formatResponse(compact('html'));
     }
 }

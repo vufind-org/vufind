@@ -39,7 +39,7 @@
              ]
         ); ?>
         </div>
-        <button class="btn btn-outline-primary load-more" aria-label="<?= $this->transEsc('See all')?>" data-id="<?= $this->escapeHtmlAttr($this->id)?>" data-start-index="<?= $this->escapeHtmlAttr($this->indexStart + $limit)?>" data-offset="<?= $this->escapeHtmlAttr($limit + 1)?>"><?= $this->transEsc('See all'); ?></button>
+        <button class="btn btn-outline-primary load-more" aria-label="<?= $this->transEsc('See all')?>" data-id="<?= $this->escapeHtmlAttr($this->id)?>" data-start-index="<?= $this->escapeHtmlAttr($this->indexStart + $limit)?>" data-offset="<?= $this->escapeHtmlAttr($limit + 1)?>"<?= $this->sort ? (' data-sort="' . $this->escapeHtmlAttr($this->sort) . '"') : ''?>><?= $this->transEsc('See all'); ?></button>
         <i class="fa fa-spinner fa-spin hide"></i>
       </div>
     <?php endif; ?>

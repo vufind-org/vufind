@@ -18,6 +18,7 @@ finna.userListEmbed = (function userListEmbed() {
           var offset = btn.data('offset');
           var indexStart = btn.data('start-index');
           var view = btn.data('view');
+          var sort = btn.data('sort');
 
           btn.hide();
           $.getJSON(
@@ -27,6 +28,7 @@ finna.userListEmbed = (function userListEmbed() {
               offset: offset,
               indexStart: indexStart,
               view: view,
+              sort: sort,
               method: 'getUserList' 
             }
           )
