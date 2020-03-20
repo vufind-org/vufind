@@ -144,7 +144,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar'
             ]
         );
-        $this->assertEquals('Foo!\n', $commandTester->getDisplay());
+        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
         $this->assertEquals(1, $commandTester->getStatusCode());
     }
 
