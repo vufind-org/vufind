@@ -87,7 +87,7 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
     {
         $class = $input->getArgument('class_name');
         $target = $input->getArgument('target_module');
-        $extendFactory = $input->getOption('extendfactory')
+        $extendFactory = $input->getOption('extendfactory');
 
         try {
             $this->generatorTools->extendClass(
