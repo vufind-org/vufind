@@ -41,42 +41,6 @@ use Laminas\Console\Console;
 class GenerateController extends AbstractBase
 {
     /**
-     * Extend an existing service
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function extendserviceAction()
-    {
-        // Display help message if parameters missing:
-        $request = $this->getRequest();
-        $source = $request->getParam('source');
-        $target = $request->getParam('target');
-        if (empty($source) || empty($target)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' generate extendservice'
-                . ' [config_path] [target_module]'
-            );
-            Console::writeLine(
-                "\tconfig_path - the path to the service in the framework config"
-            );
-            Console::writeLine("\t\te.g. controllers/invokables/generate");
-            Console::writeLine(
-                "\ttarget_module - the module where the new class will be generated"
-            );
-            return $this->getFailureResponse();
-        }
-
-        try {
-            $this->getGeneratorTools()->extendService($source, $target);
-        } catch (\Exception $e) {
-            Console::writeLine($e->getMessage());
-            return $this->getFailureResponse();
-        }
-
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Add a new non-tab record action to all existing record routes
      *
      * @return \Laminas\Console\Response
