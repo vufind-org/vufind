@@ -29,7 +29,6 @@ namespace VuFindTest\Command\Harvest;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Harvest\HarvestOaiCommand;
-use VuFindHarvest\OaiPmh\HarvesterFactory;
 
 /**
  * HarvestOai command test.

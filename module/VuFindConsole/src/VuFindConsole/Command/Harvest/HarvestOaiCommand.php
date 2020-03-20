@@ -29,7 +29,6 @@ namespace VuFindConsole\Command\Harvest;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFindHarvest\OaiPmh\HarvesterFactory;
 
 /**
  * Console command: VuFind-specific customizations to OAI-PMH harvest command
