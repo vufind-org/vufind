@@ -73,8 +73,9 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
-            ['extendClass']
+            ['extendClass', 'setOutputInterface']
         );
+        $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->with(
                 $this->equalTo($container),
@@ -102,8 +103,9 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
-            ['extendClass']
+            ['extendClass', 'setOutputInterface']
         );
+        $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->with(
                 $this->equalTo($container),
@@ -128,12 +130,13 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithError()
+    public function testError()
     {
         $container = $this->getMockContainer();
         $tools = $this->getMockGeneratorTools(
-            ['extendClass']
+            ['extendClass', 'setOutputInterface']
         );
+        $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->will($this->throwException(new \Exception('Foo!')));
         $command = new ExtendClassCommand($tools, $container);

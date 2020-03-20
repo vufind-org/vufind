@@ -115,6 +115,29 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test exception handling.
+     *
+     * @return void
+     */
+    public function testError()
+    {
+        $container = $this->getMockContainer();
+        $tools = $this->getMockGeneratorTools(
+            ['createPlugin', 'setOutputInterface']
+        );
+        $tools->expects($this->once())->method('setOutputInterface');
+        $tools->expects($this->once())->method('createPlugin')
+            ->will($this->throwException(new \Exception('Foo!')));
+        $command = new PluginCommand($tools, $container);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            ['class_name' => 'Foo', 'factory' => 'Factory']
+        );
+        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
+        $this->assertEquals(1, $commandTester->getStatusCode());
+    }
+
+    /**
      * Get a mock generator tools object
      *
      * @param array $methods Methods to mock
