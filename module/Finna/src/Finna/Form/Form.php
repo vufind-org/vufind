@@ -610,7 +610,7 @@ class Form extends \VuFind\Form\Form
      */
     protected function getFormElementSettingFields()
     {
-        $fields = parent::getFormSettingFields();
+        $fields = parent::getFormElementSettingFields();
         $fields[] = 'recipient';
 
         return $fields;
