@@ -78,7 +78,7 @@ class VuFind
      *
      * @param string $config Configuration name
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public static function getConfig($config = 'config')
     {

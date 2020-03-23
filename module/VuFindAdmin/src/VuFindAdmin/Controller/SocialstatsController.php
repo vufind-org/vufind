@@ -41,7 +41,7 @@ class SocialstatsController extends AbstractAdmin
     /**
      * Social statistics reporting
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

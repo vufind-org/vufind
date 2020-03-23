@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\Connector;
 use VuFindSearch\Backend\EIT\QueryBuilder;
-use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**
  * Factory for EIT backends.
@@ -52,7 +52,7 @@ class EITBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -66,7 +66,7 @@ class EITBackendFactory implements FactoryInterface
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 

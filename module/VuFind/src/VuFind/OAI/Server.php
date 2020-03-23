@@ -230,14 +230,14 @@ class Server
     /**
      * Initialize settings
      *
-     * @param \Zend\Config\Config $config  VuFind configuration
-     * @param string              $baseURL The base URL for the OAI server
-     * @param array               $params  The incoming OAI-PMH parameters (i.e.
+     * @param \Laminas\Config\Config $config  VuFind configuration
+     * @param string                 $baseURL The base URL for the OAI server
+     * @param array                  $params  The incoming OAI-PMH parameters (i.e.
      * $_GET)
      *
      * @return void
      */
-    public function init(\Zend\Config\Config $config, $baseURL, $params)
+    public function init(\Laminas\Config\Config $config, $baseURL, $params)
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -633,11 +633,11 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Zend\Config\Config $config)
+    protected function initializeSettings(\Laminas\Config\Config $config)
     {
         // Override default repository name if configured:
         if (isset($config->OAI->repository_name)) {
@@ -901,7 +901,7 @@ class Server
      * @param int $until         End date.
      * @param int $currentCursor Offset into result set
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     protected function listRecordsGetDeleted($from, $until, $currentCursor)
     {

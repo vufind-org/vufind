@@ -15,14 +15,14 @@
   <form class="form-inline" method="GET" action="<?=$this->url('collections-home')?>">
     <ul class="pager">
       <?php if (isset($prevpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
       <?php else: ?>
-        <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+        <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
       <?php endif; ?>
       <?php if (isset($nextpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
       <?php else: ?>
-        <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+        <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
       <?php endif; ?>
       <input type="submit" class="btn btn-default" value="<?=$this->transEsc('Jump to')?>" />
       <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control" />

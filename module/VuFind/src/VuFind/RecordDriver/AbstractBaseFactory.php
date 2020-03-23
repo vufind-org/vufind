@@ -28,7 +28,7 @@
 namespace VuFind\RecordDriver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Default factory for record drivers.

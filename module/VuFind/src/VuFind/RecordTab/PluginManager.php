@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordTab;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record tab plugin manager

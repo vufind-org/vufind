@@ -74,7 +74,7 @@ class Folio extends AbstractAPI implements
     /**
      * Session cache
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
@@ -121,10 +121,11 @@ class Folio extends AbstractAPI implements
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
-     * @param \Zend\Http\Headers $req_headers Headers object
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
+     * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
      */
@@ -142,7 +143,9 @@ class Folio extends AbstractAPI implements
         // truncate headers for token obscuring
         $logHeaders = $req_headers->toArray();
         if (isset($logHeaders['X-Okapi-Token'])) {
-            $logHeaders['X-Okapi-Token'] = substr($val, 0, 30) . '...';
+            $logHeaders['X-Okapi-Token'] = substr(
+                $logHeaders['X-Okapi-Token'], 0, 30
+            ) . '...';
         }
 
         $this->debug(
@@ -158,12 +161,12 @@ class Folio extends AbstractAPI implements
      *
      * Add X-Okapi headers and Content-Type to every request
      *
-     * @param \Zend\Http\Headers $headers the request headers
-     * @param object             $params  the parameters object
+     * @param \Laminas\Http\Headers $headers the request headers
+     * @param object                $params  the parameters object
      *
      * @return array
      */
-    public function preRequest(\Zend\Http\Headers $headers, $params)
+    public function preRequest(\Laminas\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
         if (!$headers->has('Content-Type')) {
@@ -315,6 +318,18 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Escape a string for use in a CQL query.
+     *
+     * @param string $in Input string
+     *
+     * @return string
+     */
+    protected function escapeCql($in)
+    {
+        return str_replace('"', '\"', str_replace('&', '%26', $in));
+    }
+
+    /**
      * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
      *
      * @param string $bibId Bib-level id
@@ -330,8 +345,9 @@ class Folio extends AbstractAPI implements
         $idType = $this->getBibIdType();
         $idField = $idType === 'instance' ? 'id' : $idType;
 
-        $escaped = str_replace('"', '\"', str_replace('&', '%26', $bibId));
-        $query = ['query' => '(' . $idField . '=="' . $escaped . '")'];
+        $query = [
+            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")'
+        ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances) == 0) {
@@ -426,7 +442,7 @@ class Folio extends AbstractAPI implements
                     'id' => $bibId,
                     'item_id' => $itemBody->items[$j]->id,
                     'holding_id' => $holding->id,
-                    'number' => count($items),
+                    'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
@@ -442,6 +458,87 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for patronLogin(): authenticate the patron with an Okapi
+     * login attempt. Returns a CQL query for retrieving more information about
+     * the authenticated user.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return string
+     */
+    protected function patronLoginWithOkapi($username, $password)
+    {
+        $tenant = $this->config['API']['tenant'];
+        $credentials = compact('tenant', 'username', 'password');
+        // Get token
+        $response = $this->makeRequest(
+            'POST',
+            '/authn/login',
+            json_encode($credentials)
+        );
+        $debugMsg = 'User logged in. User: ' . $username . '.';
+        // We've authenticated the user with Okapi, but we only have their
+        // username; set up a query to retrieve full info below.
+        $query = 'username == ' . $username;
+        // Replace admin with user as tenant if configured to do so:
+        if ($this->config['User']['use_user_token'] ?? false) {
+            $this->token = $response->getHeaders()->get('X-Okapi-Token')
+                ->getFieldValue();
+            $debugMsg .= ' Token: ' . substr($this->token, 0, 30) . '...';
+        }
+        $this->debug($debugMsg);
+        return $query;
+    }
+
+    /**
+     * Support method for patronLogin(): authenticate the patron with a CQL looup.
+     * Returns the CQL query for retrieving more information about the user.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return string
+     */
+    protected function getUserWithCql($username, $password)
+    {
+        // Construct user query using barcode, username, etc.
+        $usernameField = $this->config['User']['username_field'] ?? 'username';
+        $passwordField = $this->config['User']['password_field'] ?? false;
+        $cql = $this->config['User']['cql']
+            ?? '%%username_field%% == "%%username%%"'
+            . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        $placeholders = [
+            '%%username_field%%',
+            '%%password_field%%',
+            '%%username%%',
+            '%%password%%',
+        ];
+        $values = [
+            $usernameField,
+            $passwordField,
+            $this->escapeCql($username),
+            $this->escapeCql($password),
+        ];
+        return str_replace($placeholders, $values, $cql);
+    }
+
+    /**
+     * Given a CQL query, fetch a single user; if we get an unexpected count, treat
+     * that as an unsuccessful login by returning null.
+     *
+     * @param string $query CQL query
+     *
+     * @return object
+     */
+    protected function fetchUserWithCql($query)
+    {
+        $response = $this->makeRequest('GET', '/users', compact('query'));
+        $json = json_decode($response->getBody());
+        return count($json->users) === 1 ? $json->users[0] : null;
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -450,51 +547,55 @@ class Folio extends AbstractAPI implements
      * @param string $password The patron password
      *
      * @return mixed Associative array of patron info on successful login,
-     *               null on unsuccessful login.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
     {
-        // Get user id
-        $query = ['query' => 'username == ' . $username];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $json = json_decode($response->getBody());
-        if (count($json->users) == 0) {
-            throw new ILSException("User not found");
+        $doOkapiLogin = $this->config['User']['okapi_login'] ?? false;
+        $usernameField = $this->config['User']['username_field'] ?? 'username';
+
+        // If the username field is not the default 'username' we will need to
+        // do a lookup to find the correct username value for Okapi login. We also
+        // need to do this lookup if we're skipping Okapi login entirely.
+        if (!$doOkapiLogin || $usernameField !== 'username') {
+            $query = $this->getUserWithCql($username, $password);
+            $profile = $this->fetchUserWithCql($query);
+            if ($profile === null) {
+                return null;
+            }
         }
-        $profile = $json->users[0];
-        $credentials = [
-            'userId' => $profile->id,
+
+        // If we need to do an Okapi login, we have the information we need to do
+        // it at this point.
+        if ($doOkapiLogin) {
+            try {
+                // If we fetched the profile earlier, we want to use the username
+                // from there; otherwise, we'll use the passed-in version.
+                $query = $this->patronLoginWithOkapi(
+                    $profile->username ?? $username,
+                    $password
+                );
+            } catch (Exception $e) {
+                return null;
+            }
+            // If we didn't load a profile earlier, we should do so now:
+            if (!isset($profile)) {
+                $profile = $this->fetchUserWithCql($query);
+                if ($profile === null) {
+                    return null;
+                }
+            }
+        }
+
+        return [
+            'id' => $profile->id,
             'username' => $username,
-            'password' => $password,
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'firstname' => $profile->personal->firstName ?? null,
+            'lastname' => $profile->personal->lastName ?? null,
+            'email' => $profile->personal->email ?? null,
         ];
-        // Get token
-        try {
-            $response = $this->makeRequest(
-                'POST',
-                '/authn/login',
-                json_encode($credentials)
-            );
-            // Replace admin with user as tenant
-            $this->token = $response->getHeaders()->get('X-Okapi-Token')
-                ->getFieldValue();
-            $this->debug(
-                'User logged in. User: ' . $username . '.' .
-                ' Token: ' . substr($this->token, 0, 30) . '...'
-            );
-            return [
-                'id' => $profile->id,
-                'username' => $username,
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'firstname' => $profile->personal->firstName ?? null,
-                'lastname' => $profile->personal->lastName ?? null,
-                'email' => $profile->personal->email ?? null,
-            ];
-        } catch (Exception $e) {
-            return null;
-        }
     }
 
     /**
@@ -506,7 +607,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'id == "' . $patron['id'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
@@ -659,24 +760,24 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-        // Get user id
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $users = json_decode($response->getBody());
         $query = [
-            'query' => 'requesterId == "' . $users->users[0]->id . '"' .
-                ' and requestType == "Hold"'
+            'query' => 'requesterId == "' . $patron['id'] . '"'
         ];
-        // Request HOLDS
         $response = $this->makeRequest('GET', '/request-storage/requests', $query);
         $json = json_decode($response->getBody());
         $holds = [];
         foreach ($json->requests as $hold) {
+            $requestDate = date_create($hold->requestDate);
+            // Set expire date if it was included in the response
+            $expireDate = isset($hold->requestExpirationDate)
+                ? date_create($hold->requestExpirationDate) : null;
             $holds[] = [
                 'type' => 'Hold',
-                'create' => $hold->requestDate,
-                'expire' => $hold->requestExpirationDate,
+                'create' => date_format($requestDate, "j M Y"),
+                'expire' => isset($expireDate)
+                    ? date_format($expireDate, "j M Y") : "",
                 'id' => $this->getBibId(null, null, $hold->itemId),
+                'title' => $hold->item->title
             ];
         }
         return $holds;
@@ -987,7 +1088,27 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        return [];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
+        $response = $this->makeRequest("GET", '/accounts', $query);
+        $json = json_decode($response->getBody());
+        if (count($json->accounts) == 0) {
+            return [];
+        }
+        $fines = [];
+        foreach ($json->accounts as $fine) {
+            $date = date_create($fine->metadata->createdDate);
+            $title = (isset($fine->title) ? $fine->title : null);
+            $fines[] = [
+                'id' => $fine->id,
+                'amount' => $fine->amount * 100,
+                'balance' => $fine->remaining * 100,
+                'status' => $fine->paymentStatus->name,
+                'type' => $fine->feeFineType,
+                'title' => $title,
+                'createdate' => date_format($date, "j M Y")
+            ];
+        }
+        return $fines;
     }
 
     /**

@@ -63,7 +63,7 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
     {
         VuFind::setServiceLocator($this->getServiceManager());
         $this->assertEquals(
-            \Zend\Config\Config::class, get_class(VuFind::getConfig())
+            \Laminas\Config\Config::class, get_class(VuFind::getConfig())
         );
     }
 

@@ -27,11 +27,11 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * "Get Save Statuses" AJAX handler

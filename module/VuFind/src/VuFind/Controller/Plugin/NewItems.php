@@ -27,12 +27,12 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
 /**
- * Zend action helper to perform new items-related actions
+ * Action helper to perform new items-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

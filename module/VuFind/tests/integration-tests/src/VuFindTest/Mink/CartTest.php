@@ -47,11 +47,11 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -160,7 +160,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      * Add the current page of results to the cart (using the individual add
      * buttons).
      *
-     * @param Element $page        Page element
+     * @param Element $page Page element
      *
      * @return void
      */
@@ -579,6 +579,8 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the save control works.
      *
+     * @depends testCartEmail
+     *
      * @return void
      */
     public function testCartSave()
@@ -687,14 +689,16 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $select->selectOption('Google');
 
         // Do the export:
+        $windowCount = count($this->getMinkSession()->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
         $this->snooze();
         $windows = $this->getMinkSession()->getWindowNames();
-        $this->assertEquals(2, count($windows));
-        $this->getMinkSession()->switchToWindow($windows[1]);
+        $this->assertEquals($windowCount + 1, count($windows));
+        $this->getMinkSession()->switchToWindow($windows[$windowCount]);
         $this->assertEquals(
-            'https://www.google.com/', $this->getMinkSession()->getCurrentUrl()
+            'https://www.google.com/',
+            $this->getMinkSession()->getCurrentUrl()
         );
     }
 
@@ -757,41 +761,55 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     public function testToolbarVisibilityConfigCombinations()
     {
         $page = $this->getSearchResultsPage();
-        $elements = $this->runConfigCombo($page, [
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => true,
             'showBulkOptions' => false,
             'bookbagTogglesInSearch' => false,
-        ]);
-        $elements = $this->runConfigCombo($page, [
+            ]
+        );
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => false,
             'showBulkOptions' => false,
             'bookbagTogglesInSearch' => true,
-        ]);
-        $elements = $this->runConfigCombo($page, [
+            ]
+        );
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => false,
             'showBulkOptions' => true,
             'bookbagTogglesInSearch' => false,
-        ]);
-        $elements = $this->runConfigCombo($page, [
+            ]
+        );
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => true,
             'showBulkOptions' => false,
             'bookbagTogglesInSearch' => true,
-        ]);
-        $elements = $this->runConfigCombo($page, [
+            ]
+        );
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => true,
             'showBulkOptions' => true,
             'bookbagTogglesInSearch' => false,
-        ]);
-        $elements = $this->runConfigCombo($page, [
+            ]
+        );
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => false,
             'showBulkOptions' => true,
             'bookbagTogglesInSearch' => true,
-        ]);
-        $elements = $this->runConfigCombo($page, [
+            ]
+        );
+        $elements = $this->runConfigCombo(
+            $page, [
             'showBookBag' => true,
             'showBulkOptions' => true,
             'bookbagTogglesInSearch' => true,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -799,7 +817,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers('username1');
     }

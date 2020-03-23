@@ -29,15 +29,14 @@
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
+use Laminas\Http\Response;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use Zend\Http\Response;
 
 /**
  * Unit tests for SOLR backend.
@@ -171,12 +170,12 @@ class BackendTest extends TestCase
      * Test handling of a bad JSON response.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage JSON decoding error: 4 -- bad {
      */
     public function testBadJson()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('JSON decoding error: 4 -- bad {');
+
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -189,12 +188,12 @@ class BackendTest extends TestCase
      * Test injectResponseWriter throws on incompatible response writer.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid response writer type: xml
      */
     public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
     {
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid response writer type: xml');
+
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->retrieve('foobar', new ParamBag(['wt' => ['xml']]));
@@ -204,12 +203,12 @@ class BackendTest extends TestCase
      * Test injectResponseWriter throws on incompatible named list setting.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid named list implementation type: bad
      */
     public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
     {
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid named list implementation type: bad');
+
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->retrieve('foobar', new ParamBag(['json.nl' => ['bad']]));
@@ -282,12 +281,12 @@ class BackendTest extends TestCase
      * Test refining an alphabrowse exception (string 1).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionMessage Alphabetic Browse index missing.
      */
     public function testRefineAlphaBrowseException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionMessage('Alphabetic Browse index missing.');
+
         $this->runRefineExceptionCall('does not exist');
     }
 
@@ -295,12 +294,12 @@ class BackendTest extends TestCase
      * Test refining an alphabrowse exception (string 2).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionMessage Alphabetic Browse index missing.
      */
     public function testRefineAlphaBrowseExceptionWithAltString()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionMessage('Alphabetic Browse index missing.');
+
         $this->runRefineExceptionCall('couldn\'t find a browse index');
     }
 
@@ -308,12 +307,12 @@ class BackendTest extends TestCase
      * Test that we don't refine a non-alphabrowse-related exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionMessage not a browse error
      */
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionMessage('not a browse error');
+
         $this->runRefineExceptionCall('not a browse error');
     }
 
@@ -354,7 +353,7 @@ class BackendTest extends TestCase
     protected function runRefineExceptionCall($msg)
     {
         $conn = $this->getConnectorMock(['query']);
-        $e = new RemoteErrorException($msg, 400, new \Zend\Http\Response());
+        $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
             ->will($this->throwException($e));
@@ -367,7 +366,7 @@ class BackendTest extends TestCase
      *
      * @param string $fixture Fixture file
      *
-     * @return Zend\Http\Response
+     * @return Laminas\Http\Response
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */

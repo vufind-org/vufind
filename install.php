@@ -28,7 +28,7 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Zend\Console\Getopt;
+use Laminas\Console\Getopt;
 
 define('MULTISITE_NONE', 0);
 define('MULTISITE_DIR_BASED', 1);
@@ -479,7 +479,7 @@ function getHost()
  */
 function getInput($prompt)
 {
-    return \Zend\Console\Prompt\Line::prompt($prompt, true);
+    return \Laminas\Console\Prompt\Line::prompt($prompt, true);
 }
 
 /**

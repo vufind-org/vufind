@@ -60,8 +60,8 @@ class CartControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Zend\Session\Container(
-            'cart_followup', $container->get(\Zend\Session\SessionManager::class)
+        $session = new \Laminas\Session\Container(
+            'cart_followup', $container->get(\Laminas\Session\SessionManager::class)
         );
         return $this->applyPermissions(
             $container,

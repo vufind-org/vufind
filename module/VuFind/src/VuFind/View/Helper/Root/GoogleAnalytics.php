@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
+class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * API key (false if disabled)
@@ -121,6 +121,6 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
         }
         $code = $this->getRawJavascript($customUrl);
         $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+        return $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $code, 'SET');
     }
 }

@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Exception\RuntimeException;
 use VuFind\View\Helper\Root\Record;
-use Zend\View\Exception\RuntimeException;
 
 /**
  * Record view helper Test Class
@@ -45,12 +45,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Test attempting to display a template that does not exist.
      *
      * @return void
-     *
-     * @expectedException        Zend\View\Exception\RuntimeException
-     * @expectedExceptionMessage Cannot find RecordDriver/AbstractBase/core.phtml template for class: VuFind\RecordDriver\SolrMarc
      */
     public function testMissingTemplate()
     {
+        $this->expectException(\Laminas\View\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot find RecordDriver/AbstractBase/core.phtml template for class: VuFind\\RecordDriver\\SolrMarc');
+
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $record->getView()->resolver()->expects($this->at(0))->method('resolve')
             ->with($this->equalTo('RecordDriver/SolrMarc/core.phtml'))
@@ -221,7 +221,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetPreviews()
     {
         $driver = $this->loadRecordFixture('testbug1.json');
-        $config = new \Zend\Config\Config(['foo' => 'bar']);
+        $config = new \Laminas\Config\Config(['foo' => 'bar']);
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
             ->with($this->equalTo(compact('driver', 'config')))
@@ -438,12 +438,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * Test getLinkDetails with invalid details
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Invalid URL array.
      */
     public function testGetLinkDetailsFailure()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Invalid URL array.');
+
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
             [
@@ -499,7 +499,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         if (null === $context) {
             $context = $this->getMockContext();
         }
-        $view = $this->getMockBuilder(\Zend\View\Renderer\PhpRenderer::class)
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
             ->disableOriginalConstructor()
             ->setMethods(['render', 'plugin', 'resolver'])
             ->getMock();
@@ -522,7 +522,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $view->expects($this->any())->method('resolver')
             ->will($this->returnValue($this->getMockResolver()));
-        $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
+        $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
         $record = new Record($config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar'));
         $record->setView($view);
@@ -536,7 +536,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResolver()
     {
-        return $this->createMock(\Zend\View\Resolver\ResolverInterface::class);
+        return $this->createMock(\Laminas\View\Resolver\ResolverInterface::class);
     }
 
     /**
@@ -557,11 +557,11 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $expectedRoute Route expected by mock helper
      *
-     * @return \Zend\View\Helper\Url
+     * @return \Laminas\View\Helper\Url
      */
     protected function getMockUrl($expectedRoute)
     {
-        $url = $this->createMock(\Zend\View\Helper\Url::class);
+        $url = $this->createMock(\Laminas\View\Helper\Url::class);
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expectedRoute))
             ->will($this->returnValue('http://foo/bar'));
@@ -573,11 +573,11 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $expectedRoute Route expected by mock helper
      *
-     * @return \Zend\View\Helper\ServerUrl
+     * @return \Laminas\View\Helper\ServerUrl
      */
     protected function getMockServerUrl()
     {
-        $url = $this->createMock(\Zend\View\Helper\ServerUrl::class);
+        $url = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $url->expects($this->once())->method('__invoke')
             ->will($this->returnValue('http://server-foo/baz'));
         return $url;

@@ -38,8 +38,8 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadLink extends \Zend\View\Helper\HeadLink
-    implements \Zend\Log\LoggerAwareInterface
+class HeadLink extends \Laminas\View\Helper\HeadLink
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;

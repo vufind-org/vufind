@@ -28,7 +28,7 @@
 namespace VuFind\ServiceManager;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * VuFind Abstract Plugin Factory
