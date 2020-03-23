@@ -89,11 +89,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(false));
         $generator->expects($this->once())
             ->method('getLastError')
-            ->will($this->returnValue("fake error\n"));
+            ->will($this->returnValue('fake error'));
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);
-        $this->assertEquals('fake error', $commandTester->getDisplay());
+        $this->assertEquals("fake error\n", $commandTester->getDisplay());
         $this->assertEquals(1, $commandTester->getStatusCode());
     }
 
