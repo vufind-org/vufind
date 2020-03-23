@@ -61,7 +61,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             "\tNo theme mixin name provided, using \"custom\"\n"
             . "\tFinished. Add to your theme.config.php 'mixins' setting "
-            . "to activate.",
+            . "to activate.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
