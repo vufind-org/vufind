@@ -1,6 +1,6 @@
 <?php
 /**
- * Console command: Generate record route.
+ * Console command: Generate non-tab record action route.
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Console command: Generate record route.
+ * Console command: Generate non-tab record action route.
  *
  * @category VuFind
  * @package  Console
@@ -40,14 +40,36 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordRouteCommand extends AbstractRouteCommand
+class NonTabRecordActionCommand extends AbstractRouteCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
      *
      * @var string
      */
-    protected static $defaultName = 'generate/recordroute';
+    protected static $defaultName = 'generate/nontabrecordaction';
+
+    /**
+     * Main framework configuration
+     *
+     * @var array
+     */
+    protected $mainConfig;
+
+    /**
+     * Constructor
+     *
+     * @param GeneratorTools $tools      Generator tools
+     * @param array          $mainConfig Main framework configuration
+     * @param string|null    $name       The name of the command; passing null
+     * means it must be set in configure()
+     */
+    public function __construct(GeneratorTools $tools, array $mainConfig,
+        $name = null
+    ) {
+        $this->mainConfig = $mainConfig;
+        parent::__construct($tools, $name);
+    }
 
     /**
      * Configure the command.
@@ -57,20 +79,16 @@ class RecordRouteCommand extends AbstractRouteCommand
     protected function configure()
     {
         $this
-            ->setDescription('Record route generator')
-            ->setHelp('Adds a record route.')
+            ->setDescription('Non-tab record action route generator')
+            ->setHelp('Adds routes for a non-tab record action.')
             ->addArgument(
-                'base',
+                'action',
                 InputArgument::REQUIRED,
-                'the base route name (used by router), e.g. record'
-            )->addArgument(
-                'controller',
-                InputArgument::REQUIRED,
-                'the controller name (used in URL), e.g. MyResearch'
+                'new action to add'
             )->addArgument(
                 'target_module',
                 InputArgument::REQUIRED,
-                'the module where the new route will be generated'
+                'the module where the new routes will be generated'
             );
     }
 
@@ -84,8 +102,7 @@ class RecordRouteCommand extends AbstractRouteCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $base = $input->getArgument('base');
-        $controller = $input->getArgument('controller');
+        $action = $input->getArgument('action');
         $module = $input->getArgument('target_module');
 
         $this->generatorTools->setOutputInterface($output);
@@ -94,9 +111,24 @@ class RecordRouteCommand extends AbstractRouteCommand
         $configPath = $this->generatorTools->getModuleConfigPath($module);
         $this->generatorTools->backUpFile($configPath);
 
-        // Append the route
+        // Append the routes
         $config = include $configPath;
-        $this->routeGenerator->addRecordRoute($config, $base, $controller);
+        foreach ($this->mainConfig['router']['routes'] as $key => $val) {
+            if (isset($val['options']['route'])
+                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
+            ) {
+                $newRoute = $key . '-' . strtolower($action);
+                if (isset($this->mainConfig['router']['routes'][$newRoute])) {
+                    $output->writeln($newRoute . ' already exists; skipping.');
+                } else {
+                    $val['options']['route'] = str_replace(
+                        '[:id[/[:tab]]]', "[:id]/$action", $val['options']['route']
+                    );
+                    $val['options']['defaults']['action'] = $action;
+                    $config['router']['routes'][$newRoute] = $val;
+                }
+            }
+        }
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);

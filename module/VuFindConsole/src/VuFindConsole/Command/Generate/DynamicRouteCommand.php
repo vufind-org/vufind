@@ -93,6 +93,8 @@ class DynamicRouteCommand extends AbstractRouteCommand
         $action = $input->getArgument('action');
         $module = $input->getArgument('target_module');
 
+        $this->generatorTools->setOutputInterface($output);
+
         // Create backup of configuration
         $configPath = $this->generatorTools->getModuleConfigPath($module);
         $this->generatorTools->backUpFile($configPath);

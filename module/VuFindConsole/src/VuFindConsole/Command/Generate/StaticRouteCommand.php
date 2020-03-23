@@ -83,6 +83,8 @@ class StaticRouteCommand extends AbstractRouteCommand
         $route = $input->getArgument('route_definition');
         $module = $input->getArgument('target_module');
 
+        $this->generatorTools->setOutputInterface($output);
+
         // Create backup of configuration
         $configPath = $this->generatorTools->getModuleConfigPath($module);
         $this->generatorTools->backUpFile($configPath);

@@ -113,6 +113,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Generate\AbstractContainerAwareCommandFactory::class,
         Generate\ExtendServiceCommand::class =>
             Generate\AbstractCommandFactory::class,
+        Generate\NonTabRecordActionCommand::class =>
+            Generate\NonTabRecordActionCommandFactory::class,
         Generate\PluginCommand::class =>
             Generate\AbstractContainerAwareCommandFactory::class,
         Generate\RecordRouteCommand::class =>

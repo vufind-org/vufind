@@ -41,62 +41,6 @@ use Laminas\Console\Console;
 class GenerateController extends AbstractBase
 {
     /**
-     * Add a new non-tab record action to all existing record routes
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function nontabrecordactionAction()
-    {
-        $request = $this->getRequest();
-        $action = $request->getParam('newAction');
-        $module = $request->getParam('module');
-        if (empty($action) || empty($module)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName()
-                . ' generate nontabrecordaction [action] [target_module]'
-            );
-            Console::writeLine(
-                "\taction - new action to add"
-            );
-            Console::writeLine(
-                "\ttarget_module - the module where the new routes will be generated"
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Create backup of configuration
-        $generator = $this->getGeneratorTools();
-        $configPath = $generator->getModuleConfigPath($module);
-        $generator->backUpFile($configPath);
-
-        // Load the route config
-        $config = include $configPath;
-
-        // Append the route
-        $mainConfig = $this->serviceLocator->get('Config');
-        foreach ($mainConfig['router']['routes'] as $key => $val) {
-            if (isset($val['options']['route'])
-                && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
-            ) {
-                $newRoute = $key . '-' . strtolower($action);
-                if (isset($mainConfig['router']['routes'][$newRoute])) {
-                    Console::writeLine($newRoute . ' already exists; skipping.');
-                } else {
-                    $val['options']['route'] = str_replace(
-                        '[:id[/[:tab]]]', "[:id]/$action", $val['options']['route']
-                    );
-                    $val['options']['defaults']['action'] = $action;
-                    $config['router']['routes'][$newRoute] = $val;
-                }
-            }
-        }
-
-        // Write updated configuration
-        $generator->writeModuleConfig($configPath, $config);
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Create a custom theme from the template, configure.
      *
      * @return \Laminas\Console\Response
@@ -148,17 +92,5 @@ class GenerateController extends AbstractBase
             "\tFinished. Add to your theme.config.php 'mixins' setting to activate."
         );
         return $this->getSuccessResponse();
-    }
-
-    /**
-     * Get generator tools
-     *
-     * @return \VuFindConsole\Generator\GeneratorTools
-     */
-    protected function getGeneratorTools()
-    {
-        return $this->serviceLocator->get(
-            \VuFindConsole\Generator\GeneratorTools::class
-        );
     }
 }
