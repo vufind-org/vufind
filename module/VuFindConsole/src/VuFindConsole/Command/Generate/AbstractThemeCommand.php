@@ -127,7 +127,7 @@ abstract class AbstractThemeCommand extends Command
         $this->generator->setOutputInterface($output);
 
         if (!$this->generate($name)) {
-            $output->writeln($generator->getLastError());
+            $output->writeln($this->generator->getLastError());
             return 1;
         }
         $output->writeln(rtrim("\tFinished. {$this->extraSuccessMessage}"));

@@ -64,7 +64,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(
-            "\tNo theme name provided, using \"custom\"\n\tFinished.",
+            "\tNo theme name provided, using \"custom\"\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
