@@ -39,7 +39,7 @@ use VuFindTheme\GeneratorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class ThemeMixinCommand extends AbstractThemeCommand
+class ThemeMixinCommand extends AbstractThemeCommand
 {
     /**
      * The name of the command (the part after "public/index.php")

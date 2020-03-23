@@ -56,7 +56,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('custom'))
             ->will($this->returnValue(true));
         $generator->expects($this->once())
-            ->method('config')
+            ->method('configure')
             ->with($this->equalTo($config), $this->equalTo('custom'))
             ->will($this->returnValue(true));
         $config = new \Laminas\Config\Config([]);
