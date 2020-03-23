@@ -41,7 +41,7 @@ use VuFindConsole\Generator\GeneratorTools;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class NonTabRecordActionCommand extends AbstractRouteCommand
+class NonTabRecordActionCommand extends AbstractCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
