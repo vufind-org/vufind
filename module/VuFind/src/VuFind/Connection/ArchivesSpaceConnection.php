@@ -27,8 +27,8 @@
  */
 namespace VuFind\Connection;
 
-use Zend\Config\Config;
-use Zend\Http\Client;
+use Laminas\Config\Config;
+use Laminas\Http\Client;
 
 /**
  * ArchivesSpace connection class.
@@ -39,7 +39,7 @@ use Zend\Http\Client;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ArchivesSpaceConnection implements \Zend\Log\LoggerAwareInterface
+class ArchivesSpaceConnection implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
