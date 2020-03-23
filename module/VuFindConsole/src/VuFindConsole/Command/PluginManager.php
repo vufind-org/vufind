@@ -50,17 +50,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'generate/dynamicroute' => Generate\DynamicRouteCommand::class,
         'generate/extendclass' => Generate\ExtendClassCommand::class,
         'generate/extendservice' => Generate\ExtendServiceCommand::class,
+        'generate/nontabrecordaction' => Generate\NonTabRecordActionCommand::class,
         'generate/plugin' => Generate\PluginCommand::class,
         'generate/recordroute' => Generate\RecordRouteCommand::class,
         'generate/staticroute' => Generate\StaticRouteCommand::class,
+        'generate/theme' => Generate\ThemeCommand::class,
+        'generate/thememixin' => Generate\ThemeMixinCommand::class,
         'harvest/harvest_oai' => Harvest\HarvestOaiCommand::class,
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'generate/nontabrecordaction' =>
-            'generate nontabrecordaction [<newAction>] [<module>]',
-        'generate/theme' => 'generate theme [<themename>]',
-        'generate/thememixin' => 'generate thememixin [<name>]',
         'import/import-xsl' =>
             'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
         'import/webcrawl' => 'import webcrawl [--test-only] [--index=]',
@@ -121,6 +120,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Generate\AbstractRouteCommandFactory::class,
         Generate\StaticRouteCommand::class =>
             Generate\AbstractRouteCommandFactory::class,
+        Generate\ThemeCommand::class =>
+            Generate\ThemeCommandFactory::class,
+        Generate\ThemeMixinCommand::class =>
+            Generate\ThemeMixinCommandFactory::class,
         Harvest\MergeMarcCommand::class => InvokableFactory::class,
         Harvest\HarvestOaiCommand::class => Harvest\HarvestOaiCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,

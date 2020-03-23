@@ -1,6 +1,6 @@
 <?php
 /**
- * Class to generate a new mixin from a template.
+ * Interface shared by theme and mixin generator classes.
  *
  * PHP version 7
  *
@@ -21,50 +21,47 @@
  *
  * @category VuFind
  * @package  Theme
- * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 namespace VuFindTheme;
 
-use Laminas\Console\Console;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class to generate a new mixin from a template.
+ * Interface shared by theme and mixin generator classes.
  *
  * @category VuFind
  * @package  Theme
- * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class MixinGenerator extends AbstractThemeUtility implements GeneratorInterface
+interface GeneratorInterface
 {
-    use \VuFindConsole\ConsoleOutputTrait;
-
     /**
-     * Generate a new mixin from a template.
+     * Generate a new resource.
      *
-     * @param string $name     Name of mixin to generate.
-     * @param string $template Name of template mixin directory
+     * @param string $name Name of resource to generate.
      *
      * @return bool
      */
-    public function generate($name, $template = 'local_mixin_example')
-    {
-        // Check for existing theme
-        $baseDir = $this->info->getBaseDir() . '/';
-        if (realpath($baseDir . $name)) {
-            return $this->setLastError('Mixin "' . $name . '" already exists');
-        }
-        $this->writeln('Creating new mixin: "' . $name . '"');
-        $source = $baseDir . $template;
-        $dest = $baseDir . $name;
-        $this->writeln("\tCopying $template");
-        $this->writeln("\t\tFrom: " . $source);
-        $this->writeln("\t\tTo: " . $dest);
-        return $this->copyDir($source, $dest);
-    }
+    public function generate($name);
+
+    /**
+     * Get last error message.
+     *
+     * @return string
+     */
+    public function getLastError();
+
+    /**
+     * Set the output interface.
+     *
+     * @param OutputInterface $output Output interface
+     *
+     * @return void
+     */
+    public function setOutputInterface(OutputInterface $output): void;
 }
