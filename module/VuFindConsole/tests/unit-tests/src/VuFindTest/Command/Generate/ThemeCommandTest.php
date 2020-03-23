@@ -50,6 +50,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
+        $config = new \Laminas\Config\Config([]);
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
@@ -59,7 +60,6 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
             ->method('configure')
             ->with($this->equalTo($config), $this->equalTo('custom'))
             ->will($this->returnValue(true));
-        $config = new \Laminas\Config\Config([]);
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -83,7 +83,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('foo'))
             ->will($this->returnValue(true));
         $generator->expects($this->once())
-            ->method('config')
+            ->method('configure')
             ->with($this->equalTo($config), $this->equalTo('foo'))
             ->will($this->returnValue(false));
         $generator->expects($this->once())
