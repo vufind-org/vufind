@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Generate\ThemeCommand;
 use VuFindTheme\ThemeGenerator;

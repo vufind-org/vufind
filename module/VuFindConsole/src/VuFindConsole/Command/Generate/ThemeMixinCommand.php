@@ -28,7 +28,6 @@
 namespace VuFindConsole\Command\Generate;
 
 use Symfony\Component\Console\Command\Command;
-use VuFindTheme\GeneratorInterface;
 
 /**
  * Theme mixin generator command.

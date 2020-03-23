@@ -28,8 +28,6 @@
  */
 namespace VuFindTheme;
 
-use Laminas\Console\Console;
-
 /**
  * Class to generate a new mixin from a template.
  *
