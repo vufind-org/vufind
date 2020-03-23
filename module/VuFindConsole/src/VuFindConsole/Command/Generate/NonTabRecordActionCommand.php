@@ -30,6 +30,7 @@ namespace VuFindConsole\Command\Generate;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFindConsole\Generator\GeneratorTools;
 
 /**
  * Console command: Generate non-tab record action route.

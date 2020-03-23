@@ -108,7 +108,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                 ]
             ]
         ];
-        $command = new NonTabRecordAction($tools, $config);
+        $command = new NonTabRecordActionCommand($tools, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
