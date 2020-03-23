@@ -234,7 +234,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
 
         $form = new Form(
             $mock,
-            $this->createMock(\Zend\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
         );
         $form->setFormId('TestElementOptions');
 
