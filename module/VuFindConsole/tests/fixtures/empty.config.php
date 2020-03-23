@@ -1,1 +1,2 @@
-<?php return [];
+<?php
+return [];

@@ -28,7 +28,6 @@
 namespace VuFindConsole\Command\Generate;
 
 use Interop\Container\ContainerInterface;
-use VuFind\Route\RouteGenerator;
 
 /**
  * Factory for non-tab record action route generator command.

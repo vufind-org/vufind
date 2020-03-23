@@ -27,9 +27,7 @@
  */
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Route\RouteGenerator;
 use VuFindConsole\Command\Generate\NonTabRecordActionCommand;
 use VuFindConsole\Generator\GeneratorTools;
 
@@ -74,7 +72,26 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
     public function testSuccessWithMinimalParameters()
     {
         $configFixturePath = __DIR__ . '/../../../../../fixtures/empty.config.php';
-        $expectedConfig = include $configFixturePath;
+        $expectedConfig = [
+            'router' => [
+                'routes' => [
+                    'example-foo' => [
+                        'type'    => \Laminas\Router\Http\Segment::class,
+                        'options' => [
+                            'route'    => '/Example/[:id]/Foo',
+                            'constraints' => [
+                                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Example',
+                                'action'     => 'Foo',
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
         );
@@ -112,7 +129,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
-                'action' => 'foo',
+                'action' => 'Foo',
                 'target_module' => 'xyzzy',
             ]
         );
