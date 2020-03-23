@@ -77,6 +77,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testFailure()
     {
+        $config = new \Laminas\Config\Config([]);
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
@@ -89,7 +90,6 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('getLastError')
             ->will($this->returnValue('fake error'));
-        $config = new \Laminas\Config\Config([]);
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);

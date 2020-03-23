@@ -55,8 +55,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
             ->method('generate')
             ->with($this->equalTo('custom'))
             ->will($this->returnValue(true));
-        $config = new \Laminas\Config\Config([]);
-        $command = new ThemeMixinCommand($generator, $config);
+        $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(
@@ -83,8 +82,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('getLastError')
             ->will($this->returnValue('fake error'));
-        $config = new \Laminas\Config\Config([]);
-        $command = new ThemeMixinCommand($generator, $config);
+        $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);
         $this->assertEquals('fake error', $commandTester->getDisplay());
