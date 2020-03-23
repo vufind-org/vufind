@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractRouteCommandFactory extends AbstractCommandFactory
+class NonTabRecordActionCommandFactory extends AbstractCommandFactory
 {
     /**
      * Create an object
