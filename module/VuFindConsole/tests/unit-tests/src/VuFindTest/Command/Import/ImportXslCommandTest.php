@@ -28,8 +28,8 @@
 namespace VuFindTest\Command\Import;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFindConsole\Command\Import\ImportXslCommand;
 use VuFind\XSLT\Importer;
+use VuFindConsole\Command\Import\ImportXslCommand;
 
 /**
  * Import/ImportXsl command test.
