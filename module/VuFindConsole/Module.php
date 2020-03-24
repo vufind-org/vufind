@@ -99,8 +99,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'import import-xsl' => 'XSLT importer',
-            'import webcrawl' => 'Web crawler',
             'language addusingtemplate' => 'Build new language strings from '
                 . 'existing ones using a template',
             'language copystring' => 'Copy one language string to another',

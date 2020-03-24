@@ -58,11 +58,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'generate/thememixin' => Generate\ThemeMixinCommand::class,
         'harvest/harvest_oai' => Harvest\HarvestOaiCommand::class,
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
+        'import/import-xsl' => Import\ImportXslCommand::class,
+        'import/webcrawl' => Import\WebCrawlCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'import/import-xsl' =>
-            'import import-xsl [--test-only] [--index=] [<xml>] [<properties>]',
-        'import/webcrawl' => 'import webcrawl [--test-only] [--index=]',
         'language/addusingtemplate' =>
             'language addusingtemplate [<target>] [<template>]',
         'language/copystring' => 'language copystring [<source>] [<target>]',
@@ -126,6 +125,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Generate\ThemeMixinCommandFactory::class,
         Harvest\MergeMarcCommand::class => InvokableFactory::class,
         Harvest\HarvestOaiCommand::class => Harvest\HarvestOaiCommandFactory::class,
+        Import\ImportXslCommand::class => Import\ImportXslCommandFactory::class,
+        Import\WebCrawlCommand::class => Import\WebCrawlCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 
