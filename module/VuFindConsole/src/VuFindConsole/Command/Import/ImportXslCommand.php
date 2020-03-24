@@ -62,11 +62,14 @@ class ImportXslCommand extends Command
     /**
      * Constructor
      *
-     * @param Importer $importer XSLT importer
+     * @param Importer       $importer XSLT importer
+     * @param string|null    $name     The name of the command; passing null means it
+     * must be set in configure()
      */
-    public function __construct(Importer $importer)
+    public function __construct(Importer $importer, $name = null)
     {
         $this->importer = $importer;
+        parent::__construct($name);
     }
 
     /**
@@ -100,9 +103,8 @@ class ImportXslCommand extends Command
                 'index',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'name of search backend to index content into (default = Solr; could'
-                . ' be overridden with,'
-                . "\nfor example, SolrAuth to index authority records)",
+                'name of search backend to index content into (could be overridden '
+                . "with,\nfor example, SolrAuth to index authority records)",
                 'Solr'
             );
     }

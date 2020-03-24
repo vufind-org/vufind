@@ -77,15 +77,19 @@ class WebCrawlCommand extends Command
     /**
      * Constructor
      *
-     * @param Importer $importer XSLT importer
-     * @param Writer   $solr     Solr writer
-     * @param Config   $config   Configuration from webcrawl.ini
+     * @param Importer    $importer XSLT importer
+     * @param Writer      $solr     Solr writer
+     * @param Config      $config   Configuration from webcrawl.ini
+     * @param string|null $name  The name of the command; passing null means it
+     * must be set in configure()
      */
-    public function __construct(Importer $importer, Writer $solr, Config $config)
-    {
+    public function __construct(Importer $importer, Writer $solr, Config $config,
+        $name = null
+    ) {
         $this->importer = $importer;
         $this->solr = $solr;
         $this->config = $config;
+        parent::__construct($name);
     }
 
     /**
@@ -107,7 +111,7 @@ class WebCrawlCommand extends Command
                 'index',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'name of search backend to index content into (default = SolrWeb)',
+                'name of search backend to index content into',
                 'SolrWeb'
             );
     }
@@ -216,7 +220,7 @@ class WebCrawlCommand extends Command
 
         // Are we in verbose mode?
         $verbose = ($this->config->General->verbose ?? false)
-            || $input->getOption('verbose');
+            || ($input->hasOption('verbose') && $input->getOption('verbose'));
 
         // Loop through sitemap URLs in the config file.
         foreach ($this->config->Sitemaps->url as $current) {

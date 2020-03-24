@@ -86,7 +86,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(
-            "Successfully imported foo.xml\n", $commandTester->getDisplay()
+            "Successfully imported foo.xml...\n", $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -107,7 +107,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('SolrTest'),
                 $this->equalTo(true)
             )->will($this->throwException($e));
-        $command = new ImportXslCommand($tools);
+        $command = new ImportXslCommand($importer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
