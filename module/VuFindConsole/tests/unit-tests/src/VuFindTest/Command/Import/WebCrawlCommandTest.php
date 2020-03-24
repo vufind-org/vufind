@@ -51,12 +51,12 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $fixture1 = 'foo.xml';
-        $fixture2 = 'bar.xml';
+        $fixture1 = __DIR__ . '/../../../../../fixtures/sitemap/index.xml';
+        $fixture2 = __DIR__ . '/../../../../../fixtures/sitemap/map.xml';
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo($fixture1),
+                $this->equalTo('http://bar'),
                 $this->equalTo('sitemap.properties'),
                 $this->equalTo('SolrWeb'),
                 $this->equalTo(false)

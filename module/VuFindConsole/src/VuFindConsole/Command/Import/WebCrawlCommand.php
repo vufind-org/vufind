@@ -171,7 +171,7 @@ class WebCrawlCommand extends Command
             foreach ($results as $current) {
                 if (isset($current->loc)) {
                     $success = $this->harvestSitemap(
-                        (string)$current->loc, $verbose, $index, $testMode
+                        $output, (string)$current->loc, $verbose, $index, $testMode
                     );
                     if (!$success) {
                         $retVal = false;
@@ -224,7 +224,7 @@ class WebCrawlCommand extends Command
 
         // Loop through sitemap URLs in the config file.
         foreach ($this->config->Sitemaps->url as $current) {
-            $this->harvestSitemap($current, $verbose, $index, $testMode);
+            $this->harvestSitemap($output, $current, $verbose, $index, $testMode);
         }
 
         // Skip Solr operations if we're in test mode.
