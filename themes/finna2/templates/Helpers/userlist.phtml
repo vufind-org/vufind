@@ -19,7 +19,8 @@
       </div>
     </div>
   <?php endif; ?>
-  <div class="public-list-view results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
+  <?php $view = $this->params->getView(); ?>
+  <div class="public-list-view results result-view-<?=$this->escapeHtmlAttr($view)?>">
     <?= $this->partial('search/list-' . $this->view . '.phtml',
     [
       'results' => $this->results,
@@ -39,7 +40,7 @@
              ]
         ); ?>
         </div>
-        <button class="btn btn-outline-primary load-more" aria-label="<?= $this->transEsc('See all')?>" data-id="<?= $this->escapeHtmlAttr($this->id)?>" data-start-index="<?= $this->escapeHtmlAttr($this->indexStart + $limit)?>" data-offset="<?= $this->escapeHtmlAttr($limit + 1)?>"<?= $this->sort ? (' data-sort="' . $this->escapeHtmlAttr($this->sort) . '"') : ''?>><?= $this->transEsc('See all'); ?></button>
+        <button class="btn btn-outline-primary load-more" aria-label="<?= $this->transEsc('See all')?>" data-id="<?= $this->escapeHtmlAttr($this->id)?>" data-start-index="<?= $this->escapeHtmlAttr($this->indexStart + $limit)?>" data-offset="<?= $this->escapeHtmlAttr($limit + 1)?>" data-view="<?= $this->escapeHtmlAttr($view)?>"<?= $this->sort ? (' data-sort="' . $this->escapeHtmlAttr($this->sort) . '"') : ''?>><?= $this->transEsc('See all'); ?></button>
         <i class="fa fa-spinner fa-spin hide"></i>
       </div>
     <?php endif; ?>

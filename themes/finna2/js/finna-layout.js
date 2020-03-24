@@ -374,12 +374,14 @@ finna.layout = (function finnaLayout() {
     });
   }
 
-  function initCondensedList() {
-    $('.condensed-collapse-toggle').click(function onClickCollapseToggle(event) {
+  function initCondensedList(_holder) {
+    var holder = typeof _holder === 'undefined' ? $(document) : _holder;
+
+    holder.find('.condensed-collapse-toggle').off('click').click(function onClickCollapseToggle(event) {
       if ((event.target.nodeName) !== 'A' && (event.target.nodeName) !== 'MARK') {
         $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear');
         $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
-        var holder = $(this).parent().parent();
+        holder = $(this).parent().parent();
         holder.toggleClass('open');
         if (holder.hasClass('open') && !holder.hasClass('opened')) {
           holder.addClass('opened');
@@ -820,6 +822,7 @@ finna.layout = (function finnaLayout() {
   var my = {
     getOrganisationPageLink: getOrganisationPageLink,
     isTouchDevice: isTouchDevice,
+    initCondensedList: initCondensedList,
     initTruncate: initTruncate,
     initLocationService: initLocationService,
     initHierarchicalFacet: initHierarchicalFacet,
