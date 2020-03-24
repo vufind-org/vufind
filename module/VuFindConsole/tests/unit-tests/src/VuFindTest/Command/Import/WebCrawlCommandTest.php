@@ -56,7 +56,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('http://bar'),
+                $this->equalTo($fixture2),
                 $this->equalTo('sitemap.properties'),
                 $this->equalTo('SolrWeb'),
                 $this->equalTo(false)
@@ -74,16 +74,16 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $command = $this->getMockCommand($importer, $solr, $config);
-        $command->expects($this->at(1))->method('downloadFile')
+        $command->expects($this->at(0))->method('downloadFile')
             ->with($this->equalTo('http://foo'))
             ->will($this->returnValue($fixture1));
-        $command->expects($this->at(2))->method('downloadFile')
+        $command->expects($this->at(1))->method('downloadFile')
             ->with($this->equalTo('http://bar'))
             ->will($this->returnValue($fixture2));
-        $command->expects($this->at(1))->method('removeTempFile')
-            ->with($this->equalTo($fixture1));
         $command->expects($this->at(2))->method('removeTempFile')
             ->with($this->equalTo($fixture2));
+        $command->expects($this->at(3))->method('removeTempFile')
+            ->with($this->equalTo($fixture1));
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(
