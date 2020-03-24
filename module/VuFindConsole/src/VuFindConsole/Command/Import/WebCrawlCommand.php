@@ -223,8 +223,14 @@ class WebCrawlCommand extends Command
             || ($input->hasOption('verbose') && $input->getOption('verbose'));
 
         // Loop through sitemap URLs in the config file.
+        $error = false;
         foreach ($this->config->Sitemaps->url as $current) {
-            $this->harvestSitemap($output, $current, $verbose, $index, $testMode);
+            $error = $error || !$this->harvestSitemap(
+                $output, $current, $verbose, $index, $testMode
+            );
+        }
+        if ($error) {
+            $output->writeln("Error encountered during harvest.");
         }
 
         // Skip Solr operations if we're in test mode.
@@ -244,6 +250,6 @@ class WebCrawlCommand extends Command
             }
             $this->solr->optimize($index);
         }
-        return 0;
+        return $error ? 1 : 0;
     }
 }
