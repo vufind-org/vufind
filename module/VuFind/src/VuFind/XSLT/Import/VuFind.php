@@ -452,26 +452,54 @@ class VuFind
     }
 
     /**
-     * Try to find a four-digit year in a string.
+     * Try to find the best single year or date range in a set of DOM elements.
+     * Best is defined as the first value to consist of only YYYY or YYYY-ZZZZ,
+     * with no other text. If no "best" match is found, the first value is used.
      *
-     * @param string $input String to search.
+     * @param array $input DOM elements to search.
      *
      * @return string
      */
-    public static function extractYear($input)
+    public static function extractBestDateOrRange($input)
     {
-        // Best match -- a four-digit string starting with 1 or 2
-        preg_match('/[12]\d{3}/', $input, $matches);
-        if (isset($matches[0])) {
-            return $matches[0];
-        }
-        // Next best match -- any string of four or fewer digits.
-        for ($length = 4; $length > 0; $length--) {
-            preg_match('/\d{' . $length . '}/', $input, $matches);
-            if (isset($matches[0])) {
-                return $matches[0];
+        foreach ($input as $current) {
+            if (preg_match('/^\d{4}(-\d{4})?$/', $current->textContent)) {
+                return $current->textContent;
             }
         }
-        return '';
+        return reset($input)->textContent;
+    }
+
+    /**
+     * Try to find a four-digit year in a set of DOM elements.
+     *
+     * @param array $input DOM elements to search.
+     *
+     * @return string
+     */
+    public static function extractEarliestYear($input)
+    {
+        $goodMatch = $adequateMatch = '';
+        foreach ($input as $current) {
+            // Best match -- a four-digit string starting with 1 or 2
+            preg_match_all('/[12]\d{3}/', $current->textContent, $matches);
+            foreach ($matches[0] as $match) {
+                if (empty($goodMatch) || $goodMatch > $match) {
+                    $goodMatch = $match;
+                }
+            }
+            // Next best match -- any string of four or fewer digits.
+            for ($length = 4; $length > 0; $length--) {
+                preg_match_all(
+                    '/\d{' . $length . '}/', $current->textContent, $matches
+                );
+                foreach ($matches[0] as $match) {
+                    if (strlen($match) > strlen($adequateMatch)) {
+                        $adequateMatch = $match;
+                    }
+                }
+            }
+        }
+        return empty($goodMatch) ? $adequateMatch : $goodMatch;
     }
 }

@@ -132,10 +132,10 @@
                 <!-- PUBLISHDATE -->
                 <xsl:if test="//dc:date">
                     <field name="publishDate">
-                        <xsl:value-of select="php:function('VuFind::extractYear', string(//dc:date))"/>
+                        <xsl:value-of select="php:function('VuFind::extractBestDateOrRange', //dc:date)"/>
                     </field>
                     <field name="publishDateSort">
-                        <xsl:value-of select="php:function('VuFind::extractYear', string(//dc:date))"/>
+                        <xsl:value-of select="php:function('VuFind::extractEarliestYear', //dc:date)"/>
                     </field>
                 </xsl:if>
 
