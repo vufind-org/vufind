@@ -6,7 +6,7 @@ $config = [
         'factories' => [
             'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
-            'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
+            'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\Search2ApiControllerFactory',
         ],
         'aliases' => [
             'Api' => 'VuFindApi\Controller\ApiController',
@@ -18,6 +18,7 @@ $config = [
         'factories' => [
             'VuFindApi\Formatter\FacetFormatter' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
+            'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
         ],
     ],
     'router' => [

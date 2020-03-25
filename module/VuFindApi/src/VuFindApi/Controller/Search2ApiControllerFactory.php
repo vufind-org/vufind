@@ -1,10 +1,10 @@
 <?php
 /**
- * Record Formatter factory.
+ * Factory for SearchApiController.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,34 +20,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-namespace VuFindApi\Formatter;
+namespace VuFindApi\Controller;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Record Formatter factory.
+ * Factory for SearchApiController.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class RecordFormatterFactory implements FactoryInterface
+class Search2ApiControllerFactory implements FactoryInterface
 {
-    /**
-     * Record fields configuration file name
-     *
-     * @var string
-     */
-    protected $configFile = 'SearchApiRecordFields.yaml';
-
     /**
      * Create an object
      *
@@ -68,10 +61,10 @@ class RecordFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-
-        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get($this->configFile);
-        $helperManager = $container->get('ViewHelperManager');
-        return new $requestedName($recordFields, $helperManager);
+        return new $requestedName(
+            $container,
+            $container->get(\VuFindApi\Formatter\Search2RecordFormatter::class),
+            $container->get(\VuFindApi\Formatter\FacetFormatter::class)
+        );
     }
 }
