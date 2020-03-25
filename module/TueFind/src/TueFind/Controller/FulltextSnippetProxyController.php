@@ -133,7 +133,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                             !empty($text_types_filter) ?
                                  [ 'bool' => [ 'must' => [  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ], $text_types_filter ] ] ] :
                                  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
-                        ]
+                        ],
+                        'must_not' => [ 'term' => [ '_index' => $index . '_write' ] ]
                     ]
                 ],
                 'highlight' => [
