@@ -54,9 +54,6 @@
                     </xsl:for-each>
                 </xsl:if>
 
-                <!-- FORMAT -->
-                <field name="format">Archival Material</field>
-
                 <!-- SUBJECT -->
                 <xsl:if test="//dc:subject">
                     <xsl:for-each select="//dc:subject">
@@ -82,7 +79,8 @@
                     </field>
                 </xsl:if>
 
-                <!-- TYPE -->
+                <!-- FORMAT / TYPE -->
+                <field name="format">Archival Material</field>
                 <xsl:if test="//dc:type">
                     <field name="format">
                         <xsl:value-of select="//dc:type" />
