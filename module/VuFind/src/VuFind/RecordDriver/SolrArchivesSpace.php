@@ -52,4 +52,29 @@ class SolrArchivesSpace extends SolrDefault
         };
         return array_map($filter, $urls);
     }
+
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        $urls = parent::getURLs();
+        // We're going to assume that if there is a link, it's always pointing at
+        // the finding aid in the ArchivesSpace front end.
+        if (isset($urls[0])) {
+            $urls[0]['desc'] = $this->translate('Finding Aid');
+        }
+        return $urls;
+    }
 }
