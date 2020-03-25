@@ -21,14 +21,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
+ * @package  ContentBlock
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+namespace VuFind\ContentBlock;
+
+/**
+ * Class TemplateBased
+ *
+ * @category VuFind
  * @package  VuFind\ContentBlock
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
-
-namespace VuFind\ContentBlock;
-
 class TemplateBased implements ContentBlockInterface
 {
     /**
@@ -45,6 +53,11 @@ class TemplateBased implements ContentBlockInterface
      */
     protected $pageContent;
 
+    /**
+     * TemplateBased constructor.
+     *
+     * @param \VuFind\Content\Page $pageContent Content page service
+     */
     public function __construct(\VuFind\Content\Page $pageContent)
     {
         $this->pageContent = $pageContent;
@@ -69,12 +82,12 @@ class TemplateBased implements ContentBlockInterface
      */
     public function getContext()
     {
-
         $page = $this->templateName;
         $pathPrefix = "templates/ContentBlock/TemplateBased/";
         $data = $this->pageContent->determineTemplateAndRenderer($pathPrefix, $page);
 
-        $method = isset($data) ? 'getContextFor' . ucwords($data['renderer']) : false;
+        $method = isset($data) ? 'getContextFor' . ucwords($data['renderer'])
+            : false;
 
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
@@ -111,5 +124,4 @@ class TemplateBased implements ContentBlockInterface
             'templateName' => $this->templateName,
         ];
     }
-
 }
