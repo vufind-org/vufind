@@ -26,7 +26,6 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
-
 namespace VuFind\Content;
 
 /**
@@ -74,9 +73,9 @@ class Page
     /**
      * Page constructor.
      *
-     * @param \VuFindTheme\ThemeInfo $themeInfo
-     * @param \Laminas\Mvc\I18n\Translator $translator
-     * @param \Laminas\Config\Config $config
+     * @param \VuFindTheme\ThemeInfo       $themeInfo  Theme information service
+     * @param \Laminas\Mvc\I18n\Translator $translator Translator
+     * @param \Laminas\Config\Config       $config     Main configuration
      */
     public function __construct($themeInfo, $translator, $config)
     {
@@ -88,8 +87,8 @@ class Page
     /**
      * Try to find template information about desired page
      *
-     * @param string $pathPrefix
-     * @param string $pageName
+     * @param string $pathPrefix Subdirectory where the template should be located
+     * @param string $pageName   Template name
      *
      * @return array|null Null if template is not found or array with keys renderer
      *                    (type of template), path (full path of template), page
