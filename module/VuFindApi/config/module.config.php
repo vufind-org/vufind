@@ -6,10 +6,12 @@ $config = [
         'factories' => [
             'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
+            'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
         ],
         'aliases' => [
             'Api' => 'VuFindApi\Controller\ApiController',
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
+            'Search2Api' => 'VuFindApi\Controller\Search2ApiController',
         ],
     ],
     'service_manager' => [
@@ -49,6 +51,28 @@ $config = [
                     'route'    => '/api/v1/record',
                     'defaults' => [
                         'controller' => 'SearchApi',
+                        'action'     => 'record',
+                    ]
+                ]
+            ],
+            'search2Apiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/search2',
+                    'defaults' => [
+                        'controller' => 'Search2Api',
+                        'action'     => 'search',
+                    ]
+                ]
+            ],
+            'record2Apiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/search2record',
+                    'defaults' => [
+                        'controller' => 'Search2Api',
                         'action'     => 'record',
                     ]
                 ]

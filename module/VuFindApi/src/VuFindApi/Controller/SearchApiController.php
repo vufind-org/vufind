@@ -83,6 +83,20 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $searchAccessPermission = 'access.api.Search';
 
     /**
+     * Record route uri
+     *
+     * @var string
+     */
+    protected $recordRoute = 'record';
+
+    /**
+     * Search route uri
+     *
+     * @var string
+     */
+    protected $searchRoute = 'search';
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -124,7 +138,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'defaultFields' => $this->defaultRecordFields,
             'facetConfig' => $params->getFacetConfig(),
             'sortOptions' => $options->getSortOptions(),
-            'defaultSort' => $options->getDefaultSortByHandler()
+            'defaultSort' => $options->getDefaultSortByHandler(),
+            'recordRoute' => $this->recordRoute,
+            'searchRoute' => $this->searchRoute,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
