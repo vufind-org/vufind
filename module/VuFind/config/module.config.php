@@ -352,6 +352,7 @@ $config = [
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Connection\WorldCatUtils' => 'VuFind\Connection\WorldCatUtilsFactory',
+            'VuFind\Content\Page' => 'VuFind\Content\PageFactory',
             'VuFind\Content\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\AuthorNotes\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Covers\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
