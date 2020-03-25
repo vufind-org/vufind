@@ -452,6 +452,21 @@ class VuFind
     }
 
     /**
+     * Proxy the implode PHP function for use in XSL transformation.
+     *
+     * @param string $glue   Glue string
+     * @param array  $pieces DOM elements to join together.
+     *
+     * @return string
+     */
+    public static function implode($glue, $pieces)
+    {
+        $mapper = function ($dom) {
+            return trim($dom->textContent);
+        };
+        return implode($glue, array_map($mapper, $pieces));
+    }
+    /**
      * Try to find the best single year or date range in a set of DOM elements.
      * Best is defined as the first value to consist of only YYYY or YYYY-ZZZZ,
      * with no other text. If no "best" match is found, the first value is used.

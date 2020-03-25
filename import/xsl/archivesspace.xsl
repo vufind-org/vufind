@@ -123,7 +123,7 @@
                 <!-- PUBLISHER -->
                 <xsl:if test="//dc:publisher[normalize-space()]">
                     <field name="publisher">
-                        <xsl:value-of select="//dc:publisher[normalize-space()]"/>
+                        <xsl:value-of select="php:function('VuFind::implode', ', ', //dc:publisher)"/>
                     </field>
                 </xsl:if>
 
