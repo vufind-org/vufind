@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Page
+ * Class PageLocator
  *
  * PHP version 7
  *
@@ -21,15 +21,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Content
+ * @package  Content
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content;
 
 /**
- * Class Page
+ * Class PageLocator
  *
  * @category VuFind
  * @package  Content
@@ -37,7 +37,7 @@ namespace VuFind\Content;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Page
+class PageLocator
 {
     /**
      * Types/formats of content

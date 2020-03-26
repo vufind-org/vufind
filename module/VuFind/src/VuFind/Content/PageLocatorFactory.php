@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class PageFactory
+ * Class PageLocatorFactory
  *
  * PHP version 7
  *
@@ -21,10 +21,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Content
+ * @package  Content
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Content;
 
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
- * Content page factory
+ * Page locator factory
  *
  * @category VuFind
  * @package  Content
@@ -42,7 +42,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PageFactory
+class PageLocatorFactory
     implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**

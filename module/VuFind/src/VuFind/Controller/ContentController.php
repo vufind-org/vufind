@@ -63,8 +63,9 @@ class ContentController extends AbstractBase
     {
         $page = $this->params()->fromRoute('page');
         $pathPrefix = "templates/content/";
-        $pageContent = $this->serviceLocator->get(\VuFind\Content\Page::class);
-        $data = $pageContent->determineTemplateAndRenderer($pathPrefix, $page);
+        $pageLocator = $this->serviceLocator
+            ->get(\VuFind\Content\PageLocator::class);
+        $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
 
         $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 

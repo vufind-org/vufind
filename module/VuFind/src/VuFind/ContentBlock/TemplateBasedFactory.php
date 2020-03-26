@@ -65,7 +65,7 @@ class TemplateBasedFactory
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $pageContent = $container->get(\VuFind\Content\Page::class);
+        $pageContent = $container->get(\VuFind\Content\PageLocator::class);
 
         return new $requestedName($pageContent);
     }

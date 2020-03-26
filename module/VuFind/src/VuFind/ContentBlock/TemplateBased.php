@@ -49,18 +49,18 @@ class TemplateBased implements ContentBlockInterface
     /**
      * Page content
      *
-     * @var VuFind\Content\Page
+     * @var \VuFind\Content\PageLocator
      */
-    protected $pageContent;
+    protected $pageLocator;
 
     /**
      * TemplateBased constructor.
      *
-     * @param \VuFind\Content\Page $pageContent Content page service
+     * @param \VuFind\Content\PageLocator $pageLocator Content page locator service
      */
-    public function __construct(\VuFind\Content\Page $pageContent)
+    public function __construct(\VuFind\Content\PageLocator $pageLocator)
     {
-        $this->pageContent = $pageContent;
+        $this->pageLocator = $pageLocator;
     }
 
     /**
@@ -84,7 +84,8 @@ class TemplateBased implements ContentBlockInterface
     {
         $page = $this->templateName;
         $pathPrefix = "templates/ContentBlock/TemplateBased/";
-        $data = $this->pageContent->determineTemplateAndRenderer($pathPrefix, $page);
+        $data = $this->pageLocator
+            ->determineTemplateAndRenderer($pathPrefix, $page);
 
         $method = isset($data) ? 'getContextFor' . ucwords($data['renderer'])
             : false;
