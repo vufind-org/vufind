@@ -43,57 +43,6 @@ use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 class LanguageController extends AbstractBase
 {
     /**
-     * Delete a language string to another
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function deleteAction()
-    {
-        // Display help message if parameters missing:
-        $request = $this->getRequest();
-        $target = $request->getParam('target');
-        if (empty($target)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName() . ' language delete [target]'
-            );
-            Console::writeLine(
-                "\ttarget - the target key to remove "
-                . "(may include 'textdomain::' prefix)"
-            );
-            return $this->getFailureResponse();
-        }
-
-        $normalizer = new ExtendedIniNormalizer();
-        list($domain, $key) = $this->extractTextDomain($target);
-        $target = $key . ' = "';
-
-        if (!($dir = $this->getLangDir($output, $domain))) {
-            return $this->getFailureResponse();
-        }
-        $callback = function ($full) use ($target, $normalizer) {
-            $lines = file($full);
-            $out = '';
-            $found = false;
-            foreach ($lines as $line) {
-                if (substr($line, 0, strlen($target)) !== $target) {
-                    $out .= $line;
-                } else {
-                    $found = true;
-                }
-            }
-            if ($found) {
-                file_put_contents($full, $out);
-                $normalizer->normalizeFile($full);
-            } else {
-                Console::writeLine("Source key not found.");
-            }
-        };
-        $this->processDirectory($dir, $callback);
-
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Normalizer
      *
      * @return \Laminas\Console\Response

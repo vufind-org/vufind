@@ -99,7 +99,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'language delete' => 'Remove a language string from all files',
             'language normalize' => 'Normalize a directory of language files',
             'scheduledsearch notify' => 'Send scheduled search email notifications',
             'util cleanup_record_cache' => 'Remove unused records from the cache',

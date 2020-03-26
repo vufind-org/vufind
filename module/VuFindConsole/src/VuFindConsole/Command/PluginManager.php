@@ -62,9 +62,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'import/webcrawl' => Import\WebCrawlCommand::class,
         'language/addusingtemplate' => Language\AddUsingTemplateCommand::class,
         'language/copystring' => Language\CopyStringCommand::class,
+        'language/delete' => Language\DeleteCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'language/delete' => 'language delete [<target>]',
         'language/normalize' => 'language normalize [<target>]',
         'scheduledsearch/notify' => 'scheduledsearch notify',
         'util/cleanup_record_cache' =>
@@ -129,6 +129,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Language\AddUsingTemplateCommand::class =>
             Language\AbstractCommandFactory::class,
         Language\CopyStringCommand::class => Language\AbstractCommandFactory::class,
+        Language\DeleteCommand::class => Language\AbstractCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 
