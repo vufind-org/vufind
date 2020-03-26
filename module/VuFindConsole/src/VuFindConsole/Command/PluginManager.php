@@ -60,11 +60,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'harvest/merge-marc' => Harvest\MergeMarcCommand::class,
         'import/import-xsl' => Import\ImportXslCommand::class,
         'import/webcrawl' => Import\WebCrawlCommand::class,
+        'language/addusingtemplate' => Language\AddUsingTemplateCommand::class,
         'language/copystring' => Language\CopyStringCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'language/addusingtemplate' =>
-            'language addusingtemplate [<target>] [<template>]',
         'language/delete' => 'language delete [<target>]',
         'language/normalize' => 'language normalize [<target>]',
         'scheduledsearch/notify' => 'scheduledsearch notify',
@@ -127,6 +126,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Harvest\HarvestOaiCommand::class => Harvest\HarvestOaiCommandFactory::class,
         Import\ImportXslCommand::class => Import\ImportXslCommandFactory::class,
         Import\WebCrawlCommand::class => Import\WebCrawlCommandFactory::class,
+        Language\AddUsingTemplateCommand::class =>
+            Language\AbstractCommandFactory::class,
         Language\CopyStringCommand::class => Language\AbstractCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];

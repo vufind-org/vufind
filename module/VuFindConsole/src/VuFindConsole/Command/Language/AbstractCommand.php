@@ -77,6 +77,25 @@ abstract class AbstractCommand extends Command
     }
 
     /**
+     * Add a line to a language file
+     *
+     * @param string $filename File to update
+     * @param string $key      Name of language key
+     * @param string $value    Value of translation
+     *
+     * @return void
+     */
+    protected function addLineToFile($filename, $key, $value)
+    {
+        $fHandle = fopen($filename, "a");
+        if (!$fHandle) {
+            throw new \Exception('Cannot open ' . $filename . ' for writing.');
+        }
+        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fclose($fHandle);
+    }
+
+    /**
      * Extract a text domain and key from a raw language key.
      *
      * @param string $raw Raw language key

@@ -99,8 +99,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'language addusingtemplate' => 'Build new language strings from '
-                . 'existing ones using a template',
             'language delete' => 'Remove a language string from all files',
             'language normalize' => 'Normalize a directory of language files',
             'scheduledsearch notify' => 'Send scheduled search email notifications',
