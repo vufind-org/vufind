@@ -99,7 +99,7 @@ abstract class AbstractCommand extends Command
         $createIfMissing = false
     ) {
         $subDir = $domain == 'default' ? '' : ('/' . $domain);
-        $langDir = __DIR__ . '/../../../../../languages' . $subDir;
+        $langDir = __DIR__ . '/../../../../../../languages' . $subDir;
         if ($createIfMissing && !is_dir($langDir)) {
             mkdir($langDir);
         }
