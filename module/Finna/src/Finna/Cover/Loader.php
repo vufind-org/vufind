@@ -199,7 +199,8 @@ class Loader extends \VuFind\Cover\Loader
             $url, \Zend\Http\Request::METHOD_GET, 300
         );
         $client->setStream();
-        $adapter = $client->getAdapter();
+        $adapter = new \Zend\Http\Client\Adapter\Curl();
+        $client->setAdapter($adapter);
         $adapter->setOptions(
             [
                 'curloptions' => [
