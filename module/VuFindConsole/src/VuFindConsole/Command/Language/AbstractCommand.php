@@ -25,9 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindConsole\Command\Generate;
+namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
@@ -59,16 +60,19 @@ abstract class AbstractCommand extends Command
     /**
      * Constructor
      *
-     * @param ExtendedIniNormalizer $normalizer Normalizer for .ini files
-     * @param ExtendedIniReader     $reader     Reader for .ini files
-     * @param string|null           $name       The name of the command; passing null
-     * means it must be set in configure()
+     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
+     * @param ExtendedIniReader     $reader      Reader for .ini files
+     * @param string                $languageDir Base language file directory
+     * @param string|null           $name        The name of the command; passing
+     * null means it must be set in configure()
      */
     public function __construct(ExtendedIniNormalizer $normalizer,
-        ExtendedIniReader $reader, $name = null
+        ExtendedIniReader $reader, $languageDir = null, $name = null
     ) {
         $this->normalizer = $normalizer;
         $this->reader = $reader;
+        $this->languageDir = $languageDir
+            ?? realpath(__DIR__ . '/../../../../../../languages');
         parent::__construct($name);
     }
 
@@ -99,7 +103,7 @@ abstract class AbstractCommand extends Command
         $createIfMissing = false
     ) {
         $subDir = $domain == 'default' ? '' : ('/' . $domain);
-        $langDir = __DIR__ . '/../../../../../../languages' . $subDir;
+        $langDir = $this->languageDir . $subDir;
         if ($createIfMissing && !is_dir($langDir)) {
             mkdir($langDir);
         }
