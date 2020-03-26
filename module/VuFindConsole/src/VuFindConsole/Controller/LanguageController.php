@@ -43,73 +43,6 @@ use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 class LanguageController extends AbstractBase
 {
     /**
-     * Copy one language string to another
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function copystringAction()
-    {
-        // Display help message if parameters missing:
-        $request = $this->getRequest();
-        $source = $request->getParam('source');
-        $target = $request->getParam('target');
-        if (empty($source) || empty($target)) {
-            Console::writeLine(
-                'Usage: ' . $request->getScriptName()
-                . ' language copystring [source] [target]'
-            );
-            Console::writeLine("\tsource - the source key to read");
-            Console::writeLine("\ttarget - the target key to write");
-            Console::writeLine(
-                "(source and target may include 'textdomain::' prefix)"
-            );
-            return $this->getFailureResponse();
-        }
-
-        $reader = new ExtendedIniReader();
-        $normalizer = new ExtendedIniNormalizer();
-        list($sourceDomain, $sourceKey) = $this->extractTextDomain($source);
-        list($targetDomain, $targetKey) = $this->extractTextDomain($target);
-
-        if (!($sourceDir = $this->getLangDir($sourceDomain))
-            || !($targetDir = $this->getLangDir($targetDomain, true))
-        ) {
-            return $this->getFailureResponse();
-        }
-
-        // First, collect the source values from the source text domain:
-        $sources = [];
-        $sourceCallback = function ($full) use ($sourceKey, $reader, & $sources) {
-            $strings = $reader->getTextDomain($full, false);
-            if (!isset($strings[$sourceKey])) {
-                Console::writeLine("Source key not found.");
-            } else {
-                $sources[basename($full)] = $strings[$sourceKey];
-            }
-        };
-        $this->processDirectory($sourceDir, $sourceCallback);
-
-        // Make sure that all target files exist:
-        $this->createMissingFiles($targetDir->path, array_keys($sources));
-
-        // Now copy the values to their destination:
-        $targetCallback = function ($full) use ($targetKey, $normalizer, $sources) {
-            if (isset($sources[basename($full)])) {
-                $fHandle = fopen($full, "a");
-                fputs(
-                    $fHandle,
-                    "\n$targetKey = \"" . $sources[basename($full)] . "\"\n"
-                );
-                fclose($fHandle);
-                $normalizer->normalizeFile($full);
-            }
-        };
-        $this->processDirectory($targetDir, $targetCallback);
-
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Assemble a new language string by combining existing ones using a
      * template.
      *
@@ -137,7 +70,7 @@ class LanguageController extends AbstractBase
 
         // Make sure a valid target has been specified:
         list($targetDomain, $targetKey) = $this->extractTextDomain($target);
-        if (!($targetDir = $this->getLangDir($targetDomain, true))) {
+        if (!($targetDir = $this->getLangDir($output, $targetDomain, true))) {
             return $this->getFailureResponse();
         }
 
@@ -156,7 +89,7 @@ class LanguageController extends AbstractBase
         // Look up translations of all references in template:
         $reader = new ExtendedIniReader();
         foreach ($lookups as $domain => & $tokens) {
-            $sourceDir = $this->getLangDir($domain, false);
+            $sourceDir = $this->getLangDir($output, $domain, false);
             if (!$sourceDir) {
                 return $this->getFailureResponse();
             }
@@ -231,7 +164,7 @@ class LanguageController extends AbstractBase
         list($domain, $key) = $this->extractTextDomain($target);
         $target = $key . ' = "';
 
-        if (!($dir = $this->getLangDir($domain))) {
+        if (!($dir = $this->getLangDir($output, $domain))) {
             return $this->getFailureResponse();
         }
         $callback = function ($full) use ($target, $normalizer) {
@@ -286,81 +219,5 @@ class LanguageController extends AbstractBase
             return $this->getFailureResponse();
         }
         return $this->getSuccessResponse();
-    }
-
-    /**
-     * Extract a text domain and key from a raw language key.
-     *
-     * @param string $raw Raw language key
-     *
-     * @return array [textdomain, key]
-     */
-    protected function extractTextDomain($raw)
-    {
-        $parts = explode('::', $raw, 2);
-        return count($parts) > 1 ? $parts : ['default', $raw];
-    }
-
-    /**
-     * Open the language directory as an object using dir(). Return false on
-     * failure.
-     *
-     * @param string $domain          Text domain to retrieve.
-     * @param bool   $createIfMissing Should we create a missing directory?
-     *
-     * @return object|bool
-     */
-    protected function getLangDir($domain = 'default', $createIfMissing = false)
-    {
-        $subDir = $domain == 'default' ? '' : ('/' . $domain);
-        $langDir = __DIR__ . '/../../../../../languages' . $subDir;
-        if ($createIfMissing && !is_dir($langDir)) {
-            mkdir($langDir);
-        }
-        $dir = dir(realpath($langDir));
-        if (!$dir) {
-            Console::writeLine("Could not open directory $langDir");
-            return false;
-        }
-        return $dir;
-    }
-
-    /**
-     * Create empty files if they do not already exist.
-     *
-     * @param string $path  Directory path
-     * @param array  $files Filenames to create in directory
-     *
-     * @return void
-     */
-    protected function createMissingFiles($path, $files)
-    {
-        foreach ($files as $file) {
-            if (!file_exists($path . '/' . $file)) {
-                file_put_contents($path . '/' . $file, '');
-            }
-        }
-    }
-
-    /**
-     * Process a language directory.
-     *
-     * @param object   $dir        Directory object from dir() to process
-     * @param Callable $callback   Function to run on all .ini files in $dir
-     * @param bool     $showStatus Should we display status messages?
-     *
-     * @return void
-     */
-    protected function processDirectory($dir, $callback, $showStatus = true)
-    {
-        while ($file = $dir->read()) {
-            // Only process .ini files, and ignore native.ini special case file:
-            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
-                if ($showStatus) {
-                    Console::writeLine("Processing $file...");
-                }
-                $callback($dir->path . '/' . $file);
-            }
-        }
     }
 }

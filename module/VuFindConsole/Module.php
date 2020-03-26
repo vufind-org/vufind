@@ -101,7 +101,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
         return [
             'language addusingtemplate' => 'Build new language strings from '
                 . 'existing ones using a template',
-            'language copystring' => 'Copy one language string to another',
             'language delete' => 'Remove a language string from all files',
             'language normalize' => 'Normalize a directory of language files',
             'scheduledsearch notify' => 'Send scheduled search email notifications',
