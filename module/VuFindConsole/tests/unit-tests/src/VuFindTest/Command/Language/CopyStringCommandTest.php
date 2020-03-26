@@ -78,24 +78,26 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
+        $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
-        $normalizer->expects($this->once())->method('normalize')
-            ->with($this->equalTo('foo'));
+        $normalizer->expects($this->once())->method('normalizeFile')
+            ->with($this->equalTo($expectedPath));
         $reader = $this->getMockReader();
         $reader->expects($this->once())->method('getTextDomain')
-            ->with($this->equalTo('foo'), $this->equalTo(false))
+            ->with($this->equalTo($expectedPath), $this->equalTo(false))
             ->will($this->returnValue(['bar' => 'baz']));
         $command = $this->getMockCommand($normalizer, $reader);
         $command->expects($this->once())->method('addLineToFile')
             ->with(
-                $this->equalTo('foo'),
+                $this->equalTo($expectedPath),
                 $this->equalTo('xyzzy'),
                 $this->equalTo('baz')
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'foo::bar', 'target' => 'foo::xyzzy']);
         $this->assertEquals(
-            '', $commandTester->getDisplay()
+            "Processing en.ini...\nProcessing en.ini...\n",
+            $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -113,7 +115,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
             ['source' => 'doesnotexist::bar', 'target' => 'foo::xyzzy']
         );
         $this->assertEquals(
-            "Could not open directory {$this->languageFixtureDir}/doesnotexist",
+            "Could not open directory {$this->languageFixtureDir}/doesnotexist\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(1, $commandTester->getStatusCode());

@@ -29,9 +29,9 @@ namespace VuFindTest\Command\Import;
 
 use Laminas\Config\Config;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFindConsole\Command\Import\WebCrawlCommand;
 use VuFind\Solr\Writer;
 use VuFind\XSLT\Importer;
+use VuFindConsole\Command\Import\WebCrawlCommand;
 
 /**
  * Import/WebCrawl command test.
