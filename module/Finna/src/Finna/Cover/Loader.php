@@ -175,12 +175,13 @@ class Loader extends \VuFind\Cover\Loader
      * Loads an external image from provider and sends it to browser
      * in chunks. Used for big image files
      *
-     * @param string $url    to load
-     * @param string $format type of the image to load
+     * @param string $url      to load
+     * @param string $format   type of the image to load
+     * @param string $filename filename for the downloaded image
      *
      * @return bool
      */
-    public function loadExternalImage($url, $format)
+    public function loadExternalImage($url, $format, $filename)
     {
         $contentType = '';
         switch ($format) {
@@ -193,6 +194,7 @@ class Loader extends \VuFind\Cover\Loader
             break;
         }
         header("Content-Type: $contentType");
+        header("Content-disposition: attachment; filename=\"{$filename}\"");
         $client = $this->httpService->createClient(
             $url, \Zend\Http\Request::METHOD_GET, 300
         );
