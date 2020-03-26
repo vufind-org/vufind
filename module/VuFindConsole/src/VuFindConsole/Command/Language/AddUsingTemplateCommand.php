@@ -130,7 +130,7 @@ class AddUsingTemplateCommand extends AbstractCommand
             $in = $out = [];
             foreach ($lookups as $domain => $tokens) {
                 foreach ($tokens as $token => $details) {
-                    if (isset($details['translations'][$lang])) {
+                    if (!isset($details['translations'][$lang])) {
                         $output->writeln("Skipping; no match for token: $token");
                         return;
                     }
@@ -143,7 +143,7 @@ class AddUsingTemplateCommand extends AbstractCommand
             );
             $this->normalizer->normalizeFile($full);
         };
-        $this->processDirectory($targetDir, $targetCallback);
+        $this->processDirectory($targetDir, $targetCallback, [$output, 'writeln']);
         return 0;
     }
 }

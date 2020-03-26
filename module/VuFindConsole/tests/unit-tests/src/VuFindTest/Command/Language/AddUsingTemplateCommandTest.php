@@ -63,7 +63,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage(
             'Not enough arguments (missing: "target, template").'
         );
-        $command = new CopyStringCommand(
+        $command = new AddUsingTemplateCommand(
             $this->getMockNormalizer(),
             $this->getMockReader()
         );
@@ -95,12 +95,9 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(
-            ['template' => '|foo::bar|-|foo::bar|', 'target' => 'foo::xyzzy']
+            ['template' => '||foo::bar||-||foo::bar||', 'target' => 'foo::xyzzy']
         );
-        $this->assertEquals(
-            "Processing en.ini...\nProcessing en.ini...\n",
-            $commandTester->getDisplay()
-        );
+        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
@@ -112,13 +109,13 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
      * @param string                $languageDir Base language file directory
      * @param array                 $methods     Methods to mock
      *
-     * @return CopyStringCommand
+     * @return AddUsingTemplateCommand
      */
     protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
         ExtendedIniReader $reader = null, $languageDir = null,
         array $methods = ['addLineToFile']
     ) {
-        return $this->getMockBuilder(CopyStringCommand::class)
+        return $this->getMockBuilder(AddUsingTemplateCommand::class)
             ->setConstructorArgs(
                 [
                     $normalizer ?? $this->getMockNormalizer(),
