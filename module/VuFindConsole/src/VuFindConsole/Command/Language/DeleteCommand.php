@@ -40,14 +40,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AddUsingTemplateCommand extends AbstractCommand
+class DeleteCommand extends AbstractCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
      *
      * @var string
      */
-    protected static $defaultName = 'language/addusingtemplate';
+    protected static $defaultName = 'language/delete';
 
     /**
      * Configure the command.

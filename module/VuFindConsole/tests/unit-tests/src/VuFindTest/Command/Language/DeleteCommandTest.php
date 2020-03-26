@@ -82,7 +82,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
             ->with($this->equalTo($expectedPath));
-        $command = $this->getMockCommand($normalizer, $reader);
+        $command = $this->getMockCommand($normalizer);
         $command->expects($this->once())->method('writeFileToDisk')
             ->with(
                 $this->equalTo($expectedPath),
@@ -102,18 +102,13 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     public function testDeletingNonExistentString()
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
-        $normalizer = $this->getMockNormalizer();
-        $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
-        $command = $this->getMockCommand($normalizer, $reader);
-        $command->expects($this->once())->method('writeFileToDisk')
-            ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('foo = "bar"')
-            );
+        $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => 'foo::barzap']);
-        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
+        $this->assertEquals(
+            "Processing en.ini...\nSource key not found.\n",
+            $commandTester->getDisplay()
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
