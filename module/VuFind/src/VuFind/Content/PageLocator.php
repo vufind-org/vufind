@@ -57,11 +57,11 @@ class PageLocator
     protected $themeInfo;
 
     /**
-     * Translator
+     * Current language
      *
-     * @var \Laminas\Mvc\I18n\Translator
+     * @var string
      */
-    protected $translator;
+    protected $language;
 
     /**
      * Default language
@@ -73,14 +73,14 @@ class PageLocator
     /**
      * Page constructor.
      *
-     * @param \VuFindTheme\ThemeInfo       $themeInfo  Theme information service
-     * @param \Laminas\Mvc\I18n\Translator $translator Translator
-     * @param \Laminas\Config\Config       $config     Main configuration
+     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
+     * @param string                 $language  Current language
+     * @param \Laminas\Config\Config $config    Main configuration
      */
-    public function __construct($themeInfo, $translator, $config)
+    public function __construct($themeInfo, $language, $config)
     {
         $this->themeInfo = $themeInfo;
-        $this->translator = $translator;
+        $this->language = $language;
         $this->defaultLanguage  = $config->Site->language;
     }
 
@@ -91,18 +91,16 @@ class PageLocator
      * @param string $pageName   Template name
      *
      * @return array|null Null if template is not found or array with keys renderer
-     *                    (type of template), path (full path of template), page
-     *                    (page name)
+     * (type of template), path (full path of template), page (page name)
      */
     public function determineTemplateAndRenderer($pathPrefix, $pageName)
     {
-        $language = $this->translator->getLocale();
         // Try to find a template using
         // 1.) Current language suffix
         // 2.) Default language suffix
         // 3.) No language suffix
         $templates = [
-            "{$pageName}_$language",
+            "{$pageName}_$this->language",
             "{$pageName}_$this->defaultLanguage",
             $pageName,
         ];

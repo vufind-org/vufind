@@ -69,7 +69,8 @@ class PageLocatorFactory
             ->get('config');
         $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
         $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
+        $language = $translator->getLocale();
 
-        return new $requestedName($themeInfo, $translator, $config);
+        return new $requestedName($themeInfo, $language, $config);
     }
 }
