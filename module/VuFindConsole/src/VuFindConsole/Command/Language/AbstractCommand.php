@@ -66,11 +66,11 @@ abstract class AbstractCommand extends Command
      * @param string|null           $name        The name of the command; passing
      * null means it must be set in configure()
      */
-    public function __construct(ExtendedIniNormalizer $normalizer,
-        ExtendedIniReader $reader, $languageDir = null, $name = null
+    public function __construct(ExtendedIniNormalizer $normalizer = null,
+        ExtendedIniReader $reader = null, $languageDir = null, $name = null
     ) {
-        $this->normalizer = $normalizer;
-        $this->reader = $reader;
+        $this->normalizer = $normalizer ?? new ExtendedIniNormalizer();
+        $this->reader = $reader ?? new ExtendedIniReader();
         $this->languageDir = $languageDir
             ?? realpath(__DIR__ . '/../../../../../../languages');
         parent::__construct($name);
