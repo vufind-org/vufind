@@ -28,6 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\ModuleRouteListener;
 
 /**
  * Url view helper (extending core Laminas helper with additional functionality)
@@ -95,9 +96,21 @@ class Url extends \Laminas\View\Helper\Url
      */
     public function addQueryParameters($params, $reuseMatchedParams = true)
     {
-        $requestQuery = (null !== $this->request)
+        $requestQuery = ($this->request !== null)
             ? $this->request->getQuery()->toArray() : [];
         $options = ['query' => array_merge($requestQuery, $params)];
-        return $this->__invoke(null, [], $options, $reuseMatchedParams);
+
+        $params = [];
+
+        if ($reuseMatchedParams) {
+            $routeMatchParams = $this->routeMatch->getParams();
+
+            // Add case: VuFind Record ID escape
+            if (!isset($params['id']) && isset($routeMatchParams['id'])) {
+                $params['id'] = rawurlencode($routeMatchParams['id']);
+            }
+        }
+
+        return $this->__invoke(null, $params, $options);
     }
 }
