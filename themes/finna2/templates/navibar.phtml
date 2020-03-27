@@ -27,7 +27,7 @@
                   $desc = !empty($itemVal['desc']) ? $itemVal['desc'] : null;
                 ?>
                 <li>
-                  <a  role="menuitem" <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$this->escapeHtmlAttr($url)?>">
+                  <a role="menuitem" <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?=$this->escapeHtmlAttr($url)?>">
                     <div><?= $this->transEsc($label) ?></div>
                     <?php if ($desc): ?>
                       <div class="description" role="note"><?= $this->transEsc($desc) ?></div>
@@ -46,7 +46,7 @@
             $target = $itemUrl['target'] ?? null;
             $label = $itemVal['label'];
           ?>
-            <li><a <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $url ?>"><i class="fa fa-nav-<?=$label ?>" aria-hidden="true"></i><?= $this->transEsc($label) ?></a></li>
+            <li><a role="menuitem" <?= $target ? ' target="' . $this->escapeHtmlAttr($target) . '"' : ''?> href="<?= $url ?>"><i class="fa fa-nav-<?=$label ?>" aria-hidden="true"></i><?= $this->transEsc($label) ?></a></li>
           <?php endif; ?>
         <?php endforeach; ?>
         <?php $cart = $this->cart(); if ($cart->isActive()): ?>
@@ -56,7 +56,7 @@
         <?php endif; ?>
         <?php if ($this->feedback()->tabEnabled()): ?>
           <li>
-          <a  role="menuitem" id="feedback-link" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc("Feedback")?></a>
+          <a role="menuitem" id="feedback-link" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc("Feedback")?></a>
         </li>
         <?php endif; ?>
         <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
@@ -100,11 +100,11 @@
             <?php else: ?>
               <?php if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
                 <div>
-                  <a class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
+                  <a role="menuitem" class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
                 </div>
               <?php else: ?>
                 <div>
-                  <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
+                  <a role="menuitem" href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
                 </div>
               <?php endif; ?>
             <?php endif; ?>
@@ -113,7 +113,7 @@
       <?php endif; ?>
     <?php endif; ?>
     </div>
-    <ul <?php if ($this->auth()->isLoggedIn()): ?>role="menubar" <?php endif; ?>aria-label="<?=$this->transEsc('Your Account')?>" class="nav navbar-nav nav-absolute">
+    <ul role="menubar" class="nav navbar-nav nav-absolute">
       <?php if (is_object($account) && $account->loginEnabled()): ?>
         <?php if ($user): ?>
           <li class="logoutOptions">
@@ -169,11 +169,11 @@
           <?php else: ?>
             <?php if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
               <div>
-                <a class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
+                <a role="menuitem" class="btn btn-primary btn-uppercase"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span  class="login-text"><?=$this->transEsc("Login")?></span></a>
               </div>
             <?php else: ?>
               <div>
-                <a href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
+                <a role="menuitem" href="<?=$this->url('myresearch-userlogin')?>" class="btn btn-primary btn-uppercase" data-lightbox data-lightbox-onclose="window.location.href='<?=$this->escapeHtmlAttr($this->url('myresearch-home')) ?>'"><i class="fa fa-user fa-lg" aria-hidden="true"></i><span class="login-text"><?=$this->transEsc("Login")?></span></a>
               </div>
             <?php endif; ?>
           <?php endif; ?>
