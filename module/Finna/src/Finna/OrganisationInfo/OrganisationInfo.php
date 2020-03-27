@@ -974,9 +974,6 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
             // Staff times
             foreach ($day['times'] as $time) {
-                if (!empty($day['info'])) {
-                    $result['info'] = $day['info'];
-                }
                 $result['opens'] = $this->formatTime($time['from']);
                 $result['closes'] = $this->formatTime($time['to']);
                 $result['selfservice'] = $time['status'] === 2 ? true : false;
@@ -992,6 +989,9 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                'times' => $times,
                'day' => $weekDayName,
             ];
+            if (!empty($day['info'])) {
+                $scheduleData['info'] = $day['info'];
+            }
 
             if ($closed) {
                 $scheduleData['closed'] = $closed;
