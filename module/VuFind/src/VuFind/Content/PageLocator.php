@@ -73,15 +73,15 @@ class PageLocator
     /**
      * Page constructor.
      *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
-     * @param string                 $language  Current language
-     * @param \Laminas\Config\Config $config    Main configuration
+     * @param \VuFindTheme\ThemeInfo $themeInfo       Theme information service
+     * @param string                 $language        Current language
+     * @param string                 $defaultLanguage Main configuration
      */
-    public function __construct($themeInfo, $language, $config)
+    public function __construct($themeInfo, $language, $defaultLanguage)
     {
         $this->themeInfo = $themeInfo;
         $this->language = $language;
-        $this->defaultLanguage  = $config->Site->language;
+        $this->defaultLanguage  = $defaultLanguage;
     }
 
     /**

@@ -67,10 +67,11 @@ class PageLocatorFactory
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
+        $defaultLanguage = $config->Site->language;
         $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
         $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
         $language = $translator->getLocale();
 
-        return new $requestedName($themeInfo, $language, $config);
+        return new $requestedName($themeInfo, $language, $defaultLanguage);
     }
 }
