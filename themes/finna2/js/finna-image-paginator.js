@@ -635,7 +635,13 @@ finna.imagePaginator = (function imagePaginator() {
 
     if (!_.isList) {
       $('.image-details-container').addClass('hidden');
-      $('.image-details-container[data-img-index="' + imagePopup.attr('index') + '"]').removeClass('hidden');
+      var details = $('.image-details-container[data-img-index="' + imagePopup.attr('index') + '"]');
+      details.removeClass('hidden');
+      var license = details.find('.truncate-field');
+      if (license.length && !license.hasClass('truncated')) {
+        license.removeClass('truncate-done');
+        finna.layout.initTruncate(details);
+      }
     }
     _.imageDetail.html(imagePopup.data('description'));
 
