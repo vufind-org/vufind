@@ -154,9 +154,10 @@ abstract class AbstractCommand extends Command
     /**
      * Process a language directory.
      *
-     * @param object   $dir        Directory object from dir() to process
-     * @param Callable $callback   Function to run on all .ini files in $dir
-     * @param bool     $showStatus Should we display status messages?
+     * @param object   $dir            Directory object from dir() to process
+     * @param Callable $callback       Function to run on all .ini files in $dir
+     * @param bool     $statusCallback Callback function to display status messages
+     * (omit to suppress messages)
      *
      * @return void
      */

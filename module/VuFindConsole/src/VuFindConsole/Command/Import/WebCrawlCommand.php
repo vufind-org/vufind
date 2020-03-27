@@ -80,7 +80,7 @@ class WebCrawlCommand extends Command
      * @param Importer    $importer XSLT importer
      * @param Writer      $solr     Solr writer
      * @param Config      $config   Configuration from webcrawl.ini
-     * @param string|null $name  The name of the command; passing null means it
+     * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
     public function __construct(Importer $importer, Writer $solr, Config $config,

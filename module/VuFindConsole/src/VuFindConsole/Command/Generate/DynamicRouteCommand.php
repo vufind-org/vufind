@@ -101,7 +101,8 @@ class DynamicRouteCommand extends AbstractRouteCommand
 
         // Append the route
         $config = include $configPath;
-        $this->routeGenerator->addDynamicRoute($config, $route, $controller, $action);
+        $this->routeGenerator
+            ->addDynamicRoute($config, $route, $controller, $action);
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);

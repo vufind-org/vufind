@@ -62,8 +62,8 @@ class ImportXslCommand extends Command
     /**
      * Constructor
      *
-     * @param Importer       $importer XSLT importer
-     * @param string|null    $name     The name of the command; passing null means it
+     * @param Importer    $importer XSLT importer
+     * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
     public function __construct(Importer $importer, $name = null)
@@ -97,8 +97,8 @@ class ImportXslCommand extends Command
                 'test-only',
                 null,
                 InputOption::VALUE_NONE,
-                'activates test mode, which displays transformed XML without updating'
-                . ' Solr'
+                'activates test mode, which displays transformed XML without '
+                . 'updating Solr'
             )->addOption(
                 'index',
                 null,
