@@ -28,7 +28,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\Mvc\ModuleRouteListener;
 
 /**
  * Url view helper (extending core Laminas helper with additional functionality)
