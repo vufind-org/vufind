@@ -64,9 +64,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'language/copystring' => Language\CopyStringCommand::class,
         'language/delete' => Language\DeleteCommand::class,
         'language/normalize' => Language\NormalizeCommand::class,
+        'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'scheduledsearch/notify' => 'scheduledsearch notify',
         'util/cleanup_record_cache' =>
             'util (cleanuprecordcache|cleanup_record_cache) [--help|-h]',
         'util/commit' => 'util commit [<core>]',
@@ -131,6 +131,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Language\CopyStringCommand::class => Language\AbstractCommandFactory::class,
         Language\DeleteCommand::class => Language\AbstractCommandFactory::class,
         Language\NormalizeCommand::class => Language\AbstractCommandFactory::class,
+        ScheduledSearch\NotifyCommand::class =>
+            ScheduledSearch\NotifyCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
     ];
 

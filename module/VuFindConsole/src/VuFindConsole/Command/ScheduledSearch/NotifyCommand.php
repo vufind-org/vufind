@@ -1,10 +1,10 @@
 <?php
 /**
- * CLI Controller Module (scheduled search tools)
+ * Console command: notify users of scheduled searches.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,34 +20,54 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFindConsole\Controller;
+namespace VuFindConsole\Command\ScheduledSearch;
 
-use Laminas\Console\Console;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\View\Renderer\PhpRenderer;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Crypt\HMAC;
+use VuFind\Db\Table\Search as SearchTable;
+use VuFind\Db\Table\User as UserTable;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\Mailer\Mailer;
+use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
- * CLI Controller Module (scheduled search tools)
+ * Console command: notify users of scheduled searches.
  *
  * @category VuFind
- * @package  Controller
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class ScheduledSearchController extends AbstractBase
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class NotifyCommand extends Command implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
+
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'scheduledsearch/notify';
+
+    /**
+     * Output interface
+     *
+     * @var OutputInterface
+     */
+    protected $output = null;
 
     /**
      * Useful date format value
@@ -59,14 +79,14 @@ class ScheduledSearchController extends AbstractBase
     /**
      * HMAC generator
      *
-     * @var \VuFind\Crypt\HMAC
+     * @var HMAC
      */
     protected $hmac;
 
     /**
      * View renderer
      *
-     * @var \Laminas\View\Renderer\PhpRenderer
+     * @var PhpRenderer
      */
     protected $renderer;
 
@@ -80,7 +100,7 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Search results plugin manager
      *
-     * @var \VuFind\Search\Results\PluginManager
+     * @var ResultsManager
      */
     protected $resultsManager;
 
@@ -94,7 +114,7 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Top-level VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var Config
      */
     protected $mainConfig;
 
@@ -108,42 +128,62 @@ class ScheduledSearchController extends AbstractBase
     /**
      * Mail service
      *
-     * @var \VuFind\Mailer\Mailer
+     * @var Mailer
      */
     protected $mailer;
 
     /**
+     * Search table
+     *
+     * @var SearchTable
+     */
+    protected $searchTable;
+
+    /**
+     * User table
+     *
+     * @var UserTable
+     */
+    protected $userTable;
+
+    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param HMAC           $hmac            HMAC generator
+     * @param PhpRenderer    $renderer        View renderer
+     * @param ResultsManager $resultsManager  Search results plugin manager
+     * @param array          $scheduleOptions Configured schedule options
+     * @param Config         $mainConfig      Top-level VuFind configuration
+     * @param Mailer         $mailer          Mail service
+     * @param SearchTable    $searchTable     Search table
+     * @param UserTable      $userTable       User table
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        parent::__construct($sm);
-
-        $this->hmac = $sm->get(\VuFind\Crypt\HMAC::class);
-        $this->renderer = $sm->get('ViewRenderer');
-        $this->urlHelper = $this->renderer->plugin('url');
-        $this->resultsManager = $sm->get(
-            \VuFind\Search\Results\PluginManager::class
-        );
-        $this->scheduleOptions = $sm
-            ->get(\VuFind\Search\History::class)
-            ->getScheduleOptions();
-        $this->mainConfig = $sm->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $this->mailer = $sm->get(\VuFind\Mailer\Mailer::class);
+    public function __construct(HMAC $hmac, PhpRenderer $renderer,
+        ResultsManager $resultsManager, array $scheduleOptions, Config $mainConfig,
+        Mailer $mailer, SearchTable $searchTable, UserTable $userTable, $name = null
+    ) {
+        $this->hmac = $hmac;
+        $this->renderer = $renderer;
+        $this->urlHelper = $renderer->plugin('url');
+        $this->resultsManager = $resultsManager;
+        $this->scheduleOptions = $scheduleOptions;
+        $this->mainConfig = $mainConfig;
+        $this->mailer = $mailer;
+        $this->searchTable = $searchTable;
+        $this->userTable = $userTable;
+        parent::__construct($name);
     }
 
     /**
-     * Send notifications.
+     * Configure the command.
      *
-     * @return \Laminas\Console\Response
+     * @return void
      */
-    public function notifyAction()
+    protected function configure()
     {
-        $this->processViewAlerts();
-        return $this->getSuccessResponse();
+        $this
+            ->setDescription('Scheduled Search Notifier')
+            ->setHelp('Sends scheduled search email notifications.');
     }
 
     /**
@@ -155,7 +195,9 @@ class ScheduledSearchController extends AbstractBase
      */
     protected function msg($msg)
     {
-        Console::writeLine($msg);
+        if (null !== $this->output) {
+            $this->output->writeln($msg);
+        }
     }
 
     /**
@@ -167,7 +209,7 @@ class ScheduledSearchController extends AbstractBase
      */
     protected function warn($msg)
     {
-        Console::writeLine('WARNING: ' . $msg);
+        $this->msg('WARNING: ' . $msg);
     }
 
     /**
@@ -179,7 +221,22 @@ class ScheduledSearchController extends AbstractBase
      */
     protected function err($msg)
     {
-        Console::writeLine('ERROR: ' . $msg);
+        $this->msg('ERROR: ' . $msg);
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->output = $output;
+        $this->processViewAlerts();
+        return 0;
     }
 
     /**
@@ -226,7 +283,7 @@ class ScheduledSearchController extends AbstractBase
         static $user = false;
 
         if ($user === false || $s->user_id != $user->id) {
-            if (!$user = $this->getTable('user')->getById($s->user_id)) {
+            if (!$user = $this->userTable->getById($s->user_id)) {
                 $this->warn(
                     'Search ' . $s->id . ': user ' . $s->user_id
                     . ' does not exist '
@@ -436,7 +493,7 @@ class ScheduledSearchController extends AbstractBase
     protected function processViewAlerts()
     {
         $todayTime = new \DateTime();
-        $scheduled = $this->getTable('search')->getScheduledSearches();
+        $scheduled = $this->searchTable->getScheduledSearches();
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
@@ -459,7 +516,7 @@ class ScheduledSearchController extends AbstractBase
             }
             $searchTime = date('Y-m-d H:i:s');
             if ($s->setLastExecuted($searchTime) === 0) {
-                $this->err("Error updating last_executed date for search $searchId");
+                $this->err("Error updating last_executed date for search {$s->id}");
             }
         }
         $this->msg('Done processing searches');
