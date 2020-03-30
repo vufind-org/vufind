@@ -42,12 +42,15 @@ use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test that linting a file yields useful messages.
+     * Test behavior when no notifications are waiting to be sent.
      *
      * @return void
      */
-    public function testLintingFile()
+    public function testNoNotifications()
     {
+        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
+        $searchTable->expects($this->once())->method('getScheduledSearches')
+            ->will($this->returnValue([]));
         $command = new NotifyCommand(
             $this->prepareMock(\VuFind\Crypt\HMAC::class),
             $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
@@ -55,12 +58,12 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             [],
             new \Laminas\Config\Config([]),
             $this->prepareMock(\VuFind\Mailer\Mailer::class),
-            $this->prepareMock(\VuFind\Db\Table\Search::class),
+            $searchTable,
             $this->prepareMock(\VuFind\Db\Table\User::class)
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $expected = '';
+        $expected = "Processing 0 searches\nDone processing searches\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
