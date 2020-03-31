@@ -69,6 +69,127 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test behavior when notifications are waiting to be sent but there is no
+     * matching frequency configuration.
+     *
+     * @return void
+     */
+    public function testNotificationWithIllegalFrequency()
+    {
+        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
+        $searchTable->expects($this->once())->method('getScheduledSearches')
+            ->will($this->returnValue($this->getMockNotifications()));
+        $command = new NotifyCommand(
+            $this->prepareMock(\VuFind\Crypt\HMAC::class),
+            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
+            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
+            [1 => 'Daily'],
+            new \Laminas\Config\Config([]),
+            $this->prepareMock(\VuFind\Mailer\Mailer::class),
+            $searchTable,
+            $this->prepareMock(\VuFind\Db\Table\User::class)
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "ERROR: Search 1: unknown schedule: 7\nDone processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test behavior when notifications have already been sent recently.
+     *
+     * @return void
+     */
+    public function testNotificationWithRecentExecution()
+    {
+        $lastDate = date('Y-m-d h:i:s');
+        $overrides = [
+            'last_notification_sent' => $lastDate,
+        ];
+        $lastDate = str_replace(' ', 'T', $lastDate) . 'Z';
+        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
+        $searchTable->expects($this->once())->method('getScheduledSearches')
+            ->will($this->returnValue($this->getMockNotifications($overrides)));
+        $command = new NotifyCommand(
+            $this->prepareMock(\VuFind\Crypt\HMAC::class),
+            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
+            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
+            [1 => 'Daily', 7 => 'Weekly'],
+            new \Laminas\Config\Config([]),
+            $this->prepareMock(\VuFind\Mailer\Mailer::class),
+            $searchTable,
+            $this->prepareMock(\VuFind\Db\Table\User::class)
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "  Bypassing search 1: previous execution too recent (Weekly, $lastDate)\n"
+            . "Done processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test behavior when notifications are waiting to be sent but user does not
+     * exist.
+     *
+     * @return void
+     */
+    public function testNotifications()
+    {
+        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
+        $searchTable->expects($this->once())->method('getScheduledSearches')
+            ->will($this->returnValue($this->getMockNotifications()));
+        $command = new NotifyCommand(
+            $this->prepareMock(\VuFind\Crypt\HMAC::class),
+            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
+            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
+            [1 => 'Daily', 7 => 'Weekly'],
+            new \Laminas\Config\Config([]),
+            $this->prepareMock(\VuFind\Mailer\Mailer::class),
+            $searchTable,
+            $this->prepareMock(\VuFind\Db\Table\User::class)
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "WARNING: Search 1: user 2 does not exist \n"
+            . "Done processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Create a list of fake notification objects.
+     *
+     * @param array $overrides Fields to override in the notification row.
+     *
+     * @return array
+     */
+    protected function getMockNotifications($overrides = [])
+    {
+        $defaults = [
+            'id' => 1,
+            'user_id' => 2,
+            'session_id' => null,
+            'folder_id' => null,
+            'created' => '2000-01-01 00:00:00',
+            'title' => null,
+            'saved' => 1,
+            'search_object' => 'foo',
+            'checksum' => null,
+            'notification_frequency' => 7,
+            'last_notification_sent' => '2000-01-01 00:00:00',
+            'notification_base_url' => 'http://foo',
+        ];
+        $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
+        $row1 = new \VuFind\Db\Row\Search($adapter);
+        $row1->populate($overrides + $defaults, true);
+        return [$row1];
+    }
+    /**
      * Prepare a mock object
      *
      * @param string $class Class to mock
