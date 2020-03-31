@@ -1411,7 +1411,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
                 foreach ($sendMethods as $method) {
                     $type = isset($method->sendMethod->value)
-                        ? $this->mapCodeToStatus($method->sendMethod->value)
+                        ? $this->mapOldCodeToStatus($method->sendMethod->value)
                         : 'none';
                     if (!isset($services[$serviceType]['sendMethods'][$type])) {
                         continue;
