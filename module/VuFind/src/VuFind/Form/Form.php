@@ -366,7 +366,8 @@ class Form extends \Laminas\Form\Form implements
     {
         return [
             'recipient', 'title', 'help', 'submit', 'response', 'useCaptcha',
-            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
+            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired',
+            'reportReferrer'
         ];
     }
 
@@ -542,6 +543,16 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
+     * Check if the form should report referrer url
+     *
+     * @return bool
+     */
+    public function reportReferrer()
+    {
+        return (bool)($this->formConfig['reportReferrer'] ?? false);
+    }
+
+    /**
      * Check if form is available only for logged users.
      *
      * @return bool
@@ -678,6 +689,13 @@ class Form extends \Laminas\Form\Form implements
 
             $label = isset($el['label']) ? $this->translate($el['label']) : null;
             $params[] = ['type' => $type, 'value' => $value, 'label' => $label];
+        }
+        if ($this->reportReferrer()) {
+            $params[] = [
+                'type' => 'referrer',
+                'value' => $requestParams['referrer'],
+                'label' => $this->translate('Referrer'),
+            ];
         }
 
         return [$params, 'Email/form.phtml'];

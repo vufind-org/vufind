@@ -33,6 +33,10 @@
   </div>
   <?php endif ?>
 
+  <?php if(isset($this->referrer)): ?>
+    <input type="hidden" name="referrer" id="referrer" value="<?=$this->referrer?>">
+  <?php endif; ?>
+
   <?php $currentGroup = null; ?>
   <?php foreach($form->getElements() as $el): ?>
     <?php
@@ -103,5 +107,6 @@
     <?php endif ?>
     </div>
   <?php endforeach ?>
+
   <?= $this->form()->closeTag() ?>
 <?php if (!$this->inLightbox): ?></div><?php endif; ?>

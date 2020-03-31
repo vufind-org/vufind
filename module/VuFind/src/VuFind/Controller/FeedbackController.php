@@ -74,6 +74,11 @@ class FeedbackController extends AbstractBase
 
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
+            if ($form->reportReferrer()
+                && $refererHeader = $this->getRequest()->getHeader('Referer')
+            ) {
+                $view->referrer = $refererHeader->getFieldValue();
+            }
             return $view;
         }
 
