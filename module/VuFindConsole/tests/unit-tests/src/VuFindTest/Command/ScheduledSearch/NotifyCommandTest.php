@@ -51,15 +51,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
         $searchTable->expects($this->once())->method('getScheduledSearches')
             ->will($this->returnValue([]));
-        $command = new NotifyCommand(
-            $this->prepareMock(\VuFind\Crypt\HMAC::class),
-            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
-            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
-            [],
-            new \Laminas\Config\Config([]),
-            $this->prepareMock(\VuFind\Mailer\Mailer::class),
-            $searchTable,
-            $this->prepareMock(\VuFind\Db\Table\User::class)
+        $command = $this->getCommand(
+            [
+                'searchTable' => $searchTable,
+                'scheduleOptions' => []
+            ]
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -76,18 +72,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotificationWithIllegalFrequency()
     {
-        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
-        $searchTable->expects($this->once())->method('getScheduledSearches')
-            ->will($this->returnValue($this->getMockNotifications()));
-        $command = new NotifyCommand(
-            $this->prepareMock(\VuFind\Crypt\HMAC::class),
-            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
-            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
-            [1 => 'Daily'],
-            new \Laminas\Config\Config([]),
-            $this->prepareMock(\VuFind\Mailer\Mailer::class),
-            $searchTable,
-            $this->prepareMock(\VuFind\Db\Table\User::class)
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable(),
+                'scheduleOptions' => [1 => 'Daily']
+            ]
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -109,18 +98,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'last_notification_sent' => $lastDate,
         ];
         $lastDate = str_replace(' ', 'T', $lastDate) . 'Z';
-        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
-        $searchTable->expects($this->once())->method('getScheduledSearches')
-            ->will($this->returnValue($this->getMockNotifications($overrides)));
-        $command = new NotifyCommand(
-            $this->prepareMock(\VuFind\Crypt\HMAC::class),
-            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
-            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
-            [1 => 'Daily', 7 => 'Weekly'],
-            new \Laminas\Config\Config([]),
-            $this->prepareMock(\VuFind\Mailer\Mailer::class),
-            $searchTable,
-            $this->prepareMock(\VuFind\Db\Table\User::class)
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable($overrides),
+            ]
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -137,20 +118,12 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNotifications()
+    public function testNotificationsWithMissingUser()
     {
-        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
-        $searchTable->expects($this->once())->method('getScheduledSearches')
-            ->will($this->returnValue($this->getMockNotifications()));
-        $command = new NotifyCommand(
-            $this->prepareMock(\VuFind\Crypt\HMAC::class),
-            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
-            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
-            [1 => 'Daily', 7 => 'Weekly'],
-            new \Laminas\Config\Config([]),
-            $this->prepareMock(\VuFind\Mailer\Mailer::class),
-            $searchTable,
-            $this->prepareMock(\VuFind\Db\Table\User::class)
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable(),
+            ]
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -189,6 +162,43 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $row1->populate($overrides + $defaults, true);
         return [$row1];
     }
+
+    /**
+     * Get a notify command for testing.
+     *
+     * @param array $options Options to override
+     *
+     * @return NotifyCommand
+     */
+    protected function getCommand($options = [])
+    {
+        return new NotifyCommand(
+            $this->prepareMock(\VuFind\Crypt\HMAC::class),
+            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
+            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
+            $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
+            new \Laminas\Config\Config([]),
+            $this->prepareMock(\VuFind\Mailer\Mailer::class),
+            $options['searchTable'] ?? $this->prepareMock(\VuFind\Db\Table\Search::class),
+            $this->prepareMock(\VuFind\Db\Table\User::class)
+        );
+    }
+
+    /**
+     * Create a mock search table that returns a list of fake notification objects.
+     *
+     * @param array $overrides Fields to override in the notification row.
+     *
+     * @return array
+     */
+    protected function getMockSearchTable($overrides = [])
+    {
+        $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
+        $searchTable->expects($this->once())->method('getScheduledSearches')
+            ->will($this->returnValue($this->getMockNotifications($overrides)));
+        return $searchTable;
+    }
+
     /**
      * Prepare a mock object
      *
