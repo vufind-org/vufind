@@ -284,6 +284,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
 
         if ($user === false || $s->user_id != $user->id) {
             if (!$user = $this->userTable->getById($s->user_id)) {
+                $user = false;  // make sure static variable is cleared
                 $this->warn(
                     'Search ' . $s->id . ': user ' . $s->user_id
                     . ' does not exist '

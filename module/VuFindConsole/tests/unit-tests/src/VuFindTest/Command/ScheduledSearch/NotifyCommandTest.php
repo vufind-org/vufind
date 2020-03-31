@@ -135,6 +135,28 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test behavior when notifications are waiting to be sent.
+     *
+     * @return void
+     */
+    public function testNotifications()
+    {
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable(),
+                'userTable' => $this->getMockUserTable(),
+            ]
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "WARNING: Search 1: user 2 does not exist \n"
+            . "Done processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
      * Create a list of fake notification objects.
      *
      * @param array $overrides Fields to override in the notification row.
@@ -151,7 +173,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'created' => '2000-01-01 00:00:00',
             'title' => null,
             'saved' => 1,
-            'search_object' => 'foo',
+            'search_object' => serialize($this->getMockSearch()),
             'checksum' => null,
             'notification_frequency' => 7,
             'last_notification_sent' => '2000-01-01 00:00:00',
@@ -161,6 +183,34 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $row1 = new \VuFind\Db\Row\Search($adapter);
         $row1->populate($overrides + $defaults, true);
         return [$row1];
+    }
+
+    /**
+     * Get a minified search object
+     *
+     * @return \VuFind\Search\Minified
+     */
+    protected function getMockSearch()
+    {
+        return $this->prepareMock(\VuFind\Search\Minified::class);
+    }
+
+    /**
+     * Get a mock row representing a user.
+     *
+     * @return \VuFind\Db\Row\Search
+     */
+    protected function getMockUserObject()
+    {
+        $data = [
+            'id' => 2,
+            'username' => 'foo',
+            'email' => 'fake@myuniversity.edu',
+        ];
+        $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
+        $user = new \VuFind\Db\Row\Search($adapter);
+        $user->populate($data, true);
+        return $user;
     }
 
     /**
@@ -180,7 +230,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             new \Laminas\Config\Config([]),
             $this->prepareMock(\VuFind\Mailer\Mailer::class),
             $options['searchTable'] ?? $this->prepareMock(\VuFind\Db\Table\Search::class),
-            $this->prepareMock(\VuFind\Db\Table\User::class)
+            $options['userTable'] ?? $this->prepareMock(\VuFind\Db\Table\User::class)
         );
     }
 
@@ -197,6 +247,20 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $searchTable->expects($this->once())->method('getScheduledSearches')
             ->will($this->returnValue($this->getMockNotifications($overrides)));
         return $searchTable;
+    }
+
+    /**
+     * Create a mock user table that returns a fake user object.
+     *
+     * @return array
+     */
+    protected function getMockUserTable()
+    {
+        $user = $this->getMockUserObject();
+        $userTable = $this->prepareMock(\VuFind\Db\Table\User::class);
+        $userTable->expects($this->any())->method('getById')
+            ->with($this->equalTo(2))->will($this->returnValue($user));
+        return $userTable;
     }
 
     /**
