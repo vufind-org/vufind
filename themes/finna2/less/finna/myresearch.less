@@ -181,7 +181,52 @@
     box-shadow: none;
   }
 }
+.markdown-preview, .public-list-embed .public-list-desc, .list-description, .public-list-desc {
+  details {
+    margin-bottom: 10.5px;
+    &.favorite-list-details {
+        outline: 1px solid #d1d1d1;
+        background: white;
+        padding-left: 5px;
+        p {
+          padding-left: 5px;
+        }
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
 
+      summary:before {
+        content: ' ';
+        border: solid @gray;
+        border-width: 0 2px 2px 0;
+        display: inline-block;
+        padding: 0 5px 5px 0;
+        transform: rotate(45deg);
+        margin-right: 10px;
+        margin-bottom: 3px;
+      }
+      summary {
+        display: block;
+        margin-left: 0px;
+        margin-right: 0px;
+        outline: 1px solid #d1d1d1;
+        background: #fafafa;
+        padding: 10px;
+        margin-left: -5px;
+      }
+    }
+    details[open] {
+      padding-bottom: 5px;
+      & summary::before {
+        transform: rotate(-135deg);
+        margin-bottom: 0px;
+      }
+      & summary {
+        margin-bottom: 10px;
+      }
+    }
+}
 // Custom styles for user account functions
 .template-dir-myresearch, .template-dir-search.template-name-history, .template-dir-librarycards {
   padding-bottom: 30px;
