@@ -55,7 +55,12 @@ class FeedbackController extends AbstractBase
         $user = $this->getUser();
 
         $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
-        $form->setFormId($formId);
+        $params = [];
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')
+        ) {
+            $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        $form->setFormId($formId, $params);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
@@ -74,11 +79,6 @@ class FeedbackController extends AbstractBase
 
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
-            if ($form->reportReferrer()
-                && $refererHeader = $this->getRequest()->getHeader('Referer')
-            ) {
-                $view->referrer = $refererHeader->getFieldValue();
-            }
             return $view;
         }
 
