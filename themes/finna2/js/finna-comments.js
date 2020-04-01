@@ -150,7 +150,7 @@ finna.comments = (function finnaComments() {
     registerAjaxCommentRecord = function registerAjaxCommentRecord() { // eslint-disable-line no-global-assign
       initCommentForm(_registerAjaxCommentRecord, allowRating);
     };
-
+    registerAjaxCommentRecord();
     // Override global method
     deleteRecordComment = function deleteRecordComment(element, recordId, recordSource, commentId) { // eslint-disable-line no-global-assign
       var url = VuFind.path + '/AJAX/JSON?'
