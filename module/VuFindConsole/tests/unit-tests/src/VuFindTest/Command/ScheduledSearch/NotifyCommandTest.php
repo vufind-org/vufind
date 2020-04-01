@@ -74,7 +74,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchTable(),
+                'searchTable' => $this->getMockSearchTable(
+                    [
+                        'search_object' => null,
+                    ]
+                ),
                 'scheduleOptions' => [1 => 'Daily']
             ]
         );
@@ -96,6 +100,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $lastDate = date('Y-m-d h:i:s');
         $overrides = [
             'last_notification_sent' => $lastDate,
+            'search_object' => null,
         ];
         $lastDate = str_replace(' ', 'T', $lastDate) . 'Z';
         $command = $this->getCommand(
@@ -122,7 +127,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchTable(),
+                'searchTable' => $this->getMockSearchTable(
+                    [
+                        'search_object' => null,
+                    ]
+                ),
             ]
         );
         $commandTester = new CommandTester($command);
@@ -135,22 +144,31 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test behavior when notifications are waiting to be sent.
+     * Test behavior when notifications are waiting to be sent but an illegal backend
+     * is involved.
      *
      * @return void
      */
-    public function testNotifications()
+    public function testNotificationsWithUnsupportedBackend()
     {
+        $resultsCallback = function ($results) {
+            $results->expects($this->any())->method('getBackendId')
+                ->will($this->returnValue('unsupported'));
+            $results->expects($this->any())->method('getSearchId')
+                ->will($this->returnValue(1));
+        };
         $command = $this->getCommand(
             [
-                'searchTable' => $this->getMockSearchTable(),
+                'searchTable' => $this->getMockSearchTable(
+                    [], null, $resultsCallback
+                ),
                 'userTable' => $this->getMockUserTable(),
             ]
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "Processing 1 searches\n"
-            . "WARNING: Search 1: user 2 does not exist \n"
+            . "ERROR: Unsupported search backend unsupported for search 1\n"
             . "Done processing searches\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -159,11 +177,13 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a list of fake notification objects.
      *
-     * @param array $overrides Fields to override in the notification row.
+     * @param array     $overrides       Fields to override in the notification row.
+     * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
-    protected function getMockNotifications($overrides = [])
+    protected function getMockNotifications($overrides = [], $optionsCallback = null, $resultsCallback = null)
     {
         $defaults = [
             'id' => 1,
@@ -173,12 +193,19 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'created' => '2000-01-01 00:00:00',
             'title' => null,
             'saved' => 1,
-            'search_object' => serialize($this->getMockSearch()),
             'checksum' => null,
             'notification_frequency' => 7,
             'last_notification_sent' => '2000-01-01 00:00:00',
             'notification_base_url' => 'http://foo',
         ];
+        // Don't create the mock search (and thus set up assertions) unless
+        // we actually need to. We use array_key_exists() instead of isset()
+        // because the key may be explicitly set to a value of null.
+        if (!array_key_exists('search_object', $overrides)) {
+            $defaults['search_object'] = serialize(
+                $this->getMockSearch($optionsCallback, $resultsCallback)
+            );
+        }
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $row1 = new \VuFind\Db\Row\Search($adapter);
         $row1->populate($overrides + $defaults, true);
@@ -186,13 +213,47 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get mock search results.
+     *
+     * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $resultsCallback Callback to set expectations on results object
+     *
+     * @return \VuFind\Search\Solr\Results
+     */
+    protected function getMockSearchResults($optionsCallback = null, $resultsCallback = null)
+    {
+        $options = $this->prepareMock(\VuFind\Search\Solr\Options::class);
+        if ($optionsCallback) {
+            $optionsCallback($options);
+        }
+        $results = $this->prepareMock(\VuFind\Search\Solr\Results::class);
+        $results->expects($this->any())->method('getOptions')
+            ->will($this->returnValue($options));
+        if ($resultsCallback) {
+            $resultsCallback($results);
+        }
+        return $results;
+    }
+
+    /**
      * Get a minified search object
+     *
+     * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Minified
      */
-    protected function getMockSearch()
+    protected function getMockSearch($optionsCallback = null, $resultsCallback = null)
     {
-        return $this->prepareMock(\VuFind\Search\Minified::class);
+        $search = $this->prepareMock(\VuFind\Search\Minified::class);
+        $search->expects($this->any())->method('deminify')
+            ->with($this->equalTo($this->getMockResultsManager()))
+            ->will(
+                $this->returnValue(
+                    $this->getMockSearchResults($optionsCallback, $resultsCallback)
+                )
+            );
+        return $search;
     }
 
     /**
@@ -225,7 +286,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         return new NotifyCommand(
             $this->prepareMock(\VuFind\Crypt\HMAC::class),
             $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
-            $this->prepareMock(\VuFind\Search\Results\PluginManager::class),
+            $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
             new \Laminas\Config\Config([]),
             $this->prepareMock(\VuFind\Mailer\Mailer::class),
@@ -235,17 +296,35 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Create a mock results manager.
+     *
+     * @return \VuFind\Search\Results\PluginManager
+     */
+    protected function getMockResultsManager()
+    {
+        // Use a static variable to ensure we only create a single shared instance
+        // of the results manager.
+        static $manager = false;
+        if (!$manager) {
+            $manager = $this
+                ->prepareMock(\VuFind\Search\Results\PluginManager::class);
+        }
+        return $manager;
+    }
+    /**
      * Create a mock search table that returns a list of fake notification objects.
      *
-     * @param array $overrides Fields to override in the notification row.
+     * @param array     $overrides       Fields to override in the notification row.
+     * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
-    protected function getMockSearchTable($overrides = [])
+    protected function getMockSearchTable($overrides = [], $optionsCallback = null, $resultsCallback = null)
     {
         $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
         $searchTable->expects($this->once())->method('getScheduledSearches')
-            ->will($this->returnValue($this->getMockNotifications($overrides)));
+            ->will($this->returnValue($this->getMockNotifications($overrides, $optionsCallback, $resultsCallback)));
         return $searchTable;
     }
 
