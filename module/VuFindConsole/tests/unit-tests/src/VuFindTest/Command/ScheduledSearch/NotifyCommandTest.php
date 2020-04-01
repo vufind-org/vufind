@@ -160,7 +160,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'searchTable' => $this->getMockSearchTable(
-                    [], null, $resultsCallback
+                    [], null, null, $resultsCallback
                 ),
                 'userTable' => $this->getMockUserTable(),
             ]
@@ -175,16 +175,51 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test behavior when notifications are waiting to be sent but no new search
+     * results exist.
+     *
+     * @return void
+     */
+    public function testNotificationsWithNoSearchChanges()
+    {
+        $optionsCallback = function ($options) {
+            $options->expects($this->any())->method('supportsScheduledSearch')
+                ->will($this->returnValue(true));
+        };
+        $resultsCallback = function ($results) {
+            $results->expects($this->any())->method('getSearchId')
+                ->will($this->returnValue(1));
+        };
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable(
+                    [], $optionsCallback, null, $resultsCallback
+                ),
+                'userTable' => $this->getMockUserTable(),
+            ]
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "  No results found for search 1\n"
+            . "Done processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
      * Create a list of fake notification objects.
      *
      * @param array     $overrides       Fields to override in the notification row.
      * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $paramsCallback  Callback to set expectations on params object
      * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
-    protected function getMockNotifications($overrides = [], $optionsCallback = null, $resultsCallback = null)
-    {
+    protected function getMockNotifications($overrides = [], $optionsCallback = null,
+        $paramsCallback = null, $resultsCallback = null
+    ) {
         $defaults = [
             'id' => 1,
             'user_id' => 2,
@@ -203,7 +238,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         // because the key may be explicitly set to a value of null.
         if (!array_key_exists('search_object', $overrides)) {
             $defaults['search_object'] = serialize(
-                $this->getMockSearch($optionsCallback, $resultsCallback)
+                $this->getMockSearch(
+                    $optionsCallback, $paramsCallback, $resultsCallback
+                )
             );
         }
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
@@ -216,19 +253,27 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      * Get mock search results.
      *
      * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $paramsCallback  Callback to set expectations on params object
      * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getMockSearchResults($optionsCallback = null, $resultsCallback = null)
-    {
+    protected function getMockSearchResults($optionsCallback = null,
+        $paramsCallback = null, $resultsCallback = null
+    ) {
         $options = $this->prepareMock(\VuFind\Search\Solr\Options::class);
         if ($optionsCallback) {
             $optionsCallback($options);
         }
+        $params = $this->prepareMock(\VuFind\Search\Solr\Params::class);
+        if ($paramsCallback) {
+            $paramsCallback($params);
+        }
         $results = $this->prepareMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->any())->method('getOptions')
             ->will($this->returnValue($options));
+        $results->expects($this->any())->method('getParams')
+            ->will($this->returnValue($params));
         if ($resultsCallback) {
             $resultsCallback($results);
         }
@@ -239,18 +284,22 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      * Get a minified search object
      *
      * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $paramsCallback  Callback to set expectations on params object
      * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Minified
      */
-    protected function getMockSearch($optionsCallback = null, $resultsCallback = null)
-    {
+    protected function getMockSearch($optionsCallback = null, $paramsCallback = null,
+        $resultsCallback = null
+    ) {
         $search = $this->prepareMock(\VuFind\Search\Minified::class);
         $search->expects($this->any())->method('deminify')
             ->with($this->equalTo($this->getMockResultsManager()))
             ->will(
                 $this->returnValue(
-                    $this->getMockSearchResults($optionsCallback, $resultsCallback)
+                    $this->getMockSearchResults(
+                        $optionsCallback, $paramsCallback, $resultsCallback
+                    )
                 )
             );
         return $search;
@@ -316,15 +365,24 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array     $overrides       Fields to override in the notification row.
      * @param \Callable $optionsCallback Callback to set expectations on options object
+     * @param \Callable $paramsCallback  Callback to set expectations on params object
      * @param \Callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
-    protected function getMockSearchTable($overrides = [], $optionsCallback = null, $resultsCallback = null)
+    protected function getMockSearchTable($overrides = [], $optionsCallback = null,
+        $paramsCallback = null, $resultsCallback = null)
     {
         $searchTable = $this->prepareMock(\VuFind\Db\Table\Search::class);
         $searchTable->expects($this->once())->method('getScheduledSearches')
-            ->will($this->returnValue($this->getMockNotifications($overrides, $optionsCallback, $resultsCallback)));
+            ->will(
+                $this->returnValue(
+                    $this->getMockNotifications(
+                        $overrides, $optionsCallback, $paramsCallback,
+                        $resultsCallback
+                    )
+                )
+            );
         return $searchTable;
     }
 
