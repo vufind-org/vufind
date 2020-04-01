@@ -175,12 +175,12 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test behavior when notifications are waiting to be sent but no new search
+     * Test behavior when notifications are waiting to be sent but no search
      * results exist.
      *
      * @return void
      */
-    public function testNotificationsWithNoSearchChanges()
+    public function testNotificationsWithNoSearchResults()
     {
         $optionsCallback = function ($options) {
             $options->expects($this->any())->method('supportsScheduledSearch')
@@ -205,6 +205,51 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             . "Done processing searches\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test behavior when notifications are waiting to be sent but no search
+     * results exist.
+     *
+     * @return void
+     */
+    public function testNotificationsWithNoNewSearchResults()
+    {
+        $optionsCallback = function ($options) {
+            $options->expects($this->any())->method('supportsScheduledSearch')
+                ->will($this->returnValue(true));
+        };
+        $resultsCallback = function ($results) {
+            $results->expects($this->any())->method('getSearchId')
+                ->will($this->returnValue(1));
+            $results->expects($this->any())->method('getResults')
+                ->will($this->returnValue($this->getMockSearchResultsSet()));
+        };
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable(
+                    [], $optionsCallback, null, $resultsCallback
+                ),
+                'userTable' => $this->getMockUserTable(),
+            ]
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "  No new results for search (1): 1970-01-01T00:00:00Z < 2000-01-01T00:00:00Z\n"
+            . "Done processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Get mock search results.
+     *
+     * @return array
+     */
+    protected function getMockSearchResultsSet()
+    {
+        return [$this->prepareMock(\VuFind\RecordDriver\SolrDefault::class)];
     }
 
     /**
