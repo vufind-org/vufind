@@ -27,12 +27,12 @@
  */
 namespace VuFindConsole\Command\Import;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\XSLT\Importer;
+use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: XSLT importer
@@ -43,7 +43,7 @@ use VuFind\XSLT\Importer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ImportXslCommand extends Command
+class ImportXslCommand extends RelativeFileAwareCommand
 {
     /**
      * The name of the command
