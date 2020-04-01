@@ -917,9 +917,9 @@ trait MarcAdvancedTrait
         $ismn = null;
         foreach ($fields024 as $field) {
             if ($field->getIndicator(1) == 2
-                && $subField = $field->getSubfield('a')
+                && $subfield = $field->getSubfield('a')
             ) {
-                $ismn = $subField->getData();
+                $ismn = $subfield->getData();
                 break;
             }
         }
