@@ -50,7 +50,7 @@
 #     required (boolean) Is the element required?
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox)
+#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox|hidden)
 #
 #     help (string)      Element help text (translation key) that is displayed before the element.
 #                        To include HTML formatting, use a translation key ending

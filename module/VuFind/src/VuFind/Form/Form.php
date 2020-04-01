@@ -124,18 +124,19 @@ class Form extends \Laminas\Form\Form implements
      * Set form id
      *
      * @param string $formId Form id
+     * @param array  $params Additional form parameters.
      *
      * @return void
      * @throws Exception
      */
-    public function setFormId($formId)
+    public function setFormId($formId, $params = [])
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
 
         $this->formElementConfig
-            = $this->parseConfig($formId, $config);
+            = $this->parseConfig($formId, $config, $params);
 
         $this->buildForm($this->formElementConfig);
     }
@@ -204,10 +205,11 @@ class Form extends \Laminas\Form\Form implements
      *
      * @param string $formId Form id
      * @param array  $config Configuration
+     * @param array  $params Additional form parameters.
      *
      * @return array
      */
-    protected function parseConfig($formId, $config)
+    protected function parseConfig($formId, $config, $params)
     {
         $formConfig = [
            'id' => $formId,
@@ -346,6 +348,17 @@ class Form extends \Laminas\Form\Form implements
                 }
             }
             $elements[] = $element;
+        }
+
+        if ($this->reportReferrer()) {
+            if ($referrer = ($params['referrer'] ?? false)) {
+                $elements[] = [
+                    'type' => 'hidden',
+                    'name' => 'referrer',
+                    'settings' => ['value' => $referrer],
+                    'label' => $this->translate('Referrer'),
+                ];
+            }
         }
 
         $elements[]= [
@@ -515,7 +528,8 @@ class Form extends \Laminas\Form\Form implements
             'textarea' => '\Laminas\Form\Element\Textarea',
             'radio' => '\Laminas\Form\Element\Radio',
             'select' => '\Laminas\Form\Element\Select',
-            'submit' => '\Laminas\Form\Element\Submit'
+            'submit' => '\Laminas\Form\Element\Submit',
+            'hidden' => '\Laminas\Form\Element\Hidden'
         ];
 
         return $map[$type] ?? null;
@@ -689,13 +703,6 @@ class Form extends \Laminas\Form\Form implements
 
             $label = isset($el['label']) ? $this->translate($el['label']) : null;
             $params[] = ['type' => $type, 'value' => $value, 'label' => $label];
-        }
-        if ($this->reportReferrer()) {
-            $params[] = [
-                'type' => 'referrer',
-                'value' => $requestParams['referrer'],
-                'label' => $this->translate('Referrer'),
-            ];
         }
 
         return [$params, 'Email/form.phtml'];
