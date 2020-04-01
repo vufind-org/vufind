@@ -97,7 +97,10 @@ class Url extends \Laminas\View\Helper\Url
     {
         $requestQuery = (null !== $this->request)
             ? $this->request->getQuery()->toArray() : [];
-        $options = ['query' => array_merge($requestQuery, $params)];
+        $options = [
+            'query' => array_merge($requestQuery, $params),
+            'normalize_path' => false, // fix for VUFIND-1392
+        ];
         return $this->__invoke(null, [], $options, $reuseMatchedParams);
     }
 }
