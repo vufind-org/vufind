@@ -17,6 +17,7 @@ finna.comments = (function finnaComments() {
   }
 
   function initCommentForm(parentMethod, allowRating) {
+    $('.comment-list .delete').off('click');
     parentMethod();
 
     $('form.comment-form').unbind('submit').submit(function onCommentSubmit(event) {
