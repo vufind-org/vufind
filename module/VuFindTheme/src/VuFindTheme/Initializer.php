@@ -122,7 +122,7 @@ class Initializer
         $this->config = $config;
 
         if ($eventOrContainer instanceof MvcEvent) {
-            $this->event = $event;
+            $this->event = $eventOrContainer;
             $this->serviceManager = $this->event->getApplication()
                 ->getServiceManager();
         } elseif ($eventOrContainer instanceof ContainerInterface) {
