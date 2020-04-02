@@ -28,9 +28,6 @@
  */
 namespace VuFind\Search\SolrReserves;
 
-use VuFind\Record\Loader;
-use VuFindSearch\Service as SearchService;
-
 /**
  * Solr Reserves Search Parameters
  *

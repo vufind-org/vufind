@@ -27,9 +27,6 @@
  */
 namespace VuFind\Search\BrowZine;
 
-use VuFind\Record\Loader;
-use VuFindSearch\Service as SearchService;
-
 /**
  * BrowZine Search Results
  *

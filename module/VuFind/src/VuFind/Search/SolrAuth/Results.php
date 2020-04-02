@@ -27,9 +27,6 @@
  */
 namespace VuFind\Search\SolrAuth;
 
-use VuFind\Record\Loader;
-use VuFindSearch\Service as SearchService;
-
 /**
  * Solr Authority Search Parameters
  *
