@@ -58,17 +58,24 @@ class NotifyCommandFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
         $tableManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+
+        // We need to initialize the theme so that the view renderer works:
+        $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
+        $theme->init();
+
+        // Now build the object:
         return new $requestedName(
             $container->get(\VuFind\Crypt\HMAC::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $scheduleOptions,
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $mainConfig,
             $container->get(\VuFind\Mailer\Mailer::class),
             $tableManager->get(\VuFind\Db\Table\Search::class),
             $tableManager->get(\VuFind\Db\Table\User::class),
