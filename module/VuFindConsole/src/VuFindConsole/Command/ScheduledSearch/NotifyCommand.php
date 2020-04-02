@@ -312,14 +312,12 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function setLanguage($userLang)
     {
         // Start with default language setting; override with user language
-        // preference if set and valid.
-        $language = $this->mainConfig->Site->language;
-        if ($userLang != ''
-            && in_array(
-                $userLang,
-                array_keys($this->mainConfig->Languages->toArray())
-            )
-        ) {
+        // preference if set and valid. Default to English if configuration
+        // is missing.
+        $language = $this->mainConfig->Site->language ?? 'en';
+        $allLanguages = isset($this->mainConfig->Languages)
+            ? array_keys($this->mainConfig->Languages->toArray()) : ['en'];
+        if ($userLang != '' && in_array($userLang, $allLanguages)) {
             $language = $userLang;
         }
         $this->translator->setLocale($language);

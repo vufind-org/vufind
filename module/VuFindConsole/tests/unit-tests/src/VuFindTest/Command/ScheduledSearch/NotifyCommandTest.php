@@ -243,13 +243,63 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test behavior when notifications are waiting to be sent and new search
+     * results exist.
+     *
+     * @return void
+     */
+    public function testNotificationsWithNewSearchResults()
+    {
+        $optionsCallback = function ($options) {
+            $options->expects($this->any())->method('supportsScheduledSearch')
+                ->will($this->returnValue(true));
+        };
+        $paramsCallback = function ($params) {
+            $params->expects($this->any())->method('getCheckboxFacets')
+                ->will($this->returnValue([]));
+        };
+        $resultsCallback = function ($results) {
+            $record = new \VuFindTest\RecordDriver\TestHarness();
+            $now = str_replace(' ', 'T', date('Y-m-d h:i:s')) . 'Z';
+            $record->setRawData(
+                [
+                    'FirstIndexed' => $now,
+                ]
+            );
+            $results->expects($this->any())->method('getSearchId')
+                ->will($this->returnValue(1));
+            $results->expects($this->any())->method('getResults')
+                ->will($this->returnValue($this->getMockSearchResultsSet($record)));
+        };
+        $command = $this->getCommand(
+            [
+                'searchTable' => $this->getMockSearchTable(
+                    [], $optionsCallback, $paramsCallback, $resultsCallback
+                ),
+                'userTable' => $this->getMockUserTable(),
+            ]
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $expected = "Processing 1 searches\n"
+            . "  No new results for search (1): 1970-01-01T00:00:00Z < 2000-01-01T00:00:00Z\n"
+            . "Done processing searches\n";
+        $this->assertEquals($expected, $commandTester->getDisplay());
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
      * Get mock search results.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record to return
      *
      * @return array
      */
-    protected function getMockSearchResultsSet()
+    protected function getMockSearchResultsSet($record = null)
     {
-        return [$this->prepareMock(\VuFind\RecordDriver\SolrDefault::class)];
+        return [
+            $record ?? $this->prepareMock(\VuFind\RecordDriver\SolrDefault::class)
+        ];
     }
 
     /**
@@ -310,6 +360,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         if ($optionsCallback) {
             $optionsCallback($options);
         }
+        $urlQuery = $this->prepareMock(\VuFind\Search\UrlQueryHelper::class);
         $params = $this->prepareMock(\VuFind\Search\Solr\Params::class);
         if ($paramsCallback) {
             $paramsCallback($params);
@@ -317,6 +368,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $results = $this->prepareMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->any())->method('getOptions')
             ->will($this->returnValue($options));
+        $results->expects($this->any())->method('getUrlQuery')
+            ->will($this->returnValue($urlQuery));
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
         if ($resultsCallback) {
@@ -361,6 +414,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'id' => 2,
             'username' => 'foo',
             'email' => 'fake@myuniversity.edu',
+            'created' => '2000-01-01 00:00:00',
+            'last_language' => 'en',
         ];
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $user = new \VuFind\Db\Row\Search($adapter);
@@ -377,16 +432,26 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getCommand($options = [])
     {
-        return new NotifyCommand(
+        $renderer = $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $renderer->expects($this->any())->method('plugin')
+            ->with($this->equalTo('url'))
+            ->will($this->returnValue($this->prepareMock(\Laminas\View\Helper\Url::class)));
+        $command = new NotifyCommand(
             $this->prepareMock(\VuFind\Crypt\HMAC::class),
-            $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class),
+            $renderer,
             $this->getMockResultsManager(),
             $options['scheduleOptions'] ?? [1 => 'Daily', 7 => 'Weekly'],
-            new \Laminas\Config\Config([]),
+            new \Laminas\Config\Config(
+                $options['configArray'] ?? ['Site' => ['institution' => 'My Institution']]
+            ),
             $this->prepareMock(\VuFind\Mailer\Mailer::class),
             $options['searchTable'] ?? $this->prepareMock(\VuFind\Db\Table\Search::class),
             $options['userTable'] ?? $this->prepareMock(\VuFind\Db\Table\User::class)
         );
+        $command->setTranslator(
+            $options['translator'] ?? $this->prepareMock(\Laminas\I18n\Translator\Translator::class)
+        );
+        return $command;
     }
 
     /**
