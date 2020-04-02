@@ -27,9 +27,6 @@
  */
 namespace VuFind\Search\SolrWeb;
 
-use VuFind\Record\Loader;
-use VuFindSearch\Service as SearchService;
-
 /**
  * Solr Web Search Parameters
  *

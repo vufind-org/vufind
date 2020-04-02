@@ -515,6 +515,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         }
         return $manager;
     }
+
     /**
      * Create a mock search table that returns a list of fake notification objects.
      *

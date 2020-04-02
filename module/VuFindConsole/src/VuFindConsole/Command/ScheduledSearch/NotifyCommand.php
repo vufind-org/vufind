@@ -30,7 +30,6 @@ namespace VuFindConsole\Command\ScheduledSearch;
 use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Crypt\HMAC;
@@ -39,7 +38,6 @@ use VuFind\Db\Table\User as UserTable;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: notify users of scheduled searches.

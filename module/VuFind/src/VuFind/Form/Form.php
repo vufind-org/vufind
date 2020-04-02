@@ -124,18 +124,19 @@ class Form extends \Laminas\Form\Form implements
      * Set form id
      *
      * @param string $formId Form id
+     * @param array  $params Additional form parameters.
      *
      * @return void
      * @throws Exception
      */
-    public function setFormId($formId)
+    public function setFormId($formId, $params = [])
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
 
         $this->formElementConfig
-            = $this->parseConfig($formId, $config);
+            = $this->parseConfig($formId, $config, $params);
 
         $this->buildForm($this->formElementConfig);
     }
@@ -204,10 +205,11 @@ class Form extends \Laminas\Form\Form implements
      *
      * @param string $formId Form id
      * @param array  $config Configuration
+     * @param array  $params Additional form parameters.
      *
      * @return array
      */
-    protected function parseConfig($formId, $config)
+    protected function parseConfig($formId, $config, $params)
     {
         $formConfig = [
            'id' => $formId,
@@ -348,6 +350,17 @@ class Form extends \Laminas\Form\Form implements
             $elements[] = $element;
         }
 
+        if ($this->reportReferrer()) {
+            if ($referrer = ($params['referrer'] ?? false)) {
+                $elements[] = [
+                    'type' => 'hidden',
+                    'name' => 'referrer',
+                    'settings' => ['value' => $referrer],
+                    'label' => $this->translate('Referrer'),
+                ];
+            }
+        }
+
         $elements[]= [
             'type' => 'submit',
             'name' => 'submit',
@@ -366,7 +379,8 @@ class Form extends \Laminas\Form\Form implements
     {
         return [
             'recipient', 'title', 'help', 'submit', 'response', 'useCaptcha',
-            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
+            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired',
+            'reportReferrer'
         ];
     }
 
@@ -514,7 +528,8 @@ class Form extends \Laminas\Form\Form implements
             'textarea' => '\Laminas\Form\Element\Textarea',
             'radio' => '\Laminas\Form\Element\Radio',
             'select' => '\Laminas\Form\Element\Select',
-            'submit' => '\Laminas\Form\Element\Submit'
+            'submit' => '\Laminas\Form\Element\Submit',
+            'hidden' => '\Laminas\Form\Element\Hidden'
         ];
 
         return $map[$type] ?? null;
@@ -539,6 +554,16 @@ class Form extends \Laminas\Form\Form implements
     public function useCaptcha()
     {
         return (bool)($this->formConfig['useCaptcha'] ?? true);
+    }
+
+    /**
+     * Check if the form should report referrer url
+     *
+     * @return bool
+     */
+    public function reportReferrer()
+    {
+        return (bool)($this->formConfig['reportReferrer'] ?? false);
     }
 
     /**
