@@ -99,7 +99,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'util cleanup_record_cache' => 'Remove unused records from the cache',
             'util commit' => 'Solr commit tool',
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util cssBuilder' => 'LESS compiler',

@@ -437,30 +437,6 @@ class UtilController extends AbstractBase
     }
 
     /**
-     * Command-line tool to clear unwanted entries
-     * from record cache table.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function cleanuprecordcacheAction()
-    {
-        $request = $this->getRequest();
-        if ($request->getParam('help') || $request->getParam('h')) {
-            Console::writeLine('Clean up unused cached records from the database.');
-            return $this->getFailureResponse();
-        }
-
-        $recordTable = $this->serviceLocator
-            ->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('Record');
-
-        $count = $recordTable->cleanup();
-
-        Console::writeLine("$count records deleted.");
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Display help for the search or session expiration actions
      *
      * @param string $rows Plural name of records to delete

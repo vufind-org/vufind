@@ -65,10 +65,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'language/delete' => Language\DeleteCommand::class,
         'language/normalize' => Language\NormalizeCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
+        'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
+        'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
-        'util/cleanup_record_cache' =>
-            'util (cleanuprecordcache|cleanup_record_cache) [--help|-h]',
         'util/commit' => 'util commit [<core>]',
         'util/createHierarchyTrees' =>
             'util createHierarchyTrees [--skip-xml|-sx]
@@ -133,8 +133,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Language\NormalizeCommand::class => Language\AbstractCommandFactory::class,
         ScheduledSearch\NotifyCommand::class =>
             ScheduledSearch\NotifyCommandFactory::class,
+        Util\CleanUpRecordCacheCommand::class =>
+            CleanUpRecordCacheCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
-    ];
+        ];
 
     /**
      * Constructor
