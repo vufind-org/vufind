@@ -101,7 +101,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
         return [
             'util commit' => 'Solr commit tool',
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
-            'util cssBuilder' => 'LESS compiler',
             'util deletes' => 'Tool for deleting Solr records',
             'util expire_auth_hashes' => 'Database auth_hash table cleanup',
             'util expire_external_sessions'

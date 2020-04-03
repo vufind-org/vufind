@@ -67,13 +67,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
+        'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
         'util/commit' => 'util commit [<core>]',
         'util/createHierarchyTrees' =>
             'util createHierarchyTrees [--skip-xml|-sx]
             [--skip-json|-sj] [<backend>] [--help|-h]',
-        'util/cssBuilder' => 'util cssBuilder [...themes]',
         'util/deletes' =>
             'util deletes [--verbose] [<filename>] [<format>] [<index>]',
         'util/expire_auth_hashes' =>
@@ -135,6 +135,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             ScheduledSearch\NotifyCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class =>
             Util\CleanUpRecordCacheCommandFactory::class,
+        Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         ];
 

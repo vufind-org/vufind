@@ -694,21 +694,6 @@ class UtilController extends AbstractBase
     }
 
     /**
-     * Compile CSS files from LESS.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function cssbuilderAction()
-    {
-        $compiler = new \VuFindTheme\LessCompiler(true);
-        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
-        $cacheDir = $cacheManager->getCacheDir() . 'less/';
-        $compiler->setTempPath($cacheDir);
-        $compiler->compile(array_unique($this->getRequest()->getParam('themes')));
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Abstract delete method.
      *
      * @param string    $tableName     Table to operate on.
