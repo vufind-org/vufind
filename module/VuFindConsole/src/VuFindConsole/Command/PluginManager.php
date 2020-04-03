@@ -134,7 +134,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ScheduledSearch\NotifyCommand::class =>
             ScheduledSearch\NotifyCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class =>
-            CleanUpRecordCacheCommandFactory::class,
+            Util\CleanUpRecordCacheCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         ];
 

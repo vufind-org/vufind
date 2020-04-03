@@ -80,7 +80,8 @@ class CleanUpRecordCacheCommand extends Command
     {
         $this
             ->setDescription('Record cache cleaner')
-            ->setHelp('Removes unused cached records from the database.');
+            ->setHelp('Removes unused cached records from the database.')
+            ->setAliases(['util/cleanuprecordcache']);
     }
 
     /**

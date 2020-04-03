@@ -54,6 +54,7 @@ class CleanUpRecordCacheCommandTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(5));
         $command = new CleanUpRecordCacheCommand($table);
         $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
         $expected = "5 records deleted.\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
