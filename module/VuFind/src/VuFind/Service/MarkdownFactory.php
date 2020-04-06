@@ -63,10 +63,27 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container, $requestedName, array $options = null
     ) {
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('markdown')->Markdown;
         return new GithubFlavoredMarkdownConverter(
             [
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
+                'html_input' => $config->html_input ?? 'strip',
+                'allow_unsafe_links' => $config->allow_unsafe_links ?? false,
+                'enable_em' => $config->enable_em ?? true,
+                'enable_strong' => $config->enable_strong ?? true,
+                'use_asterisk' => $config->use_asterisk ?? true,
+                'use_underscore' => $config->use_underscore ?? true,
+                'unordered_list_markers' => isset($config->unordered_list_markers)
+                    && is_array($config->unordered_list_markers)
+                        ? $config->unordered_list_markers : ['-', '*', '+'],
+                'max_nesting_level' => $config->max_nesting_level ?? \INF,
+                'renderer' => [
+                    'block_separator'
+                        => $config->renderer['block_separator'] ?? "\n",
+                    'inner_separator'
+                        => $config->renderer['inner_separator'] ?? "\n",
+                    'soft_break' => $config->renderer['soft_break'] ?? "\n",
+                ],
             ]
         );
     }
