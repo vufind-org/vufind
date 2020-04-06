@@ -133,7 +133,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                             !empty($text_types_filter) ?
                                  [ 'bool' => [ 'must' => [  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ], $text_types_filter ] ] ] :
                                  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
-                        ]
+                        ],
+                        'must_not' => [ 'term' => [ '_index' => $index . '_write' ] ]
                     ]
                 ],
                 'highlight' => [
@@ -249,6 +250,16 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function array_key_last($array) {
+       if (!function_exists("array_key_last")) {
+           if (!is_array($array) || empty($array))
+               return NULL;
+           return array_keys($array)[count($array)-1];
+       }
+       return array_key_last($array);
+    }
+
+
     protected function extractSnippetParagraph($snippet_page) {
         $dom = new \DOMDocument();
         $dom->loadHTML($snippet_page, LIBXML_NOERROR /*Needed since ES highlighting does not address nesting of tags properly*/);
@@ -290,7 +301,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         }
 
         array_walk($snippet_trees, function($snippet_tree, $index) use ($snippet_trees) {
-                                            if ($index != array_key_last($snippet_trees))
+                                            if ($index != $this->array_key_last($snippet_trees))
                                                 $snippet_tree->appendChild($snippet_tree->createTextNode(self::DOTS));
                                             return $snippet_tree; } );
 
