@@ -74,8 +74,9 @@ class MarkdownFactory implements FactoryInterface
                 'use_asterisk' => $config->use_asterisk ?? true,
                 'use_underscore' => $config->use_underscore ?? true,
                 'unordered_list_markers' => isset($config->unordered_list_markers)
-                    && is_array($config->unordered_list_markers)
-                        ? $config->unordered_list_markers : ['-', '*', '+'],
+                    && $config->unordered_list_markers instanceof \ArrayAccess
+                        ? $config->unordered_list_markers->toArray()
+                        : ['-', '*', '+'],
                 'max_nesting_level' => $config->max_nesting_level ?? \INF,
                 'renderer' => [
                     'block_separator'
