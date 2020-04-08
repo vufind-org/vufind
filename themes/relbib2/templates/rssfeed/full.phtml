@@ -4,9 +4,6 @@
 <?php if (count($rssItems) == 0):?>
 <h1><?=$this->translate('rss_news_missing')?></h1>
 <?php else:?>
-    <?php if ($this->tuefind()->getRssNewsUrl()): ?>
-        <h4><a href="<?=$this->tuefind()->getRssNewsUrl()?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a></h4>
-    <?php endif; ?>
     <div id="tf-rss-full">
         <?php foreach ($rssItems as $rssItem):?>
             <div class="tf-rss-full-item">
