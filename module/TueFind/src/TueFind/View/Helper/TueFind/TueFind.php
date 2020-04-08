@@ -159,13 +159,32 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get metadata for aggregated RSS feeds
+     *
+     * @return array
+     */
+    public function getRssFeeds() {
+        $rssConfigPath = $this->getConfig()->General->rss_config_path;
+        $rssConfig = parse_ini_file($rssConfigPath, true, INI_SCANNER_RAW);
+
+        $rssFeeds = [];
+        foreach ($rssConfig as $rssConfigKey => $rssConfigValue) {
+            if (is_array($rssConfigValue) && isset($rssConfigValue['feed_url']))
+                $rssFeeds[$rssConfigKey] = $rssConfigValue;
+        }
+
+        ksort($rssFeeds);
+        return $rssFeeds;
+    }
+
+    /**
      * Search for specific RSS feed icon, return generic RSS icon if not found
      *
      * @param string $rssFeedId
      *
      * @return string
      */
-    public function getRssFeedIcon($rssFeedId) {
+    public function getRssFeedIcon($rssFeedId='rss') {
         $imgSrc = $this->getView()->imageLink('rss/' . $rssFeedId . '.png');
         if ($imgSrc == null)
             $imgSrc = $this->getView()->imageLink('rss/rss.png');
@@ -207,6 +226,19 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
 
         return $rss_items;
+    }
+
+    /**
+     * Get URL of our own generated RSS feed (from rss_aggregator)
+     *
+     * @return string
+     */
+    public function getRssNewsUrl() {
+        $rssFeedPath = $this->getConfig()->General->rss_feed_path;
+        if (!is_file($rssFeedPath))
+            return false;
+
+        return str_replace(getenv('VUFIND_HOME') . '/public', '', $rssFeedPath);
     }
 
     /**
