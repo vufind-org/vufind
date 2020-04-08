@@ -159,6 +159,25 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get metadata for aggregated RSS feeds
+     *
+     * @return array
+     */
+    public function getRssFeeds() {
+        $rssConfigPath = $this->getConfig()->General->rss_config_path;
+        $rssConfig = parse_ini_file($rssConfigPath, true, INI_SCANNER_RAW);
+
+        $rssFeeds = [];
+        foreach ($rssConfig as $rssConfigKey => $rssConfigValue) {
+            if (is_array($rssConfigValue) && isset($rssConfigValue['feed_url']))
+                $rssFeeds[$rssConfigKey] = $rssConfigValue;
+        }
+
+        ksort($rssFeeds);
+        return $rssFeeds;
+    }
+
+    /**
      * Search for specific RSS feed icon, return generic RSS icon if not found
      *
      * @param string $rssFeedId
