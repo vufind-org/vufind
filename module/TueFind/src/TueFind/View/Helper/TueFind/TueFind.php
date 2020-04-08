@@ -184,7 +184,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getRssFeedIcon($rssFeedId) {
+    public function getRssFeedIcon($rssFeedId='rss') {
         $imgSrc = $this->getView()->imageLink('rss/' . $rssFeedId . '.png');
         if ($imgSrc == null)
             $imgSrc = $this->getView()->imageLink('rss/rss.png');
@@ -226,6 +226,19 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
 
         return $rss_items;
+    }
+
+    /**
+     * Get URL of our own generated RSS feed (from rss_aggregator)
+     *
+     * @return string
+     */
+    public function getRssNewsUrl() {
+        $rssFeedPath = $this->getConfig()->General->rss_feed_path;
+        if (!is_file($rssFeedPath))
+            return false;
+
+        return str_replace(getenv('VUFIND_HOME') . '/public', '', $rssFeedPath);
     }
 
     /**
