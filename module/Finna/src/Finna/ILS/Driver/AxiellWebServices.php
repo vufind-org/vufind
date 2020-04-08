@@ -1852,11 +1852,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             $currentMethods = $sendMethods->sendMethods->sendMethod;
             $serviceType = $sendMethods->serviceType;
             foreach ($currentMethods as $key => $value) {
-                $method = $value->value;
+                $method = is_object($value) ? $value->value : $value;
                 if (in_array($method, $this->messagingBlackLists[$serviceType])) {
                     continue;
                 }
-                $current[] = $value->value;
+                $current[] = $method;
             }
             $returnable[$serviceType] = $current;
         }
