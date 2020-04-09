@@ -28,7 +28,7 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFindConsole\Command\Util\ExpireSessionsCommand;
+use VuFindConsole\Command\Util\ExpireExternalSessionsCommand;
 
 /**
  * ExpireExternalSessionsCommand test.
@@ -53,7 +53,7 @@ class ExpireExternalSessionsCommandTest extends AbstractExpireCommandTest
      *
      * @var string
      */
-    protected $validTableClass = \VuFind\Db\Table\ExternalSessions::class;
+    protected $validTableClass = \VuFind\Db\Table\ExternalSession::class;
 
     /**
      * Label to use for rows in help messages.
