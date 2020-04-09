@@ -1,6 +1,6 @@
 <?php
 /**
- * CssBuilderCommand test.
+ * AbstractExpireCommand test.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\AbstractExpireCommand;
 
 /**
- * CssBuilderCommand test.
+ * AbstractExpireCommand test.
  *
  * @category VuFind
  * @package  Tests
@@ -39,7 +39,7 @@ use VuFindConsole\Command\Util\AbstractExpireCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CssBuilderCommandTest extends \PHPUnit\Framework\TestCase
+class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Name of class being tested
@@ -56,28 +56,111 @@ class CssBuilderCommandTest extends \PHPUnit\Framework\TestCase
     protected $validTableClass = \VuFind\Db\Table\AuthHash::class;
 
     /**
-     * Test that the command delegates proper behavior.
+     * Label to use for rows in help messages.
+     *
+     * @var string
+     */
+    protected $rowLabel = 'rows';
+
+    /**
+     * Test an unsupported table class.
      *
      * @return void
      */
-    public function testBasicOperation()
+    public function testUnsupportedTableClass()
+    {
+        $table = $this->getMockBuilder(\VuFind\Db\Table\User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            get_class($table) . ' does not support getExpiredIdRange()'
+        );
+        $command = new $this->targetClass($table, 'foo');
+    }
+
+    /**
+     * Test an illegal age parameter.
+     *
+     * @return void
+     */
+    public function testIllegalAgeInput()
     {
         $table = $this->getMockBuilder($this->validTableClass)
             ->disableOriginalConstructor()
             ->getMock();
-        $table->expects($this->at(1))->method('getExpiredIdRange')
+        $command = new $this->targetClass($table, 'foo');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['age' => 1]);
+        $this->assertEquals(
+            "Expiration age must be at least 2 days.\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test that the command expires rows correctly.
+     *
+     * @return void
+     */
+    public function testSuccessfulExpiration()
+    {
+        $table = $this->getMockBuilder($this->validTableClass)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $table->expects($this->at(0))->method('getExpiredIdRange')
             ->with($this->equalTo(2))
             ->will($this->returnValue([0, 1500]));
-        $table->expects($this->at(2))->method('deleteExpired')
+        $table->expects($this->at(1))->method('deleteExpired')
             ->with($this->equalTo(2), $this->equalTo(0), $this->equalTo(999))
             ->will($this->returnValue(50));
-        $table->expects($this->at(3))->method('deleteExpired')
+        $table->expects($this->at(2))->method('deleteExpired')
             ->with($this->equalTo(2), $this->equalTo(1000), $this->equalTo(1999))
             ->will($this->returnValue(7));
         $command = new $this->targetClass($table, 'foo');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--sleep' => 1]);
-        $this->assertEquals('', $commandTester->getDisplay());
+        $response = $commandTester->getDisplay();
+        // The response contains date stamps that will vary every time the test
+        // runs, so let's split things apart to work around that...
+        $parts = explode("\n", trim($response));
+        $this->assertEquals(2, count($parts));
+        $this->assertEquals(
+            "50 {$this->rowLabel} deleted.",
+            explode('] ', $parts[0])[1]
+        );
+        $this->assertEquals(
+            "7 {$this->rowLabel} deleted.",
+            explode('] ', $parts[1])[1]
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test correct behavior when no rows need to be expired.
+     *
+     * @return void
+     */
+    public function testSuccessfulNonExpiration()
+    {
+        $table = $this->getMockBuilder($this->validTableClass)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $table->expects($this->once())->method('getExpiredIdRange')
+            ->with($this->equalTo(2))
+            ->will($this->returnValue(false));
+        $command = new $this->targetClass($table, 'foo');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $response = $commandTester->getDisplay();
+        // The response contains date stamps that will vary every time the test
+        // runs, so let's split things apart to work around that...
+        $parts = explode("\n", trim($response));
+        $this->assertEquals(1, count($parts));
+        $this->assertEquals(
+            "No {$this->rowLabel} to delete.", explode('] ', $parts[0])[1]
+        );
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 }
