@@ -69,6 +69,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
+        'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
+        'util/expire_searches' => Util\ExpireSearchesCommand::class,
+        'util/expire_sessions' => Util\ExpireSessionsCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
         'util/commit' => 'util commit [<core>]',
@@ -77,13 +80,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             [--skip-json|-sj] [<backend>] [--help|-h]',
         'util/deletes' =>
             'util deletes [--verbose] [<filename>] [<format>] [<index>]',
-        'util/expire_external_sessions' =>
-            'util expire_external_sessions [--help|-h] [--batch=] [--sleep=]
-             [<daysOld>]',
-        'util/expire_searches' =>
-            'util expire_searches [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
-        'util/expire_sessions' =>
-            'util expire_sessions [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
         'util/index_reserves' =>
             'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
         'util/optimize' => 'util optimize [<core>]',
@@ -137,6 +133,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
+        Util\ExpireExternalSessionsCommand::class =>
+            Util\ExpireExternalSessionsCommandFactory::class,
+        Util\ExpireSearchesCommand::class =>
+            Util\ExpireSearchesCommandFactory::class,
+        Util\ExpireSessionsCommand::class =>
+            Util\ExpireSessionsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         ];
 
