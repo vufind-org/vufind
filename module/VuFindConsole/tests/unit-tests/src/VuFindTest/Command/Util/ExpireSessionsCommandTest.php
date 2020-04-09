@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\Command\Util;
 
-use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\ExpireSessionsCommand;
 
 /**
