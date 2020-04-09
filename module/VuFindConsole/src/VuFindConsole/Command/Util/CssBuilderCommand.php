@@ -62,7 +62,7 @@ class CssBuilderCommand extends Command
     /**
      * Constructor
      *
-     * @param strng       $cacheDir Cache directory for compiler
+     * @param string      $cacheDir Cache directory for compiler
      * @param string|null $name     The name of the command; passing null means it
      * must be set in configure()
      */
