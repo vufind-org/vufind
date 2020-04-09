@@ -155,6 +155,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * @param Mailer         $mailer          Mail service
      * @param SearchTable    $searchTable     Search table
      * @param UserTable      $userTable       User table
+     * @param string|null    $name            The name of the command; passing
+     * null means it must be set in configure()
      */
     public function __construct(HMAC $hmac, PhpRenderer $renderer,
         ResultsManager $resultsManager, array $scheduleOptions, Config $mainConfig,
