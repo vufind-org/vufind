@@ -530,26 +530,6 @@ class UtilController extends AbstractBase
     }
 
     /**
-     * Command-line tool to clear unwanted entries
-     * from auth_hash database table.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function expireauthhashesAction()
-    {
-        $request = $this->getRequest();
-        if ($request->getParam('help') || $request->getParam('h')) {
-            return $this->expirationHelp('authentication hashes');
-        }
-
-        return $this->expire(
-            \VuFind\Db\Table\AuthHash::class,
-            '%%count%% expired authentication hashes deleted.',
-            'No expired authentication hashes to delete.'
-        );
-    }
-
-    /**
      * Command-line tool to delete suppressed records from the index.
      *
      * @return \Laminas\Console\Response
@@ -691,85 +671,6 @@ class UtilController extends AbstractBase
         );
 
         return $this->getSuccessResponse();
-    }
-
-    /**
-     * Abstract delete method.
-     *
-     * @param string    $tableName     Table to operate on.
-     * @param string    $successString String for reporting success.
-     * @param string    $failString    String for reporting failure.
-     * @param int|float $minAge        Minimum age allowed for expiration in days
-     * (also used as default value).
-     *
-     * @return mixed
-     */
-    protected function expire($tableName, $successString, $failString, $minAge = 2)
-    {
-        // Get command-line arguments
-        $request = $this->getRequest();
-
-        // Use command line value as expiration age, or default to $minAge.
-        $daysOld = floatval($request->getParam('daysOld', $minAge));
-
-        // Use command line values for batch size and sleep time if specified.
-        $batchSize = $request->getParam('batch', 1000);
-        $sleepTime = $request->getParam('sleep', 100);
-
-        // Abort if we have an invalid expiration age.
-        if ($daysOld < $minAge) {
-            Console::writeLine(
-                str_replace(
-                    '%%age%%', $minAge,
-                    'Expiration age must be at least %%age%% days.'
-                )
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Delete the expired rows--this cleans up any junk left in the database
-        // e.g. from old searches or sessions that were not caught by the session
-        // garbage collector.
-        $table = $this->getTable($tableName);
-        if (!method_exists($table, 'getExpiredIdRange')) {
-            throw new \Exception("$tableName does not support getExpiredIdRange()");
-        }
-        if (!method_exists($table, 'deleteExpired')) {
-            throw new \Exception("$tableName does not support deleteExpired()");
-        }
-
-        $idRange = $table->getExpiredIdRange($daysOld);
-        if (false === $idRange) {
-            $this->timestampedMessage($failString);
-            return $this->getSuccessResponse();
-        }
-
-        // Delete records in batches
-        for ($batch = $idRange[0]; $batch <= $idRange[1]; $batch += $batchSize) {
-            $count = $table->deleteExpired(
-                $daysOld, $batch, $batch + $batchSize - 1
-            );
-            $this->timestampedMessage(
-                str_replace('%%count%%', $count, $successString)
-            );
-            // Be nice to others and wait between batches
-            if ($batch + $batchSize <= $idRange[1]) {
-                usleep($sleepTime * 1000);
-            }
-        }
-        return $this->getSuccessResponse();
-    }
-
-    /**
-     * Print a message with a time stamp to the console
-     *
-     * @param string $msg Message
-     *
-     * @return void
-     */
-    protected function timestampedMessage($msg)
-    {
-        Console::writeLine('[' . date('Y-m-d H:i:s') . '] ' . $msg);
     }
 
     /**

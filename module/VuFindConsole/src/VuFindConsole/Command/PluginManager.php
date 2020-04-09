@@ -68,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/cssBuilder' => Util\CssBuilderCommand::class,
+        'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         /*
         'util/commit' => 'util commit [<core>]',
@@ -76,8 +77,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             [--skip-json|-sj] [<backend>] [--help|-h]',
         'util/deletes' =>
             'util deletes [--verbose] [<filename>] [<format>] [<index>]',
-        'util/expire_auth_hashes' =>
-            'util expire_auth_hashes [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
         'util/expire_external_sessions' =>
             'util expire_external_sessions [--help|-h] [--batch=] [--sleep=]
              [<daysOld>]',
@@ -136,6 +135,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CleanUpRecordCacheCommand::class =>
             Util\CleanUpRecordCacheCommandFactory::class,
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
+        Util\ExpireAuthHashesCommand::class =>
+            Util\ExpireAuthHashesCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         ];
 
