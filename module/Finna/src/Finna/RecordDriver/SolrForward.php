@@ -720,6 +720,29 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return full record as filtered XML for public APIs.
+     *
+     * @return string
+     */
+    public function getFilteredXML()
+    {
+        $record = clone $this->getRecordXML();
+        $remove = [];
+        foreach ($record->ProductionEvent as $event) {
+            $attributes = $event->attributes();
+            if (isset($attributes->{'elonet-tag'})
+                && 'lehdistoarvio' === (string)$attributes->{'elonet-tag'}
+            ) {
+                $remove[] = $event;
+            }
+        }
+        foreach ($remove as $node) {
+            unset($node[0]);
+        }
+        return $record->asXMl();
+    }
+
+    /**
      * Get all agents that have the given attribute in Activity element
      *
      * @param string $attribute    Attribute (and option value) to look for
