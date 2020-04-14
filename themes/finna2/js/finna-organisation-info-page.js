@@ -428,15 +428,33 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
   function updateServices(data) {
     if ('allServices' in data.details) {
       holder.find('.services').show();
-      var serviceHolder = holder.find('.service-list').empty();
-      $(data.details.allServices).each(function handleService(ind, obj) {
-        var li = $('<li/>');
-        li.append($('<strong/>').text(obj[0]));
-        if (obj.length > 0) {
-          li.append($('<p/>').html(obj[1]));
-        }
-        li.appendTo(serviceHolder);
+      var allServices = data.details.allServices;
+      $.each(allServices, function handleService(ind, obj) {
+        var serviceHolder = holder.find('.service-list.' + ind).empty();
+        holder.find($('.service-header.' + ind)).removeClass('hidden');
+        $.each(obj, function handleGrouping(group, services) {
+          var div = $('<div/>');
+          var serviceText = '';
+          var serviceTitle = '';
+          if (typeof services.desc !== 'undefined' || typeof services.shortDesc !== 'undefined') {
+            serviceTitle = '<b>' + services[0] + '</b>';
+            serviceText = $('<a class="service-tooltip" data-toggle="tooltip" data-placement="bottom" data-html="true" />').html(serviceTitle);
+            var serviceDesc = '';
+            if (typeof services.desc !== 'undefined') {
+              serviceDesc = services.desc
+            } else {
+              serviceDesc = services.shortDesc
+            }
+            var serviceToolTip = '<h4>' + services[0] + '</h4>' + serviceDesc;
+            serviceText.attr('data-original-title', serviceToolTip)
+          } else {
+            serviceText = serviceTitle;
+          }
+          div.append(serviceText);
+          div.appendTo(serviceHolder);
+        });
       });
+      finna.layout.initToolTips(holder);
     }
   }
 

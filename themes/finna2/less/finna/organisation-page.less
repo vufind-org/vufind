@@ -501,7 +501,6 @@
                             font-family: finnaicons;
                             content: '\e612';
                             float: right;
-                            position: absolute;
                             right: 20px;
                         }
                         &.collapsed:after {
@@ -527,6 +526,9 @@
                     .list-feed.with-image {
                         img {
                             max-width: 30%;
+                        }
+                        span.date {
+                            position: inherit;
                         }
                         .text, .title, .xcal {
                             width: 65%;
@@ -566,10 +568,20 @@
                     margin-right: 8px;
                 }
             }
-            .service-list li {
-                margin-bottom: 10px;
+            .service-list div {
+                line-height: 2em;
+                break-inside: avoid-column;
+                page-break-inside: avoid;
+                .tooltip-inner {
+                    line-height: 1.5em;
+                }
                 > strong {
                     text-transform: uppercase;
+                }
+            }
+            .office-row-general {
+                @media(min-width: @screen-sm) {
+                    display: flex;
                 }
             }
             .office-col {
@@ -579,6 +591,40 @@
                     padding: 0px 15px;
                 }
                 position:relative;
+            }
+            .organisation-feeds {
+                @media(min-width: @screen-sm) {
+                    width: 33%;
+                    float: right;
+                    padding-right: 15px;
+                }
+            }
+            .services {
+                .service-header {
+                    margin-bottom: 15px;
+                    font-size: 1.5em;
+                }
+                @media(min-width: @screen-sm) {
+                    width: 66%;
+                    display: inline-block;
+                    padding-left: 15px;
+                }
+                .service-list {
+                    column-count: 1;
+                    @media(min-width: @screen-sm) {
+                        column-count: 3;
+                    }
+                    .service-tooltip {
+                        &:hover {
+                            cursor: pointer;
+                        }
+                    }
+                    .service-short-desc {
+                        font-size: .90em;
+                        margin-left: 5px;
+                        max-width: 200px;
+                    }
+                }
             }
         }
         .consortium-navigation {

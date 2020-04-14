@@ -197,46 +197,44 @@ JS;
   </div>
 
   <div class="row office-information info-element">
-    <div class="office-col">
-      <div class="finna-panel introduction">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse1"><?=$this->translate('organisation_info_general')?></a>
-        </h4>
-        <div id="collapse1" class="panel-collapse collapse in">
-          <img class="building-image" src="#" alt=""/>
-          <img class="extra-image" src="#" alt=""/>
-          <img class="extra-image-2" src="#" alt=""/>
-          <p class="building-name info-element"></p>
-          <p class="building-year info-element"><?=$this->translate('organisation_info_building_year')?>: <span></span></p>
-          <p class="office-description description-long info-element"></p>
+    <div class="office-row-general">
+      <div class="office-col">
+        <div class="finna-panel introduction">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapse1"><?=$this->translate('organisation_info_general')?></a>
+          </h4>
+          <div id="collapse1" class="panel-collapse collapse in">
+            <img class="building-image" src="#" alt=""/>
+            <img class="extra-image" src="#" alt=""/>
+            <img class="extra-image-2" src="#" alt=""/>
+            <p class="building-name info-element"></p>
+            <p class="building-year info-element"><?=$this->translate('organisation_info_building_year')?>: <span></span></p>
+            <p class="office-description description-long info-element"></p>
+          </div>
         </div>
       </div>
 
-      <div class="finna-panel contact-details contact-details-rss info-element">
+      <div class="office-col opening-times-widget">
+        <div class="finna-panel opening-times-library-information">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapse2"><?=$this->translate('organisation_info_schedules')?></a>
+          </h4>
+          <div id="collapse2" class="panel-collapse collapse in">
+            <?=$this->organisationInfo(['id' => $this->id, 'init' => false, 'target' => 'page'])?>
+          </div>
+        </div>
+      </div>
+
+      <div class="office-col">
+        <div class="finna-panel contact-details contact-details-rss info-element">
           <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 4])?>
-      </div>
-    </div>
-    <div class="office-col opening-times-widget">
-      <div class="finna-panel opening-times-library-information">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse2"><?=$this->translate('organisation_info_schedules')?></a>
-        </h4>
-        <div id="collapse2" class="panel-collapse collapse in">
-          <?=$this->organisationInfo(['id' => $this->id, 'init' => false, 'target' => 'page'])?>
         </div>
-      </div>
-
-      <div class="finna-panel services info-element">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse6"><?=$this->translate('organisation_info_services')?></a>
-        </h4>
-        <div id="collapse6" class="panel-collapse collapse in">
-          <ul class="service-list">
-          </ul>
+        <div class="finna-panel contact-details contact-details-no-rss info-element">
+          <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 5])?>
         </div>
       </div>
     </div>
-    <div class="office-col">
+    <div class="organisation-feeds">
       <div class="finna-panel news-feed-container rss-container info-element">
         <h4 class="panel-title">
           <a data-toggle="collapse" href="#collapse7"><?=$this->translate('organisation_info_rss_news')?></a>
@@ -253,10 +251,23 @@ JS;
           <div class="feed-container events-feed info-element" data-init="0"></div>
         </div>
       </div>
-      <div class="finna-panel contact-details contact-details-no-rss info-element">
-        <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 5])?>
-      </div>
     </div>
+    <div class="finna-panel services info-element">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse6"><?=$this->translate('organisation_info_services')?></a>
+        </h4>
+        <div id="collapse6" class="panel-collapse collapse in">
+          <h5 class="service-header hardware hidden"><?= $this->transEsc('kirkanta_hardware') ?></h5>
+          <div class="service-list hardware">
+          </div>
+          <h5 class="service-header room hidden"><?= $this->transEsc('kirkanta_rooms') ?></h5>
+          <div class="service-list room">
+          </div>
+          <h5 class="service-header service hidden"><?= $this->transEsc('kirkanta_services') ?></h5>
+          <div class="service-list service">
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 <!-- open closed tags to make valid html, if consortiumInfo -->

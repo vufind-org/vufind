@@ -834,6 +834,7 @@ finna.layout = (function finnaLayout() {
     initILSSelfRegistrationLink: initILSSelfRegistrationLink,
     initLoginTabs: initLoginTabs,
     loadScripts: loadScripts,
+    initToolTips: initToolTips,
     init: function init() {
       initScrollRecord();
       initJumpMenus();
