@@ -221,6 +221,26 @@ class Form extends \VuFind\Form\Form
     }
 
     /**
+     * Return form email message subject.
+     *
+     * @param array $postParams Posted form data
+     *
+     * @return string
+     */
+    public function getEmailSubject($postParams)
+    {
+        if (!$recipient = $this->getRecipientFromFormData($postParams)) {
+            return parent::getEmailSubject($postParams);
+        }
+
+        // Replace posted recipient field value with label
+        $recipientField = $this->getRecipientField($this->formElementConfig);
+        $postParams[$recipientField] = $recipient['name'];
+
+        return parent::getEmailSubject($postParams);
+    }
+
+    /**
      * Resolve email recipient based on posted form data.
      *
      * @param array $postParams Posted form data
