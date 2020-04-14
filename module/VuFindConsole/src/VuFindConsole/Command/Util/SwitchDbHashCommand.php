@@ -74,13 +74,16 @@ class SwitchDbHashCommand extends RelativeFileAwareCommand
     /**
      * Constructor
      *
-     * @param Config    $config    VuFind configuration
-     * @param UserTable $userTable User table gateway
+     * @param Config      $config    VuFind configuration
+     * @param UserTable   $userTable User table gateway
+     * @param string|null $name      The name of the command; passing null means it
+     * must be set in configure()
      */
-    public function __construct(Config $config, UserTable $userTable)
+    public function __construct(Config $config, UserTable $userTable, $name = null)
     {
         $this->config = $config;
         $this->userTable = $userTable;
+        parent::__construct($name);
     }
 
     /**

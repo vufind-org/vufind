@@ -65,8 +65,10 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(SwitchDbHashCommandCommand::class)
             ->setConstructorArgs(
-                new Config($config),
-                $table ?? $this->getMockTable()
+                [
+                    new Config($config),
+                    $table ?? $this->getMockTable(),
+                ]
             )->setMethods(['getConfigWriter'])
             ->getMock();
     }
