@@ -3,7 +3,8 @@
         "See https://github.com/wikimedia/composer-merge-plugin for more details."
     ],
     "require": {
-        "erusev/parsedown": "1.6.1",
+        "erusev/parsedown": "1.7.4",
+        "erusev/parsedown-extra": "^0.8.1",
         "ezyang/htmlpurifier": "4.12.0",
         "picqer/php-barcode-generator": "0.2.1"
     },

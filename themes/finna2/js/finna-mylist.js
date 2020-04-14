@@ -6,6 +6,18 @@ finna.myList = (function finnaMyList() {
   var save = false;
   var listUrl = null;
   var refreshLists = null;
+  var truncateField = '<div class="truncate-field" data-rows="1" data-row-height="5" markdown="1">';
+  var truncateTag = '[[more]]';
+
+  function toggleTruncateField(mdeditor) {
+    var value = mdeditor.value();
+    if (value.indexOf(truncateTag) !== -1) {
+      return;
+    } else {
+      var moreTag = '\n' + truncateTag + '\n';
+      insertElement(moreTag, mdeditor);
+    }
+  }
 
   var mdeToolbar = [
     'bold', 'italic',
@@ -19,8 +31,16 @@ finna.myList = (function finnaMyList() {
       action: function detailsInsert(mdeditor) {
         insertDetails(mdeditor);
       },
-      className: 'details-icon',
+      className: 'fa details-icon',
       title: 'Insert details element'
+    },
+    {
+      name: 'truncate',
+      action: function truncateFieldToggle(mdeditor) {
+        toggleTruncateField(mdeditor);
+      },
+      className: 'fa fa-pagebreak',
+      title: 'Truncate'
     }
   ]
 
@@ -34,28 +54,35 @@ finna.myList = (function finnaMyList() {
     });
   }
 
-  function insertDetails(mdeditor) {
-    var summaryPlaceholder = VuFind.translate('details_summary_placeholder')
-    var detailsElement = '\n<details class="favorite-list-details">\n' +
-     '<summary>' + summaryPlaceholder + '</summary>' +
-     '<p>' + VuFind.translate('details_text_placeholder') + '</p>\n' + 
-     '</details>';
+  function insertElement(element, mdeditor) {
+    var doc = mdeditor.codemirror.getDoc();
+    doc.replaceRange(element, getEditorCursorPos(mdeditor));
+    mdeditor.codemirror.focus();
+  }
+
+  function getEditorCursorPos(mdeditor) {
     var doc = mdeditor.codemirror.getDoc();
     var cursorPos = doc.getCursor();
     var position = {
       line: cursorPos.line,
       ch: cursorPos.ch
     }
-    doc.replaceRange(detailsElement, position);
-    mdeditor.codemirror.focus();
-    cursorPos = doc.getCursor();
+    return position;
+  }
+
+  function insertDetails(mdeditor) {
+    var summaryPlaceholder = VuFind.translate('details_summary_placeholder')
+    var detailsElement = '\n<details class="favorite-list-details">\n' +
+     '<summary>' + summaryPlaceholder + '</summary>' +
+     '<p>' + VuFind.translate('details_text_placeholder') + '</p>\n' + 
+     '</details>';
+
+    insertElement(detailsElement, mdeditor);
+    var doc = editor.codemirror.getDoc();
+    var cursorPos = getEditorCursorPos(editor);
     var summaryAndPlaceholder = '<summary>' + summaryPlaceholder;
-    var newPosition = {
-      line: cursorPos.line,
-      ch: cursorPos.ch
-    }
-    doc.setCursor({line: newPosition.line - 1, ch: summaryAndPlaceholder.length});
-    }
+    doc.setCursor({line: cursorPos.line - 1, ch: summaryAndPlaceholder.length});
+  }
 
   // This is duplicated in image-popup.js to avoid dependency
   function getActiveListId() {
@@ -88,6 +115,21 @@ finna.myList = (function finnaMyList() {
     target.toggleClass('fa-spinner fa-spin list-save', mode);
   }
 
+  function handleTruncateField(description, addTruncate) {
+    var trunc = typeof addTruncate !== 'undefined' ? addTruncate : true;
+    var desc = description;
+    if (trunc && description.indexOf(truncateTag) !== -1) {
+      desc = description.replace(truncateTag, truncateField);
+      desc += '</div>';
+    } else if (description.indexOf(truncateField) !== -1) {
+      // replace <div class="truncate-field"...> with [[more]] and
+      // get rid of the closing tag
+      desc = description.replace(truncateField, truncateTag);
+      desc = desc.substr(0, desc.length - 6);
+    }
+    return desc;
+  }
+
   function updateList(params, callback, type) {
     save = true;
     var spinner = null;
@@ -100,6 +142,7 @@ finna.myList = (function finnaMyList() {
 
     if (type !== 'add-list') {
       var description = $('.list-description .editable').data('markdown');
+      description = handleTruncateField(description);
       if (description === VuFind.translate('add_list_description')) {
         listParams.desc = '';
       } else {
@@ -110,7 +153,7 @@ finna.myList = (function finnaMyList() {
     if (type === 'title') {
       spinner = $('.list-title .fa');
     } else if (type === 'desc') {
-      spinner = $('.list-description .fa');
+      spinner = $('.list-description .fa:not(.fa-arrow-down)');
     } else if (type === 'add-list') {
       spinner = $('.add-new-list .fa');
     } else if (type === 'visibility') {
@@ -316,6 +359,7 @@ finna.myList = (function finnaMyList() {
       var textArea = $('<textarea/>');
       var currentVal = null;
       currentVal = container.data('markdown');
+      currentVal = handleTruncateField(currentVal, false);
       textArea.text(currentVal);
       container.hide();
       textArea.insertAfter(container);
@@ -335,18 +379,32 @@ finna.myList = (function finnaMyList() {
       editor = new SimpleMDE(editorSettings);
       currentVal = editor.value();
 
+      if (currentVal.indexOf(truncateTag) !== -1) {
+        $('.fa-pagebreak').addClass('pagebreak-toggled');
+      }
       // Preview
       var html = SimpleMDE.prototype.markdown(editor.value());
+      html = handleTruncateField(html);
       $('.markdown-preview').remove();
       var preview = $('<div/>').addClass('markdown-preview')
         .html($('<div/>').addClass('data').html(html));
       $('<div/>').addClass('preview').text(VuFind.translate('preview').toUpperCase()).prependTo(preview);
       preview.appendTo(element);
+      finna.layout.initTruncate(preview);
       initDetailsElements();
 
       editor.codemirror.on('change', function onChangeEditor() {
         var result = SimpleMDE.prototype.markdown(editor.value());
+        if (result.indexOf(truncateTag) !== -1) {
+          if (!$('.fa-pagebreak').hasClass('pagebreak-toggled')) {
+            $('.fa-pagebreak').addClass('pagebreak-toggled');
+          }
+        } else {
+          $('.fa-pagebreak').removeClass('pagebreak-toggled');
+        }
+        result = handleTruncateField(result);
         preview.find('.data').html(result);
+        finna.layout.initTruncate(preview);
         initDetailsElements();
       });
 
@@ -362,8 +420,9 @@ finna.myList = (function finnaMyList() {
         container.show();
         container.data('markdown', markdown);
         container.data('empty', (markdown.length === 0 ? '1' : '0'));
+        resultHtml = handleTruncateField(resultHtml);
         container.html(resultHtml);
-
+        finna.layout.initTruncate(container);
         preview.remove();
 
         callback(markdown);

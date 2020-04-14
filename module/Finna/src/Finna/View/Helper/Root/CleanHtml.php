@@ -85,6 +85,7 @@ class CleanHtml extends \Zend\View\Helper\AbstractHelper
         if (null === $this->purifier || $targetBlank !== $this->currentTargetBlank) {
             $this->currentTargetBlank = $targetBlank;
             $config = \HTMLPurifier_Config::createDefault();
+            $config->set('AutoFormat.AutoParagraph', true);
             // Set cache path to the object cache
             if ($this->cacheDir) {
                 $config->set('Cache.SerializerPath', $this->cacheDir);
@@ -103,6 +104,8 @@ class CleanHtml extends \Zend\View\Helper\AbstractHelper
                 ['open' => new \HTMLPurifier_AttrDef_HTML_Bool(true)]
             );
             $def->addElement('summary', 'Inline', 'Inline', 'Common');
+            $def->addAttribute('div', 'data-rows', 'Number');
+            $def->addAttribute('div', 'data-row-height', 'Number');
             $this->purifier = new \HTMLPurifier($config);
         }
         return $this->purifier->purify($html);

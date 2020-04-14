@@ -56,7 +56,7 @@ class Markdown extends \VuFind\View\Helper\Root\Markdown
     {
         $cleanHtml = $this->getView()->plugin('cleanHtml');
         if (null === $this->parsedown) {
-            $this->parsedown = new \Parsedown();
+            $this->parsedown = new \ParsedownExtra();
             $this->parsedown->setBreaksEnabled(true);
         }
         $text = $this->parsedown->text($markdown);
