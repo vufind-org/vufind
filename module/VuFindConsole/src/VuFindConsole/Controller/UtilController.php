@@ -30,10 +30,6 @@ namespace VuFindConsole\Controller;
 use File_MARC;
 use File_MARCXML;
 use Laminas\Console\Console;
-use Laminas\Crypt\BlockCipher as BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
-use VuFind\Config\Locator as ConfigLocator;
-use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
@@ -577,109 +573,6 @@ class UtilController extends AbstractBase
             count($hierarchies['hierarchy_top_id']['data']['list']) . ' files'
         );
 
-        return $this->getSuccessResponse();
-    }
-
-    /**
-     * Convert hash algorithms
-     * Expected parameters: oldmethod:oldkey (or none) newmethod:newkey
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function switchdbhashAction()
-    {
-        // Validate command line arguments:
-        $request = $this->getRequest();
-        $newhash = $request->getParam('newhash');
-        if (empty($newhash)) {
-            Console::writeLine(
-                'Expected parameters: newmethod [newkey]'
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Pull existing encryption settings from the configuration:
-        $config = $this->getConfig();
-        if (!isset($config->Authentication->encrypt_ils_password)
-            || !isset($config->Authentication->ils_encryption_key)
-            || !$config->Authentication->encrypt_ils_password
-        ) {
-            $oldhash = 'none';
-            $oldkey = null;
-        } else {
-            $oldhash = isset($config->Authentication->ils_encryption_algo)
-                ? $config->Authentication->ils_encryption_algo : 'blowfish';
-            $oldkey = $config->Authentication->ils_encryption_key;
-        }
-
-        // Pull new encryption settings from arguments:
-        $newkey = $request->getParam('newkey', $oldkey);
-
-        // No key specified AND no key on file = fatal error:
-        if ($newkey === null) {
-            Console::writeLine('Please specify a key as the second parameter.');
-            return $this->getFailureResponse();
-        }
-
-        // If no changes were requested, abort early:
-        if ($oldkey == $newkey && $oldhash == $newhash) {
-            Console::writeLine('No changes requested -- no action needed.');
-            return $this->getSuccessResponse();
-        }
-
-        // Initialize Openssl first, so we can catch any illegal algorithms before
-        // making any changes:
-        try {
-            if ($oldhash != 'none') {
-                $oldCrypt = new Openssl(['algorithm' => $oldhash]);
-            }
-            $newCrypt = new Openssl(['algorithm' => $newhash]);
-        } catch (\Exception $e) {
-            Console::writeLine($e->getMessage());
-            return $this->getFailureResponse();
-        }
-
-        // Next update the config file, so if we are unable to write the file,
-        // we don't go ahead and make unwanted changes to the database:
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
-        Console::writeLine("\tUpdating $configPath...");
-        $writer = new ConfigWriter($configPath);
-        $writer->set('Authentication', 'encrypt_ils_password', true);
-        $writer->set('Authentication', 'ils_encryption_algo', $newhash);
-        $writer->set('Authentication', 'ils_encryption_key', $newkey);
-        if (!$writer->save()) {
-            Console::writeLine("\tWrite failed!");
-            return $this->getFailureResponse();
-        }
-
-        // Now do the database rewrite:
-        $userTable = $this->serviceLocator
-            ->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('User');
-        $users = $userTable->select(
-            function ($select) {
-                $select->where->isNotNull('cat_username');
-            }
-        );
-        Console::writeLine("\tConverting hashes for " . count($users) . ' user(s).');
-        foreach ($users as $row) {
-            $pass = null;
-            if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
-                $oldcipher = new BlockCipher($oldCrypt);
-                $oldcipher->setKey($oldkey);
-                $pass = $oldcipher->decrypt($row['cat_pass_enc']);
-            } else {
-                $pass = $row['cat_password'];
-            }
-            $newcipher = new BlockCipher($newCrypt);
-            $newcipher->setKey($newkey);
-            $row['cat_password'] = null;
-            $row['cat_pass_enc'] = $newcipher->encrypt($pass);
-            $row->save();
-        }
-
-        // If we got this far, all went well!
-        Console::writeLine("\tFinished.");
         return $this->getSuccessResponse();
     }
 }

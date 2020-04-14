@@ -106,9 +106,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
-            'util switch_db_hash' => 'Switch the hashing algorithm in the database '
-                . 'and config. Expects new algorithm and (optional) new key as'
-                . ' parameters.',
         ];
     }
 }

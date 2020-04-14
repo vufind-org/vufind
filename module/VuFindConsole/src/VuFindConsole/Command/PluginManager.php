@@ -73,6 +73,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
         'util/expire_sessions' => Util\ExpireSessionsCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
+        'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
         /*
         'util/commit' => 'util commit [<core>]',
         'util/createHierarchyTrees' =>
@@ -88,7 +89,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             [--basesitemapurl=s]',
         'util/suppressed' =>
             'util suppressed [--help|-h] [--authorities] [--outfile=s]',
-        'util/switch_db_hash' => 'util switch_db_hash [<newhash>] [<newkey>]',
         */
     ];
 
@@ -140,7 +140,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\ExpireSessionsCommand::class =>
             Util\ExpireSessionsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
-        ];
+        Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,
+    ];
 
     /**
      * Constructor
