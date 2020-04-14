@@ -30,7 +30,7 @@ namespace VuFindTest\Command\Util;
 use Laminas\Config\Config;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Table\User;
-use VuFindConsole\Command\Util\SwitchDbHashCommandCommand;
+use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
 /**
  * SwitchDbHashCommand command test.
@@ -63,7 +63,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockCommand(array $config = [], $table = null)
     {
-        return $this->getMockBuilder(SwitchDbHashCommandCommand::class)
+        return $this->getMockBuilder(SwitchDbHashCommand::class)
             ->setConstructorArgs(
                 [
                     new Config($config),
