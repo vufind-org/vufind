@@ -105,8 +105,9 @@ class SitemapCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $verbose = $input->hasOption('verbose') && $input->getOption('verbose');
-        $this->generator->setVerbose($verbose);
+        if ($input->hasOption('verbose') && $input->getOption('verbose')) {
+            $this->generator->setVerbose([$output, 'writeln']);
+        }
         if ($url = $input->getOption('baseurl')) {
             $this->generator->setBaseUrl($url);
         }
