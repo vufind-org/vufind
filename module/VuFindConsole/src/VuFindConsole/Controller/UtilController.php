@@ -30,7 +30,6 @@ namespace VuFindConsole\Controller;
 use File_MARC;
 use File_MARCXML;
 use Laminas\Console\Console;
-use VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 
