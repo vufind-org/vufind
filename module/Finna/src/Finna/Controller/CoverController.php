@@ -135,6 +135,13 @@ class CoverController extends \VuFind\Controller\CoverController
         $height = (int)$params->fromQuery('h');
         $size = $params->fromQuery('fullres')
             ? 'large' : $params->fromQuery('size');
+
+        if (!in_array($size, ['master', 'large', 'medium', 'small'])) {
+            $response = $this->getResponse();
+            $response->setStatusCode(400);
+            return $response;
+        }
+
         $this->loader->setParams($width, $height, $size);
 
         // Cover image configuration for current datasource
