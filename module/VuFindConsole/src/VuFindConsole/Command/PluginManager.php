@@ -67,16 +67,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
+        'util/commit' => Util\CommitCommand::class,
         'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
         'util/expire_sessions' => Util\ExpireSessionsCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
+        'util/optimize' => Util\OptimizeCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
         /*
-        'util/commit' => 'util commit [<core>]',
         'util/createHierarchyTrees' =>
             'util createHierarchyTrees [--skip-xml|-sx]
             [--skip-json|-sj] [<backend>] [--help|-h]',
@@ -84,7 +85,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             'util deletes [--verbose] [<filename>] [<format>] [<index>]',
         'util/index_reserves' =>
             'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
-        'util/optimize' => 'util optimize [<core>]',
         'util/suppressed' =>
             'util suppressed [--help|-h] [--authorities] [--outfile=s]',
         */
@@ -128,6 +128,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             ScheduledSearch\NotifyCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class =>
             Util\CleanUpRecordCacheCommandFactory::class,
+        Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
@@ -138,6 +139,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\ExpireSessionsCommand::class =>
             Util\ExpireSessionsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
+        Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,
     ];

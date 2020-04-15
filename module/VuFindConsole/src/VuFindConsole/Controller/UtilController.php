@@ -223,50 +223,6 @@ class UtilController extends AbstractBase
     }
 
     /**
-     * Commit the Solr index.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function commitAction()
-    {
-        return $this->performCommit();
-    }
-
-    /**
-     * Optimize the Solr index.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function optimizeAction()
-    {
-        return $this->performCommit(true);
-    }
-
-    /**
-     * Commit (and possibly optimize) the Solr index.
-     *
-     * @param bool $optimize Should we optimize?
-     *
-     * @return \Laminas\Console\Response
-     */
-    protected function performCommit($optimize = false)
-    {
-        ini_set('memory_limit', '50M');
-        ini_set('max_execution_time', '3600');
-
-        // Setup Solr Connection -- Allow core to be specified from command line.
-        $core = $this->getRequest()->getParam('core', 'Solr');
-
-        // Commit and Optimize the Solr Index
-        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
-        $solr->commit($core);
-        if ($optimize) {
-            $solr->optimize($core);
-        }
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Command-line tool to batch-delete records from the Solr index.
      *
      * @return \Laminas\Console\Response

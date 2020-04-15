@@ -99,11 +99,9 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     public function getConsoleUsage(Console $console)
     {
         return [
-            'util commit' => 'Solr commit tool',
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util deletes' => 'Tool for deleting Solr records',
             'util index_reserves' => 'Solr reserves indexer',
-            'util optimize' => 'Solr optimize tool',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
         ];
     }
