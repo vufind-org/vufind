@@ -37,7 +37,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Table\User as UserTable;
-use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: switch database encryption algorithm.
@@ -48,7 +47,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SwitchDbHashCommand extends RelativeFileAwareCommand
+class SwitchDbHashCommand extends Command
 {
     /**
      * The name of the command (the part after "public/index.php")
@@ -94,7 +93,7 @@ class SwitchDbHashCommand extends RelativeFileAwareCommand
     protected function configure()
     {
         $this
-            ->setDescription('MARC validator')
+            ->setDescription('Encryption algorithm switcher')
             ->setHelp(
                 'Switches the encryption algorithm in the database '
                 . 'and config. Expects new algorithm and (optional) new key as'
