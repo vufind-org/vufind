@@ -28,7 +28,7 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFindConsole\Command\Util\CommitCommand;
+use VuFindConsole\Command\Util\OptimizeCommand;
 
 /**
  * OptimizeCommand command test.
@@ -51,9 +51,9 @@ class OptimizeCommandTest extends \PHPUnit\Framework\TestCase
         $writer = $this->getMockBuilder(\VuFind\Solr\Writer::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $generator->expects($this->once())->method('commit')
+        $writer->expects($this->once())->method('commit')
             ->with($this->equalTo('foo'));
-        $generator->expects($this->once())->method('optimize')
+        $writer->expects($this->once())->method('optimize')
             ->with($this->equalTo('foo'));
         $command = new OptimizeCommand($writer);
         $commandTester = new CommandTester($command);
