@@ -456,7 +456,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'last_language' => 'en',
         ];
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
-        $user = new \VuFind\Db\Row\Search($adapter);
+        $user = new \VuFind\Db\Row\User($adapter);
         $user->populate($data, true);
         return $user;
     }

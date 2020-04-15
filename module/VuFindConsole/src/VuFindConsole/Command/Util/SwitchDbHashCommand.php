@@ -116,6 +116,19 @@ class SwitchDbHashCommand extends RelativeFileAwareCommand
     }
 
     /**
+     * Get an OpenSsl object for the specified algorithm (or return null if the
+     * algorithm is 'none').
+     *
+     * @param string $algorithm Encryption algorithm
+     *
+     * @return Openssl
+     */
+    protected function getOpenSsl($algorithm)
+    {
+        return ($algorithm == 'none') ? null : new Openssl(compact('algorithm'));
+    }
+
+    /**
      * Run the command.
      *
      * @param InputInterface  $input  Input object
@@ -158,10 +171,8 @@ class SwitchDbHashCommand extends RelativeFileAwareCommand
         // Initialize Openssl first, so we can catch any illegal algorithms before
         // making any changes:
         try {
-            if ($oldhash != 'none') {
-                $oldCrypt = new Openssl(['algorithm' => $oldhash]);
-            }
-            $newCrypt = new Openssl(['algorithm' => $newhash]);
+            $oldCrypt = $this->getOpenSsl($oldhash);
+            $newCrypt = $this->getOpenSsl($newhash);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
