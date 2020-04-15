@@ -205,7 +205,7 @@ class Generator
     protected function verboseMsg($msg)
     {
         if (is_callable($this->verbose)) {
-            $this->verbose($msg);
+            call_user_func($this->verbose, $msg);
         }
     }
 
