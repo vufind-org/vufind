@@ -41,7 +41,7 @@ use VuFindConsole\Command\Util\SuppressedCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
+class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get mock ILS connection.
@@ -105,6 +105,96 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             "No suppressed records to delete.\n",
             $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test successful Solr update.
+     *
+     * @return void
+     */
+    public function testRecordsToDelete()
+    {
+        $ils = $this->getMockIlsConnection();
+        $ils->expects($this->once())->method('__call')
+            ->with($this->equalTo('getSuppressedRecords'))
+            ->will($this->returnValue([1, 2]));
+        $solr = $this->getMockSolrWriter();
+        $solr->expects($this->once())->method('deleteRecords')
+            ->with($this->equalTo('Solr'), $this->equalTo([1, 2]));
+        $solr->expects($this->once())->method('commit')
+            ->with($this->equalTo('Solr'));
+        $solr->expects($this->once())->method('optimize')
+            ->with($this->equalTo('Solr'));
+        $command = $this->getCommand($solr, $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals("", $commandTester->getDisplay());
+    }
+
+    /**
+     * Test no results coming back from ILS
+     *
+     * @return void
+     */
+    public function testNoAuthorityRecordsToDelete()
+    {
+        $ils = $this->getMockIlsConnection();
+        $ils->expects($this->once())->method('__call')
+            ->with($this->equalTo('getSuppressedAuthorityRecords'))
+            ->will($this->returnValue([]));
+        $command = $this->getCommand(null, $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['--authorities' => true]);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals(
+            "No suppressed records to delete.\n",
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test write to file.
+     *
+     * @return void
+     */
+    public function testWriteToFile()
+    {
+        $ils = $this->getMockIlsConnection();
+        $ils->expects($this->once())->method('__call')
+            ->with($this->equalTo('getSuppressedRecords'))
+            ->will($this->returnValue([1, 2]));
+        $command = $this->getCommand(null, $ils);
+        $command->expects($this->once())->method('writeToDisk')
+            ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
+            ->will($this->returnValue(true));
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['--outfile' => 'foo']);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals('', $commandTester->getDisplay());
+    }
+
+    /**
+     * Test failed write to file.
+     *
+     * @return void
+     */
+    public function testFailedWriteToFile()
+    {
+        $ils = $this->getMockIlsConnection();
+        $ils->expects($this->once())->method('__call')
+            ->with($this->equalTo('getSuppressedRecords'))
+            ->will($this->returnValue([1, 2]));
+        $command = $this->getCommand(null, $ils);
+        $command->expects($this->once())->method('writeToDisk')
+            ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
+            ->will($this->returnValue(false));
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['--outfile' => 'foo']);
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertEquals(
+            "Problem writing to foo\n", $commandTester->getDisplay()
         );
     }
 }
