@@ -127,10 +127,48 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
             ->with($this->equalTo('SolrReserves'));
+        $that = $this;
+        $updateValidator = function ($update) use ($that) {
+            $expectedXml = "<?xml version=\"1.0\"?>\n"
+                . '<add>'
+                . '<doc>'
+                . '<field name="id">course1|inst1|dept1</field>'
+                . '<field name="bib_id">1</field>'
+                . '<field name="instructor_id">inst1</field>'
+                . '<field name="instructor">inst1</field>'
+                . '<field name="course_id">course1</field>'
+                . '<field name="course">course1</field>'
+                . '<field name="department_id">dept1</field>'
+                . '<field name="department">dept1</field>'
+                . '</doc>'
+                . '<doc>'
+                . '<field name="id">course2|inst2|dept2</field>'
+                . '<field name="bib_id">2</field>'
+                . '<field name="instructor_id">inst2</field>'
+                . '<field name="instructor">inst2</field>'
+                . '<field name="course_id">course2</field>'
+                . '<field name="course">course2</field>'
+                . '<field name="department_id">dept2</field>'
+                . '<field name="department">dept2</field>'
+                . '</doc>'
+                . '<doc>'
+                . '<field name="id">course3|inst3|dept3</field>'
+                . '<field name="bib_id">3</field>'
+                . '<field name="instructor_id">inst3</field>'
+                . '<field name="instructor">inst3</field>'
+                . '<field name="course_id">course3</field>'
+                . '<field name="course">course3</field>'
+                . '<field name="department_id">dept3</field>'
+                . '<field name="department">dept3</field>'
+                . '</doc>'
+                . '</add>';
+            $that->assertEquals($expectedXml, trim($update->asXml()));
+            return true;
+        };
         $writer->expects($this->once())->method('save')
             ->with(
                 $this->equalTo('SolrReserves'),
-                $this->equalTo('foo')
+                $this->callback($updateValidator)
             );
         $writer->expects($this->once())->method('commit')
             ->with($this->equalTo('SolrReserves'));
@@ -149,7 +187,112 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertEquals(
-            "Success!\n",
+            "Successfully loaded 3 rows.\n",
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test successful ILS loading.
+     *
+     * @return void
+     */
+    public function testSuccessWithILS()
+    {
+        $ils = $this->getMockIlsConnection();
+        $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
+        $ils->expects($this->at(0))->method('__call')
+            ->with($this->equalTo('getInstructors'))
+            ->will($this->returnValue($instructors));
+        $courses = [
+            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3'
+        ];
+        $ils->expects($this->at(1))->method('__call')
+            ->with($this->equalTo('getCourses'))
+            ->will($this->returnValue($courses));
+        $departments = ['dept1' => 'dept1', 'dept2' => 'dept2', 'dept3' => 'dept3'];
+        $ils->expects($this->at(2))->method('__call')
+            ->with($this->equalTo('getDepartments'))
+            ->will($this->returnValue($departments));
+        $reserves = [
+            [
+                'BIB_ID' => 1,
+                'COURSE_ID' => 'course1',
+                'DEPARTMENT_ID' => 'dept1',
+                'INSTRUCTOR_ID' => 'inst1',
+            ],
+            [
+                'BIB_ID' => 2,
+                'COURSE_ID' => 'course2',
+                'DEPARTMENT_ID' => 'dept2',
+                'INSTRUCTOR_ID' => 'inst2',
+            ],
+            [
+                'BIB_ID' => 3,
+                'COURSE_ID' => 'course3',
+                'DEPARTMENT_ID' => 'dept3',
+                'INSTRUCTOR_ID' => 'inst3',
+            ],
+        ];
+        $ils->expects($this->at(3))->method('__call')
+            ->with($this->equalTo('findReserves'), $this->equalTo(['', '', '']))
+            ->will($this->returnValue($reserves));
+        $writer = $this->getMockSolrWriter();
+        $writer->expects($this->once())->method('deleteAll')
+            ->with($this->equalTo('SolrReserves'));
+        $that = $this;
+        $updateValidator = function ($update) use ($that) {
+            $expectedXml = "<?xml version=\"1.0\"?>\n"
+                . '<add>'
+                . '<doc>'
+                . '<field name="id">course1|inst1|dept1</field>'
+                . '<field name="bib_id">1</field>'
+                . '<field name="instructor_id">inst1</field>'
+                . '<field name="instructor">inst1</field>'
+                . '<field name="course_id">course1</field>'
+                . '<field name="course">course1</field>'
+                . '<field name="department_id">dept1</field>'
+                . '<field name="department">dept1</field>'
+                . '</doc>'
+                . '<doc>'
+                . '<field name="id">course2|inst2|dept2</field>'
+                . '<field name="bib_id">2</field>'
+                . '<field name="instructor_id">inst2</field>'
+                . '<field name="instructor">inst2</field>'
+                . '<field name="course_id">course2</field>'
+                . '<field name="course">course2</field>'
+                . '<field name="department_id">dept2</field>'
+                . '<field name="department">dept2</field>'
+                . '</doc>'
+                . '<doc>'
+                . '<field name="id">course3|inst3|dept3</field>'
+                . '<field name="bib_id">3</field>'
+                . '<field name="instructor_id">inst3</field>'
+                . '<field name="instructor">inst3</field>'
+                . '<field name="course_id">course3</field>'
+                . '<field name="course">course3</field>'
+                . '<field name="department_id">dept3</field>'
+                . '<field name="department">dept3</field>'
+                . '</doc>'
+                . '</add>';
+            $that->assertEquals($expectedXml, trim($update->asXml()));
+            return true;
+        };
+        $writer->expects($this->once())->method('save')
+            ->with(
+                $this->equalTo('SolrReserves'),
+                $this->callback($updateValidator)
+            );
+        $writer->expects($this->once())->method('commit')
+            ->with($this->equalTo('SolrReserves'));
+        $writer->expects($this->once())->method('optimize')
+            ->with($this->equalTo('SolrReserves'));
+        $command = $this->getCommand($writer, $ils);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals(
+            "Successfully loaded 3 rows.\n",
             $commandTester->getDisplay()
         );
     }
