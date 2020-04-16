@@ -50,7 +50,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockIlsConnection()
     {
-        return $this->getMockBuilder(\VuFind\ILS\Connection::class)
+        return $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -62,7 +62,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSolrWriter()
     {
-        return $this->getMockBuilder(\VuFind\Solr\Writer::class)
+        return $this->getMockBuilder(Writer::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

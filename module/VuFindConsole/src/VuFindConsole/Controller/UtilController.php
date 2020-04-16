@@ -41,67 +41,6 @@ use Laminas\Console\Console;
 class UtilController extends AbstractBase
 {
     /**
-     * Command-line tool to delete suppressed records from the index.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function suppressedAction()
-    {
-        $request = $this->getRequest();
-        if ($request->getParam('help') || $request->getParam('h')) {
-            Console::writeLine('Available switches:');
-            Console::writeLine(
-                '--authorities =>'
-                . ' Delete authority records instead of bibliographic records'
-            );
-            Console::writeLine('--help or -h => Show this message');
-            Console::writeLine(
-                '--outfile=[/path/to/file] => Write the ID list to the specified'
-                . ' file instead of updating Solr (optional)'
-            );
-            return $this->getFailureResponse();
-        }
-
-        // Setup Solr Connection
-        $backend = $request->getParam('authorities') ? 'SolrAuth' : 'Solr';
-
-        // Make ILS Connection
-        try {
-            $catalog = $this->getILS();
-            $result = ($backend == 'SolrAuth')
-                ? $catalog->getSuppressedAuthorityRecords()
-                : $catalog->getSuppressedRecords();
-        } catch (\Exception $e) {
-            Console::writeLine("ILS error -- " . $e->getMessage());
-            return $this->getFailureResponse();
-        }
-
-        // Validate result:
-        if (!is_array($result)) {
-            Console::writeLine("Could not obtain suppressed record list from ILS.");
-            return $this->getFailureResponse();
-        } elseif (empty($result)) {
-            Console::writeLine("No suppressed records to delete.");
-            return $this->getSuccessResponse();
-        }
-
-        // If 'outfile' set, write the list
-        if ($file = $request->getParam('outfile')) {
-            if (!file_put_contents($file, implode("\n", $result))) {
-                Console::writeLine("Problem writing to $file");
-                return $this->getFailureResponse();
-            }
-        } else {
-            // Default behavior: Get Suppressed Records and Delete from index
-            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
-            $solr->deleteRecords($backend, $result);
-            $solr->commit($backend);
-            $solr->optimize($backend);
-        }
-        return $this->getSuccessResponse();
-    }
-
-    /**
      * Tool to auto-fill hierarchy cache.
      *
      * @return \Laminas\Console\Response

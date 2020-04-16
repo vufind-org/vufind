@@ -78,13 +78,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/lint_marc' => Util\LintMarcCommand::class,
         'util/optimize' => Util\OptimizeCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
+        'util/suppressed' => Util\SuppressedCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
         /*
         'util/createHierarchyTrees' =>
             'util createHierarchyTrees [--skip-xml|-sx]
             [--skip-json|-sj] [<backend>] [--help|-h]',
-        'util/suppressed' =>
-            'util suppressed [--help|-h] [--authorities] [--outfile=s]',
         */
     ];
 
@@ -142,6 +141,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
+        Util\SuppressedCommand::class =>
+            Util\AbstractSolrAndIlsCommandFactory::class,
         Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,
     ];
 
