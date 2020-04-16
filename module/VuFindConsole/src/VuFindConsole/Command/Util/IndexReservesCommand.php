@@ -114,7 +114,7 @@ class IndexReservesCommand extends AbstractSolrCommand
                 'filename',
                 'f',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'loads a file (may be repeated for multiple files)'
+                'file(s) containing delimited values'
             )->addOption(
                 'delimiter',
                 'd',
@@ -126,7 +126,7 @@ class IndexReservesCommand extends AbstractSolrCommand
                 't',
                 InputOption::VALUE_REQUIRED,
                 'provides a template showing where important values can be found '
-                . 'within the file.  The template is a comma-separated list of '
+                . "within the file.\nThe template is a comma-separated list of "
                 . "values.  Choose from:\n"
                 . "BIB_ID     - bibliographic ID\n"
                 . "COURSE     - course name\n"
