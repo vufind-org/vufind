@@ -27,6 +27,8 @@
  */
 namespace VuFindConsole\Command\Util;
 
+use File_MARC;
+use File_MARCXML;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -68,11 +70,11 @@ class DeletesCommand extends AbstractSolrCommand
                 'format',
                 InputArgument::OPTIONAL,
                 "the format of the file -- it may be one of the following:\n"
-                . "\tflat - flat text format "
+                . "flat - flat text format "
                 . "(deletes all IDs in newline-delimited file)\n"
-                . "\tmarc - binary MARC format (delete all record IDs from 001 "
+                . "marc - binary MARC format (delete all record IDs from 001 "
                 . "fields)\n"
-                . "\tmarcxml - MARC-XML format (delete all record IDs from 001 "
+                . "marcxml - MARC-XML format (delete all record IDs from 001 "
                 . "fields)\n",
                 'marc'
             )->addArgument(
@@ -172,7 +174,7 @@ class DeletesCommand extends AbstractSolrCommand
                 'Attempting to delete ' . count($ids) . ' record(s): '
                 . implode(', ', $ids), OutputInterface::VERBOSITY_VERBOSE
             );
-            $this->writer->deleteRecords($index, $ids);
+            $this->solr->deleteRecords($index, $ids);
             $output->writeln(
                 'Delete operation completed.', OutputInterface::VERBOSITY_VERBOSE
             );

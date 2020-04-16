@@ -124,7 +124,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('foo'), $this->equalTo(['testbug2']));
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
-        $fixture = __DIR__ . '/../../../../../../../../data/testbug2.mrc';
+        $fixture = __DIR__ . '/../../../../../../../../tests/data/testbug2.mrc';
         $commandTester->execute(
             [
                 'filename' => $fixture,
