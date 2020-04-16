@@ -88,7 +88,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessWithOptions()
+    public function testBadParameterCombination()
     {
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
@@ -96,6 +96,60 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
             "-d (delimiter) is meaningless without -f (filename)\n",
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test missing file.
+     *
+     * @return void
+     */
+    public function testBadFilename()
+    {
+        $command = $this->getCommand();
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['--filename' => '/does/not/exist']);
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertEquals(
+            "Could not open /does/not/exist!\n",
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
+     * Test successful file loading.
+     *
+     * @return void
+     */
+    public function testSuccessWithMultipleFiles()
+    {
+        $writer = $this->getMockSolrWriter();
+        $writer->expects($this->once())->method('deleteAll')
+            ->with($this->equalTo('SolrReserves'));
+        $writer->expects($this->once())->method('save')
+            ->with(
+                $this->equalTo('SolrReserves'),
+                $this->equalTo('foo')
+            );
+        $writer->expects($this->once())->method('commit')
+            ->with($this->equalTo('SolrReserves'));
+        $writer->expects($this->once())->method('optimize')
+            ->with($this->equalTo('SolrReserves'));
+        $command = $this->getCommand($writer);
+        $commandTester = new CommandTester($command);
+        $fixture1 = __DIR__ . '/../../../../../fixtures/reserves/fixture1';
+        $fixture2 = __DIR__ . '/../../../../../fixtures/reserves/fixture2';
+        $commandTester->execute(
+            [
+                '--filename' => [$fixture1, $fixture2],
+                '--delimiter' => '|',
+                '--template' => 'BIB_ID,SKIP,COURSE,DEPARTMENT,INSTRUCTOR',
+            ]
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals(
+            "Success!\n",
             $commandTester->getDisplay()
         );
     }
