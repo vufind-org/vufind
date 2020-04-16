@@ -1,6 +1,6 @@
 <?php
 /**
- * DeletesCommand command test.
+ * DeletesCommand test.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\DeletesCommand;
 
 /**
- * DeletesCommand command test.
+ * DeletesCommand test.
  *
  * @category VuFind
  * @package  Tests

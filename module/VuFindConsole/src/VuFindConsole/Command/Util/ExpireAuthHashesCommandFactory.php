@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Util/ExpireAuthHashesCommand command.
+ * Factory for Util/ExpireAuthHashesCommand.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Util/ExpireAuthHashesCommand command.
+ * Factory for Util/ExpireAuthHashesCommand.
  *
  * @category VuFind
  * @package  Console

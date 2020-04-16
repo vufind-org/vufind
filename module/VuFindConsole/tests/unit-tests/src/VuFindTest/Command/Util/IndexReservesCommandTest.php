@@ -1,6 +1,6 @@
 <?php
 /**
- * IndexReservesCommand command test.
+ * IndexReservesCommand test.
  *
  * PHP version 7
  *
@@ -33,7 +33,7 @@ use VuFind\Solr\Writer;
 use VuFindConsole\Command\Util\IndexReservesCommand;
 
 /**
- * IndexReservesCommand command test.
+ * IndexReservesCommand test.
  *
  * @category VuFind
  * @package  Tests

@@ -1,6 +1,6 @@
 <?php
 /**
- * SwitchDbHashCommand command test.
+ * SwitchDbHashCommand test.
  *
  * PHP version 7
  *
@@ -37,7 +37,7 @@ use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
 
 /**
- * SwitchDbHashCommand command test.
+ * SwitchDbHashCommand test.
  *
  * @category VuFind
  * @package  Tests

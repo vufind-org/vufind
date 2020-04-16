@@ -1,6 +1,6 @@
 <?php
 /**
- * CleanUpRecordCacheCommand command test.
+ * CleanUpRecordCacheCommand test.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\CleanUpRecordCacheCommand;
 
 /**
- * CleanUpRecordCacheCommand command test.
+ * CleanUpRecordCacheCommand test.
  *
  * @category VuFind
  * @package  Tests

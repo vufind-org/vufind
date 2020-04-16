@@ -200,7 +200,9 @@ class Generator
     /**
      * Write a verbose message (if configured to do so)
      *
-     * @var string $msg Message to display
+     * @param string $msg Message to display
+     *
+     * @return void
      */
     protected function verboseMsg($msg)
     {

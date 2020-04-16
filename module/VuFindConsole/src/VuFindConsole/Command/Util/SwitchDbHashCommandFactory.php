@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Util/SwitchDbHashCommand command.
+ * Factory for Util/SwitchDbHashCommand.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Util/SwitchDbHashCommand command.
+ * Factory for Util/SwitchDbHashCommand.
  *
  * @category VuFind
  * @package  Console

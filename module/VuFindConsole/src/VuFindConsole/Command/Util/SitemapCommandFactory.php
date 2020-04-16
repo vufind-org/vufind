@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Util/SitemapCommand command.
+ * Factory for Util/SitemapCommand.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Util/SitemapCommand command.
+ * Factory for Util/SitemapCommand.
  *
  * @category VuFind
  * @package  Console

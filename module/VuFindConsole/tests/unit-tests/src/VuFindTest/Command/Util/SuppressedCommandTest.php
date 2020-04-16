@@ -1,6 +1,6 @@
 <?php
 /**
- * SuppressedCommand command test.
+ * SuppressedCommand test.
  *
  * PHP version 7
  *
@@ -33,7 +33,7 @@ use VuFind\Solr\Writer;
 use VuFindConsole\Command\Util\SuppressedCommand;
 
 /**
- * SuppressedCommand command test.
+ * SuppressedCommand test.
  *
  * @category VuFind
  * @package  Tests

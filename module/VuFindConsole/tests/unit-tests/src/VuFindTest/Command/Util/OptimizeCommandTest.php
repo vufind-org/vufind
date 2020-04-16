@@ -1,6 +1,6 @@
 <?php
 /**
- * OptimizeCommand command test.
+ * OptimizeCommand test.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\OptimizeCommand;
 
 /**
- * OptimizeCommand command test.
+ * OptimizeCommand test.
  *
  * @category VuFind
  * @package  Tests

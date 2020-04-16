@@ -1,6 +1,6 @@
 <?php
 /**
- * SitemapCommand command test.
+ * SitemapCommand test.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\SitemapCommand;
 
 /**
- * SitemapCommand command test.
+ * SitemapCommand test.
  *
  * @category VuFind
  * @package  Tests

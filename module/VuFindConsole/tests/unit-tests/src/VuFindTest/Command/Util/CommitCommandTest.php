@@ -1,6 +1,6 @@
 <?php
 /**
- * CommitCommand command test.
+ * CommitCommand test.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\CommitCommand;
 
 /**
- * CommitCommand command test.
+ * CommitCommand test.
  *
  * @category VuFind
  * @package  Tests

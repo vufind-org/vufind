@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Util/ExpireSessionsCommand command.
+ * Factory for Util/ExpireSessionsCommand.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Util/ExpireSessionsCommand command.
+ * Factory for Util/ExpireSessionsCommand.
  *
  * @category VuFind
  * @package  Console

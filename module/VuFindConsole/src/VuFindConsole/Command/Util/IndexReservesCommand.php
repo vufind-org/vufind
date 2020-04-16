@@ -178,10 +178,10 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return CsvReader
      */
-    protected function getCsvReader($file, string $delimiter,
+    protected function getCsvReader($files, string $delimiter,
         string $template
     ): CsvReader {
-        return new CsvReader($file, $delimiter, $template);
+        return new CsvReader($files, $delimiter, $template);
     }
 
     /**
