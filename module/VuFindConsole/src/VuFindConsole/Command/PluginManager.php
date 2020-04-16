@@ -74,6 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
         'util/expire_sessions' => Util\ExpireSessionsCommand::class,
+        'util/index_reserves' => Util\IndexReservesCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         'util/optimize' => Util\OptimizeCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
@@ -82,8 +83,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/createHierarchyTrees' =>
             'util createHierarchyTrees [--skip-xml|-sx]
             [--skip-json|-sj] [<backend>] [--help|-h]',
-        'util/index_reserves' =>
-            'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
         'util/suppressed' =>
             'util suppressed [--help|-h] [--authorities] [--outfile=s]',
         */
@@ -138,6 +137,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\ExpireSearchesCommandFactory::class,
         Util\ExpireSessionsCommand::class =>
             Util\ExpireSessionsCommandFactory::class,
+        Util\IndexReservesCommand::class => Util\IndexReservesCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,

@@ -100,7 +100,6 @@ class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInter
     {
         return [
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
-            'util index_reserves' => 'Solr reserves indexer',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
         ];
     }
