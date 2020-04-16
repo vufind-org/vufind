@@ -137,7 +137,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\ExpireSearchesCommandFactory::class,
         Util\ExpireSessionsCommand::class =>
             Util\ExpireSessionsCommandFactory::class,
-        Util\IndexReservesCommand::class => Util\IndexReservesCommandFactory::class,
+        Util\IndexReservesCommand::class =>
+            Util\AbstractSolrAndIlsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,

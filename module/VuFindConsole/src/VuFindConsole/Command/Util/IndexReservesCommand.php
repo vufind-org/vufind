@@ -31,9 +31,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\ILS\Connection as ILSConnection;
 use VuFind\Reserves\CsvReader;
-use VuFind\Solr\Writer;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 
@@ -46,7 +44,7 @@ use VuFindSearch\Backend\Solr\Record\SerializableRecord;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IndexReservesCommand extends AbstractSolrCommand
+class IndexReservesCommand extends AbstractSolrAndIlsCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
@@ -54,13 +52,6 @@ class IndexReservesCommand extends AbstractSolrCommand
      * @var string
      */
     protected static $defaultName = 'util/index_reserves';
-
-    /**
-     * ILS connection
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
 
     /**
      * Default delimiter for reading files
@@ -82,20 +73,6 @@ class IndexReservesCommand extends AbstractSolrCommand
      * @var string[]
      */
     protected $requiredKeys = ['INSTRUCTOR_ID', 'COURSE_ID', 'DEPARTMENT_ID'];
-
-    /**
-     * Constructor
-     *
-     * @param Writer        $solr Solr writer
-     * @param ILSConnection $ils  ILS connection object
-     * @param string|null   $name The name of the command; passing null means it
-     * must be set in configure()
-     */
-    public function __construct(Writer $solr, ILSConnection $ils, $name = null)
-    {
-        $this->catalog = $ils;
-        parent::__construct($solr, $name);
-    }
 
     /**
      * Configure the command.

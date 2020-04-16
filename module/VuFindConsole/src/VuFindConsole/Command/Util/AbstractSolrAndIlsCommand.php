@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for IndexReservesCommand.
+ * Generic base class for Solr + ILS commands.
  *
  * PHP version 7
  *
@@ -27,11 +27,11 @@
  */
 namespace VuFindConsole\Command\Util;
 
-use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\ILS\Connection;
+use VuFind\Solr\Writer;
 
 /**
- * Factory for IndexReservesCommand.
+ * Generic base class for Solr + ILS commands.
  *
  * @category VuFind
  * @package  Console
@@ -39,29 +39,26 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IndexReservesCommandFactory implements FactoryInterface
+abstract class AbstractSolrAndIlsCommand extends AbstractSolrCommand
 {
     /**
-     * Create an object
+     * ILS connection
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
-     *
-     * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @var Connection
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
-        array $options = null
-    ) {
-        return new $requestedName(
-            $container->get(\VuFind\Solr\Writer::class),
-            $container->get(\VuFind\ILS\Connection::class),
-            ...($options ?? [])
-        );
+    protected $catalog;
+
+    /**
+     * Constructor
+     *
+     * @param Writer      $solr Solr writer
+     * @param Connection  $ils  ILS connection object
+     * @param string|null $name The name of the command; passing null means it
+     * must be set in configure()
+     */
+    public function __construct(Writer $solr, Connection $ils, $name = null)
+    {
+        $this->catalog = $ils;
+        parent::__construct($solr, $name);
     }
 }
