@@ -69,6 +69,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/commit' => Util\CommitCommand::class,
         'util/cssBuilder' => Util\CssBuilderCommand::class,
+        'util/deletes' => Util\DeletesCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
@@ -81,8 +82,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/createHierarchyTrees' =>
             'util createHierarchyTrees [--skip-xml|-sx]
             [--skip-json|-sj] [<backend>] [--help|-h]',
-        'util/deletes' =>
-            'util deletes [--verbose] [<filename>] [<format>] [<index>]',
         'util/index_reserves' =>
             'util index_reserves [--help|-h] [-d=s] [-t=s] [-f=s]',
         'util/suppressed' =>
@@ -130,6 +129,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\CleanUpRecordCacheCommandFactory::class,
         Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
+        Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
         Util\ExpireExternalSessionsCommand::class =>
