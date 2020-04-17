@@ -133,10 +133,8 @@ class CreateHierarchyTreesCommand extends Command
         $backendId = $input->getArgument('backend');
         $hierarchies = $this->resultsManager->get($backendId)
             ->getFullFieldFacets(['hierarchy_top_id']);
-        if (!isset($hierarchies['hierarchy_top_id']['data']['list'])) {
-            $hierarchies['hierarchy_top_id']['data']['list'] = [];
-        }
-        foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
+        $list = $hierarchies['hierarchy_top_id']['data']['list'] ?? [];
+        foreach ($list as $hierarchy) {
             $recordid = $hierarchy['value'];
             $count = $hierarchy['count'];
             if (empty($recordid)) {

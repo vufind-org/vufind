@@ -28,8 +28,10 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Hierarchy\Driver\ConfigurationBased as HierarchyDriver;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager;
+use VuFind\Search\Solr\Results;
 use VuFindConsole\Command\Util\CreateHierarchyTreesCommand;
 
 /**
@@ -44,27 +46,98 @@ use VuFindConsole\Command\Util\CreateHierarchyTreesCommand;
 class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get mock record loader.
+     * Get mock hierarchy driver
      *
-     * @return Loader
+     * @return HierarchyDriver
      */
-    protected function getMockRecordLoader()
+    protected function getMockHierarchyDriver()
     {
-        return $this->getMockBuilder(Loader::class)
+        return $this->getMockBuilder(HierarchyDriver::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     /**
+     * Get mock record.
+     *
+     * @param HierarchyDriver $driver Hierarchy driver
+     *
+     * @return \VuFind\RecordDriver\AbstractBase
+     */
+    protected function getMockRecord($driver = null)
+    {
+        $record = new \VuFindTest\RecordDriver\TestHarness();
+        $record->setRawData(
+            [
+                'HierarchyType' => 'foo',
+                'HierarchyDriver' => $driver ?? $this->getMockHierarchyDriver()
+            ]
+        );
+        return $record;
+    }
+
+    /**
+     * Get mock record loader.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     *
+     * @return Loader
+     */
+    protected function getMockRecordLoader($record = null)
+    {
+        $loader = $this->getMockBuilder(Loader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $loader->expects($this->once())->method('load')
+            ->with($this->equalTo('recordid'), $this->equalTo('foo'))
+            ->will($this->returnValue($record ?? $this->getMockRecord()));
+        return $loader;
+    }
+
+    /**
+     * Get mock results.
+     *
+     * @return Results
+     */
+    protected function getMockResults()
+    {
+        $results = $this->getMockBuilder(Results::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $output = [
+            'hierarchy_top_id' => [
+                'data' => [
+                    'list' => [
+                        [
+                            'value' => 'recordid',
+                            'count' => 5,
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $results->expects($this->once())->method('getFullFieldFacets')
+            ->with($this->equalTo(['hierarchy_top_id']))
+            ->will($this->returnValue($output));
+        return $results;
+    }
+
+    /**
      * Get mock results manager.
+     *
+     * @param Results $results Results object
      *
      * @return PluginManager
      */
-    protected function getMockResultsManager()
+    protected function getMockResultsManager($results = null)
     {
-        return $this->getMockBuilder(PluginManager::class)
+        $manager = $this->getMockBuilder(PluginManager::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $manager->expects($this->once())->method('get')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue($results ?? $this->getMockResults()));
+        return $manager;
     }
 
     /**
@@ -94,9 +167,11 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(
-            ['--skip-xml' => true, '--skip-json' => true]
+            ['--skip-xml' => true, '--skip-json' => true, 'backend' => 'foo']
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $expectedText = "\tBuilding tree for recordid... 5 records\n"
+            . "\t\tJSON skipped.\n\t\tXML skipped.\n1 files\n";
+        $this->assertEquals($expectedText, $commandTester->getDisplay());
     }
 }
