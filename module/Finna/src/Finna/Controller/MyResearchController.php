@@ -1264,7 +1264,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             . ($patron['lastname'] ?? '')
         );
         $user = $this->getUser();
-        $email = $patron['email'] ?? $user['email'] ?? '';
+        $email = $profile['email'] ?? '';
         $userId = $user->id;
         $homeLibrary = $user->home_library ?? '';
         $formId = $subject;
