@@ -68,6 +68,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/commit' => Util\CommitCommand::class,
+        'util/createHierarchyTrees' => Util\CreateHierarchyTreesCommand::class,
         'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/deletes' => Util\DeletesCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
@@ -80,11 +81,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
-        /*
-        'util/createHierarchyTrees' =>
-            'util createHierarchyTrees [--skip-xml|-sx]
-            [--skip-json|-sj] [<backend>] [--help|-h]',
-        */
     ];
 
     /**
@@ -126,6 +122,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CleanUpRecordCacheCommand::class =>
             Util\CleanUpRecordCacheCommandFactory::class,
         Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\CreateHierarchyTreesCommand::class =>
+        Util\CreateHierarchyTreesCommandFactory::class,
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
