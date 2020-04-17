@@ -27,8 +27,6 @@
  */
 namespace VuFindConsole;
 
-use Laminas\Console\Adapter\AdapterInterface as Console;
-
 /**
  * Code module for VuFind's console functionality
  *
@@ -38,8 +36,7 @@ use Laminas\Console\Adapter\AdapterInterface as Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface,
-    \Laminas\ModuleManager\Feature\ConsoleBannerProviderInterface
+class Module
 {
     /**
      * Get module configuration
