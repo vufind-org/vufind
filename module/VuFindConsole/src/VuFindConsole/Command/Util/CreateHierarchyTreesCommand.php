@@ -34,7 +34,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager;
-use VuFind\Solr\Writer;
 
 /**
  * Generic base class for Solr commands.
