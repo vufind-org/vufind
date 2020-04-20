@@ -85,11 +85,7 @@ class CommitCommand extends AbstractSolrCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Check some limits; increase them if necessary:
-        $limit = ini_get('memory_limit');
-        if ($limit > 0 && $limit < 50 * 1024 * 1024) {
-            ini_set('memory_limit', '50M');
-        }
+        // Check time limit; increase if necessary:
         if (ini_get('max_execution_time') < 3600) {
             ini_set('max_execution_time', '3600');
         }
