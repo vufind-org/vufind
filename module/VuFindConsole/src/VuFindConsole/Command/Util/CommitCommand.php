@@ -85,7 +85,6 @@ class CommitCommand extends AbstractSolrCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
         // Setup Solr Connection -- Allow core to be specified from command line.

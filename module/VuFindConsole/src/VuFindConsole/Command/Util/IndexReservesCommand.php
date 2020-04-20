@@ -194,7 +194,6 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
         $delimiter = $input->getOption('delimiter');
