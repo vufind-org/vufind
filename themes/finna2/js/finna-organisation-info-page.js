@@ -435,9 +435,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         $.each(obj, function handleGrouping(group, services) {
           var div = $('<div/>');
           var serviceText = '';
-          var serviceTitle = '';
+          var serviceTitle = '<b>' + services[0] + '</b>';
           if (typeof services.desc !== 'undefined' || typeof services.shortDesc !== 'undefined') {
-            serviceTitle = '<b>' + services[0] + '</b>';
             serviceText = $('<a class="service-tooltip" data-toggle="tooltip" data-placement="bottom" data-html="true" />').html(serviceTitle);
             var serviceDesc = '';
             if (typeof services.desc !== 'undefined') {
