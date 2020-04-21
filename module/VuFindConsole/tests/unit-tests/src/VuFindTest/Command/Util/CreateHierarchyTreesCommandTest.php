@@ -29,6 +29,7 @@ namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Hierarchy\Driver\ConfigurationBased as HierarchyDriver;
+use VuFind\Hierarchy\TreeDataSource\Solr as TreeSource;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager;
 use VuFind\Search\Solr\Results;
@@ -53,6 +54,18 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockHierarchyDriver()
     {
         return $this->getMockBuilder(HierarchyDriver::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Get mock tree source
+     *
+     * @return TreeSource
+     */
+    protected function getMockTreeSource()
+    {
+        return $this->getMockBuilder(TreeSource::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -172,6 +185,31 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $expectedText = "\tBuilding tree for recordid... 5 records\n"
             . "\t\tJSON skipped.\n\t\tXML skipped.\n1 files\n";
+        $this->assertEquals($expectedText, $commandTester->getDisplay());
+    }
+
+    /**
+     * Test populating everything.
+     *
+     * @return void
+     */
+    public function testPopulatingEverything()
+    {
+        $tree = $this->getMockTreeSource();
+        $tree->expects($this->once())->method('getJSON')
+            ->with($this->equalTo('recordid'), $this->equalTo(['refresh' => true]));
+        $tree->expects($this->once())->method('getXML')
+            ->with($this->equalTo('recordid'), $this->equalTo(['refresh' => true]));
+        $driver = $this->getMockHierarchyDriver();
+        $driver->expects($this->any())->method('getTreeSource')
+            ->will($this->returnValue($tree));
+        $loader = $this->getMockRecordLoader($this->getMockRecord($driver));
+        $command = $this->getCommand($loader);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(['backend' => 'foo']);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $expectedText = "\tBuilding tree for recordid... 5 records\n"
+            . "\t\tJSON cache...\n\t\tXML cache...\n1 files\n";
         $this->assertEquals($expectedText, $commandTester->getDisplay());
     }
 }
