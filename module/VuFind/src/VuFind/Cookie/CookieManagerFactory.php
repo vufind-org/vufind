@@ -66,7 +66,7 @@ class CookieManagerFactory implements FactoryInterface
             ->get('config');
         $path = '/';
         if ($config->Cookies->limit_by_path ?? false) {
-            $path = Console::isConsole()
+            $path = (PHP_SAPI == 'cli')
                 ? '' : $container->get('Request')->getBasePath();
             if (empty($path)) {
                 $path = '/';

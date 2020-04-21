@@ -83,7 +83,7 @@ class IpRange implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return [];
         }
         // Check if any regex matches....

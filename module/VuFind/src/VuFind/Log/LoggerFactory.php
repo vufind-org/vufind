@@ -188,7 +188,7 @@ class LoggerFactory implements FactoryInterface
         // Query parameters do not apply in console mode; if we do have a debug
         // query parameter, and the appropriate permission is set, activate dynamic
         // debug:
-        if (!Console::isConsole()
+        if (PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
             return $container->get(\ZfcRbac\Service\AuthorizationService::class)

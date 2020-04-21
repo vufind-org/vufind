@@ -133,7 +133,7 @@ class Bootstrapper
     {
         // If the system is unavailable and we're not in the console, forward to the
         // unavailable page.
-        if (!Console::isConsole() && !($this->config->System->available ?? true)) {
+        if (PHP_SAPI !== 'cli' && !($this->config->System->available ?? true)) {
             $callback = function ($e) {
                 $routeMatch = new RouteMatch(
                     ['controller' => 'Error', 'action' => 'Unavailable'], 1
@@ -175,7 +175,7 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            if (!Console::isConsole()) {
+            if (PHP_SAPI !== 'cli') {
                 $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
                 // Grab the template name from the first child -- we can use this to
@@ -278,7 +278,7 @@ class Bootstrapper
     protected function initLanguage()
     {
         // Language not supported in CLI mode:
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return;
         }
 
@@ -366,7 +366,7 @@ class Bootstrapper
     protected function initExceptionBasedHttpStatuses()
     {
         // HTTP statuses not needed in console mode:
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return;
         }
 
@@ -412,7 +412,7 @@ class Bootstrapper
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.
-                    $server = Console::isConsole()
+                    $server = (PHP_SAPI == 'cli')
                         ? new \Laminas\Stdlib\Parameters(['env' => 'console'])
                         : $event->getRequest()->getServer();
                     if (!empty($exception)) {

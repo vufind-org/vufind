@@ -201,7 +201,7 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return $standardTheme;
         }
         $mobileTheme = $this->mobile->enabled()
@@ -259,7 +259,7 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        if (!Console::isConsole()) {
+        if (PHP_SAPI !== 'cli') {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:
