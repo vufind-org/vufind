@@ -30,7 +30,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Auth\Shibboleth as ShibbolethAuth;
+use VuFind\Auth\AbstractShibboleth as ShibbolethAuth;
 
 /**
  * Shibboleth permission provider for VuFind.
