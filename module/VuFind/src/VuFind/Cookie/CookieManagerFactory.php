@@ -28,7 +28,6 @@
 namespace VuFind\Cookie;
 
 use Interop\Container\ContainerInterface;
-use Laminas\Console\Console;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**

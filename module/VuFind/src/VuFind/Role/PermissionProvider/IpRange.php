@@ -30,7 +30,6 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use Laminas\Console\Console;
 use Laminas\Stdlib\RequestInterface;
 use VuFind\Net\IpAddressUtils;
 

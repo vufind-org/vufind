@@ -29,7 +29,6 @@ namespace VuFindTheme;
 
 use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
-use Laminas\Console\Console;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
