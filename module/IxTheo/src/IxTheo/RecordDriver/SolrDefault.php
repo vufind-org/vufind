@@ -21,24 +21,6 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get the full title of the record.
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        $title = $this->getShortTitle();
-        $subtitle = $this->getSubtitle();
-        $titleSection = $this->getTitleSection();
-        // In some cases the subtitles contain the English translation
-        // then don't separate title and subtitle with ":"
-        $title_subtitle_separator = preg_match('/^\s*=\s/', $subtitle) ? ' ' : ' : ';
-        if (!empty($subtitle)) { $title .= $title_subtitle_separator . $subtitle; }
-        if (!empty($titleSection)) { $title .= ' / ' . $titleSection; }
-        return $title;
-    }
-
-    /**
      * Get secondary author and its role in a '$'-separated string
      *
      * @return array
