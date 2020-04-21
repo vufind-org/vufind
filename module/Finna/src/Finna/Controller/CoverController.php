@@ -136,7 +136,7 @@ class CoverController extends \VuFind\Controller\CoverController
         $size = $params->fromQuery('fullres')
             ? 'large' : $params->fromQuery('size');
 
-        if (!in_array($size, ['master', 'large', 'medium', 'small'])) {
+        if ($size && !in_array($size, ['master', 'large', 'medium', 'small'])) {
             $response = $this->getResponse();
             $response->setStatusCode(400);
             return $response;
