@@ -35,7 +35,9 @@
 #       email: recipient2@email
 #
 #   response (string) Reponse after form submit (translation key)
-#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
+#   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
+#   senderEmailRequired (boolean) Require sender to fill out email field
+#   senderNameRequired (boolean)  Require sender to fill out name field
 #
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
@@ -112,7 +114,8 @@ forms:
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
-    senderInfoRequired: false 
+    senderEmailRequired: false
+    senderNameRequired: false
 
     #help:
     #  pre: feedback_help_pre
