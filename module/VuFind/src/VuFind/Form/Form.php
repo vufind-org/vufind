@@ -240,7 +240,12 @@ class Form extends \Laminas\Form\Form implements
             $senderEmail['required'] = $senderEmail['aria-required']
                 = $senderName['required'] = $senderName['aria-required'] = true;
         }
-
+        if ($formConfig['senderNameRequired'] ?? false) {
+            $senderName['required'] = $senderName['aria-required'] = true;
+        }
+        if ($formConfig['senderEmailRequired'] ?? false) {
+            $senderEmail['required'] = $senderEmail['aria-required'] = true;
+        }
         $configuredElements[] = $senderName;
         $configuredElements[] = $senderEmail;
 
@@ -380,7 +385,7 @@ class Form extends \Laminas\Form\Form implements
         return [
             'recipient', 'title', 'help', 'submit', 'response', 'useCaptcha',
             'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired',
-            'reportReferrer'
+            'reportReferrer', 'senderEmailRequired', 'senderNameRequired'
         ];
     }
 
