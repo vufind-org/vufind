@@ -126,37 +126,37 @@ class InstallCommand extends Command
                 'use-defaults',
                 null,
                 InputOption::VALUE_NONE,
-                'Use VuFind Defaults to Configure '
+                'Use VuFind defaults to configure '
                 . '(ignores any other arguments passed)'
             )->addOption(
                 'overridedir',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Where would you like to store your local settings?',
-                "{$this->baseDir}/local"
+                'Where would you like to store your local settings?'
+                . " (defaults to {$this->overrideDir} when --non-interactive is set)"
             )->addOption(
                 'module-name',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'What module name would you like to use? Use disabled, to not use',
-                "disabled"
+                'What module name would you like to use? Specify "disabled" to skip'
             )->addOption(
                 'basepath',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'What base path should be used in VuFind\'s URL?',
-                $this->basePath
+                'What base path should be used in VuFind\'s URL?'
+                . " (defaults to {$this->baseDir} when --non-interactive is set)"
             )->addOption(
                 'multisite',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_OPTIONAL,
                 'Specify we are going to setup a multisite. '
-                . 'Options: directory and host'
+                . 'Options: directory and host',
+                false
             )->addOption(
                 'hostname',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Specify the hostname for the VuFind Site, When multisite=host'
+                'Specify the hostname for the VuFind Site, when multisite=host'
             )->addOption(
                 'non-interactive',
                 null,
@@ -520,7 +520,7 @@ class InstallCommand extends Command
             $config = str_replace('//', '/', $config);
             $config = str_replace('Alias /', '#Alias /', $config);
         }
-        if (!empty($this->__constructmodule)) {
+        if (!empty($this->module)) {
             $config = str_replace(
                 "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
                 "SetEnv VUFIND_LOCAL_MODULES {$this->module}", $config
@@ -770,24 +770,25 @@ class InstallCommand extends Command
 
         // Load user settings if we are not forcing defaults:
         if (!$input->getOption('use-defaults')) {
-            if ($input->hasOption('overridedir')) {
-                $this->overrideDir = $input->getOption('overridedir');
+            $overrideDir = trim($input->getOption('overridedir'));
+            if (!empty($overrideDir)) {
+                $this->overrideDir = $overrideDir;
             } elseif ($interactive) {
                 $userInputNeeded['overrideDir'] = true;
             }
-            if ($input->hasOption('module-name')) {
-                if ($input->getOption('module-name') !== 'disabled') {
-                    $this->module = $input->getOption('module-name');
-                    if (($result = $this->validateModules($this->module)) !== true) {
-                        return $this->failWithError($output, $result);
-                    }
+            $moduleName = trim($input->getOption('module-name'));
+            if (!empty($moduleName) && $moduleName !== 'disabled') {
+                $this->module = $moduleName;
+                if (($result = $this->validateModules($this->module)) !== true) {
+                    return $this->failWithError($output, $result);
                 }
             } elseif ($interactive) {
                 $userInputNeeded['module'] = true;
             }
 
-            if ($input->hasOption('basepath')) {
-                $this->basePath = $input->getOption('basepath');
+            $basePath = trim($input->getOption('basepath'));
+            if (!empty($basePath)) {
+                $this->basePath = $basePath;
                 if (($result = $this->validateBasePath($this->basePath, true)) !== true) {
                     return $this->failWithError($output, $result);
                 }
@@ -795,19 +796,20 @@ class InstallCommand extends Command
                 $userInputNeeded['basePath'] = true;
             }
 
-            // We assume "single site" mode unless the --multisite switch is set:
-            if ($input->hasOption('multisite')) {
-                if ($input->getOption('multisite') === 'directory') {
-                    $this->multisiteMode = self::MULTISITE_DIR_BASED;
-                } elseif ($input->getOption('multisite') === 'host') {
-                    $this->multisiteMode = self::MULTISITE_HOST_BASED;
-                } elseif (($bad = $input->getOption('multisite')) && $bad !== true) {
-                    return $this->failWithError(
-                        $output, 'Unexpected multisite mode: ' . $bad
-                    );
-                } elseif ($interactive) {
-                    $userInputNeeded['multisiteMode'] = true;
-                }
+            // We assume "single site" mode unless the --multisite option is set;
+            // note that $mode will be null if the user provided the option with
+            // no value specified, and false if the user did not provide the option.
+            $mode = $input->getOption('multisite');
+            if ($mode === 'directory') {
+                $this->multisiteMode = self::MULTISITE_DIR_BASED;
+            } elseif ($mode === 'host') {
+                $this->multisiteMode = self::MULTISITE_HOST_BASED;
+            } elseif ($mode !== true && $mode !== null && $mode !== false) {
+                return $this->failWithError(
+                    $output, 'Unexpected multisite mode: ' . $mode
+                );
+            } elseif ($interactive && $mode !== false) {
+                $userInputNeeded['multisiteMode'] = true;
             }
 
             // Now that we've validated as many parameters as possible, retrieve
@@ -827,7 +829,7 @@ class InstallCommand extends Command
 
             // Load supplemental multisite parameters:
             if ($this->multisiteMode == self::MULTISITE_HOST_BASED) {
-                $hostOption = $input->getOption('hostname');
+                $hostOption = trim($input->getOption('hostname'));
                 $this->host = (!empty($hostOption) || !$interactive)
                     ? $hostOption : $this->getHost($input, $output);
             }
