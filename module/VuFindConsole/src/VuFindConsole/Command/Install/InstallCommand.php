@@ -420,7 +420,7 @@ class InstallCommand extends Command
     {
         $output->writeln(
             "\nWhen running multiple VuFind sites against a single installation, you"
-            . "need\nto decide how to distinguish between instances.  Choose an "
+            . " need\nto decide how to distinguish between instances.  Choose an "
             . "option:\n\n" . self::MULTISITE_DIR_BASED . ".) Directory-based "
             . "(i.e. http://server/vufind1 vs. http://server/vufind2)\n"
             . self::MULTISITE_HOST_BASED
@@ -429,11 +429,11 @@ class InstallCommand extends Command
         );
         $legal = [self::MULTISITE_NONE, self::MULTISITE_DIR_BASED, self::MULTISITE_HOST_BASED];
         while (true) {
-            $input = $this->getInput(
+            $response = $this->getInput(
                 $input, $output, "\nWhich option do you want? "
             );
-            if (is_numeric($input) && in_array(intval($input), $legal)) {
-                return intval($input);
+            if (is_numeric($response) && in_array(intval($response), $legal)) {
+                return intval($response);
             }
             $output->writeln("Invalid selection.");
         }
@@ -468,11 +468,11 @@ class InstallCommand extends Command
     protected function getHost(InputInterface $input, OutputInterface $output)
     {
         while (true) {
-            $input = $this->getInput(
+            $response = $this->getInput(
                 $input, $output, "\nPlease enter the hostname for your site: "
             );
-            if (($result = $this->validateHost($input)) === true) {
-                return $input;
+            if (($result = $this->validateHost($response)) === true) {
+                return $response;
             }
             $output->writeln($result);
         }
@@ -487,8 +487,9 @@ class InstallCommand extends Command
      *
      * @return string        User-entered response.
      */
-    protected function getInput($input, $output, $prompt)
-    {
+    protected function getInput(InputInterface $input, OutputInterface $output,
+        string $prompt
+    ): string {
         $question = new Question($prompt, '');
         return $this->getHelper('question')->ask($input, $output, $question);
     }
@@ -728,7 +729,7 @@ class InstallCommand extends Command
             $output->writeln(
                 "Since you are using a host-based multisite configuration, you will "
                 . "also \nneed to do some virtual host configuration. See\n"
-                . "     http://httpd.apache.org/docs/2.2/vhosts/\n"
+                . "     http://httpd.apache.org/docs/2.4/vhosts/\n"
             );
         }
         if ('/' == $this->basePath) {
