@@ -771,7 +771,7 @@ class InstallCommand extends Command
             . "{$this->baseDir} and {$this->overrideDir} respectively.\n\n"
             : "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n"
             . "variables are set to {$this->baseDir}, {$this->module} and "
-            . "{$this->overrideDir} respectively.\n\n";
+            . "{$this->overrideDir} respectively.";
         $output->writeln($finalMsg);
     }
 
