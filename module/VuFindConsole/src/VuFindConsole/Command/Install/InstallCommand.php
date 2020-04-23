@@ -242,8 +242,8 @@ class InstallCommand extends Command
     }
 
     /**
-     * Display system-specific information for where configuration files are found and/or
-     * symbolic links should be created.
+     * Display system-specific information for where configuration files are found
+     * and/or symbolic links should be created.
      *
      * @param OutputInterface $output Output object
      *
@@ -335,7 +335,8 @@ class InstallCommand extends Command
         while (true) {
             $overrideDirInput = $this->getInput(
                 $input, $output,
-                "Where would you like to store your local settings? [{$this->overrideDir}] "
+                'Where would you like to store your local settings? '
+                . "[{$this->overrideDir}] "
             );
             if (empty($overrideDirInput)) {
                 return $this->overrideDir;
@@ -349,8 +350,8 @@ class InstallCommand extends Command
     }
 
     /**
-     * Validate a comma-separated list of module names. Returns true on success, message
-     * on failure.
+     * Validate a comma-separated list of module names. Returns true on success,
+     * message on failure.
      *
      * @param string $modules Module names to validate.
      *
@@ -429,8 +430,9 @@ class InstallCommand extends Command
      *
      * @return int
      */
-    protected function getMultisiteMode(InputInterface $input, OutputInterface $output)
-    {
+    protected function getMultisiteMode(InputInterface $input,
+        OutputInterface $output
+    ) {
         $output->writeln(
             "\nWhen running multiple VuFind sites against a single installation, you"
             . " need\nto decide how to distinguish between instances.  Choose an "
@@ -440,7 +442,11 @@ class InstallCommand extends Command
             . ".) Host-based (i.e. http://vufind1.server vs. http://vufind2.server)"
             . "\n\nor enter " . self::MULTISITE_NONE . " to disable multisite mode."
         );
-        $legal = [self::MULTISITE_NONE, self::MULTISITE_DIR_BASED, self::MULTISITE_HOST_BASED];
+        $legal = [
+            self::MULTISITE_NONE,
+            self::MULTISITE_DIR_BASED,
+            self::MULTISITE_HOST_BASED
+        ];
         while (true) {
             $response = $this->getInput(
                 $input, $output, "\nWhich option do you want? "
@@ -453,7 +459,8 @@ class InstallCommand extends Command
     }
 
     /**
-     * Validate the user's hostname input. Returns true on success, message on failure.
+     * Validate the user's hostname input. Returns true on success, message on
+     * failure.
      *
      * @param string $host String to check
      *
@@ -555,7 +562,8 @@ class InstallCommand extends Command
             }
             $config = preg_replace(
                 '/SetEnv\s+(\w+)\s+(.*)/',
-                'SetEnvIfNoCase Host ' . str_replace('.', '\.', $this->host) . ' $1=$2',
+                'SetEnvIfNoCase Host ' . str_replace('.', '\.', $this->host)
+                . ' $1=$2',
                 $config
             );
             break;
@@ -579,9 +587,10 @@ class InstallCommand extends Command
      */
     protected function buildWindowsConfig()
     {
-        $batch = "@set VUFIND_HOME={$this->baseDir}\n" .
-            "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" .
-            (empty($this->module) ? '' : "@set VUFIND_LOCAL_MODULES={$this->module}\n");
+        $module = empty($this->module)
+            ? '' : "@set VUFIND_LOCAL_MODULES={$this->module}\n";
+        $batch = "@set VUFIND_HOME={$this->baseDir}\n"
+            . "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module;
         return $this->writeFileToDisk($this->baseDir . '/env.bat', $batch)
             ? true : "Problem writing {$this->baseDir}/env.bat.";
     }
