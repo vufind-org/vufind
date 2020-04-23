@@ -29,7 +29,6 @@ namespace VuFind\Log;
 
 use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
-use Laminas\Console\Console;
 use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 

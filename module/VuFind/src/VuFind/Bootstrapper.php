@@ -27,7 +27,6 @@
  */
 namespace VuFind;
 
-use Laminas\Console\Console;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Router\Http\RouteMatch;
 
