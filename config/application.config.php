@@ -6,7 +6,6 @@ $modules = [
     'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
 ];
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
-    $modules[] = 'Laminas\Mvc\Console';
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {
