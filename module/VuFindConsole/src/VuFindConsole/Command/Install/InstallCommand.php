@@ -768,7 +768,7 @@ class InstallCommand extends Command
         );
         $finalMsg = empty($this->addOptionmodule)
             ? "VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to\n"
-            . "{$this->baseDir} and {$this->overrideDir} respectively.\n\n"
+            . "{$this->baseDir} and {$this->overrideDir} respectively."
             : "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n"
             . "variables are set to {$this->baseDir}, {$this->module} and "
             . "{$this->overrideDir} respectively.";
