@@ -166,6 +166,19 @@ class InstallCommand extends Command
     }
 
     /**
+     * Write file contents to disk.
+     *
+     * @param string $filename Filename
+     * @param string $content  Content
+     *
+     * @return bool
+     */
+    protected function writeFileToDisk($filename, $content)
+    {
+        return @file_put_contents($filename, $content);
+    }
+
+    /**
      * Get instructions for editing the Apache configuration under Windows.
      *
      * @return string
@@ -554,7 +567,7 @@ class InstallCommand extends Command
             copy($target, $bak);
             $output->writeln("Backed up existing Apache configuration to $bak.");
         }
-        return @file_put_contents($target, $config)
+        return $this->writeFileToDisk($target, $config)
             ? true : "Problem writing {$this->overrideDir}/httpd-vufind.conf.";
     }
 
@@ -569,7 +582,7 @@ class InstallCommand extends Command
         $batch = "@set VUFIND_HOME={$this->baseDir}\n" .
             "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" .
             (empty($this->module) ? '' : "@set VUFIND_LOCAL_MODULES={$this->module}\n");
-        return @file_put_contents($this->baseDir . '/env.bat', $batch)
+        return $this->writeFileToDisk($this->baseDir . '/env.bat', $batch)
             ? true : "Problem writing {$this->baseDir}/env.bat.";
     }
 
@@ -598,7 +611,7 @@ class InstallCommand extends Command
             "solrmarc.path = {$this->overrideDir}/import|{$this->baseDir}/import",
             $import
         );
-        if (!@file_put_contents($target, $import)) {
+        if (!$this->writeFileToDisk($target, $import)) {
             return "Problem writing {$this->overrideDir}/import/{$filename}.";
         }
         return true;
@@ -674,7 +687,7 @@ class InstallCommand extends Command
         if (!$config) {
             return "Problem reading {$configFile}.";
         }
-        $success = @file_put_contents(
+        $success = $this->writeFileToDisk(
             $moduleDir . '/config/module.config.php',
             str_replace('VuFindLocalTemplate', $module, $config)
         );
@@ -688,7 +701,7 @@ class InstallCommand extends Command
         if (!$contents) {
             return "Problem reading {$moduleFile}.";
         }
-        $success = @file_put_contents(
+        $success = $this->writeFileToDisk(
             $moduleDir . '/Module.php',
             str_replace('VuFindLocalTemplate', $module, $contents)
         );
@@ -778,20 +791,20 @@ class InstallCommand extends Command
             }
             $moduleName = trim($input->getOption('module-name'));
             if (!empty($moduleName) && $moduleName !== 'disabled') {
-                $this->module = $moduleName;
-                if (($result = $this->validateModules($this->module)) !== true) {
+                if (($result = $this->validateModules($moduleName)) !== true) {
                     return $this->failWithError($output, $result);
                 }
+                $this->module = $moduleName;
             } elseif ($interactive) {
                 $userInputNeeded['module'] = true;
             }
 
             $basePath = trim($input->getOption('basepath'));
             if (!empty($basePath)) {
-                $this->basePath = $basePath;
-                if (($result = $this->validateBasePath($this->basePath, true)) !== true) {
+                if (($result = $this->validateBasePath($basePath, true)) !== true) {
                     return $this->failWithError($output, $result);
                 }
+                $this->basePath = $basePath;
             } elseif ($interactive) {
                 $userInputNeeded['basePath'] = true;
             }
