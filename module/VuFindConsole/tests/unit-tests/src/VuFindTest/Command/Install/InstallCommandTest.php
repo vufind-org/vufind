@@ -93,9 +93,13 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->at(4))->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
+        $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
+            . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
         $command->expects($this->at(5))->method('writeFileToDisk')
-            ->with($this->equalTo("$expectedBaseDir/env.bat"))
-            ->will($this->returnValue(true));
+            ->with(
+                $this->equalTo("$expectedBaseDir/env.bat"),
+                $this->equalTo($expectedEnvBat)
+            )->will($this->returnValue(true));
         $command->expects($this->at(6))->method('writeFileToDisk')
             ->with($this->equalTo("$localFixtures/import/import.properties"))
             ->will($this->returnValue(true));
@@ -118,6 +122,57 @@ If you decide to use a custom module, the name you choose will be used for
 the module's directory name and its PHP namespace.
 
 TEXT;
+        $this->assertEquals(
+            $expectedOutput, $commandTester->getDisplay()
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test the non-interactive installation process.
+     *
+     * @return void
+     */
+    public function testNonInteractiveInstallation()
+    {
+        $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
+        $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
+        $command = $this->getMockCommand(
+            ['buildDirs', 'displaySuccessMessage', 'getInput', 'writeFileToDisk']
+        );
+        $expectedDirs = [
+            $localFixtures,
+            $localFixtures . '/cache',
+            $localFixtures . '/config',
+            $localFixtures . '/harvest',
+            $localFixtures . '/import',
+        ];
+        $command->expects($this->at(0))->method('buildDirs')
+            ->with($this->equalTo($expectedDirs))
+            ->will($this->returnValue(true));
+        $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
+            . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
+        $command->expects($this->at(1))->method('writeFileToDisk')
+            ->with(
+                $this->equalTo("$expectedBaseDir/env.bat"),
+                $this->equalTo($expectedEnvBat)
+            )->will($this->returnValue(true));
+        $command->expects($this->at(2))->method('writeFileToDisk')
+            ->with($this->equalTo("$localFixtures/import/import.properties"))
+            ->will($this->returnValue(true));
+        $command->expects($this->at(3))->method('writeFileToDisk')
+            ->with($this->equalTo("$localFixtures/import/import_auth.properties"))
+            ->will($this->returnValue(true));
+        $command->expects($this->at(4))->method('writeFileToDisk')
+            ->with($this->equalTo("$localFixtures/httpd-vufind.conf"))
+            ->will($this->returnValue(true));
+        $command->expects($this->at(5))->method('displaySuccessMessage')
+            ->with($this->isInstanceOf(OutputInterface::class));
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            ['--non-interactive' => true, '--overridedir' => $localFixtures]
+        );
+        $expectedOutput = "VuFind has been found in $expectedBaseDir.\n";
         $this->assertEquals(
             $expectedOutput, $commandTester->getDisplay()
         );
