@@ -907,7 +907,7 @@ class InstallCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln("VuFind has been found in {$this->baseDir}.\n");
+        $output->writeln("VuFind has been found in {$this->baseDir}.");
 
         // Collect and process parameters, and stop if an error is encountered
         // along the way....
