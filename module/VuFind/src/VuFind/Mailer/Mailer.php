@@ -32,6 +32,9 @@ use Zend\Mail\Address;
 use Zend\Mail\AddressList;
 use Zend\Mail\Header\ContentType;
 use Zend\Mail\Message;
+use Zend\Mime\Message as MimeMessage;
+use Zend\Mime\Mime;
+use Zend\Mime\Part as MimePart;
 
 /**
  * VuFind Mailer Class
@@ -88,19 +91,30 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
-     * Get a blank email message object.
+     * Get a text email message object.
      *
      * @return Message
      */
     public function getNewMessage()
     {
-        $message = new Message();
-        $message->setEncoding('UTF-8');
+        $message = $this->getNewBlankMessage();
         $headers = $message->getHeaders();
         $ctype = new ContentType();
         $ctype->setType('text/plain');
         $ctype->addParameter('charset', 'UTF-8');
         $headers->addHeader($ctype);
+        return $message;
+    }
+
+    /**
+     * Get a blank email message object.
+     *
+     * @return Message
+     */
+    public function getNewBlankMessage()
+    {
+        $message = new Message();
+        $message->setEncoding('UTF-8');
         return $message;
     }
 
@@ -138,13 +152,54 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
+     * Constructs a {@see MimeMessage} body from given text and html content.
+     *
+     * @param string|null $text Mail content used for plain text part
+     * @param string|null $html Mail content used for html part
+     *
+     * @return MimeMessage
+     */
+    public function buildMultipartBody(
+        string $text = null,
+        string $html = null
+    ): MimeMessage {
+        $parts = new MimeMessage();
+
+        if ($text) {
+            $textPart = new MimePart($text);
+            $textPart->setType(Mime::TYPE_TEXT);
+            $textPart->setCharset('utf-8');
+            $textPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+            $parts->addPart($textPart);
+        }
+
+        if ($html) {
+            $htmlPart = new MimePart($html);
+            $htmlPart->setType(Mime::TYPE_HTML);
+            $htmlPart->setCharset('utf-8');
+            $htmlPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+            $parts->addPart($htmlPart);
+        }
+
+        $alternativePart = new MimePart($parts->generateMessage());
+        $alternativePart->setType('multipart/alternative');
+        $alternativePart->setBoundary($parts->getMime()->boundary());
+        $alternativePart->setCharset('utf-8');
+
+        $body = new MimeMessage();
+        $body->setParts([$alternativePart]);
+
+        return $body;
+    }
+
+    /**
      * Send an email message.
      *
      * @param string|Address|AddressList $to      Recipient email address (or
      * delimited list)
      * @param string|Address             $from    Sender name and email address
      * @param string                     $subject Subject line for message
-     * @param string                     $body    Message body
+     * @param string|MimeMessage         $body    Message body
      * @param string                     $cc      CC recipient (null for none)
      * @param string|Address|AddressList $replyTo Reply-To address (or delimited
      * list, null for none)
@@ -201,8 +256,10 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
-            $message = $this->getNewMessage()
-                ->addFrom($from)
+            $message = $body instanceof MimeMessage
+                ? $this->getNewBlankMessage()
+                : $this->getNewMessage();
+            $message->addFrom($from)
                 ->addTo($recipients)
                 ->setBody($body)
                 ->setSubject($subject);
@@ -212,6 +269,15 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             if ($replyTo) {
                 $message->addReplyTo($replyTo);
             }
+
+            $headers = $message->getHeaders();
+            if (!$headers->has('Content-Type')) {
+                $ctype = new ContentType();
+                $ctype->setType('text/plain');
+                $ctype->addParameter('charset', 'UTF-8');
+                $headers->addHeader($ctype);
+            }
+
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
