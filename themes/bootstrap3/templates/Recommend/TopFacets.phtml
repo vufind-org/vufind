@@ -40,14 +40,14 @@
           <?php /* More link */ ?>
           <?php if ($index == $limit): ?>
             <span id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="narrow-toggle">
-              <a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;">
+              <a href="#" class="more-facets" data-title="<?=$this->escapeHtmlAttr($title)?>">
                 <?=$this->transEsc('more') ?> ...
               </a>
             </span>
           <?php endif; ?>
         <?php endforeach; ?>
         <?php if (count($cluster['list']) > $limit): ?>
-          <a class="narrow-toggle <?=$moreClass ?>" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;">
+          <a class="narrow-toggle <?=$moreClass ?> less-facets" href="#" data-title="<?=$this->escapeHtmlAttr($title) ?>">
             <?=$this->transEsc('less') ?> ...
           </a>
         <?php endif; ?>
@@ -55,5 +55,19 @@
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'collapseTopFacets()', 'SET')?>
+<?php
+$script = <<<JS
+$('.more-facets').click(function(e) {
+  title = $(this).data('title');
+  moreFacets('NarrowGroupHidden-' + title);
+  return false;
+});
+$('.less-facets').click(function(e) {
+  title = $(this).data('title');
+  lessFacets('NarrowGroupHidden-' + title);
+  return false;
+});
+collapseTopFacets()
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

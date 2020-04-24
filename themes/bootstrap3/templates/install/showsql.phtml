@@ -16,8 +16,17 @@
 <?=$this->flashmessages()?>
 <p>Save this SQL somewhere safe:</p>
 
-<textarea class="pre" rows="20" readonly onClick="this.select()"><?=trim($this->sql) ?></textarea>
+<textarea class="pre" rows="20" readonly id="sql_text"><?=trim($this->sql) ?></textarea>
 
 <form method="post" action="<?=$this->url('install-showsql')?>">
     <input type="submit" name="continue" value="Next" class="btn btn-primary"/>
 </form>
+
+<?php
+$script = <<<JS
+$('#sql_text').click(function(e) {
+  this.select();  
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
