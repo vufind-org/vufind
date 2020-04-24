@@ -39,7 +39,12 @@
     $jsParams = implode(', ', $params);
     $jsLoad = "loadMapSelection(" . $jsParams . ");";
     $addSearchOption = <<<EOF
-      $('.search-query-options>.advanced').after('&nbsp;&nbsp;<a href="#" class="advanced" onclick=\\'{$jsLoad} $(this).remove(); return false;\\'>{$this->transEsc('Geographic Search')}</a>');
+      $('.search-query-options>.advanced').after('&nbsp;&nbsp;<a href="#" class="advanced geo" >{$this->transEsc('Geographic Search')}</a>');
+      $('.advanced.geo').click(function(e) {
+        ${jsLoad}
+        $(this).remove();
+        return false;
+      });
 EOF;
   ?>
   <div class="authorbox">

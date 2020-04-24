@@ -4,7 +4,7 @@
     <dl>
       <?php $i = 0; foreach ($worldCatIdentities as $author => $subjects): ?>
         <?php if (++$i == 4): ?>
-          <dd id="more-WCIdents"><a href="#" onclick="moreFacets('WCIdents'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+          <dd id="more-WCIdents"><a href="#"><?=$this->transEsc('more')?> ...</a></dd>
           <span class="hidden WCIdents">
         <?php endif; ?>
         <dd>
@@ -14,17 +14,30 @@
           <dd><?=$this->transEsc('Related Subjects')?>:</dd>
           <?php $j = 0; foreach ($subjects as $subj): ?>
             <?php if (++$j == 3): ?>
-              <dd id="more-WCIdents<?=$i?>"><a href="#" onclick="moreFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+              <dd id="more-WCIdents<?=$i?>"><a href="#"><?=$this->transEsc('more')?> ...</a></dd>
               <span class="hidden WCIdents<?=$i?>">
             <?php endif; ?>
             <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
           <?php endforeach; ?>
-          <?php if ($j > 2): ?><dd><a href="#" onclick="lessFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd></span><?php endif; ?>
+          <?php if ($j > 2): ?><dd id="less-WCIdents">><a href="#"><?=$this->transEsc('less')?> ...</a></dd></span><?php endif; ?>
           </dl>
         <?php endif; ?>
         </dd>
       <?php endforeach; ?>
-      <?php if ($i > 3): ?><dd><a href="#" onclick="lessFacets('WCIdents'); return false;"><?=$this->transEsc('less')?> ...</a></dd></span><?php endif; ?>
+      <?php if ($i > 3): ?><dd id="less-WCIdents"><a href="#"><?=$this->transEsc('less')?> ...</a></dd></span><?php endif; ?>
     </dl>
   </div>
 <?php endif; ?>
+<?php
+$script = <<<JS
+$('#more-WCIdents a').click(function(e) {
+    moreFacets('WCIdents');
+    return false;
+});
+$('#less-WCIdents a').click(function(e) {
+    lessFacets('WCIdents');
+    return false;
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
