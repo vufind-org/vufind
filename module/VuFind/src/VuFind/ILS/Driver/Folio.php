@@ -673,7 +673,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyTransactions($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id']];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
         if (count($json->loans) == 0) {
