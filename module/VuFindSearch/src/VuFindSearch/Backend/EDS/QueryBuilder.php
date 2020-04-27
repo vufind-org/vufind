@@ -45,7 +45,8 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilder
 {
     /**
-     * Default query (used when query string is empty).
+     * Default query (used when query string is empty). This should retrieve all
+     * records in the index, facilitating high-level facet-based browsing.
      *
      * @var string
      */
