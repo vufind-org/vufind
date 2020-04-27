@@ -43,6 +43,23 @@ use VuFindSearch\Backend\EDS\QueryBuilder;
 class QueryBuilderTest extends TestCase
 {
     /**
+     * Test special case for blank queries.
+     *
+     * @return void
+     */
+    public function testBlankSearch()
+    {
+        $qb = new QueryBuilder();
+        $params = $qb->build(new \VuFindSearch\Query\Query());
+        $this->assertEquals(
+            [
+                'query' => ['(FT yes) OR (FT no)']
+            ],
+            $params->getArrayCopy()
+        );
+    }
+
+    /**
      * Test query parsing.
      *
      * @return void
