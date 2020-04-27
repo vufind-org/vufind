@@ -41,7 +41,7 @@ class AdminController extends AbstractAdmin
     /**
      * Display disabled message.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function disabledAction()
     {
@@ -51,7 +51,7 @@ class AdminController extends AbstractAdmin
     /**
      * Admin home.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

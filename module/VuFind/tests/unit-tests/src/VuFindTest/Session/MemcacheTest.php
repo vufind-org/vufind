@@ -109,7 +109,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo(0),
                 $this->equalTo(1000)
             )->will($this->returnValue(true));
-        $config = new \Zend\Config\Config(
+        $config = new \Laminas\Config\Config(
             [
                 'lifetime' => 1000,
                 'memcache_host' => 'myhost',
@@ -145,8 +145,8 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Zend\Config\Config $config Optional configuration
-     * @param \Memcache           $client Optional client object
+     * @param \Laminas\Config\Config $config Optional configuration
+     * @param \Memcache              $client Optional client object
      *
      * @return Database
      */

@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\Auth;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -78,7 +78,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingMethodOrder()
     {
@@ -95,15 +94,15 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
@@ -111,11 +110,10 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with handler configured to load a service which does not exist.
      *
      * @return void
-     *
      */
     public function testLoginWithBadService()
     {
-        $this->expectException(\Zend\ServiceManager\Exception\ServiceNotFoundException::class);
+        $this->expectException(\Laminas\ServiceManager\Exception\ServiceNotFoundException::class);
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
@@ -130,11 +128,10 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * as an arbitrary inappropriate class).
      *
      * @return void
-     *
      */
     public function testLoginWithBadClass()
     {
-        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';
@@ -147,7 +144,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -161,7 +157,6 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {

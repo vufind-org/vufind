@@ -28,11 +28,11 @@
 namespace VuFindConsole\Generator;
 
 use Interop\Container\ContainerInterface;
-use Zend\Code\Generator\ClassGenerator;
-use Zend\Code\Generator\FileGenerator;
-use Zend\Code\Generator\MethodGenerator;
-use Zend\Code\Reflection\ClassReflection;
-use Zend\Console\Console;
+use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\FileGenerator;
+use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Reflection\ClassReflection;
+use Laminas\Console\Console;
 
 /**
  * Generator tools.
@@ -46,7 +46,7 @@ use Zend\Console\Console;
 class GeneratorTools
 {
     /**
-     * Zend Framework configuration
+     * Laminas configuration
      *
      * @var array
      */
@@ -55,7 +55,7 @@ class GeneratorTools
     /**
      * Constructor.
      *
-     * @param array $config Zend Framework configuration
+     * @param array $config Laminas configuration
      */
     public function __construct(array $config)
     {
@@ -148,7 +148,7 @@ class GeneratorTools
     {
         $this->createClassInModule(
             $factory, $module, null,
-            ['Zend\ServiceManager\Factory\FactoryInterface'],
+            ['Laminas\ServiceManager\Factory\FactoryInterface'],
             function ($generator) use ($class) {
                 $method = MethodGenerator::fromArray(
                     [
@@ -170,7 +170,7 @@ class GeneratorTools
                 ];
                 $method->setParameters([$param1, $param2, $param3]);
                 // Copy doc block from this class' factory:
-                $reflection = new \Zend\Code\Reflection\MethodReflection(
+                $reflection = new \Laminas\Code\Reflection\MethodReflection(
                     GeneratorToolsFactory::class, '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);
@@ -566,9 +566,9 @@ class GeneratorTools
                 throw new \Exception("$fullPath already exists.");
             }
         }
-        // TODO: this is a workaround for an apparent bug in Zend\Code which
+        // TODO: this is a workaround for an apparent bug in Laminas\Code which
         // omits the leading backslash on "extends" statements when rewriting
-        // existing classes. Can we remove this after a future Zend\Code upgrade?
+        // existing classes. Can we remove this after a future Laminas\Code upgrade?
         $code = str_replace(
             'extends VuFind\\', 'extends \\VuFind\\', $generator->generate()
         );

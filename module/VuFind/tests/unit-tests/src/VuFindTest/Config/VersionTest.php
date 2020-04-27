@@ -59,7 +59,6 @@ class VersionTest extends \VuFindTest\Unit\TestCase
      * Test with a bad directory.
      *
      * @return void
-     *
      */
     public function testMissingFile()
     {

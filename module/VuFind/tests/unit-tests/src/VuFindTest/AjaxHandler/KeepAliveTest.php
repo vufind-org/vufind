@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\Session\SessionManager;
 use VuFind\AjaxHandler\KeepAlive;
 use VuFind\AjaxHandler\KeepAliveFactory;
-use Zend\Session\SessionManager;
 
 /**
  * KeepAlive test class.
@@ -54,7 +54,7 @@ class KeepAliveTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->container->set(SessionManager::class, $sm);
         $factory = new KeepAliveFactory();
         $handler = $factory($this->container, KeepAlive::class);
-        $params = new \Zend\Mvc\Controller\Plugin\Params();
+        $params = new \Laminas\Mvc\Controller\Plugin\Params();
         $this->assertEquals([true], $handler->handleRequest($params));
     }
 }

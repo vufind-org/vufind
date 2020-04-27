@@ -28,15 +28,15 @@
  */
 namespace VuFindSearch;
 
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
+
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
-
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerInterface;
 
 /**
  * Search service.

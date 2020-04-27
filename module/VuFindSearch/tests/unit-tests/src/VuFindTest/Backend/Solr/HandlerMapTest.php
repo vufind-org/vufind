@@ -47,7 +47,6 @@ class HandlerMapTest extends TestCase
      * Test exception on duplicate fallback handler.
      *
      * @return void
-     *
      */
     public function testSetHandlerMapThrowsOnDuplicateFallback()
     {
@@ -65,7 +64,6 @@ class HandlerMapTest extends TestCase
      * Test exception on duplicate handler.
      *
      * @return void
-     *
      */
     public function testSetHandlerMapThrowsOnDuplicateFunctionHandler()
     {
@@ -83,7 +81,6 @@ class HandlerMapTest extends TestCase
      * Test exception on undefined handler.
      *
      * @return void
-     *
      */
     public function testGetHandlerThrowsOnUndefinedFunctionHandler()
     {
@@ -98,7 +95,6 @@ class HandlerMapTest extends TestCase
      * Test exception on unexpected type.
      *
      * @return void
-     *
      */
     public function testGetParametersThrowsOnUndefinedType()
     {
@@ -113,7 +109,6 @@ class HandlerMapTest extends TestCase
      * Test exception on unexpected type.
      *
      * @return void
-     *
      */
     public function testSetParametersThrowsOnUndefinedType()
     {

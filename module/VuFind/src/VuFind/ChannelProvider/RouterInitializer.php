@@ -28,7 +28,7 @@
 namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Initializer\InitializerInterface;
+use Laminas\ServiceManager\Initializer\InitializerInterface;
 
 /**
  * Channel Provider Router Initializer

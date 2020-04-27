@@ -27,13 +27,13 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\BadRequest;
 use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * Abstract Driver for API-based ILS drivers
@@ -55,12 +55,12 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Allow default corrections to all requests
      *
-     * @param \Zend\Http\Headers $headers the request headers
-     * @param array              $params  the parameters object
+     * @param \Laminas\Http\Headers $headers the request headers
+     * @param array                 $params  the parameters object
      *
      * @return array
      */
-    protected function preRequest(\Zend\Http\Headers $headers, $params)
+    protected function preRequest(\Laminas\Http\Headers $headers, $params)
     {
         return [$headers, $params];
     }
@@ -68,10 +68,11 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
-     * @param \Zend\Http\Headers $req_headers Headers object
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
+     * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
      */
@@ -99,7 +100,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * @param array  $params  Parameters object to be sent as data
      * @param array  $headers Additional headers
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function makeRequest($method = "GET", $path = "/", $params = [],
         $headers = []

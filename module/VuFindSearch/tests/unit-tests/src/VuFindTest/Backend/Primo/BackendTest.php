@@ -132,7 +132,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
-     *
      */
     public function testSearchWrapsPrimoException()
     {
@@ -150,7 +149,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieve exception handling.
      *
      * @return void
-     *
      */
     public function testRetrieveWrapsPrimoException()
     {
@@ -211,7 +209,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\Primo\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['http://fakeaddress.none', 'inst-id', $client])

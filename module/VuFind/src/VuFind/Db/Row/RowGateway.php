@@ -36,7 +36,7 @@ namespace VuFind\Db\Row;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RowGateway extends \Zend\Db\RowGateway\RowGateway
+class RowGateway extends \Laminas\Db\RowGateway\RowGateway
 {
     /**
      * Retrieve primary key information.

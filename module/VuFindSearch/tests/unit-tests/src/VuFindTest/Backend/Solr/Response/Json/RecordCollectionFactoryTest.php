@@ -59,7 +59,6 @@ class RecordCollectionFactoryTest extends TestCase
      * Test invalid input.
      *
      * @return void
-     *
      */
     public function testInvalidInput()
     {

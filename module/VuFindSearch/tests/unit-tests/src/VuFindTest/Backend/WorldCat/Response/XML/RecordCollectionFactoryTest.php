@@ -45,7 +45,6 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
      * Test bad callback.
      *
      * @return void
-     *
      */
     public function testBadCallback()
     {
@@ -59,7 +58,6 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
      * Test bad factory input.
      *
      * @return void
-     *
      */
     public function testBadFactoryInput()
     {

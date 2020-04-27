@@ -27,10 +27,10 @@
  */
 namespace VuFind\Log\Writer;
 
-use Zend\Http\Client;
+use Laminas\Http\Client;
 
 /**
- * This class extends the Zend Logging to sent POST messages over HTTP
+ * This class extends the Laminas Logging to sent POST messages over HTTP
  *
  * @category VuFind
  * @package  Error_Logging
@@ -38,7 +38,7 @@ use Zend\Http\Client;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Post extends \Zend\Log\Writer\AbstractWriter
+class Post extends \Laminas\Log\Writer\AbstractWriter
 {
     use VerbosityTrait;
 
@@ -52,7 +52,7 @@ class Post extends \Zend\Log\Writer\AbstractWriter
     /**
      * Pre-configured http client
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $client = null;
 
@@ -105,7 +105,7 @@ class Post extends \Zend\Log\Writer\AbstractWriter
      * @param array $event event data
      *
      * @return void
-     * @throws \Zend\Log\Exception\RuntimeException
+     * @throws \Laminas\Log\Exception\RuntimeException
      */
     protected function doWrite(array $event)
     {

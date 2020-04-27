@@ -130,7 +130,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @param string $name Configuration to load
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     protected function getConfig($name)
     {
@@ -251,11 +251,10 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      * Test configuration is read-only.
      *
      * @return void
-     *
      */
     public function testReadOnlyConfig()
     {
-        $this->expectException(\Zend\Config\Exception\RuntimeException::class);
+        $this->expectException(\Laminas\Config\Exception\RuntimeException::class);
 
         if (self::$writeFailed) {
             $this->markTestSkipped('Could not write test configurations.');
