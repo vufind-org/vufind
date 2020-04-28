@@ -12,6 +12,7 @@
 #   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
 #                        option to be turned on in the config.ini [Captcha] form setting.
 #                        (default = true, if Captcha turned on for feedback overall).
+#   reportReferrer (boolean) Should the form report the page from which it was invoked?
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
@@ -34,7 +35,9 @@
 #       email: recipient2@email
 #
 #   response (string) Reponse after form submit (translation key)
-#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
+#   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
+#   senderEmailRequired (boolean) Require sender to fill out email field
+#   senderNameRequired (boolean)  Require sender to fill out name field
 #
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
@@ -49,7 +52,7 @@
 #     required (boolean) Is the element required?
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox)
+#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox|hidden)
 #
 #     help (string)      Element help text (translation key) that is displayed before the element.
 #                        To include HTML formatting, use a translation key ending
@@ -103,6 +106,7 @@ forms:
     title: Send us your feedback!
     enabled: true
     useCaptcha: true
+    reportReferrer: false
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
@@ -110,7 +114,8 @@ forms:
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
-    senderInfoRequired: false 
+    senderEmailRequired: false
+    senderNameRequired: false
 
     #help:
     #  pre: feedback_help_pre
