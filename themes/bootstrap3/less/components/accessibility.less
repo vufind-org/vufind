@@ -3,10 +3,15 @@
 
 /* ACCESSIBILITY IMPROVEMENTS */
 
+a {
+  text-decoration: underline;
+}
+
+/* AAA Color Contrasts */
 @badge-bg: #595959;
 
-@breadcrumb-color: #535353; // AAA compliant
-@breadcrumb-active-color: #444; // AAA compliant
+@breadcrumb-color: #535353;
+@breadcrumb-active-color: #444;
 
 @state-danger-text: #8a211e;
 .alert-danger,
@@ -14,16 +19,9 @@
   color: @state-danger-text;
 }
 
-a {
-  text-decoration: underline;
-}
-
-.sr-only {
-  color: #000;
-  background-color: #fff;
-}
-
 /**
+ * OVERRIDE BS3 COLLAPSE MENU HIDDEN
+ *
  * instead of display: none, keep things sr accessible
  * https://tailwindcss.com/docs/screen-readers/
  */
