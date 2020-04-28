@@ -12,7 +12,7 @@
         <?php if ($page != $this->current): ?>
           <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
         <?php else: ?>
-          <li class="active"><span><?=$page?></span></li>
+          <li class="active" aria-current="page"><span><?=$page?></span></li>
         <?php endif; ?>
       <?php endforeach; ?>
     <?php endif; ?>
