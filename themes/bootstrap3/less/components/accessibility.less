@@ -19,6 +19,37 @@ a {
 }
 
 .sr-only {
-  background-color: #fff;
   color: #000;
+  background-color: #fff;
+}
+
+/**
+ * instead of display: none, keep things sr accessible
+ * https://tailwindcss.com/docs/screen-readers/
+ */
+.collapse.collapse:not(.in) {
+  position: absolute;
+  display: block;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  color: #000;
+  background-color: #fff;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+@media (min-width: 768px) {
+  .navbar-collapse.collapse:not(.in) {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
 }

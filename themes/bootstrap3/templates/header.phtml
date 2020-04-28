@@ -1,9 +1,8 @@
 <?php $account = $this->auth()->getManager(); ?>
 <div class="banner container navbar">
   <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
-      <span class="sr-only">Toggle navigation</span>
-      <i class="fa fa-bars" aria-hidden="true"></i>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-hidden="true">
+      <i class="fa fa-bars"></i>
     </button>
     <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
   </div>
