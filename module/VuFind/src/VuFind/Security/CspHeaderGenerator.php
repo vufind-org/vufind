@@ -76,13 +76,20 @@ class CspHeaderGenerator
      */
     public function getHeader()
     {
-        if ($this->config->CSP->report_only) {
-            //TODO: We need report only implementation of csp header
-            //$cspHeader = new ContentSecurityPolicyReportOnly();
-            $cspHeader = new ContentSecurityPolicy();
-        } else {
-            $cspHeader = new ContentSecurityPolicy();
+        if ('development' == APPLICATION_ENV) {
+            return $this->createDevelopmentModeHeader();
         }
+        return $this->createStandardHeader();
+    }
+
+    /**
+     * Create CSP header base on given configuration
+     *
+     * @return ContentSecurityPolicy
+     */
+    protected function createStandardHeader()
+    {
+        $cspHeader = $this->createHeaderObject();
         $directives = $this->config->Directives;
         foreach ($directives as $name => $value) {
             $sources = $value->toArray();
@@ -90,6 +97,36 @@ class CspHeaderGenerator
                 $sources[] = "'nonce-$this->nonce'";
             }
             $cspHeader->setDirective($name, $sources);
+        }
+        return $cspHeader;
+    }
+
+    /**
+     * Create CSP header base for development mode
+     *
+     * @return ContentSecurityPolicy
+     */
+    protected function createDevelopmentModeHeader()
+    {
+        $cspHeader = $this->createHeaderObject();
+        $cspHeader->setDirective('script-src', ["'self'", "'unsafe-inline'"]);
+        $cspHeader->setDirective('style-src', ["'self'", "'unsafe-inline'"]);
+        return $cspHeader;
+    }
+
+    /**
+     * Create header object
+     *
+     * @return ContentSecurityPolicy
+     */
+    protected function createHeaderObject()
+    {
+        if ($this->config->CSP->report_only) {
+            //TODO: We need report only implementation of csp header
+            //$cspHeader = new ContentSecurityPolicyReportOnly();
+            $cspHeader = new ContentSecurityPolicy();
+        } else {
+            $cspHeader = new ContentSecurityPolicy();
         }
         return $cspHeader;
     }
