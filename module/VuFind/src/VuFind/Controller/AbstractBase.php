@@ -191,13 +191,23 @@ class AbstractBase extends AbstractActionController
      */
     public function onDispatch(MvcEvent $e)
     {
+        $this->addCspHeader();
+        return parent::onDispatch($e);
+    }
+
+    /**
+     * Add Content Security Policy Header to response
+     *
+     * @return void
+     */
+    protected function addCspHeader()
+    {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $cspHeaderGenerator = $this->serviceLocator
             ->get(\VuFind\Security\CspHeaderGenerator::class);
         $cspHeader = $cspHeaderGenerator->getHeader();
         $headers->addHeader($cspHeader);
-        return parent::onDispatch($e);
     }
 
     /**
