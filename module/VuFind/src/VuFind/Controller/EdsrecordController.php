@@ -57,7 +57,7 @@ class EdsrecordController extends AbstractRecord
     }
 
     /**
-     * ePub display action.
+     * Action to display ePub.
      *
      * @return mixed
      */
