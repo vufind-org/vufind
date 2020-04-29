@@ -89,6 +89,12 @@
         </a>
       <?php endif; ?>
 
+      <?php if ($this->driver->hasEpubAvailable()): ?>
+        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'Epub'); ?>" class="icon epub fulltext" target="_blank">
+          <?=$this->transEsc('Epub Full Text')?>
+        </a>
+      <?php endif; ?>
+
       <?php /* Links from DOI linker */ ?>
       <?php $doi = $this->doi($this->driver, 'results'); if ($doi->isActive()):?>
         <?=$doi->renderTemplate()?>
