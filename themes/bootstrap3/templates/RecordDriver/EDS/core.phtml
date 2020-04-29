@@ -36,6 +36,14 @@
           </a>
         </span><br />
       <?php endif; ?>
+      <?php $epubLink = $this->driver->getEpubLink();
+          if ($epubLink): ?>
+        <span>
+          <a href="<?=$epubLink?>" class="icon epub fulltext">
+            <?=$this->transEsc('ePub Full Text')?>
+          </a>
+        </span><br />
+      <?php endif; ?>
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>#html" class="icon html fulltext">
