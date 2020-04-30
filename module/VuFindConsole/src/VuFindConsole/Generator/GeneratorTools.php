@@ -79,6 +79,9 @@ class GeneratorTools
         if ($pmClass === 'VuFind\Controller\PluginManager') {
             return 'ControllerManager';
         }
+        if ($pmClass === 'VuFind\Controller\Plugin\PluginManager') {
+            return \Laminas\Mvc\Controller\PluginManager::class;
+        }
         return $pmClass;
     }
 
@@ -115,6 +118,11 @@ class GeneratorTools
             return \VuFind\Controller\AbstractBase::class;
         }
 
+        // Special case: controller plugins:
+        if ($pm instanceof \Laminas\Mvc\Controller\PluginManager) {
+            return \Laminas\Mvc\Controller\Plugin\AbstractPlugin::class;
+        }
+
         // Default case: look it up:
         if (!method_exists($pm, 'getExpectedInterface')) {
             throw new \Exception(
@@ -141,6 +149,8 @@ class GeneratorTools
         // Special case: controller
         if ($class === \Laminas\Mvc\Controller\ControllerManager::class) {
             return ['controllers'];
+        } elseif ($class == \Laminas\Mvc\Controller\PluginManager::class) {
+            return ['controller_plugins'];
         }
         // Default case: VuFind internal plugin manager
         $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
