@@ -27,8 +27,8 @@
  */
 namespace VuFind\Cover;
 
-use Zend\Http\Client;
-use Zend\Http\Response;
+use Laminas\Http\Client;
+use Laminas\Http\Response;
 
 /**
  * Caching Proxy for Cover Images

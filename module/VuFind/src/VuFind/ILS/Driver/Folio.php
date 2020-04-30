@@ -74,7 +74,7 @@ class Folio extends AbstractAPI implements
     /**
      * Session cache
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
@@ -121,10 +121,11 @@ class Folio extends AbstractAPI implements
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
-     * @param \Zend\Http\Headers $req_headers Headers object
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
+     * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
      */
@@ -160,12 +161,12 @@ class Folio extends AbstractAPI implements
      *
      * Add X-Okapi headers and Content-Type to every request
      *
-     * @param \Zend\Http\Headers $headers the request headers
-     * @param object             $params  the parameters object
+     * @param \Laminas\Http\Headers $headers the request headers
+     * @param object                $params  the parameters object
      *
      * @return array
      */
-    public function preRequest(\Zend\Http\Headers $headers, $params)
+    public function preRequest(\Laminas\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
         if (!$headers->has('Content-Type')) {
@@ -435,17 +436,20 @@ class Folio extends AbstractAPI implements
             $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
+            $notesFormatter = function ($note) {
+                return $note->note ?? '';
+            };
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $itemBody->items[$j]->id,
                     'holding_id' => $holding->id,
-                    'number' => count($items),
+                    'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
-                    'notes' => $item->notes ?? [],
+                    'notes' => array_map($notesFormatter, $item->notes ?? []),
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
@@ -606,7 +610,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'id == "' . $patron['id'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
@@ -669,7 +673,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyTransactions($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id']];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
         if (count($json->loans) == 0) {
@@ -705,13 +709,14 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron)
     {
-        $response = $this->makeRequest('GET', '/locations');
+        $query = ['query' => 'pickupLocation=true'];
+        $response = $this->makeRequest('GET', '/service-points', $query);
         $json = json_decode($response->getBody());
         $locations = [];
-        foreach ($json->locations as $location) {
+        foreach ($json->servicepoints as $servicepoint) {
             $locations[] = [
-                'locationID' => $location->id,
-                'locationDisplay' => $location->name
+                'locationID' => $servicepoint->id,
+                'locationDisplay' => $servicepoint->discoveryDisplayName
             ];
         }
         return $locations;

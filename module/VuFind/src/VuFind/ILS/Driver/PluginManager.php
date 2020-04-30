@@ -27,7 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * ILS driver plugin manager

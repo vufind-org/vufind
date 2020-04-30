@@ -36,6 +36,14 @@
           </a>
         </span><br />
       <?php endif; ?>
+      <?php $epubLink = $this->driver->getEpubLink();
+          if ($epubLink): ?>
+        <span>
+          <a href="<?=$epubLink?>" class="icon epub fulltext">
+            <?=$this->transEsc('ePub Full Text')?>
+          </a>
+        </span><br />
+      <?php endif; ?>
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
           <a href="<?=$this->recordLink()->getUrl($this->driver)?>#html" class="icon html fulltext">
@@ -46,7 +54,7 @@
     </div>
   </div>
   <div class="media-body info-col">
-    <h3 property="name"><?=$this->driver->getTitle()?></h3>
+    <h1 property="name"><?=$this->driver->getTitle()?></h1>
 
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>

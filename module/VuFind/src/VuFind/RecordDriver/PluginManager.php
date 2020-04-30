@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record driver plugin manager
@@ -70,7 +70,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Default delegator factories.
      *
-     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],

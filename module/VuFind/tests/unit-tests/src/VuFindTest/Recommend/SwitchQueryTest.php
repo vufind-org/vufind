@@ -196,7 +196,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         }
         $sq = new SwitchQuery($bm);
         $sq->setConfig($settings);
-        $sq->init($results->getParams(), new \Zend\StdLib\Parameters([]));
+        $sq->init($results->getParams(), new \Laminas\Stdlib\Parameters([]));
         $sq->process($results);
         return $sq;
     }

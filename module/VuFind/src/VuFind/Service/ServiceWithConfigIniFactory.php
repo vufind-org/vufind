@@ -28,7 +28,7 @@
 namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory to constructor-inject the config.ini settings.

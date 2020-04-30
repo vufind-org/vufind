@@ -166,10 +166,10 @@ class PrimoPermissionHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testWithoutAuthorizationServiceWithZendConfigObject()
+    public function testWithoutAuthorizationServiceWithLaminasConfigObject()
     {
         $handler = new PrimoPermissionHandler(
-            new \Zend\Config\Config($this->primoConfig)
+            new \Laminas\Config\Config($this->primoConfig)
         );
         $this->assertEquals(false, $handler->hasPermission());
     }

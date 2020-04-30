@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ChoiceAuthFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class ChoiceAuthFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -60,8 +60,8 @@ class ChoiceAuthFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Zend\Session\Container(
-            'ChoiceAuth', $container->get(\Zend\Session\SessionManager::class)
+        $session = new \Laminas\Session\Container(
+            'ChoiceAuth', $container->get(\Laminas\Session\SessionManager::class)
         );
         $auth = new $requestedName($session);
         $auth->setPluginManager($container->get(PluginManager::class));

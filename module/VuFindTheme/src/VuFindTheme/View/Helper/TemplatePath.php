@@ -27,7 +27,7 @@
  */
 namespace VuFindTheme\View\Helper;
 
-use Zend\View\Resolver\TemplatePathStack;
+use Laminas\View\Resolver\TemplatePathStack;
 
 /**
  * Helper to get path to a template from another theme (for including)
@@ -38,7 +38,7 @@ use Zend\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TemplatePath extends \Zend\View\Helper\AbstractHelper
+class TemplatePath extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Absolute path up to the theme name

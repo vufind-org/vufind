@@ -29,8 +29,8 @@
  */
 namespace VuFind\Session;
 
+use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use VuFind\Db\Table\DbTableAwareInterface;
-use Zend\Session\SaveHandler\SaveHandlerInterface;
 
 /**
  * Session handler interface

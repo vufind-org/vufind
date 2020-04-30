@@ -12,7 +12,7 @@ goto end
 rem ##################################################
 rem # Set SOLR_HOME
 rem ##################################################
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 rem VUFIND_HOME not set -- try to call env.bat to 
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
@@ -25,22 +25,22 @@ set VUFIND_HOME=%VUFIND_HOME:~0,-1%
 goto vufindhomefound
 :useenvbat
 call env > nul
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 echo You need to set the VUFIND_HOME environmental variable before running this script.
 goto end
 :vufindhomefound
-if not (!%SOLR_HOME%!)==(!!) goto solrhomefound
+if not "!%SOLR_HOME%!"=="!!" goto solrhomefound
 set SOLR_HOME=%VUFIND_HOME%\solr\vufind
 :solrhomefound
 
 rem #####################################################
 rem # Build java command
 rem #####################################################
-if not (!%JAVA_HOME%!)==(!!) goto javahomefound
+if not "!%JAVA_HOME%!"=="!!" goto javahomefound
 set JAVA=java
 goto javaset
 :javahomefound
-set JAVA=%JAVA_HOME%\bin\java
+set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
 cd %VUFIND_HOME%\import

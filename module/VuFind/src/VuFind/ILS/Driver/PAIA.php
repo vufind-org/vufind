@@ -76,14 +76,14 @@ class PAIA extends DAIA
     /**
      * Session containing PAIA login information
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
      * SessionManager
      *
-     * @var \Zend\Session\SessionManager
+     * @var \Laminas\Session\SessionManager
      */
     protected $sessionManager;
 
@@ -127,11 +127,11 @@ class PAIA extends DAIA
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter       $converter      Date converter
-     * @param \Zend\Session\SessionManager $sessionManager Session Manager
+     * @param \VuFind\Date\Converter          $converter      Date converter
+     * @param \Laminas\Session\SessionManager $sessionManager Session Manager
      */
     public function __construct(\VuFind\Date\Converter $converter,
-        \Zend\Session\SessionManager $sessionManager
+        \Laminas\Session\SessionManager $sessionManager
     ) {
         parent::__construct($converter);
         $this->sessionManager = $sessionManager;
@@ -162,7 +162,7 @@ class PAIA extends DAIA
     {
         // SessionContainer not defined yet? Build it now:
         if (null === $this->session) {
-            $this->session = new \Zend\Session\Container(
+            $this->session = new \Laminas\Session\Container(
                 'PAIA', $this->sessionManager
             );
         }
@@ -2040,7 +2040,7 @@ class PAIA extends DAIA
         try {
             $client = $this->httpService->createClient(
                 $this->paiaURL . $file,
-                \Zend\Http\Request::METHOD_DELETE,
+                \Laminas\Http\Request::METHOD_DELETE,
                 $this->paiaTimeout
             );
             $client->setHeaders($http_headers);

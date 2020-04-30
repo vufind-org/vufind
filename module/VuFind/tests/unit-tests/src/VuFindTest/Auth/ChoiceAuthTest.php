@@ -27,11 +27,11 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Config\Config;
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\ChoiceAuth;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
-use Zend\Config\Config;
-use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth test class.
@@ -207,11 +207,11 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      *
      * @param string $method Auth method to set in container (null for none).
      *
-     * @return \Zend\Session\Container
+     * @return \Laminas\Session\Container
      */
     protected function getSessionContainer($method = null)
     {
-        $mock = $this->getMockBuilder(\Zend\Session\Container::class)
+        $mock = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->setMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
@@ -225,7 +225,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Get a ChoiceAuth object.
      *
      * @param PluginManager           $pm         Plugin manager
-     * @param \Zend\Session\Container $session    Session container
+     * @param \Laminas\Session\Container $session    Session container
      * @param string                  $strategies Strategies setting
      *
      * @return ChoiceAuth
@@ -274,11 +274,11 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a mock request object
      *
-     * @return \Zend\Http\PhpEnvironment\Request
+     * @return \Laminas\Http\PhpEnvironment\Request
      */
     protected function getMockRequest()
     {
-        return $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
+        return $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

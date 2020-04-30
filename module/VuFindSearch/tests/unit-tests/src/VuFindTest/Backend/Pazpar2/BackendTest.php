@@ -52,7 +52,7 @@ class BackendTest extends TestCase
     public function testGetConnector()
     {
         $connector = $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
-            ->setConstructorArgs(['http://fake', $this->createMock(\Zend\Http\Client::class)])
+            ->setConstructorArgs(['http://fake', $this->createMock(\Laminas\Http\Client::class)])
             ->getMock();
         $back = new Backend(
             $connector,
@@ -149,7 +149,7 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\Pazpar2\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['fake', $client])

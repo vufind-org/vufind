@@ -31,6 +31,10 @@ namespace VuFind\Controller;
 
 use ArrayObject;
 use Exception;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
@@ -38,14 +42,11 @@ use VuFind\Config\Version;
 use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
+use VuFind\Crypt\Base62;
 use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\Db\Adapter\Adapter;
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
 
 /**
  * Class controls VuFind upgrading.
@@ -341,8 +342,8 @@ class UpgradeController extends AbstractBase
     /**
      * Attempt to perform a MySQL upgrade; return either a string containing SQL
      * (if we are in "log SQL" mode), an empty string (if we are successful but
-     * not logging SQL) or a Zend Framework object representing forward/redirect
-     * (if we need to obtain user input).
+     * not logging SQL) or a Laminas object representing forward/redirect (if we
+     * need to obtain user input).
      *
      * @param Adapter $adapter Database adapter
      *
@@ -550,6 +551,9 @@ class UpgradeController extends AbstractBase
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
+
+            // fix shortlinks
+            $this->fixshortlinks();
 
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
@@ -923,5 +927,40 @@ class UpgradeController extends AbstractBase
         $storage[$this->session->getName()]
             = new ArrayObject([], ArrayObject::ARRAY_AS_PROPS);
         return $this->forwardTo('Upgrade', 'Home');
+    }
+
+    /**
+     * Generate base62 encoding to migrate old shortlinks
+     *
+     * @throws Exception
+     *
+     * @return void
+     */
+    protected function fixshortlinks()
+    {
+        $shortlinksTable = $this->getTable('shortlinks');
+        $base62 = new Base62();
+
+        try {
+            $results = $shortlinksTable->select(['hash' => null]);
+
+            foreach ($results as $result) {
+                $id = $result['id'];
+                $shortlinksTable->update(
+                    ['hash' => $base62->encode($id)],
+                    ['id' => $id]
+                );
+            }
+
+            $this->session->warnings->append(
+                'Added hash value(s) to ' . count($results) . ' short links.'
+            );
+        } catch (Exception $e) {
+            $this->session->warnings->append(
+                'Could not fix hashes in table shortlinks - maybe column ' .
+                'hash is missing? Exception thrown with ' .
+                'message: ' . $e->getMessage()
+            );
+        }
     }
 }

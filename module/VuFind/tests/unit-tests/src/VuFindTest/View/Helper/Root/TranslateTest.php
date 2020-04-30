@@ -242,7 +242,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testLocaleWithTranslator()
     {
         $translate = new Translate();
-        $translator = $this->createMock(\Zend\I18n\Translator\Translator::class);
+        $translator = $this->createMock(\Laminas\I18n\Translator\Translator::class);
         $translator->expects($this->once())->method('getLocale')
             ->will($this->returnValue('foo'));
         $translate->setTranslator($translator);
@@ -257,7 +257,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testGetTranslator()
     {
         $translate = new Translate();
-        $translator = $this->createMock(\Zend\I18n\Translator\TranslatorInterface::class);
+        $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
     }
@@ -267,14 +267,14 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $translations Key => value translation map.
      *
-     * @return \Zend\I18n\Translator\TranslatorInterface
+     * @return \Laminas\I18n\Translator\TranslatorInterface
      */
     protected function getMockTranslator($translations)
     {
         $callback = function ($str, $domain) use ($translations) {
             return $translations[$domain][$str] ?? $str;
         };
-        $translator = $this->createMock(\Zend\I18n\Translator\TranslatorInterface::class);
+        $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
         return $translator;

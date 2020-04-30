@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * EDS Record Controller
@@ -54,6 +54,25 @@ class EdsrecordController extends AbstractRecord
 
         // Call standard record controller initialization:
         parent::__construct($sm);
+    }
+
+    /**
+     * Action to display ePub.
+     *
+     * @return mixed
+     */
+    public function epubAction()
+    {
+        $driver = $this->loadRecord();
+        //if the user is a guest, redirect them to the login screen.
+        $auth = $this->getAuthorizationService();
+        if (!$auth->isGranted('access.EDSExtendedResults')) {
+            if (!$this->getUser()) {
+                return $this->forceLogin();
+            }
+            throw new ForbiddenException('Access denied.');
+        }
+        return $this->redirect()->toUrl($driver->getEpubLink());
     }
 
     /**

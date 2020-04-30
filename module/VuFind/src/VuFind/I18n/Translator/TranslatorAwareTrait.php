@@ -27,13 +27,13 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Zend\I18n\Translator\TranslatorInterface;
+use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
  * Lightweight translator aware marker interface (used as an alternative to
- * \Zend\I18n\Translator\TranslatorAwareInterface, which requires an excessive
+ * \Laminas\I18n\Translator\TranslatorAwareInterface, which requires an excessive
  * number of methods to be implemented).  If we switch to PHP 5.4 traits in the
- * future, we can eliminate this interface in favor of the default Zend version.
+ * future, we can eliminate this interface in favor of the default Laminas version.
  *
  * @category VuFind
  * @package  Translator
@@ -46,7 +46,7 @@ trait TranslatorAwareTrait
     /**
      * Translator
      *
-     * @var \Zend\I18n\Translator\TranslatorInterface
+     * @var \Laminas\I18n\Translator\TranslatorInterface
      */
     protected $translator = null;
 
@@ -66,7 +66,7 @@ trait TranslatorAwareTrait
     /**
      * Get translator object.
      *
-     * @return \Zend\I18n\Translator\TranslatorInterface
+     * @return \Laminas\I18n\Translator\TranslatorInterface
      */
     public function getTranslator()
     {
