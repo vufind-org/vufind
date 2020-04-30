@@ -63,23 +63,41 @@ class GeneratorTools
     }
 
     /**
-     * Given a namespace exploded into an array, figure out the appropriate plugin
+     * Given a class name exploded into an array, figure out the appropriate plugin
      * manager to use.
      *
-     * @param array $namespace Exploded namespace array
+     * @param array $classParts Exploded class name array
      *
      * @return string
      */
-    protected function getPluginManagerFromExplodedNamespace($namespace)
+    protected function getPluginManagerFromExplodedClassName($classParts)
     {
-        $namespace[0] = 'VuFind';
-        $namespace[] = 'PluginManager';
-        $pmClass = implode('\\', $namespace);
+        $classParts[0] = 'VuFind';
+        $classParts[count($classParts) - 1] = 'PluginManager';
+        $pmClass = implode('\\', $classParts);
         // Special case: no such service; use framework core service instead:
         if ($pmClass === 'VuFind\Controller\PluginManager') {
             return 'ControllerManager';
         }
         return $pmClass;
+    }
+
+    /**
+     * Given a class name exploded into an array, figure out the appropriate short
+     * name to use as an alias in the service manager configuration.
+     *
+     * @param array $classParts Exploded class name array
+     *
+     * @return string
+     */
+    protected function getShortNameFromExplodedClassName($classParts)
+    {
+        $shortName = array_pop($classParts);
+        // Special case: controllers use shortened aliases
+        if (($classParts[1] ?? '') === 'Controller') {
+            return preg_replace('/Controller$/', '', $shortName);
+        }
+        return strtolower($shortName);
     }
 
     /**
@@ -147,8 +165,8 @@ class GeneratorTools
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
         $module = $classParts[0];
-        $shortName = strtolower(array_pop($classParts));
-        $pmClass = $this->getPluginManagerFromExplodedNamespace($classParts);
+        $shortName = $this->getShortNameFromExplodedClassName($classParts);
+        $pmClass = $this->getPluginManagerFromExplodedClassName($classParts);
 
         // Set a flag for whether to generate a factory, and create class name
         // if necessary. If existing factory specified, ensure it really exists.
@@ -187,6 +205,13 @@ class GeneratorTools
         // Don't back up the config twice -- the first backup from the previous
         // write operation is sufficient.
         $this->writeNewConfig($aliasPath, $class, $module, false);
+        // Add extra lowercase alias if necessary:
+        if (strtolower($shortName) != $shortName) {
+            $lowerAliasPath = array_merge(
+                $configPath, ['aliases', strtolower($shortName)]
+            );
+            $this->writeNewConfig($lowerAliasPath, $class, $module, false);
+        }
 
         return true;
     }
