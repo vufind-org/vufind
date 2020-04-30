@@ -106,7 +106,8 @@ class Results extends \VuFind\Search\Base\Results
                 $field = $current['displayName'];
 
                 // If we are filtering out the field, skip it!
-                if (!in_array($field, $filterFields)) {
+                $currentFilterKey = array_search($field, $filterFields);
+                if ($currentFilterKey === false) {
                     continue;
                 }
 
@@ -151,9 +152,9 @@ class Results extends \VuFind\Search\Base\Results
 
                 // Create a reference to counts called list for consistency with
                 // Solr output format -- this allows the facet recommendations
-                // modules to be shared between the Search and Summon modules.
+                // modules to be shared between the Search and other modules.
                 $current['list'] = & $current['counts'];
-                $facetResult[] = $current;
+                $facetResult[$currentFilterKey] = $current;
             }
         }
         ksort($facetResult);
