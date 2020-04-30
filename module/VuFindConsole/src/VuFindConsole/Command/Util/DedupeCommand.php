@@ -30,11 +30,11 @@
  */
 namespace VuFindConsole\Command\Util;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: deduplicate lines in a sorted file.
@@ -45,7 +45,7 @@ use Symfony\Component\Console\Question\Question;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DedupeCommand extends AbstractSolrCommand
+class DedupeCommand extends RelativeFileAwareCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
@@ -100,7 +100,7 @@ class DedupeCommand extends AbstractSolrCommand
      */
     protected function openOutputFile($filename)
     {
-        return fopen($filename, 'w');
+        return @fopen($filename, 'w');
     }
 
     /**
@@ -143,7 +143,7 @@ class DedupeCommand extends AbstractSolrCommand
             $inprompt = 'Please specify an input file: ';
             $infile = $this->getInput($input, $output, $inprompt);
         }
-        $inHandle = fopen($infile, 'r');
+        $inHandle = @fopen($infile, 'r');
         if (!$inHandle) {
             $output->writeln('Could not open input file: ' . $infile);
             return 1;

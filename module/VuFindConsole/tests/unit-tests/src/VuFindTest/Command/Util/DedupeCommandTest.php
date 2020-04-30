@@ -27,6 +27,8 @@
  */
 namespace VuFindTest\Command\Util;
 
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Util\DedupeCommand;
 
@@ -55,7 +57,6 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             'closeOutputFile',
         ];
         return $this->getMockBuilder(DedupeCommand::class)
-            ->disableOriginalConstructor()
             ->setMethods($mockMethods)
             ->getMock();
     }
@@ -74,13 +75,13 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $fakeHandle = 7;    // arbitrary number for test purposes
         $command->expects($this->at($sequence++))->method('openOutputFile')
             ->with($this->equalTo($output))
-            ->will($this->return($fakeHandle));
+            ->will($this->returnValue($fakeHandle));
         $command->expects($this->at($sequence++))->method('writeToOutputFile')
-            ->with($this->equalTo($fakeHandle), $this->equalTo('foo'));
+            ->with($this->equalTo($fakeHandle), $this->equalTo("foo\n"));
         $command->expects($this->at($sequence++))->method('writeToOutputFile')
-            ->with($this->equalTo($fakeHandle), $this->equalTo('bar'));
+            ->with($this->equalTo($fakeHandle), $this->equalTo("bar\n"));
         $command->expects($this->at($sequence++))->method('writeToOutputFile')
-            ->with($this->equalTo($fakeHandle), $this->equalTo('baz'));
+            ->with($this->equalTo($fakeHandle), $this->equalTo("baz\n"));
         $command->expects($this->at($sequence++))->method('closeOutputFile')
             ->with($this->equalTo($fakeHandle));
     }
@@ -92,8 +93,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testWithMissingFile()
     {
-        $writer = $this->getMockWriter();
-        $command = new DeletesCommand($writer);
+        $command = new DedupeCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['input' => '/does/not/exist']);
         $this->assertEquals(1, $commandTester->getStatusCode());
