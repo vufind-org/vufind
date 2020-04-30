@@ -71,6 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/commit' => Util\CommitCommand::class,
         'util/createHierarchyTrees' => Util\CreateHierarchyTreesCommand::class,
         'util/cssBuilder' => Util\CssBuilderCommand::class,
+        'util/dedupe' => Util\DedupeCommand::class,
         'util/deletes' => Util\DeletesCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
@@ -127,6 +128,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CreateHierarchyTreesCommand::class =>
         Util\CreateHierarchyTreesCommandFactory::class,
         Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
+        Util\DedupeCommand::class => InvokableFactory::class,
         Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
