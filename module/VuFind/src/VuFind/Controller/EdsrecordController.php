@@ -57,6 +57,25 @@ class EdsrecordController extends AbstractRecord
     }
 
     /**
+     * Action to display ePub.
+     *
+     * @return mixed
+     */
+    public function epubAction()
+    {
+        $driver = $this->loadRecord();
+        //if the user is a guest, redirect them to the login screen.
+        $auth = $this->getAuthorizationService();
+        if (!$auth->isGranted('access.EDSExtendedResults')) {
+            if (!$this->getUser()) {
+                return $this->forceLogin();
+            }
+            throw new ForbiddenException('Access denied.');
+        }
+        return $this->redirect()->toUrl($driver->getEpubLink());
+    }
+
+    /**
      * PDF display action.
      *
      * @return mixed

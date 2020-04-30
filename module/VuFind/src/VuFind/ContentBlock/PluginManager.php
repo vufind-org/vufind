@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'channels' => Channels::class,
         'facetlist' => FacetList::class,
         'ilsstatusmonitor' => IlsStatusMonitor::class,
+        'templatebased' => TemplateBased::class,
     ];
 
     /**
@@ -60,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Channels::class => ChannelsFactory::class,
         FacetList::class => FacetListFactory::class,
         IlsStatusMonitor::class => InvokableFactory::class,
+        TemplateBased::class => TemplateBasedFactory::class,
     ];
 
     /**
