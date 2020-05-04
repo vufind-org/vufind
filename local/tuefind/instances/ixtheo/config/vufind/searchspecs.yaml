@@ -169,15 +169,15 @@
 # These searches use Dismax when possible:
 Author:
   DismaxFields:
-    - author^100
+    - author^500
     - author_synonyms^99
     - author_fuller^50
-    - author2
+    - author2^500
     - author_additional
     - corporation
   QueryFields:
     author:
-      - [onephrase, 350]
+      - [onephrase, 500]
       - [and, 200]
       - [or, 100]
     author_synonyms:
@@ -189,7 +189,7 @@ Author:
       - [and, 100]
       - [or, 50]
     author2:
-      - [onephrase, 100]
+      - [onephrase, 500]
       - [and, 50]
       - [or, ~]
     author_additional:

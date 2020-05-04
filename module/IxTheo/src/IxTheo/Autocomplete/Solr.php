@@ -53,11 +53,15 @@ class Solr extends \VuFind\Autocomplete\Solr
         $query = str_replace($forbidden, " ", $query);
         // Explanation for conditions:
         // first regex condition necessary for proper handling of author suggestions
-        // second regex needed to avoid ?* combinations that do not yield results
-        // thirs reges needed to avoid wildcarding of titles containing '-' since these would interfere
+        // second regex needed to do away with dot minus and number at the end
+        // third regex needed to avoid ?* combinations that do not yield results
+        // forth regex needed to avoid wildcarding of titles containing '-' since these would interfere
         if (substr($query, -1) != " " && !preg_match('/[.\-0-9]$/', $query) && !preg_match('/[?]$/', $query) && !preg_match('/-/', $query)) {
 
             $query .= "*";
+            // Make sure we avoid empty results after a suggestion
+            $escape = ['/'];
+            $query = preg_replace('#(' . implode($escape, '|') . ')#', '\\\\' . '\\1', $query);
         }
         return $query;
     }
