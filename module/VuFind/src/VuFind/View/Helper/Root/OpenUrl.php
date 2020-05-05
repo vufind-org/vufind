@@ -38,7 +38,7 @@ use VuFind\Resolver\Driver\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class OpenUrl extends \Zend\View\Helper\AbstractHelper
+class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Context helper
@@ -50,7 +50,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * VuFind OpenURL configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -85,10 +85,10 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context             $context       Context helper
-     * @param array               $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager       $pluginManager Resolver plugin manager
-     * @param \Zend\Config\Config $config        VuFind OpenURL config
+     * @param Context                $context       Context helper
+     * @param array                  $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager          $pluginManager Resolver plugin manager
+     * @param \Laminas\Config\Config $config        VuFind OpenURL config
      */
     public function __construct(Context $context, $openUrlRules,
         PluginManager $pluginManager, $config = null

@@ -59,14 +59,14 @@ class PrimoPermissionHandler
     /**
      * Constructor.
      *
-     * @param Zend\Config\Config|array $primoPermConfig Primo-Config for
+     * @param Laminas\Config\Config|array $primoPermConfig Primo-Config for
      * Institutions
      *
      * @return void
      */
     public function __construct($primoPermConfig)
     {
-        if ($primoPermConfig instanceof \Zend\Config\Config) {
+        if ($primoPermConfig instanceof \Laminas\Config\Config) {
             $primoPermConfig = $primoPermConfig->toArray();
         }
         $this->primoConfig = is_array($primoPermConfig) ? $primoPermConfig : [];

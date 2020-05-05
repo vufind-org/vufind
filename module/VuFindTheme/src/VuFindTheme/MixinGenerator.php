@@ -28,7 +28,7 @@
  */
 namespace VuFindTheme;
 
-use Zend\Console\Console;
+use Laminas\Console\Console;
 
 /**
  * Class to generate a new mixin from a template.

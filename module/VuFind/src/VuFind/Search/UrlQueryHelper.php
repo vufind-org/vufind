@@ -492,7 +492,7 @@ class UrlQueryHelper
      * parameter.
      *
      * Note: This is called setViewParam rather than setView to avoid confusion
-     * with the \Zend\View\Helper\AbstractHelper interface.
+     * with the \Laminas\View\Helper\AbstractHelper interface.
      *
      * @param string $v New sort parameter (null for NO view parameter)
      *

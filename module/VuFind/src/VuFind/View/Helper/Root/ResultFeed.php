@@ -28,11 +28,11 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
+use Laminas\Feed\Writer\Feed;
+use Laminas\Feed\Writer\Writer as FeedWriter;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Feed\Writer\Feed;
-use Zend\Feed\Writer\Writer as FeedWriter;
-use Zend\ServiceManager\ServiceManager;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * "Results as feed" view helper
@@ -75,7 +75,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      */
     public function registerExtensions(ServiceManager $sm)
     {
-        $manager = new \Zend\Feed\Writer\ExtensionPluginManager($sm);
+        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($sm);
         $manager->setInvokableClass(
             'DublinCore\Renderer\Entry',
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
@@ -241,7 +241,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $recordLink = $this->getView()->plugin('recordLink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
-        } catch (\Zend\Router\Exception\RuntimeException $e) {
+        } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
             $url = $record->tryMethod('getUrl');

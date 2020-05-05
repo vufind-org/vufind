@@ -27,12 +27,12 @@
  */
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\Config\Config;
 use VuFind\AjaxHandler\DoiLookup;
 use VuFind\AjaxHandler\DoiLookupFactory;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\DoiLinker\DoiLinkerInterface;
 use VuFind\DoiLinker\PluginManager;
-use Zend\Config\Config;
 
 /**
  * DoiLookup test class.
@@ -46,33 +46,221 @@ use Zend\Config\Config;
 class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
     /**
-     * Test a DOI lookup.
+     * Set up configuration for a test.
+     *
+     * @param array $config Configuration to set.
      *
      * @return void
      */
-    public function testLookup()
+    protected function setupConfig($config)
     {
-        // Set up config manager:
-        $config = new Config(['DOI' => ['resolver' => 'foo']]);
+        $config = new Config($config);
         $cm = $this->container->createMock(ConfigManager::class, ['get']);
         $cm->expects($this->once())->method('get')->with($this->equalTo('config'))
             ->will($this->returnValue($config));
         $this->container->set(ConfigManager::class, $cm);
+    }
 
-        // Set up plugin manager:
-        $pm = new PluginManager($this->container);
+    /**
+     * Create a mock plugin.
+     *
+     * @param mixed  $value    Value to return in response to DOI request.
+     * @param string $times    How many times do we expect this method to be called?
+     * @param string $doi      What DOI does this handler return data for?
+     * @param array  $expected What is the expected DOI request?
+     *
+     * @return DoiLinkerInterface
+     */
+    protected function getMockPlugin($value, $times = 'once', $doi = 'bar',
+        $expected = ['bar']
+    ) {
         $mockPlugin = $this->container
             ->createMock(DoiLinkerInterface::class, ['getLinks']);
-        $mockPlugin->expects($this->once())->method('getLinks')
-            ->with($this->equalTo(['bar']))
-            ->will($this->returnValue(['bar' => 'baz']));
-        $pm->setService('foo', $mockPlugin);
-        $this->container->set(PluginManager::class, $pm);
+        $mockPlugin->expects($this->$times())->method('getLinks')
+            ->with($this->equalTo($expected))
+            ->will(
+                $this->returnValue(
+                    [
+                        $doi => [['link' => 'http://' . $value, 'label' => $value]]
+                    ]
+                )
+            );
+        return $mockPlugin;
+    }
 
-        // Test the handler:
+    /**
+     * Set up a plugin manager for a test.
+     *
+     * @param array $plugins Plugins to insert into container.
+     *
+     * @return void
+     */
+    protected function setupPluginManager($plugins)
+    {
+        $pm = new PluginManager($this->container);
+        foreach ($plugins as $name => $plugin) {
+            $pm->setService($name, $plugin);
+        }
+        $this->container->set(PluginManager::class, $pm);
+    }
+
+    /**
+     * After setupConfig() and setupPluginManager() have been called, run the
+     * standard default test.
+     *
+     * @param array $requested DOI(s) to test request with
+     *
+     * @return array
+     */
+    protected function getHandlerResults($requested = ['bar'])
+    {
         $factory = new DoiLookupFactory();
         $handler = $factory($this->container, DoiLookup::class);
-        $params = $this->getParamsHelper(['doi' => ['bar']]);
-        $this->assertEquals([['bar' => 'baz']], $handler->handleRequest($params));
+        $params = $this->getParamsHelper(['doi' => $requested]);
+        return $handler->handleRequest($params);
+    }
+
+    /**
+     * Test a single DOI lookup.
+     *
+     * @return void
+     */
+    public function testSingleLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(['DOI' => ['resolver' => 'foo']]);
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            ['foo' => $this->getMockPlugin('baz')]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "first" mode turned on by default.
+     *
+     * @return void
+     */
+    public function testFirstDefaultLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(['DOI' => ['resolver' => 'foo,foo2']]);
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz'),
+                'foo2' => $this->getMockPlugin('baz2', 'never')
+            ]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "first" mode turned on explicitly.
+     *
+     * @return void
+     */
+    public function testFirstExplicitLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(
+            ['DOI' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'first']]
+        );
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz'),
+                'foo2' => $this->getMockPlugin('baz2', 'never')
+            ]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            $this->getHandlerResults()
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "first" mode turned on explicitly,
+     * where each handler returns results for a different DOI.
+     *
+     * @return void
+     */
+    public function testFirstExplicitLookupMultipleDOIs()
+    {
+        // Set up config manager:
+        $this->setupConfig(
+            ['DOI' => ['resolver' => 'foo,foo2,foo3', 'multi_resolver_mode' => 'first']]
+        );
+
+        // Set up plugin manager:
+        $request = ['bar', 'bar2'];
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz', 'once', 'bar', $request),
+                'foo2' => $this->getMockPlugin('baz2', 'once', 'bar2', $request),
+                // The previous handlers will satisfy the request, so this one will
+                // never be called; included to verify short-circuit behavior:
+                'foo3' => $this->getMockPlugin('baz', 'never', 'bar', $request),
+            ]
+        );
+
+        // Test the handler:
+        $this->assertEquals(
+            [
+                [
+                    'bar' => [['link' => 'http://baz', 'label' => 'baz']],
+                    'bar2' => [['link' => 'http://baz2', 'label' => 'baz2']],
+                ]
+            ],
+            $this->getHandlerResults($request)
+        );
+    }
+
+    /**
+     * Test a DOI lookup in two handlers, with "merge" mode turned on.
+     *
+     * @return void
+     */
+    public function testMergeLookup()
+    {
+        // Set up config manager:
+        $this->setupConfig(
+            ['DOI' => ['resolver' => 'foo,foo2', 'multi_resolver_mode' => 'merge']]
+        );
+
+        // Set up plugin manager:
+        $this->setupPluginManager(
+            [
+                'foo' => $this->getMockPlugin('baz'),
+                'foo2' => $this->getMockPlugin('baz2')
+            ]
+        );
+        // Test the handler:
+        $this->assertEquals(
+            [
+                [
+                    'bar' => [
+                        ['link' => 'http://baz', 'label' => 'baz'],
+                        ['link' => 'http://baz2', 'label' => 'baz2'],
+                    ]
+                ]
+            ],
+            $this->getHandlerResults()
+        );
     }
 }

@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Stdlib\ResponseInterface as Response;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Stdlib\ResponseInterface as Response;
 
 /**
  * Handles Shibboleth back-channel logout notifications.
@@ -77,7 +77,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     public function postAction()
     {
         $this->disableSessionWrites();
-        $soapServer = new \Zend\Soap\Server(
+        $soapServer = new \Laminas\Soap\Server(
             'data://text/plain;base64,' . base64_encode($this->getWsdl())
         );
         $soapServer->setReturnResponse(true);
@@ -107,7 +107,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
             return;
         }
         $sessionManager = $this->serviceLocator
-            ->get(\Zend\Session\SessionManager::class);
+            ->get(\Laminas\Session\SessionManager::class);
         $handler = $sessionManager->getSaveHandler();
         $handler->destroy($row['session_id']);
     }

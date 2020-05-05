@@ -65,7 +65,7 @@ class Record extends AbstractClassBasedTemplateRenderer
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -79,7 +79,7 @@ class Record extends AbstractClassBasedTemplateRenderer
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      */
     public function __construct($config = null)
     {

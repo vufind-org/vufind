@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Cover;
 
+use Laminas\Config\Config;
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
-use Zend\Config\Config;
 
 /**
  * Cover Loader Test Class

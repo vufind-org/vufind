@@ -106,7 +106,7 @@ class TabManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConfigManager()
     {
-        $iniConfig = new \Zend\Config\Config(
+        $iniConfig = new \Laminas\Config\Config(
             [
                 'VuFind\RecordDriver\EDS' => [
                     'tabs' => [

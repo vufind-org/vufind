@@ -1,6 +1,6 @@
 <?php
 /**
- * Zend\Feed\Feed extension for Open Search
+ * Laminas\Feed\Feed extension for Open Search
  *
  * PHP version 7
  *
@@ -27,12 +27,12 @@
  */
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
 
-use Zend\Feed\Uri;
-use Zend\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
-use Zend\Stdlib\StringUtils;
+use Laminas\Feed\Uri;
+use Laminas\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
+use Laminas\Stdlib\StringUtils;
 
 /**
- * Zend\Feed\Feed extension for Open Search
+ * Laminas\Feed\Feed extension for Open Search
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to

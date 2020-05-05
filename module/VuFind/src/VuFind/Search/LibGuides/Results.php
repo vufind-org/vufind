@@ -39,6 +39,13 @@ namespace VuFind\Search\LibGuides;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'LibGuides';
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -50,7 +57,7 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $collection = $this->getSearchService()->search(
-            'LibGuides', $query, $offset, $limit
+            $this->backendId, $query, $offset, $limit
         );
 
         $this->resultTotal = $collection->getTotal();
