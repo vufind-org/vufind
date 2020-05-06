@@ -622,11 +622,16 @@ class EDS extends DefaultRecord
      */
     public function getCleanDOI()
     {
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('DOI' == $item['Name']) {
-                    return $item['Data'];
-                }
+        foreach ($this->fields['Items'] ?? [] as $item) {
+            if ('DOI' == $item['Name'] ?? '' && isset($item['Data'])) {
+                return $item['Data'];
+            }
+        }
+        $ids = $this->fields['RecordInfo']['BibRecord']['BibEntity']['Identifiers']
+            ?? [];
+        foreach ($ids as $item) {
+            if ('DOI' == strtoupper($item['Type'] ?? '') && isset($item['Value'])) {
+                return $item['Value'];
             }
         }
         return false;
