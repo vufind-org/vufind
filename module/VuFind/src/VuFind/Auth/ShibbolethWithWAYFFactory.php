@@ -41,7 +41,7 @@ use Interop\Container\ContainerInterface;
  */
 class ShibbolethWithWAYFFactory
 {
-    const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+    const SHIBBOLETH_CONFIG_FILE_NAME = "ShibbolethWithWAYF";
 
     /**
      * Create an object
