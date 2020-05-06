@@ -446,7 +446,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->text)
                 && 'multipart/alternative' == $message->getHeaders()->get('Content-Type')->getType();
         };
-        $transport = $this->createMock('Zend\Mail\Transport\TransportInterface');
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('from@example.com', 'Sender TextName');
         $mailer = new Mailer($transport);
