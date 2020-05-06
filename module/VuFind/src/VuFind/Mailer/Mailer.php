@@ -288,15 +288,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             if ($replyTo) {
                 $message->addReplyTo($replyTo);
             }
-
-            $headers = $message->getHeaders();
-            if (!$headers->has('Content-Type')) {
-                $ctype = new ContentType();
-                $ctype->setType('text/plain');
-                $ctype->addParameter('charset', 'UTF-8');
-                $headers->addHeader($ctype);
-            }
-
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
