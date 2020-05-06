@@ -80,4 +80,10 @@ if (!class_exists('Laminas\Loader\AutoloaderFactory')) {
 }
 
 // Run the application!
-Laminas\Mvc\Application::init(require 'config/application.config.php')->run();
+$app = Laminas\Mvc\Application::init(require 'config/application.config.php');
+if (PHP_SAPI === 'cli') {
+    return $app->getServiceManager()
+        ->get(\VuFindConsole\ConsoleRunner::class)->run();
+} else {
+    $app->run();
+}
