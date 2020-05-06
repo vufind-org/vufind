@@ -101,7 +101,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         $message = $this->getNewBlankMessage();
         $headers = $message->getHeaders();
         $ctype = new ContentType();
-        $ctype->setType('text/plain');
+        $ctype->setType(Mime::TYPE_TEXT);
         $ctype->addParameter('charset', 'UTF-8');
         $headers->addHeader($ctype);
         return $message;
