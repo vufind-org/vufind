@@ -379,13 +379,15 @@ abstract class MinkTestCase extends DbTestCase
     {
         // Take screenshot of failed test
         if ($this->hasFailed()) {
-            $imageDir = (getenv('VUFIND_HOME') ?? '/tmp') . '/tests/screenshots/';
-            if (!file_exists($imageDir)) {
-                mkdir($imageDir);
-            }
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
-            if ($imageData !== false) {
+            if ($imageData && !empty($imageData)) {
+                $imageDir = (getenv('VUFIND_HOME') ?? '/tmp')
+                    . '/tests/screenshots/';
                 $filename = $this->getName() . '-' . hrtime(true) . '.png';
+
+                if (!file_exists($imageDir)) {
+                    mkdir($imageDir);
+                }
                 file_put_contents($imageDir . $filename, $imageData);
             }
         }
