@@ -808,33 +808,32 @@ class Folio extends AbstractAPI implements
         } catch (Exception $e) {
             throw new ILSException('hold_date_invalid');
         }
-        // Get status to separate Holds (on checked out items) and Pages on a
-        $status = $this->getStatus($holdDetails['item_id']);
         $requestBody = [
-            'requestType' => $item->status->name == 'Available' ? 'Page' : 'Hold',
-            'requestDate' => date('c'),
+            'instanceId' => $holdDetails['id'],
             'requesterId' => $holdDetails['patron']['id'],
-            'requester' => [
-                'firstName' => $holdDetails['patron']['firstname'] ?? '',
-                'lastName' => $holdDetails['patron']['lastname'] ?? ''
-            ],
-            'itemId' => $holdDetails['item_id'],
-            'fulfilmentPreference' => 'Hold Shelf',
+            'requestDate' => date('c'),
             'requestExpirationDate' => date_format($requiredBy, 'Y-m-d'),
+            'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
         $response = $this->makeRequest(
             'POST',
-            '/request-storage/requests',
+            '/circulation/requests/instances',
             json_encode($requestBody)
         );
         if ($response->isSuccess()) {
-            return [
+            $json = json_decode($response->getBody());
+            $result = [
                 'success' => true,
-                'status' => $response->getBody()
+                'status' => $json->status
             ];
         } else {
-            throw new ILSException($response->getBody());
+            $json = json_decode($response->getBody());
+            $result = [
+                'success' => false,
+                'status' => $json->errors[0]->message
+            ];
         }
+        return $result;
     }
 
     /**
