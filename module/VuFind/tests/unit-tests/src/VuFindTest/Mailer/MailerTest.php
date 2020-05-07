@@ -426,6 +426,33 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $mailer = new Mailer($transport);
         $mailer->resetConnection();
     }
+
+    /**
+     * Test sending an email using with text part and html part and multipart content type.
+     *
+     * @return void
+     * @throws \VuFind\Exception\Mail
+     */
+    public function testSendMimeMessageWithMultipartAlternativeContentType()
+    {
+        $this->html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
+        $this->text = 'this is the text part';
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && 'Sender TextName <from@example.com>' == $fromString
+                && 'subject' == $message->getSubject()
+                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->html)
+                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->text)
+                && 'multipart/alternative' == $message->getHeaders()->get('Content-Type')->getType();
+        };
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('from@example.com', 'Sender TextName');
+        $mailer = new Mailer($transport);
+        $body = $mailer->buildMultipartBody($this->text, $this->html);
+        $mailer->send('to@example.com', $address, 'subject', $body);
+    }
 }
 
 class MockEmailRenderer extends \Laminas\View\Renderer\PhpRenderer
