@@ -726,7 +726,7 @@ class Folio extends AbstractAPI implements
         foreach ($renewDetails['details'] as $loanId) {
             $renewal = [];
             $requestbody = [
-                'itemId' => $renewDetails['details'][0],
+                'itemId' => $loanId,
                 'userId' => $renewDetails['patron']['id']
                 ];
             $response = $this->makeRequest(
