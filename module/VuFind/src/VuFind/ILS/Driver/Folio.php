@@ -708,8 +708,7 @@ class Folio extends AbstractAPI implements
      */
     public function getRenewDetails($transaction)
     {
-        $loanId = $transaction['item_id'];
-        return $loanId;
+        return $transaction['item_id'];
     }
 
     /**
