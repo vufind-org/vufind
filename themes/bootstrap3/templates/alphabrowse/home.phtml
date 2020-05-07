@@ -19,15 +19,15 @@
 <?php ob_start(); ?>
   <ul class="pager">
     <?php if (isset($this->prevpage)): ?>
-      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->prevpage]]))?>"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
     <?php else: ?>
-      <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
     <?php endif; ?>
 
     <?php if (isset($this->nextpage)): ?>
-      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => $baseQuery + ['page' => $this->nextpage]]))?>"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
     <?php else: ?>
-      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
     <?php endif; ?>
   </ul>
 <?php $pageLinks = ob_get_contents(); ?>

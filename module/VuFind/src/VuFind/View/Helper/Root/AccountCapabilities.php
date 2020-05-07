@@ -38,7 +38,7 @@ use VuFind\Config\AccountCapabilities as Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountCapabilities extends \Zend\View\Helper\AbstractHelper
+class AccountCapabilities extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Capabilities helper

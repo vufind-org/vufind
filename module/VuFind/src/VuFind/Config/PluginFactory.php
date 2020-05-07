@@ -28,9 +28,9 @@
 namespace VuFind\Config;
 
 use Interop\Container\ContainerInterface;
-use Zend\Config\Config;
-use Zend\Config\Reader\Ini as IniReader;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\Config\Config;
+use Laminas\Config\Reader\Ini as IniReader;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * VuFind Config Plugin Factory
@@ -134,7 +134,7 @@ class PluginFactory implements AbstractFactoryInterface
                 } else {
                     foreach (array_keys($contents->toArray()) as $key) {
                         // If a key is defined as key[] in the config file the key
-                        // remains a Zend\Config\Config object. If the current
+                        // remains a Laminas\Config\Config object. If the current
                         // section is not configured as an override section we try to
                         // merge the key[] values instead of overwriting them.
                         if (is_object($config->$section->$key)

@@ -43,18 +43,23 @@ class LessCompilerTest extends Unit\TestCase
     /**
      * Our brave test subject
      *
-     * @var VuFindTheme\LessCompiler
+     * @var string
      */
     protected $testDest;
 
     /**
      * Our brave test subject
      *
-     * @var VuFindTheme\LessCompiler
+     * @var LessCompiler
      */
     protected $compiler;
 
-    public static function setUpBeforeClass()
+    /**
+     * Initial class setup.
+     *
+     * @return void
+     */
+    public static function setUpBeforeClass(): void
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
@@ -93,7 +98,12 @@ class LessCompilerTest extends Unit\TestCase
         );
     }
 
-    public function setUp()
+    /**
+     * Individual test setup.
+     *
+     * @return void
+     */
+    public function setUp(): void
     {
         $temp = sys_get_temp_dir();
         $perms = fileperms($temp);
@@ -106,7 +116,12 @@ class LessCompilerTest extends Unit\TestCase
         $this->compiler->setTempPath($temp . '/vufind_less_comp_test/cache');
     }
 
-    public static function tearDownAfterClass()
+    /**
+     * Final teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass(): void
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
@@ -114,7 +129,14 @@ class LessCompilerTest extends Unit\TestCase
         self::delTree($testDest);
     }
 
-    // adapted from http://php.net/manual/en/function.rmdir.php
+    /**
+     * Delete a directory tree; adapted from
+     * http://php.net/manual/en/function.rmdir.php
+     *
+     * @param string $dir Directory to delete.
+     *
+     * @return void
+     */
     protected static function delTree($dir)
     {
         $files = array_diff(scandir($dir), ['.', '..']);
@@ -125,6 +147,11 @@ class LessCompilerTest extends Unit\TestCase
         rmdir($dir);
     }
 
+    /**
+     * Test compiling a single theme.
+     *
+     * @return void
+     */
     public function testThemeCompile()
     {
         $this->compiler->compile(['child']);
@@ -133,6 +160,11 @@ class LessCompilerTest extends Unit\TestCase
         unlink($this->testDest . 'themes/child/css/compiled.css');
     }
 
+    /**
+     * Test compiling all themes.
+     *
+     * @return void
+     */
     public function testAllCompile()
     {
         $this->compiler->compile([]);

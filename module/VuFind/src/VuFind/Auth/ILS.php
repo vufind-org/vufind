@@ -28,6 +28,7 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -107,8 +108,7 @@ class ILS extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
@@ -159,8 +159,7 @@ class ILS extends AbstractBase
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
@@ -218,11 +217,11 @@ class ILS extends AbstractBase
     /**
      * Returns any authentication method this request should be delegated to.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return string|bool
      */
-    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    public function getDelegateAuthMethod(Request $request)
     {
         return (null !== $this->emailAuthenticator
             && $this->emailAuthenticator->isValidLoginRequest($request))

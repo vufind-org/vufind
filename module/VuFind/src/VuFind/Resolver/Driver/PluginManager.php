@@ -27,7 +27,7 @@
  */
 namespace VuFind\Resolver\Driver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Resolver driver plugin manager

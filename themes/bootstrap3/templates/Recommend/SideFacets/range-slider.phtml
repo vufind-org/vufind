@@ -65,5 +65,5 @@ $('#{$this->escapeHtmlAttr($this->title)}from, #{$this->escapeHtmlAttr($this->ti
 });
 JS;
   ?>
-  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <?php endif; ?>

@@ -2,7 +2,7 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -27,9 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Http\Headers;
 
 /**
  * Alma ILS Driver
@@ -41,7 +41,7 @@ use Zend\Http\Headers;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -185,16 +185,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException($e->getMessage());
         }
 
+        // Get the HTTP status code and response
+        $statusCode = $result->getStatusCode();
+        $answer = $statusCode !== 204 ? $result->getBody() : '';
+        $answer = str_replace('xmlns=', 'ns=', $answer);
+
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $code = $result->getStatusCode();
+        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
         $this->debug(
-            "[$duration] $method request for $url?$urlParams results ($code):\n"
-            . $result->getBody()
+            "[$duration] $method request for $fullUrl results ($statusCode):\n"
+            . $answer
         );
-
-        // Get the HTTP status code
-        $statusCode = $result->getStatusCode();
 
         // Check for error
         if ($result->isServerError()) {
@@ -204,8 +206,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
-        $answer = $result->getBody();
-        $answer = str_replace('xmlns=', 'ns=', $answer);
         try {
             $xml = simplexml_load_string($answer);
         } catch (\Exception $e) {
@@ -775,46 +775,46 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             return [];
         }
         $profile = [
-            'firstname'  => (isset($xml->first_name))
-                                ? (string)$xml->first_name
-                                : null,
-            'lastname'   => (isset($xml->last_name))
-                                ? (string)$xml->last_name
-                                : null,
-            'group'      => isset($xml->user_group)
-                                ? $this->getTranslatableString($xml->user_group)
-                                : null,
+            'firstname' => (isset($xml->first_name))
+                ? (string)$xml->first_name
+                : null,
+            'lastname' => (isset($xml->last_name))
+                ? (string)$xml->last_name
+                : null,
+            'group' => isset($xml->user_group)
+                ? $this->getTranslatableString($xml->user_group)
+                : null,
             'group_code' => (isset($xml->user_group))
-                                ? (string)$xml->user_group
-                                : null
+                ? (string)$xml->user_group
+                : null
         ];
         $contact = $xml->contact_info;
         if ($contact) {
             if ($contact->addresses) {
                 $address = $contact->addresses[0]->address;
-                $profile['address1'] =  (isset($address->line1))
-                                            ? (string)$address->line1
-                                            : null;
-                $profile['address2'] =  (isset($address->line2))
-                                            ? (string)$address->line2
-                                            : null;
-                $profile['address3'] =  (isset($address->line3))
-                                            ? (string)$address->line3
-                                            : null;
-                $profile['zip']      =  (isset($address->postal_code))
-                                            ? (string)$address->postal_code
-                                            : null;
-                $profile['city']     =  (isset($address->city))
-                                            ? (string)$address->city
-                                            : null;
-                $profile['country']  =  (isset($address->country))
-                                            ? (string)$address->country
-                                            : null;
+                $profile['address1'] = (isset($address->line1))
+                    ? (string)$address->line1
+                    : null;
+                $profile['address2'] = (isset($address->line2))
+                    ? (string)$address->line2
+                    : null;
+                $profile['address3'] = (isset($address->line3))
+                    ? (string)$address->line3
+                    : null;
+                $profile['zip'] = (isset($address->postal_code))
+                    ? (string)$address->postal_code
+                    : null;
+                $profile['city'] = (isset($address->city))
+                    ? (string)$address->city
+                    : null;
+                $profile['country'] = (isset($address->country))
+                    ? (string)$address->country
+                    : null;
             }
             if ($contact->phones) {
                 $profile['phone'] = (isset($contact->phones[0]->phone->phone_number))
-                                   ? (string)$contact->phones[0]->phone->phone_number
-                                   : null;
+                    ? (string)$contact->phones[0]->phone->phone_number
+                    : null;
             }
             $profile['email'] = $this->getPreferredEmail($xml);
         }
@@ -1250,28 +1250,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 );
 
                 // Add information to the renewal array
-                $blocks = false;
-                $renewal[$loanId]['success'] = true;
-                $renewal[$loanId]['new_date'] = $this->parseDate(
-                    (string)$apiResult->due_date,
-                    true
-                );
-                //$renewal[$loanId]['new_time'] = ;
-                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
-                $renewal[$loanId]['sysMessage'] = 'renew_success';
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->parseDate(
+                        (string)$apiResult->due_date,
+                        true
+                    ),
+                    'item_id' => (string)$apiResult->loan_id,
+                    'sysMessage' => 'renew_success'
+                ];
 
                 // Add the renewal to the return array
-                $returnArray['details'] = $renewal;
+                $returnArray['details'][$loanId] = $renewal;
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
-                $returnArray['details'] = $renewal;
-
-                // Add a message that can be translated
-                $blocks[] = 'renew_fail';
+                $returnArray['details'][$loanId] = [
+                    'success' => false
+                ];
             }
         }
-
-        $returnArray['blocks'] = $blocks;
 
         return $returnArray;
     }
@@ -1451,7 +1448,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
 
         // Set HTTP method
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        $client->setMethod(\Laminas\Http\Request::METHOD_POST);
 
         // Set body
         $client->setRawBody(json_encode($body));

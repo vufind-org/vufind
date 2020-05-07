@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search\Base;
 
+use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
-use Zend\Paginator\Paginator;
 
 /**
  * Abstract results search model.
@@ -58,6 +58,13 @@ abstract class Results
      * @var int
      */
     protected $resultTotal = null;
+
+    /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId;
 
     /**
      * Override (only for use in very rare cases)
@@ -404,6 +411,16 @@ abstract class Results
     }
 
     /**
+     * Basic 'getter' of search backend identifier.
+     *
+     * @return string
+     */
+    public function getBackendId()
+    {
+        return $this->backendId;
+    }
+
+    /**
      * Basic 'getter' for ID of saved search.
      *
      * @return int
@@ -513,7 +530,7 @@ abstract class Results
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
+        $nullAdapter = "Laminas\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())

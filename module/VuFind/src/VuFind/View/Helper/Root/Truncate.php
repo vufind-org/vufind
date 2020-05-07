@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Truncate view helper

@@ -173,16 +173,17 @@ abstract class Base
      * @param string $sessionToken        Session token
      * @param string $highlightTerms      Comma separated list of terms to highlight
      * in the retrieved record responses
+     * @param array  $extraQueryParams    Extra query string parameters
      *
      * @return array    The requested record
      */
     public function retrieve($an, $dbId, $authenticationToken, $sessionToken,
-        $highlightTerms = null
+        $highlightTerms = null, $extraQueryParams = []
     ) {
         $this->debugPrint(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
         );
-        $qs = ['an' => $an, 'dbid' => $dbId];
+        $qs = $extraQueryParams + ['an' => $an, 'dbid' => $dbId];
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }

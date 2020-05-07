@@ -62,12 +62,12 @@ trait ApiTrait
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
         // Add CORS headers and handle OPTIONS requests. This is a simplistic
         // approach since we allow any origin. For more complete CORS handling
@@ -111,7 +111,7 @@ trait ApiTrait
      *
      * @param string $permission Permission to check
      *
-     * @return \Zend\Http\Response|boolean
+     * @return \Laminas\Http\Response|boolean
      */
     protected function isAccessDenied($permission)
     {
@@ -131,7 +131,7 @@ trait ApiTrait
      * @param int    $httpCode A custom HTTP Status Code
      * @param string $message  Status message
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      * @throws \Exception
      */
     protected function output($data, $status, $httpCode = null, $message = '')
