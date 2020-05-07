@@ -705,7 +705,6 @@ class Folio extends AbstractAPI implements
      * array from getMyTransactions
      *
      * @return string The FOLIO loan ID for this loan
-     *
      */
     public function getRenewDetails($transaction)
     {
@@ -720,42 +719,41 @@ class Folio extends AbstractAPI implements
      * patron and details
      *
      * @return array $renewResult result of attempt to renew loans
-     *
      */
     public function renewMyItems($renewDetails)
     {
 
-    $userId = $renewDetails['patron']['id'];
-    $renewalResults = [];
+        $userId = $renewDetails['patron']['id'];
+        $renewalResults = [];
 
-    foreach ($renewDetails['details'] as $loanId) {
-        $renewal = [];
-        $requestbody = [
-            'itemId' => $renewDetails['details'][0],
-            'userId' => $renewDetails['patron']['id']
+        foreach ($renewDetails['details'] as $loanId) {
+            $renewal = [];
+            $requestbody = [
+                'itemId' => $renewDetails['details'][0],
+                'userId' => $renewDetails['patron']['id']
+                ];
+            $response = $this->makeRequest(
+                'POST', '/circulation/renew-by-id', json_encode($requestbody)
+            );
+                if ($response->isSuccess()) {
+            $json = json_decode($response->getBody());
+            $rawDueDate = date_create($json->dueDate);
+            $renewal = [
+                'success' => true,
+                'new_date' =>  date_format($rawDueDate, "j M Y"),
+                'new_time' =>  date_format($rawDueDate, "g:i:s a"),
+                'item_id' => $json->itemId,
+                'sysMessage' => $json->action
             ];
-        $response = $this->makeRequest(
-            'POST', '/circulation/renew-by-id', json_encode($requestbody)
-        );
-            if ($response->isSuccess()) {
-        $json = json_decode($response->getBody());
-        $rawDueDate = date_create($json->dueDate);
-        $renewal = [
-            'success' => true,
-            'new_date' =>  date_format($rawDueDate, "j M Y"),
-            'new_time' =>  date_format($rawDueDate, "g:i:s a"),
-            'item_id' => $json->itemId,
-            'sysMessage' => $json->action
-        ];
-        $renewalResults['details'][$loanId] = $renewal;
-            } else {
-        $renewal = [
-            'success' => false,
-            'sysMessage' => json_decode($response->getBody())->errors[0]->message ?? 'failed'
-        ];
-        $renewalResults['details'][$loanId] = $renewal;
-            }
-    }
+            $renewalResults['details'][$loanId] = $renewal;
+                } else {
+            $renewal = [
+                'success' => false,
+                'sysMessage' => json_decode($response->getBody())->errors[0]->message ?? 'failed'
+            ];
+            $renewalResults['details'][$loanId] = $renewal;
+                }
+        }
         return $renewalResults;
     }
 
