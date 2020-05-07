@@ -722,7 +722,6 @@ class Folio extends AbstractAPI implements
      */
     public function renewMyItems($renewDetails)
     {
-
         $userId = $renewDetails['patron']['id'];
         $renewalResults = [];
 
@@ -735,24 +734,30 @@ class Folio extends AbstractAPI implements
             $response = $this->makeRequest(
                 'POST', '/circulation/renew-by-id', json_encode($requestbody)
             );
-                if ($response->isSuccess()) {
-            $json = json_decode($response->getBody());
-            $rawDueDate = date_create($json->dueDate);
-            $renewal = [
-                'success' => true,
-                'new_date' =>  date_format($rawDueDate, "j M Y"),
-                'new_time' =>  date_format($rawDueDate, "g:i:s a"),
-                'item_id' => $json->itemId,
-                'sysMessage' => $json->action
-            ];
-            $renewalResults['details'][$loanId] = $renewal;
-                } else {
-            $renewal = [
-                'success' => false,
-                'sysMessage' => json_decode($response->getBody())->errors[0]->message ?? 'failed'
-            ];
-            $renewalResults['details'][$loanId] = $renewal;
+            if ($response->isSuccess()) {
+                $json = json_decode($response->getBody());
+                $rawDueDate = date_create($json->dueDate);
+                $renewal = [
+                    'success' => true,
+                    'new_date' =>  date_format($rawDueDate, "j M Y"),
+                    'new_time' =>  date_format($rawDueDate, "g:i:s a"),
+                    'item_id' => $json->itemId,
+                    'sysMessage' => $json->action
+                ];
+                $renewalResults['details'][$loanId] = $renewal;
+            } else {
+                try {
+                    $json = json_decode($response->getBody());
+                    $sysMessage = $json->errors[0]->message;
+                } catch (Exception $e) {
+                    $sysMessage = "Renewal Failed";
                 }
+                $renewal = [
+                    'success' => false,
+                    'sysMessage' => $sysMessage
+                ];
+                $renewalResults['details'][$loanId] = $renewal;
+            }
         }
         return $renewalResults;
     }
