@@ -691,25 +691,11 @@ class Folio extends AbstractAPI implements
                 'item_id' => $trans->item->id,
                 'barcode' => $trans->item->barcode,
                 'renew' => $trans->renewalCount ?? 0,
-                'renewable' => $this->isRenewable($trans->item->id),
+                'renewable' => true,
                 'title' => $trans->item->title,
             ];
         }
         return $transactions;
-    }
-
-    /**
-     * Get FOLIO loan renewal eligibility
-     *
-     * @param string $transactions An array from getMyTransactions
-     *
-     * @return bool whether or not a transaction is eligible to be renewed
-     *
-     */
-    public function isRenewable($loanId)
-    {
-	// placeholder, always say true for now
-        return true;
     }
 
     /**
@@ -739,38 +725,38 @@ class Folio extends AbstractAPI implements
     public function renewMyItems($renewDetails)
     {
 
-	$userId = $renewDetails['patron']['id'];
-	$renewalResults = [];
+    $userId = $renewDetails['patron']['id'];
+    $renewalResults = [];
 
-	foreach ($renewDetails['details'] as $loanId) {
-	    $renewal = [];
-	    $requestbody = [
-	        'itemId' => $renewDetails['details'][0],
-	        'userId' => $renewDetails['patron']['id']
+    foreach ($renewDetails['details'] as $loanId) {
+        $renewal = [];
+        $requestbody = [
+            'itemId' => $renewDetails['details'][0],
+            'userId' => $renewDetails['patron']['id']
             ];
-	    $response = $this->makeRequest(
-	        'POST', '/circulation/renew-by-id', json_encode($requestbody)
-	    );
+        $response = $this->makeRequest(
+            'POST', '/circulation/renew-by-id', json_encode($requestbody)
+        );
             if ($response->isSuccess()) {
-		$json = json_decode($response->getBody());
-		$rawDueDate = date_create($json->dueDate);
-		$renewal = [
-		    'success' => true,
-		    'new_date' =>  date_format($rawDueDate, "j M Y"),
-		    'new_time' =>  date_format($rawDueDate, "g:i:s a"),
-		    'item_id' => $json->itemId,
-		    'sysMessage' => $json->action
-		];
-		$renewalResults['details'][$loanId] = $renewal;
+        $json = json_decode($response->getBody());
+        $rawDueDate = date_create($json->dueDate);
+        $renewal = [
+            'success' => true,
+            'new_date' =>  date_format($rawDueDate, "j M Y"),
+            'new_time' =>  date_format($rawDueDate, "g:i:s a"),
+            'item_id' => $json->itemId,
+            'sysMessage' => $json->action
+        ];
+        $renewalResults['details'][$loanId] = $renewal;
             } else {
-		$renewal = [
-		    'success' => false,
-		    'sysMessage' => json_decode($response->getBody())->errors[0]->message ?? 'failed'
-		];
-		$renewalResults['details'][$loanId] = $renewal;
+        $renewal = [
+            'success' => false,
+            'sysMessage' => json_decode($response->getBody())->errors[0]->message ?? 'failed'
+        ];
+        $renewalResults['details'][$loanId] = $renewal;
             }
-	}
-	    return $renewalResults;
+    }
+        return $renewalResults;
     }
 
     /**
