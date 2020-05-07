@@ -76,7 +76,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage(
             get_class($table) . ' does not support getExpiredIdRange()'
         );
-        $command = new $this->targetClass($table, 'foo');
+        new $this->targetClass($table, 'foo');
     }
 
     /**

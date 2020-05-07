@@ -101,7 +101,6 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testDeletingNonExistentString()
     {
-        $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => 'foo::barzap']);

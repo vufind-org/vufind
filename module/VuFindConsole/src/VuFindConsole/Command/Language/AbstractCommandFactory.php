@@ -56,6 +56,8 @@ class AbstractCommandFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null

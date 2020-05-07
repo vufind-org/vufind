@@ -82,6 +82,8 @@ class CommitCommand extends AbstractSolrCommand
      * @param OutputInterface $output Output object
      *
      * @return int 0 for success
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
