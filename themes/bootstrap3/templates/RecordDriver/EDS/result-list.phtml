@@ -84,7 +84,7 @@
       <?php endif; ?>
 
       <?php if ($this->driver->hasLinkedFullTextAvailable()): ?>
-        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'LinkedText'); ?>" class="icon html fulltext" target="_blank">
+        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'LinkedText'); ?>" class="fulltext" target="_blank">
           <?=$this->transEsc('Linked Full Text')?>
         </a>
       <?php endif; ?>
