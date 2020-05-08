@@ -28,6 +28,14 @@
           </a>
         </span><br />
       <?php endif; ?>
+      <?php $ftLink = $this->driver->getLinkedFullTextLink();
+          if ($ftLink): ?>
+        <span>
+          <a href="<?=$ftLink?>" class="fulltext">
+            <?=$this->transEsc('Linked Full Text')?>
+          </a>
+        </span><br />
+      <?php endif; ?>
       <?php $pdfLink = $this->driver->getPdfLink();
           if ($pdfLink): ?>
         <span>
