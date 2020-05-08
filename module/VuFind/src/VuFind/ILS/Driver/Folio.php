@@ -809,15 +809,18 @@ class Folio extends AbstractAPI implements
             throw new ILSException('hold_date_invalid');
         }
         $requestBody = [
-            'instanceId' => $holdDetails['id'],
+            'itemId' => $holdDetails['item_id'],
+            'requestType' => $holdDetails['status'] == 'Available'
+                ? 'Page' : 'Recall',
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
+            'fulfilmentPreference' => 'Hold Shelf',
             'requestExpirationDate' => date_format($requiredBy, 'Y-m-d'),
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
         $response = $this->makeRequest(
             'POST',
-            '/circulation/requests/instances',
+            '/circulation/requests',
             json_encode($requestBody)
         );
         if ($response->isSuccess()) {
