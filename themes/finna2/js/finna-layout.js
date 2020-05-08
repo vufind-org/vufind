@@ -170,7 +170,7 @@ finna.layout = (function finnaLayout() {
             $('.content-navigation-menu').css({'bottom': $('footer').height() + 20 + 'px', 'top': 'auto'});
           }
           else {
-            $('.content-navigation-menu').css({'bottom': 'auto', 'top': '0px'});
+            $('.content-navigation-menu').css({'bottom': 'auto'});
           }
         }
         else {
