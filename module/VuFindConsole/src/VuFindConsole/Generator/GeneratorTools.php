@@ -32,7 +32,6 @@ use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
-use Laminas\Console\Console;
 
 /**
  * Generator tools.
@@ -45,6 +44,8 @@ use Laminas\Console\Console;
  */
 class GeneratorTools
 {
+    use \VuFindConsole\ConsoleOutputTrait;
+
     /**
      * Laminas configuration
      *
@@ -532,8 +533,8 @@ class GeneratorTools
             // __callStatic and ignore the error. Any other exception should be
             // treated as a fatal error.
             if (method_exists($factoryClass, '__callStatic')) {
-                Console::writeLine('Error: ' . $e->getMessage());
-                Console::writeLine(
+                $this->writeln('Error: ' . $e->getMessage());
+                $this->writeln(
                     '__callStatic in parent factory; skipping method generation.'
                 );
             } else {
@@ -666,7 +667,7 @@ class GeneratorTools
         if (!file_put_contents($fullPath, $code)) {
             throw new \Exception("Problem writing to $fullPath.");
         }
-        Console::writeLine("Saved file: $fullPath");
+        $this->writeln("Saved file: $fullPath");
     }
 
     /**
@@ -728,7 +729,7 @@ class GeneratorTools
         if (!copy($filename, $backup)) {
             throw new \Exception("Problem generating backup file: $backup");
         }
-        Console::writeLine("Created backup: $backup");
+        $this->writeln("Created backup: $backup");
     }
 
     /**
@@ -768,7 +769,7 @@ class GeneratorTools
         if (!file_put_contents($configPath, $generator->generate())) {
             throw new \Exception("Cannot write to $configPath");
         }
-        Console::writeLine("Successfully updated $configPath");
+        $this->writeln("Successfully updated $configPath");
     }
 
     /**

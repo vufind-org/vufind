@@ -273,10 +273,16 @@ class Backend extends AbstractBackend
                 );
             }
             list($dbId, $an) = $parts;
-            $hlTerms = (null != $params)
+            $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
+            $extras = [];
+            if (null !== $params
+                && ($eBookFormat = $params->get('ebookpreferredformat'))
+            ) {
+                $extras['ebookpreferredformat'] = $eBookFormat;
+            }
             $response = $this->client->retrieve(
-                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
+                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms, $extras
             );
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more

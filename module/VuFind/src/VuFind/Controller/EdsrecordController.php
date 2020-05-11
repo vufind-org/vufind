@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFindSearch\ParamBag;
 
 /**
  * EDS Record Controller
@@ -57,14 +58,19 @@ class EdsrecordController extends AbstractRecord
     }
 
     /**
-     * Action to display ePub.
+     * Redirect to an eBook.
+     *
+     * @param string $format Format of eBook to request from API.
+     * @param string $method Record driver method to use to obtain target URL.
      *
      * @return mixed
      */
-    public function epubAction()
+    protected function redirectToEbook($format, $method)
     {
-        $driver = $this->loadRecord();
-        //if the user is a guest, redirect them to the login screen.
+        $paramArray = $format === null ? [] : ['ebookpreferredformat' => $format];
+        $params = new ParamBag($paramArray);
+        $driver = $this->loadRecord($params, true);
+        // If the user is a guest, redirect them to the login screen.
         $auth = $this->getAuthorizationService();
         if (!$auth->isGranted('access.EDSExtendedResults')) {
             if (!$this->getUser()) {
@@ -72,7 +78,27 @@ class EdsrecordController extends AbstractRecord
             }
             throw new ForbiddenException('Access denied.');
         }
-        return $this->redirect()->toUrl($driver->getEpubLink());
+        return $this->redirect()->toUrl($driver->tryMethod($method));
+    }
+
+    /**
+     * Action to display ePub.
+     *
+     * @return mixed
+     */
+    public function epubAction()
+    {
+        return $this->redirectToEbook('ebook-epub', 'getEpubLink');
+    }
+
+    /**
+     * Linked text display action.
+     *
+     * @return mixed
+     */
+    public function linkedtextAction()
+    {
+        return $this->redirectToEbook(null, 'getLinkedFullTextLink');
     }
 
     /**
@@ -82,16 +108,7 @@ class EdsrecordController extends AbstractRecord
      */
     public function pdfAction()
     {
-        $driver = $this->loadRecord();
-        //if the user is a guest, redirect them to the login screen.
-        $auth = $this->getAuthorizationService();
-        if (!$auth->isGranted('access.EDSExtendedResults')) {
-            if (!$this->getUser()) {
-                return $this->forceLogin();
-            }
-            throw new ForbiddenException('Access denied.');
-        }
-        return $this->redirect()->toUrl($driver->getPdfLink());
+        return $this->redirectToEbook('ebook-pdf', 'getPdfLink');
     }
 
     /**
