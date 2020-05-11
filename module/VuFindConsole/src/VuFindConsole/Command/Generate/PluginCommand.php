@@ -75,7 +75,7 @@ class PluginCommand extends AbstractContainerAwareCommand
                 'when set, create the plugin as a top-level service instead of'
                 . ' inside a plugin manager'
             );
-        }
+    }
 
     /**
      * Run the command.
