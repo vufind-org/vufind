@@ -53,12 +53,12 @@ class Search2ApiController extends SearchApiController
      *
      * @var string
      */
-    protected $recordRoute = 'search2record';
+    protected $recordRoute = 'index2/record';
 
     /**
      * Search route uri
      *
      * @var string
      */
-    protected $searchRoute = 'search2';
+    protected $searchRoute = 'index2/search';
 }
