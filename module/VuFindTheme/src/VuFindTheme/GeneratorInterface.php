@@ -57,11 +57,11 @@ interface GeneratorInterface
     public function getLastError();
 
     /**
-     * Set the output interface.
+     * Set the output interface. Implements a fluent interface.
      *
      * @param OutputInterface $output Output interface
      *
-     * @return void
+     * @return mixed
      */
-    public function setOutputInterface(OutputInterface $output): void;
+    public function setOutputInterface(OutputInterface $output);
 }
