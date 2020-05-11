@@ -60,6 +60,13 @@ abstract class Results
     protected $resultTotal = null;
 
     /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId;
+
+    /**
      * Override (only for use in very rare cases)
      *
      * @var int
@@ -401,6 +408,16 @@ abstract class Results
             $this->performAndProcessSearch();
         }
         return $this->errors;
+    }
+
+    /**
+     * Basic 'getter' of search backend identifier.
+     *
+     * @return string
+     */
+    public function getBackendId()
+    {
+        return $this->backendId;
     }
 
     /**

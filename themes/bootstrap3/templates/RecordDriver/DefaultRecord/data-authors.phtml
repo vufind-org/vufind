@@ -16,7 +16,7 @@ $formattedAuthors = [];
     <?php ob_start(); ?>
     <span class="author-data" property="<?=$this->escapeHtml($schemaLabel)?>">
       <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
-        <?=$this->escapeHtml($author)?>
+        <?=$this->escapeHtml(rtrim($author, ','))?>
       </a>
       <?php
         // Display additional data using the appropriate translation prefix

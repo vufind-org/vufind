@@ -8,6 +8,7 @@
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
   <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
+  <property name="extra_startup_command" value="false" />
   <property name="extra_shutdown_cleanup" value="false" />
   <property name="vufindurl" value="http://localhost/vufind" />
   <property name="vufinddb" value="vufind_test" />
@@ -240,7 +241,7 @@
       <filterchain>
         <replaceregexp>
           <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
-          <regexp pattern="url = &quot;.*&quot;" replace="url = &quot;../api/v1?swagger&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?swagger&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
@@ -254,6 +255,14 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <!-- run extra cleanup action, if any -->
+    <if>
+      <istrue value="${extra_startup_command}" />
+      <then>
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${extra_startup_command}" />
+      </then>
+    </if>
+
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
