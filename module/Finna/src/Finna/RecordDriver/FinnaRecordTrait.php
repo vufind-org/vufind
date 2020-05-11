@@ -187,4 +187,21 @@ trait FinnaRecordTrait
     {
         return true;
     }
+
+    /**
+     * Whether to show record labels for this record.
+     *
+     * @return boolean
+     */
+    public function getRecordLabelsEnabled()
+    {
+        $labelsConfig = $this->mainConfig->RecordLabels->showLabels ?? null;
+        if (!$labelsConfig) {
+            return false;
+        }
+        $backend = $this->getSourceIdentifier();
+        return $labelsConfig[$backend]
+            ?? $labelsConfig['*']
+            ?? false;
+    }
 }

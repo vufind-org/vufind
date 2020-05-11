@@ -1592,3 +1592,13 @@ url = "https://my.surveypal.com/Finnasurvey"
 ; typeMap[elonet_henkilo] = Personal Name
 ; typeMap[elonet_kokoonpano] = Group Name
 ; typeMap[elonet_yhtio] = Corporate Name
+
+; Record labels
+[RecordLabels]
+; Whether to show record labels in search result and record views.
+; showLabels[*] can be used to set the value for all backends.
+; Different backends can also have specific settings, e.g. showLabels[Primo].
+; Note that backend specific settings always win.
+showLabels[*] = false
+showLabels[Primo] = true
+

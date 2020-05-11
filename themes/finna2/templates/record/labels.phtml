@@ -1,0 +1,7 @@
+<?php if (!empty($labels)): ?>
+  <ul class="record-labels">
+    <?php foreach ($labels as $label): ?>
+      <li class="label iconlabel <?=str_replace('_', '-', $label)?>"><?=$this->transEsc($label)?></li>
+    <?php endforeach; ?>
+  </ul>
+<?php endif; ?>
