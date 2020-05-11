@@ -286,6 +286,16 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the linked full text availability of the record.
+     *
+     * @return bool
+     */
+    public function hasLinkedFullTextAvailable()
+    {
+        return $this->hasEbookAvailable(['other']);
+    }
+
+    /**
      * Get the ebook url of the record. If missing, return false
      *
      * @param array $types Types that we are interested in checking for
@@ -322,6 +332,16 @@ class EDS extends DefaultRecord
     public function getEpubLink()
     {
         return $this->getEbookLink($this->epubTypes);
+    }
+
+    /**
+     * Get the linked full text url of the record. If missing, return false
+     *
+     * @return string
+     */
+    public function getLinkedFullTextLink()
+    {
+        return $this->getEbookLink(['other']);
     }
 
     /**
