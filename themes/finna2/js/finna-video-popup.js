@@ -18,7 +18,13 @@ finna.videoPopup = (function finnaVideoPopup() {
     // Use a fairly small buffer for faster quality changes
     videojs.Hls.GOAL_BUFFER_LENGTH = 10;
     videojs.Hls.MAX_GOAL_BUFFER_LENGTH = 20;
-    var player = videojs($videoElem.get(0));
+    var player = videojs($videoElem.get(0), {
+      html5: {
+        hls: {
+          overrideNative: !videojs.browser.IS_SAFARI
+        }
+      }
+    });
 
     player.ready(function onReady() {
       this.hotkeys({
