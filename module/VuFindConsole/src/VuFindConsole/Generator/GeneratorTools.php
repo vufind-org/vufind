@@ -99,9 +99,6 @@ class GeneratorTools
     }
 
     /**
-     * Get a list of VuFind modules
-     */
-    /**
      * Given a class name exploded into an array, figure out the appropriate plugin
      * manager to use.
      *
