@@ -29,6 +29,7 @@ namespace VuFindConsole\Command\Generate;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -67,8 +68,14 @@ class PluginCommand extends AbstractContainerAwareCommand
                 'factory',
                 InputArgument::OPTIONAL,
                 'an existing factory to use (omit to generate a new one)'
+            )->addOption(
+                'top-level',
+                null,
+                InputOption::VALUE_NONE,
+                'when set, create the plugin as a top-level service instead of'
+                . ' inside a plugin manager'
             );
-    }
+        }
 
     /**
      * Run the command.
@@ -82,9 +89,10 @@ class PluginCommand extends AbstractContainerAwareCommand
     {
         $class = $input->getArgument('class_name');
         $factory = $input->getArgument('factory');
+        $topLevel = $input->getOption('top-level');
         try {
-            $this->generatorTools->setOutputInterface($output);
-            $this->generatorTools->createPlugin($this->container, $class, $factory);
+            $this->generatorTools->setOutputInterface($output)
+                ->createPlugin($this->container, $class, $factory, $topLevel);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;

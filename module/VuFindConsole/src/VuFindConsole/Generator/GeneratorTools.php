@@ -168,9 +168,7 @@ class GeneratorTools
 
         // Default case: look it up:
         if (!method_exists($pm, 'getExpectedInterface')) {
-            throw new \Exception(
-                get_class($pm) . ' does not implement getExpectedInterface!'
-            );
+            return null;
         }
 
         // Force getExpectedInterface() to be public so we can read it:
@@ -194,6 +192,8 @@ class GeneratorTools
             return ['controllers'];
         } elseif ($class == \Laminas\Mvc\Controller\PluginManager::class) {
             return ['controller_plugins'];
+        } elseif ($class == \Laminas\ServiceManager\ServiceManager::class) {
+            return ['service_manager'];
         }
         // Default case: VuFind internal plugin manager
         $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
@@ -202,24 +202,54 @@ class GeneratorTools
     }
 
     /**
+     * Given appropriate inputs, figure out which plugin manager or service manager
+     * to use during plugin generation.
+     *
+     * @param ContainerInterface $container       Service manager
+     * @param array              $classParts      Exploded class name array
+     * @param bool               $topLevelService Set to true to build a service
+     * in the top-level container rather than a plugin in a subsidiary plugin manager
+     *
+     * @return ContainerInterface
+     */
+    protected function getPluginManagerForClassParts($container, $classParts,
+        $topLevelService
+    ) {
+        // Special case -- short-circuit for top-level service:
+        if ($topLevelService) {
+            return $container;
+        }
+        $pmClass = $this->getPluginManagerFromExplodedClassName($classParts);
+        if (!$container->has($pmClass)) {
+            throw new \Exception(
+                'Cannot find expected plugin manager: ' . $pmClass . "\n"
+                . 'You can use the --top-level option if you wish to create'
+                . ' a top-level service.'
+            );
+        }
+        return $container->get($pmClass);
+    }
+
+    /**
      * Create a plugin class.
      *
-     * @param ContainerInterface $container Service manager
-     * @param string             $class     Class name to create
-     * @param string             $factory   Existing factory to use (null to
+     * @param ContainerInterface $container       Service manager
+     * @param string             $class           Class name to create
+     * @param string             $factory         Existing factory to use (null to
      * generate a new one)
+     * @param bool               $topLevelService Set to true to build a service
+     * in the top-level container rather than a plugin in a subsidiary plugin manager
      *
      * @return bool
      * @throws \Exception
      */
     public function createPlugin(ContainerInterface $container, $class,
-        $factory = null
+        $factory = null, $topLevelService = false
     ) {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
         $module = $classParts[0];
         $shortName = $this->getShortNameFromExplodedClassName($classParts);
-        $pmClass = $this->getPluginManagerFromExplodedClassName($classParts);
 
         // Set a flag for whether to generate a factory, and create class name
         // if necessary. If existing factory specified, ensure it really exists.
@@ -230,10 +260,9 @@ class GeneratorTools
         }
 
         // Figure out further information based on the plugin manager:
-        if (!$container->has($pmClass)) {
-            throw new \Exception('Cannot find expected plugin manager: ' . $pmClass);
-        }
-        $pm = $container->get($pmClass);
+        $pm = $this->getPluginManagerForClassParts(
+            $container, $classParts, $topLevelService
+        );
         $interface = $this->getExpectedInterfaceFromPluginManager($pm);
 
         // Figure out whether the plugin requirement is an interface or a
