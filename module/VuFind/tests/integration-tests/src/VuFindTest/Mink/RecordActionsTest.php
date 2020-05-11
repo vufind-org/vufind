@@ -431,7 +431,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test record view print button.
      */
-    function testPrint(): void
+    public function testPrint(): void
     {
         // Go to a record view (manually search so we can access $session)
         $session = $this->getMinkSession();
