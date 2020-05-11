@@ -316,7 +316,7 @@ class GeneratorTools
                 $method = MethodGenerator::fromArray(
                     [
                         'name' => '__invoke',
-                        'body' => 'return new \\' . $class . '();',
+                        'body' => 'return new $requestedName();',
                     ]
                 );
                 $param1 = [
