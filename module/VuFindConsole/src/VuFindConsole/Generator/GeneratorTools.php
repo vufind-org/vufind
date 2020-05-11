@@ -64,6 +64,44 @@ class GeneratorTools
     }
 
     /**
+     * Determine a plugin manager name within the specified namespace.
+     *
+     * @param array  $classParts Exploded class name array
+     * @param string $namespace  Namespace to try for plugin manager
+     *
+     * @return string
+     */
+    protected function getPluginManagerForNamespace($classParts, $namespace)
+    {
+        $classParts[0] = $namespace;
+        $classParts[count($classParts) - 1] = 'PluginManager';
+        return implode('\\', $classParts);
+    }
+
+    /**
+     * Get a list of VuFind modules (only those with names beginning with VuFind,
+     * and not including the core VuFind module itself).
+     *
+     * @return array
+     */
+    protected function getVuFindExtendedModules()
+    {
+        $moduleDir = __DIR__ . '/../../../../';
+        $handle = opendir($moduleDir);
+        $results = [];
+        while ($line = readdir($handle)) {
+            if (substr($line, 0, 6) === 'VuFind' && strlen($line) > 6) {
+                $results[] = $line;
+            }
+        }
+        closedir($handle);
+        return $results;
+    }
+
+    /**
+     * Get a list of VuFind modules
+     */
+    /**
      * Given a class name exploded into an array, figure out the appropriate plugin
      * manager to use.
      *
@@ -73,15 +111,22 @@ class GeneratorTools
      */
     protected function getPluginManagerFromExplodedClassName($classParts)
     {
-        $classParts[0] = 'VuFind';
-        $classParts[count($classParts) - 1] = 'PluginManager';
-        $pmClass = implode('\\', $classParts);
-        // Special case: no such service; use framework core service instead:
+        $pmClass = $this->getPluginManagerForNamespace($classParts, 'VuFind');
+        // Special cases: no such service; use framework core services instead:
         if ($pmClass === 'VuFind\Controller\PluginManager') {
             return 'ControllerManager';
         }
         if ($pmClass === 'VuFind\Controller\Plugin\PluginManager') {
             return \Laminas\Mvc\Controller\PluginManager::class;
+        }
+        // Special case: no such service; check other modules:
+        if (!class_exists($pmClass)) {
+            foreach ($this->getVuFindExtendedModules() as $module) {
+                $pmClass = $this->getPluginManagerForNamespace($classParts, $module);
+                if (class_exists($pmClass)) {
+                    break;
+                }
+            }
         }
         return $pmClass;
     }
