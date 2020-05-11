@@ -2,7 +2,7 @@
 <p>Mit dem Newsfeed-Aggregator bieten wir Ihnen eine komfortable Möglichkeit, sich über neue Beiträge aus verschiedenen religionswissenschaftlich relevanten Blogs zu informieren und diese en bloc zu abonnieren. Aktuell aggregieren wir die folgenden Blogs:</p>
 <ul>
   <?php foreach ($this->tuefind()->getRssFeeds() as $rssFeedName => $rssFeedDetails): ?>
-    <li><a href="<?=$rssFeedDetails['feed_url']?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeedName)?>" width="16"> <?=htmlspecialchars($rssFeedName)?></a></li>
+    <li><a href="<?=$rssFeedDetails['blog_url']?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeedName)?>" width="16"> <?=htmlspecialchars($rssFeedName)?></a></li>
   <?php endforeach; ?>
 </ul>
 <p>Kennen Sie weitere interessante und relevante Blogs, die Sie hier vermissen? Gerne dürfen Sie uns diese melden unter: relbib(at)ub.uni-tuebingen.de!</p>
