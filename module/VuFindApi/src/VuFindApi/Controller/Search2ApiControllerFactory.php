@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for SearchApiController.
+ * Factory for Search2ApiController.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for SearchApiController.
+ * Factory for Search2ApiController.
  *
  * @category VuFind
  * @package  Controller
