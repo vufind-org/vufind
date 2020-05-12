@@ -916,8 +916,10 @@ trait MarcAdvancedTrait
         $fields024 = $this->getMarcRecord()->getFields('024');
         $ismn = null;
         foreach ($fields024 as $field) {
-            if ($field->getIndicator(1) == 2) {
-                $ismn = $field->getSubfield('a')->getData();
+            if ($field->getIndicator(1) == 2
+                && $subfield = $field->getSubfield('a')
+            ) {
+                $ismn = $subfield->getData();
                 break;
             }
         }

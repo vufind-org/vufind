@@ -55,7 +55,12 @@ class FeedbackController extends AbstractBase
         $user = $this->getUser();
 
         $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
-        $form->setFormId($formId);
+        $params = [];
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')
+        ) {
+            $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        $form->setFormId($formId, $params);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
