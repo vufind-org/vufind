@@ -230,10 +230,10 @@ abstract class AbstractShibboleth extends AbstractBase
                 } elseif ($attribute == 'cat_username' && isset($shib['prefix'])) {
                     $user->cat_username = $shib['prefix'] . '.'
                         . (($value === null) ? '' : $value);
-                } elseif ($attribute != 'cat_password') {
-                    $user->$attribute = ($value === null) ? '' : $value;
-                } else {
+                } elseif ($attribute == 'cat_password') {
                     $catPassword = $value;
+                } else {
+                    $user->$attribute = ($value === null) ? '' : $value;
                 }
             }
         }
