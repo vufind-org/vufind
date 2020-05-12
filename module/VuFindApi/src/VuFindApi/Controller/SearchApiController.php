@@ -141,6 +141,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'defaultSort' => $options->getDefaultSortByHandler(),
             'recordRoute' => $this->recordRoute,
             'searchRoute' => $this->searchRoute,
+            'searchIndex' => $this->searchClassId,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
