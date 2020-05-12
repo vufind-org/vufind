@@ -42,11 +42,10 @@ use VuFind\Exception\Auth as AuthException;
  */
 class ShibbolethWithWAYF extends AbstractShibboleth
 {
-
     /**
      * Configured IdPs with entityId and overridden attribute mapping
      *
-     * @param \Laminas\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $shibbolethConfig;
 
