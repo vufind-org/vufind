@@ -14,7 +14,7 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
-    '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
+    '<li class="active" aria-current="page">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
   $this->layout()->title = $this->driver->getShortTitle();
 ?>
 
@@ -22,36 +22,50 @@
   <ul class="pager hidden-print">
     <?php if ($this->scrollData['previousRecord']): ?>
       <?php if ($this->scrollData['firstRecord']): ?>
-        <li>
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('First')?></a>
+        <li role="none">
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" aria-label="<?=$this->transEsc('First Search Result')?>" rel="nofollow">
+            <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+            <?=$this->transEsc('First')?>
+          </a>
         </li>
       <?php endif; ?>
-      <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a>
+      <li role="none">
+        <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" aria-label="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+          <?=$this->transEsc('Prev')?>
+        </a>
       </li>
     <?php else: ?>
       <?php if ($this->scrollData['firstRecord']): ?>
-        <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('First')?></a></li>
+        <li class="disabled" aria-hidden="true" role="none"><a href="#"><i class="fa fa-angle-double-left"></i> <?=$this->transEsc('First')?></a></li>
       <?php endif; ?>
-      <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
+      <li class="disabled" aria-hidden="true" role="none"><a href="#"><i class="fa fa-angle-left"></i> <?=$this->transEsc('Prev')?></a></li>
     <?php endif; ?>
+
     <?=$this->transEsc('of_num_results', [
       '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
       '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
     ]) ?>
+
     <?php if ($this->scrollData['nextRecord']): ?>
-      <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a>
+      <li role="none">
+        <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow">
+          <?=$this->transEsc('Next')?>
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
       </li>
       <?php if ($this->scrollData['lastRecord']): ?>
-        <li>
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> <span aria-hidden="true">&raquo;</span></a>
+        <li role="none">
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow">
+            <?=$this->transEsc('Last')?>
+            <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+          </a>
         </li>
       <?php endif; ?>
-     <?php else: ?>
-      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
+    <?php else: ?>
+      <li class="disabled" aria-hidden="true" role="none"><a href="#"><?=$this->transEsc('Next')?> <i class="fa fa-angle-right"></i></a></li>
       <?php if ($this->scrollData['lastRecord']): ?>
-        <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> <span aria-hidden="true">&raquo;</span></a></li>
+        <li class="disabled" aria-hidden="true" role="none"><a href="#"><?=$this->transEsc('Last')?> <i class="fa fa-angle-double-right"></i></a></li>
       <?php endif; ?>
     <?php endif; ?>
   </ul>

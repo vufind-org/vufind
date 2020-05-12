@@ -7,9 +7,9 @@
         </li>
       <?php endif; ?>
       <li role="none">
-        <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">
+        <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>" aria-label="<?=$this->transEsc('page_prev')?>">
           <i class="fa fa-angle-left" aria-hidden="true"></i>
-          <?=$this->transEsc('page_prev')?>
+          <?=$this->transEsc('Prev')?>
         </a>
       </li>
     <?php endif; ?>
@@ -28,8 +28,8 @@
 
     <?php if (isset($this->next)): ?>
       <li role="none">
-        <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>">
-          <?=$this->transEsc('page_next');?>
+        <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>" aria-label="<?=$this->transEsc('page_next')?>">
+          <?=$this->transEsc('Next');?>
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
       </li>
