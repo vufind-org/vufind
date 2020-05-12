@@ -7,11 +7,13 @@ $config = [
             'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
             'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\Search2ApiControllerFactory',
+            'VuFindApi\Controller\WebApiController' => 'VuFindApi\Controller\WebApiControllerFactory',
         ],
         'aliases' => [
             'Api' => 'VuFindApi\Controller\ApiController',
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
             'Search2Api' => 'VuFindApi\Controller\Search2ApiController',
+            'WebApi' => 'VuFindApi\Controller\WebApiController',
         ],
     ],
     'service_manager' => [
@@ -19,6 +21,7 @@ $config = [
             'VuFindApi\Formatter\FacetFormatter' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
             'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
+            'VuFindApi\Formatter\WebRecordFormatter' => 'VuFindApi\Formatter\WebRecordFormatterFactory',
         ],
     ],
     'router' => [
@@ -77,7 +80,29 @@ $config = [
                         'action'     => 'record',
                     ]
                 ]
-            ]
+            ],
+            'websearchApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/web/search',
+                    'defaults' => [
+                        'controller' => 'WebApi',
+                        'action'     => 'search',
+                    ]
+                ]
+            ],
+            'webrecordApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/web/record',
+                    'defaults' => [
+                        'controller' => 'WebApi',
+                        'action'     => 'record',
+                    ]
+                ]
+            ],
         ],
     ],
 ];

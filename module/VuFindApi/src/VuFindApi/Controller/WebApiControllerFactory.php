@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for ApiController.
+ * Factory for WebApiController.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) Villanova University 2020
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Controller
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -31,15 +31,15 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for ApiController.
+ * Factory for WebApiController.
  *
  * @category VuFind
  * @package  Controller
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class ApiControllerFactory implements FactoryInterface
+class WebApiControllerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,10 +61,10 @@ class ApiControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $controller = new $requestedName($container);
-        $controller->addApi($container->get('ControllerManager')->get('SearchApi'));
-        $controller->addApi($container->get('ControllerManager')->get('Search2Api'));
-        $controller->addApi($container->get('ControllerManager')->get('WebApi'));
-        return $controller;
+        return new $requestedName(
+            $container,
+            $container->get(\VuFindApi\Formatter\WebRecordFormatter::class),
+            $container->get(\VuFindApi\Formatter\FacetFormatter::class)
+        );
     }
 }
