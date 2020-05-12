@@ -207,9 +207,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             if (is_array($request['id'])) {
-                $results = $loader->loadBatchForSource($request['id']);
+                $results = $loader->loadBatchForSource(
+                    $request['id'],
+                    $this->searchClassId
+                );
             } else {
-                $results[] = $loader->load($request['id']);
+                $results[] = $loader->load($request['id'], $this->searchClassId);
             }
         } catch (\Exception $e) {
             return $this->output(
