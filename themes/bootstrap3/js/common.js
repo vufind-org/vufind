@@ -60,6 +60,9 @@ var VuFind = (function VuFind() {
     if (replacements) {
       for (var key in replacements) {
         if (replacements.hasOwnProperty(key)) {
+          if (key.substr(0, 2) != "%%" || key.substr(key.length-2) != "%%") {
+            key = "%%" + key.replace(/%/g, "") + "%%";
+          }
           translation = translation.replace(key, replacements[key]);
         }
       }

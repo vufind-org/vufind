@@ -174,6 +174,9 @@ trait TranslatorAwareTrait
         if (!empty($tokens)) {
             $in = $out = [];
             foreach ($tokens as $key => $value) {
+                if (substr($key, 0, 2) != '%%' || substr($key, -2) != '%%') {
+                    $key = '%%' . str_replace('%', '', $key) . '%%';
+                }
                 $in[] = $key;
                 $out[] = $value;
             }
