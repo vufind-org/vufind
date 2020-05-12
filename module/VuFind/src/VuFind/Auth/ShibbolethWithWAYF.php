@@ -31,7 +31,8 @@ namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Shibboleth with WAYF authentication module.
+ * Shibboleth with WAYF authentication module for authentication against
+ * multiple IdPs.
  *
  * @category VuFind
  * @package  Authentication
@@ -41,6 +42,12 @@ use VuFind\Exception\Auth as AuthException;
  */
 class ShibbolethWithWAYF extends AbstractShibboleth
 {
+
+    /**
+     * Configured IdPs with entityId and overridden attribute mapping
+     *
+     * @param \Laminas\Config\Config
+     */
     protected $shibbolethConfig;
 
     /**
