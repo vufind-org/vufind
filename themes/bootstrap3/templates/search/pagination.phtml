@@ -3,13 +3,13 @@
     <?php if (isset($this->previous)): ?>
       <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
         <li role="none">
-          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEsc('Start Page')?>">[1]</a>
+          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEsc('page_first')?>">[1]</a>
         </li>
       <?php endif; ?>
       <li role="none">
         <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">
           <i class="fa fa-angle-left" aria-hidden="true"></i>
-          <?=$this->transEsc('Prev')?>
+          <?=$this->transEsc('page_prev')?>
         </a>
       </li>
     <?php endif; ?>
@@ -29,13 +29,13 @@
     <?php if (isset($this->next)): ?>
       <li role="none">
         <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>">
-          <?=$this->transEsc('Next');?>
+          <?=$this->transEsc('page_next');?>
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
       </li>
       <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
         <li role="none">
-          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEsc('End Page')?>">[<?=$this->pageCount?>]</a>
+          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEsc('page_last')?>">[<?=$this->pageCount?>]</a>
         </li>
       <?php endif; ?>
     <?php endif; ?>
