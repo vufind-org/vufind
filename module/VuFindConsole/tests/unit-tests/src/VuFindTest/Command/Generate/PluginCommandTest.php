@@ -75,7 +75,8 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
         $tools = $this->getMockGeneratorTools(
             ['setOutputInterface', 'createPlugin']
         );
-        $tools->expects($this->once())->method('setOutputInterface');
+        $tools->expects($this->once())->method('setOutputInterface')
+            ->will($this->returnValue($tools));
         $tools->expects($this->once())->method('createPlugin')
             ->with(
                 $this->equalTo($container),
@@ -99,7 +100,8 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
         $tools = $this->getMockGeneratorTools(
             ['setOutputInterface', 'createPlugin']
         );
-        $tools->expects($this->once())->method('setOutputInterface');
+        $tools->expects($this->once())->method('setOutputInterface')
+            ->will($this->returnValue($tools));
         $tools->expects($this->once())->method('createPlugin')
             ->with(
                 $this->equalTo($container),
@@ -125,7 +127,8 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
         $tools = $this->getMockGeneratorTools(
             ['createPlugin', 'setOutputInterface']
         );
-        $tools->expects($this->once())->method('setOutputInterface');
+        $tools->expects($this->once())->method('setOutputInterface')
+            ->will($this->returnValue($tools));
         $tools->expects($this->once())->method('createPlugin')
             ->will($this->throwException(new \Exception('Foo!')));
         $command = new PluginCommand($tools, $container);

@@ -48,28 +48,30 @@ trait ConsoleOutputTrait
     protected $outputInterface = null;
 
     /**
-     * Set the output interface.
+     * Set the output interface. Implements a fluent interface.
      *
      * @param OutputInterface $output Output interface
      *
-     * @return void
+     * @return mixed
      */
-    public function setOutputInterface(OutputInterface $output): void
+    public function setOutputInterface(OutputInterface $output)
     {
         $this->outputInterface = $output;
+        return $this;
     }
 
     /**
-     * Write a line to the output (if available).
+     * Write a line to the output (if available). Implements a fluent interface.
      *
      * @param string $output Line to output.
      *
-     * @return void
+     * @return mixed
      */
-    public function writeln(string $output): void
+    public function writeln(string $output)
     {
         if ($this->outputInterface) {
             $this->outputInterface->writeln($output);
         }
+        return $this;
     }
 }
