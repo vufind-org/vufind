@@ -193,6 +193,35 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Filter unwanted stuff from RSS item description (especially images)
+     *
+     * @param string $htmlPart
+     *
+     * @return string
+     */
+    private function filterRssItemDescription(string $htmlPart): string {
+        $html = '<html><meta charset="UTF-8"/><body id="htmlPartWrapper">'.$htmlPart.'</body></html>';
+
+        $dom = new \DOMDocument();
+        $dom->recover = true;
+        $dom->strictErrorChecking = false;
+        if (!@$dom->loadHTML($html))
+            return $htmlPart;
+
+        $wrapper = $dom->getElementById('htmlPartWrapper');
+
+        // Elements need to be copied before removing to avoid iterator problem
+        $images = $wrapper->getElementsByTagName('img');
+        $imageReferences = [];
+        foreach ($images as $image)
+            $imageReferences[] = $image;
+        foreach ($imageReferences as $imageReference)
+            $imageReference->parentNode->removeChild($imageReference);
+
+        return $dom->saveHTML($wrapper);
+    }
+
+    /**
      * Parse the RSS feed and return a short overview of the first few entries
      *
      * @param int $max_item_count           Max items to read from file
@@ -215,7 +244,10 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                 $child = $item->firstChild;
                 while ($child != null) {
                     if ($child instanceof \DOMElement) {
-                        $rss_item[$child->tagName] = htmlspecialchars_decode($child->nodeValue);
+                        $value = htmlspecialchars_decode($child->nodeValue);
+                        if ($child->tagName == 'description')
+                            $value = $this->filterRssItemDescription($value);
+                        $rss_item[$child->tagName] = $value;
                     }
                     $child = $child->nextSibling;
                 }
