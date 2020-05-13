@@ -95,8 +95,6 @@ class InjectFulltextMatchIdsListener
             if ($params) {
                 if ($backend->getIdentifier() == 'Search2') {
                     $this->active = true;
-                    $params->set('debug', 'results');
-                    $params->set('debug.explain.structured', 'true');
                     $this->backend->getQueryBuilder()->setIncludeFulltextSnippets(true);
                     // Pass filter from chosen fulltext_type facet
                     $this->selected_fulltext_types = $this->getFulltextFilterFromFulltextTypeFacet($backend, $params);
