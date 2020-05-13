@@ -734,11 +734,14 @@ class Folio extends AbstractAPI implements
             );
             if ($response->isSuccess()) {
                 $json = json_decode($response->getBody());
-                $rawDueDate = date_create($json->dueDate);
                 $renewal = [
                     'success' => true,
-                    'new_date' =>  date_format($rawDueDate, "j M Y"),
-                    'new_time' =>  date_format($rawDueDate, "g:i:s a"),
+                    'new_date' => $this->dateConverter->convertToDisplayDate(
+                        "Y-m-d H:i", $json->dueDate
+                    ),
+                    'new_time' => $this->dateConverter->convertToDisplayTime(
+                        "Y-m-d H:i", $json->dueDate
+                    ),
                     'item_id' => $json->itemId,
                     'sysMessage' => $json->action
                 ];
