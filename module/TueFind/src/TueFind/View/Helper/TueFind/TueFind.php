@@ -159,18 +159,66 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get metadata for aggregated RSS feeds
+     *
+     * @return array
+     */
+    public function getRssFeeds() {
+        $rssConfigPath = $this->getConfig()->General->rss_config_path;
+        $rssConfig = parse_ini_file($rssConfigPath, true, INI_SCANNER_RAW);
+
+        $rssFeeds = [];
+        foreach ($rssConfig as $rssConfigKey => $rssConfigValue) {
+            if (is_array($rssConfigValue) && isset($rssConfigValue['feed_url']))
+                $rssFeeds[$rssConfigKey] = $rssConfigValue;
+        }
+
+        ksort($rssFeeds);
+        return $rssFeeds;
+    }
+
+    /**
      * Search for specific RSS feed icon, return generic RSS icon if not found
      *
      * @param string $rssFeedId
      *
      * @return string
      */
-    public function getRssFeedIcon($rssFeedId) {
+    public function getRssFeedIcon($rssFeedId='rss') {
         $imgSrc = $this->getView()->imageLink('rss/' . $rssFeedId . '.png');
         if ($imgSrc == null)
             $imgSrc = $this->getView()->imageLink('rss/rss.png');
 
         return $imgSrc;
+    }
+
+    /**
+     * Filter unwanted stuff from RSS item description (especially images)
+     *
+     * @param string $htmlPart
+     *
+     * @return string
+     */
+    private function filterRssItemDescription(string $htmlPart): string {
+        $html = '<html><meta charset="UTF-8"/><body id="htmlPartWrapper">'.$htmlPart.'</body></html>';
+
+        $dom = new \DOMDocument();
+        $dom->recover = true;
+        $dom->strictErrorChecking = false;
+        if (!@$dom->loadHTML($html))
+            return $htmlPart;
+
+        $wrapper = $dom->getElementById('htmlPartWrapper');
+
+        // Elements need to be copied before removing to avoid iterator problem
+        $images = $wrapper->getElementsByTagName('img');
+        $imageReferences = [];
+        foreach ($images as $image)
+            $imageReferences[] = $image;
+        foreach ($imageReferences as $imageReference)
+            $imageReference->parentNode->removeChild($imageReference);
+
+        return $dom->saveHTML($wrapper);
     }
 
     /**
@@ -196,7 +244,10 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                 $child = $item->firstChild;
                 while ($child != null) {
                     if ($child instanceof \DOMElement) {
-                        $rss_item[$child->tagName] = htmlspecialchars_decode($child->nodeValue);
+                        $value = htmlspecialchars_decode($child->nodeValue);
+                        if ($child->tagName == 'description')
+                            $value = $this->filterRssItemDescription($value);
+                        $rss_item[$child->tagName] = $value;
                     }
                     $child = $child->nextSibling;
                 }
@@ -207,6 +258,19 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
 
         return $rss_items;
+    }
+
+    /**
+     * Get URL of our own generated RSS feed (from rss_aggregator)
+     *
+     * @return string
+     */
+    public function getRssNewsUrl() {
+        $rssFeedPath = $this->getConfig()->General->rss_feed_path;
+        if (!is_file($rssFeedPath))
+            return false;
+
+        return str_replace(getenv('VUFIND_HOME') . '/public', '', $rssFeedPath);
     }
 
     /**

@@ -45,19 +45,18 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Get names of all authors from 100/700 (subfields 'a','b','c' only)
+     * Special function for metadata vocabularies.
+     * Get names of all authors from 100a/700a only.
+     * (Special request from Google Scholar, b+c are completely omitted,
+     * even if this does not make sense in all cases, because
+     * the result might only be e.g. "Thomas" instead of "Thomas von Aquin"
+     * or "Benedikt" instead of "Benedikt XVI.")
      */
     public function getAuthorNames(): array {
         $authorNames = [];
         $authors = $this->getMarcRecord()->getFields('^100|700$', true);
         foreach ($authors as $author) {
             $authorName = $author->getSubfield('a')->getData();
-            $subfield_b = $author->getSubfield('b');
-            if ($subfield_b != false)
-                $authorName .= ' ' . $subfield_b->getData();
-            $subfield_c = $author->getSubfield('c');
-            if ($subfield_c != false)
-                $authorName .= ' (' . $subfield_c->getData() . ')';
             $authorNames[] = $authorName;
         }
         return array_unique($authorNames);
