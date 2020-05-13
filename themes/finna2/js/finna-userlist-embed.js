@@ -43,15 +43,17 @@ finna.userListEmbed = (function userListEmbed() {
               });
               
               finna.myList.init();
-              finna.imagePaginator.reindexPaginators();
               finna.layout.initCondensedList(resultsContainer);
               finna.layout.initTruncate();
               finna.openUrl.initLinks(resultsContainer);
+              finna.videoPopup.initIframeEmbed(resultsContainer);
+              finna.videoPopup.initVideoPopup(resultsContainer);
               finna.itemStatus.initItemStatuses(resultsContainer);
               finna.itemStatus.initDedupRecordSelection(resultsContainer);
               finna.record.initRecordVersions(resultsContainer);
               VuFind.lightbox.bind(resultsContainer);
               VuFind.cart.init(resultsContainer);
+              $.fn.finnaPopup.reIndex();
               checkSaveStatuses(resultsContainer);
             })
             .fail(function onLoadListFail() {

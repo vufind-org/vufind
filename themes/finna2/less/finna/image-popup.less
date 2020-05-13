@@ -1,75 +1,76 @@
-.mfp-bg {
-    background: #000;
-    .opacity(0.9);
-}
- .mfp-wrap {  
-    &.mfp-removing {
-        .mfp-content {
-            margin-top: -150px;
-            .opacity(0);
-            transition: all .1s linear;
-        }
-    }
-}
-.mfp-preloader {
-    width: 260px;
-    margin: auto;
-    padding: 60px;
-    color: #000;
-    margin-top: -70px;
-    .opacity(.4);
-    &:before {
-        font-family:'Fontawesome';
-        content: "\f110";
-        color: @gray-lighter;
-        font-size: 20px;
-        .fa-spin();
-    }
-}
-.mfp-content {
-    &.loaded {
-        height: 100%;
-        width: 100%;
-        @media (min-width: @screen-sm-min) {
-            &.marc {
-                max-width: 800px;
-            }
-        }
-        &.nonzoomable {
-            .finna-image-pagination {
-                background-color: transparent;
-                button:not(:disabled) {
-                    color: black;
-                }
-            }
-        }
-    }
-
-    max-height: 100%;
-    background: @body-bg;
+.finna-popup {
     width: 100%;
-    box-shadow: 0px 10px 40px rgba(1,1,1,0.8);
-
+    @media (min-width: @screen-sm-min) {
+        &.marc {
+            max-width: 800px;
+        }
+    }
+    
     &.videoplayer-only {
         background: initial;
         box-shadow: none;
     }
-}
-
-.mfp-close-btn-in {
-    .mfp-ajax-holder {
-        .mfp-close {
-            background: @body-bg;
+    &.backdrop {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: 20000;
+        background-color: rgba(1,1,1,0.6);
+        padding: 12px;
+        @media (min-width: @screen-sm-min) {
+            padding: 40px;
+        }
+        overflow: hidden auto;
+    }
+    >.large-spinner {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        .fa-spinner::before {
+            font-size: 80px;
+            color: white;
+            text-shadow: 2px 2px #565656;
         }
     }
-}
-    
-.mfp-container {
-    padding: 72px;
-    @media (max-width: @screen-xs-max) {
-        padding: 16px;
-        height: initial;
+    &.content {
+        width: 100%;
+        @media (min-width: @screen-sm-min) {
+            height: 100%;
+        }
+        padding: 72px;
+        @media (max-width: @screen-xs-max) {
+            padding: 0;
+        }
     }
+    &.modal-holder {
+        height: 100%;
+        position: relative;
+        @media (min-width: @screen-sm-min) {
+            height: 100%;
+        }
+    }
+    &.close-button {
+        position: absolute;
+        z-index: 1500;
+        width: 30px;
+        height: 24px;
+        line-height: 16px;
+        appearance: none;
+        -webkit-appearance: none;
+        top: 0;
+        right: 0;
+        @media (min-width: @screen-sm-min) {
+            right: -30px;
+        }
+
+        background-color: transparent;
+        color: white;
+        border: none;
+        font-size: 24px;
+        text-shadow: 2px 2px 2px black;
+    }
+
     .popup-arrow {
         font-size: 36px;
         position: absolute;
@@ -102,33 +103,22 @@
             }
         }
         &.popup-left-arrow {
-            left: 24px;
+            @media (min-width: @screen-sm-min) {
+                left: 24px;
+            }
             i {
                 text-shadow: -2px 2px 4px rgba(128, 128, 128, 0.3);
             }
         }
         &.popup-right-arrow {
-            right: 24px;
+            @media (min-width: @screen-sm-min) {
+                right: 24px;
+            }
             i {
                 text-shadow: 2px 2px 4px rgba(128, 128, 128, 0.3);
             }
         }
     }
-    .mfp-arrow-right.touch-device {
-        right:0px;
-        transform: translate(0,0);
-        .opacity(0.8);
-        transition-delay: 0;
-    }
-    .mfp-arrow-left.touch-device {
-        left:0px;
-        transform: translate(0,0);
-        .opacity(0.8);
-        transition-delay: 0;
-    }
-     .mfp-close.touch-device {
-          .opacity(0.8);
-     }
 }
 
 .imagepopup-zoom-container {
@@ -179,19 +169,12 @@
 
 .imagepopup-holder {
     height: 100%;
+    background-color: white;
     display: flex;
     justify-content: space-between;
 
     @media (max-width: @screen-xs-max) {
         flex-flow: column;
-    }
-
-    .mfp-close {
-        text-shadow: 2px 2px 2px black;
-        color: #fff;
-        @media (min-width: @screen-sm-min) {
-            right: -44px;
-        }
     }
 
     .imagepopup-container {
@@ -221,6 +204,7 @@
             }
             .video-popup {
                 height: 100% !important;
+                margin: 0;
                 max-height: initial;
                 max-width: initial;
                 .video-js {
@@ -239,7 +223,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-around;
-                .mfp-content.marc & {
+                .finna-popup.marc & {
                     align-items: start;
                 }
                 &.no-image {
@@ -297,7 +281,6 @@
             }
         }
         .finna-image-pagination {
-            background-color: #383838;
             padding: 4px;
             flex: 1 1 0;
             width: 100%;
@@ -307,7 +290,7 @@
             flex: 0 0 auto;
             .recordcovers .track-holder .finna-element-track {
                 div {
-                    .mfp-content:not(.nonzoomable) & {
+                    .finna-popup.content:not(.nonzoomable) & {
                         a {
                             background-color: #2e2e2ecc;
                             @media (min-width: @screen-sm-min) {
@@ -524,3 +507,53 @@
     }
 }
 
+.finna-popup {
+    &.modal-holder {
+        &.canvas-player, &.video-player {
+            height: 100%;
+        }
+        &.marc {
+            margin: auto;
+        }
+        &.finna-iframe .player {
+            width: 100%;
+            height: 100%;
+        }
+    }
+    &.content {
+        .finna-image-pagination {
+            background-color: #383838;
+            padding: 4px;
+            flex: 1 1 0;
+            width: 100%;
+            @media (min-width: @screen-sm-min) {
+                height: 105px;
+            }
+            flex: 0 0 auto;
+            .finna-element-track {
+                a {
+                    background-color: #2e2e2ecc;
+                    @media (min-width: @screen-sm-min) {
+                        height: 96px;
+                        max-width: 96px;
+                    }
+                }
+            }
+            .paginator-info {
+                display: none;
+            }
+        }
+        &.nonzoomable {
+            .finna-image-pagination {
+                background-color: transparent;
+                button:not(:disabled) {
+                    color: black;
+                }
+                a {
+                    background-color: transparent;
+                }
+            }
+        }
+        
+    }
+}

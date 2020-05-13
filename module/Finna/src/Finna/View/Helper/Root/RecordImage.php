@@ -265,7 +265,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      * @param string $source      Record source
      * @param array  $extraParams Optional extra parameters:
      *                            - boolean $disableModal
-     *                            Whether to disable MagnificPopup modal
+     *                            Whether to disable FinnaPopup modal
      *                            - string  $imageRightsLabel
      *                            Label for image rights statement
      *                            - array   $numOfImages
