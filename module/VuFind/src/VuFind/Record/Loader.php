@@ -207,8 +207,19 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         if ($list->hasUnchecked() && $this->fallbackLoader
             && $this->fallbackLoader->has($source)
         ) {
-            $fallbackRecords = $this->fallbackLoader->get($source)
-                ->load($list->getUnchecked());
+            try {
+                $fallbackRecords = $this->fallbackLoader->get($source)
+                    ->load($list->getUnchecked());
+            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+                if (!$tolerateBackendExceptions) {
+                    throw $e;
+                }
+                $fallbackRecords = [];
+                $this->logWarning(
+                    'Exception when trying to retrieve fallback records from '
+                    . $source . ': ' . $e->getMessage()
+                );
+            }
             foreach ($fallbackRecords as $record) {
                 $retVal[] = $record;
                 if (!$list->check($record->getUniqueId())) {
