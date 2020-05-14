@@ -70,9 +70,9 @@ class WebApiController extends SearchApiController
     protected $indexLabel = 'website';
 
     /**
-     * Model name used in API for representing records
+     * Prefix for use in model names used by API
      *
      * @var string
      */
-    protected $recordModel = 'WebRecord';
+    protected $modelPrefix = 'Web';
 }

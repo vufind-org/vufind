@@ -70,9 +70,9 @@ class Search2ApiController extends SearchApiController
     protected $indexLabel = 'secondary';
 
     /**
-     * Model name used in API for representing records
+     * Prefix for use in model names used by API
      *
      * @var string
      */
-    protected $recordModel = 'SecondaryRecord';
+    protected $modelPrefix = 'Secondary';
 }

@@ -71,7 +71,7 @@
                     "200": {
                         "description": "Response containing result count and records",
                         "schema": {
-                            "$ref": "#/definitions/SearchResponse"
+                            "$ref": "#/definitions/<?=$this->modelPrefix?>SearchResponse"
                         }
                     },
                     "default": {
@@ -168,7 +168,7 @@
                     "200": {
                         "description": "Response containing result count, records and/or facets.",
                         "schema": {
-                            "$ref": "#/definitions/SearchResponse"
+                            "$ref": "#/definitions/<?=$this->modelPrefix?>SearchResponse"
                         }
                     },
                     "default": {
@@ -287,7 +287,7 @@
                 }
             }
         },
-        "<?=$this->recordModel?>": {
+        "<?=$this->modelPrefix?>Record": {
             "type": "object",
             "properties": <?=json_encode($this->recordFields) ?>
         },
@@ -307,7 +307,7 @@
                 }
             }
         },
-        "SearchResponse": {
+        "<?=$this->modelPrefix?>SearchResponse": {
             "type": "object",
             "properties": {
                 "resultCount": {
@@ -318,7 +318,7 @@
                     "description": "Records",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/<?=$this->recordModel?>"
+                        "$ref": "#/definitions/<?=$this->modelPrefix?>Record"
                     }
                 },
                 "facets": {

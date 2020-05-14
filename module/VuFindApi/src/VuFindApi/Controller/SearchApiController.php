@@ -104,11 +104,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $indexLabel = 'primary';
 
     /**
-     * Model name used in API for representing records
+     * Prefix for use in model names used by API
      *
      * @var string
      */
-    protected $recordModel = 'Record';
+    protected $modelPrefix = '';
 
     /**
      * Constructor
@@ -157,7 +157,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'searchRoute' => $this->searchRoute,
             'searchIndex' => $this->searchClassId,
             'indexLabel' => $this->indexLabel,
-            'recordModel' => $this->recordModel,
+            'modelPrefix' => $this->modelPrefix,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
