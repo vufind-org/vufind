@@ -181,7 +181,7 @@ FinnaPopup.prototype.show = function show() {
 
   if (typeof _.backDrop === 'undefined' && !hasParent) {
     _.backDrop = $('<div class="finna-popup backdrop"></div>');
-    _.backDrop.off('click').on('click', function test(e) {
+    _.backDrop.off('click').on('click', function test() {
       _.onPopupClose();
     });
     $(document.body).prepend(_.backDrop);
@@ -268,7 +268,7 @@ FinnaPopup.prototype.clearKeyBinds = function clearKeyBinds() {
   $(document).off('keyup.finna');
 };
 
-FinnaPopup.prototype.onPopupInit = function onPopupInit(trigger) { };
+FinnaPopup.prototype.onPopupInit = function onPopupInit(/*trigger*/) { };
 
 FinnaPopup.prototype.onPopupOpen = function onPopupOpen(open, close) {
   var _ = this;

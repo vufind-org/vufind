@@ -362,16 +362,16 @@ finna.layout = (function finnaLayout() {
   function initToolTips(_holder) {
     var holder = typeof _holder === 'undefined' ? $(document) : _holder;
     holder.find('[data-toggle="tooltip"]')
-      .on('show.bs.tooltip', function() {
+      .on('show.bs.tooltip', function onShowTooltip() {
         var self = $(this);
-        $(currentOpenTooltips).each(function() {
+        $(currentOpenTooltips).each(function hideOtherTooltips() {
           if ($(this)[0] !== self[0]) {
             $(this).tooltip('hide');
           }
         });
         currentOpenTooltips = [self];
       })
-      .on('hidden.bs.tooltip', function (e) {
+      .on('hidden.bs.tooltip', function onHideTooltip(e) {
         $(e.target).data('bs.tooltip').inState.click = false;
       })
       .tooltip({trigger: 'click', viewport: '.container'});

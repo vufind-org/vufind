@@ -9,6 +9,22 @@ finna.myList = (function finnaMyList() {
   var truncateField = '<div class="truncate-field" data-rows="1" data-row-height="5" markdown="1">';
   var truncateTag = '[[more]]';
 
+  function getEditorCursorPos(mdeditor) {
+    var doc = mdeditor.codemirror.getDoc();
+    var cursorPos = doc.getCursor();
+    var position = {
+      line: cursorPos.line,
+      ch: cursorPos.ch
+    };
+    return position;
+  }
+
+  function insertElement(element, mdeditor) {
+    var doc = mdeditor.codemirror.getDoc();
+    doc.replaceRange(element, getEditorCursorPos(mdeditor));
+    mdeditor.codemirror.focus();
+  }
+
   function toggleTruncateField(mdeditor) {
     var value = mdeditor.value();
     if (value.indexOf(truncateTag) !== -1) {
@@ -17,6 +33,20 @@ finna.myList = (function finnaMyList() {
       var moreTag = '\n' + truncateTag + '\n';
       insertElement(moreTag, mdeditor);
     }
+  }
+
+  function insertDetails(mdeditor) {
+    var summaryPlaceholder = VuFind.translate('details_summary_placeholder');
+    var detailsElement = '\n<details class="favorite-list-details">\n' +
+     '<summary>' + summaryPlaceholder + '</summary>' +
+     '<p>' + VuFind.translate('details_text_placeholder') + '</p>\n' +
+     '</details>';
+
+    insertElement(detailsElement, mdeditor);
+    var doc = editor.codemirror.getDoc();
+    var cursorPos = getEditorCursorPos(editor);
+    var summaryAndPlaceholder = '<summary>' + summaryPlaceholder;
+    doc.setCursor({line: cursorPos.line - 1, ch: summaryAndPlaceholder.length});
   }
 
   var mdeToolbar = [
@@ -42,7 +72,7 @@ finna.myList = (function finnaMyList() {
       className: 'fa fa-pagebreak',
       title: 'Truncate'
     }
-  ]
+  ];
 
   function initDetailsElements() {
     $('.favorite-list-details').click(function onDetailsClick() {
@@ -52,36 +82,6 @@ finna.myList = (function finnaMyList() {
         $(this).attr('open', 'open');
       }
     });
-  }
-
-  function insertElement(element, mdeditor) {
-    var doc = mdeditor.codemirror.getDoc();
-    doc.replaceRange(element, getEditorCursorPos(mdeditor));
-    mdeditor.codemirror.focus();
-  }
-
-  function getEditorCursorPos(mdeditor) {
-    var doc = mdeditor.codemirror.getDoc();
-    var cursorPos = doc.getCursor();
-    var position = {
-      line: cursorPos.line,
-      ch: cursorPos.ch
-    }
-    return position;
-  }
-
-  function insertDetails(mdeditor) {
-    var summaryPlaceholder = VuFind.translate('details_summary_placeholder')
-    var detailsElement = '\n<details class="favorite-list-details">\n' +
-     '<summary>' + summaryPlaceholder + '</summary>' +
-     '<p>' + VuFind.translate('details_text_placeholder') + '</p>\n' + 
-     '</details>';
-
-    insertElement(detailsElement, mdeditor);
-    var doc = editor.codemirror.getDoc();
-    var cursorPos = getEditorCursorPos(editor);
-    var summaryAndPlaceholder = '<summary>' + summaryPlaceholder;
-    doc.setCursor({line: cursorPos.line - 1, ch: summaryAndPlaceholder.length});
   }
 
   // This is duplicated in image-popup.js to avoid dependency
