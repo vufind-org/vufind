@@ -721,8 +721,6 @@ class Folio extends AbstractAPI implements
      */
     public function renewMyItems($renewDetails)
     {
-        $renewalResults = [];
-
         foreach ($renewDetails['details'] as $loanId) {
             $renewal = [];
             $requestbody = [
@@ -745,7 +743,6 @@ class Folio extends AbstractAPI implements
                     'item_id' => $json->itemId,
                     'sysMessage' => $json->action
                 ];
-                $renewalResults['details'][$loanId] = $renewal;
             } else {
                 try {
                     $json = json_decode($response->getBody());
@@ -757,8 +754,8 @@ class Folio extends AbstractAPI implements
                     'success' => false,
                     'sysMessage' => $sysMessage
                 ];
-                $renewalResults['details'][$loanId] = $renewal;
             }
+            $renewalResults['details'][$loanId] = $renewal;
         }
         return $renewalResults;
     }
