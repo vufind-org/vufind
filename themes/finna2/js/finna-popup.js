@@ -1,66 +1,3 @@
-(function popupModule($) {
-  $.fn.finnaPopup = function finnaPopup(params) {
-    var _ = $(this);
-    if (typeof $.fn.finnaPopup.popups === 'undefined') {
-      $.fn.finnaPopup.popups = {};
-    }
-    var id = typeof params.id === 'undefined' ? 'default' : params.id;
-
-    if (typeof _.data('popup-' + id + '-index') !== 'undefined') {
-      return; //Already found in the list, so lets not double init this
-    }
-    if (typeof $.fn.finnaPopup.popups[id] === 'undefined') {
-      $.fn.finnaPopup.popups[id] = new FinnaPopup($(this), params, params.id);
-    } else {
-      $.fn.finnaPopup.popups[id].addTrigger($(this));
-    }
-    _.data('popup-id', id);
-    var events = (typeof params.noClick === 'undefined' || !params.noClick) ? 'click openmodal.finna' : 'openmodal.finna';
-    _.off(events).on(events, function showModal(e) {
-      e.preventDefault();
-      _.on('removeclick.finna', function removeClick() {
-        _.off('click');
-      });
-      // We need to tell which triggers is being used
-      $.fn.finnaPopup.popups[id].openIndex = _.data('popup-' + id + '-index');
-      $.fn.finnaPopup.popups[id].onPopupOpen(params.onPopupOpen, params.onPopupClose);
-    });
-    if (typeof params.embed !== 'undefined' && params.embed) {
-      if (typeof $.fn.finnaPopup.popups[id].content === 'undefined') {
-        $.fn.finnaPopup.popups[id].triggers[0].trigger('openmodal.finna');
-      }
-    }
-  };
-  $.fn.finnaPopup.reIndex = function reIndex() {
-    $.each($.fn.finnaPopup.popups, function callReindex(key, obj) {
-      obj.reIndex();
-    });
-  };
-  $.fn.finnaPopup.getCurrent = function getCurrent(id) {
-    if (typeof $.fn.finnaPopup.popups !== 'undefined') {
-      return $.fn.finnaPopup.popups[id].openIndex;
-    }
-    return undefined;
-  };
-  $.fn.finnaPopup.closeOpen = function closeOpen() {
-    $.each($.fn.finnaPopup.popups, function callClose(key, obj) {
-      if (obj.isOpen) {
-        obj.onPopupClose();
-      }
-    });
-  };
-  $.fn.finnaPopup.isOpen = function isOpen() {
-    var open = false;
-    $.each($.fn.finnaPopup.popups, function checkOpen(key, obj) {
-      if (obj.isOpen) {
-        open = true;
-        return false;
-      }
-    });
-    return open;
-  };
-})(jQuery);
-
 var previous = '<button class="popup-arrow popup-left-arrow previous-record" type="button"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button>';
 var next = '<button class="popup-arrow popup-right-arrow next-record" type="button"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button>';
 var closeTemplate = '<button class="finna-popup close-button" title="close_translation" aria-label="close_translation">x</button>';
@@ -319,3 +256,66 @@ FinnaPopup.prototype.focusTrap = function focusTrap(e) {
     _.content.find(':focusable').eq(0).focus();
   }
 };
+
+(function popupModule($) {
+  $.fn.finnaPopup = function finnaPopup(params) {
+    var _ = $(this);
+    if (typeof $.fn.finnaPopup.popups === 'undefined') {
+      $.fn.finnaPopup.popups = {};
+    }
+    var id = typeof params.id === 'undefined' ? 'default' : params.id;
+
+    if (typeof _.data('popup-' + id + '-index') !== 'undefined') {
+      return; //Already found in the list, so lets not double init this
+    }
+    if (typeof $.fn.finnaPopup.popups[id] === 'undefined') {
+      $.fn.finnaPopup.popups[id] = new FinnaPopup($(this), params, params.id);
+    } else {
+      $.fn.finnaPopup.popups[id].addTrigger($(this));
+    }
+    _.data('popup-id', id);
+    var events = (typeof params.noClick === 'undefined' || !params.noClick) ? 'click openmodal.finna' : 'openmodal.finna';
+    _.off(events).on(events, function showModal(e) {
+      e.preventDefault();
+      _.on('removeclick.finna', function removeClick() {
+        _.off('click');
+      });
+      // We need to tell which triggers is being used
+      $.fn.finnaPopup.popups[id].openIndex = _.data('popup-' + id + '-index');
+      $.fn.finnaPopup.popups[id].onPopupOpen(params.onPopupOpen, params.onPopupClose);
+    });
+    if (typeof params.embed !== 'undefined' && params.embed) {
+      if (typeof $.fn.finnaPopup.popups[id].content === 'undefined') {
+        $.fn.finnaPopup.popups[id].triggers[0].trigger('openmodal.finna');
+      }
+    }
+  };
+  $.fn.finnaPopup.reIndex = function reIndex() {
+    $.each($.fn.finnaPopup.popups, function callReindex(key, obj) {
+      obj.reIndex();
+    });
+  };
+  $.fn.finnaPopup.getCurrent = function getCurrent(id) {
+    if (typeof $.fn.finnaPopup.popups !== 'undefined') {
+      return $.fn.finnaPopup.popups[id].openIndex;
+    }
+    return undefined;
+  };
+  $.fn.finnaPopup.closeOpen = function closeOpen() {
+    $.each($.fn.finnaPopup.popups, function callClose(key, obj) {
+      if (obj.isOpen) {
+        obj.onPopupClose();
+      }
+    });
+  };
+  $.fn.finnaPopup.isOpen = function isOpen() {
+    var open = false;
+    $.each($.fn.finnaPopup.popups, function checkOpen(key, obj) {
+      if (obj.isOpen) {
+        open = true;
+        return false;
+      }
+    });
+    return open;
+  };
+})(jQuery);
