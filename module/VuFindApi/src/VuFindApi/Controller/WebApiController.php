@@ -61,4 +61,11 @@ class WebApiController extends SearchApiController
      * @var string
      */
     protected $searchRoute = 'web/search';
+
+    /**
+     * Descriptive label for the index managed by this controller
+     *
+     * @var string
+     */
+    protected $indexLabel = 'website';
 }
