@@ -726,7 +726,7 @@ class Folio extends AbstractAPI implements
             $requestbody = [
                 'itemId' => $loanId,
                 'userId' => $renewDetails['patron']['id']
-                ];
+            ];
             $response = $this->makeRequest(
                 'POST', '/circulation/renew-by-id', json_encode($requestbody)
             );
