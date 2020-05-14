@@ -68,4 +68,11 @@ class WebApiController extends SearchApiController
      * @var string
      */
     protected $indexLabel = 'website';
+
+    /**
+     * Model name used in API for representing records
+     *
+     * @var string
+     */
+    protected $recordModel = 'WebRecord';
 }
