@@ -1715,12 +1715,13 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     $itemsResult,
                     $id,
                     $patron,
+                    true,
                     true
                 );
 
                 $result = [
                     'holdings' => $items['items'],
-                    'total' => $totalItems
+                    'total' => $items['total'],
                 ];
 
                 if ($displayRequests) {
@@ -2076,15 +2077,17 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     /**
      * Get items as holdings entries
      *
-     * @param \SimpleXMLElement $itemsResult Items from Alma
-     * @param string            $id          Record id
-     * @param array             $patron      Patron
-     * @param bool              $sortItems   Whether to sort the items
+     * @param \SimpleXMLElement $itemsResult         Items from Alma
+     * @param string            $id                  Record id
+     * @param array             $patron              Patron
+     * @param bool              $sortItems           Whether to sort the items
+     * @param bool              $addItemlessHoldings Whether to include holdings that
+     * don't have items
      *
      * @return array
      */
     protected function getHoldingsItems($itemsResult, $id, $patron = null,
-        $sortItems = false
+        $sortItems = false, $addItemlessHoldings = false
     ) {
         // For checking for suppressed holdings. This is a bit complicated,
         // but the holding information in items is missing this crucial bit.
@@ -2177,16 +2180,41 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'sort' => $sort++
                 ];
             }
-            if ($sortItems) {
-                usort($items, [$this, 'statusSortFunction']);
+        }
+
+        if ($addItemlessHoldings) {
+            $noItemsHoldings = [];
+            foreach ($almaHoldings as $record) {
+                if ('true' === (string)$record->suppress_from_publishing) {
+                    continue;
+                }
+                foreach ($items as $item) {
+                    if ($item['holding_id'] === (string)$record->holding_id) {
+                        continue 2;
+                    }
+                }
+                $noItemsHoldings[] = $record;
             }
 
-            // Return locations to strings
-            foreach ($items as &$item) {
-                $item['location'] = $this->translate($item['location']);
+            foreach ($noItemsHoldings as $record) {
+                $entry = $this->createHoldingEntry($id, $record);
+                $entry['details_ajax'] = $entry['holding_id'];
+                $entry['sort'] = $sort++;
+                $entry['detailsGroupKey'] = $entry['holding_id'] . '||||';
+                $items[] = $entry;
+                ++$totalItems;
             }
-            unset($item);
         }
+
+        if ($sortItems) {
+            usort($items, [$this, 'statusSortFunction']);
+        }
+
+        // Return locations to strings
+        foreach ($items as &$item) {
+            $item['location'] = $this->translate($item['location']);
+        }
+        unset($item);
 
         return [
             'items' => $items,
