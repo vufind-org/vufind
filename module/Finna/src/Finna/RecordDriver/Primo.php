@@ -445,7 +445,7 @@ class Primo extends \VuFind\RecordDriver\Primo
     {
         $rec = $this->getSimpleXML();
         if (isset($rec->display->lds50)) {
-            return ((string) $rec->display->lds50) === 'peer_reviewed';
+            return ((string)$rec->display->lds50) === 'peer_reviewed';
         }
         return false;
     }
@@ -459,7 +459,7 @@ class Primo extends \VuFind\RecordDriver\Primo
     {
         $rec = $this->getSimpleXML();
         if (isset($rec->display->oa)) {
-            return ((string) $rec->display->oa) === 'free_for_read';
+            return ((string)$rec->display->oa) === 'free_for_read';
         }
         return false;
     }

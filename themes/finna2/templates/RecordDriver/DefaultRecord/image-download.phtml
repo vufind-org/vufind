@@ -13,7 +13,7 @@
                 </button>
                 <ul class="dropdown-menu download" aira-labelledby="downloadMenu-<?=$index?>">
                     <?php if (isset($urls['large'])): ?>
-                        <li class="display-image"><a href="<?= $this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank"><?= $this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
+                        <li class="display-image"><a href="<?=$this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank"><?=$this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
                     <?php endif; ?>
                     <?php foreach ($hiRes as $size => $img): ?>
                         <?php foreach ($img as $key => $info): ?>
@@ -43,20 +43,20 @@
                                 }
                                 $downloadName = str_replace('.', '-', $this->driver->getUniqueID()) . '-' . ($info['resourceID'] ?? $index) . '-' . $size;
                             ?>
-                            <li><a download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('cover-download', [], ['query' => $info['params']]))?>"> <?= $this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$dimensions?></span> <span class="image-size"><?=$imageSize?></span>  <?=$key?></a></li>
+                            <li><a download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('cover-download', [], ['query' => $info['params']]))?>"> <?=$this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$dimensions?></span> <span class="image-size"><?=$imageSize?></span>  <?=$key?></a></li>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 </ul>
             </div>
         <?php else: ?>
             <div class="open-link">
-                <?php 
+                <?php
                     $recordImage = $this->recordImage($this->record($this->driver));
                     $originalImage = $recordImage->getMasterImage($index);
                 ?>
                 <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download>
-                  <i aria-hidden="true" class="fa fa-download"></i>
-                  <span><?=$this->transEsc('Download the image') ?></span>
+                    <i aria-hidden="true" class="fa fa-download"></i>
+                    <span><?=$this->transEsc('Download the image') ?></span>
                 </a>
                 <span class="image-dimensions"></span>
               </div>

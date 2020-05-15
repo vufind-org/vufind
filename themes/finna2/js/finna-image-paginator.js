@@ -1,4 +1,4 @@
-/* global finna, VuFind, L, videojs */
+/* global finna, VuFind, L */
 finna.imagePaginator = (function imagePaginator() {
   var imageElement = '<a draggable="false" href="" class="image-popup image-popup-navi hidden-print"></a>';
   var paginatorIndex = 0;
@@ -698,7 +698,7 @@ finna.imagePaginator = (function imagePaginator() {
             _.setCanvasElement('video');
           },
           onPopupClose: function onPopupClose() {
-  
+
           }
         });
       });

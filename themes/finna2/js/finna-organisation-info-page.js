@@ -440,12 +440,12 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
             serviceText = $('<a class="service-tooltip" data-toggle="tooltip" data-placement="bottom" data-html="true" />').html(serviceTitle);
             var serviceDesc = '';
             if (typeof services.desc !== 'undefined') {
-              serviceDesc = services.desc
+              serviceDesc = services.desc;
             } else {
-              serviceDesc = services.shortDesc
+              serviceDesc = services.shortDesc;
             }
             var serviceToolTip = '<h4>' + services[0] + '</h4>' + serviceDesc;
-            serviceText.attr('data-original-title', serviceToolTip)
+            serviceText.attr('data-original-title', serviceToolTip);
           } else {
             serviceText = serviceTitle;
           }
