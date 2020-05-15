@@ -97,6 +97,20 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $searchRoute = 'search';
 
     /**
+     * Descriptive label for the index managed by this controller
+     *
+     * @var string
+     */
+    protected $indexLabel = 'primary';
+
+    /**
+     * Prefix for use in model names used by API
+     *
+     * @var string
+     */
+    protected $modelPrefix = '';
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -142,6 +156,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'recordRoute' => $this->recordRoute,
             'searchRoute' => $this->searchRoute,
             'searchIndex' => $this->searchClassId,
+            'indexLabel' => $this->indexLabel,
+            'modelPrefix' => $this->modelPrefix,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams

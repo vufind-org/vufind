@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class Search2ApiController
+ * Class WebApiController
  *
  * PHP version 7
  *
- * Copyright (C) Moravian Library 2020.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,57 +22,57 @@
  *
  * @category VuFind
  * @package  VuFindApi\Controller
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
 namespace VuFindApi\Controller;
 
 /**
- * Search2 API Controller
+ * Web API Controller
  *
- * Controls the Search API functionality on second defined index
+ * Controls the Search API functionality on website index
  *
  * @category VuFind
  * @package  VuFindApi\Controller
- * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class Search2ApiController extends SearchApiController
+class WebApiController extends SearchApiController
 {
     /**
      * Search class family to use.
      *
      * @var string
      */
-    protected $searchClassId = 'Search2';
+    protected $searchClassId = 'SolrWeb';
 
     /**
      * Record route uri
      *
      * @var string
      */
-    protected $recordRoute = 'index2/record';
+    protected $recordRoute = 'web/record';
 
     /**
      * Search route uri
      *
      * @var string
      */
-    protected $searchRoute = 'index2/search';
+    protected $searchRoute = 'web/search';
 
     /**
      * Descriptive label for the index managed by this controller
      *
      * @var string
      */
-    protected $indexLabel = 'secondary';
+    protected $indexLabel = 'website';
 
     /**
      * Prefix for use in model names used by API
      *
      * @var string
      */
-    protected $modelPrefix = 'Secondary';
+    protected $modelPrefix = 'Web';
 }
