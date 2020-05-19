@@ -795,13 +795,9 @@ trait MarcAdvancedTrait
     {
         // Simplest case -- "msg" mode (just return a configured message):
         if ($details['mode'] === 'msg') {
-            if ($details['params'] === 'true') {
-                return true;
-            }
-            if ($details['params'] === 'false') {
-                return false;
-            }
-            return $details['params'];
+            // Map 'true' and 'false' to boolean equivalents:
+            $msgMap = ['true' => true, 'false' => false];
+            return $msgMap[$details['params']] ?? $details['params'];
         }
 
         // Standard case -- "marc" mode (extract subfield data):
