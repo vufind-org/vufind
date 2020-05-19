@@ -28,6 +28,15 @@
  */
 namespace VuFind\Content;
 
+/**
+ * Service class for ObalkyKnih
+ *
+ * @category VuFind
+ * @package  Content
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
 class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
@@ -43,8 +52,10 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
 
     /**
      * Constructor
+     *
+     * @param \Laminas\Config\Config $config Configuration for service
      */
-    public function __construct($config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->apiUrl = $config->base_url1 . $config->books_endpoint;
         $this->cacheLifetime = 1800;
@@ -57,7 +68,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      *
      * @return \Laminas\Http\Client
      */
-    protected function getHttpClient($url = null)
+    protected function getHttpClient(string $url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -65,17 +76,34 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         return $this->httpService->createClient($url);
     }
 
-    protected function createCacheKey($ids) {
-        array_walk($ids, function(&$value, $key) {
-            if (gettype($value) === 'object') {
-                $value = $value->get13();
+    /**
+     * Creates cache key based on ids
+     *
+     * @param array $ids Record identifiers
+     *
+     * @return string
+     */
+    protected function createCacheKey(array $ids)
+    {
+        array_walk(
+            $ids, function (&$value, $key) {
+                if (gettype($value) === 'object') {
+                    $value = $value->get13();
+                }
+                $value = "$key::$value";
             }
-            $value = "$key::$value";
-        });
+        );
         return implode("%%", $ids);
     }
 
-    public function getData($ids): ?\stdClass
+    /**
+     * Get data from cache, or from service
+     *
+     * @param array $ids Record identifiers
+     *
+     * @return \stdClass|null
+     */
+    public function getData(array $ids): ?\stdClass
     {
         $cacheKey = $this->createCacheKey($ids);
         $cachedData = $this->getCachedData($cacheKey);
@@ -86,17 +114,25 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         return $cachedData;
     }
 
-    protected function getFromService($ids): ?\stdClass {
+    /**
+     * Get data from service
+     *
+     * @param array $ids Record identifiers
+     *
+     * @return \stdClass|null
+     * @throws \Exception
+     */
+    protected function getFromService(array $ids): ?\stdClass
+    {
         $param = "multi";
         $query = [];
-        $isbn = $ids['isbn'] ? $ids['isbn']->get13() : null;
+        $isbn = isset($ids['isbn']) ? $ids['isbn']->get13() : null;
         $isbn = $isbn ?? $ids['upc'] ?? $ids['issn'] ?? null;
         $oclc = $ids['oclc'] ?? null;
-        $isbn = $isbn ?? ($ids['ismn'] ? $ids['ismn']->get13() : null);
-        $ismn = $ids['ismn'] ? $ids['ismn']->get10() : null;
+        $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
+        $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
         $nbn = $ids['nbn'] ?? null;
-
-        foreach(['isbn', 'oclc', 'ismn', 'nbn' ] as $identifier) {
+        foreach (['isbn', 'oclc', 'ismn', 'nbn' ] as $identifier) {
             if (isset($$identifier)) {
                 $query[$identifier] = $$identifier;
             }
@@ -104,6 +140,6 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $url = $this->apiUrl . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $response = $this->getHttpClient($url)->send();
-        return $response->isSuccess() ? json_decode($response->getBody())[0]: null;
+        return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
     }
 }

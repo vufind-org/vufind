@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 /**
  * Class ObalkyKnih
@@ -26,12 +27,20 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Content\Covers;
 
 use VuFind\Content\ObalkyKnihService;
 
-class ObalkyKnih extends AbstractCover
+/**
+ * Class ObalkyKnih
+ *
+ * @category VuFind
+ * @package  Content
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class ObalkyKnih extends \VuFind\Content\AbstractCover
 {
     /**
      * Obalky knih service
@@ -42,6 +51,9 @@ class ObalkyKnih extends AbstractCover
 
     /**
      * Constructor
+     *
+     * @param ObalkyKnihService $service Service for getting metadata from
+     * obalkyknih.cz
      */
     public function __construct(ObalkyKnihService $service)
     {
@@ -74,7 +86,6 @@ class ObalkyKnih extends AbstractCover
         if (!isset($data)) {
             return false;
         }
-
         switch ($size) {
         case 'small':
             $imageUrl = $data->cover_icon_url;

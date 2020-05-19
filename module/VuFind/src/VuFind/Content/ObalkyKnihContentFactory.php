@@ -26,14 +26,23 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Content;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class ObalkyKnihContentFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+/**
+ * Class ObalkyKnihCoversFactory
+ *
+ * @category VuFind
+ * @package  Content
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class ObalkyKnihContentFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -54,7 +63,9 @@ class ObalkyKnihContentFactory implements \Laminas\ServiceManager\Factory\Factor
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new ServiceNotCreatedException('Unexpected options passed to factory.');
+            throw new ServiceNotCreatedException(
+                'Unexpected options passed to factory.'
+            );
         }
 
         $service = $container->get(\VuFind\Content\ObalkyKnihService::class);

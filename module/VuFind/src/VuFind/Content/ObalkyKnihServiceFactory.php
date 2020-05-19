@@ -26,14 +26,23 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\Content;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class ObalkyKnihServiceFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+/**
+ * Class ObalkyKnihCoversFactory
+ *
+ * @category VuFind
+ * @package  Content
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
+ */
+class ObalkyKnihServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -51,15 +60,19 @@ class ObalkyKnihServiceFactory implements \Laminas\ServiceManager\Factory\Factor
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
-                             array $options = null
+        array $options = null
     ) {
         if (!empty($options)) {
-            throw new ServiceNotCreatedException('Unexpected options passed to factory.');
+            throw new ServiceNotCreatedException(
+                'Unexpected options passed to factory.'
+            );
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('obalkyknih');
         if (!isset($config->ObalkyKnih)) {
-            throw new ServiceNotCreatedException("ObalkyKnih service is not properly configured");
+            throw new ServiceNotCreatedException(
+                'ObalkyKnih service is not properly configured'
+            );
         }
 
         $service = new $requestedName($config->ObalkyKnih);
