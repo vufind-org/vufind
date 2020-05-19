@@ -37,7 +37,7 @@ use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Shibboleth authentication module.
+ * Abstract Shibboleth class
  *
  * @category VuFind
  * @package  Authentication
@@ -52,8 +52,15 @@ use VuFind\Exception\Auth as AuthException;
  */
 abstract class AbstractShibboleth extends AbstractBase
 {
+    /**
+     * Header name for entityID of the IdP that authenticated the user.
+     */
     const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
 
+    /**
+     * Header name of the internal session key assigned to the
+     * session associated with the request.
+     */
     const SHIB_SESSION_ID = "Shib-Session-ID";
 
     /**
