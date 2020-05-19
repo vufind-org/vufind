@@ -840,7 +840,7 @@ trait MarcAdvancedTrait
         }
 
         // Now fetch all of the MARC data that we need.
-        $getTagCallback = function($instruction) {
+        $getTagCallback = function ($instruction) {
             return $instruction['field'];
         };
         $fields = [];
