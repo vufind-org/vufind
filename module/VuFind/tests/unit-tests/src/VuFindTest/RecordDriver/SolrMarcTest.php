@@ -135,9 +135,11 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
             'foo' => 'msg|true',
             'bar' => 'msg|false',
             'baz' => 'msg|xyzzy',
+            'null' => 'msg',
             'title' => 'marc|a',
             'default' => 'marc',
             'emptySubfield' => 'marc|c',
+            'pub' => 'marc|abc|260',
         ];
         $this->assertEquals(
             [
@@ -145,10 +147,12 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
                     'id' => '000105196',
                     'foo' => true,
                     'bar' => false,
+                    'null' => null,
                     'baz' => 'xyzzy',
                     'title' => 'Bollettino della Unione matematica italiana.',
                     'default' => 'Bollettino della Unione matematica italiana.',
                     'emptySubfield' => '',
+                    'pub' => 'Bologna : Zanichelli, 1922-1975.',
                 ]
             ],
             $record->getFormattedMarcDetails('245', $input)
