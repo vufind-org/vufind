@@ -322,7 +322,7 @@ abstract class AbstractShibboleth extends AbstractBase
         if (!isset($shib['session_id'])) {
             return;
         }
-        $shibSessionId = getAttribute($request, $shib['session_id']);
+        $shibSessionId = $this->getAttribute($request, $shib['session_id']);
         if (null === $shibSessionId) {
             return;
         }
