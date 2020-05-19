@@ -438,9 +438,6 @@ $config = [
             'Laminas\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
-        'delegators' => [
-            'VuFind\Http\PhpEnvironment\Request' => [ \Laminas\Mvc\Console\Service\ConsoleRequestDelegatorFactory::class ],
-        ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],

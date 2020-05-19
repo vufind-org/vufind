@@ -67,7 +67,8 @@ class EdsrecordController extends AbstractRecord
      */
     protected function redirectToEbook($format, $method)
     {
-        $params = new ParamBag(['ebookpreferredformat' => $format]);
+        $paramArray = $format === null ? [] : ['ebookpreferredformat' => $format];
+        $params = new ParamBag($paramArray);
         $driver = $this->loadRecord($params, true);
         // If the user is a guest, redirect them to the login screen.
         $auth = $this->getAuthorizationService();
@@ -88,6 +89,16 @@ class EdsrecordController extends AbstractRecord
     public function epubAction()
     {
         return $this->redirectToEbook('ebook-epub', 'getEpubLink');
+    }
+
+    /**
+     * Linked text display action.
+     *
+     * @return mixed
+     */
+    public function linkedtextAction()
+    {
+        return $this->redirectToEbook(null, 'getLinkedFullTextLink');
     }
 
     /**
