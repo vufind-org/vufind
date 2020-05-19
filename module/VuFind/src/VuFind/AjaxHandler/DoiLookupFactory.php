@@ -65,6 +65,10 @@ class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $pluginManager = $container->get(\VuFind\DoiLinker\PluginManager::class);
-        return new $requestedName($pluginManager, $config->DOI->resolver ?? null);
+        return new $requestedName(
+            $pluginManager,
+            $config->DOI->resolver ?? null,
+            $config->DOI->multi_resolver_mode ?? 'first'
+        );
     }
 }

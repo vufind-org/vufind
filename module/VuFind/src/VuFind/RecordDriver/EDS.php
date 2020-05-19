@@ -286,6 +286,16 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the linked full text availability of the record.
+     *
+     * @return bool
+     */
+    public function hasLinkedFullTextAvailable()
+    {
+        return $this->hasEbookAvailable(['other']);
+    }
+
+    /**
      * Get the ebook url of the record. If missing, return false
      *
      * @param array $types Types that we are interested in checking for
@@ -322,6 +332,16 @@ class EDS extends DefaultRecord
     public function getEpubLink()
     {
         return $this->getEbookLink($this->epubTypes);
+    }
+
+    /**
+     * Get the linked full text url of the record. If missing, return false
+     *
+     * @return string
+     */
+    public function getLinkedFullTextLink()
+    {
+        return $this->getEbookLink(['other']);
     }
 
     /**
@@ -622,11 +642,16 @@ class EDS extends DefaultRecord
      */
     public function getCleanDOI()
     {
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('DOI' == $item['Name']) {
-                    return $item['Data'];
-                }
+        foreach ($this->fields['Items'] ?? [] as $item) {
+            if ('DOI' == $item['Name'] ?? '' && isset($item['Data'])) {
+                return $item['Data'];
+            }
+        }
+        $ids = $this->fields['RecordInfo']['BibRecord']['BibEntity']['Identifiers']
+            ?? [];
+        foreach ($ids as $item) {
+            if ('DOI' == strtoupper($item['Type'] ?? '') && isset($item['Value'])) {
+                return $item['Value'];
             }
         }
         return false;

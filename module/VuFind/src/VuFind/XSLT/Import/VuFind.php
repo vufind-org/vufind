@@ -466,6 +466,7 @@ class VuFind
         };
         return implode($glue, array_map($mapper, $pieces));
     }
+
     /**
      * Try to find the best single year or date range in a set of DOM elements.
      * Best is defined as the first value to consist of only YYYY or YYYY-ZZZZ,

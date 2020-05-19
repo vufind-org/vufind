@@ -160,6 +160,22 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
     }
 
     /**
+     * Test the implode helper.
+     *
+     * @return void
+     */
+    public function testImplode()
+    {
+        $domify = function ($input) {
+            return new \DOMElement('foo', $input);
+        };
+        $this->assertEquals(
+            'a.b.c',
+            VuFind::implode('.', array_map($domify, ['a', 'b', 'c']))
+        );
+    }
+
+    /**
      * Test the extractBestDateOrRange helper.
      *
      * @return void
