@@ -43,12 +43,20 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * API URL
      *
      * @var string
      */
     protected $apiUrl;
+
+    /**
+     * Http referrer
+     *
+     * @var string
+     */
+    protected $referrer;
 
     /**
      * Constructor
@@ -59,6 +67,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     {
         $this->apiUrl = $config->base_url1 . $config->books_endpoint;
         $this->cacheLifetime = 1800;
+        $this->referrer = $config->referrer ?? null;
     }
 
     /**
@@ -139,7 +148,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         }
         $url = $this->apiUrl . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
-        $response = $this->getHttpClient($url)->send();
+        $client = $this->getHttpClient($url);
+        if (isset($this->referrer)) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Referer', $this->referrer);
+        }
+        $response = $client->send();
         return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
     }
 }
