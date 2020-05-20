@@ -103,7 +103,7 @@
 
       <?php /* Links from DOI linker */ ?>
       <?php $doi = $this->doi($this->driver, 'results'); if ($doi->isActive()):?>
-        <?=$doi->renderTemplate()?>
+        <div><?=$doi->renderTemplate()?></div>
       <?php endif; ?>
     </div>
     <div class="result-links hidden-print">
