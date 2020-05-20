@@ -45,9 +45,12 @@ class EDSResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
      */
     public function testStandardOperation()
     {
-        $mod = $this->getRecommend('VuFind\Recommend\EDSResultsDeferred');
+        $mod = $this->getRecommend(
+            'VuFind\Recommend\EDSResultsDeferred', ':3',
+            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+        );
         $this->assertEquals(
-            'mod=EDSResults&params=lookfor%3A&lookfor=foo',
+            'mod=EDSResults&params=lookfor%3A3&lookfor=foo',
             $mod->getUrlParams()
         );
     }
