@@ -98,7 +98,8 @@ class EDSResultsDeferred implements RecommendInterface
         }
 
         // Map the user-specified query field to 'lookfor' for simplicity:
-        $this->lookfor = $request->get($settings[0] ?? 'lookfor', '');
+        $this->lookfor
+            = $request->get(empty($settings[0]) ? 'lookfor' : $settings[0], '');
         $settings[0] = 'lookfor';
         $this->processedParams = implode(':', $settings);
     }
