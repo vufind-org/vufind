@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Stdlib\Parameters;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -36,8 +38,6 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Search\RecommendListener;
-use Zend\Stdlib\Parameters;
-use Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -74,7 +74,7 @@ class MyResearchController extends AbstractBase
      * Construct an HTTP 205 (refresh) response. Useful for reporting success
      * in the lightbox without actually rendering content.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function getRefreshResponse()
     {
@@ -136,12 +136,12 @@ class MyResearchController extends AbstractBase
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $event Event
+     * @param \Laminas\Mvc\MvcEvent $event Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $event)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $event)
     {
         // Catch any ILSExceptions thrown during processing and display a generic
         // failure message to the user (instead of going to the fatal exception
@@ -392,7 +392,7 @@ class MyResearchController extends AbstractBase
     {
         $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator
-            ->get(\Zend\Session\SessionManager::class)->getId();
+            ->get(\Laminas\Session\SessionManager::class)->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
             throw new ForbiddenException('Access denied.');
@@ -408,13 +408,13 @@ class MyResearchController extends AbstractBase
     /**
      * Return a session container for use in user email verification.
      *
-     * @return \Zend\Session\Container
+     * @return \Laminas\Session\Container
      */
     protected function getUserVerificationContainer()
     {
-        return new \Zend\Session\Container(
+        return new \Laminas\Session\Container(
             'user_verification',
-            $this->serviceLocator->get(\Zend\Session\SessionManager::class)
+            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
     }
 
@@ -1935,7 +1935,7 @@ class MyResearchController extends AbstractBase
                 );
             }
             // Update email
-            $validator = new \Zend\Validator\EmailAddress();
+            $validator = new \Laminas\Validator\EmailAddress();
             $email = $this->params()->fromPost('email', '');
             try {
                 if (!$validator->isValid($email)) {

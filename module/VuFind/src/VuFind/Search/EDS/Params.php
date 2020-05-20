@@ -95,7 +95,7 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -167,6 +167,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
+        $hiddenFilterList = $this->getHiddenFilters();
         if (!empty($filterList)) {
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
@@ -177,6 +178,18 @@ class Params extends \VuFind\Search\Base\Params
                     // Standard case:
                     $fq = "{$filt['field']}:{$safeValue}";
                     $params->add('filters', $fq);
+                }
+            }
+        }
+        if (!empty($hiddenFilterList)) {
+            foreach ($hiddenFilterList as $field => $hiddenFilters) {
+                foreach ($hiddenFilters as $value) {
+                    $safeValue = SearchRequestModel::escapeSpecialCharacters(
+                        $value
+                    );
+                    // Standard case:
+                    $hfq = "{$field}:{$safeValue}";
+                    $params->add('filters', $hfq);
                 }
             }
         }

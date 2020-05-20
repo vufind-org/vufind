@@ -28,7 +28,7 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Symphony ILS driver.

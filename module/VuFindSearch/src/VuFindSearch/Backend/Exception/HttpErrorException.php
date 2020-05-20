@@ -30,7 +30,7 @@ namespace VuFindSearch\Backend\Exception;
 
 use Exception;
 
-use Zend\Http\Response;
+use Laminas\Http\Response;
 
 /**
  * HTTP error exception.

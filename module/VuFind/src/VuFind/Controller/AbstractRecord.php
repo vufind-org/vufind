@@ -30,6 +30,7 @@ namespace VuFind\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFindSearch\ParamBag;
 
 /**
  * VuFind Record Controller
@@ -82,7 +83,7 @@ class AbstractRecord extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -423,7 +424,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Email action - Allows the email form to appear.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function emailAction()
     {
@@ -484,7 +485,7 @@ class AbstractRecord extends AbstractBase
     /**
      * SMS action - Allows the SMS form to appear.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function smsAction()
     {
@@ -531,7 +532,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Show citations for the current record.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function citeAction()
     {
@@ -622,15 +623,19 @@ class AbstractRecord extends AbstractBase
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
+     * @param ParamBag $params Search backend parameters
+     * @param bool     $force  Set to true to force a reload of the record, even if
+     * already loaded (useful if loading a record using different parameters)
+     *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord()
+    protected function loadRecord(ParamBag $params = null, bool $force = false)
     {
         // Only load the record if it has not already been loaded.  Note that
         // when determining record ID, we check both the route match (the most
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
-        if (!is_object($this->driver)) {
+        if ($force || !is_object($this->driver)) {
             $recordLoader = $this->getRecordLoader();
             $cacheContext = $this->getRequest()->getQuery()->get('cacheContext');
             if (isset($cacheContext)) {
@@ -639,7 +644,8 @@ class AbstractRecord extends AbstractBase
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
                 $this->searchClassId,
-                false
+                false,
+                $params
             );
         }
         return $this->driver;

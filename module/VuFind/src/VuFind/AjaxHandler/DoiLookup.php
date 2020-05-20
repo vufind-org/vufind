@@ -27,8 +27,8 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\DoiLinker\PluginManager;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler to look up DOI data.
@@ -49,22 +49,35 @@ class DoiLookup extends AbstractBase
     protected $pluginManager;
 
     /**
-     * DOI resolver configuration value
+     * DOI resolver configuration value, exploded into an array of options
+     *
+     * @var string[]
+     */
+    protected $resolvers;
+
+    /**
+     * Behavior to use when multiple resolvers find results for the same DOI (may
+     * be 'first' -- use first match, or 'merge' -- use all results)
      *
      * @var string
      */
-    protected $resolver;
+    protected $multiMode;
 
     /**
      * Constructor
      *
      * @param PluginManager $pluginManager DOI Linker Plugin Manager
-     * @param string        $resolver      DOI resolver configuration value
+     * @param string        $resolvers     DOI resolver configuration value
+     * @param string        $multiMode     Behavior to use when multiple resolvers
+     * find results for the same DOI (may be 'first' -- use first match, or 'merge'
+     * -- use all results)
      */
-    public function __construct(PluginManager $pluginManager, $resolver)
-    {
+    public function __construct(PluginManager $pluginManager, $resolvers,
+        $multiMode = 'first'
+    ) {
         $this->pluginManager = $pluginManager;
-        $this->resolver = $resolver;
+        $this->resolvers = array_map('trim', explode(',', $resolvers));
+        $this->multiMode = trim(strtolower($multiMode));
     }
 
     /**
@@ -77,9 +90,29 @@ class DoiLookup extends AbstractBase
     public function handleRequest(Params $params)
     {
         $response = [];
-        if ($this->pluginManager->has($this->resolver)) {
-            $dois = (array)$params->fromQuery('doi', []);
-            $response = $this->pluginManager->get($this->resolver)->getLinks($dois);
+        $dois = (array)$params->fromQuery('doi', []);
+        foreach ($this->resolvers as $resolver) {
+            if ($this->pluginManager->has($resolver)) {
+                $next = $this->pluginManager->get($resolver)->getLinks($dois);
+                if (empty($response)) {
+                    $response = $next;
+                } else {
+                    foreach ($next as $doi => $data) {
+                        if (!isset($response[$doi])) {
+                            $response[$doi] = $data;
+                        } elseif ($this->multiMode == 'merge') {
+                            $response[$doi] = array_merge($response[$doi], $data);
+                        }
+                    }
+                }
+                // If all DOIs have been found and we're not in merge mode, we
+                // can short circuit out of here.
+                if ($this->multiMode !== 'merge'
+                    && count(array_diff($dois, array_keys($response))) == 0
+                ) {
+                    break;
+                }
+            }
         }
         return $this->formatResponse($response);
     }

@@ -27,8 +27,8 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Config\Config;
 use VuFind\Auth\LDAP;
-use Zend\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -80,7 +80,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingHost()
     {
@@ -95,7 +94,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing port causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingPort()
     {
@@ -110,7 +108,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing baseDN causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingBaseDN()
     {
@@ -125,7 +122,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing UID causes failure.
      *
      * @return void
-     *
      */
     public function testWithMissingUid()
     {
@@ -175,15 +171,15 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
@@ -191,7 +187,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankUsername()
     {
@@ -205,7 +200,6 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
      */
     public function testLoginWithBlankPassword()
     {

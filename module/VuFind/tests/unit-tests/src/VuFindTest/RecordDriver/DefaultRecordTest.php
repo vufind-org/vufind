@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\RecordDriver;
 
+use Laminas\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
-use Zend\Config\Config;
 
 /**
  * DefaultRecord Record Driver Test Class

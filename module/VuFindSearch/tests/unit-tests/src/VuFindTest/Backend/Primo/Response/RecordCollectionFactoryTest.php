@@ -46,7 +46,6 @@ class RecordCollectionFactoryTest extends TestCase
      * Test constructor exception.
      *
      * @return void
-     *
      */
     public function testConstructorRequiresValidFactoryFunction()
     {
@@ -60,7 +59,6 @@ class RecordCollectionFactoryTest extends TestCase
      * Test invalid input.
      *
      * @return void
-     *
      */
     public function testInvalidInput()
     {

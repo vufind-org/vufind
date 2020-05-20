@@ -36,7 +36,7 @@ public class DatabaseManager
     // Shutdown flag:
     private boolean shuttingDown = false;
 
-    private static ThreadLocal<DatabaseManager> managerCache = 
+    private static ThreadLocal<DatabaseManager> managerCache =
         new ThreadLocal<DatabaseManager>()
         {
             @Override

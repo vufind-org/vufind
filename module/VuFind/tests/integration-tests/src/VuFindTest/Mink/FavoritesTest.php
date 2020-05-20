@@ -168,6 +168,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      * Test adding a record to favorites (from the record page) using an existing
      * account that is not yet logged in.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testAddRecordToFavoritesLogin()
@@ -217,6 +219,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test adding a record to favorites (from the record page) using an existing
      * account that is already logged in.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -309,6 +313,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is not yet logged in.
      *
+     * @depends testAddSearchItemToFavoritesNewAccount
+     *
      * @return void
      */
     public function testAddSearchItemToFavoritesLogin()
@@ -356,6 +362,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test adding a record to favorites (from the search results) using an existing
      * account that is already logged in.
+     *
+     * @depends testAddSearchItemToFavoritesNewAccount
      *
      * @return void
      */
@@ -448,6 +456,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the email control works.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testBulkEmail()
@@ -478,6 +488,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that the export control works.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -511,6 +523,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the print control works.
      *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
      * @return void
      */
     public function testBulkPrint()
@@ -538,6 +552,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that it is possible to email a public list.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */
@@ -585,6 +601,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that the bulk delete control works.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
      *
      * @return void
      */

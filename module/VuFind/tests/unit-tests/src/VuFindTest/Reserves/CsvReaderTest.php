@@ -136,7 +136,6 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      * Test loading an empty file.
      *
      * @return void
-     *
      */
     public function testEmptyFile()
     {

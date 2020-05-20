@@ -29,13 +29,13 @@
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+
+use Laminas\Http\Client as HttpClient;
 use PHPUnit\Framework\TestCase;
 
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
-
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for SOLR connector.
@@ -85,7 +85,6 @@ class ConnectorTest extends TestCase
      * Test RemoteErrorException is thrown on a remote 5xx error.
      *
      * @return void
-     *
      */
     public function testInternalServerError()
     {
@@ -100,7 +99,6 @@ class ConnectorTest extends TestCase
      * Test RequestErrorException is thrown on a remote 4xx error.
      *
      * @return void
-     *
      */
     public function testBadRequestError()
     {
@@ -115,7 +113,6 @@ class ConnectorTest extends TestCase
      * Test InvalidArgumentException invalid adapter object.
      *
      * @return void
-     *
      */
     public function testSetAdapterThrowsInvalidObject()
     {
@@ -130,7 +127,6 @@ class ConnectorTest extends TestCase
      * Test InvalidArgumentException unknown serialization format.
      *
      * @return void
-     *
      */
     public function testSaveThrowsUnknownFormat()
     {

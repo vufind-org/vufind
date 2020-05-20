@@ -27,12 +27,12 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Row\User;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * "Get User Fines" AJAX handler

@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Form;
 
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
 
@@ -48,7 +49,10 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testDefaultsWithoutConfiguration()
     {
-        $form = new Form(new YamlReader());
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
@@ -64,7 +68,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertEquals(
-            'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
     }
 
@@ -80,7 +84,11 @@ class FormTest extends \VuFindTest\Unit\TestCase
             'recipient_name' => 'me',
             'email_subject' => 'subject',
         ];
-        $form = new Form(new YamlReader(), $defaults);
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $defaults
+        );
         $this->assertEquals(
             [['name' => 'me', 'email' => 'me@example.com']], $form->getRecipient()
         );
@@ -91,14 +99,16 @@ class FormTest extends \VuFindTest\Unit\TestCase
      * Test that the class blocks unknown form IDs.
      *
      * @return void
-     *
      */
     public function testUndefinedFormId()
     {
         $this->expectException(\VuFind\Exception\RecordMissing::class);
         $this->expectExceptionMessage('Form \'foo\' not found');
 
-        $form = new Form(new YamlReader());
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
         $form->setFormId('foo');
     }
 
@@ -109,8 +119,12 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testDefaultsWithFormSet()
     {
-        $form = new Form(new YamlReader());
+        $form = new Form(
+            new YamlReader(),
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
         $form->setFormId('FeedbackSite');
+
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
@@ -145,9 +159,11 @@ class FormTest extends \VuFindTest\Unit\TestCase
             ],
             $form->getElements()
         );
+
         $this->assertEquals(
             [['email' => null, 'name' => null]], $form->getRecipient()
         );
+
         $this->assertEquals('Send us your feedback!', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
@@ -172,7 +188,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems
@@ -194,5 +210,101 @@ class FormTest extends \VuFindTest\Unit\TestCase
         // Validators: Good data
         $form->setData(['email' => 'foo@bar.com', 'message' => 'message']);
         $this->assertTrue($form->isValid());
+    }
+
+    /**
+     * Test element options (select, radio, checkbox).
+     *
+     * @return void
+     */
+    public function testElementOptions()
+    {
+        $config = Yaml::parse(
+            file_get_contents(
+                __DIR__ . '/../../../../fixtures/configs/feedbackforms/test.yaml'
+            )
+        );
+        $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+        $mock->expects($this->any())->method('get')
+            ->with($this->equalTo('FeedbackForms.yaml'))
+            ->will($this->returnValue($config));
+
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId('TestElementOptions');
+
+        $getElement = function ($name, $elements) {
+            foreach ($elements as $el) {
+                if ($el['name'] === $name) {
+                    return $el;
+                }
+            }
+            return null;
+        };
+
+        $elements = $form->getElements();
+
+        // Select element optionGroup: options with labels and values
+        $el = $getElement('select', $elements);
+        $this->assertEquals(
+            ['value-1' => 'label-1', 'value-2' => 'label-2'],
+            $el['optionGroups']['group-1']['options']
+        );
+
+        // Select element optionGroup: options with values
+        $el = $getElement('select2', $elements);
+        $this->assertEquals(
+            ['option-1' => 'option-1', 'option-2' => 'option-2'],
+            $el['optionGroups']['group-1']['options']
+        );
+
+        // Select element options with labels and values
+        $el = $getElement('select3', $elements);
+        $this->assertEquals(
+            [['label' => 'label-1', 'value' => 'value-1'],
+             ['value' => 'value-2', 'label' => 'label-2']],
+            $el['options']
+        );
+
+        // Select element options with values
+        $el = $getElement('select4', $elements);
+        $this->assertEquals(
+            [['label' => 'option-1', 'value' => 'option-1'],
+             ['value' => 'option-2', 'label' => 'option-2']],
+            $el['options']
+        );
+
+        // Radio element options with labels and values
+        $el = $getElement('radio', $elements);
+        $this->assertEquals(
+            ['value-1' => 'label-1', 'value-2' => 'label-2'],
+            $el['options']
+        );
+
+        // Radio element options with values
+        $el = $getElement('radio2', $elements);
+        $this->assertEquals(
+            ['option-1' => 'option-1', 'option-2' => 'option-2'],
+            $el['options']
+        );
+
+        // Checkbox element options with labels and values
+        $el = $getElement('checkbox', $elements);
+        $this->assertEquals(
+            ['value-1' => 'label-1', 'value-2' => 'label-2'],
+            $el['options']
+        );
+
+        // Checkbox element options with values
+        $el = $getElement('checkbox2', $elements);
+        $this->assertEquals(
+            ['option-1' => 'option-1', 'option-2' => 'option-2'],
+            $el['options']
+        );
     }
 }

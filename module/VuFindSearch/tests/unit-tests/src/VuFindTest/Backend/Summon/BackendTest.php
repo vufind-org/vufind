@@ -120,7 +120,6 @@ class BackendTest extends TestCase
      * Test retrieve exception handling.
      *
      * @return void
-     *
      */
     public function testRetrieveWrapsSummonException()
     {
@@ -173,7 +172,6 @@ class BackendTest extends TestCase
      * Test search exception handling.
      *
      * @return void
-     *
      */
     public function testSearchWrapsSummonException()
     {
@@ -262,7 +260,7 @@ class BackendTest extends TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        return $this->getMockBuilder(\SerialsSolutions\Summon\Zend2::class)
+        return $this->getMockBuilder(\SerialsSolutions\Summon\Laminas::class)
             ->setMethods($mock)
             ->setConstructorArgs(['id', 'key'])
             ->getMock();

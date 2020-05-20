@@ -211,7 +211,7 @@ XML;
             true
         );
 
-        $record = new SolrDefault(null, null, new \Zend\Config\Config($searchConfig));
+        $record = new SolrDefault(null, null, new \Laminas\Config\Config($searchConfig));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

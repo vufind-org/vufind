@@ -32,6 +32,7 @@ namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
+use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
@@ -45,7 +46,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Loader implements \Zend\Log\LoggerAwareInterface
+class Loader implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -118,8 +119,14 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $results = $this->recordCache->lookup($id, $source);
             }
             if (empty($results)) {
-                $results = $this->searchService->retrieve($source, $id, $params)
-                    ->getRecords();
+                try {
+                    $results = $this->searchService->retrieve($source, $id, $params)
+                        ->getRecords();
+                } catch (BackendException $e) {
+                    if (!$tolerateMissing) {
+                        throw $e;
+                    }
+                }
             }
             if (empty($results) && null !== $this->recordCache
                 && $this->recordCache->isFallback($source)
@@ -134,8 +141,15 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             if ($this->fallbackLoader
                 && $this->fallbackLoader->has($source)
             ) {
-                $fallbackRecords = $this->fallbackLoader->get($source)
-                    ->load([$id]);
+                try {
+                    $fallbackRecords = $this->fallbackLoader->get($source)
+                        ->load([$id]);
+                } catch (BackendException $e) {
+                    if (!$tolerateMissing) {
+                        throw $e;
+                    }
+                    $fallbackRecords = [];
+                }
 
                 if (count($fallbackRecords) == 1) {
                     return $fallbackRecords[0];
@@ -188,7 +202,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $genuineRecords = $this->searchService
                     ->retrieveBatch($source, $list->getUnchecked(), $params)
                     ->getRecords();
-            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+            } catch (BackendException $e) {
                 if (!$tolerateBackendExceptions) {
                     throw $e;
                 }
@@ -207,8 +221,19 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         if ($list->hasUnchecked() && $this->fallbackLoader
             && $this->fallbackLoader->has($source)
         ) {
-            $fallbackRecords = $this->fallbackLoader->get($source)
-                ->load($list->getUnchecked());
+            try {
+                $fallbackRecords = $this->fallbackLoader->get($source)
+                    ->load($list->getUnchecked());
+            } catch (BackendException $e) {
+                if (!$tolerateBackendExceptions) {
+                    throw $e;
+                }
+                $fallbackRecords = [];
+                $this->logWarning(
+                    'Exception when trying to retrieve fallback records from '
+                    . $source . ': ' . $e->getMessage()
+                );
+            }
             foreach ($fallbackRecords as $record) {
                 $retVal[] = $record;
                 if (!$list->check($record->getUniqueId())) {

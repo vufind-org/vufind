@@ -57,11 +57,10 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * Test expected interface.
      *
      * @return void
-     *
      */
     public function testExpectedInterface()
     {
-        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
         $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\RecordTab\\TabInterface');
 
         $pm = new PluginManager(

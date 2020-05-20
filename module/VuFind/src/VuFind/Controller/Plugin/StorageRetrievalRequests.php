@@ -30,7 +30,7 @@
 namespace VuFind\Controller\Plugin;
 
 /**
- * Zend action helper to perform storage retrieval request related actions
+ * Action helper to perform storage retrieval request related actions
  *
  * @category VuFind
  * @package  Controller_Plugins
