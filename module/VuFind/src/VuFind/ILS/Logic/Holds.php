@@ -173,70 +173,68 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id  A Bib ID
-     * @param array  $ids A list of Source Records (if catalog is for a consortium)
+     * @param string $id      A Bib ID
+     * @param array  $ids     A list of Source Records (if catalog is for a
+     * consortium)
+     * @param array  $options Optional options to pass on to getHolding()
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null)
+    public function getHoldings($id, $ids = null, $options = [])
     {
-        $holdings = [];
-
-        // Get Holdings Data
-        if ($this->catalog) {
-            // Retrieve stored patron credentials; it is the responsibility of the
-            // controller and view to inform the user that these credentials are
-            // needed for hold data.
-            try {
-                $patron = $this->ilsAuth->storedCatalogLogin();
-
-                // Does this ILS Driver handle consortial holdings?
-                $config = $this->catalog->checkFunction(
-                    'Holds', compact('id', 'patron')
-                );
-            } catch (ILSException $e) {
-                $patron = false;
-                $config = [];
-            }
-
-            if (isset($config['consortium']) && $config['consortium'] == true) {
-                $result = $this->catalog->getConsortialHoldings(
-                    $id, $patron ? $patron : null, $ids
-                );
-            } else {
-                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
-            }
-
-            $grb = 'getRequestBlocks'; // use variable to shorten line below:
-            $blocks
-                = $patron && $this->catalog->checkCapability($grb, compact('patron'))
-                ? $this->catalog->getRequestBlocks($patron) : false;
-
-            $mode = $this->catalog->getHoldsMode();
-
-            if ($mode == "disabled") {
-                $holdings = $this->standardHoldings($result);
-            } elseif ($mode == "driver") {
-                $holdings = $this->driverHoldings($result, $config, !empty($blocks));
-            } else {
-                $holdings = $this->generateHoldings($result, $mode, $config);
-            }
-
-            $holdings = $this->processStorageRetrievalRequests(
-                $holdings, $id, $patron, !empty($blocks)
-            );
-            $holdings = $this->processILLRequests(
-                $holdings, $id, $patron, !empty($blocks)
-            );
+        if (!$this->catalog) {
+            return [];
         }
-        return [
-            'blocks' => $blocks,
-            'total' => $result['total'],
-            'page' => $result['page'],
-            'itemLimit' => $result['itemLimit'],
-            'holdings' => $this->formatHoldings($holdings),
-            'electronic_holdings' => $result['electronic_holdings'] ?? [],
-        ];
+        // Retrieve stored patron credentials; it is the responsibility of the
+        // controller and view to inform the user that these credentials are
+        // needed for hold data.
+        try {
+            $patron = $this->ilsAuth->storedCatalogLogin();
+
+            // Does this ILS Driver handle consortial holdings?
+            $config = $this->catalog->checkFunction(
+                'Holds', compact('id', 'patron')
+            );
+        } catch (ILSException $e) {
+            $patron = false;
+            $config = [];
+        }
+
+        if (isset($config['consortium']) && $config['consortium'] == true) {
+            $result = $this->catalog->getConsortialHoldings(
+                $id, $patron ? $patron : null, $ids
+            );
+        } else {
+            $result = $this->catalog
+                ->getHolding($id, $patron ? $patron : null, $options);
+        }
+
+        $grb = 'getRequestBlocks'; // use variable to shorten line below:
+        $blocks
+            = $patron && $this->catalog->checkCapability($grb, compact('patron'))
+            ? $this->catalog->getRequestBlocks($patron) : false;
+
+        $mode = $this->catalog->getHoldsMode();
+
+        if ($mode == "disabled") {
+            $holdings = $this->standardHoldings($result);
+        } elseif ($mode == "driver") {
+            $holdings = $this->driverHoldings($result, $config, !empty($blocks));
+        } else {
+            $holdings = $this->generateHoldings($result, $mode, $config);
+        }
+
+        $holdings = $this->processStorageRetrievalRequests(
+            $holdings, $id, $patron, !empty($blocks)
+        );
+        $holdings = $this->processILLRequests(
+            $holdings, $id, $patron, !empty($blocks)
+        );
+
+        $result['blocks'] = $blocks;
+        $result['holdings'] = $this->formatHoldings($holdings);
+
+        return $result;
     }
 
     /**

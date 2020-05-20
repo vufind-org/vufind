@@ -32,6 +32,9 @@ use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
 use Laminas\Mail\Message;
 use Laminas\Mail\Transport\TransportInterface;
+use Laminas\Mime\Message as MimeMessage;
+use Laminas\Mime\Mime;
+use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
 
 /**
@@ -89,17 +92,16 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
-     * Get a blank email message object.
+     * Get a text email message object.
      *
      * @return Message
      */
     public function getNewMessage()
     {
-        $message = new Message();
-        $message->setEncoding('UTF-8');
+        $message = $this->getNewBlankMessage();
         $headers = $message->getHeaders();
         $ctype = new ContentType();
-        $ctype->setType('text/plain');
+        $ctype->setType(Mime::TYPE_TEXT);
         $ctype->addParameter('charset', 'UTF-8');
         $headers->addHeader($ctype);
         return $message;
@@ -118,6 +120,18 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             $transport->disconnect();
         }
         return $this;
+    }
+
+    /**
+     * Get a blank email message object.
+     *
+     * @return Message
+     */
+    public function getNewBlankMessage()
+    {
+        $message = new Message();
+        $message->setEncoding('UTF-8');
+        return $message;
     }
 
     /**
@@ -153,13 +167,54 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
+     * Constructs a {@see MimeMessage} body from given text and html content.
+     *
+     * @param string|null $text Mail content used for plain text part
+     * @param string|null $html Mail content used for html part
+     *
+     * @return MimeMessage
+     */
+    public function buildMultipartBody(
+        string $text = null,
+        string $html = null
+    ): MimeMessage {
+        $parts = new MimeMessage();
+
+        if ($text) {
+            $textPart = new MimePart($text);
+            $textPart->setType(Mime::TYPE_TEXT);
+            $textPart->setCharset('utf-8');
+            $textPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+            $parts->addPart($textPart);
+        }
+
+        if ($html) {
+            $htmlPart = new MimePart($html);
+            $htmlPart->setType(Mime::TYPE_HTML);
+            $htmlPart->setCharset('utf-8');
+            $htmlPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
+            $parts->addPart($htmlPart);
+        }
+
+        $alternativePart = new MimePart($parts->generateMessage());
+        $alternativePart->setType('multipart/alternative');
+        $alternativePart->setBoundary($parts->getMime()->boundary());
+        $alternativePart->setCharset('utf-8');
+
+        $body = new MimeMessage();
+        $body->setParts([$alternativePart]);
+
+        return $body;
+    }
+
+    /**
      * Send an email message.
      *
      * @param string|Address|AddressList $to      Recipient email address (or
      * delimited list)
      * @param string|Address             $from    Sender name and email address
      * @param string                     $subject Subject line for message
-     * @param string                     $body    Message body
+     * @param string|MimeMessage         $body    Message body
      * @param string                     $cc      CC recipient (null for none)
      * @param string|Address|AddressList $replyTo Reply-To address (or delimited
      * list, null for none)
@@ -220,8 +275,10 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
-            $message = $this->getNewMessage()
-                ->addFrom($from)
+            $message = $body instanceof MimeMessage
+                ? $this->getNewBlankMessage()
+                : $this->getNewMessage();
+            $message->addFrom($from)
                 ->addTo($recipients)
                 ->setBody($body)
                 ->setSubject($subject);

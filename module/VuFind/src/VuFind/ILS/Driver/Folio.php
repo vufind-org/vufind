@@ -27,6 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Exception;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
@@ -436,17 +437,20 @@ class Folio extends AbstractAPI implements
             $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
+            $notesFormatter = function ($note) {
+                return $note->note ?? '';
+            };
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $itemBody->items[$j]->id,
                     'holding_id' => $holding->id,
-                    'number' => count($items),
+                    'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
-                    'notes' => $item->notes ?? [],
+                    'notes' => array_map($notesFormatter, $item->notes ?? []),
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
@@ -670,7 +674,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyTransactions($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id']];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
         if (count($json->loans) == 0) {
@@ -687,10 +691,74 @@ class Folio extends AbstractAPI implements
                 'id' => $this->getBibId($trans->item->instanceId),
                 'item_id' => $trans->item->id,
                 'barcode' => $trans->item->barcode,
+                'renew' => $trans->renewalCount ?? 0,
+                'renewable' => true,
                 'title' => $trans->item->title,
             ];
         }
         return $transactions;
+    }
+
+    /**
+     * Get FOLIO loan IDs for use in renewMyItems.
+     *
+     * @param array $transaction An single transaction
+     * array from getMyTransactions
+     *
+     * @return string The FOLIO loan ID for this loan
+     */
+    public function getRenewDetails($transaction)
+    {
+        return $transaction['item_id'];
+    }
+
+    /**
+     * Attempt to renew a list of items for a given patron.
+     *
+     * @param array $renewDetails An associative array with
+     * patron and details
+     *
+     * @return array $renewResult result of attempt to renew loans
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $renewalResults = ['details' => []];
+        foreach ($renewDetails['details'] as $loanId) {
+            $requestbody = [
+                'itemId' => $loanId,
+                'userId' => $renewDetails['patron']['id']
+            ];
+            $response = $this->makeRequest(
+                'POST', '/circulation/renew-by-id', json_encode($requestbody)
+            );
+            if ($response->isSuccess()) {
+                $json = json_decode($response->getBody());
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->dateConverter->convertToDisplayDate(
+                        "Y-m-d H:i", $json->dueDate
+                    ),
+                    'new_time' => $this->dateConverter->convertToDisplayTime(
+                        "Y-m-d H:i", $json->dueDate
+                    ),
+                    'item_id' => $json->itemId,
+                    'sysMessage' => $json->action
+                ];
+            } else {
+                try {
+                    $json = json_decode($response->getBody());
+                    $sysMessage = $json->errors[0]->message;
+                } catch (Exception $e) {
+                    $sysMessage = "Renewal Failed";
+                }
+                $renewal = [
+                    'success' => false,
+                    'sysMessage' => $sysMessage
+                ];
+            }
+            $renewalResults['details'][$loanId] = $renewal;
+        }
+        return $renewalResults;
     }
 
     /**
@@ -706,13 +774,14 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron)
     {
-        $response = $this->makeRequest('GET', '/locations');
+        $query = ['query' => 'pickupLocation=true'];
+        $response = $this->makeRequest('GET', '/service-points', $query);
         $json = json_decode($response->getBody());
         $locations = [];
-        foreach ($json->locations as $location) {
+        foreach ($json->servicepoints as $servicepoint) {
             $locations[] = [
-                'locationID' => $location->id,
-                'locationDisplay' => $location->name
+                'locationID' => $servicepoint->id,
+                'locationDisplay' => $servicepoint->discoveryDisplayName
             ];
         }
         return $locations;

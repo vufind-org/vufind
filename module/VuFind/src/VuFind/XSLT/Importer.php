@@ -28,7 +28,6 @@
 namespace VuFind\XSLT;
 
 use DOMDocument;
-use Laminas\Console\Console;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
@@ -71,7 +70,7 @@ class Importer
      * @param bool   $testMode   Are we in test-only mode?
      *
      * @throws \Exception
-     * @return void
+     * @return string            Transformed XML
      */
     public function save($xmlFile, $properties, $index = 'Solr',
         $testMode = false
@@ -83,9 +82,8 @@ class Importer
         if (!$testMode) {
             $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
             $solr->save($index, new RawXMLDocument($xml));
-        } else {
-            Console::write($xml . "\n");
         }
+        return $xml;
     }
 
     /**

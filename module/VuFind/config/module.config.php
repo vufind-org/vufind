@@ -333,7 +333,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
             'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -352,6 +352,7 @@ $config = [
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Connection\WorldCatUtils' => 'VuFind\Connection\WorldCatUtilsFactory',
+            'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
             'VuFind\Content\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\AuthorNotes\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Covers\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -435,9 +436,6 @@ $config = [
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
             'Laminas\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
-        ],
-        'delegators' => [
-            'VuFind\Http\PhpEnvironment\Request' => [ \Laminas\Mvc\Console\Service\ConsoleRequestDelegatorFactory::class ],
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',

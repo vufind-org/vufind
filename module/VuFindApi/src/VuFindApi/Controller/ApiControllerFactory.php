@@ -63,6 +63,8 @@ class ApiControllerFactory implements FactoryInterface
         }
         $controller = new $requestedName($container);
         $controller->addApi($container->get('ControllerManager')->get('SearchApi'));
+        $controller->addApi($container->get('ControllerManager')->get('Search2Api'));
+        $controller->addApi($container->get('ControllerManager')->get('WebApi'));
         return $controller;
     }
 }

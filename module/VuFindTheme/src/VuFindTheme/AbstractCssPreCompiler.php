@@ -1,10 +1,10 @@
 <?php
 /**
- * Class to compile LESS into CSS within a theme.
+ * Abstract base class to precompile CSS within a theme.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,10 @@
  */
 namespace VuFindTheme;
 
-use Laminas\Console\Console;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class to compile SCSS into CSS within a theme.
+ * Abstract base class to precompile CSS within a theme.
  *
  * @category VuFind
  * @package  Theme
@@ -69,22 +69,22 @@ abstract class AbstractCssPreCompiler
     protected $fakePath = '/zzzz_basepath_zzzz/';
 
     /**
-     * Console log?
+     * Output object (set for logging)
      *
-     * @var bool
+     * @var OutputInterface
      */
-    protected $verbose;
+    protected $output;
 
     /**
      * Constructor
      *
-     * @param bool $verbose Display messages while compiling?
+     * @param OutputInterface $output Output interface for logging (optional)
      */
-    public function __construct($verbose = false)
+    public function __construct(OutputInterface $output = null)
     {
         $this->basePath = realpath(__DIR__ . '/../../../../');
         $this->tempPath = sys_get_temp_dir();
-        $this->verbose = $verbose;
+        $this->output = $output;
     }
 
     /**
@@ -213,8 +213,8 @@ abstract class AbstractCssPreCompiler
      */
     protected function logMessage($str)
     {
-        if ($this->verbose) {
-            Console::writeLine($str);
+        if ($this->output) {
+            $this->output->writeln($str);
         }
     }
 }

@@ -51,7 +51,7 @@ class Results extends \VuFind\Search\Base\Results
     protected $responseFacets = null;
 
     /**
-     * Search backend identifiers.
+     * Search backend identifier.
      *
      * @var string
      */

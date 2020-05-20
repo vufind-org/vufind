@@ -6,6 +6,6 @@ foreach ($formats as $i => $format) {
 }
 
 // Use the default template, but override the formats:
-$this->overrideFormats = $formats;
+$this->slot('endnote-formats')->set($formats);
 echo $this->render('RecordDriver/AbstractBase/export-endnote.phtml');
 ?>
