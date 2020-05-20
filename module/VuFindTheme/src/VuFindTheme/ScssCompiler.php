@@ -1,6 +1,6 @@
 <?php
 /**
- * Class to compile LESS into CSS within a theme.
+ * Class to compile SCSS into CSS within a theme.
  *
  * PHP version 7
  *
