@@ -109,7 +109,7 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
         $response = [];
         foreach ($doiArray as $doi) {
             $data = $this->connector->lookupDoi($doi)['data'] ?? null;
-            if (!$this->arrayKeyAvailable('browzineWebLink', $data)) {
+            if ($this->arrayKeyAvailable('browzineWebLink', $data)) {
                 $response[$doi][] = [
                     'link' => $data['browzineWebLink'],
                     'label' => $this->translate('View Complete Issue'),
@@ -117,7 +117,7 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
                     'data' => $data,
                 ];
             }
-            if (!$this->arrayKeyAvailable('fullTextFile', $data)) {
+            if ($this->arrayKeyAvailable('fullTextFile', $data)) {
                 $response[$doi][] = [
                     'link' => $data['fullTextFile'],
                     'label' => $this->translate('PDF Full Text'),

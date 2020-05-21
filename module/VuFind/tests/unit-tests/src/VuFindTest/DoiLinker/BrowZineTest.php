@@ -68,18 +68,27 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
      */
     public function testApiSuccess()
     {
+        $fixture = realpath(
+            __DIR__
+            . '/../../../../../tests/fixtures/browzine/doi.json'
+        );
+        $rawData = json_decode(file_get_contents($fixture), true);
         $testData = [
             [
-                'filename' => realpath(
-                    __DIR__
-                    . '/../../../../../tests/fixtures/browzine/doi.json'
-                ),
                 'config' => [],
                 'response' => [
                     '10.1155/2020/8690540' => [
                         [
-                            'link' => 'http://sajlis.journals.ac.za/pub/article/download/1434/1332',
+                            'link' => 'https://weblink',
+                            'label' => 'View Complete Issue',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                            'data' => $rawData['data'],
+                        ],
+                        [
+                            'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'data' => $rawData['data'],
                         ]
                     ]
                 ]
@@ -88,10 +97,7 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
 
         foreach ($testData as $data) {
             $dois = array_keys($data['response']);
-            $connector = $this->getMockConnector(
-                $dois[0],
-                json_decode(file_get_contents($data['filename']))
-            );
+            $connector = $this->getMockConnector($dois[0], $rawData);
             $browzine = new BrowZine($connector, $data['config']);
             $this->assertEquals(
                 $data['response'],
