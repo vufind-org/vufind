@@ -64,6 +64,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
         $this->supportsUpc = true;
         $this->supportsNbn = true;
         $this->cacheAllowed = false;
+        $this->directUrls = true;
 
         $this->service = $service;
     }

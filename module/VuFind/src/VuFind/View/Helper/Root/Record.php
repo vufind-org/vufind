@@ -40,7 +40,10 @@ use VuFind\Cover\Router as CoverRouter;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Record extends AbstractClassBasedTemplateRenderer
+    implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Context view helper
      *
@@ -590,19 +593,34 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
-        $directUrl = $this->config->Content->coversUrlOnlyMode ?? false;
+        $handlers = $this->coverLoader->getHandlers();
+        $this->coverLoader->storeSanitizedSettings(
+            array_merge($this->driver->getThumbnail(), ['size' => $size])
+        );
+        $ids = $this->coverLoader->getIdentifiers();
         $url = $this->coverRouter ? $this->coverRouter->getUrl(
             $this->driver, $size
         ) : false;
-        if ($directUrl && $this->coverLoader) {
-            $this->coverLoader->storeSanitizedSettings(
-                array_merge($this->driver->getThumbnail(), ['size' => $size])
-            );
-            $directUrls = $this->coverLoader->getCoverUrls();
-            $directUrl = $directUrls->current();
-            $url = $directUrl['url'] ?? $url ?? false;
+        foreach ($handlers as $handler) {
+            try {
+                // Is the current provider appropriate for the available data?
+                if ($handler['handler']->supports($ids)
+                    && $handler['handler']->useDirectUrls()
+                ) {
+                    $directUrl = $handler['handler']
+                        ->getUrl($handler['key'], $size, $ids);
+                    if ($directUrl !== false) {
+                        break;
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during processing of '
+                    . get_class($handler['handler']) . ': ' . $e->getMessage()
+                );
+            }
         }
-        return $url;
+        return $directUrl ?? $url ?? false;
     }
 
     /**

@@ -386,7 +386,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    protected function getIdentifiers()
+    public function getIdentifiers()
     {
         $ids = [];
         if ($this->isbn && $this->isbn->isValid()) {
@@ -440,7 +440,7 @@ class Loader extends \VuFind\ImageLoader
             $urls = $this->getCoverUrls();
             foreach ($urls as $url) {
                 $success = $this->processImageURLForSource(
-                    $url['url'], $url['cache'], $url['apiName']
+                    $url['url'], $url['handler']->isCacheAllowed, $url['apiName']
                 );
                 if ($success) {
                     return true;
@@ -665,20 +665,18 @@ class Loader extends \VuFind\ImageLoader
     public function getCoverUrls()
     {
         $ids = $this->getIdentifiers();
-        $providers = explode(',', $this->config->Content->coverimages);
-        foreach ($providers as $provider) {
-            $provider = explode(':', trim($provider));
-            $apiName = strtolower(trim($provider[0]));
-            $key = isset($provider[1]) ? trim($provider[1]) : null;
+        $handlers = $this->getHandlers();
+        foreach ($handlers as $handler) {
             try {
-                $handler = $this->apiManager->get($apiName);
                 // Is the current provider appropriate for the available data?
-                if ($handler->supports($ids)) {
-                    if ($url = $handler->getUrl($key, $this->size, $ids)) {
+                if ($handler['handler']->supports($ids)) {
+                    $url = $handler['handler']
+                        ->getUrl($handler['key'], $this->size, $ids);
+                    if ($url) {
                         yield [
                             'url' => $url,
-                            'apiName' => $apiName,
-                            'cache' => $handler->isCacheAllowed(),
+                            'apiName' => $handler['apiName'],
+                            'handler' => $handler['handler'],
                         ];
                     }
                 }
@@ -688,6 +686,27 @@ class Loader extends \VuFind\ImageLoader
                     . ': ' . $e->getMessage()
                 );
             }
+        }
+    }
+
+    /**
+     * Return API handlers
+     *
+     * @return \Generator Array with keys: key - API key, apiName - api name from
+     * configuration, handler - handler object
+     */
+    public function getHandlers()
+    {
+        $providers = explode(',', $this->config->Content->coverimages);
+        foreach ($providers as $provider) {
+            $provider = explode(':', trim($provider));
+            $apiName = strtolower(trim($provider[0]));
+            $key = isset($provider[1]) ? trim($provider[1]) : null;
+            yield [
+                'key' => $key,
+                'apiName' => $apiName,
+                'handler' => $this->apiManager->get($apiName),
+            ];
         }
     }
 }
