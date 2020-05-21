@@ -93,6 +93,32 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
                     ]
                 ]
             ],
+            [
+                'config' => ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+                'response' => [
+                    '10.1155/2020/8690540' => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'PDF Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'data' => $rawData['data'],
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'config' => ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+                'response' => [
+                    '10.1155/2020/8690540' => [
+                        [
+                            'link' => 'https://weblink',
+                            'label' => 'View Complete Issue',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                            'data' => $rawData['data'],
+                        ]
+                    ]
+                ]
+            ],
         ];
 
         foreach ($testData as $data) {
