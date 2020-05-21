@@ -104,7 +104,7 @@ class Record extends AbstractClassBasedTemplateRenderer
     /**
      * Inject the cover loader
      *
-     * @param CoverRouter $loader Cover router
+     * @param CoverLoader $loader Cover router
      *
      * @return void
      */
@@ -594,9 +594,10 @@ class Record extends AbstractClassBasedTemplateRenderer
     public function getThumbnail($size = 'small')
     {
         $handlers = $this->coverLoader->getHandlers();
-        $this->coverLoader->storeSanitizedSettings(
-            array_merge($this->driver->getThumbnail(), ['size' => $size])
-        );
+        $settings = $this->driver->getThumbnail();
+        $settings = is_array($settings) ? array_merge($settings, ['size' => $size])
+            : ['size' => $size];
+        $this->coverLoader->storeSanitizedSettings($settings);
         $ids = $this->coverLoader->getIdentifiers();
         $url = $this->coverRouter ? $this->coverRouter->getUrl(
             $this->driver, $size

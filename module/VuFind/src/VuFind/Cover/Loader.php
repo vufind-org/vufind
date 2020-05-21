@@ -436,7 +436,7 @@ class Loader extends \VuFind\ImageLoader
             $this->contentType = 'image/jpeg';
             $this->image = file_get_contents($this->localFile);
             return true;
-        } elseif (isset($this->config->Content->coverimages)) {
+        } else {
             $urls = $this->getCoverUrls();
             foreach ($urls as $url) {
                 $success = $this->processImageURLForSource(
@@ -697,6 +697,9 @@ class Loader extends \VuFind\ImageLoader
      */
     public function getHandlers()
     {
+        if (!isset($this->config->Content->coverimages)) {
+            return [];
+        }
         $providers = explode(',', $this->config->Content->coverimages);
         foreach ($providers as $provider) {
             $provider = explode(':', trim($provider));
