@@ -34,6 +34,7 @@ use Laminas\EventManager\EventInterface;
 
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\I18n\TranslatableString;
 use VuFindSearch\Backend\BackendInterface;
 
 /**
@@ -179,11 +180,19 @@ class HierarchicalFacetListener
                     continue;
                 }
                 if (is_array($fields[$facetName])) {
-                    $lastElem = end($fields[$facetName]);
+                    $allLevels = $this->displayStyles[$facetName] ?? '' == 'full';
                     foreach ($fields[$facetName] as &$value) {
-                        $value = $this->formatFacetField(
-                            $facetName, $value, $value == $lastElem
-                        );
+                        // If we display all levels for a facet value, include a
+                        // translation only for the deepest level available
+                        if (!$allLevels
+                            || $this->facetHelper->isDeepestFacetLevel(
+                                $fields[$facetName], $value
+                            )
+                        ) {
+                            $value = $this->formatFacetField($facetName, $value);
+                        } else {
+                            $value = new TranslatableString((string)$value, '');
+                        }
                     }
                     $fields[$facetName] = array_unique($fields[$facetName]);
                 } else {
@@ -201,11 +210,10 @@ class HierarchicalFacetListener
      *
      * @param string $facet Facet field
      * @param string $value Facet value
-     * @param bool   $last  Whether this is the last of multiple values
      *
      * @return string Formatted field
      */
-    protected function formatFacetField($facet, $value, $last)
+    protected function formatFacetField($facet, $value)
     {
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'
@@ -216,12 +224,6 @@ class HierarchicalFacetListener
         $value = $this->facetHelper->formatDisplayText(
             $value, $allLevels, $separator
         );
-
-        // If full display style is used, clear out default display text for all but
-        // the last value:
-        if ($allLevels && !$last) {
-            $value = new \VuFind\I18n\TranslatableString((string)$value, '');
-        }
 
         return $value;
     }

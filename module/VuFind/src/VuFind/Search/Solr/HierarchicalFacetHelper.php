@@ -200,6 +200,37 @@ class HierarchicalFacetHelper
     }
 
     /**
+     * Check if the given value is the deepest level in the facet list.
+     *
+     * Takes into account lists with multiple top levels.
+     *
+     * @param array  $facetList Facet list
+     * @param string $value     Facet value
+     *
+     * @return bool
+     */
+    public function isDeepestFacetLevel($facetList, $value)
+    {
+        $parts = explode('/', $value);
+        $level = array_shift($parts);
+        if (!is_numeric($level)) {
+            return false;
+        }
+        $path = implode('/', array_slice($parts, 0, $level + 1));
+        foreach ($facetList as $current) {
+            $parts = explode('/', $current);
+            $currentLevel = array_shift($parts);
+            if (is_numeric($currentLevel) && $currentLevel > $level) {
+                // Check if parent is same
+                if ($path === implode('/', array_slice($parts, 0, $level + 1))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Create an item for the hierarchical facet array
      *
      * @param string         $facet     Facet name
