@@ -77,7 +77,22 @@ class ScssCompiler extends AbstractCssPreCompiler
             if ($key === 'active') {
                 continue;
             }
+
             $this->logMessage("\t" . $file);
+
+            // Check importPaths for file
+            $exists = false;
+            foreach ($importPaths as $path) {
+                if (file_exists($path . $file)) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (!$exists) {
+                $this->logMessage("\t\tnot found; skipping.");
+                continue;
+            }
+
             $start = microtime(true);
             $finalFile = $finalOutDir . str_replace('.scss', '.css', $file) . '.css';
             if (!is_dir(dirname($finalFile))) {
