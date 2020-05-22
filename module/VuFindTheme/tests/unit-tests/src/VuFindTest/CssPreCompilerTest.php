@@ -55,6 +55,24 @@ class CssPreCompilerTest extends Unit\TestCase
      */
     protected $compiler;
 
+    /**
+     * Data Provider for extensions and classes
+     *
+     * @return void
+     */
+    public static function extClassProvider()
+    {
+        return [
+            ['less', LessCompiler::class],
+            ['scss', ScssCompiler::class]
+        ];
+    }
+
+    /**
+     * Create fixture files in temp folder
+     *
+     * @return void
+     */
     protected function makeFakeThemeStructure($ext) {
         $temp = sys_get_temp_dir();
         $testDest = $temp . "/vufind_${ext}_comp_test/";
@@ -102,8 +120,9 @@ class CssPreCompilerTest extends Unit\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        self::makeFakeThemeStructure('less');
-        self::makeFakeThemeStructure('scss');
+        foreach (self::extClassProvider() as [$ext, $class]) {
+            self::makeFakeThemeStructure($ext);
+        }
     }
 
     /**
@@ -120,70 +139,47 @@ class CssPreCompilerTest extends Unit\TestCase
         }
     }
 
-    protected function getCompiler($ext, $class)
+    /**
+     * Assign appropriate values to $this->testDest and $this->compiler
+     *
+     * @return void
+     */
+    protected function setupCompiler($ext, $class)
     {
         $temp = sys_get_temp_dir();
         $this->testDest = "$temp/vufind_${ext}_comp_test/";
-        $compiler = new $class();
-        $compiler->setBasePath("$temp/vufind_${ext}_comp_test");
-        $compiler->setTempPath("$temp/vufind_${ext}_comp_test/cache");
-        return $compiler;
+        $this->compiler = new $class();
+        $this->compiler->setBasePath("$temp/vufind_${ext}_comp_test");
+        $this->compiler->setTempPath("$temp/vufind_${ext}_comp_test/cache");
     }
 
     /**
-     * Test LESS compiling a single theme.
+     * Test compiling a single theme.
+     *
+     * @dataProvider extClassProvider
      *
      * @return void
      */
-    public function testLessThemeCompile()
+    public function testThemeCompile($ext, $class)
     {
-        $compiler = $this->getCompiler('less', LessCompiler::class);
-        $compiler->compile(['child']);
+        $this->setupCompiler($ext, $class);
+        $this->compiler->compile(['child']);
         $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
         $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
         unlink($this->testDest . 'themes/child/css/compiled.css');
     }
 
     /**
-     * Test LESS compiling all themes.
+     * Test compiling all themes (default).
+     *
+     * @dataProvider extClassProvider
      *
      * @return void
      */
-    public function testLessAllCompile()
+    public function testAllCompile($ext, $class)
     {
-        $compiler = $this->getCompiler('less', LessCompiler::class);
-        $compiler->compile([]);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
-        unlink($this->testDest . 'themes/child/css/compiled.css');
-        unlink($this->testDest . 'themes/parent/css/compiled.css');
-        unlink($this->testDest . 'themes/parent/css/relative/relative.css');
-    }
-
-    /**
-     * Test SCSS compiling a single theme.
-     *
-     * @return void
-     */
-    public function testScssThemeCompile()
-    {
-        $compiler = $this->getCompiler('scss', ScssCompiler::class);
-        $compiler->compile(['child']);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
-        unlink($this->testDest . 'themes/child/css/compiled.css');
-    }
-
-    /**
-     * Test SCSS compiling all themes.
-     *
-     * @return void
-     */
-    public function testScssAllCompile()
-    {
-        $compiler = $this->getCompiler('scss', ScssCompiler::class);
-        $compiler->compile([]);
+        $this->setupCompiler($ext, $class);
+        $this->compiler->compile([]);
         $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
         $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
         $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
