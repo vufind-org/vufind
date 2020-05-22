@@ -5,7 +5,7 @@
   if ($versions):
 ?>
   <div class="record-versions">
-    <a href="<?=!empty($this->full) ? $this->escapeHtmlAttr($this->recordLink()->getTabUrl($this->driver, 'Versions')) : '#versions'?>">
+    <a href="<?=!empty($this->full) ? $this->escapeHtmlAttr($this->recordLink()->getTabUrl($this->driver, 'Versions')) . '#tabnav' : '#versions'?>">
       <i class="fa fa-arrow-right" aria-hidden="true"></i><?=$this->transEsc('other_versions_link', ['%%count%%' => $versions])?>
     </a>
   </div>
