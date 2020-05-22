@@ -82,25 +82,20 @@ class QueryBuilder
      * @param Query  $query    Query to convert
      * @param string $operator Operator to apply
      *
-     * @return string
+     * @return array
      */
     protected function queryToEdsQuery(Query $query, $operator = 'AND')
     {
         $expression = $query->getString();
-        $expression = SearchRequestModel::escapeSpecialCharacters($expression);
         $fieldCode = ($query->getHandler() == 'AllFields')
             ? '' : $query->getHandler();  //fieldcode
         // Special case: default search
         if (empty($fieldCode) && empty($expression)) {
-            return $this->defaultQuery;
+            $expression = $this->defaultQuery;
         }
-        if (!empty($fieldCode)) {
-            $expression = $fieldCode . ':' . $expression;
-        }
-        if (!empty($operator)) {
-            $expression = $operator . ',' . $expression;
-        }
-        return $expression;
+        return json_encode(
+            ['term' => $expression, 'field' => $fieldCode, 'bool' => $operator]
+        );
     }
 
     /// Internal API

@@ -198,17 +198,22 @@ abstract class Base
      * @param SearchRequestModel $query               Search request object
      * @param string             $authenticationToken Authentication token
      * @param string             $sessionToken        Session token
+     * @param string             $method              HTTP method to use (GET/POST)
      *
      * @return array An array of query results as returned from the api
      */
-    public function search($query, $authenticationToken, $sessionToken)
-    {
+    public function search($query, $authenticationToken, $sessionToken,
+        $method = 'POST'
+    ) {
         // Query String Parameters
-        $qs = $query->convertToQueryStringParameterArray();
-        $this->debugPrint('Query: ' . print_r($qs, true));
+        $json = $method === 'GET' ? null : $query->convertToSearchRequestJSON();
+        $qs = $method === 'GET' ? $query->convertToQueryStringParameterArray() : [];
+        $this->debugPrint(
+            'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
+        );
         $url = $this->edsApiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
-        return $this->call($url, $headers, $qs);
+        return $this->call($url, $headers, $qs, $method, $json);
     }
 
     /**

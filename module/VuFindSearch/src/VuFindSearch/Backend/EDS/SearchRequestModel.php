@@ -217,7 +217,21 @@ class SearchRequestModel
     {
         $qs = [];
         if (isset($this->query) && 0 < sizeof($this->query)) {
-            $qs['query-x'] = $this->query;
+            $formatQuery = function ($json) {
+                $query = json_decode($json, true);
+                $queryString = '';
+                if (!empty($query['bool'])) {
+                    $queryString .= $query['bool'] . ',';
+                }
+                if (!empty($query['field'])) {
+                    $queryString .= $query['field'] . ':';
+                }
+                $queryString .= SearchRequestModel::escapeSpecialCharacters(
+                    $query['term']
+                );
+                return $queryString;
+            };
+            $qs['query-x'] = array_map($formatQuery, $this->query);
         }
 
         if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
@@ -264,6 +278,85 @@ class SearchRequestModel
         $qs['highlight'] = $highlightVal;
 
         return $qs;
+    }
+
+    /**
+     * Converts properties to a search request JSON document to send to the EdsAPI
+     *
+     * @return string
+     */
+    public function convertToSearchRequestJSON()
+    {
+        $json = new \stdClass();
+        $json->SearchCriteria = new \stdClass();
+        $json->RetrievalCriteria = new \stdClass();
+        $json->Actions = [];
+        if (isset($this->query) && 0 < sizeof($this->query)) {
+            $json->SearchCriteria->Queries = [];
+            foreach ($this->query as $queryJson) {
+                $query = json_decode($queryJson, true);
+                $queryObj = new \stdClass();
+                if (!empty($query['bool'])) {
+                    $queryObj->BooleanOperator = $query['bool'];
+                }
+                if (!empty($query['field'])) {
+                    $queryObj->FieldCode = $query['field'];
+                }
+                $queryObj->Term = $query['term'];
+                $json->SearchCriteria->Queries[] = $queryObj;
+            }
+        }
+
+        if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
+            foreach ($this->facetFilters as $filter) {
+                // TODO -- remap
+                //$json->Actions[] = 'AddFacetFilter(' . $filter . ')';
+            }
+        }
+
+        if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
+            foreach ($this->limiters as $limiter) {
+                // TODO -- remap
+                //$json->Actions[] = 'AddLimiter(' . $limiter . ')';
+            }
+        }
+
+        if (isset($this->actions) && 0 < sizeof($this->actions)) {
+            $json->Actions = array_merge($json->Actions, $this->actions);
+        }
+
+        if (isset($this->includeFacets)) {
+            $json->SearchCriteria->IncludeFacets = $this->includeFacets;
+        }
+
+        if (isset($this->sort)) {
+            $json->SearchCriteria->Sort = $this->sort;
+        }
+
+        if (isset($this->searchMode)) {
+            $json->SearchCriteria->SearchMode = $this->searchMode;
+        }
+
+        if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
+            $json->SearchCriteria->Expanders = implode(",", $this->expanders);
+        }
+
+        if (isset($this->view)) {
+            $json->RetrievalCriteria->View = $this->view;
+        }
+
+        if (isset($this->resultsPerPage)) {
+            $json->RetrievalCriteria->ResultsPerPage = $this->resultsPerPage;
+        }
+
+        if (isset($this->pageNumber)) {
+            $json->RetrievalCriteria->PageNumber = $this->pageNumber;
+        }
+
+        $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
+        $json->RetrievalCriteria->Highlight = $highlightVal;
+
+        return json_encode($json);
     }
 
     /**
