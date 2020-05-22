@@ -800,6 +800,7 @@ class Folio extends AbstractAPI implements
      */
     public function placeHold($holdDetails)
     {
+        $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         try {
             $requiredBy = date_create_from_format(
                 'm-d-Y',
@@ -811,7 +812,7 @@ class Folio extends AbstractAPI implements
         $requestBody = [
             'itemId' => $holdDetails['item_id'],
             'requestType' => $holdDetails['status'] == 'Available'
-                ? 'Page' : 'Recall',
+                ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
             'fulfilmentPreference' => 'Hold Shelf',
@@ -830,11 +831,15 @@ class Folio extends AbstractAPI implements
                 'status' => $json->status
             ];
         } else {
-            $json = json_decode($response->getBody());
-            $result = [
-                'success' => false,
-                'status' => $json->errors[0]->message
-            ];
+            try {
+                $json = json_decode($response->getBody());
+                $result = [
+                    'success' => false,
+                    'status' => $json->errors[0]->message
+                ];
+            } catch (Exception $e) {
+                throw new ILSException($response->getBody());
+            }
         }
         return $result;
     }
