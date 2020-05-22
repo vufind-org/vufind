@@ -247,7 +247,7 @@ class SearchRequestModel
         }
 
         if (isset($this->includeFacets)) {
-            $qs['includefacets']  = $this->includeFacets;
+            $qs['includefacets'] = $this->includeFacets;
         }
 
         if (isset($this->sort)) {
@@ -290,7 +290,7 @@ class SearchRequestModel
         $json = new \stdClass();
         $json->SearchCriteria = new \stdClass();
         $json->RetrievalCriteria = new \stdClass();
-        $json->Actions = [];
+        $json->Actions = null;
         if (isset($this->query) && 0 < sizeof($this->query)) {
             $json->SearchCriteria->Queries = [];
             foreach ($this->query as $queryJson) {
@@ -322,12 +322,10 @@ class SearchRequestModel
         }
 
         if (isset($this->actions) && 0 < sizeof($this->actions)) {
-            $json->Actions = array_merge($json->Actions, $this->actions);
+            $json->Actions = $this->actions;
         }
 
-        if (isset($this->includeFacets)) {
-            $json->SearchCriteria->IncludeFacets = $this->includeFacets;
-        }
+        $json->SearchCriteria->IncludeFacets = $this->includeFacets ?? 'y';
 
         if (isset($this->sort)) {
             $json->SearchCriteria->Sort = $this->sort;
@@ -338,7 +336,7 @@ class SearchRequestModel
         }
 
         if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
-            $json->SearchCriteria->Expanders = implode(",", $this->expanders);
+            $json->SearchCriteria->Expanders = $this->expanders;
         }
 
         if (isset($this->view)) {
@@ -346,17 +344,17 @@ class SearchRequestModel
         }
 
         if (isset($this->resultsPerPage)) {
-            $json->RetrievalCriteria->ResultsPerPage = $this->resultsPerPage;
+            $json->RetrievalCriteria->ResultsPerPage = intval($this->resultsPerPage);
         }
 
         if (isset($this->pageNumber)) {
-            $json->RetrievalCriteria->PageNumber = $this->pageNumber;
+            $json->RetrievalCriteria->PageNumber = intval($this->pageNumber);
         }
 
         $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
         $json->RetrievalCriteria->Highlight = $highlightVal;
 
-        return json_encode($json);
+        return json_encode($json, JSON_PRETTY_PRINT);
     }
 
     /**
