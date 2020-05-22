@@ -308,16 +308,28 @@ class SearchRequestModel
         }
 
         if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
-            foreach ($this->facetFilters as $filter) {
-                // TODO -- remap
-                //$json->Actions[] = 'AddFacetFilter(' . $filter . ')';
+            $json->SearchCriteria->FacetFilters = [];
+            foreach ($this->facetFilters as $currentFilter) {
+                list($id, $filter) = explode(',', $currentFilter, 2);
+                list($field, $value) = explode(':', $filter, 2);
+                $filterObj = new \stdClass();
+                $filterObj->FilterId = $id;
+                $valueObj = new \stdClass();
+                $valueObj->Id = $field;
+                $valueObj->Value = $value;
+                $filterObj->FacetValues = [$valueObj];
+                $json->SearchCriteria->FacetFilters[] = $filterObj;
             }
         }
 
         if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
+            $json->SearchCriteria->Limiters = [];
             foreach ($this->limiters as $limiter) {
-                // TODO -- remap
-                //$json->Actions[] = 'AddLimiter(' . $limiter . ')';
+                list($id, $value) = explode(':', $limiter, 2);
+                $limiterObj = new \stdClass();
+                $limiterObj->Id = $id;
+                $limiterObj->Values = [$value];
+                $json->SearchCriteria->Limiters[] = $limiterObj;
             }
         }
 
