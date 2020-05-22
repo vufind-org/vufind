@@ -141,7 +141,9 @@ class Connector extends Base implements LoggerAwareInterface
         $this->client->setEncType($messageFormat);
         $result = $this->client->send();
         if (!$result->isSuccess()) {
-            throw new ApiException(json_decode($result->getBody(), true));
+            $error = $result->getBody();
+            $decodedError = json_decode($error, true);
+            throw new ApiException($decodedError ? $decodedError : $error);
         }
         return $result->getBody();
     }
