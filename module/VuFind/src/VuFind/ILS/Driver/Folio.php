@@ -765,7 +765,8 @@ class Folio extends AbstractAPI implements
     public function getMyHolds($patron)
     {
         $query = [
-            'query' => 'requesterId == "' . $patron['id'] . '"'
+            'query' => '(requesterId == "' . $patron['id'] . '"  ' .
+            'and status == Open*)'
         ];
         $response = $this->makeRequest('GET', '/request-storage/requests', $query);
         $json = json_decode($response->getBody());
@@ -776,11 +777,13 @@ class Folio extends AbstractAPI implements
             $expireDate = isset($hold->requestExpirationDate)
                 ? date_create($hold->requestExpirationDate) : null;
             $holds[] = [
-                'type' => 'Hold',
+                'type' => $hold->requestType,
                 'create' => date_format($requestDate, "j M Y"),
                 'expire' => isset($expireDate)
                     ? date_format($expireDate, "j M Y") : "",
                 'id' => $this->getBibId(null, null, $hold->itemId),
+                'item_id' => $hold->itemId,
+                'reqnum' => $hold->id,
                 'title' => $hold->item->title
             ];
         }
@@ -842,6 +845,70 @@ class Folio extends AbstractAPI implements
             }
         }
         return $result;
+    }
+
+    /**
+     * Get FOLIO hold IDs for use in cancelHolds.
+     *
+     * @param array $hold An single request
+     * array from getMyHolds
+     *
+     * @return string request ID for this request
+     */
+    public function getCancelHoldDetails($hold)
+    {
+        return $hold['reqnum'];
+    }
+
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        $details = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $cancelResult = ['items' => []];
+
+        foreach ($details as $requestId) {
+            $response = $this->makeRequest(
+                'GET', '/circulation/requests/' . $requestId
+            );
+            $request_json = json_decode($response->getBody());
+
+            // Change status to Closed and add cancellationID
+            $request_json->status = 'Closed - Cancelled';
+            $request_json->cancellationReasonId
+                = $this->config['Holds']['cancellation_reason'];
+
+            $cancel_response = $this->makeRequest(
+                'PUT', '/circulation/requests/' . $requestId,
+                json_encode($request_json)
+            );
+
+            if ($cancel_response->getStatusCode() == 204) {
+                $count++;
+                $cancelResult['items'][$request_json->itemId] = [
+                    'success' => true,
+                    'status' => 'hold_cancel_success'
+                ];
+            } else {
+                $cancelResult['items'][$request_json->itemId] = [
+                    'success' => false,
+                    'status' => 'hold_cancel_fail'
+                ];
+            }
+        }
+        $cancelResult['count'] = $count;
+        return $cancelResult;
     }
 
     /**
