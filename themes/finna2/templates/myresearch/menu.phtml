@@ -12,10 +12,7 @@
     if ($listOpen) {
       $list = $this->results->getListObject();
       $listParams = [
-        'activeId' => $list['id'],
-        'activeUrl' => $this->serverUrl() . $this->url('home') . 'List/' . $list['id'],
-        'activePublic' => $list['public'],
-        'isDefaultList' => !isset($list),
+        'activeId' => $list['id'] ?? null,
         'lists' => $user ? $user->getLists() : null,
         'results' => $this->results,
         'user' => $user

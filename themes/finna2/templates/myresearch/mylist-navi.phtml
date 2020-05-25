@@ -23,7 +23,7 @@
       </a>
     </li>
     <?php foreach ($lists as $list): ?>
-    <?php $active = ($list->id === $activeId); ?>
+    <?php $active = ($list['id'] === $activeId); ?>
     <li role="menuitem" class="favorites-menulist-item">
       <a href="<?= $active ? '#' : $this->url('userList', ['id' => $list['id']])?>?limit=<?=$currentLimit;?>" class="<?=$list && $active ? ' active' : ''?>" aria-current="<?=$active ? 'page' : 'false' ?>">
         <div class="favorite-list-holder">
@@ -38,8 +38,8 @@
         </div>
       </a>
       <?php if ($active): ?>
-      <?php $url = $this->serverUrl() . $this->url('home') . 'List/' . $list['id']; ?>
-      <?= $this->partial('myresearch/list-visibility.phtml', ['listUrl' => $url, 'public' => $list['public']]); ?>
+        <?php $url = $this->url('list-page', ['lid' => $list['id']], ['force_canonical' => true]) ?>
+        <?= $this->partial('myresearch/list-visibility.phtml', ['listUrl' => $url, 'public' => $list['public']]); ?>
       <?php endif; ?>
     </li>
     <?php endforeach; ?>
