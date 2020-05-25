@@ -65,7 +65,14 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     public function __construct(\Laminas\Config\Config $config)
     {
-        $this->apiUrl = $config->base_url1 . $config->books_endpoint;
+        if (!isset($config->base_url) || !is_array($config->base_url)
+            || !isset($config->books_endpoint)
+        ) {
+            throw new \Exception(
+                "Configuration for ObalkyKnih.cz service is not valid"
+            );
+        }
+        $this->apiUrl = $config->base_url[0] . $config->books_endpoint;
         $this->cacheLifetime = 1800;
         $this->referrer = $config->referrer ?? null;
     }
