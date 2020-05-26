@@ -132,10 +132,16 @@ class SolrMarc extends SolrDefault
     }
 
 
-    public function isAvailableInTubingenUniversityLibrary() {
+    public function isTADTagged() {
         $ita_fields = $this->getMarcRecord()->getFields('ITA');
-        return (count($ita_fields) > 0);
+        foreach ($ita_fields as $ita_field) {
+            $t_subfields = $this->getSubfieldArray($ita_field, ['t']);
+            if (count($t_subfields) > 0)
+                return true;
+        }
+        return false;
     }
+
 
     public function isArticle() {
         $leader = $this->getMarcRecord()->getLeader();
@@ -177,7 +183,7 @@ class SolrMarc extends SolrDefault
     }
 
     public function workIsTADCandidate() {
-        return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isAvailableInTubingenUniversityLibrary();
+        return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isTADTagged();
     }
 
     public function suppressDisplayByFormat() {
