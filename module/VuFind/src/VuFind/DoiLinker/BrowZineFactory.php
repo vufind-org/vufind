@@ -64,9 +64,9 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         }
         $backend = $container->get(\VuFind\Search\BackendManager::class)
             ->get('BrowZine');
-        $fullConfig = $container->get(\VuFind\Config\PluginManager)
+        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('BrowZine');
-        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->asArray() : [];
+        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
         return new $requestedName($backend->getConnector(), $config);
     }
 }
