@@ -1,1 +1,1 @@
-<a href="<?=$this->url("search-results", [], ['query' => ['lookfor' => 'bundle_id:' . $this->driver->getRecordId()]])?>"><?=$this->transEsc('Show journals in subscriptions package');?>.</a>
+<a href="<?=$this->url("search-results", [], ['query' => ['lookfor' => 'bundle_id:' . '"' .  $this->driver->getRecordId() . '"']])?>"><?=$this->transEsc('Show journals in subscriptions package');?>.</a>

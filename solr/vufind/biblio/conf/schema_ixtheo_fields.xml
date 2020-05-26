@@ -145,6 +145,7 @@
     <field name="exclude_ixtheo" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="bundle_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="has_fulltext" type="boolean" indexed="true" stored="true" multiValued="false"/>
+    <field name="has_publisher_fulltext" type="boolean" indexed="true" stored="true" multiValued="false"/>
     <field name="fulltext_types" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="fulltext_toc" type="text" indexed="true" stored="false"/>
     <field name="fulltext_toc_unstemmed" type="textProper" indexed="true" stored="false"/>

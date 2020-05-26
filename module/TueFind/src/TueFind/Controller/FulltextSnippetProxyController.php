@@ -110,8 +110,26 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function assembleMustQueryParts($doc_id, $search_query, $synonym_analyzer, $text_types_filter) {
+        $must_query_parts = [ !empty($text_types_filter) ?
+                                      [ 'bool' => [ 'must' => [  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ], $text_types_filter ] ] ] :
+                                      [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
+                            ];
+        // c.f. https://stackoverflow.com/questions/2202435/php-explode-the-string-but-treat-words-in-quotes-as-a-single-word (200525)
+        preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $search_query, $subqueries, PREG_PATTERN_ORDER);
+        $subquery_parts = [];
+        foreach (array_values($subqueries[0]) as $subquery) {
+           $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($subquery);
+           $subquery_parts[] = [ $is_phrase_query ? 'match_phrase' : 'match' =>
+                                  [ self::FIELD =>  [ 'query' => $subquery, 'analyzer' => $synonym_analyzer ] ]
+                               ];
+        }
+        $must_query_parts[] = [ 'bool' => [ 'must' => $subquery_parts ] ];
+        return $must_query_parts;
+    }
+
+
     protected function getQueryParams($doc_id, $search_query, $verbose, $synonyms, $paged_results, $types_filter) {
-        $is_phrase_query = \TueFind\Utility::isSurroundedByQuotes($search_query);
         $this->maxSnippets = $verbose ? self::MAX_SNIPPETS_VERBOSE : self::MAX_SNIPPETS_DEFAULT;
         $index = $paged_results ? $this->page_index : $this->index;
         $synonym_analyzer = $this->selectSynonymAnalyzer($synonyms);
@@ -124,16 +142,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                 'sort' => $paged_results && $verbose ? [ self::TEXT_TYPE => 'asc', 'page' => 'asc' ] : [ '_score' ],
                 'query' => [
                     'bool' => [
-                        'must' => [
-                            [ $is_phrase_query ? 'match_phrase' : 'match' => [
-                                                                               self::FIELD => [ 'query' => $search_query,
-                                                                                                'analyzer' => $synonym_analyzer ]
-                                                                             ],
-                            ],
-                            !empty($text_types_filter) ?
-                                 [ 'bool' => [ 'must' => [  [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ], $text_types_filter ] ] ] :
-                                 [ 'match' => [ self::DOCUMENT_ID => $doc_id ] ]
-                        ],
+                        'must' => $this->assembleMustQueryParts($doc_id, $search_query, $synonym_analyzer, $text_types_filter),
                         'must_not' => [ 'term' => [ '_index' => $index . '_write' ] ]
                     ]
                 ],
@@ -295,7 +304,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                                                    $parent_node,
                                                    $has_intersection ? null : $left_sibling,
                                                    $right_sibling,
-                                                   $has_intersection ? array_pop($snippet_trees) : new \DomDocument);
+                                                   $has_intersection ? array_pop($snippet_trees) : new \DOMDocument);
 
             array_push($snippet_trees, $snippet_tree);
         }

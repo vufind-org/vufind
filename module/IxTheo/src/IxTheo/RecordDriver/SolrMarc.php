@@ -149,7 +149,7 @@ class SolrMarc extends SolrDefault
      */
 
     public function hasFulltext() {
-        return isset($this->fields['has_fulltext']);
+        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
     }
 
 }
