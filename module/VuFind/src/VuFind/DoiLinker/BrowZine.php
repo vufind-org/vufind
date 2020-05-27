@@ -77,7 +77,7 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
      *
      * @return bool
      */
-    protected function arrayKeyAvailable(string $key, array $data): bool
+    protected function arrayKeyAvailable(string $key, ?array $data): bool
     {
         if (empty($data[$key])) {
             return false;
