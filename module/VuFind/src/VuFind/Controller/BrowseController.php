@@ -139,7 +139,6 @@ class BrowseController extends AbstractBase
             array_filter(array_intersect($configuredOptions, $allOptions), $filter),
             array_diff($defaultOptions, $configuredOptions)
         );
-
     }
 
     /**
