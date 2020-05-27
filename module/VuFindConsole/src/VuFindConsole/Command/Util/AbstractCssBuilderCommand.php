@@ -92,7 +92,7 @@ abstract class AbstractCssBuilderCommand extends Command
      *
      * @param OutputInterface $output Output object
      *
-     * @return object
+     * @return \VuFindTheme\AbstractCssPreCompiler
      */
     abstract protected function getCompiler(OutputInterface $output);
 
