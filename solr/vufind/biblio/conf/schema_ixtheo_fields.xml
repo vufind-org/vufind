@@ -6,7 +6,9 @@
     <!-- CUSTOM fields - only IxTheo/RelBib -->
     <field name="author_synonyms" type="text" indexed="true" stored="true" termVectors="true" multiValued="true"/>
     <field name="author2_and_role" type="textProper" indexed="true" stored="true" multiValued="true"/>
+    <field name="bible_date_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="bible_ranges" type="string" indexed="true" stored="true" />
+    <field name="canon_date_law_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="canon_law_ranges" type="string" indexed="true" stored="true" />
     <field name="corporation" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
@@ -88,6 +90,7 @@
     <field name="recording_date" type="date" indexed="true" stored="true" multiValued="false"/>
     <field name="relbib_notation" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="relbib_notation_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+    <field name="time_aspect_date_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="time_aspect_ranges" type="string" indexed="true" stored="true" />
     <field name="title_keywords" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="topic_all" type="text" indexed="true" stored="true" multiValued="true"/>

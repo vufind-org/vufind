@@ -258,5 +258,5 @@
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldType>
-
+    <fieldType name="date_range" class="solr.DateRangeField"/>
 </types>
