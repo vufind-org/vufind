@@ -462,10 +462,8 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             return false;
         }
         $response = $response['items'][0];
-        $consortiumId = $response['id'];
 
         $consortium = [];
-        $finna = [];
 
         if ($target == 'page') {
             $consortium['name'] = $response['name'];
@@ -577,7 +575,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $scheduleDescriptions = null;
         if (isset($response['refs']['period'])) {
             $scheduleDescriptions = [];
-            foreach ($response['refs']['period'] as $key => $period) {
+            foreach ($response['refs']['period'] as $period) {
                 $scheduleDesc = $period['description'];
                 if (!empty($scheduleDesc)) {
                     $scheduleDescriptions[] = $scheduleDesc;
