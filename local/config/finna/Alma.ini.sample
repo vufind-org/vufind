@@ -94,6 +94,10 @@ titleHoldBibLevels = "monograph:monographpart:serial:serialpart:collectionpart:i
 ; pickupLocationRules[] = "loc=MAIN,SUB:group=STAFF:pickup=MAINLIB,RES_SHARE:work=true"
 ;pickupLocationRules[] = ""
 
+; By default a request cannot be canceled if the item is available for pickup.
+; Uncomment this to enable canceling of available requests.
+;allowCancelingAvailableRequests = true
+
 ; The "NewUser" section defines some default values that are used when creating an account
 ; in Alma via its API. This is only relevant if you use the authentication method "AlmaDatabase"
 ; in the "Authentication" section of the "config.ini" file.

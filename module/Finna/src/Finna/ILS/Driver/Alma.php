@@ -1662,7 +1662,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        return empty($holdDetails['available']) ? $holdDetails['id'] : '';
+        return (empty($holdDetails['available'])
+            || !empty($this->config['Holds']['allowCancelingAvailableRequests']))
+            ? $holdDetails['id'] : '';
     }
 
     /**
