@@ -950,33 +950,29 @@ class Folio extends AbstractAPI implements
             $request_json = json_decode($response->getBody());
 
             // confirm request belongs to signed in patron
-            if ($request_json->requesterId == $patron['id']) {
-                // Change status to Closed and add cancellationID
-                $request_json->status = 'Closed - Cancelled';
-                $request_json->cancellationReasonId
-                    = $this->config['Holds']['cancellation_reason'];
-
-                $cancel_response = $this->makeRequest(
-                    'PUT', '/circulation/requests/' . $requestId,
-                    json_encode($request_json)
-                );
-
-                if ($cancel_response->getStatusCode() == 204) {
-                    $count++;
-                    $cancelResult['items'][$request_json->itemId] = [
-                        'success' => true,
-                        'status' => 'hold_cancel_success'
-                    ];
-                } else {
-                    $cancelResult['items'][$request_json->itemId] = [
-                        'success' => false,
-                        'status' => 'hold_cancel_fail'
-                    ];
-                }
-            } else {
+            if ($request_json->requesterId != $patron['id']) {
                 throw new ILSException("Invalid Request");
             }
-
+            // Change status to Closed and add cancellationID
+            $request_json->status = 'Closed - Cancelled';
+            $request_json->cancellationReasonId
+                = $this->config['Holds']['cancellation_reason'];
+            $cancel_response = $this->makeRequest(
+                'PUT', '/circulation/requests/' . $requestId,
+                json_encode($request_json)
+            );
+            if ($cancel_response->getStatusCode() == 204) {
+                $count++;
+                $cancelResult['items'][$request_json->itemId] = [
+                    'success' => true,
+                    'status' => 'hold_cancel_success'
+                ];
+            } else {
+                $cancelResult['items'][$request_json->itemId] = [
+                    'success' => false,
+                    'status' => 'hold_cancel_fail'
+                ];
+            }
         }
         $cancelResult['count'] = $count;
         return $cancelResult;
