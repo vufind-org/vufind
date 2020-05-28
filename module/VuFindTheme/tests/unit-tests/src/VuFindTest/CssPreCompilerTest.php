@@ -121,7 +121,7 @@ class CssPreCompilerTest extends Unit\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        foreach (self::extClassProvider() as [$ext, $class]) {
+        foreach (self::extClassProvider() as [$ext]) {
             self::makeFakeThemeStructure($ext);
         }
     }
