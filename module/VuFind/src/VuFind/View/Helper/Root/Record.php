@@ -77,7 +77,7 @@ class Record extends AbstractClassBasedTemplateRenderer
      *
      * @var CoverLoader
      */
-    protected $coverLoader;
+    protected $coverLoader = null;
 
     /**
      * Constructor
@@ -593,6 +593,9 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
+        if ($this->coverLoader === null) {
+            return false;
+        }
         $handlers = $this->coverLoader->getHandlers();
         $settings = $this->driver->getThumbnail();
         $settings = is_array($settings) ? array_merge($settings, ['size' => $size])
