@@ -8,7 +8,7 @@
     <field name="author2_and_role" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="bible_date_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="bible_ranges" type="string" indexed="true" stored="true" />
-    <field name="canon_date_law_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
+    <field name="canon_law_date_ranges" type="date_range" indexed="true" stored="true" multiValued="true"/>
     <field name="canon_law_ranges" type="string" indexed="true" stored="true" />
     <field name="corporation" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="era_facet_de" type="textFacet" indexed="true" stored="true" multiValued="true"/>
