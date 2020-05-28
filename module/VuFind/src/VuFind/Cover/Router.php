@@ -27,6 +27,7 @@
  */
 namespace VuFind\Cover;
 
+use VuFind\Cover\Loader as CoverLoader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
@@ -38,8 +39,10 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class Router
+class Router implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Base URL for dynamic cover images.
      *
@@ -48,13 +51,22 @@ class Router
     protected $dynamicUrl;
 
     /**
+     * Cover loader
+     *
+     * @var CoverLoader
+     */
+    protected $coverLoader;
+
+    /**
      * Constructor
      *
-     * @param string $url Base URL for dynamic cover images.
+     * @param string      $url         Base URL for dynamic cover images.
+     * @param CoverLoader $coverLoader Cover loader
      */
-    public function __construct($url)
+    public function __construct($url, CoverLoader $coverLoader)
     {
         $this->dynamicUrl = $url;
+        $this->coverLoader = $coverLoader;
     }
 
     /**
@@ -76,12 +88,38 @@ class Router
             return false;
         }
 
-        // Array?  It's parameters to send to the cover generator:
+        // Array? It's parameters to send to the cover generator:
         if (is_array($thumb)) {
-            return $this->dynamicUrl . '?' . http_build_query($thumb);
+            $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
+        } else {
+            $dynamicUrl = $thumb;
         }
 
-        // Default case -- return fixed string:
-        return $thumb;
+        $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
+            : ['size' => $size];
+        $this->coverLoader->storeSanitizedSettings($settings);
+        $handlers = $this->coverLoader->getHandlers();
+        $ids = $this->coverLoader->getIdentifiers();
+
+        foreach ($handlers as $handler) {
+            try {
+                // Is the current provider appropriate for the available data?
+                if ($handler['handler']->supports($ids)
+                    && $handler['handler']->useDirectUrls()
+                ) {
+                    $directUrl = $handler['handler']
+                        ->getUrl($handler['key'], $size, $ids);
+                    if ($directUrl !== false) {
+                        break;
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during processing of '
+                    . get_class($handler['handler']) . ': ' . $e->getMessage()
+                );
+            }
+        }
+        return $directUrl ?? $dynamicUrl ?? false;
     }
 }

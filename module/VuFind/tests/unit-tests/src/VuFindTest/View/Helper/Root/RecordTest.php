@@ -534,8 +534,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->getMockResolver()));
         $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
         $record = new Record($config);
-        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar'));
-        $record->setCoverLoader($this->getCoverLoader());
+        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);
         return $record->__invoke($driver);
     }

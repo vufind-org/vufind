@@ -27,7 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Cover\Loader as CoverLoader;
 use VuFind\Cover\Router as CoverRouter;
 
 /**
@@ -40,10 +39,7 @@ use VuFind\Cover\Router as CoverRouter;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Record extends AbstractClassBasedTemplateRenderer
-    implements \Laminas\Log\LoggerAwareInterface
 {
-    use \VuFind\Log\LoggerAwareTrait;
-
     /**
      * Context view helper
      *
@@ -73,13 +69,6 @@ class Record extends AbstractClassBasedTemplateRenderer
     protected $config;
 
     /**
-     * Cover loader
-     *
-     * @var CoverLoader
-     */
-    protected $coverLoader = null;
-
-    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $config VuFind configuration
@@ -99,18 +88,6 @@ class Record extends AbstractClassBasedTemplateRenderer
     public function setCoverRouter($router)
     {
         $this->coverRouter = $router;
-    }
-
-    /**
-     * Inject the cover loader
-     *
-     * @param CoverLoader $loader Cover router
-     *
-     * @return void
-     */
-    public function setCoverLoader($loader)
-    {
-        $this->coverLoader = $loader;
     }
 
     /**
@@ -593,38 +570,9 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
-        if ($this->coverLoader === null) {
-            return false;
-        }
-        $handlers = $this->coverLoader->getHandlers();
-        $settings = $this->driver->getThumbnail();
-        $settings = is_array($settings) ? array_merge($settings, ['size' => $size])
-            : ['size' => $size];
-        $this->coverLoader->storeSanitizedSettings($settings);
-        $ids = $this->coverLoader->getIdentifiers();
-        $url = $this->coverRouter ? $this->coverRouter->getUrl(
-            $this->driver, $size
-        ) : false;
-        foreach ($handlers as $handler) {
-            try {
-                // Is the current provider appropriate for the available data?
-                if ($handler['handler']->supports($ids)
-                    && $handler['handler']->useDirectUrls()
-                ) {
-                    $directUrl = $handler['handler']
-                        ->getUrl($handler['key'], $size, $ids);
-                    if ($directUrl !== false) {
-                        break;
-                    }
-                }
-            } catch (\Exception $e) {
-                $this->debug(
-                    get_class($e) . ' during processing of '
-                    . get_class($handler['handler']) . ': ' . $e->getMessage()
-                );
-            }
-        }
-        return $directUrl ?? $url ?? false;
+        return $this->coverRouter
+            ? $this->coverRouter->getUrl($this->driver, $size)
+            : false;
     }
 
     /**
