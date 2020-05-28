@@ -206,10 +206,10 @@ class Transaction extends \VuFind\Db\Table\Gateway
             $select->where->in(
                 'complete', [$updatedStatus, $expiredStatus]
             );
-            $select->where->greaterThan('paid', 0);
+            $select->where->greaterThan('paid', '2000-01-01 00:00:00');
             $select->where(
                 sprintf(
-                    '(reported = 0 OR NOW() > DATE_ADD(reported, INTERVAL %u HOUR))',
+                    'NOW() > DATE_ADD(reported, INTERVAL %u HOUR)',
                     $interval
                 )
             );
