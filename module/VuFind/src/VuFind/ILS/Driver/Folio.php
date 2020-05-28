@@ -939,7 +939,6 @@ class Folio extends AbstractAPI implements
     public function cancelHolds($cancelDetails)
     {
         $details = $cancelDetails['details'];
-        $patron = $cancelDetails['patron'];
         $count = 0;
         $cancelResult = ['items' => []];
 
