@@ -10,7 +10,8 @@ finna.onlinePayment = (function finnaOnlinePayment() {
       dataType: 'json'
     })
       .done(function onRegisterPaymentDone() {
-        // Reload current page without parameters
+        // Clear account notification cache and reload current page without parameters
+        VuFind.account.clearCache();
         location.href = window.location.href.split('?')[0];
       })
       .fail(function onRegisterPaymentFail() {
