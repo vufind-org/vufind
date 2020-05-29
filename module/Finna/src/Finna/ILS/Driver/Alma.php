@@ -340,7 +340,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 }
             }
         }
-        if ($amount > ($paymentConfig['minimumFee'] ?? 0)) {
+        if ($amount >= ($paymentConfig['minimumFee'] ?? 0)) {
             return [
                 'payable' => true,
                 'amount' => $amount
