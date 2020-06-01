@@ -1,6 +1,6 @@
 <?php
 /**
- * Console command: build CSS from LESS.
+ * Console command: build CSS from SCSS.
  *
  * PHP version 7
  *
@@ -29,10 +29,10 @@ namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\LessCompiler;
+use VuFindTheme\ScssCompiler;
 
 /**
- * Console command: build CSS from LESS.
+ * Console command: build CSS from SCSS.
  *
  * @category VuFind
  * @package  Console
@@ -40,31 +40,31 @@ use VuFindTheme\LessCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CssBuilderCommand extends AbstractCssBuilderCommand
+class ScssBuilderCommand extends AbstractCssBuilderCommand
 {
     /**
      * The name of the command (the part after "public/index.php")
      *
      * @var string
      */
-    protected static $defaultName = 'util/cssBuilder';
+    protected static $defaultName = 'util/scssBuilder';
 
     /**
      * Name of precompiler format
      *
      * @var string
      */
-    protected $format = 'LESS';
+    protected $format = 'SCSS';
 
     /**
      * Build the LESS compiler.
      *
      * @param OutputInterface $output Output object
      *
-     * @return LessCompiler
+     * @return ScssCompiler
      */
     protected function getCompiler(OutputInterface $output)
     {
-        return new LessCompiler($output);
+        return new ScssCompiler($output);
     }
 }
