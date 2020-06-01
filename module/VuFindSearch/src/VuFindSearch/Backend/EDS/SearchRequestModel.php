@@ -219,23 +219,23 @@ class SearchRequestModel
         if (isset($this->query) && 0 < sizeof($this->query)) {
             $formatQuery = function ($json) {
                 $query = json_decode($json, true);
-                $queryString = '';
-                if (!empty($query['bool'])) {
-                    $queryString .= $query['bool'] . ',';
-                }
+                $queryString = empty($query['bool'])
+                    ? '' : ($query['bool'] . ',');
                 if (!empty($query['field'])) {
                     $queryString .= $query['field'] . ':';
                 }
-                $queryString .= SearchRequestModel::escapeSpecialCharacters(
-                    $query['term']
-                );
+                $queryString .= static::escapeSpecialCharacters($query['term']);
                 return $queryString;
             };
             $qs['query-x'] = array_map($formatQuery, $this->query);
         }
 
         if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
-            $qs['facetfilter'] = $this->facetFilters;
+            $formatFilter = function ($raw) {
+                list($field, $value) = explode(':', $raw, 2);
+                return $field . ':' . static::escapeSpecialCharacters($value);
+            };
+            $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
         }
 
         if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
