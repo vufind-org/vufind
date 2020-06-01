@@ -56,6 +56,7 @@ class QueryBuilderTest extends TestCase
         }
         return $response;
     }
+
     /**
      * Test special case for blank queries.
      *
