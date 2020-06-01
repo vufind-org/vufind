@@ -1726,12 +1726,22 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'total' => $items['total'],
                 ];
 
+                // Add summary
+                $summary = [
+                    'available' => $items['available'],
+                    'total' => $items['total'],
+                    'availability' => null,
+                    'callnumber' => null,
+                    'location' => '__HOLDINGSSUMMARYLOCATION__'
+                ];
+
                 if ($displayRequests) {
                     $bib = $this->makeRequest(
                         '/bibs/' . urlencode($id) . '?expand=requests'
                     );
-                    $result['reservations'] = (int)$bib->requests ?? 0;
+                    $summary['reservations'] = (int)$bib->requests ?? 0;
                 }
+                $result['holdings'][] = $summary;
 
                 return $result;
             }
@@ -2102,6 +2112,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $sort = 0;
         $items = [];
         $totalItems = 0;
+        $availableItems = 0;
         $itemHolds = $this->config['Holds']['enableItemHolds'] ?? null;
         if ($itemsResult) {
             $totalItems = (int)$itemsResult->attributes()->total_record_count;
@@ -2155,11 +2166,15 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $addLink = false;
                     }
                 }
+                $available = $this->getAvailabilityFromItem($item);
+                if ($available) {
+                    ++$availableItems;
+                }
 
                 $items[] = [
                     'id' => $id,
                     'source' => 'Solr',
-                    'availability' => $this->getAvailabilityFromItem($item),
+                    'availability' => $available,
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
                     'location_code' => (string)$item->item_data->location,
@@ -2221,6 +2236,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         return [
             'items' => $items,
             'total' => $totalItems,
+            'available' => $availableItems,
         ];
     }
 
