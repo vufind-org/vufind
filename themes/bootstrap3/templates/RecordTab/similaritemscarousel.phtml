@@ -19,6 +19,7 @@
             <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
               <?php $thumb = $this->record($data)->getThumbnail('large'); ?>
               <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+              <?=$this->ajaxCovers()->detail('large')?>
               <div class="content">
                 <?php $formats = $data->getFormats(); ?>
                 <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>

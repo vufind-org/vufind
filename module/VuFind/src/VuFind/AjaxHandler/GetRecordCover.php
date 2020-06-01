@@ -28,8 +28,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Cover\Loader as CoverLoader;
-use VuFind\Cover\Router;
+use VuFind\Cover\Router as CoverRouter;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\ILS\Driver\CacheTrait;
 use VuFind\Record\Loader as RecordLoader;
@@ -48,13 +47,6 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     use CacheTrait;
 
     /**
-     * Cover loader
-     *
-     * @var CoverLoader
-     */
-    protected $coverLoader;
-
-    /**
      * Record loader
      *
      * @var RecordLoader
@@ -64,21 +56,19 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     /**
      * Cover router
      *
-     * @var Router
+     * @var CoverRouter
      */
     protected $coverRouter;
 
     /**
      * GetRecordCover constructor.
      *
-     * @param CoverLoader  $coverLoader  Cover loader
      * @param RecordLoader $recordLoader Record loader
-     * @param Router       $coverRouter  Cover router
+     * @param CoverRouter  $coverRouter  Cover router
      */
-    public function __construct(CoverLoader $coverLoader, RecordLoader $recordLoader,
-        Router $coverRouter
+    public function __construct(RecordLoader $recordLoader,
+        CoverRouter $coverRouter
     ) {
-        $this->coverLoader = $coverLoader;
         $this->recordLoader = $recordLoader;
         $this->coverRouter = $coverRouter;
     }
@@ -93,10 +83,11 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      */
     public function handleRequest(Params $params)
     {
-        $recordId = $params->fromQuery('recordid');
-        $size = $params->fromQuery('size');
+        $recordId = $params->fromQuery('recordId');
+        $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $size = $params->fromQuery('size', 'small');
         try {
-            $record = $this->recordLoader->load($recordId);
+            $record = $this->recordLoader->load($recordId, $recordSource);
         } catch (RecordMissingException $exception) {
             return $this->formatResponse(
                 'Could not load record: ' . $exception->getMessage(),
@@ -111,17 +102,10 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        $cover = $record->tryMethod('getThumbnail');
-        if ($cover === null) {
-            return $this->formatResponse(
-                'Could not load cover for record id ' . $recordId,
-                self::STATUS_HTTP_NOT_FOUND
-            );
-        }
-
         return $this->formatResponse(
             [
-            'url' => $this->coverRouter->getUrl($record, $size ?? 'small')
+                'url' => $this->coverRouter->getUrl($record, $size ?? 'small'),
+                'size' => $size,
             ]
         );
     }

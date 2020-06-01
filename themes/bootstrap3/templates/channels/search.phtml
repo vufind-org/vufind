@@ -11,3 +11,4 @@
     $this->queryParams = ltrim($this->results->getUrlQuery()->getParams(false), '?');
 ?>
 <?=$this->render('channels/channelList.phtml')?>
+<?=$this->ajaxCovers()->results('small')?>

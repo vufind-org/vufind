@@ -12,6 +12,7 @@
   <div class="media-left medium img-col">
     <?php if ($thumb): ?>
       <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <?=$this->ajaxCovers()->detail('medium')?>
     <?php else: ?>
       <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
     <?php endif; ?>

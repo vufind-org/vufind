@@ -62,7 +62,6 @@ class GetRecordCoverFactory implements FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Cover\Loader::class),
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Cover\Router::class)
         );

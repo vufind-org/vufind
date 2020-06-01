@@ -7,6 +7,7 @@
       <div class="mapInfoResult <?php if ($i % 2 == 0): ?>alt <?php endif; ?>record<?=$i ?>">
         <div class="mapInfoResultThumb">
           <?php if ($thumb = $this->record($record)->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtmlAttr($thumb) ?>"/><?php endif; ?>
+          <?=$this->ajaxCovers()->detail('small')?>
         </div>
 
         &bull; <a href="<?=$this->recordLink()->getUrl($record)?>"><?=($title = $record->getTitle()) ? $title : $this->transEsc('Title not available') ?></a>

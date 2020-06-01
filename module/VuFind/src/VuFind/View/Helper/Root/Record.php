@@ -570,7 +570,8 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
-        return $this->coverRouter
+        $ajaxcovers = $this->config->Content->ajaxcovers ?? false;
+        return ($this->coverRouter && !$ajaxcovers)
             ? $this->coverRouter->getUrl($this->driver, $size)
             : false;
     }
