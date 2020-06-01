@@ -1,4 +1,10 @@
 <?php
+    $manager = $this->auth()->getManager();
+    $options = $manager->getSelectableAuthOptions();
+    if (!in_array('ILS', $options) && !in_array('MultiILS', $options)) {
+      return;
+    }
+
     // Check if this page has been added as a part of another page
     $isPartial = $this->layout()->templateName === 'profile';
 
@@ -79,8 +85,6 @@
 
 <?php
   $labels = [];
-  $manager = $this->auth()->getManager();
-  $options = $manager->getSelectableAuthOptions();
   $originalMethod = $manager->getAuthMethod();
   if (in_array('MultiILS', $options)) {
     $manager->setAuthMethod('MultiILS');
