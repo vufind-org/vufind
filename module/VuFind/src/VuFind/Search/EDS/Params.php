@@ -196,56 +196,6 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set up limiter based on VuFind settings.
-     *
-     * @param ParamBag $params Parameter collection to update
-     *
-     * @return void
-     */
-    public function createBackendLimiterParameters(ParamBag $params)
-    {
-        //group limiters with same id together
-        $edsLimiters = [];
-        foreach ($this->limiters as $limiter) {
-            if (isset($limiter) && !empty($limiter)) {
-                // split the id/value
-                list($key, $value) = explode(':', $limiter, 2);
-                $value = SearchRequestModel::escapeSpecialCharacters($value);
-                $edsLimiters[$key] = (!isset($edsLimiters[$key]))
-                     ? $value : $edsLimiters[$key] . ',' . $value;
-            }
-        }
-        if (!empty($edsLimiters)) {
-            foreach ($edsLimiters as $key => $value) {
-                $params->add('limiters', $key . ':' . $value);
-            }
-        }
-    }
-
-    /**
-     * Set up expanders based on VuFind settings.
-     *
-     * @param ParamBag $params Parameter collection to update
-     *
-     * @return void
-     */
-    public function createBackendExpanderParameters(ParamBag $params)
-    {
-        // Which filters should be applied to our query?
-        if (!empty($this->expanders)) {
-            // Loop through all filters and add appropriate values to request:
-            $value = '';
-            foreach ($this->expanders as $expander) {
-                $value = (!empty($value))
-                    ? $value . ',' . $expander : $expander;
-            }
-            if (!empty($value)) {
-                $params->add('expander', $value);
-            }
-        }
-    }
-
-    /**
      * Return the value for which search view we use
      *
      * @return string

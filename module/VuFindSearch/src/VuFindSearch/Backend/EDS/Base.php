@@ -91,7 +91,6 @@ abstract class Base
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
      *      <li>orgid - Organization making calls to the EDS API </li>
-     *      <li>profile - EBSCO profile to use for calls to the API. </li>
      *    </ul>
      */
     public function __construct($settings = [])
