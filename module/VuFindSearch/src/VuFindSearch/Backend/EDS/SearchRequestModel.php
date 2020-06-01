@@ -325,10 +325,10 @@ class SearchRequestModel
         if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
             foreach ($this->limiters as $limiter) {
-                list($id, $value) = explode(':', $limiter, 2);
+                list($id, $values) = explode(':', $limiter, 2);
                 $limiterObj = new \stdClass();
                 $limiterObj->Id = $id;
-                $limiterObj->Values = [$value];
+                $limiterObj->Values = explode(',', $values);
                 $json->SearchCriteria->Limiters[] = $limiterObj;
             }
         }
