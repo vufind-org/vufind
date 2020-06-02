@@ -553,7 +553,7 @@ class Folio extends AbstractAPI implements
      */
     protected function getPagedResults($responseKey, $interface, $query = [])
     {
-        $fullResponse = [];
+        $count = 0;
         $limit = 1000;
         $offset = 0;
 
@@ -565,16 +565,19 @@ class Folio extends AbstractAPI implements
                 $combinedQuery
             );
             $json = json_decode($response->getBody());
-            $total = $json->totalRecords ?? 0;
-            $preCount = count($fullResponse);
-            foreach ($json->$responseKey ?? [] as $item) {
-                $fullResponse[] = $item ?? '';
+            if ($json == null) {
+                throw new ILSException('Could not get requests');
             }
-            $postCount = count($fullResponse);
-            $offset += $limit;
-        } while ($total && $postCount < $total && $preCount != $postCount);
-
-        return $fullResponse;
+            $total = $json->totalRecords ?? 0;
+            $preCount = $count;
+            foreach ($json->$responseKey ?? [] as $item) {
+                $count = $count +1;
+                if ($count % $limit == 0) {
+                    $offset += $limit;
+                }
+                yield $item ?? '';
+            }
+        } while ($count < $total);
     }
 
     /**
@@ -868,11 +871,10 @@ class Folio extends AbstractAPI implements
             'query' => '(requesterId == "' . $patron['id'] . '"  ' .
             'and status == Open*)'
         ];
-        $requests = $this->getPagedResults(
-            'requests', '/request-storage/requests', $query
-        );
         $holds = [];
-        foreach ($requests as $hold) {
+        foreach ($this->getPagedResults(
+            'requests', '/request-storage/requests', $query
+        ) as $hold) {
             $requestDate = date_create($hold->requestDate);
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
