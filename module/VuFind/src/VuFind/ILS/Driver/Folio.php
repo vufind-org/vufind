@@ -559,7 +559,7 @@ class Folio extends AbstractAPI implements
         $offset = 0;
 
         do {
-            $combinedQuery = compact('query', 'offset', 'limit');
+            $combinedQuery = array_merge($query, compact('offset', 'limit'));
             $response = $this->makeRequest(
                 'GET',
                 $interface,
