@@ -554,7 +554,6 @@ class Folio extends AbstractAPI implements
     protected function getPagedResults($responseKey, $interface, $query = [])
     {
         $fullResponse = [];
-        // set artificially low to test
         $limit = 1000;
         $offset = 0;
 
