@@ -82,6 +82,13 @@ abstract class Base
     protected $contentType = 'application/json';
 
     /**
+     * Search HTTP method
+     *
+     * @var string
+     */
+    protected $searchHttpMethod = 'POST';
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Client
@@ -91,6 +98,7 @@ abstract class Base
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
      *      <li>orgid - Organization making calls to the EDS API </li>
+     *      <li>search_http_method - HTTP method for search API calls</li>
      *    </ul>
      */
     public function __construct($settings = [])
@@ -104,6 +112,8 @@ abstract class Base
                 case 'orgid':
                     $this->orgId = $value;
                     break;
+                case 'search_http_method':
+                    $this->searchHttpMethod = $value;
                 }
             }
         }
@@ -197,14 +207,13 @@ abstract class Base
      * @param SearchRequestModel $query               Search request object
      * @param string             $authenticationToken Authentication token
      * @param string             $sessionToken        Session token
-     * @param string             $method              HTTP method to use (GET/POST)
      *
      * @return array An array of query results as returned from the api
      */
-    public function search($query, $authenticationToken, $sessionToken,
-        $method = 'POST'
-    ) {
+    public function search($query, $authenticationToken, $sessionToken)
+    {
         // Query String Parameters
+        $method = $this->searchHttpMethod;
         $json = $method === 'GET' ? null : $query->convertToSearchRequestJSON();
         $qs = $method === 'GET' ? $query->convertToQueryStringParameterArray() : [];
         $this->debugPrint(
