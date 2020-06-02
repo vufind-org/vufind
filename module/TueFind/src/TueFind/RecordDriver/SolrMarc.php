@@ -297,7 +297,7 @@ class SolrMarc extends SolrDefault
 
     public function getContainsInformation(): array {
         $contains = [];
-        $fields = $this->getMarcRecord()->getFields('772');
+        $fields = $this->getMarcRecord()->getFields('772|773');
         foreach ($fields as $field) {
             $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
             $titles = [];
