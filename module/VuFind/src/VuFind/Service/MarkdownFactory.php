@@ -103,7 +103,7 @@ class MarkdownFactory implements FactoryInterface
             ],
         ];
         $extensions = isset($markdownSection->extensions)
-            ? explode(',', $markdownSection->extensions) : [];
+            ? array_map('trim', explode(',', $markdownSection->extensions)) : [];
 
         foreach ($extensions as $ext) {
             $extClass = sprintf(
