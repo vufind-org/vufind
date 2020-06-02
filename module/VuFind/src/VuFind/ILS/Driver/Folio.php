@@ -543,6 +543,42 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Helper function to retrieve paged results from FOLIO API
+     *
+     * @param string $responseKey Key containing values to collect in response
+     * @param string $interface   FOLIO api interface to call
+     * @param array  $query       CQL query
+     *
+     * @return array
+     */
+    protected function getPagedResults($responseKey, $interface, $query = [])
+    {
+        $fullResponse = [];
+        // set artificially low to test
+        $limit = 1000;
+        $offset = 0;
+
+        do {
+            $combinedQuery = compact('query', 'offset', 'limit');
+            $response = $this->makeRequest(
+                'GET',
+                $interface,
+                $combinedQuery
+            );
+            $json = json_decode($response->getBody());
+            $total = $json->totalRecords ?? 0;
+            $preCount = count($fullResponse);
+            foreach ($json->$responseKey ?? [] as $item) {
+                $fullResponse[] = $item ?? '';
+            }
+            $postCount = count($fullResponse);
+            $offset += $limit;
+        } while ($total && $postCount < $total && $preCount != $postCount);
+
+        return $fullResponse;
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -833,10 +869,11 @@ class Folio extends AbstractAPI implements
             'query' => '(requesterId == "' . $patron['id'] . '"  ' .
             'and status == Open*)'
         ];
-        $response = $this->makeRequest('GET', '/request-storage/requests', $query);
-        $json = json_decode($response->getBody());
+        $requests = $this->getPagedResults(
+            'requests', '/request-storage/requests', $query
+        );
         $holds = [];
-        foreach ($json->requests as $hold) {
+        foreach ($requests as $hold) {
             $requestDate = date_create($hold->requestDate);
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
