@@ -137,7 +137,9 @@ class EdsBackendFactory implements FactoryInterface
     protected function createConnector()
     {
         $options = [
-            'timeout' => $this->edsConfig->General->timeout ?? 120
+            'timeout' => $this->edsConfig->General->timeout ?? 120,
+            'search_http_method' => $this->edsConfig->General->search_http_method
+                ?? 'POST'
         ];
         // Build HTTP client:
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)

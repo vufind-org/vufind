@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use VuFindSearch\Backend\EDS\SearchRequestModel as SearchRequestModel;
 use VuFindSearch\ParamBag;
 
 /**
@@ -172,11 +171,8 @@ class Params extends \VuFind\Search\Base\Params
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    $safeValue = SearchRequestModel::escapeSpecialCharacters(
-                        $filt['value']
-                    );
                     // Standard case:
-                    $fq = "{$filt['field']}:{$safeValue}";
+                    $fq = "{$filt['field']}:{$filt['value']}";
                     $params->add('filters', $fq);
                 }
             }
@@ -184,11 +180,8 @@ class Params extends \VuFind\Search\Base\Params
         if (!empty($hiddenFilterList)) {
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
-                    $safeValue = SearchRequestModel::escapeSpecialCharacters(
-                        $value
-                    );
                     // Standard case:
-                    $hfq = "{$field}:{$safeValue}";
+                    $hfq = "{$field}:{$value}";
                     $params->add('filters', $hfq);
                 }
             }
