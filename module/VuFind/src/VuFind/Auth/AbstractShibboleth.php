@@ -351,7 +351,7 @@ abstract class AbstractShibboleth extends AbstractBase
     {
         $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
         return ($proxy) ? $request->getHeader($this->normalize($attribute))
-            : ($_SERVER[$attribute] ?? null);
+            : ($request->getServer()->get($attribute) ?? null);
     }
 
     /**
