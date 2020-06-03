@@ -50,8 +50,7 @@ class Figlet extends LaminasBase
                . $this->captcha->getFiglet()->render($this->captcha->getWord())
                . '</pre>';
         $html .= '<p>Please enter what you see: <input name="'
-               . $this->captchaHtmlInputId
-               . '" required="required"></p>';
+               . $this->captchaHtmlInputId . '"></p>';
         $html .= '<input type="hidden" name="'
                . $this->captchaHtmlInternalId
                . '" value="' . $id . '">';

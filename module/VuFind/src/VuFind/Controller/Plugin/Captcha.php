@@ -43,11 +43,11 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 class Captcha extends AbstractPlugin
 {
     /**
-     * Captcha service
+     * Captcha services
      *
-     * @var \VuFind\Captcha\AbstractBase
+     * @var array
      */
-    protected $captcha;
+    protected $captchas = [];
 
     /**
      * String array of forms where Captcha is active
@@ -67,15 +67,15 @@ class Captcha extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param \VuFind\Captcha\AbstractBase|null $captcha CAPTCHA object
-     * @param \VuFind\Config                    $config  Config file
+     * @param \VuFind\Config $config   Config file
+     * @param array          $captchas CAPTCHA objects
      *
      * @return void
      */
-    public function __construct(?\VuFind\Captcha\AbstractBase $captcha, $config)
+    public function __construct($config, array $captchas=[])
     {
-        $this->captcha = $captcha;
-        if (isset($captcha) && isset($config->Captcha->forms)) {
+        $this->captchas = $captchas;
+        if (count($captchas) > 0 && isset($config->Captcha->forms)) {
             $this->active = true;
             $this->domains = '*' == trim($config->Captcha->forms)
                 ? true
@@ -112,12 +112,21 @@ class Captcha extends AbstractPlugin
         if (!$this->active()) {
             return true;
         }
-        try {
-            $captchaPassed = $this->captcha
-                ->verify($this->getController()->params());
-        } catch (\Exception $e) {
-            $captchaPassed = false;
+        $captchaPassed = false;
+        foreach ($this->captchas as $captcha) {
+            try {
+                $captchaPassed = $captcha->verify(
+                    $this->getController()->params()
+                );
+            } catch (\Exception $e) {
+                $captchaPassed = false;
+            }
+
+            if ($captchaPassed) {
+                break;
+            }
         }
+
         if (!$captchaPassed && $this->errorMode != 'none') {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()

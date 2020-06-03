@@ -69,6 +69,8 @@ abstract class LaminasBase extends AbstractBase
     public function __construct(\Laminas\Captcha\AbstractWord $captcha)
     {
         $this->captcha = $captcha;
+        $this->captchaHtmlInputId .= '-' . $this->getId();
+        $this->captchaHtmlInternalId .= '-' . $this->getId();
     }
 
     /**

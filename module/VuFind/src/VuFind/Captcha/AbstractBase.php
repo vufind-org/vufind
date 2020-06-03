@@ -51,6 +51,16 @@ abstract class AbstractBase
     }
 
     /**
+     * Get ID for current CAPTCHA (to use e.g. in HTML forms)
+     *
+     * @return string
+     */
+    public function getId(): string
+    {
+        return preg_replace('"^.*\\\\"', '', get_class($this));
+    }
+
+    /**
      * Generate HTML depending on CAPTCHA type.
      *
      * @return string

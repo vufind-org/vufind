@@ -43,11 +43,11 @@ use Laminas\View\Helper\AbstractHelper;
 class Captcha extends AbstractHelper
 {
     /**
-     * Captcha service
+     * Captcha services
      *
-     * @var \VuFind\Captcha\AbstractBase
+     * @var array
      */
-    protected $captcha;
+    protected $captchas = [];
 
     /**
      * Config
@@ -57,30 +57,16 @@ class Captcha extends AbstractHelper
     protected $config;
 
     /**
-     * HTML prefix for ReCaptcha output.
-     *
-     * @var string
-     */
-    protected $prefixHtml = '';
-
-    /**
-     * HTML suffix for ReCaptcha output.
-     *
-     * @var string
-     */
-    protected $suffixHtml = '';
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Captcha\AbstractBase|null $captcha Captcha
-     * @param \Laminas\Config\Config            $config  Config
+     * @param \Laminas\Config\Config $config   Config
+     * @param array                  $captchas Captchas
      */
-    public function __construct(?\VuFind\Captcha\AbstractBase $captcha,
-        \Laminas\Config\Config $config
+    public function __construct(\Laminas\Config\Config $config,
+        array $captchas=[]
     ) {
-        $this->captcha = $captcha;
         $this->config = $config;
+        $this->captchas = $captchas;
     }
 
     /**
@@ -97,19 +83,21 @@ class Captcha extends AbstractHelper
      * Generate HTML depending on CAPTCHA type (empty if not active).
      *
      * @param bool $useCaptcha Boolean of active state, for compact templating
-     * @param bool $wrapHtml   Include prefix and suffix?
+     * @param bool $wrapHtml   Wrap in a form-group?
      *
      * @return string
      */
     public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
     {
-        if (!isset($this->captcha) || !$useCaptcha) {
+        if (count($this->captchas) == 0 || !$useCaptcha) {
             return false;
         }
-        if (!$wrapHtml) {
-            return $this->captcha->getHtml();
+
+        $html = '';
+        foreach ($this->captchas as $captcha) {
+            $html .= $captcha->getHtml();
         }
-        return $this->prefixHtml . $this->captcha->getHtml() . $this->suffixHtml;
+        return $html;
     }
 
     /**
@@ -119,7 +107,11 @@ class Captcha extends AbstractHelper
      */
     public function js(): array
     {
-        return isset($this->captcha) ? $this->captcha->getJsIncludes() : [];
+        $jsIncludes = [];
+        foreach ($this->captchas as $captcha) {
+            $jsIncludes = array_merge($jsIncludes, $captcha->getJsIncludes());
+        }
+        return array_unique($jsIncludes);
     }
 
     /**
@@ -129,6 +121,6 @@ class Captcha extends AbstractHelper
      */
     protected function active(): bool
     {
-        return isset($this->captcha) && isset($config->Captcha->forms);
+        return count($this->captchas) > 0 && isset($config->Captcha->forms);
     }
 }

@@ -41,16 +41,59 @@ namespace VuFind\View\Helper\Bootstrap3;
 class Captcha extends \VuFind\View\Helper\Root\Captcha
 {
     /**
-     * Constructor
+     * Generate HTML depending on CAPTCHA type (empty if not active).
      *
-     * @param \VuFind\Captcha\AbstractBase|null $captcha Captcha object
-     * @param \Laminas\Config\Config            $config  Config object
+     * @param bool $useCaptcha Boolean of active state, for compact templating
+     * @param bool $wrapHtml   Wrap in a form-group?
+     *
+     * @return string
      */
-    public function __construct(?\VuFind\Captcha\AbstractBase $captcha,
-        \Laminas\Config\Config $config
-    ) {
-        $this->prefixHtml = '<div class="form-group">';
-        $this->suffixHtml = '</div>';
-        parent::__construct($captcha, $config);
+    public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
+    {
+        if (count($this->captchas) == 0 || !$useCaptcha) {
+            return false;
+        }
+
+        if ($wrapHtml) {
+            $html = '<div class="form-group">';
+        }
+
+        if (count($this->captchas) == 1) {
+            $html .= '<label class="control-label">CAPTCHA:</label>';
+            $html .= '<p>';
+            $html .= $this->captchas[0]->getHtml();
+            $html .= '</p>';
+        } else {
+            // nav
+            $html .= '<label class="control-label">';
+            $html .= 'Select your favorite CAPTCHA:';
+            $html .= '</label>';
+            $html .= '<ul class="nav nav-tabs">';
+            foreach ($this->captchas as $i => $captcha) {
+                $active = $i == 0 ? ' class="active"' : '';
+                $html .= '<li' . $active . '>';
+                $html .= '<a href="#' . $captcha->getId() . '" '
+                      . 'role="tab" data-toggle="tab">' . $captcha->getId()
+                      . '</a>';
+                $html .= '</li>';
+            }
+            $html .= '</ul>';
+
+            // panes
+            $html .= '<div class="tab-content">';
+            foreach ($this->captchas as $i => $captcha) {
+                $active = $i == 0 ? ' active' : '';
+                $html .= '<div class="tab-pane fade in' . $active
+                      . '" id="' . $captcha->getId() . '">';
+                $html .= $captcha->getHtml();
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+        }
+        if ($wrapHtml) {
+            $html .= '</div>';
+        }
+
+        return $html;
     }
 }
