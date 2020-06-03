@@ -27,7 +27,7 @@
  */
 namespace VuFind\I18n;
 
-use Zend\I18n\Translator\TextDomain;
+use Laminas\I18n\Translator\TextDomain;
 
 /**
  * Class to consistently format ExtendedIni language files.

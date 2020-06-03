@@ -45,6 +45,14 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilder
 {
     /**
+     * Default query (used when query string is empty). This should retrieve all
+     * records in the index, facilitating high-level facet-based browsing.
+     *
+     * @var string
+     */
+    protected $defaultQuery = '(FT yes) OR (FT no)';
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -74,21 +82,20 @@ class QueryBuilder
      * @param Query  $query    Query to convert
      * @param string $operator Operator to apply
      *
-     * @return string
+     * @return array
      */
     protected function queryToEdsQuery(Query $query, $operator = 'AND')
     {
         $expression = $query->getString();
-        $expression = SearchRequestModel::escapeSpecialCharacters($expression);
         $fieldCode = ($query->getHandler() == 'AllFields')
             ? '' : $query->getHandler();  //fieldcode
-        if (!empty($fieldCode)) {
-            $expression = $fieldCode . ':' . $expression;
+        // Special case: default search
+        if (empty($fieldCode) && empty($expression)) {
+            $expression = $this->defaultQuery;
         }
-        if (!empty($operator)) {
-            $expression = $operator . ',' . $expression;
-        }
-        return $expression;
+        return json_encode(
+            ['term' => $expression, 'field' => $fieldCode, 'bool' => $operator]
+        );
     }
 
     /// Internal API

@@ -72,8 +72,8 @@ trait LanguageInitializerTrait
     /**
      * Configure a translator to support the requested language.
      *
-     * @param \Zend\Mvc\I18n\Translator $translator Translator
-     * @param string                    $language   Language to set up
+     * @param \Laminas\Mvc\I18n\Translator $translator Translator
+     * @param string                       $language   Language to set up
      *
      * @return void
      */

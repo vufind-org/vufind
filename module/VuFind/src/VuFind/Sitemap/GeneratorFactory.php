@@ -28,7 +28,7 @@
 namespace VuFind\Sitemap;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Sitemap Generator factory.

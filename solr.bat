@@ -40,8 +40,8 @@ rem Unrecognized action -- display help text
 if "!%1!"=="!!" goto usage
 
 rem Set VUFIND_HOME (if not already set)
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -53,7 +53,7 @@ set VUFIND_HOME=%VUFIND_HOME:~0,-1%
 goto vufindhomefound
 :useenvbat
 call env > nul
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 echo You need to set the VUFIND_HOME environmental variable before running this script.
 goto end
 :vufindhomefound

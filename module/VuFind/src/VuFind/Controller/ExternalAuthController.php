@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Log\LoggerAwareInterface;
+use Laminas\Log\LoggerAwareInterface;
 
 /**
  * External Authentication/Authorization Controller
@@ -74,7 +74,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
             if (empty($config->EZproxy->disable_ticket_auth_logging)) {
                 $logger = $this->serviceLocator->get(\VuFind\Logger::class);
                 $logger->log(
-                    \Zend\Log\Logger::INFO,
+                    \Laminas\Log\Logger::INFO,
                     "EZproxy login to '" . $config->EZproxy->host
                     . "' for '" . ($user ? $user->username : 'anonymous')
                     . "' from IP address "
@@ -124,7 +124,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
         }
 
         $packet = '$u' . time() . '$e';
-        $hash = new \Zend\Crypt\Hash();
+        $hash = new \Laminas\Crypt\Hash();
         $algorithm = !empty($config->EZproxy->secret_hash_method)
             ? $config->EZproxy->secret_hash_method : 'SHA512';
         $ticket = $config->EZproxy->secret . $user . $packet;

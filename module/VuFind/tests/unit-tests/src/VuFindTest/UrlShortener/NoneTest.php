@@ -56,7 +56,6 @@ class NoneTest extends \PHPUnit\Framework\TestCase
      * Test that resolve is not supported.
      *
      * @return void
-     *
      */
     public function testNoResolution()
     {

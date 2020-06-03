@@ -53,7 +53,6 @@ class LoaderTest extends TestCase
      * Test exception for missing record.
      *
      * @return void
-     *
      */
     public function testMissingRecord()
     {
@@ -276,8 +275,8 @@ class LoaderTest extends TestCase
     /**
      * Build a loader to test.
      *
-     * @param SearchService  $service Search service
-     * @param RecordFactory  $factory Record factory (optional)
+     * @param SearchService  $service        Search service
+     * @param RecordFactory  $factory        Record factory (optional)
      * @param Cache          $recordCache    Record Cache
      * @param FallbackLoader $fallbackLoader Fallback record loader
      *

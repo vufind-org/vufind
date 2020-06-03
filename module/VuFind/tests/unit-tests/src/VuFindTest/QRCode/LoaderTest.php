@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\QRCode;
 
+use Laminas\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
-use Zend\Config\Config;
 
 /**
  * QR Code Loader Test Class
@@ -53,7 +53,6 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
-     *
      */
     public function testUtterFailure()
     {

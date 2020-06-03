@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SystemStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -64,7 +64,7 @@ class SystemStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
         }
         $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $tablePluginManager->get(\VuFind\Db\Table\Session::class)

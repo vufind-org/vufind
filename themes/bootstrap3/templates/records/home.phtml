@@ -1,6 +1,6 @@
 <?php
-    $this->overrideTitle = $this->translate('View Records');
-    $this->overrideSearchHeading = '';
+    $this->slot('head-title')->set($this->translate('View Records'));
+    $this->slot('search-heading')->set('');
 
     // Load standard settings from the default search results screen:
     echo $this->render('search/results.phtml');

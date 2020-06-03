@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class BrowZineFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -64,6 +64,9 @@ class BrowZineFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         }
         $backend = $container->get(\VuFind\Search\BackendManager::class)
             ->get('BrowZine');
-        return new $requestedName($backend->getConnector());
+        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('BrowZine');
+        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
+        return new $requestedName($backend->getConnector(), $config);
     }
 }

@@ -27,7 +27,7 @@
  */
 namespace VuFind\Related;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Related record plugin manager

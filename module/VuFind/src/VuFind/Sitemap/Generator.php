@@ -27,14 +27,13 @@
  */
 namespace VuFind\Sitemap;
 
+use Laminas\Config\Config;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
-use Zend\Config\Config;
-use Zend\Console\Console;
 
 /**
  * Class for generating sitemaps
@@ -125,11 +124,11 @@ class Generator
     protected $warnings = [];
 
     /**
-     * Verbose mode
+     * Verbose callback
      *
-     * @var bool
+     * @var \Callable
      */
-    protected $verbose = false;
+    protected $verbose = null;
 
     /**
      * Mode of retrieving IDs from the index (may be 'terms' or 'search')
@@ -183,11 +182,12 @@ class Generator
     }
 
     /**
-     * Get/set verbose mode
+     * Get/set verbose callback
      *
-     * @param bool $newMode New verbose mode
+     * @param \Callable|null $newMode Callback for writing verbose messages (or null
+     * to disable them)
      *
-     * @return bool Current or new verbose mode
+     * @return \Callable|null Current verbose callback (null if disabled)
      */
     public function setVerbose($newMode = null)
     {
@@ -195,6 +195,20 @@ class Generator
             $this->verbose = $newMode;
         }
         return $this->verbose;
+    }
+
+    /**
+     * Write a verbose message (if configured to do so)
+     *
+     * @param string $msg Message to display
+     *
+     * @return void
+     */
+    protected function verboseMsg($msg)
+    {
+        if (is_callable($this->verbose)) {
+            call_user_func($this->verbose, $msg);
+        }
     }
 
     /**
@@ -266,11 +280,9 @@ class Generator
         $this->buildIndex($currentPage - 1);
 
         // Display total elapsed time in verbose mode:
-        if ($this->verbose) {
-            Console::writeLine(
-                'Elapsed time (in seconds): ' . round($this->getTime() - $startTime)
-            );
-        }
+        $this->verboseMsg(
+            'Elapsed time (in seconds): ' . round($this->getTime() - $startTime)
+        );
     }
 
     /**
@@ -325,9 +337,7 @@ class Generator
             // Update total record count:
             $recordCount += count($result['ids']);
 
-            if ($this->verbose) {
-                Console::writeLine("Page $currentPage, $recordCount processed");
-            }
+            $this->verboseMsg("Page $currentPage, $recordCount processed");
 
             // Update counter:
             $currentPage++;

@@ -284,7 +284,7 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -308,7 +308,7 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -339,7 +339,7 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -376,7 +376,7 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -392,7 +392,7 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -409,7 +409,7 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
@@ -488,7 +488,7 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -519,7 +519,7 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -548,7 +548,7 @@ class Params
     /**
      * Get the value for which results view to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -1019,17 +1019,6 @@ class Params
     }
 
     /**
-     * Get the raw filter list.
-     *
-     * @return     array
-     * @deprecated Obsolete since VuFind 6.1. Use getRawFilters() instead.
-     */
-    public function getFilters()
-    {
-        return $this->getRawFilters();
-    }
-
-    /**
      * Return an array structure containing information about all current filters.
      *
      * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
@@ -1182,7 +1171,7 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1286,13 +1275,13 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request         Parameter object representing
-     * user request.
-     * @param string                  $requestParam    Name of parameter containing
-     * names of range filter fields.
-     * @param Callable                $valueFilter     Optional callback to process
-     * values in the range.
-     * @param Callable                $filterGenerator Optional callback to create
+     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * representing user request.
+     * @param string                     $requestParam    Name of parameter
+     * containing names of range filter fields.
+     * @param Callable                   $valueFilter     Optional callback to
+     * process values in the range.
+     * @param Callable                   $filterGenerator Optional callback to create
      * a filter query from the range values.
      *
      * @return void
@@ -1390,7 +1379,7 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1408,7 +1397,7 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1426,7 +1415,7 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1442,7 +1431,7 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1482,7 +1471,7 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

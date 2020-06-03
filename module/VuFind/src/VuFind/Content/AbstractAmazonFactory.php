@@ -38,7 +38,8 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractAmazonFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class AbstractAmazonFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -66,7 +67,7 @@ class AbstractAmazonFactory implements \Zend\ServiceManager\Factory\FactoryInter
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        $label = $container->get(\Zend\Mvc\I18n\Translator::class)->translate(
+        $label = $container->get(\Laminas\Mvc\I18n\Translator::class)->translate(
             'Supplied by Amazon'
         );
         return new $requestedName($associate, $secret, $label);

@@ -36,7 +36,7 @@ namespace VuFind\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ReCaptcha extends \ZendService\ReCaptcha\ReCaptcha
+class ReCaptcha extends \Laminas\ReCaptcha\ReCaptcha
 {
     /**
      * Get the HTML code for the captcha
@@ -47,7 +47,7 @@ class ReCaptcha extends \ZendService\ReCaptcha\ReCaptcha
      *
      * @return string
      *
-     * @throws \ZendService\ReCaptcha\Exception
+     * @throws \Laminas\ReCaptcha\Exception
      */
     public function getHtml($name = null)
     {

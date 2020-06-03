@@ -29,15 +29,15 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Exception;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Config\Config;
+use Laminas\Session\Container as SessionContainer;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
-use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
-use Zend\Config\Config;
-use Zend\Session\Container as SessionContainer;
 
 /**
  *  EDS API Backend
@@ -235,6 +235,17 @@ class Backend extends AbstractBackend
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
+            case 138:
+                // User requested unavailable deep search results; first extract the
+                // next legal position from the error message:
+                $parts = explode(' ', trim($e->getApiDetailedErrorDescription()));
+                $legalPos = array_pop($parts);
+                // Now calculate the legal page number and throw an exception so the
+                // controller can fix it from here:
+                $legalPage = floor($legalPos / $limit);
+                throw new \VuFindSearch\Backend\Exception\DeepPagingException(
+                    $e->getMessage(), $e->getCode(), $legalPage, $e
+                );
             default:
                 $response = [];
                 break;
@@ -273,10 +284,16 @@ class Backend extends AbstractBackend
                 );
             }
             list($dbId, $an) = $parts;
-            $hlTerms = (null != $params)
+            $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
+            $extras = [];
+            if (null !== $params
+                && ($eBookFormat = $params->get('ebookpreferredformat'))
+            ) {
+                $extras['ebookpreferredformat'] = $eBookFormat;
+            }
             $response = $this->client->retrieve(
-                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
+                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms, $extras
             );
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more

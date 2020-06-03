@@ -29,15 +29,14 @@
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
+use Laminas\Http\Response;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use Zend\Http\Response;
 
 /**
  * Unit tests for SOLR backend.
@@ -171,7 +170,6 @@ class BackendTest extends TestCase
      * Test handling of a bad JSON response.
      *
      * @return void
-     *
      */
     public function testBadJson()
     {
@@ -190,7 +188,6 @@ class BackendTest extends TestCase
      * Test injectResponseWriter throws on incompatible response writer.
      *
      * @return void
-     *
      */
     public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
     {
@@ -206,7 +203,6 @@ class BackendTest extends TestCase
      * Test injectResponseWriter throws on incompatible named list setting.
      *
      * @return void
-     *
      */
     public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
     {
@@ -285,7 +281,6 @@ class BackendTest extends TestCase
      * Test refining an alphabrowse exception (string 1).
      *
      * @return void
-     *
      */
     public function testRefineAlphaBrowseException()
     {
@@ -299,7 +294,6 @@ class BackendTest extends TestCase
      * Test refining an alphabrowse exception (string 2).
      *
      * @return void
-     *
      */
     public function testRefineAlphaBrowseExceptionWithAltString()
     {
@@ -313,7 +307,6 @@ class BackendTest extends TestCase
      * Test that we don't refine a non-alphabrowse-related exception.
      *
      * @return void
-     *
      */
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()
     {
@@ -360,7 +353,7 @@ class BackendTest extends TestCase
     protected function runRefineExceptionCall($msg)
     {
         $conn = $this->getConnectorMock(['query']);
-        $e = new RemoteErrorException($msg, 400, new \Zend\Http\Response());
+        $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
             ->will($this->throwException($e));
@@ -373,7 +366,7 @@ class BackendTest extends TestCase
      *
      * @param string $fixture Fixture file
      *
-     * @return Zend\Http\Response
+     * @return Laminas\Http\Response
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */

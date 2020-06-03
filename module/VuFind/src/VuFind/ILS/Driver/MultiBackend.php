@@ -42,7 +42,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -1519,7 +1519,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 : $this->driversConfigPath . '/' . $source;
 
             $config = $this->configLoader->get($path);
-        } catch (\Zend\Config\Exception\RuntimeException $e) {
+        } catch (\Laminas\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             $this->error("Could not load config for $source");

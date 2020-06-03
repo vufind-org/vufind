@@ -38,7 +38,7 @@ public class ConfigManager
     static Logger logger = Logger.getLogger(ConfigManager.class.getName());
     private static ConcurrentHashMap<String, Ini> configCache = new ConcurrentHashMap<String, Ini>();
     private Properties vuFindConfigs = null;
-    private static ThreadLocal<ConfigManager> managerCache = 
+    private static ThreadLocal<ConfigManager> managerCache =
         new ThreadLocal<ConfigManager>()
         {
             @Override
@@ -140,7 +140,10 @@ public class ConfigManager
             } catch (IllegalStateException e) {
                 dieWithError("Illegal State: " + e.getMessage());
             } catch (Throwable e) {
-                dieWithError("Unable to locate " + filename);
+                dieWithError(
+                    "Unable to locate " + filename
+                    + " (" + e.getMessage() + ")"
+                );
             }
             try {
                 if (configFile != null) {
@@ -148,7 +151,10 @@ public class ConfigManager
                     configCache.putIfAbsent(filename, ini);
                 }
             } catch (Throwable e) {
-                dieWithError("Unable to access " + configFile.getAbsolutePath());
+                dieWithError(
+                    "Unable to access " + configFile.getAbsolutePath()
+                    + " (" + e.getMessage() + ")"
+                );
             }
         }
         return configCache.get(filename);
@@ -221,7 +227,10 @@ public class ConfigManager
                 try {
                     ini.load(new FileReader(new File(parent)));
                 } catch (Throwable e) {
-                    dieWithError("Unable to access " + parent);
+                    dieWithError(
+                        "Unable to access " + parent
+                        + " (" + e.getMessage() + ")"
+                    );
                 }
                 retVal = ini.get(section, setting);
             } else {

@@ -30,10 +30,10 @@ namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\Resolver\Driver\Ezb;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
-use Zend\Http\Response as HttpResponse;
+use VuFind\Resolver\Driver\Ezb;
 
 /**
  * Ezb resolver driver test
@@ -160,7 +160,7 @@ class EzbTest extends \VuFindTest\Unit\TestCase
         }
         $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
 
-        $client = new \Zend\Http\Client();
+        $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
         $conn = new Ezb($this->openUrlConfig['OpenURL']['url'], $client);

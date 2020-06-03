@@ -107,21 +107,25 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
 
     protected function setupMultipleCallnumbers()
     {
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Catalog' => ['driver' => 'Demo']
             ],
             'Demo' => [
                 'Holdings' => [
-                    $this->id => json_encode([
+                    $this->id => json_encode(
+                        [
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberTwo', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberThree', 'location' => 'Phobos'],
                         ['callnumber' => 'CallNumberFour', 'location' => 'Phobos']
-                    ])
+                        ]
+                    )
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**
@@ -136,12 +140,14 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
     protected function activateAndTestLinks($type, $page, $expectLinks)
     {
         // Single callnumbers (Sample)
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Catalog' => ['driver' => 'Sample'],
                 'Item_Status' => ['callnumber_handler' => $type]
             ]
-        ]);
+            ]
+        );
         $this->getMinkSession()->reload();
         $this->snooze();
         $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
@@ -189,9 +195,11 @@ class CallnumberBrowseTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testFirstAndMsg()
     {
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => ['Item_Status' => ['show_full_status' => false]]
-        ]);
+            ]
+        );
         $this->validateSetting('first');
     }
 
