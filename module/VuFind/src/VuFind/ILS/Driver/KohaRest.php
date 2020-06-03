@@ -137,8 +137,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'restriction' => 'Borrowing Block Message',
         'overdue' => 'renew_item_overdue',
         'cardlost' => 'renew_card_lost',
-        'gonenoaddress' => 'Borrowing Block Koha Reason Patron_GoneNoAddress',
-        'debarred' => 'Borrowing Block Koha Reason Patron_DebarredOverdue',
+        'gonenoaddress' => 'patron_status_address_missing',
+        'debarred' => 'patron_status_card_blocked',
         'debt' => 'renew_debt'
     ];
 
@@ -399,7 +399,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             [
                 'path' => 'v1/contrib/kohasuomi/patrons/validation',
                 'json' => ['userid' => $username, 'password' => $password],
-                'method' => 'POST'
+                'method' => 'POST',
+                'errors' => true,
             ]
         );
 
@@ -1237,8 +1238,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 }
             }
             $type = $entry['debit_type'];
-            if (isset($this->feeTypeMappings[$type])) {
-                $type = $this->feeTypeMappings[$type];
+            $type = $this->translate($this->feeTypeMappings[$type] ?? $type);
+            if ($entry['description'] !== $type) {
+                $type .= ' - ' . $entry['description'];
             }
             $fine = [
                 'amount' => $entry['amount'] * 100,
@@ -1246,7 +1248,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'fine' => $type,
                 'createdate' => $this->convertDate($entry['date'] ?? null),
                 'checkout' => '',
-                'title' => $entry['description'],
             ];
             if (null !== $bibId) {
                 $fine['id'] = $bibId;
