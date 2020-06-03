@@ -204,6 +204,7 @@
         padding: 0 5px 5px 0;
         transform: rotate(45deg);
         margin-right: 10px;
+        margin-top: 5px;
         margin-bottom: 3px;
       }
       summary {
@@ -214,6 +215,10 @@
         background: #fafafa;
         padding: 10px;
         margin-left: -5px;
+        p {
+          display: inline;
+          padding-left: 0;
+        }
       }
     }
     details[open] {
@@ -221,6 +226,7 @@
       & summary::before {
         transform: rotate(-135deg);
         margin-bottom: 0px;
+        margin-top: 10px;
       }
       & summary {
         margin-bottom: 10px;

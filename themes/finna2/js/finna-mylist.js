@@ -37,9 +37,9 @@ finna.myList = (function finnaMyList() {
 
   function insertDetails(mdeditor) {
     var summaryPlaceholder = VuFind.translate('details_summary_placeholder');
-    var detailsElement = '\n<details class="favorite-list-details">\n' +
-     '<summary>' + summaryPlaceholder + '</summary>' +
-     '<p>' + VuFind.translate('details_text_placeholder') + '</p>\n' +
+    var detailsElement = '\n<details class="favorite-list-details" markdown="1">' +
+     '<summary markdown="1">' + summaryPlaceholder + '</summary>\n' +
+     VuFind.translate('details_text_placeholder') + '\n' +
      '</details>';
 
     insertElement(detailsElement, mdeditor);
