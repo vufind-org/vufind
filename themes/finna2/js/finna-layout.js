@@ -361,6 +361,14 @@ finna.layout = (function finnaLayout() {
 
   function initToolTips(_holder) {
     var holder = typeof _holder === 'undefined' ? $(document) : _holder;
+    // show hover tooltips on grid image notes
+    if (window.matchMedia("(min-width: 768px)").matches) {
+      holder.find('.grid-image .note-button').tooltip();
+      holder.find('.grid-image .note-button').click(function clickHideTooltip() {
+        $("[data-toggle='tooltip']").tooltip('hide');
+      });
+    }
+    // other tooltips
     holder.find('[data-toggle="tooltip"]')
       .on('show.bs.tooltip', function onShowTooltip() {
         var self = $(this);

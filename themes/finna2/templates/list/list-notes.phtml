@@ -6,7 +6,7 @@
     $note = implode('', $notes);
     $note = $this->markdown()->toHtml($note);
     $grid = $this->params->getView() === 'grid'; ?>
-    <?= $grid ? '<button class="note-button"><i class="fa fa-file-text-o" aria-hidden="true"></i></button>' : '' ?>
+    <?= $grid ? '<button class="note-button" aria-hidden="true" data-original-title="' . $this->transEsc('Note') . '" data-placement="left" data-toggle="tooltip" title="' . $this->transEsc('Note') . '"><i class="fa fa-file-text-o"></i></button>' : '' ?>
     <div class="<?= $grid ? 'note-overlay note-hide' : '' ?>">
       <div class="notes">
         <p class="note-heading">
