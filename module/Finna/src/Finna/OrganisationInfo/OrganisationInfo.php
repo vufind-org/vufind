@@ -911,6 +911,14 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 $result['services'] = $services;
             }
             if (!empty($allServices)) {
+                foreach ($allServices as &$serviceType) {
+                    usort(
+                        $serviceType,
+                        function ($service1, $service2) {
+                            return strnatcasecmp($service1[0], $service2[0]);
+                        }
+                    );
+                }
                 $result['allServices'] = $allServices;
             }
         }
