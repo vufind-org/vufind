@@ -1,6 +1,8 @@
 var previous = '<button class="popup-arrow popup-left-arrow previous-record" type="button"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button>';
 var next = '<button class="popup-arrow popup-right-arrow next-record" type="button"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button>';
 var closeTemplate = '<button class="finna-popup close-button" title="close_translation" aria-label="close_translation">x</button>';
+var srElement = '<span class="sr-only"></span>';
+
 function FinnaPopup(trigger, params, id) {
   var _ = this;
   _.triggers = [];
@@ -143,8 +145,10 @@ FinnaPopup.prototype.show = function show() {
   if (typeof _.parent === 'undefined') {
     if (typeof _.closeButton === 'undefined') {
       _.closeButton = $(closeTemplate).clone();
-      _.closeButton.attr('title', _.getTranslation('close'));
-      _.closeButton.attr('aria-label', _.getTranslation('close'));
+      _.closeButton.attr({
+        'title': _.getTranslation('close'),
+        'aria-label': _.getTranslation('close')
+      });
     }
     _.closeButton.on('click', function callClose(e) {
       e.preventDefault();
@@ -161,6 +165,7 @@ FinnaPopup.prototype.show = function show() {
       _.getTrigger(-1);
     });
     _.previousPopup.attr('title', _.getTranslation('previous'));
+    _.previousPopup.append($(srElement).clone().html(_.getTranslation('previous')));
     _.content.append(_.previousPopup);
   }
 
@@ -172,6 +177,7 @@ FinnaPopup.prototype.show = function show() {
       _.getTrigger(+1);
     });
     _.nextPopup.attr('title', _.getTranslation('next'));
+    _.nextPopup.append($(srElement).clone().html(_.getTranslation('next')));
     _.content.append(_.nextPopup);
   }
   _.isOpen = true;

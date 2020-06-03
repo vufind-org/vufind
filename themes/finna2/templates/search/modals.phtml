@@ -22,9 +22,9 @@
         <div class="leaflet-map-image image-wrapper">
           <img src="<?=$this->imageSrc()->getDataPixel()?>" alt="" />
           <div class="imagepopup-zoom-container">
-            <div class="zoom-in zoom-button"><i class="fa fa-zoom-in" aria-hidden="true"></i></div>
-            <div class="zoom-out zoom-button"><i class="fa fa-zoom-out" aria-hidden="true"></i></div>
-            <div class="zoom-reset zoom-button"><i class="fa fa-zoom-100" aria-hidden="true"></i></div>
+            <button class="zoom-in zoom-button" title="<?= $this->transEsc('zoom_in'); ?>"><i class="fa fa-zoom-in" aria-hidden="true"></i><span class="sr-only"><?= $this->transEsc('zoom_in'); ?></span></button>
+            <button class="zoom-out zoom-button" title="<?= $this->transEsc('zoom_out'); ?>"><i class="fa fa-zoom-out" aria-hidden="true"></i><span class="sr-only"><?= $this->transEsc('zoom_out'); ?></span></button>
+            <button class="zoom-reset zoom-button" title="<?= $this->transEsc('zoom_center'); ?>"><i class="fa fa-zoom-100" aria-hidden="true"></i><span class="sr-only"><?= $this->transEsc('zoom_center'); ?></span></button>
           </div>
           <div class="leaflet-image-loading">
           </div>
