@@ -83,10 +83,10 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
 
     private function getBibleReferenceCommand($searchQuery)
     {
-        setlocale(LC_CTYPE, "de_DE.UTF-8");
+        setlocale(LC_CTYPE, "en_US.UTF-8");
         return implode(' ', [
             self::BIBLE_REFERENCE_COMMAND,
-            "--query",
+            "--date-query",
             escapeshellarg($searchQuery),
             self::BIBLE_REFERENCE_COMMAND_PARAMETERS
         ]);
@@ -96,7 +96,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     private function getCanonesReferenceCommand($searchQuery) {
         return implode(' ', [
             self::CANONES_REFERENCE_COMMAND,
-            "--query",
+            "--date-query",
             escapeshellarg($searchQuery)
         ]);
     }
@@ -105,6 +105,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     private function getTimeAspectsCommand($searchQuery) {
         return implode(' ', [
             self::TIME_ASPECTS_COMMAND,
+            "--date-query",
             escapeshellarg($searchQuery)
         ]);
     }
