@@ -730,7 +730,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
                 if (!empty($item['address']['area'])) {
                     $address['city']
-                        = "{$item['address']['area']} / {$item['address']['city']}";
+                        = "{$item['address']['area']} ({$item['address']['city']})";
                 } else {
                     $address['city'] = $item['address']['city'];
                 }
