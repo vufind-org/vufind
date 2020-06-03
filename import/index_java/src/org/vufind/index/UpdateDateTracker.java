@@ -41,7 +41,7 @@ public class UpdateDateTracker
     PreparedStatement selectSql;
     PreparedStatement updateSql;
 
-    private static ThreadLocal<UpdateDateTracker> trackerCache = 
+    private static ThreadLocal<UpdateDateTracker> trackerCache =
         new ThreadLocal<UpdateDateTracker>()
         {
             @Override
@@ -67,7 +67,7 @@ public class UpdateDateTracker
         // Save new values to the object:
         firstIndexed = lastIndexed = Timestamp.valueOf(LocalDateTime.now());
         lastRecordChange = newRecordChange;
-        
+
         // Save new values to the database:
         insertSql.setString(1, core);
         insertSql.setString(2, id);
@@ -84,13 +84,13 @@ public class UpdateDateTracker
         selectSql.setString(1, core);
         selectSql.setString(2, id);
         ResultSet result = selectSql.executeQuery();
-        
+
         // No results?  Free resources and return false:
         if (!result.first()) {
             result.close();
             return false;
         }
-        
+
         // If we got this far, we have results -- load them into the object:
         firstIndexed = result.getTimestamp(1);
         lastIndexed = result.getTimestamp(2);
@@ -189,7 +189,7 @@ public class UpdateDateTracker
             createRow(newRecordChange);
         // Row already exists?  See if it needs to be updated:
         } else {
-            // Are we restoring a previously deleted record, or was the stored 
+            // Are we restoring a previously deleted record, or was the stored
             // record change date before current record change date?  Either way,
             // we need to update the table!
             //
@@ -198,7 +198,7 @@ public class UpdateDateTracker
             // precision, some of the date conversions have been known to create
             // minor inaccuracies in the millisecond range, which used to cause
             // false positives.
-            if (deleted != null || 
+            if (deleted != null ||
                 Math.abs(lastRecordChange.getTime() - newRecordChange.getTime()) > 999) {
                 updateRow(newRecordChange);
             }

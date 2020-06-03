@@ -243,7 +243,7 @@ abstract class MinkTestCase extends DbTestCase
         $session = $this->getMinkSession();
         $session->wait($timeout, "$('$selector').length > 0");
         $result = $page->find('css', $selector);
-        $this->assertTrue(is_object($result));
+        $this->assertTrue(is_object($result), "Selector not found: $selector");
         return $result;
     }
 

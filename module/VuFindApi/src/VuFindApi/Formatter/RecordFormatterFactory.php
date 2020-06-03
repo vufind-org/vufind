@@ -42,6 +42,13 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 class RecordFormatterFactory implements FactoryInterface
 {
     /**
+     * Record fields configuration file name
+     *
+     * @var string
+     */
+    protected $configFile = 'SearchApiRecordFields.yaml';
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -63,7 +70,7 @@ class RecordFormatterFactory implements FactoryInterface
         }
 
         $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get('SearchApiRecordFields.yaml');
+            ->get($this->configFile);
         $helperManager = $container->get('ViewHelperManager');
         return new $requestedName($recordFields, $helperManager);
     }

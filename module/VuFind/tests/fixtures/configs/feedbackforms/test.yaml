@@ -1,0 +1,70 @@
+forms:
+  TestElementOptions:
+    fields:
+      - name: select
+        type: select
+        optionGroups:
+          - label: group-1
+            options:
+             - value: value-1
+               label: label-1
+             - value: value-2
+               label: label-2
+        label: select
+
+      - name: select2
+        type: select
+        optionGroups:
+          - label: group-1
+            options:
+             - option-1
+             - option-2
+        label: select2
+        
+      - name: select3
+        type: select
+        options:
+         - value: value-1
+           label: label-1
+         - value: value-2
+           label: label-2
+        label: select3
+
+      - name: select4
+        type: select
+        options:
+          - option-1
+          - option-2
+        label: select4
+
+      - name: radio
+        type: radio
+        options:
+         - value: value-1
+           label: label-1
+         - value: value-2
+           label: label-2
+        label: radio
+
+      - name: radio2
+        type: radio
+        options:
+          - option-1
+          - option-2
+        label: radio2
+
+      - name: checkbox
+        type: checkbox
+        options:
+         - value: value-1
+           label: label-1
+         - value: value-2
+           label: label-2
+        label: checkbox
+
+      - name: checkbox2
+        type: checkbox
+        options:
+          - option-1
+          - option-2
+        label: checkbox2
