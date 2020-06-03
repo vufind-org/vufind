@@ -107,6 +107,79 @@ class BrowseController extends AbstractBase
     }
 
     /**
+     * Determine which browse options to display, and in which order. Returns an
+     * array of browse options in the configured order.
+     *
+     * @return array
+     */
+    protected function getActiveBrowseOptions()
+    {
+        // Get a list of all of the options mentioned in config.ini:
+        $browseConfig = $this->config->Browse->toArray();
+        $configuredOptions = array_keys($browseConfig);
+
+        // This is a list of all available browse options:
+        $allOptions = [
+            'tag', 'dewey', 'lcc', 'author', 'topic', 'genre', 'region', 'era'
+        ];
+
+        // By default, all options except dewey are turned on if omitted from config:
+        $defaultOptions = array_diff($allOptions, ['dewey']);
+
+        // This is a callback function for array_filter, which will filter out any
+        // settings set to false in config.ini:
+        $filter = function ($option) use ($browseConfig) {
+            return (bool)($browseConfig[$option] ?? false);
+        };
+
+        // The active options are a list of configured settings set to true in
+        // config.ini, merged with any default options that were not configured in
+        // config.ini at all:
+        return array_merge(
+            array_filter(array_intersect($configuredOptions, $allOptions), $filter),
+            array_diff($defaultOptions, $configuredOptions)
+        );
+    }
+
+    /**
+     * Given a list of active options, format them into details for the view.
+     *
+     * @return array
+     */
+    protected function buildBrowseOptions()
+    {
+        // Initialize the array of top-level browse options.
+        $browseOptions = [];
+
+        $activeOptions = $this->getActiveBrowseOptions();
+        foreach ($activeOptions as $option) {
+            switch ($option) {
+            case 'dewey':
+                $deweyLabel = in_array('lcc', $activeOptions)
+                    ? 'browse_dewey' : 'Call Number';
+                $browseOptions[] = $this->buildBrowseOption('Dewey', $deweyLabel);
+                break;
+            case 'lcc':
+                $lccLabel = in_array('dewey', $activeOptions)
+                    ? 'browse_lcc' : 'Call Number';
+                $browseOptions[] = $this->buildBrowseOption('LCC', $lccLabel);
+                break;
+            case 'tag':
+                if ($this->tagsEnabled()) {
+                    $browseOptions[] = $this->buildBrowseOption('Tag', 'Tag');
+                }
+                break;
+            default:
+                $current = ucwords($option);
+                $browseOptions[] = $this->buildBrowseOption($current, $current);
+                break;
+            }
+        }
+
+        return $browseOptions;
+    }
+
+    /**
      * Create a new ViewModel.
      *
      * @param array $params Parameters to pass to ViewModel constructor.
@@ -123,64 +196,6 @@ class BrowseController extends AbstractBase
             $view->currentAction = $currentAction;
         }
 
-        // Initialize the array of top-level browse options.
-        $browseOptions = [];
-
-        // First option: tags -- is it enabled in config.ini?  If no setting is
-        // found, assume it is active. Note that this setting is disabled if tags
-        // are universally turned off.
-        if ((!isset($this->config->Browse->tag) || $this->config->Browse->tag)
-            && $this->tagsEnabled()
-        ) {
-            $browseOptions[] = $this->buildBrowseOption('Tag', 'Tag');
-            $view->tagEnabled = true;
-        }
-
-        // Read configuration settings for LC / Dewey call number display; default
-        // to LC only if no settings exist in config.ini.
-        if (!isset($this->config->Browse->dewey)
-            && !isset($this->config->Browse->lcc)
-        ) {
-            $lcc = true;
-            $dewey = false;
-        } else {
-            $lcc = (isset($this->config->Browse->lcc)
-                && $this->config->Browse->lcc);
-            $dewey = (isset($this->config->Browse->dewey)
-                && $this->config->Browse->dewey);
-        }
-
-        // Add the call number options as needed -- note that if both options exist,
-        // we need to use special text to disambiguate them.
-        if ($dewey) {
-            $browseOptions[] = $this->buildBrowseOption(
-                'Dewey', ($lcc ? 'browse_dewey' : 'Call Number')
-            );
-            $view->deweyEnabled = true;
-        }
-        if ($lcc) {
-            $browseOptions[] = $this->buildBrowseOption(
-                'LCC', ($dewey ? 'browse_lcc' : 'Call Number')
-            );
-            $view->lccEnabled = true;
-        }
-
-        // Loop through remaining browse options.  All may be individually disabled
-        // in config.ini, but if no settings are found, they are assumed to be on.
-        $remainingOptions = [
-            'Author', 'Topic', 'Genre', 'Region', 'Era'
-        ];
-        foreach ($remainingOptions as $current) {
-            $option = strtolower($current);
-            if (!isset($this->config->Browse->$option)
-                || $this->config->Browse->$option == true
-            ) {
-                $browseOptions[] = $this->buildBrowseOption($current, $current);
-                $option .= 'Enabled';
-                $view->$option = true;
-            }
-        }
-
         // CARRY
         if ($findby = $this->params()->fromQuery('findby')) {
             $view->findby = $findby;
@@ -191,7 +206,7 @@ class BrowseController extends AbstractBase
         if ($category = $this->params()->fromQuery('category')) {
             $view->category = $category;
         }
-        $view->browseOptions = $browseOptions;
+        $view->browseOptions = $this->buildBrowseOptions();
 
         return $view;
     }

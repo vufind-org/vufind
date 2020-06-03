@@ -2,7 +2,7 @@
 /**
  * Remove duplicate lines from a file -- needed for the Windows version of
  * the alphabetical browse database generator, since Windows sort does not
- * support deduplication. Assumed presorted
+ * support deduplication. Assumed presorted.
  *
  * PHP version 7
  *
@@ -27,31 +27,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
-if(count($argv) < 2 || $argv[1] == "") {
-    echo "\nPlease specify an input file: ";
-    $argv[1] = chop(fgets(STDIN)); // Read the input
-}
-$in = fopen($argv[1], 'r');
-if (!$in) {
-    die('Could not open input file: '.$argv[1]."\n");
-}
 
-if(count($argv) < 3 || $argv[2] == "") {
-    echo "\nPlease specify an output file: ";
-    $argv[2] = chop(fgets(STDIN)); // Read the input
-}
-$out = fopen($argv[2], 'w');
-if (!$out) {
-    die('Could not open output file: '.$argv[2]."\n");
-}
-
-$last = '';
-while ($tmp = fgets($in)) {
-    if ($tmp != $last) {
-        fputs($out, $tmp);
-    }
-    $last = $tmp;
-}
-
-fclose($in);
-fclose($out);
+// Manipulate command line to load correct route, then run the main index page:
+array_unshift($_SERVER['argv'], array_shift($_SERVER['argv']), 'util', 'dedupe');
+$_SERVER['argc'] += 2;
+require_once __DIR__ . '/../public/index.php';
