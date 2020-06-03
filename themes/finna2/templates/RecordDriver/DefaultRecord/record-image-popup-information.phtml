@@ -163,7 +163,7 @@
   <?php if ($this->resolver('record/record-organisation-menu.phtml')): ?>
     <?=$this->render('record/record-organisation-menu.phtml') ?>
   <?php endif; ?>
-  <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['rights' => $rights]); ?>
+  <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['rights' => $rights, 'truncateLicense' => true]); ?>
   <div style="clear: both;"></div>
 </div>
 <?=

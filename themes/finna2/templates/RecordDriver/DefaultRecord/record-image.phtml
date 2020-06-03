@@ -21,7 +21,7 @@
         <?php if ($this->record($this->driver)->allowRecordImageDownload()): ?>
           <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
         <?php endif; ?>
-      <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights]); ?>
+      <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights, 'truncateLicense' => $ind === 0]); ?>
       </div>
       <?php $ind++; ?>
     <?php endforeach; ?>

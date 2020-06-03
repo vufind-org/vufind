@@ -22,7 +22,7 @@
       </span> <p class="copyright-meaning"><a target="_blank" <?php if ($hasLink): ?>aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>" href="<?=$this->escapeHtmlAttr($rights['link']) ?>"><?php else: ?> href="<?=$this->url('content-page', ['page' => 'terms'])?>"><?php endif; ?><?=$this->transEsc('usage_meaning') ?></a></p>
     </div>
   <?php endif ?>
-  <div class="copyright truncate-field">
+  <div class="copyright<?=$this->truncateLicense ? ' truncate-field' : ''?>">
     <?php if (isset($rights['description'])): ?>
       <?php foreach ($rights['description'] as $item): ?>
         <p><?=$this->transEsc($item) ?></p>
