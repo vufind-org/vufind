@@ -566,12 +566,11 @@ class Folio extends AbstractAPI implements
             );
             $json = json_decode($response->getBody());
             if ($json == null) {
-                throw new ILSException('Could not get requests');
+                throw new ILSException('Could parse response from ILS');
             }
             $total = $json->totalRecords ?? 0;
-            $preCount = $count;
             foreach ($json->$responseKey ?? [] as $item) {
-                $count = $count +1;
+                $count++;
                 if ($count % $limit == 0) {
                     $offset += $limit;
                 }
