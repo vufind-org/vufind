@@ -67,7 +67,7 @@ class Holds
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -84,10 +84,10 @@ class Holds
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $ils     A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \Zend\Config\Config           $config  VuFind configuration
+     * @param \Laminas\Config\Config        $config  VuFind configuration
      */
     public function __construct(\VuFind\Auth\ILSAuthenticator $ilsAuth,
-        ILSConnection $ils, \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
+        ILSConnection $ils, \VuFind\Crypt\HMAC $hmac, \Laminas\Config\Config $config
     ) {
         $this->ilsAuth = $ilsAuth;
         $this->hmac = $hmac;
@@ -173,70 +173,68 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id  A Bib ID
-     * @param array  $ids A list of Source Records (if catalog is for a consortium)
+     * @param string $id      A Bib ID
+     * @param array  $ids     A list of Source Records (if catalog is for a
+     * consortium)
+     * @param array  $options Optional options to pass on to getHolding()
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null)
+    public function getHoldings($id, $ids = null, $options = [])
     {
-        $holdings = [];
-
-        // Get Holdings Data
-        if ($this->catalog) {
-            // Retrieve stored patron credentials; it is the responsibility of the
-            // controller and view to inform the user that these credentials are
-            // needed for hold data.
-            try {
-                $patron = $this->ilsAuth->storedCatalogLogin();
-
-                // Does this ILS Driver handle consortial holdings?
-                $config = $this->catalog->checkFunction(
-                    'Holds', compact('id', 'patron')
-                );
-            } catch (ILSException $e) {
-                $patron = false;
-                $config = [];
-            }
-
-            if (isset($config['consortium']) && $config['consortium'] == true) {
-                $result = $this->catalog->getConsortialHoldings(
-                    $id, $patron ? $patron : null, $ids
-                );
-            } else {
-                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
-            }
-
-            $grb = 'getRequestBlocks'; // use variable to shorten line below:
-            $blocks
-                = $patron && $this->catalog->checkCapability($grb, compact('patron'))
-                ? $this->catalog->getRequestBlocks($patron) : false;
-
-            $mode = $this->catalog->getHoldsMode();
-
-            if ($mode == "disabled") {
-                $holdings = $this->standardHoldings($result);
-            } elseif ($mode == "driver") {
-                $holdings = $this->driverHoldings($result, $config, !empty($blocks));
-            } else {
-                $holdings = $this->generateHoldings($result, $mode, $config);
-            }
-
-            $holdings = $this->processStorageRetrievalRequests(
-                $holdings, $id, $patron, !empty($blocks)
-            );
-            $holdings = $this->processILLRequests(
-                $holdings, $id, $patron, !empty($blocks)
-            );
+        if (!$this->catalog) {
+            return [];
         }
-        return [
-            'blocks' => $blocks,
-            'total' => $result['total'],
-            'page' => $result['page'],
-            'itemLimit' => $result['itemLimit'],
-            'holdings' => $this->formatHoldings($holdings),
-            'electronic_holdings' => $result['electronic_holdings'] ?? [],
-        ];
+        // Retrieve stored patron credentials; it is the responsibility of the
+        // controller and view to inform the user that these credentials are
+        // needed for hold data.
+        try {
+            $patron = $this->ilsAuth->storedCatalogLogin();
+
+            // Does this ILS Driver handle consortial holdings?
+            $config = $this->catalog->checkFunction(
+                'Holds', compact('id', 'patron')
+            );
+        } catch (ILSException $e) {
+            $patron = false;
+            $config = [];
+        }
+
+        if (isset($config['consortium']) && $config['consortium'] == true) {
+            $result = $this->catalog->getConsortialHoldings(
+                $id, $patron ? $patron : null, $ids
+            );
+        } else {
+            $result = $this->catalog
+                ->getHolding($id, $patron ? $patron : null, $options);
+        }
+
+        $grb = 'getRequestBlocks'; // use variable to shorten line below:
+        $blocks
+            = $patron && $this->catalog->checkCapability($grb, compact('patron'))
+            ? $this->catalog->getRequestBlocks($patron) : false;
+
+        $mode = $this->catalog->getHoldsMode();
+
+        if ($mode == "disabled") {
+            $holdings = $this->standardHoldings($result);
+        } elseif ($mode == "driver") {
+            $holdings = $this->driverHoldings($result, $config, !empty($blocks));
+        } else {
+            $holdings = $this->generateHoldings($result, $mode, $config);
+        }
+
+        $holdings = $this->processStorageRetrievalRequests(
+            $holdings, $id, $patron, !empty($blocks)
+        );
+        $holdings = $this->processILLRequests(
+            $holdings, $id, $patron, !empty($blocks)
+        );
+
+        $result['blocks'] = $blocks;
+        $result['holdings'] = $this->formatHoldings($holdings);
+
+        return $result;
     }
 
     /**
@@ -281,7 +279,8 @@ class Holds
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
                         if (!$requestsBlocked
-                            && isset($copy['addLink']) && $copy['addLink']
+                            && ($copy['addLink'] ?? false)
+                            && ($copy['is_holdable'] ?? true)
                         ) {
                             $copy['link'] = $this->getRequestDetails(
                                 $copy, $holdConfig['HMACKeys'], 'Hold'
@@ -363,10 +362,7 @@ class Holds
                         }
                         // If a valid holdable status has been set, use it to
                         // determine if a hold link is created
-                        $addlink = isset($copy['is_holdable'])
-                            ? ($addlink && $copy['is_holdable']) : $addlink;
-
-                        if ($addlink) {
+                        if ($addlink && ($copy['is_holdable'] ?? true)) {
                             if ($holdConfig['function'] == "getHoldLink") {
                                 /* Build opac link */
                                 $holdings[$location_key][$copy_key]['link']

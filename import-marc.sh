@@ -103,6 +103,19 @@ then
 fi
 
 ##################################################
+# Set log4j config file if not already provided
+##################################################
+if [ -z "$LOG4J_CONFIG" ]
+then
+  if [ -f "$VUFIND_LOCAL_DIR/import/log4j.properties" ]
+  then
+    LOG4J_CONFIG="$VUFIND_LOCAL_DIR/import/log4j.properties"
+  else
+    LOG4J_CONFIG="$VUFIND_HOME/import/log4j.properties"
+  fi
+fi
+
+##################################################
 # Set Command Options
 ##################################################
 for i in $VUFIND_HOME/import/solrmarc_core_*.jar; do JAR_FILE="$i"; done
@@ -127,7 +140,7 @@ MARC_FILE=`basename $1`
 # Execute Importer
 #####################################################
 
-RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $VUFIND_HOME/solr/vendor/dist/solrj-lib $MARC_PATH/$MARC_FILE"
+RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dlog4j.configuration=file://$LOG4J_CONFIG $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $VUFIND_HOME/solr/vendor/dist/solrj-lib $MARC_PATH/$MARC_FILE"
 echo "Now Importing $1 ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2

@@ -195,7 +195,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      * be needed.
      *
      * @param \VuFind\Search\Solr\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

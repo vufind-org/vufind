@@ -48,13 +48,13 @@ class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromFileAndString()
     {
-        $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface');
+        $cache = $this->getMockForAbstractClass('Laminas\Cache\Storage\StorageInterface');
         $cache->expects($this->exactly(2))
             ->method('setItem');
         $cache->expects($this->exactly(2))
             ->method('hasItem')
             ->will($this->returnValue(false));
-        $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface');
+        $reader = $this->getMockForAbstractClass('Laminas\Config\Reader\ReaderInterface');
         $reader->expects($this->once())
             ->method('fromFile')
             ->will($this->returnValue([]));
@@ -73,7 +73,7 @@ class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromFileAndStringCached()
     {
-        $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface');
+        $cache = $this->getMockForAbstractClass('Laminas\Cache\Storage\StorageInterface');
         $cache->expects($this->never())
             ->method('setItem');
         $cache->expects($this->exactly(2))
@@ -82,7 +82,7 @@ class CacheDecoratorTest extends \PHPUnit\Framework\TestCase
         $cache->expects($this->exactly(2))
             ->method('getItem')
             ->will($this->returnValue([]));
-        $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface');
+        $reader = $this->getMockForAbstractClass('Laminas\Config\Reader\ReaderInterface');
         $deco = new CacheDecorator($reader, $cache);
         $deco->fromFile('ignore');
         $deco->fromString('ignore');

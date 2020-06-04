@@ -93,7 +93,7 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -118,7 +118,7 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
 
         // Collect the best possible search term(s):
         $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];
-        $this->lookfor =  $request->get($lookforParam, '');
+        $this->lookfor = $request->get($lookforParam, '');
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }

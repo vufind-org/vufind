@@ -54,7 +54,7 @@ class Google extends \VuFind\Content\AbstractCover
      *
      * @param string $url URL for client to use
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      */
     protected function getHttpClient($url = null)
     {

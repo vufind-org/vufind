@@ -40,7 +40,7 @@ use VuFind\Config\PluginManager as ConfigManager;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class InjectConfigManagerFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

@@ -27,10 +27,10 @@
  */
 namespace VuFind\Search\Base;
 
+use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
-use Zend\Paginator\Paginator;
 
 /**
  * Abstract results search model.
@@ -58,6 +58,13 @@ abstract class Results
      * @var int
      */
     protected $resultTotal = null;
+
+    /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId;
 
     /**
      * Override (only for use in very rare cases)
@@ -152,6 +159,13 @@ abstract class Results
     protected $recordLoader;
 
     /**
+     * URL query helper factory
+     *
+     * @var UrlQueryHelperFactory
+     */
+    protected $urlQueryHelperFactory = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -231,7 +245,7 @@ abstract class Results
     {
         // Set up URL helper:
         if (!isset($this->helpers['urlQuery'])) {
-            $factory = new UrlQueryHelperFactory();
+            $factory = $this->getUrlQueryHelperFactory();
             $this->helpers['urlQuery'] = $factory->fromParams(
                 $this->getParams(), $this->getUrlQueryHelperOptions()
             );
@@ -397,6 +411,16 @@ abstract class Results
     }
 
     /**
+     * Basic 'getter' of search backend identifier.
+     *
+     * @return string
+     */
+    public function getBackendId()
+    {
+        return $this->backendId;
+    }
+
+    /**
      * Basic 'getter' for ID of saved search.
      *
      * @return int
@@ -506,7 +530,7 @@ abstract class Results
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
+        $nullAdapter = "Laminas\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
@@ -593,6 +617,31 @@ abstract class Results
         return call_user_func_array(
             [$this->getOptions(), 'translate'], func_get_args()
         );
+    }
+
+    /**
+     * Get URL query helper factory
+     *
+     * @return UrlQueryHelperFactory
+     */
+    protected function getUrlQueryHelperFactory()
+    {
+        if (null === $this->urlQueryHelperFactory) {
+            $this->urlQueryHelperFactory = new UrlQueryHelperFactory();
+        }
+        return $this->urlQueryHelperFactory;
+    }
+
+    /**
+     * Set URL query helper factory
+     *
+     * @param UrlQueryHelperFactory $factory UrlQueryHelperFactory object
+     *
+     * @return void
+     */
+    public function setUrlQueryHelperFactory(UrlQueryHelperFactory $factory)
+    {
+        $this->urlQueryHelperFactory = $factory;
     }
 
     /**

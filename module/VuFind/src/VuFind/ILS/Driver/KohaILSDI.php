@@ -46,7 +46,7 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -482,7 +482,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "Y-m-d", $display_date
         );
 
-        $checkTime =  $this->dateConverter->convertFromDisplayDate(
+        $checkTime = $this->dateConverter->convertFromDisplayDate(
             "U", $display_date
         );
         if (!is_numeric($checkTime)) {
@@ -1032,7 +1032,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
-            $items[] =  [
+            $items[] = [
                 'id' => $rowItem['id']
             ];
             $rescount++;

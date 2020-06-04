@@ -41,17 +41,24 @@ class Alma extends AbstractBase
     /**
      * HTTP client
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
+     * List of filter reasons that are ignored (displayed regardless of filtering)
+     *
+     * @var array
+     */
+    protected $ignoredFilterReasons = ['Date Filter'];
+
+    /**
      * Constructor
      *
-     * @param string            $baseUrl    Base URL for link resolver
-     * @param \Zend\Http\Client $httpClient HTTP client
+     * @param string               $baseUrl    Base URL for link resolver
+     * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
+    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
@@ -95,6 +102,13 @@ class Alma extends AbstractBase
         }
 
         foreach ($xml->context_services->children() as $service) {
+            $filtered = $this->getKeyWithId($service, 'Filtered');
+            if ('true' === $filtered) {
+                $reason = $this->getKeyWithId($service, 'Filter reason');
+                if (!in_array($reason, $this->ignoredFilterReasons)) {
+                    continue;
+                }
+            }
             $serviceType = $this->mapServiceType(
                 (string)$service->attributes()->service_type
             );
@@ -162,7 +176,9 @@ class Alma extends AbstractBase
         $map = [
             'getFullTxt' => 'getFullTxt',
             'getHolding' => 'getHolding',
-            'GeneralElectronicService' => 'getWebService'
+            'GeneralElectronicService' => 'getWebService',
+            'DB' => 'getFullTxt',
+            'Package' => 'getFullTxt',
         ];
         return $map[$serviceType] ?? '';
     }

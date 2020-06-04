@@ -47,9 +47,9 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -57,11 +57,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -428,6 +429,28 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test record view print button.
+     */
+    public function testPrint(): void
+    {
+        // Go to a record view (manually search so we can access $session)
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
+        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->clickCss($page, '.result a.title');
+
+        // Click Print
+        $this->clickCss($page, '.print-record');
+        $this->snooze();
+
+        // Make sure we're printing
+        list(, $params) = explode('?', $session->getCurrentUrl());
+        $this->assertEquals('print=1', $params);
+    }
+
+    /**
      * Retry cleanup method in case of failure during testAddTag.
      *
      * @return void
@@ -452,7 +475,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2', 'emailmaniac']);
     }

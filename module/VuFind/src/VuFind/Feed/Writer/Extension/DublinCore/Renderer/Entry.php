@@ -1,6 +1,6 @@
 <?php
 /**
- * Zend\Feed\Renderer\Entry extension for Dublin Core
+ * Laminas\Feed\Renderer\Entry extension for Dublin Core
  *
  * PHP version 7
  *
@@ -29,10 +29,10 @@ namespace VuFind\Feed\Writer\Extension\DublinCore\Renderer;
 
 use DOMDocument;
 use DOMElement;
-use Zend\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
+use Laminas\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
 
 /**
- * Zend\Feed\Renderer\Entry extension for Dublin Core
+ * Laminas\Feed\Renderer\Entry extension for Dublin Core
  *
  * @category VuFind
  * @package  Feed_Plugins

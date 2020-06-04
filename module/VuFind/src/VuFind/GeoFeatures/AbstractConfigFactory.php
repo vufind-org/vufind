@@ -29,7 +29,7 @@
 namespace VuFind\GeoFeatures;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * GeoFeatures Abstract Config Factory Class

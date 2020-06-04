@@ -27,8 +27,8 @@
  */
 namespace VuFind\Search\Base;
 
+use Laminas\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Config\Config;
 
 /**
  * Abstract options search model.
@@ -954,6 +954,17 @@ abstract class Options implements TranslatorAwareInterface
     public function supportsFirstLastNavigation()
     {
         return $this->firstlastNavigation;
+    }
+
+    /**
+     * Does this search backend support scheduled searching?
+     *
+     * @return bool
+     */
+    public function supportsScheduledSearch()
+    {
+        // Unsupported by default!
+        return false;
     }
 
     /**

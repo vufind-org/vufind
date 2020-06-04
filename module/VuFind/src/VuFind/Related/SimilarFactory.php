@@ -28,7 +28,7 @@
 namespace VuFind\Related;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Similar related record module (and subclasses).

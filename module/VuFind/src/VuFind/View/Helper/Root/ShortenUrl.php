@@ -38,7 +38,7 @@ use VuFind\UrlShortener\UrlShortenerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShortenUrl extends \Zend\View\Helper\AbstractHelper
+class ShortenUrl extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * URL shortener

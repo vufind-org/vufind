@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
 
   # Network configuration to forward ports.
   config.vm.network :forwarded_port, guest: 80, host: 4567
-  config.vm.network :forwarded_port, guest: 8080, host: 4568
+  config.vm.network :forwarded_port, guest: 8983, host: 4568
   config.vm.synced_folder ".", "/vagrant", :owner => 'ubuntu'
 
   # Enable provisioning with a shell script. Additional provisioners such as

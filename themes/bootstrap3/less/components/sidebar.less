@@ -165,3 +165,19 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
     border-bottom: 1px solid @list-group-border;
   }
 }
+
+
+.facet-range-form {
+  width: 100%;
+}
+.date-fields {
+  display: flex;
+
+  .date-from, .date-to { flex: 0 1 100%; }
+  .date-from { padding-right: .25rem; }
+  .date-to   { padding-left:  .25rem; }
+}
+@media (min-width: 768px) {
+  .author-facets { display: flex; }
+  .author-list { flex: 0 1 100%; }
+}

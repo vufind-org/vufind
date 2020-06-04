@@ -204,6 +204,14 @@ class Server
     protected $recordFormatFilters = [];
 
     /**
+     * Limit on display of deleted records (in days); older deleted records will not
+     * be returned by the server. Set to null for no limit.
+     *
+     * @var int
+     */
+    protected $deleteLifetime = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -222,14 +230,14 @@ class Server
     /**
      * Initialize settings
      *
-     * @param \Zend\Config\Config $config  VuFind configuration
-     * @param string              $baseURL The base URL for the OAI server
-     * @param array               $params  The incoming OAI-PMH parameters (i.e.
+     * @param \Laminas\Config\Config $config  VuFind configuration
+     * @param string                 $baseURL The base URL for the OAI server
+     * @param array                  $params  The incoming OAI-PMH parameters (i.e.
      * $_GET)
      *
      * @return void
      */
-    public function init(\Zend\Config\Config $config, $baseURL, $params)
+    public function init(\Laminas\Config\Config $config, $baseURL, $params)
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -625,11 +633,11 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Zend\Config\Config $config)
+    protected function initializeSettings(\Laminas\Config\Config $config)
     {
         // Override default repository name if configured:
         if (isset($config->OAI->repository_name)) {
@@ -676,6 +684,11 @@ class Server
         if (isset($config->OAI->record_format_filters)) {
             $this->recordFormatFilters
                 = $config->OAI->record_format_filters->toArray();
+        }
+
+        // Initialize delete lifetime, if set:
+        if (isset($config->OAI->delete_lifetime)) {
+            $this->deleteLifetime = intval($config->OAI->delete_lifetime);
         }
     }
 
@@ -763,10 +776,16 @@ class Server
         // The verb determines whether we're returning headers only or full records:
         $headersOnly = ($verb != 'ListRecords');
 
+        // Apply the delete lifetime limit to the from date if necessary:
+        $deleteCutoff = $this->deleteLifetime
+            ? strtotime('-' . $this->deleteLifetime . ' days') : 0;
+        $deleteFrom = ($deleteCutoff < $from) ? $from : $deleteCutoff;
+
         // Get deleted records in the requested range (if applicable):
-        $deletedCount = $this->listRecordsGetDeletedCount($from, $until);
+        $deletedCount = $this->listRecordsGetDeletedCount($deleteFrom, $until);
         if ($deletedCount > 0 && $currentCursor < $deletedCount) {
-            $deleted = $this->listRecordsGetDeleted($from, $until, $currentCursor);
+            $deleted = $this
+                ->listRecordsGetDeleted($deleteFrom, $until, $currentCursor);
             foreach ($deleted as $current) {
                 $this->attachDeleted($xml, $current, $headersOnly);
                 $currentCursor++;
@@ -865,8 +884,8 @@ class Server
         if (!empty($this->setQueries)) {
             foreach ($this->setQueries as $setName => $solrQuery) {
                 $set = $xml->addChild('set');
-                $set->setSpec = $solrQuery;
-                $set->setName = $setName;
+                $set->setName = $set->setSpec = $setName;
+                $set->setDescription = $solrQuery;
             }
         }
 
@@ -882,7 +901,7 @@ class Server
      * @param int $until         End date.
      * @param int $currentCursor Offset into result set
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     protected function listRecordsGetDeleted($from, $until, $currentCursor)
     {

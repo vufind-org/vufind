@@ -27,9 +27,9 @@
  */
 namespace VuFindApi\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search API Controller
@@ -83,6 +83,34 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $searchAccessPermission = 'access.api.Search';
 
     /**
+     * Record route uri
+     *
+     * @var string
+     */
+    protected $recordRoute = 'record';
+
+    /**
+     * Search route uri
+     *
+     * @var string
+     */
+    protected $searchRoute = 'search';
+
+    /**
+     * Descriptive label for the index managed by this controller
+     *
+     * @var string
+     */
+    protected $indexLabel = 'primary';
+
+    /**
+     * Prefix for use in model names used by API
+     *
+     * @var string
+     */
+    protected $modelPrefix = '';
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -124,7 +152,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'defaultFields' => $this->defaultRecordFields,
             'facetConfig' => $params->getFacetConfig(),
             'sortOptions' => $options->getSortOptions(),
-            'defaultSort' => $options->getDefaultSortByHandler()
+            'defaultSort' => $options->getDefaultSortByHandler(),
+            'recordRoute' => $this->recordRoute,
+            'searchRoute' => $this->searchRoute,
+            'searchIndex' => $this->searchClassId,
+            'indexLabel' => $this->indexLabel,
+            'modelPrefix' => $this->modelPrefix,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
@@ -135,12 +168,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
         // Add CORS headers and handle OPTIONS requests. This is a simplistic
         // approach since we allow any origin. For more complete CORS handling
@@ -168,7 +201,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Record action
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function recordAction()
     {
@@ -191,9 +224,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             if (is_array($request['id'])) {
-                $results = $loader->loadBatchForSource($request['id']);
+                $results = $loader->loadBatchForSource(
+                    $request['id'],
+                    $this->searchClassId
+                );
             } else {
-                $results[] = $loader->load($request['id']);
+                $results[] = $loader->load($request['id'], $this->searchClassId);
             }
         } catch (\Exception $e) {
             return $this->output(
@@ -216,7 +252,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Search action
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function searchAction()
     {

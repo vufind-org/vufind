@@ -60,7 +60,7 @@ class Email extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -86,8 +86,11 @@ class Email extends AbstractBase
                 $loginData = [
                     'vufind_id' => $user['id']
                 ];
-                $this->emailAuthenticator
-                    ->sendAuthenticationLink($user['email'], $loginData);
+                $this->emailAuthenticator->sendAuthenticationLink(
+                    $user['email'],
+                    $loginData,
+                    ['auth_method' => 'email']
+                );
             }
             // Don't reveal the result
             throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
@@ -107,7 +110,7 @@ class Email extends AbstractBase
     /**
      * Whether this authentication method needs CSRF checking for the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object.
      *
      * @return bool
      */

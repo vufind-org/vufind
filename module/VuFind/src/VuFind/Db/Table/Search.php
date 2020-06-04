@@ -29,11 +29,11 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\ParameterContainer;
+use Laminas\Db\TableGateway\Feature;
 use minSO;
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Adapter\ParameterContainer;
-use Zend\Db\TableGateway\Feature;
 
 /**
  * Table Definition for search
@@ -54,7 +54,7 @@ class Search extends Gateway
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
@@ -67,7 +67,7 @@ class Search extends Gateway
     /**
      * Initialize features
      *
-     * @param array $cfg Zend Framework configuration
+     * @param array $cfg Laminas configuration
      *
      * @return void
      */
@@ -210,6 +210,21 @@ class Search extends Gateway
             }
         };
         return $this->select($callback)->current();
+    }
+
+    /**
+     * Get scheduled searches.
+     *
+     * @return array Array of VuFind\Db\Row\Search objects.
+     */
+    public function getScheduledSearches()
+    {
+        $callback = function ($select) {
+            $select->where->equalTo('saved', 1);
+            $select->where->greaterThan('notification_frequency', 0);
+            $select->order('user_id');
+        };
+        return $this->select($callback);
     }
 
     /**
