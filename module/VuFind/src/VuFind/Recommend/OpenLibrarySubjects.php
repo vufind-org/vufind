@@ -139,7 +139,7 @@ class OpenLibrarySubjects implements RecommendInterface,
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -147,7 +147,7 @@ class OpenLibrarySubjects implements RecommendInterface,
     public function init($params, $request)
     {
         // Get and normalise $requestParam
-        $this->subject =  $request->get($this->requestParam);
+        $this->subject = $request->get($this->requestParam);
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
@@ -192,8 +192,8 @@ class OpenLibrarySubjects implements RecommendInterface,
      * @param string                     $field   Name of filter field to check for
      * date limits
      * @param \VuFind\Search\Params\Base $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
-     * request.
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     *                                            request.
      *
      * @return string
      */
@@ -205,7 +205,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
         } elseif (is_object($params)) {
-            $currentFilters = $params->getFilters();
+            $currentFilters = $params->getRawFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);
             }

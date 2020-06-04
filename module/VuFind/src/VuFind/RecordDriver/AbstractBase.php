@@ -64,14 +64,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $mainConfig;
 
     /**
      * Record-specific configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $recordConfig;
 
@@ -85,9 +85,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig   VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
+     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
+     * for built-in defaults)
+     * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
@@ -334,25 +334,20 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getCitationFormats()
     {
+        $formatSetting = $this->mainConfig->Record->citation_formats ?? true;
+
         // Default behavior: use all supported options.
-        if (!isset($this->mainConfig->Record->citation_formats)
-            || $this->mainConfig->Record->citation_formats === true
-            || $this->mainConfig->Record->citation_formats === 'true'
-        ) {
+        if ($formatSetting === true || $formatSetting === 'true') {
             return $this->getSupportedCitationFormats();
         }
 
         // Citations disabled:
-        if ($this->mainConfig->Record->citation_formats === false
-            || $this->mainConfig->Record->citation_formats === 'false'
-        ) {
+        if ($formatSetting === false || $formatSetting === 'false') {
             return [];
         }
 
         // Whitelist:
-        $whitelist = array_map(
-            'trim', explode(',', $this->mainConfig->Record->citation_formats)
-        );
+        $whitelist = array_map('trim', explode(',', $formatSetting));
         return array_intersect($whitelist, $this->getSupportedCitationFormats());
     }
 

@@ -29,14 +29,14 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Item Status" AJAX handler
@@ -330,7 +330,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     protected function getItemStatusGroup($record, $messages, $callnumberSetting)
     {
         // Summarize call number, location and availability info across all items:
-        $locations =  [];
+        $locations = [];
         $use_unknown_status = $available = false;
         foreach ($record as $info) {
             // Find an available copy
@@ -493,8 +493,9 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                         $record, $messages, $locationSetting, $callnumberSetting
                     );
                 }
-                // If a full status display has been requested, append the HTML:
-                if ($showFullStatus) {
+                // If a full status display has been requested and no errors were
+                // encountered, append the HTML:
+                if ($showFullStatus && empty($record[0]['error'])) {
                     $current['full_status'] = $this->renderer->render(
                         'ajax/status-full.phtml', [
                             'statusItems' => $record,

@@ -28,8 +28,8 @@
 namespace VuFind\Search;
 
 use Interop\Container\ContainerInterface;
-use Zend\EventManager\EventManager;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\EventManager\EventManager;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Search runner factory.

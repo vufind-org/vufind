@@ -27,12 +27,12 @@
  */
 namespace VuFind\ChannelProvider;
 
+use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * Facet-driven channel provider.

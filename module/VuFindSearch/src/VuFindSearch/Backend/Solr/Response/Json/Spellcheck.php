@@ -165,7 +165,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return bool
      */
-    protected function contains($term)
+    protected function contains(string $term)
     {
         if ($this->terms->offsetExists($term)) {
             return true;

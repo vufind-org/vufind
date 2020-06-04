@@ -28,12 +28,13 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\View\Model\ViewModel;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 
 /**
@@ -128,6 +129,20 @@ class AbstractBase extends AbstractActionController
     public function setAccessPermission($ap)
     {
         $this->accessPermission = empty($ap) ? false : $ap;
+    }
+
+    /**
+     * Get request object
+     *
+     * @return HttpRequest
+     */
+    public function getRequest()
+    {
+        if (!$this->request) {
+            $this->request = new HttpRequest();
+        }
+
+        return $this->request;
     }
 
     /**
@@ -281,7 +296,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the view renderer
      *
-     * @return \Zend\View\Renderer\RendererInterface
+     * @return \Laminas\View\Renderer\RendererInterface
      */
     protected function getViewRenderer()
     {
@@ -406,7 +421,7 @@ class AbstractBase extends AbstractActionController
      *
      * @param string $id Configuration identifier (default = main VuFind config)
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function getConfig($id = 'config')
     {

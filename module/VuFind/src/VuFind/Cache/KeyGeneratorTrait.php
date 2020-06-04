@@ -59,7 +59,7 @@ trait KeyGeneratorTrait
         ) {
             // The key violates the currently set StorageAdapter key_pattern. Our
             // best guess is to remove any characters that do not match the only
-            // default key_pattern for Zend\Cache\StorageAdapters: the filesystem
+            // default key_pattern for Laminas\Cache\StorageAdapters: the filesystem
             // adapter (default key_pattern "/^[a-z0-9_\+\-]*$/Di").
             // Any other custom pattern is assumed as less restrictive, thus the
             // transformed key should match the custom pattern.

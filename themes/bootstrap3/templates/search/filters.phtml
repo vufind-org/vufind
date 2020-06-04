@@ -7,10 +7,8 @@
     $params = clone $this->params;
   }
 
-  $filterList = $params->getFilterList(true);
-  $checkboxFilters = $params->getCheckboxFacets();
-  $lastSort = $this->searchMemory()->getLastSort($params->getSearchClassId());
-  $options = $this->searchOptions($params->getSearchClassId());
+  $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+  $options = $this->searchOptions($this->searchClassId);
   $hasDefaultsApplied = $params->hasDefaultsApplied();
   $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
 
@@ -25,14 +23,18 @@
     }
   }
 
-  $advancedSearch = $params->getSearchType() === 'advanced';
+  $advancedSearch = $this->searchType === 'advanced';
 ?>
 <?php ob_start(); ?>
   <?php foreach ($checkboxFilters as $filter): ?>
     <?php if ($filter['selected']): ?>
       <span class="filter-value">
         <?php
-          $removeLink = isset($urlQuery) ? $urlQuery->removeFilter($filter['filter']) : '';
+          $removeLink = isset($urlQuery)
+            ? $urlQuery->removeFilter($filter['filter'])
+            : $this->searchMemory()->getEditLink(
+              $this->searchClassId, 'removeFilter', $filter['filter']
+            );
           $desc = $this->translate($filter['desc']);
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
         ?>
@@ -88,10 +90,12 @@
           <span class="text">
             <?=$this->escapeHtml($value['displayText'])?>
           </span>
-          <?php if (isset($this->urlQuery)): ?>
-            <?php $removeLink = $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])?>
-            <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
-          <?php endif; ?>
+          <?php
+            $removeLink = isset($this->urlQuery)
+              ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
+              : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
+          ?>
+          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
         </span>
         <?php if ($dropdown): ?>
           </li>
@@ -108,8 +112,12 @@
 
 <?php if ($hasDefaultsApplied || $filterCount > 0): ?>
   <?php
-    $resetLink = !$onlyDefaultsApplied && isset($urlQuery)
-      ? $urlQuery->removeAllFilters()->resetDefaultFilters() : false;
+    $resetLink = null;
+    if (!$onlyDefaultsApplied) {
+      $resetLink = isset($urlQuery)
+        ? $urlQuery->removeAllFilters()->resetDefaultFilters()
+        : $this->searchMemory()->getEditLink($this->searchClassId, 'removeAllFilters', 1);
+    }
   ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">

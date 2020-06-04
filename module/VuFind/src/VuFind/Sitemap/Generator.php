@@ -27,11 +27,13 @@
  */
 namespace VuFind\Sitemap;
 
+use Laminas\Config\Config;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
-use Zend\Config\Config;
-use Zend\Console\Console;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Class for generating sitemaps
@@ -52,11 +54,25 @@ class Generator
     protected $backendManager;
 
     /**
+     * Search service.
+     *
+     * @var SearchService
+     */
+    protected $searchService;
+
+    /**
      * Base URL for site
      *
      * @var string
      */
     protected $baseUrl;
+
+    /**
+     * Base URL for sitemap
+     *
+     * @var string
+     */
+    protected $baseSitemapUrl;
 
     /**
      * Settings specifying which backends to index.
@@ -108,11 +124,11 @@ class Generator
     protected $warnings = [];
 
     /**
-     * Verbose mode
+     * Verbose callback
      *
-     * @var bool
+     * @var \Callable
      */
-    protected $verbose = false;
+    protected $verbose = null;
 
     /**
      * Mode of retrieving IDs from the index (may be 'terms' or 'search')
@@ -124,16 +140,21 @@ class Generator
     /**
      * Constructor
      *
-     * @param BackendManager $bm      Search backend
+     * @param BackendManager $bm      Search backend manaver
+     * @param SearchService  $ss      Search manager
      * @param string         $baseUrl VuFind base URL
      * @param Config         $config  Sitemap configuration settings
      */
-    public function __construct(BackendManager $bm, $baseUrl, Config $config)
-    {
+    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
+        Config $config
+    ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
+        $this->searchService = $ss;
         $this->baseUrl = $baseUrl;
         $this->config = $config;
+        $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
+            ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
         // Process backend configuration:
         $backendConfig = isset($this->config->Sitemap->index)
@@ -161,11 +182,12 @@ class Generator
     }
 
     /**
-     * Get/set verbose mode
+     * Get/set verbose callback
      *
-     * @param bool $newMode New verbose mode
+     * @param \Callable|null $newMode Callback for writing verbose messages (or null
+     * to disable them)
      *
-     * @return bool Current or new verbose mode
+     * @return \Callable|null Current verbose callback (null if disabled)
      */
     public function setVerbose($newMode = null)
     {
@@ -173,6 +195,50 @@ class Generator
             $this->verbose = $newMode;
         }
         return $this->verbose;
+    }
+
+    /**
+     * Write a verbose message (if configured to do so)
+     *
+     * @param string $msg Message to display
+     *
+     * @return void
+     */
+    protected function verboseMsg($msg)
+    {
+        if (is_callable($this->verbose)) {
+            call_user_func($this->verbose, $msg);
+        }
+    }
+
+    /**
+     * Get/set base url
+     *
+     * @param string $newUrl New base url
+     *
+     * @return string Current or new base url
+     */
+    public function setBaseUrl($newUrl = null)
+    {
+        if (null !== $newUrl) {
+            $this->baseUrl = $newUrl;
+        }
+        return $this->baseUrl;
+    }
+
+    /**
+     * Get/set base sitemap url
+     *
+     * @param string $newUrl New base sitemap url
+     *
+     * @return string Current or new base sitemap url
+     */
+    public function setBaseSitemapUrl($newUrl = null)
+    {
+        if (null !== $newUrl) {
+            $this->baseSitemapUrl = $newUrl;
+        }
+        return $this->baseSitemapUrl;
     }
 
     /**
@@ -214,11 +280,9 @@ class Generator
         $this->buildIndex($currentPage - 1);
 
         // Display total elapsed time in verbose mode:
-        if ($this->verbose) {
-            Console::writeLine(
-                'Elapsed time (in seconds): ' . ($this->getTime() - $startTime)
-            );
-        }
+        $this->verboseMsg(
+            'Elapsed time (in seconds): ' . round($this->getTime() - $startTime)
+        );
     }
 
     /**
@@ -246,6 +310,8 @@ class Generator
         $currentOffset = ($this->retrievalMode === 'terms') ? '' : '*';
         $recordCount = 0;
 
+        $this->setupBackend($backend);
+
         while (true) {
             // Get IDs and break out of the loop if we've run out:
             $result = $this->getIdsFromBackend($backend, $currentOffset);
@@ -271,14 +337,55 @@ class Generator
             // Update total record count:
             $recordCount += count($result['ids']);
 
-            if ($this->verbose) {
-                Console::writeLine("Page $currentPage, $recordCount processed");
-            }
+            $this->verboseMsg("Page $currentPage, $recordCount processed");
 
             // Update counter:
             $currentPage++;
         }
         return $currentPage;
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackend(Backend $backend)
+    {
+        $method = $this->retrievalMode == 'terms'
+            ? 'setupBackendUsingTerms' : 'setupBackendUsingCursorMark';
+        return $this->$method($backend);
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackendUsingTerms(Backend $backend)
+    {
+    }
+
+    /**
+     * Set up the backend.
+     *
+     * @param Backend $backend Search backend
+     *
+     * @return void
+     */
+    protected function setupBackendUsingCursorMark(Backend $backend)
+    {
+        // Set up the record factory. We use a very simple factory since performance
+        // is important and we only need the identifier.
+        $recordFactory = function ($data) {
+            return new \VuFindSearch\Response\SimpleRecord($data);
+        };
+        $collectionFactory = new RecordCollectionFactory($recordFactory);
+        $backend->setRecordCollectionFactory($collectionFactory);
     }
 
     /**
@@ -336,7 +443,6 @@ class Generator
         $params = new ParamBag(
             [
                 'q' => '*:*',
-                'fl' => $key,
                 'rows' => $this->countPerPage,
                 'start' => 0, // Always 0 when using a cursorMark
                 'wt' => 'json',
@@ -347,13 +453,17 @@ class Generator
                 'cursorMark' => $cursorMark
             ]
         );
-        $raw = $connector->search($params);
-        $result = json_decode($raw);
-        $ids = [];
-        $nextOffset = $result->nextCursorMark;
-        foreach ($result->response->docs ?? [] as $doc) {
-            $ids[] = $doc->$key;
+        $results = $this->searchService->getIds(
+            $backend->getIdentifier(),
+            new Query('*:*'),
+            0,
+            $this->countPerPage,
+            $params
+        );
+        foreach ($results->getRecords() as $doc) {
+            $ids[] = $doc->get($key);
         }
+        $nextOffset = $results->getCursorMark();
         return compact('ids', 'nextOffset');
     }
 
@@ -443,7 +553,6 @@ class Generator
     protected function getBaseSitemapIndexUrl()
     {
         // Pick the appropriate base URL based on the configuration files:
-        return empty($this->config->SitemapIndex->baseSitemapUrl)
-            ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
+        return $this->baseSitemapUrl;
     }
 }

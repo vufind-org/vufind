@@ -43,21 +43,21 @@ class Clickatell extends AbstractBase
     /**
      * HTTP client
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config  SMS configuration
-     * @param array               $options Additional options (client may be an HTTP
-     * client object)
+     * @param \Laminas\Config\Config $config  SMS configuration
+     * @param array                  $options Additional options (client may be an
+     * HTTP client object)
      */
-    public function __construct(\Zend\Config\Config $config, $options = [])
+    public function __construct(\Laminas\Config\Config $config, $options = [])
     {
         parent::__construct($config, $options);
-        $this->client = $options['client'] ?? new \Zend\Http\Client();
+        $this->client = $options['client'] ?? new \Laminas\Http\Client();
     }
 
     /**

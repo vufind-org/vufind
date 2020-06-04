@@ -27,8 +27,8 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\Http\Client\Adapter\Exception\TimeoutException;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client\Adapter\Exception\TimeoutException;
+use Laminas\Http\Client as HttpClient;
 
 /**
  * DPLATerms Recommendations Module
@@ -126,7 +126,7 @@ class DPLATerms implements RecommendInterface
      * Abstract-required method
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -183,7 +183,7 @@ class DPLATerms implements RecommendInterface
     {
         // Extract the first search term from the search object:
         $search = $this->searchObject->getParams()->getQuery();
-        $filters = $this->searchObject->getParams()->getFilters();
+        $filters = $this->searchObject->getParams()->getRawFilters();
         $lookfor = ($search instanceof \VuFindSearch\Query\Query)
             ? $search->getString()
             : '';

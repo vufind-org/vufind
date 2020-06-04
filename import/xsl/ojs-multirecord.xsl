@@ -31,7 +31,7 @@
                 </field>
 
                 <!-- RECORDTYPE -->
-                <field name="recordtype">ojs</field>
+                <field name="record_format">ojs</field>
 
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!

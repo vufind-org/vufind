@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record driver plugin manager
@@ -53,6 +53,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'missing' => Missing::class,
         'pazpar2' => Pazpar2::class,
         'primo' => Primo::class,
+        'search2default' => Search2Default::class,
+        'solrarchivesspace' => SolrArchivesSpace::class,
         'solrauth' => SolrAuthMarc::class, // legacy name
         'solrauthdefault' => SolrAuthDefault::class,
         'solrauthmarc' => SolrAuthMarc::class,
@@ -69,7 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Default delegator factories.
      *
-     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],
@@ -89,6 +91,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Missing::class => AbstractBaseFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
+        Search2Default::class => SolrDefaultFactory::class,
+        SolrArchivesSpace::class => SolrDefaultFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrAuthMarc::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrDefault::class => SolrDefaultFactory::class,
@@ -169,6 +173,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $driver = $this->get($recordType);
         $driver->setRawData($data);
         return $driver;
+    }
+
+    /**
+     * Convenience method to retrieve a populated Search2 record driver.
+     *
+     * @param array  $data             Raw Solr data
+     * @param string $defaultKeySuffix Default key suffix
+     *
+     * @return AbstractBase
+     */
+    public function getSearch2Record($data, $defaultKeySuffix = 'Default')
+    {
+        return $this->getSolrRecord($data, 'Search2', $defaultKeySuffix);
     }
 
     /**

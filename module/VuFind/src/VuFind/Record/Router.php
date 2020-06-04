@@ -41,16 +41,16 @@ class Router
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }
@@ -97,7 +97,11 @@ class Router
             $routeConfig = isset($this->config->Collections->route)
                 ? $this->config->Collections->route->toArray() : [];
             $collectionRoutes
-                = array_merge(['record' => 'collection'], $routeConfig);
+                = array_merge(
+                    ['record' => 'collection',
+                     'search2record' => 'search2collection'],
+                    $routeConfig
+                );
             $routeName = $route['route'];
             if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {

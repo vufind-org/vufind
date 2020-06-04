@@ -28,7 +28,8 @@
 namespace VuFind\Search\Results;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\Search\Factory\UrlQueryHelperFactory;
 
 /**
  * Generic factory for search results objects.
@@ -64,8 +65,12 @@ class ResultsFactory implements FactoryInterface
             ->get($paramsService);
         $searchService = $container->get(\VuFindSearch\Service::class);
         $recordLoader = $container->get(\VuFind\Record\Loader::class);
-        return new $requestedName(
+        $results = new $requestedName(
             $params, $searchService, $recordLoader, ...($options ?: [])
         );
+        $results->setUrlQueryHelperFactory(
+            $container->get(UrlQueryHelperFactory::class)
+        );
+        return $results;
     }
 }

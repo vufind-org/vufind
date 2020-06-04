@@ -27,10 +27,11 @@
  */
 namespace VuFind\Form;
 
+use Laminas\InputFilter\InputFilter;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\NotEmpty;
+use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
-use Zend\InputFilter\InputFilter;
-use Zend\Validator\EmailAddress;
-use Zend\Validator\NotEmpty;
 
 /**
  * Configurable form.
@@ -41,7 +42,7 @@ use Zend\Validator\NotEmpty;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class Form extends \Zend\Form\Form implements
+class Form extends \Laminas\Form\Form implements
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -54,11 +55,14 @@ class Form extends \Zend\Form\Form implements
     protected $inputFilter;
 
     /**
-     * Validation messages
+     * Default, untranslated validation messages
      *
      * @var array
      */
-    protected $messages;
+    protected $messages = [
+        'empty' => 'This field is required',
+        'invalid_email' => 'Email address is invalid',
+    ];
 
     /**
      * Default form config (from config.ini > Feedback)
@@ -89,46 +93,69 @@ class Form extends \Zend\Form\Form implements
     protected $yamlReader;
 
     /**
+     * View helper manager.
+     *
+     * @var HelperPluginManager
+     */
+    protected $viewHelperManager;
+
+    /**
      * Constructor
      *
-     * @param YamlReader $yamlReader    YAML reader
-     * @param array      $defaultConfig Default Feedback configuration (optional)
+     * @param YamlReader          $yamlReader        YAML reader
+     * @param HelperPluginManager $viewHelperManager View helper manager
+     * @param array               $defaultConfig     Default Feedback configuration
+     * (optional)
      *
      * @throws \Exception
      */
-    public function __construct(YamlReader $yamlReader, array $defaultConfig = null)
-    {
+    public function __construct(
+        YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+        array $defaultConfig = null
+    ) {
         parent::__construct();
 
         $this->defaultFormConfig = $defaultConfig;
         $this->yamlReader = $yamlReader;
+        $this->viewHelperManager = $viewHelperManager;
     }
 
     /**
      * Set form id
      *
      * @param string $formId Form id
+     * @param array  $params Additional form parameters.
      *
      * @return void
      * @throws Exception
      */
-    public function setFormId($formId)
+    public function setFormId($formId, $params = [])
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
 
-        $this->messages = [];
-        $this->messages['empty']
-            = $this->translate('This field is required');
-
-        $this->messages['invalid_email']
-            = $this->translate('Email address is invalid');
-
         $this->formElementConfig
-            = $this->parseConfig($formId, $config);
+            = $this->parseConfig($formId, $config, $params);
 
         $this->buildForm($this->formElementConfig);
+    }
+
+    /**
+     * Get display string.
+     *
+     * @param string $translationKey Translation key
+     * @param bool   $escape         Whether to escape the output.
+     * Default behaviour is to escape when the translation key does
+     * not end with '_html'.
+     *
+     * @return string
+     */
+    public function getDisplayString($translationKey, $escape = null)
+    {
+        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        return $this->viewHelperManager->get($escape ? 'transEsc' : 'translate')
+            ->__invoke($translationKey);
     }
 
     /**
@@ -178,10 +205,11 @@ class Form extends \Zend\Form\Form implements
      *
      * @param string $formId Form id
      * @param array  $config Configuration
+     * @param array  $params Additional form parameters.
      *
      * @return array
      */
-    protected function parseConfig($formId, $config)
+    protected function parseConfig($formId, $config, $params)
     {
         $formConfig = [
            'id' => $formId,
@@ -212,7 +240,12 @@ class Form extends \Zend\Form\Form implements
             $senderEmail['required'] = $senderEmail['aria-required']
                 = $senderName['required'] = $senderName['aria-required'] = true;
         }
-
+        if ($formConfig['senderNameRequired'] ?? false) {
+            $senderName['required'] = $senderName['aria-required'] = true;
+        }
+        if ($formConfig['senderEmailRequired'] ?? false) {
+            $senderEmail['required'] = $senderEmail['aria-required'] = true;
+        }
         $configuredElements[] = $senderName;
         $configuredElements[] = $senderEmail;
 
@@ -220,8 +253,7 @@ class Form extends \Zend\Form\Form implements
             $element = [];
 
             $required = ['type', 'name'];
-            $optional
-                = ['required', 'help','value', 'inputType', 'group', 'placeholder'];
+            $optional = $this->getFormElementSettingFields();
             foreach (array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
@@ -261,13 +293,15 @@ class Form extends \Zend\Form\Form implements
                         ];
                     }
                     foreach ($el['options'] as $option) {
+                        $value = $option['value'] ?? $option;
+                        $label = $option['label'] ?? $option;
                         if ($isSelect) {
                             $options[] = [
-                                'value' => $option,
-                                'label' => $this->translate($option)
+                                'value' => $value,
+                                'label' => $this->translate($label)
                             ];
                         } else {
-                            $options[$option] = $this->translate($option);
+                            $options[$value] = $this->translate($label);
                         }
                     }
                     $element['options'] = $options;
@@ -279,7 +313,10 @@ class Form extends \Zend\Form\Form implements
                         }
                         $options = [];
                         foreach ($group['options'] as $option) {
-                            $options[$option] = $this->translate($option);
+                            $value = $option['value'] ?? $option;
+                            $label = $option['label'] ?? $option;
+
+                            $options[$value] = $this->translate($label);
                         }
                         $label = $this->translate($group['label']);
                         $groups[$label] = ['label' => $label, 'options' => $options];
@@ -291,7 +328,12 @@ class Form extends \Zend\Form\Form implements
             $settings = [];
             if (isset($el['settings'])) {
                 foreach ($el['settings'] as list($settingId, $settingVal)) {
-                    $settings[trim($settingId)] = trim($settingVal);
+                    $settingId = trim($settingId);
+                    $settingVal = trim($settingVal);
+                    if ($settingId === 'placeholder') {
+                        $settingVal = $this->translate($settingVal);
+                    }
+                    $settings[$settingId] = $settingVal;
                 }
                 $element['settings'] = $settings;
             }
@@ -313,6 +355,17 @@ class Form extends \Zend\Form\Form implements
             $elements[] = $element;
         }
 
+        if ($this->reportReferrer()) {
+            if ($referrer = ($params['referrer'] ?? false)) {
+                $elements[] = [
+                    'type' => 'hidden',
+                    'name' => 'referrer',
+                    'settings' => ['value' => $referrer],
+                    'label' => $this->translate('Referrer'),
+                ];
+            }
+        }
+
         $elements[]= [
             'type' => 'submit',
             'name' => 'submit',
@@ -331,7 +384,20 @@ class Form extends \Zend\Form\Form implements
     {
         return [
             'recipient', 'title', 'help', 'submit', 'response', 'useCaptcha',
-            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired'
+            'enabled', 'onlyForLoggedUsers', 'emailSubject', 'senderInfoRequired',
+            'reportReferrer', 'senderEmailRequired', 'senderNameRequired'
+        ];
+    }
+
+    /**
+     * Return a list of field names to read from form element settings.
+     *
+     * @return array
+     */
+    protected function getFormElementSettingFields()
+    {
+        return [
+            'required', 'help', 'value', 'inputType', 'group', 'placeholder'
         ];
     }
 
@@ -460,14 +526,15 @@ class Form extends \Zend\Form\Form implements
     protected function getFormElementClass($type)
     {
         $map = [
-            'checkbox' => '\Zend\Form\Element\MultiCheckbox',
-            'text' => '\Zend\Form\Element\Text',
-            'url' => '\Zend\Form\Element\Url',
-            'email' => '\Zend\Form\Element\Email',
-            'textarea' => '\Zend\Form\Element\Textarea',
-            'radio' => '\Zend\Form\Element\Radio',
-            'select' => '\Zend\Form\Element\Select',
-            'submit' => '\Zend\Form\Element\Submit'
+            'checkbox' => '\Laminas\Form\Element\MultiCheckbox',
+            'text' => '\Laminas\Form\Element\Text',
+            'url' => '\Laminas\Form\Element\Url',
+            'email' => '\Laminas\Form\Element\Email',
+            'textarea' => '\Laminas\Form\Element\Textarea',
+            'radio' => '\Laminas\Form\Element\Radio',
+            'select' => '\Laminas\Form\Element\Select',
+            'submit' => '\Laminas\Form\Element\Submit',
+            'hidden' => '\Laminas\Form\Element\Hidden'
         ];
 
         return $map[$type] ?? null;
@@ -495,6 +562,16 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
+     * Check if the form should report referrer url
+     *
+     * @return bool
+     */
+    public function reportReferrer()
+    {
+        return (bool)($this->formConfig['reportReferrer'] ?? false);
+    }
+
+    /**
      * Check if form is available only for logged users.
      *
      * @return bool
@@ -517,10 +594,14 @@ class Form extends \Zend\Form\Form implements
     /**
      * Return form recipient(s).
      *
+     * @param array $postParams Posted form data
+     *
      * @return array of reciepients, each consisting of an array with
      * name, email or null if not configured
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecipient()
+    public function getRecipient($postParams = null)
     {
         $recipient = $this->formConfig['recipient'] ?? [null];
         $recipients = isset($recipient['email']) || isset($recipient['name'])
@@ -576,7 +657,8 @@ class Form extends \Zend\Form\Form implements
 
         $translated = [];
         foreach ($postParams as $key => $val) {
-            $translated["%%{$key}%%"] = $this->translate($val);
+            $translatedVals = array_map([$this, 'translate'], (array)$val);
+            $translated["%%{$key}%%"] = implode(', ', $translatedVals);
         }
 
         return str_replace(
@@ -616,7 +698,7 @@ class Form extends \Zend\Form\Form implements
 
             if (in_array($type, ['radio', 'select'])) {
                 $value = $this->translate($value);
-            } elseif ($type === 'checkbox') {
+            } elseif ($type === 'checkbox' && !empty($value)) {
                 $translated = [];
                 foreach ($value as $val) {
                     $translated[] = $this->translate($val);
@@ -632,9 +714,23 @@ class Form extends \Zend\Form\Form implements
     }
 
     /**
+     * Get translated validation message.
+     *
+     * @param string $messageId Message identifier
+     *
+     * @return string
+     */
+    protected function getValidationMessage($messageId)
+    {
+        return $this->translate(
+            $this->messages[$messageId] ?? $messageId
+        );
+    }
+
+    /**
      * Retrieve input filter used by this form
      *
-     * @return \Zend\InputFilter\InputFilterInterface
+     * @return \Laminas\InputFilter\InputFilterInterface
      */
     public function getInputFilter()
     {
@@ -648,14 +744,14 @@ class Form extends \Zend\Form\Form implements
             'email' => [
                 'name' => EmailAddress::class,
                 'options' => [
-                    'message' => $this->messages['invalid_email']
+                    'message' => $this->getValidationMessage('invalid_email'),
                 ]
             ],
             'notEmpty' => [
                 'name' => NotEmpty::class,
                 'options' => [
                     'message' => [
-                        NotEmpty::IS_EMPTY => $this->messages['empty']
+                        NotEmpty::IS_EMPTY => $this->getValidationMessage('empty'),
                     ]
                 ]
             ]

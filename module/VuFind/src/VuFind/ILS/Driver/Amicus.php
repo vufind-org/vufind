@@ -610,7 +610,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             "AS DUEDATE, CIRT_ITM.BIB_ITM_NBR AS BIB_ID " .
             "FROM LV_USER, CIRT_ITM " .
             "WHERE LV_USER.PRSN_NBR = CIRT_ITM.PRSN_NBR " .
-            "AND LV_USER.LOGIN =  '" . $patron['id'] . "'";
+            "AND LV_USER.LOGIN = '" . $patron['id'] . "'";
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();

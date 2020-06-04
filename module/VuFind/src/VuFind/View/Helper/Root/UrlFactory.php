@@ -28,8 +28,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\Router\RouteMatch;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\Router\RouteMatch;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Url helper factory.
@@ -60,7 +60,7 @@ class UrlFactory implements FactoryInterface
         array $options = null
     ) {
         $request = $container->get('Request');
-        if (!($request instanceof \Zend\Http\PhpEnvironment\Request)) {
+        if (!($request instanceof \Laminas\Http\PhpEnvironment\Request)) {
             $request = null;
         }
         $helper = new $requestedName($request);

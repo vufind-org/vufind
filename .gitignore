@@ -7,6 +7,7 @@
 .vagrant
 .vscode/*
 /downloads
+/Gruntfile.local.js
 /solr/vendor
 /vendor
 ChangeLog
@@ -14,5 +15,6 @@ TAGS
 composer.phar
 import/solrmarc.log*
 lessphp_*.list
+module/VuFind/tests/.phpunit.result.cache
 node_modules
 public/swagger-ui

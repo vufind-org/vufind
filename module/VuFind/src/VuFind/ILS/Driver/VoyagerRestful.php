@@ -136,7 +136,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
      *
-     * @var \Zend\Http\Response\Header\SetCookie[]
+     * @var \Laminas\Http\Response\Header\SetCookie[]
      */
     protected $cookies = false;
 
@@ -1259,18 +1259,6 @@ EOT;
      *
      * @return array              An array of renewal information keyed by item ID
      */
-
-    /**
-     * Renew My Items
-     *
-     * Function for attempting to renew a patron's items.  The data in
-     * $renewDetails['details'] is determined by getRenewDetails().
-     *
-     * @param array $renewDetails An array of data required for renewing items
-     * including the Patron ID and an array of renewal IDS
-     *
-     * @return array              An array of renewal information keyed by item ID
-     */
     public function renewMyItems($renewDetails)
     {
         $patron = $renewDetails['patron'];
@@ -1507,7 +1495,7 @@ EOT;
         }
 
         // Build request
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
   xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -1973,7 +1961,7 @@ EOT;
         }
 
         try {
-            $checkTime =  $this->dateFormat->convertFromDisplayDate(
+            $checkTime = $this->dateFormat->convertFromDisplayDate(
                 'U', $holdDetails['requiredBy']
             );
             if (!is_numeric($checkTime)) {
@@ -2734,7 +2722,7 @@ EOT;
             return false;
         }
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -2943,7 +2931,7 @@ EOT;
         $barcode = $this->encodeXML($catUsername);
         $pickupLib = $this->encodeXML($pickupLib);
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -3056,7 +3044,7 @@ EOT;
         }
 
         // Attempt Request
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -3313,7 +3301,7 @@ EOT;
         }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
