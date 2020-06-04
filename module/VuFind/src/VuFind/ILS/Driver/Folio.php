@@ -564,15 +564,10 @@ class Folio extends AbstractAPI implements
                 $interface,
                 $combinedQuery
             );
-            if ($response->isSuccess()) {
-                $json = json_decode($response->getBody());
-            } else {
-                try {
-                    $json = json_decode($response->getBody());
-                    throw new ILSException($json->errors[0]->message);
-                } catch (Exception $e) {
-                    throw new ILSException('Could not retrieve results');
-                }
+            $json = json_decode($response->getBody());
+            if (!$response->isSuccess() || !$json) {
+                $msg = $json->errors[0]->message ?? json_last_error_msg();
+                throw new ILSException($msg);
             }
             $total = $json->totalRecords ?? 0;
             $previousCount = $count;
