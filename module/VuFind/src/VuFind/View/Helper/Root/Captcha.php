@@ -90,7 +90,7 @@ class Captcha extends AbstractHelper
     public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
     {
         if (count($this->captchas) == 0 || !$useCaptcha) {
-            return false;
+            return '';
         }
 
         $html = '';
@@ -121,6 +121,7 @@ class Captcha extends AbstractHelper
      */
     protected function active(): bool
     {
-        return count($this->captchas) > 0 && isset($config->Captcha->forms);
+        return count($this->captchas) > 0
+            && isset($this->config->Captcha->forms);
     }
 }

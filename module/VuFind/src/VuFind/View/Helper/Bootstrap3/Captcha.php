@@ -58,16 +58,19 @@ class Captcha extends \VuFind\View\Helper\Root\Captcha
             $html = '<div class="form-group">';
         }
 
+        $translator = $this->getView()->plugin('transEsc');
         if (count($this->captchas) == 1) {
-            $html .= '<label class="control-label">CAPTCHA:</label>';
+            $html .= '<label class="control-label">'
+                . $translator('captcha_label_single')
+                . '</label>';
             $html .= '<p>';
             $html .= $this->captchas[0]->getHtml();
             $html .= '</p>';
         } else {
             // nav
-            $html .= '<label class="control-label">';
-            $html .= 'Select your favorite CAPTCHA:';
-            $html .= '</label>';
+            $html .= '<label class="control-label">'
+                . $translator('captcha_label_multiple')
+                . '</label>';
             $html .= '<ul class="nav nav-tabs">';
             foreach ($this->captchas as $i => $captcha) {
                 $active = $i == 0 ? ' class="active"' : '';

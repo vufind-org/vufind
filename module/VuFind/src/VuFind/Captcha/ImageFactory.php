@@ -63,9 +63,10 @@ class ImageFactory implements FactoryInterface
         }
 
         $imageOptions = [
-            'font' => getenv('VUFIND_HOME')
+            'font' => APPLICATION_PATH
                     . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
-            'imgDir' => getenv('VUFIND_LOCAL_DIR') . '/cache/public'
+            'imgDir' => $container->get(\VuFind\Cache\Manager::class)
+                ->getCache('public')->getOptions()->getCacheDir()
         ];
 
         $config = $container->get(\VuFind\Config\PluginManager::class)
@@ -91,7 +92,9 @@ class ImageFactory implements FactoryInterface
         }
 
         return new $requestedName(
-            new \Laminas\Captcha\Image($imageOptions)
+            new \Laminas\Captcha\Image($imageOptions),
+            $container->get('ViewHelperManager')->get('url')->__invoke('home')
+                . '/cache/'
         );
     }
 }

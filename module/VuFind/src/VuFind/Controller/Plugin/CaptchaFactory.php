@@ -67,8 +67,7 @@ class CaptchaFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        $captchaTypes = isset($config->Captcha->types) ?
-            $config->Captcha->types : [];
+        $captchaTypes = $config->Captcha->types ?? [];
 
         $captchas = [];
         foreach ($captchaTypes as $captchaType) {

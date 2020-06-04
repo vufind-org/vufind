@@ -39,6 +39,26 @@ namespace VuFind\Captcha;
 class Image extends LaminasBase
 {
     /**
+     * Base URL of cache where image will be stored, e.g. /vufind/cache/
+     *
+     * @var string
+     */
+    protected $cacheBaseUrl;
+
+    /**
+     * Constructor
+     *
+     * @param \Laminas\Captcha\AbstractWord $captcha      Laminas CAPTCHA object
+     * @param string                        $cacheBaseUrl e.g. /vufind/cache/
+     */
+    public function __construct(\Laminas\Captcha\AbstractWord $captcha,
+        string $cacheBaseUrl
+    ) {
+        $this->cacheBaseUrl = $cacheBaseUrl;
+        parent::__construct($captcha);
+    }
+
+    /**
      * Generate HTML depending on CAPTCHA type.
      *
      * @return string
@@ -46,7 +66,7 @@ class Image extends LaminasBase
     public function getHtml(): string
     {
         $id = $this->captcha->generate();
-        $imgUrl = '/vufind/cache/' . $id . $this->captcha->getSuffix();
+        $imgUrl = $this->cacheBaseUrl . $id . $this->captcha->getSuffix();
         $html = '<img src="' . $imgUrl . '">';
         $html .= '<br/><br/>';
         $html .= '<input name="' . $this->captchaHtmlInputId . '">';
