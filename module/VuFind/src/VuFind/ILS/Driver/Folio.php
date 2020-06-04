@@ -564,11 +564,18 @@ class Folio extends AbstractAPI implements
                 $interface,
                 $combinedQuery
             );
-            $json = json_decode($response->getBody());
-            if ($json == null) {
-                throw new ILSException('Could parse response from ILS');
+            if ($response->isSuccess()) {
+                $json = json_decode($response->getBody());
+            } else {
+                try {
+                    $json = json_decode($response->getBody());
+                    throw new ILSException($json->errors[0]->message);
+                } catch (Exception $e) {
+                    throw new ILSException('Could not retrieve results');
+                }
             }
             $total = $json->totalRecords ?? 0;
+            $previousCount = $count;
             foreach ($json->$responseKey ?? [] as $item) {
                 $count++;
                 if ($count % $limit == 0) {
@@ -576,7 +583,10 @@ class Folio extends AbstractAPI implements
                 }
                 yield $item ?? '';
             }
-        } while ($count < $total);
+            // Continue until the count reaches the total records
+            // found, if count does not increase, something has gone
+            // wrong. Stop so we don't loop forever.
+        } while ($count < $total && $previousCount != $count);
     }
 
     /**
