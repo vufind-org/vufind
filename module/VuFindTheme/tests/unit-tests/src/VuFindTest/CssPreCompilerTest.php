@@ -73,7 +73,7 @@ class CssPreCompilerTest extends Unit\TestCase
      *
      * @return void
      */
-    protected function makeFakeThemeStructure($ext)
+    protected static function makeFakeThemeStructure($ext)
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . "/vufind_${ext}_comp_test/";
