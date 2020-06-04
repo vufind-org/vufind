@@ -18,9 +18,9 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     const BIBLE_RANGE_HANDLER = 'BibleRangeSearch';
     const CANONES_RANGE_HANDLER = 'CanonesRangeSearch';
     const TIME_RANGE_HANDLER = 'TimeRangeSearch';
-    const BIBLE_RANGE_PARSER = 'bibleRangeParser';
-    const CANONES_RANGE_PARSER = 'canonesRangeParser';
-    const TIME_RANGE_PARSER = 'timeAspectRangeParser';
+    const BIBLE_RANGE_PARSER = 'bibleDateRangeParser';
+    const CANONES_RANGE_PARSER = 'canonesDateRangeParser';
+    const TIME_RANGE_PARSER = 'timeAspectDateRangeParser';
 
 
     public function build(AbstractQuery $query)
