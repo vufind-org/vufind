@@ -87,7 +87,9 @@ abstract class Captcha extends AbstractHelper
      *
      * @return string
      */
-    abstract public function html(bool $useCaptcha = true, bool $wrapHtml = true): string;
+    abstract public function html(bool $useCaptcha = true,
+        bool $wrapHtml = true
+    ): string;
 
     /**
      * Get list of URLs with JS dependancies to load for the active CAPTCHA type.
