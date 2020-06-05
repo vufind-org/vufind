@@ -814,10 +814,10 @@ class Folio extends AbstractAPI implements
     public function getPickupLocations($patron)
     {
         $query = ['query' => 'pickupLocation=true'];
-        $response = $this->makeRequest('GET', '/service-points', $query);
-        $json = json_decode($response->getBody());
         $locations = [];
-        foreach ($json->servicepoints as $servicepoint) {
+        foreach ($this->getPagedResults(
+            'servicepoints', '/service-points', $query
+        ) as $servicepoint) {
             $locations[] = [
                 'locationID' => $servicepoint->id,
                 'locationDisplay' => $servicepoint->discoveryDisplayName
