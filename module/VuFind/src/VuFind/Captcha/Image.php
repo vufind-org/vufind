@@ -39,7 +39,7 @@ namespace VuFind\Captcha;
 class Image extends LaminasBase
 {
     /**
-     * Base URL of cache where image will be stored, e.g. /vufind/cache/
+     * Base path of cache where image will be stored, e.g. /vufind/cache/
      *
      * @var string
      */
