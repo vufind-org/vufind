@@ -29,6 +29,7 @@
 namespace VuFind\Security;
 
 use Laminas\Http\Header\ContentSecurityPolicy;
+use VuFind\Http\Header\ContentSecurityPolicyReportOnly;
 
 /**
  * VuFind class for generating Content Security Policy http headers
@@ -122,9 +123,7 @@ class CspHeaderGenerator
     protected function createHeaderObject()
     {
         if ($this->config->CSP->report_only) {
-            //TODO: We need report only implementation of csp header
-            //$cspHeader = new ContentSecurityPolicyReportOnly();
-            $cspHeader = new ContentSecurityPolicy();
+            $cspHeader = new ContentSecurityPolicyReportOnly();
         } else {
             $cspHeader = new ContentSecurityPolicy();
         }
