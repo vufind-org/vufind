@@ -23,7 +23,7 @@ defined('APPLICATION_PATH')
 defined('APPLICATION_ENV')
     || define(
         'APPLICATION_ENV',
-        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'production')
+        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'development')
     );
 
 // Define default search backend identifier
