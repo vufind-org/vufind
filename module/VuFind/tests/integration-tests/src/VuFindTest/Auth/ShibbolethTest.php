@@ -93,7 +93,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      */
     public function getAuthConfig()
     {
-        $ldapConfig = new Config(
+        $shibConfig = new Config(
             [
                 'login' => 'http://myserver',
                 'username' => 'username',
@@ -102,7 +102,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
                 'userattribute_value_1' => 'testpass'
             ], true
         );
-        return new Config(['Shibboleth' => $ldapConfig], true);
+        return new Config(['Shibboleth' => $shibConfig], true);
     }
 
     /**

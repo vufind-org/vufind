@@ -290,11 +290,10 @@ abstract class AbstractShibboleth extends AbstractBase
         $sortedUserAttributes = [];
 
         // Now extract user attribute values:
-        $shib = $this->getConfig()->Shibboleth;
-        foreach ($shib as $key => $value) {
+        foreach ($config as $key => $value) {
             if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
-                $sortedUserAttributes[$value] = $shib['$valueKey'] ?? null;
+                $sortedUserAttributes[$value] = $config[$valueKey] ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {

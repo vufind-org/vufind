@@ -125,7 +125,19 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
                 'cat_username' => 'userLibraryId',
             ], true
         );
-        return new Config(['example1' => $example1], true);
+        $example2 = new Config(
+            [
+                'entityId' => 'https://idp.example2.org/',
+                'username' => 'eppn',
+                'email' => 'email',
+                'cat_username' => 'userLibraryId',
+            ], true
+        );
+        $config = [
+            'example1' => $example1,
+            'example2' => $example2,
+        ];
+        return new Config($config, true);
     }
 
     /**
@@ -140,9 +152,9 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
     {
         $server = $overrides + [
             'Shib-Identity-Provider' => 'https://idp.example1.org/',
-            'username' => '700',
-            'userLibraryId' => '700',
-            'mail' => '700@example.org',
+            'username' => 'testuser1',
+            'userLibraryId' => 'testuser1',
+            'mail' => 'testuser1@example.org',
         ];
         $request = new \Laminas\Http\PhpEnvironment\Request();
         $request->setServer(new \Laminas\Stdlib\Parameters($server));
@@ -152,7 +164,17 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
     public function testLogin()
     {
         $user = $this->getAuthObject()->authenticate($this->getLoginRequest());
-        $this->assertEquals($user->cat_username, 'example1.700');
-        $this->assertEquals($user->username, '700');
+        $this->assertEquals($user->cat_username, 'example1.testuser1');
+        $this->assertEquals($user->username, 'testuser1');
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass(): void
+    {
+        static::removeUsers('testuser1');
     }
 }
