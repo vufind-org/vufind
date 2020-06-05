@@ -717,13 +717,10 @@ class Folio extends AbstractAPI implements
     public function getMyTransactions($patron)
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
-        $response = $this->makeRequest("GET", '/circulation/loans', $query);
-        $json = json_decode($response->getBody());
-        if (count($json->loans) == 0) {
-            return [];
-        }
         $transactions = [];
-        foreach ($json->loans as $trans) {
+        foreach ($this->getPagedResults(
+            'loans', '/circulation/loans', $query
+        ) as $trans) {
             $date = date_create($trans->dueDate);
             $transactions[] = [
                 'duedate' => date_format($date, "j M Y"),
