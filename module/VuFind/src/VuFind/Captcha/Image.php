@@ -43,18 +43,18 @@ class Image extends LaminasBase
      *
      * @var string
      */
-    protected $cacheBaseUrl;
+    protected $cacheBasePath;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Captcha\AbstractWord $captcha      Laminas CAPTCHA object
-     * @param string                        $cacheBaseUrl e.g. /vufind/cache/
+     * @param \Laminas\Captcha\AbstractWord $captcha       Laminas CAPTCHA object
+     * @param string                        $cacheBasePath e.g. /vufind/cache/
      */
     public function __construct(\Laminas\Captcha\AbstractWord $captcha,
-        string $cacheBaseUrl
+        string $cacheBasePath
     ) {
-        $this->cacheBaseUrl = $cacheBaseUrl;
+        $this->cacheBasePath = $cacheBasePath;
         parent::__construct($captcha);
     }
 
@@ -66,7 +66,7 @@ class Image extends LaminasBase
     public function getHtml(): string
     {
         $id = $this->captcha->generate();
-        $imgUrl = $this->cacheBaseUrl . $id . $this->captcha->getSuffix();
+        $imgUrl = $this->cacheBasePath . $id . $this->captcha->getSuffix();
         $html = '<img src="' . $imgUrl . '">';
         $html .= '<br/><br/>';
         $html .= '<input name="' . $this->captchaHtmlInputId . '">';
