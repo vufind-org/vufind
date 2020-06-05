@@ -214,7 +214,8 @@ class HierarchicalFacetHelper
         $parts = explode('/', $value);
         $level = array_shift($parts);
         if (!is_numeric($level)) {
-            return false;
+            // Not a properly formatted hierarchical facet value
+            return true;
         }
         $path = implode('/', array_slice($parts, 0, $level + 1));
         foreach ($facetList as $current) {

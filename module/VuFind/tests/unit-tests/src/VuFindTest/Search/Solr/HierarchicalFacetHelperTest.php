@@ -340,6 +340,9 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertTrue(
             $this->helper->isDeepestFacetLevel($facetList, '0/XYZZY/')
         );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, 'XYZ')
+        );
     }
 
     /**
