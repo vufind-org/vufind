@@ -40,7 +40,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Captcha extends AbstractHelper
+abstract class Captcha extends AbstractHelper
 {
     /**
      * Captcha services
@@ -87,18 +87,7 @@ class Captcha extends AbstractHelper
      *
      * @return string
      */
-    public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
-    {
-        if (count($this->captchas) == 0 || !$useCaptcha) {
-            return '';
-        }
-
-        $html = '';
-        foreach ($this->captchas as $captcha) {
-            $html .= $captcha->getHtml();
-        }
-        return $html;
-    }
+    abstract public function html(bool $useCaptcha = true, bool $wrapHtml = true): string;
 
     /**
      * Get list of URLs with JS dependancies to load for the active CAPTCHA type.
