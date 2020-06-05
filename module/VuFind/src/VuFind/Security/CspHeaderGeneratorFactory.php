@@ -65,7 +65,7 @@ class CspHeaderGeneratorFactory implements FactoryInterface
     ) {
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('contentsecuritypolicy');
-        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
+        $nonceGenerator = $container->get(NonceGenerator::class);
 
         return new $requestedName($config, $nonceGenerator);
     }
