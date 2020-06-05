@@ -1272,14 +1272,11 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
-        $response = $this->makeRequest("GET", '/accounts', $query);
-        $json = json_decode($response->getBody());
-        if (count($json->accounts) == 0) {
-            return [];
-        }
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Closed'];
         $fines = [];
-        foreach ($json->accounts as $fine) {
+        foreach ($this->getPagedResults(
+            'accounts', '/accounts', $query
+        ) as $fine) {
             $date = date_create($fine->metadata->createdDate);
             $title = (isset($fine->title) ? $fine->title : null);
             $fines[] = [
