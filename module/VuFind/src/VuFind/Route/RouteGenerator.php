@@ -46,7 +46,11 @@ class RouteGenerator
      *
      * @var array
      */
-    protected $nonTabRecordActions;
+    protected $nonTabRecordActions = [
+        'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
+        'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText',
+    ];
 
     /**
      * Constructor
@@ -56,13 +60,7 @@ class RouteGenerator
      */
     public function __construct(array $nonTabRecordActions = null)
     {
-        if (null === $nonTabRecordActions) {
-            $this->nonTabRecordActions = [
-                'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save',
-                'Email', 'SMS', 'Cite', 'Export', 'RDF', 'Hold', 'Home',
-                'StorageRetrievalRequest', 'AjaxTab', 'ILLRequest', 'PDF',
-            ];
-        } else {
+        if (null !== $nonTabRecordActions) {
             $this->nonTabRecordActions = $nonTabRecordActions;
         }
     }

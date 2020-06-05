@@ -30,7 +30,6 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use Laminas\Console\Console;
 use Laminas\Stdlib\RequestInterface;
 use VuFind\Net\IpAddressUtils;
 
@@ -83,7 +82,7 @@ class IpRange implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return [];
         }
         // Check if any regex matches....

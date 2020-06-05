@@ -29,7 +29,6 @@ namespace VuFindTheme;
 
 use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
-use Laminas\Console\Console;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
@@ -201,7 +200,7 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return $standardTheme;
         }
         $mobileTheme = $this->mobile->enabled()
@@ -259,7 +258,7 @@ class Initializer
     protected function sendThemeOptionsToView()
     {
         // Get access to the view model:
-        if (!Console::isConsole()) {
+        if (PHP_SAPI !== 'cli') {
             $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
 
             // Send down the view options:
