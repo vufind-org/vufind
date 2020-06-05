@@ -202,8 +202,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function addCspHeader()
     {
-        $response = $this->getResponse();
-        $headers = $response->getHeaders();
+        $headers = $this->getResponse()->getHeaders();
         $cspHeaderGenerator = $this->serviceLocator
             ->get(\VuFind\Security\CspHeaderGenerator::class);
         $cspHeader = $cspHeaderGenerator->getHeader();
