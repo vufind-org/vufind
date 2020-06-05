@@ -24,7 +24,7 @@
  * @package  VuFind\Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://knihovny.cz Main Page
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Security;
 
