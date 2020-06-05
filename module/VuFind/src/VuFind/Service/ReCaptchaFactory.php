@@ -61,8 +61,21 @@ class ReCaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
+
+        $deprecatedKeys = ['siteKey', 'publicKey', 'secretKey', 'privateKey'];
+        foreach ($deprecatedKeys as $deprecatedKey) {
+            if (isset($config->Captcha->$deprecatedKey)) {
+                throw new \Exception(
+                    'Deprecated ' . $deprecatedKey . ' setting found'
+                    . ' in config.ini - please use recaptcha_' . $deprecatedKey
+                    . ' instead.'
+                );
+            }
+        }
+
         $siteKey = $config->Captcha->recaptcha_siteKey ??
             $config->Captcha->recaptcha_publicKey ?? '';
         $secretKey = $config->Captcha->recaptcha_secretKey ??

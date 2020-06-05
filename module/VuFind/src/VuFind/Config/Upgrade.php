@@ -597,6 +597,17 @@ class Upgrade
             }
         }
 
+        // Upgrade CAPTCHA Options
+        $oldKeys
+            = ['siteKey', 'publicKey', 'secretKey', 'privateKey'];
+        foreach ($oldKeys as $key) {
+            if (isset($newConfig['Captcha'][$key])) {
+                $newConfig['Captcha']['recaptcha_' . $key]
+                    = $newConfig['Captcha'][$key];
+                unset($newConfig['Captcha'][$key]);
+            }
+        }
+
         // Warn the user about deprecated WorldCat settings:
         if (isset($newConfig['WorldCat']['LimitCodes'])) {
             unset($newConfig['WorldCat']['LimitCodes']);
