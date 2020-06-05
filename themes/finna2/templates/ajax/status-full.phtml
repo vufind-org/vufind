@@ -317,4 +317,9 @@ if (!$disableTitleHold
   </div>
 <?php endif; ?>
 </div>
+
+<?php if ($driver && $source && $externalInterfaceUrl = $summary['externalInterfaceUrl'] ?? ''):?>
+  <?=$this->record($driver)->renderTemplate('external-interface-link.phtml', ['driver' => $driver, 'source' => $source, 'link' => $externalInterfaceUrl ?? ''])?>
+<?php endif;?>
+
 <!-- END of: finna - ajax/status-full.phtml -->

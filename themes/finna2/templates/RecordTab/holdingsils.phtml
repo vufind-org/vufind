@@ -10,6 +10,7 @@
     // Account for replace_other_urls setting
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
+    $recordSource = $this->driver->tryMethod('getDataSource');
     try {
         $holdings = $this->driver->getRealTimeHoldings();
     } catch (\VuFind\Exception\ILS $e) {
@@ -57,10 +58,8 @@
     $disableTitleHold = empty($holdings['holdings']) || (isset($summary['holdable']) && !$summary['holdable']);
     $showSummary = !$journal && $this->holdings()->showRecordPageSummary();
     if ($summary && $showSummary) {
-      $itemsTotal
-        = $summary['total'] ?? null;
-      $reservationsTotal
-        = $summary['reservations'] ?? null;
+      $itemsTotal = $summary['total'] ?? null;
+      $reservationsTotal = $summary['reservations'] ?? null;
     }
 
     foreach ($holdings['holdings'] as $holding) {
@@ -77,9 +76,18 @@
        }
     }
     $ilsLoginAvailable = $this->ils()->loginAvailable();
+    $externalInterfaceUrl = $summary ? ($summary['externalInterfaceUrl'] ?? '') : '';
+    $holdingsConfig = $this->ils()->getConfig('Holdings', [$this->driver->getUniqueId()]);
+    if (isset($holdingsConfig['display_title_hold_in_holdings']) && !$holdingsConfig['display_title_hold_in_holdings']) {
+      $disableTitleHold = true;
+    }
 ?>
 
 <?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
+
+<?php if ($this->driver && $recordSource && $externalInterfaceUrl):?>
+  <?=$this->record($driver)->renderTemplate('external-interface-link.phtml', ['driver' => $driver, 'source' => $recordSource, 'link' => $externalInterfaceUrl ?? ''])?>
+<?php endif;?>
 
 <?php if ($holdsAllowed && !$disableTitleHold && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver')): ?>
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
@@ -155,16 +163,15 @@
 
 <div class="table record-holdings-table">
   <div class="headers">
-    <?php $currentSource = $this->driver->tryMethod('getDataSource'); ?>
     <?php $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
     <?php $recordSourceId = $this->driver->getSourceIdentifier(); ?>
     <div class="dedup-information">
-      <span class="holdings-title"><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></span>
+      <span class="holdings-title"><?=$this->transEsc("source_$recordSource", null, $recordSource) ?></span>
       <?php if ($mergedData && count($mergedData['records']) > 1): ?>
         <select class="dedup-select form-control jumpMenuUrl hidden-print" role="listbox" aria-haspopup="true" title="<?=$this->transEsc('select_dedup_organisation');?>">
           <option value="#" role="option" selected="selected"><?=$this->transEsc('Other Libraries'); ?></option>
           <?php foreach ($mergedData['records'] as $current): ?>
-            <?php if ($currentSource != $current['source']): ?>
+            <?php if ($recordSource != $current['source']): ?>
               <option value="<?=$this->recordLink()->getUrl($recordSourceId . '|' . $current['id']) ?>" role="option"><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
             <?php endif; ?>
           <?php endforeach; ?>
@@ -260,7 +267,7 @@
     }
   ?>
   <div class="holdings-group">
-    <?php if ($holdingsGroup == 1 && $holdingsConfig = $this->ils()->getConfig('Holdings', [$this->driver->getUniqueId()])): ?>
+    <?php if ($holdingsGroup == 1 && $holdingsConfig): ?>
       <?php if (!empty($holdingsConfig['extra_texts'])): ?>
         <div class="holdings-container-heading">
           <div>
@@ -281,7 +288,7 @@
       <div class="holdings-details"><?=$holdingSummary ?></div>
       <div class="location-link text-right">
         <?php foreach ($callnumbers as $data): ?>
-          <?=$this->callnumber()->callnumber($currentSource, $this->driver->getFullTitle(), $data['callNo'], $data['collection'], $data['location'], $this->layout()->userLang)?>
+          <?=$this->callnumber()->callnumber($recordSource, $this->driver->getFullTitle(), $data['callNo'], $data['collection'], $data['location'], $this->layout()->userLang)?>
         <?php endforeach; ?>
         <?php if ($holdsAllowed && isset($holdLinksLocation[$holding['location']])): ?>
           <a class="expandedCheckRequest inlineblock placehold btn btn-primary hidden-print" data-lightbox href="<?=$this->recordLink()->getRequestUrl($holdLinksLocation[$holding['location']])?>" data-lightbox-title="<?=$this->escapeHtmlAttr($this->translate('request_place_text') . $dialogTitle); ?>"><?=$this->transEsc("request_place_text")?></a>

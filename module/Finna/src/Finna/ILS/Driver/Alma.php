@@ -1727,12 +1727,18 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 ];
 
                 // Add summary
+                $externalInterfaceUrl = str_replace(
+                    '%%id%%',
+                    $id,
+                    $this->config['Holdings']['externalInterfaceUrl'] ?? ''
+                );
                 $summary = [
                     'available' => $items['available'],
                     'total' => $items['total'],
                     'availability' => null,
                     'callnumber' => null,
-                    'location' => '__HOLDINGSSUMMARYLOCATION__'
+                    'location' => '__HOLDINGSSUMMARYLOCATION__',
+                    'externalInterfaceUrl' => $externalInterfaceUrl,
                 ];
 
                 if ($displayRequests) {
@@ -2244,7 +2250,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      * Create a holding entry
      *
      * @param string $id      Bib ID
-     * @param array  $holding Holding
+     * @param object $holding Holding
      *
      * @return array
      */
@@ -2410,6 +2416,12 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 ];
                 $sort = 0;
                 if ($record = $marc->next()) {
+                    $externalInterfaceUrl = str_replace(
+                        '%%id%%',
+                        (string)$bib->mms_id,
+                        $this->config['Holdings']['externalInterfaceUrl'] ?? ''
+                    );
+
                     // Physical
                     $physicalItems = $record->getFields('AVA');
                     foreach ($physicalItems as $field) {
@@ -2428,6 +2440,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         );
                         $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         $item['sort'] = $sort++;
+                        $item['externalInterfaceUrl'] = $externalInterfaceUrl;
                         $status[] = $item;
                     }
                     // Electronic
@@ -2461,6 +2474,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                             $item['item_notes'] = [$note];
                         }
                         $item['sort'] = $sort++;
+                        $item['externalInterfaceUrl'] = $externalInterfaceUrl;
                         $status[] = $item;
                     }
                     // Digital
