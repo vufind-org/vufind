@@ -1032,28 +1032,14 @@ class Folio extends AbstractAPI implements
         $valueKey = 'name'
     ) {
         $retVal = [];
-        $limit = 1000; // how many records to retrieve at once
-        $offset = 0;
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        do {
-            $response = $this->makeRequest(
-                'GET',
-                '/coursereserves/' . $type,
-                compact('offset', 'limit')
-            );
-            $json = json_decode($response->getBody());
-            $total = $json->totalRecords ?? 0;
-            $preCount = count($retVal);
-            foreach ($json->{$responseKey ?? $type} ?? [] as $item) {
-                $retVal[$item->id] = $item->$valueKey ?? '';
-            }
-            $postCount = count($retVal);
-            $offset += $limit;
-            // Loop has a safety valve: if the count of records doesn't change
-            // in a full iteration, something has gone wrong, and we should stop
-            // so we don't loop forever!
-        } while ($total && $postCount < $total && $preCount != $postCount);
+        foreach ($this->getPagedResults(
+            $responseKey ?? $type, '/coursereserves/' . $type
+        ) as $item) {
+            $retVal[$item->id] = $item->$valueKey ?? '';
+        }
+
         return $retVal;
     }
 
