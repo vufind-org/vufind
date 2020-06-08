@@ -15,9 +15,9 @@ override_full_sections = "SideRecommendations,TopRecommendations,SpecialFacets,F
 [EBSCO_Account]
 ; IP authentication for the API
 ip_auth = false
-user_name = [USERNAME]
-password  = [PASSWORD]
-profile   = [PROFILE]
+user_name = "USERNAME"
+password  = "PASSWORD"
+profile   = "PROFILE"
 organization_id = "VuFind from MyUniversity"
 
 ; This section controls what happens when a record title in a search result list
