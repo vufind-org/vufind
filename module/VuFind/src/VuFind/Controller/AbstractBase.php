@@ -181,35 +181,6 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
-     * Execute the request
-     *
-     * @param MvcEvent $e MVC event object
-     *
-     * @return mixed
-     *
-     * @throws Exception\DomainException
-     */
-    public function onDispatch(MvcEvent $e)
-    {
-        $this->addCspHeader();
-        return parent::onDispatch($e);
-    }
-
-    /**
-     * Add Content Security Policy Header to response
-     *
-     * @return void
-     */
-    protected function addCspHeader()
-    {
-        $headers = $this->getResponse()->getHeaders();
-        $cspHeaderGenerator = $this->serviceLocator
-            ->get(\VuFind\Security\CspHeaderGenerator::class);
-        $cspHeader = $cspHeaderGenerator->getHeader();
-        $headers->addHeader($cspHeader);
-    }
-
-    /**
      * Create a new ViewModel to use as an email form.
      *
      * @param array  $params         Parameters to pass to ViewModel constructor.

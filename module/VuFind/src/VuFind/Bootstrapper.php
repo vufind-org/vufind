@@ -442,4 +442,18 @@ class Bootstrapper
         };
         $this->events->attach('render.error', $callback, 10000);
     }
+
+    /**
+     * Set up content security policy
+     *
+     * @return void
+     */
+    protected function initContentSecurityPolicy()
+    {
+        $sm = $this->event->getApplication()->getServiceManager();
+        $headers = $this->event->getResponse()->getHeaders();
+        $cspHeaderGenerator = $sm->get(\VuFind\Security\CspHeaderGenerator::class);
+        $cspHeader = $cspHeaderGenerator->getHeader();
+        $headers->addHeader($cspHeader);
+    }
 }
