@@ -1156,51 +1156,36 @@ class Folio extends AbstractAPI implements
     public function findReserves($course, $inst, $dept)
     {
         $retVal = [];
-        $limit = 1000; // how many records to retrieve at once
-        $offset = 0;
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        do {
-            $response = $this->makeRequest(
-                'GET',
-                '/coursereserves/reserves',
-                compact('offset', 'limit')
-            );
-            $json = json_decode($response->getBody());
-            $total = $json->totalRecords ?? 0;
-            $preCount = count($retVal);
-            foreach ($json->reserves ?? [] as $item) {
-                try {
-                    $bibId = $this->getBibId(null, null, $item->itemId);
-                } catch (\Exception $e) {
-                    $bibId = null;
-                }
-                if ($bibId !== null) {
-                    $courseData = $this->getCourseDetails(
-                        $item->courseListingId ?? null
-                    );
-                    $instructorIds = $this->getInstructorIds(
-                        $item->courseListingId ?? null
-                    );
-                    foreach ($courseData as $courseId => $departmentId) {
-                        foreach ($instructorIds as $instructorId) {
-                            $retVal[] = [
-                                'BIB_ID' => $bibId,
-                                'COURSE_ID' => $courseId == '' ? null : $courseId,
-                                'DEPARTMENT_ID' => $departmentId == ''
-                                    ? null : $departmentId,
-                                'INSTRUCTOR_ID' => $instructorId,
-                            ];
-                        }
+        foreach ($this->getPagedResults(
+            'reserves', '/coursereserves/reserves'
+        ) as $item) {
+            try {
+                $bibId = $this->getBibId(null, null, $item->itemId);
+            } catch (\Exception $e) {
+                $bibId = null;
+            }
+            if ($bibId !== null) {
+                $courseData = $this->getCourseDetails(
+                    $item->courseListingId ?? null
+                );
+                $instructorIds = $this->getInstructorIds(
+                    $item->courseListingId ?? null
+                );
+                foreach ($courseData as $courseId => $departmentId) {
+                    foreach ($instructorIds as $instructorId) {
+                        $retVal[] = [
+                            'BIB_ID' => $bibId,
+                            'COURSE_ID' => $courseId == '' ? null : $courseId,
+                            'DEPARTMENT_ID' => $departmentId == ''
+                                ? null : $departmentId,
+                            'INSTRUCTOR_ID' => $instructorId,
+                        ];
                     }
                 }
             }
-            $postCount = count($retVal);
-            $offset += $limit;
-            // Loop has a safety valve: if the count of records doesn't change
-            // in a full iteration, something has gone wrong, and we should stop
-            // so we don't loop forever!
-        } while ($total && $postCount < $total && $preCount != $postCount);
+        }
 
         // If the user has requested a filter, apply it now:
         if (!empty($course) || !empty($inst) || !empty($dept)) {
