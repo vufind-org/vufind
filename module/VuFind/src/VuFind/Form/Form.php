@@ -402,18 +402,6 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return a list of field names to read from form element settings.
-     *
-     * @return array
-     */
-    protected function getFormElementSettingFields()
-    {
-        return [
-            'required', 'help', 'value', 'inputType', 'group', 'placeholder'
-        ];
-    }
-
-    /**
      * Build form.
      *
      * @param array $elements Parsed configuration elements
