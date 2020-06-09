@@ -84,6 +84,10 @@ class CspHeaderGenerator
             if ($name == "script-src" && $this->config->CSP->use_nonce) {
                 $sources[] = "'nonce-$this->nonce'";
             }
+            // Add report-to header for backwards compatibility
+            if ($name == 'report-uri') {
+                $cspHeader->setDirective('report-to', $sources);
+            }
             $cspHeader->setDirective($name, $sources);
         }
         return $cspHeader;
