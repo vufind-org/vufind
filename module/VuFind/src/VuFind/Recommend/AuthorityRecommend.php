@@ -28,8 +28,8 @@
  */
 namespace VuFind\Recommend;
 
+use Laminas\Stdlib\Parameters;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-use Zend\StdLib\Parameters;
 
 /**
  * AuthorityRecommend Module
@@ -149,7 +149,7 @@ class AuthorityRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param Parameters                 $request Parameter object representing user
      * request.
      *
      * @return void

@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Helper\Url;
+use Laminas\View\Helper\Url;
 
 /**
  * Authentication view helper
@@ -38,7 +38,7 @@ use Zend\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends \Zend\View\Helper\AbstractHelper
+class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * URL helper

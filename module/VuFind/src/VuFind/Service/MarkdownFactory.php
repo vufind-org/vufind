@@ -30,10 +30,12 @@ namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use League\CommonMark\GithubFlavoredMarkdownConverter;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Environment;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 
 /**
  * VuFind HTTP Service factory.
@@ -46,6 +48,18 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 class MarkdownFactory implements FactoryInterface
 {
+    /**
+     * Array of config keys for extensions classes
+     *
+     * @var string[]
+     */
+    protected static $configKeys = [
+        'ExternalLink' => 'external_link',
+        'HeadingPermalink' => 'heading_permalink',
+        'SmartPunct' => 'smartpunct',
+        'TableOfContents' => 'table_of_contents',
+    ];
+
     /**
      * Create an object
      *
@@ -63,11 +77,41 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container, $requestedName, array $options = null
     ) {
-        return new GithubFlavoredMarkdownConverter(
-            [
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
-            ]
-        );
+        $markdownConfig = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('markdown');
+        $markdownSection = $markdownConfig->Markdown;
+        $environment = Environment::createCommonMarkEnvironment();
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+        $config = [
+            'html_input' => $config->html_input ?? 'strip',
+            'allow_unsafe_links' => $config->allow_unsafe_links ?? false,
+            'enable_em' => $config->enable_em ?? true,
+            'enable_strong' => $config->enable_strong ?? true,
+            'use_asterisk' => $config->use_asterisk ?? true,
+            'use_underscore' => $config->use_underscore ?? true,
+            'unordered_list_markers' => isset($config->unordered_list_markers)
+                && $config->unordered_list_markers instanceof \ArrayAccess
+                    ? $config->unordered_list_markers->toArray()
+                    : ['-', '*', '+'],
+            'max_nesting_level' => $config->max_nesting_level ?? \INF,
+            'renderer' => [
+                'block_separator'
+                    => $config->renderer['block_separator'] ?? "\n",
+                'inner_separator'
+                    => $config->renderer['inner_separator'] ?? "\n",
+                'soft_break' => $config->renderer['soft_break'] ?? "\n",
+            ],
+        ];
+        $extensions = isset($markdownSection->extensions)
+            ? array_map('trim', explode(',', $markdownSection->extensions)) : [];
+
+        foreach ($extensions as $ext) {
+            $extClass = sprintf(
+                'League\CommonMark\Extension\%s\%sExtension', $ext, $ext
+            );
+            $environment->addExtension(new $extClass());
+            $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
+        }
+        return new CommonMarkConverter($config, $environment);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension of \Zend\Log\LoggerAwareTrait with some convenience methods.
+ * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Log;
 
 /**
- * Extension of \Zend\Log\LoggerAwareTrait with some convenience methods.
+ * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -38,7 +38,7 @@ namespace VuFind\Log;
  */
 trait LoggerAwareTrait
 {
-    use \Zend\Log\LoggerAwareTrait;
+    use \Laminas\Log\LoggerAwareTrait;
 
     /**
      * Log an error message.

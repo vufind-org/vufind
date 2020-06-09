@@ -66,7 +66,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testReadWithNonDefaultLifetime()
     {
         $handler = $this->getHandler(
-            new \Zend\Config\Config(['lifetime' => 1000])
+            new \Laminas\Config\Config(['lifetime' => 1000])
         );
         $session = $this->getMockSessionTable();
         $session->expects($this->once())->method('readSession')
@@ -133,7 +133,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Zend\Config\Config $config Optional configuration
+     * @param \Laminas\Config\Config $config Optional configuration
      *
      * @return Database
      */

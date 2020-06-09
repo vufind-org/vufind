@@ -29,7 +29,7 @@
  */
 namespace VuFind\Session;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Base class for session handling

@@ -51,7 +51,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Zend\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
         );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
@@ -68,7 +68,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertEquals(
-            'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
     }
 
@@ -86,7 +86,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
         ];
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Zend\View\HelperPluginManager::class),
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
             $defaults
         );
         $this->assertEquals(
@@ -107,7 +107,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
 
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Zend\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
         );
         $form->setFormId('foo');
     }
@@ -121,7 +121,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
     {
         $form = new Form(
             new YamlReader(),
-            $this->createMock(\Zend\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
         );
         $form->setFormId('FeedbackSite');
 
@@ -188,7 +188,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            'Zend\InputFilter\InputFilter', get_class($form->getInputFilter())
+            'Laminas\InputFilter\InputFilter', get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems
@@ -234,7 +234,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
 
         $form = new Form(
             $mock,
-            $this->createMock(\Zend\View\HelperPluginManager::class)
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
         );
         $form->setFormId('TestElementOptions');
 

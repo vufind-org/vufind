@@ -136,7 +136,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
      *
-     * @var \Zend\Http\Response\Header\SetCookie[]
+     * @var \Laminas\Http\Response\Header\SetCookie[]
      */
     protected $cookies = false;
 
@@ -1245,18 +1245,6 @@ EOT;
         }
         return empty($blockReason) ? false : $blockReason;
     }
-
-    /**
-     * Renew My Items
-     *
-     * Function for attempting to renew a patron's items.  The data in
-     * $renewDetails['details'] is determined by getRenewDetails().
-     *
-     * @param array $renewDetails An array of data required for renewing items
-     * including the Patron ID and an array of renewal IDS
-     *
-     * @return array              An array of renewal information keyed by item ID
-     */
 
     /**
      * Renew My Items

@@ -29,7 +29,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Markdown helper factory
@@ -56,7 +56,8 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container, $requestedName, array $options = null
     ) {
-        $markdownService = $container->get('League\CommonMark\ConverterInterface');
+        $markdownService = $container
+            ->get(\League\CommonMark\MarkdownConverterInterface::class);
         return new $requestedName($markdownService);
     }
 }

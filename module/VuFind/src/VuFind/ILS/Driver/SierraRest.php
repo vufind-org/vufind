@@ -27,11 +27,11 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * III Sierra REST API driver
@@ -76,7 +76,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     /**
      * Session cache
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
@@ -1587,7 +1587,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      *
      * @param string $url Request URL
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      */
     protected function createHttpClient($url)
     {

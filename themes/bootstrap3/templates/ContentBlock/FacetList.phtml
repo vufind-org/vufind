@@ -18,7 +18,7 @@ $(document).ready(function() {
   initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
 });
 JS;
-          echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+          echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
         <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>

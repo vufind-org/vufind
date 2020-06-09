@@ -66,12 +66,12 @@ class FolioTest extends \VuFindTest\Unit\TestCase
      * @param array  $params  Parameters object to be sent as data
      * @param array  $headers Additional headers
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function mockMakeRequest($method = "GET", $path = "/", $params = [], $headers = [])
     {
         // Run preRequest
-        $httpHeaders = new \Zend\Http\Headers();
+        $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
         list($httpHeaders, $params) = $this->driver->preRequest($httpHeaders, $params);
         // Log request
@@ -83,7 +83,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         ];
         // Create response
         $testResponse = array_shift($this->testResponses);
-        $response = new \Zend\Http\Response();
+        $response = new \Laminas\Http\Response();
         $response->setStatusCode($testResponse['status'] ?? 200);
         $response->setContent($testResponse['body'] ?? '');
         $response->getHeaders()->addHeaders($testResponse['headers'] ?? []);
@@ -113,8 +113,8 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         $this->testRequestLog = [];
         // Session factory
         $factory = function ($namespace) {
-            $manager = new \Zend\Session\SessionManager();
-            return new \Zend\Session\Container("Folio_$namespace", $manager);
+            $manager = new \Laminas\Session\SessionManager();
+            return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
@@ -135,7 +135,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     public function testTokens()
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
-        $profile = $this->driver->getMyProfile(['username' => 'whatever']);
+        $profile = $this->driver->getMyProfile(['id' => 'whatever']);
         // Get token
         // - Right URL
         $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
@@ -182,7 +182,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Request new token
         $this->assertEquals('/authn/login', $this->testRequestLog[1]['path']);
         // Move to method call
-        $this->assertEquals('/locations', $this->testRequestLog[2]['path']);
+        $this->assertEquals('/service-points', $this->testRequestLog[2]['path']);
         // - Passed correct token
         $this->assertEquals(
             'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json

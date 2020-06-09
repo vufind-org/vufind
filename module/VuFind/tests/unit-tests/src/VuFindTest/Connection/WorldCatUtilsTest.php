@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Connection;
 
-use VuFind\Connection\WorldCatUtils;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client as HttpClient;
+use VuFind\Connection\WorldCatUtils;
 
 /**
  * Unit tests for WorldCat utility connector.

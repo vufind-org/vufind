@@ -27,9 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Http\Headers;
 
 /**
  * Alma ILS Driver
@@ -41,7 +41,7 @@ use Zend\Http\Headers;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -1448,7 +1448,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
 
         // Set HTTP method
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        $client->setMethod(\Laminas\Http\Request::METHOD_POST);
 
         // Set body
         $client->setRawBody(json_encode($body));

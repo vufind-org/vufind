@@ -27,12 +27,12 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Config\Config;
+use Laminas\View\Helper\HeadMeta;
 use VuFind\MetadataVocabulary\PluginManager;
 use VuFind\MetadataVocabulary\PRISM;
 use VuFind\View\Helper\Root\Metadata;
 use VuFindTest\RecordDriver\TestHarness;
-use Zend\Config\Config;
-use Zend\View\Helper\HeadMeta;
 
 /**
  * Metadata Test Class

@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\Config\Config;
 use VuFind\Search\Solr\SpellingProcessor;
 use VuFindTest\Unit\TestCase;
-use Zend\Config\Config;
 
 /**
  * Unit tests for spelling processor.

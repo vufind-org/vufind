@@ -31,6 +31,10 @@ namespace VuFind\Controller;
 
 use ArrayObject;
 use Exception;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
@@ -43,10 +47,6 @@ use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\Db\Adapter\Adapter;
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
 
 /**
  * Class controls VuFind upgrading.
@@ -342,8 +342,8 @@ class UpgradeController extends AbstractBase
     /**
      * Attempt to perform a MySQL upgrade; return either a string containing SQL
      * (if we are in "log SQL" mode), an empty string (if we are successful but
-     * not logging SQL) or a Zend Framework object representing forward/redirect
-     * (if we need to obtain user input).
+     * not logging SQL) or a Laminas object representing forward/redirect (if we
+     * need to obtain user input).
      *
      * @param Adapter $adapter Database adapter
      *
