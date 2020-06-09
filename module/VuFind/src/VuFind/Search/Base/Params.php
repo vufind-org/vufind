@@ -1019,17 +1019,6 @@ class Params
     }
 
     /**
-     * Get the raw filter list.
-     *
-     * @return     array
-     * @deprecated Obsolete since VuFind 6.1. Use getRawFilters() instead.
-     */
-    public function getFilters()
-    {
-        return $this->getRawFilters();
-    }
-
-    /**
      * Return an array structure containing information about all current filters.
      *
      * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from

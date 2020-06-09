@@ -1,6 +1,6 @@
 <?php
 /**
- * BrowZine DOI linker factory
+ * Factory for KohaRest ILS driver.
  *
  * PHP version 7
  *
@@ -20,25 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  DOI
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\DoiLinker;
+namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * BrowZine DOI linker factory
+ * Factory for KohaRest ILS driver.
  *
  * @category VuFind
- * @package  DOI
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
 {
     /**
      * Create an object
@@ -53,8 +53,6 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -62,11 +60,10 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backend = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('BrowZine');
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('BrowZine');
-        $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        return new $requestedName($backend->getConnector(), $config);
+        $sessionFactory = function ($namespace) use ($container) {
+            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
+        };
+        return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }
 }

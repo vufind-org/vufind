@@ -1,6 +1,6 @@
 <?php
 /**
- * LessCompiler Test Class
+ * CssPreCompilerTest Test Class
  *
  * PHP version 7
  *
@@ -28,9 +28,10 @@
 namespace VuFindTest;
 
 use VuFindTheme\LessCompiler;
+use VuFindTheme\ScssCompiler;
 
 /**
- * LessCompiler Test Class
+ * CssPreCompilerTest Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +39,7 @@ use VuFindTheme\LessCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LessCompilerTest extends Unit\TestCase
+class CssPreCompilerTest extends Unit\TestCase
 {
     /**
      * Our brave test subject
@@ -50,9 +51,68 @@ class LessCompilerTest extends Unit\TestCase
     /**
      * Our brave test subject
      *
-     * @var LessCompiler
+     * @var $extCompiler
      */
     protected $compiler;
+
+    /**
+     * Data Provider for extensions and classes
+     *
+     * @return void
+     */
+    public static function extClassProvider()
+    {
+        return [
+            ['less', LessCompiler::class],
+            ['scss', ScssCompiler::class]
+        ];
+    }
+
+    /**
+     * Create fixture files in temp folder
+     *
+     * @return void
+     */
+    protected static function makeFakeThemeStructure($ext)
+    {
+        $temp = sys_get_temp_dir();
+        $testDest = $temp . "/vufind_${ext}_comp_test/";
+        // Create directory structure, recursively
+        mkdir($testDest . "themes/child/$ext", 0777, true);
+        mkdir($testDest . 'themes/empty', 0777, true);
+        mkdir($testDest . 'themes/parent/css', 0777, true);
+        mkdir($testDest . "themes/parent/$ext/relative", 0777, true);
+        file_put_contents(
+            $testDest . 'themes/empty/theme.config.php',
+            '<?php return array("extends"=>false);'
+        );
+        file_put_contents(
+            $testDest . 'themes/parent/theme.config.php',
+            "<?php return array(\"extends\"=>false, \"$ext\"=>array(\"compiled.$ext\", \"relative/relative.$ext\"));"
+        );
+        file_put_contents(
+            $testDest . 'themes/child/theme.config.php',
+            "<?php return array(\"extends\"=>\"parent\", \"$ext\"=>array(\"compiled.$ext\", \"missing.$ext\"));"
+        );
+        file_put_contents(
+            $testDest . "themes/parent/$ext/compiled.$ext",
+            '@import "parent";'
+        );
+        file_put_contents(
+            $testDest . "themes/parent/$ext/parent.$ext",
+            'body { background:url("../fake.png");color:#00D; a { color:#F00; } }'
+        );
+        file_put_contents(
+            $testDest . "themes/parent/$ext/relative/relative.$ext",
+            'div {background:#EEE}'
+        );
+        file_put_contents(
+            $testDest . "themes/child/$ext/compiled.$ext",
+            $ext == 'less'
+                ? '@import "parent"; @black: #000; div {border:1px solid @black;}'
+                : '@import "parent"; $black: #000; div {border:1px solid $black;}'
+        );
+    }
 
     /**
      * Initial class setup.
@@ -61,41 +121,9 @@ class LessCompilerTest extends Unit\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        $temp = sys_get_temp_dir();
-        $testDest = $temp . '/vufind_less_comp_test/';
-        // Create directory structure, recursively
-        mkdir($testDest . 'themes/child/less', 0777, true);
-        mkdir($testDest . 'themes/empty', 0777, true);
-        mkdir($testDest . 'themes/parent/css', 0777, true);
-        mkdir($testDest . 'themes/parent/less/relative', 0777, true);
-        file_put_contents(
-            $testDest . 'themes/empty/theme.config.php',
-            '<?php return array("extends"=>false);'
-        );
-        file_put_contents(
-            $testDest . 'themes/parent/theme.config.php',
-            '<?php return array("extends"=>false, "less"=>array("compiled.less", "relative/relative.less"));'
-        );
-        file_put_contents(
-            $testDest . 'themes/child/theme.config.php',
-            '<?php return array("extends"=>"parent", "less"=>array("compiled.less", "missing.less"));'
-        );
-        file_put_contents(
-            $testDest . 'themes/parent/less/compiled.less',
-            '@import "parent";'
-        );
-        file_put_contents(
-            $testDest . 'themes/parent/less/parent.less',
-            'body { background:url("../fake.png");color:#00D; a { color:#F00; } }'
-        );
-        file_put_contents(
-            $testDest . 'themes/parent/less/relative/relative.less',
-            'div {background:#EEE}'
-        );
-        file_put_contents(
-            $testDest . 'themes/child/less/compiled.less',
-            '@import "parent"; @black: #000; div {border:1px solid @black;}'
-        );
+        foreach (self::extClassProvider() as [$ext]) {
+            self::makeFakeThemeStructure($ext);
+        }
     }
 
     /**
@@ -107,26 +135,58 @@ class LessCompilerTest extends Unit\TestCase
     {
         $temp = sys_get_temp_dir();
         $perms = fileperms($temp);
-        $this->testDest = $temp . '/vufind_less_comp_test/';
         if (!($perms & 0x0002)) {
             $this->markTestSkipped('No write permissions in system temporary file');
         }
-        $this->compiler = new LessCompiler();
-        $this->compiler->setBasePath($temp . '/vufind_less_comp_test');
-        $this->compiler->setTempPath($temp . '/vufind_less_comp_test/cache');
     }
 
     /**
-     * Final teardown method.
+     * Assign appropriate values to $this->testDest and $this->compiler
      *
      * @return void
      */
-    public static function tearDownAfterClass(): void
+    protected function setupCompiler($ext, $class)
     {
         $temp = sys_get_temp_dir();
-        $testDest = $temp . '/vufind_less_comp_test/';
-        // Delete directory structure
-        self::delTree($testDest);
+        $this->testDest = "$temp/vufind_${ext}_comp_test/";
+        $this->compiler = new $class();
+        $this->compiler->setBasePath("$temp/vufind_${ext}_comp_test");
+        $this->compiler->setTempPath("$temp/vufind_${ext}_comp_test/cache");
+    }
+
+    /**
+     * Test compiling a single theme.
+     *
+     * @dataProvider extClassProvider
+     *
+     * @return void
+     */
+    public function testThemeCompile($ext, $class)
+    {
+        $this->setupCompiler($ext, $class);
+        $this->compiler->compile(['child']);
+        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
+        $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
+        unlink($this->testDest . 'themes/child/css/compiled.css');
+    }
+
+    /**
+     * Test compiling all themes (default).
+     *
+     * @dataProvider extClassProvider
+     *
+     * @return void
+     */
+    public function testAllCompile($ext, $class)
+    {
+        $this->setupCompiler($ext, $class);
+        $this->compiler->compile([]);
+        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
+        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
+        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
+        unlink($this->testDest . 'themes/child/css/compiled.css');
+        unlink($this->testDest . 'themes/parent/css/compiled.css');
+        unlink($this->testDest . 'themes/parent/css/relative/relative.css');
     }
 
     /**
@@ -142,37 +202,22 @@ class LessCompilerTest extends Unit\TestCase
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             is_dir("$dir/$file")
-                ? self::delTree("$dir/$file") : unlink("$dir/$file");
+                ? self::delTree("$dir/$file")
+                : unlink("$dir/$file");
         }
         rmdir($dir);
     }
 
     /**
-     * Test compiling a single theme.
+     * Final teardown method.
      *
      * @return void
      */
-    public function testThemeCompile()
+    public static function tearDownAfterClass(): void
     {
-        $this->compiler->compile(['child']);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
-        unlink($this->testDest . 'themes/child/css/compiled.css');
-    }
-
-    /**
-     * Test compiling all themes.
-     *
-     * @return void
-     */
-    public function testAllCompile()
-    {
-        $this->compiler->compile([]);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
-        unlink($this->testDest . 'themes/child/css/compiled.css');
-        unlink($this->testDest . 'themes/parent/css/compiled.css');
-        unlink($this->testDest . 'themes/parent/css/relative/relative.css');
+        $temp = sys_get_temp_dir();
+        // Delete directory structure
+        self::delTree("$temp/vufind_less_comp_test/");
+        self::delTree("$temp/vufind_scss_comp_test/");
     }
 }

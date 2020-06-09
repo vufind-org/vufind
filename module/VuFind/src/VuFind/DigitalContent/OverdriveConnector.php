@@ -795,6 +795,9 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf->showMyContent
             = strtolower($this->recordConfig->Overdrive->showMyContent);
         $conf->noAccessString = $this->recordConfig->Overdrive->noAccessString;
+        $admin = $this->recordConfig->Overdrive->showOverdriveAdminMenu ?? false;
+        $conf->showOverdriveAdminMenu
+            = (strtolower($admin) === 'false') ? false : $admin;
         $conf->tokenCacheLifetime
             = $this->recordConfig->API->tokenCacheLifetime;
         return $conf;

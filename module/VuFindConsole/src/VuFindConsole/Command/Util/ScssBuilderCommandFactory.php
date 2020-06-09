@@ -1,6 +1,6 @@
 <?php
 /**
- * Console command: build CSS from LESS.
+ * Factory for Util/ScssBuilder command.
  *
  * PHP version 7
  *
@@ -27,12 +27,11 @@
  */
 namespace VuFindConsole\Command\Util;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\LessCompiler;
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Console command: build CSS from LESS.
+ * Factory for Util/ScssBuilder command.
  *
  * @category VuFind
  * @package  Console
@@ -40,31 +39,27 @@ use VuFindTheme\LessCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CssBuilderCommand extends AbstractCssBuilderCommand
+class ScssBuilderCommandFactory implements FactoryInterface
 {
     /**
-     * The name of the command (the part after "public/index.php")
+     * Create an object
      *
-     * @var string
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
+     *
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException if any other error occurs
      */
-    protected static $defaultName = 'util/cssBuilder';
-
-    /**
-     * Name of precompiler format
-     *
-     * @var string
-     */
-    protected $format = 'LESS';
-
-    /**
-     * Build the LESS compiler.
-     *
-     * @param OutputInterface $output Output object
-     *
-     * @return LessCompiler
-     */
-    protected function getCompiler(OutputInterface $output)
-    {
-        return new LessCompiler($output);
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
+        $cacheDir = $cacheManager->getCacheDir() . 'scss/';
+        return new $requestedName($cacheDir, ...($options ?? []));
     }
 }
