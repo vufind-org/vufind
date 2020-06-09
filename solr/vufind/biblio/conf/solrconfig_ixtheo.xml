@@ -739,9 +739,9 @@
   </queryResponseWriter>
 
   <!-- CUSTOM queryParsers -->
-  <queryParser class="de.uni_tuebingen.ub.ixTheo.bibleRangeSearch.BibleRangeParserPlugin" name="bibleRangeParser" />
-  <queryParser class="de.uni_tuebingen.ub.ixTheo.canonesRangeSearch.CanonesRangeParserPlugin" name="canonesRangeParser" />
-  <queryParser class="de.uni_tuebingen.ub.ixTheo.timeAspectRangeSearch.TimeAspectRangeParserPlugin" name="timeAspectRangeParser" />
+  <queryParser class="de.uni_tuebingen.ub.ixTheo.bibleDateRangeSearch.BibleDateRangeParserPlugin" name="bibleDateRangeParser" />
+  <queryParser class="de.uni_tuebingen.ub.ixTheo.canonesDateRangeSearch.CanonesDateRangeParserPlugin" name="canonesDateRangeParser" />
+  <queryParser class="de.uni_tuebingen.ub.ixTheo.timeAspectDateRangeSearch.TimeAspectDateRangeParserPlugin" name="timeAspectDateRangeParser" />
   <queryParser class="de.uni_tuebingen.ub.ixTheo.multiLanguageQuery.MultiLanguageQueryParserPlugin" name="multiLanguageQueryParser" />
   <transformer class="de.uni_tuebingen.ub.ixTheo.MultiLanguageDocTransformerFactory" name="multiLanguageDocTransformer">
     <bool name="enabled">true</bool>
