@@ -24,7 +24,7 @@ $config = [
     'router' => [
         'routes' => [
             'adminApi' => [
-                'type' => 'Zend\Router\Http\Segment',
+                'type' => 'Laminas\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/adminapi[/v1][/]',
@@ -35,7 +35,7 @@ $config = [
                 ]
             ],
             'apiHomeBareV1' => [
-                'type' => 'Zend\Router\Http\Segment',
+                'type' => 'Laminas\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/v1[/]',
@@ -46,7 +46,7 @@ $config = [
                 ],
             ],
             'authApiV1' => [
-                'type' => 'Zend\Router\Http\Segment',
+                'type' => 'Laminas\Router\Http\Segment',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/auth/[:action]',
@@ -56,7 +56,7 @@ $config = [
                 ]
             ],
             'searchApiBareV1' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/v1/search',
@@ -67,7 +67,7 @@ $config = [
                 ]
             ],
             'recordApiBareV1' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/v1/record',

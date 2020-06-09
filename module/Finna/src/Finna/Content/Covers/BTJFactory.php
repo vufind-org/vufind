@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class BTJFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class BTJFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

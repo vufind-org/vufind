@@ -28,7 +28,7 @@
 namespace FinnaConsole\Service;
 
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Zend\Stdlib\RequestInterface as Request;
+use Laminas\Stdlib\RequestInterface as Request;
 
 /**
  * Console service for importing record comments.

@@ -73,7 +73,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
     /**
      * Session
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session = null;
 
@@ -90,13 +90,13 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
      * @param \VuFind\Search\Results\PluginManager $results         Results
      * plugin manager
      * @param \Finna\Search\Solr\AuthorityHelper   $authorityHelper Authority helper
-     * @param \Zend\Session\Container              $session         Session
+     * @param \Laminas\Session\Container              $session         Session
      * @param \VuFind\Cookie\CookieManager         $cookieManager   Cookiemanager
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper,
-        \Zend\Session\Container $session,
+        \Laminas\Session\Container $session,
         \VuFind\Cookie\CookieManager $cookieManager
     ) {
         $this->resultsManager = $results;

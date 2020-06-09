@@ -29,7 +29,7 @@
  */
 namespace Finna\RecordTab;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Record Tab Factory Class
@@ -89,7 +89,7 @@ class Factory
     {
         $capabilities = $sm->get(\VuFind\Config\AccountCapabilities::class);
         $controllerPluginManager
-            = $sm->get(\Zend\Mvc\Controller\PluginManager::class);
+            = $sm->get(\Laminas\Mvc\Controller\PluginManager::class);
         $recaptcha = $controllerPluginManager
             ->get(\VuFind\Controller\Plugin\Recaptcha::class);
         $useRecaptcha = $recaptcha->active('userComments');

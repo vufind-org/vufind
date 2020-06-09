@@ -28,7 +28,7 @@
  */
 namespace Finna\Controller;
 
-use Zend\Console\Console;
+use Laminas\Console\Console;
 
 /**
  * Online payment controller trait.
@@ -355,7 +355,7 @@ trait FinnaOnlinePaymentControllerTrait
     {
         $this->setLogger($this->serviceLocator->get(\VuFind\Log\Logger::class));
         if (!Console::isConsole()) {
-            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
+            $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
         } else {
             $this->logException($e);
         }

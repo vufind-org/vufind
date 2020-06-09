@@ -65,7 +65,7 @@ $(document).ready(function() {
 });
 JS;
       ?>
-      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
     <?php endif; ?>
     </fieldset>
   <?php endforeach; ?>

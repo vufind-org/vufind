@@ -8,7 +8,7 @@
   $dom->formatOutput = true;
   if ($dom->loadXML($rawFieldData['fullrecord'])) {
     echo $this->escapeHtml($dom->saveXML());
-    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/highlight.pack.js');
+    $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/highlight.pack.js');
     echo $this->inlineScript();
     $script = <<<JS
 $(document).ready(function() {
@@ -17,7 +17,7 @@ $(document).ready(function() {
   });
 });
 JS;
-    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
   } else {
     echo $this->escapeHtml($rawFieldData['fullrecord']);
   }

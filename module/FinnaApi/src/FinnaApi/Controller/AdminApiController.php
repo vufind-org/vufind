@@ -48,7 +48,7 @@ class AdminApiController extends \VuFindApi\Controller\ApiController
     /**
      * Clears the view's cache.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function clearCacheAction()
     {

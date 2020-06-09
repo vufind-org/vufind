@@ -52,7 +52,7 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Datasource configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $datasourceConfig;
 
@@ -115,9 +115,9 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config                 $config           VuFind
+     * @param \Laminas\Config\Config                 $config           VuFind
      * configuration
-     * @param \Zend\Config\Config                 $datasourceConfig Datasource
+     * @param \Laminas\Config\Config                 $datasourceConfig Datasource
      * configuration
      * @param \VuFind\Record\Loader               $loader           Record loader
      * @param \Finna\View\Helper\Root\RecordImage $recordImage      Record image
@@ -127,8 +127,8 @@ class Record extends \VuFind\View\Helper\Root\Record
      * @param \VuFind\RecordTab\TabManager        $tabManager       Tab manager
      */
     public function __construct(
-        \Zend\Config\Config $config,
-        \Zend\Config\Config $datasourceConfig,
+        \Laminas\Config\Config $config,
+        \Laminas\Config\Config $datasourceConfig,
         \VuFind\Record\Loader $loader,
         \Finna\View\Helper\Root\RecordImage $recordImage,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper,

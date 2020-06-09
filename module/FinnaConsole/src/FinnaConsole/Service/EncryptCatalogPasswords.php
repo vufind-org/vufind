@@ -52,7 +52,7 @@ class EncryptCatalogPasswords extends AbstractService
     /**
      * Main configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -60,10 +60,10 @@ class EncryptCatalogPasswords extends AbstractService
      * Constructor
      *
      * @param \VuFind\Db\Table\User $table  User table.
-     * @param \Zend\Config\Config   $config Main configuration.
+     * @param \Laminas\Config\Config   $config Main configuration.
      */
     public function __construct(
-        \VuFind\Db\Table\User $table, \Zend\Config\Config $config
+        \VuFind\Db\Table\User $table, \Laminas\Config\Config $config
     ) {
         $this->table = $table;
         $this->config = $config;

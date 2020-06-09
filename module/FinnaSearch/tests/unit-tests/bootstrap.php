@@ -8,9 +8,9 @@
  * @copyright Copyright (C) Villanova University 2011
  */
 require_once'Zend/Loader/AutoloaderFactory.php';
-\Zend\Loader\AutoloaderFactory::factory(
+\Laminas\Loader\AutoloaderFactory::factory(
     [
-        'Zend\Loader\StandardAutoloader' => [
+        'Laminas\Loader\StandardAutoloader' => [
             'namespaces' => [
                 'FinnaSearch' => realpath(__DIR__ . '/../../src/FinnaSearch'),
                 'VuFindTest' => realpath(__DIR__ . '/src/VuFindTest'),

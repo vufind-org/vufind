@@ -37,21 +37,21 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class HeadTitle extends \Zend\View\Helper\HeadTitle
+class HeadTitle extends \Laminas\View\Helper\HeadTitle
 {
     /**
      * Main configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Main configuration
+     * @param \Laminas\Config\Config $config Main configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }

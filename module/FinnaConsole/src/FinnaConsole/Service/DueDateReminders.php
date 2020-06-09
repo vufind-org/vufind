@@ -29,10 +29,10 @@
  */
 namespace FinnaConsole\Service;
 
-use Zend\ServiceManager\ServiceManager;
-use Zend\Stdlib\RequestInterface as Request;
-use Zend\View\Resolver\AggregateResolver;
-use Zend\View\Resolver\TemplatePathStack;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\Stdlib\RequestInterface as Request;
+use Laminas\View\Resolver\AggregateResolver;
+use Laminas\View\Resolver\TemplatePathStack;
 
 /**
  * Console service for sending due date reminders.
@@ -76,14 +76,14 @@ class DueDateReminders extends AbstractService
     /**
      * Main configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $mainConfig = null;
 
     /**
      * Datasource configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $datasourceConfig = null;
 
@@ -139,7 +139,7 @@ class DueDateReminders extends AbstractService
     /**
      * View renderer
      *
-     * @var Zend\View\Renderer\PhpRenderer
+     * @var Laminas\View\Renderer\PhpRenderer
      */
     protected $viewRenderer = null;
 
@@ -182,7 +182,7 @@ class DueDateReminders extends AbstractService
      *                                                             reminder table.
      * @param VuFind\ILS\Connection          $catalog              ILS connection.
      * @param VuFind\Config                  $configReader         Config reader.
-     * @param Zend\View\Renderer\PhpRenderer $renderer             View renderer.
+     * @param Laminas\View\Renderer\PhpRenderer $renderer             View renderer.
      * @param VuFind\RecordLoader            $recordLoader         Record loader.
      * @param VuFind\Crypt\HMAC              $hmac                 HMAC.
      * @param VuFind\Translator              $translator           Translator.

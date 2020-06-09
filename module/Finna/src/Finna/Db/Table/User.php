@@ -29,7 +29,7 @@
  */
 namespace Finna\Db\Table;
 
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Select;
 
 /**
  * Table Definition for user

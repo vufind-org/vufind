@@ -45,7 +45,7 @@ class Comments extends \VuFind\Db\Table\Comments
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
-     * @return array|\Zend\Db\ResultSet\AbstractResultSet
+     * @return array|\Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getForResource($id, $source = DEFAULT_SEARCH_BACKEND)
     {
@@ -59,7 +59,7 @@ class Comments extends \VuFind\Db\Table\Comments
      * @param string $id     Record ID to look up
      * @param int    $userId User ID
      *
-     * @return array|\Zend\Db\ResultSet\AbstractResultSet
+     * @return array|\Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getForResourceByUser($id, $userId)
     {

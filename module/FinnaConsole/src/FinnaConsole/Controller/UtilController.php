@@ -43,7 +43,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Sends reminders for expiring user accounts
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function accountExpirationRemindersAction()
     {
@@ -53,7 +53,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Sends due date reminders.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function dueDateRemindersAction()
     {
@@ -63,7 +63,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Encypt catalog passwords.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function encryptCatalogPasswordsAction()
     {
@@ -74,7 +74,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
      * Command-line tool to clear unwanted entries
      * from finna cache database table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expireFinnaCacheAction()
     {
@@ -94,7 +94,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
      * Command-line tool to clear unwanted entries
      * from session database table.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expiresessionsAction()
     {
@@ -114,7 +114,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Delete expired user accounts.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function expireUsersAction()
     {
@@ -124,7 +124,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Import comments
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function importCommentsAction()
     {
@@ -134,7 +134,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Process unregistered online paymenets.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function onlinePaymentMonitorAction()
     {
@@ -144,7 +144,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Send scheduled alerts.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function scheduledAlertsAction()
     {
@@ -157,7 +157,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Update search hashes. One-off after VuFind 1 migration.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function updateSearchHashesAction()
     {
@@ -167,7 +167,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Verify record links.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function verifyRecordLinksAction()
     {
@@ -177,7 +177,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     /**
      * Verify resource metadata.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function verifyResourceMetadataAction()
     {

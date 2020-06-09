@@ -7,7 +7,7 @@
      if ($user) {
         $inappropriateComments = $this->driver->tryMethod('getInappropriateComments', [$user->id]);
      } else {
-        $session = new \Zend\Session\Container('inappropriateComments');
+        $session = new \Laminas\Session\Container('inappropriateComments');
         if (isset($session->comments)) {
            $inappropriateComments = $session->comments;
         }
@@ -63,7 +63,7 @@
 <?php endif; ?>
 <?=
   $this->inlineScript(
-    \Zend\View\Helper\HeadScript::SCRIPT,
+    \Laminas\View\Helper\HeadScript::SCRIPT,
     '$(document).ready(function() {
         finna.comments.initCommentList('
         . ($allowCommenting ? 'true' : 'false') . ','

@@ -31,8 +31,8 @@ namespace FinnaConsole\Service;
 use Finna\Db\Row\User;
 use Finna\Db\Table\Transaction;
 
-use Zend\ServiceManager\ServiceManager;
-use Zend\Stdlib\RequestInterface as Request;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\Stdlib\RequestInterface as Request;
 
 /**
  * Console service for processing unregistered online payments.
@@ -56,14 +56,14 @@ class OnlinePaymentMonitor extends AbstractService
     /**
      * Configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $mainConfig = null;
 
     /**
      * Datasource configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $datasourceConfig = null;
 
@@ -101,14 +101,14 @@ class OnlinePaymentMonitor extends AbstractService
     /**
      * View manager
      *
-     * @var Zend\Mvc\View\Console\ViewManage
+     * @var Laminas\Mvc\View\Console\ViewManage
      */
     protected $viewManager = null;
 
     /**
      * View renderer
      *
-     * @var Zend\View\Renderer\PhpRenderer
+     * @var Laminas\View\Renderer\PhpRenderer
      */
     protected $viewRenderer = null;
 
@@ -148,9 +148,9 @@ class OnlinePaymentMonitor extends AbstractService
      * @param \Finna\Db\Table\Transaction         $transactionTable Transaction table
      * @param \Finna\Db\Table\User                $userTable        User table
      * @param \VuFind\Config                      $configReader     Config reader
-     * @param \Zend\ServiceManager\ServiceManager $serviceManager   Service manager.
-     * @param \Zend\Mvc\View\Console\ViewManage   $viewManager      View manager
-     * @param Zend\View\Renderer\PhpRenderer      $viewRenderer     View renderer
+     * @param \Laminas\ServiceManager\ServiceManager $serviceManager   Service manager.
+     * @param \Laminas\Mvc\View\Console\ViewManage   $viewManager      View manager
+     * @param Laminas\View\Renderer\PhpRenderer      $viewRenderer     View renderer
      */
     public function __construct($catalog, $transactionTable, $userTable,
         $configReader, $serviceManager, $viewManager, $viewRenderer

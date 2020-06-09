@@ -190,5 +190,5 @@
 </div>
 <?=$this->record($this->driver)->renderTemplate('toolbar_mobile.phtml') ?>
 <div>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET') ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET') ?>
 <!-- END of: finna - collection/view.phtml -->

@@ -27,8 +27,8 @@
  */
 namespace FinnaApi\Formatter;
 
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\View\HelperPluginManager;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\View\HelperPluginManager;
 
 /**
  * Record formatter for API responses

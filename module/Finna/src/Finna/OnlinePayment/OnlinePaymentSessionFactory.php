@@ -30,7 +30,7 @@
 namespace Finna\OnlinePayment;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Online payment session factory.
@@ -64,9 +64,9 @@ class OnlinePaymentSessionFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new \Zend\Session\Container(
+        return new \Laminas\Session\Container(
             'OnlinePayment',
-            $container->get(\Zend\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class)
         );
     }
 }

@@ -28,7 +28,7 @@
  */
 namespace Finna\Search\Solr;
 
-use Zend\EventManager\EventInterface;
+use Laminas\EventManager\EventInterface;
 
 /**
  * Solr merged record handling listener.
@@ -217,7 +217,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         // Sort sources alphabetically if necessary
         if (!empty($mainConfig->Record->sort_sources)) {
             $translator
-                = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class);
+                = $this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class);
             usort(
                 $recordSources,
                 function ($a, $b) use ($translator) {

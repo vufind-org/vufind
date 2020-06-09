@@ -53,7 +53,7 @@ class Search extends \VuFind\Db\Table\Search
 
         $result = $this->getAdapter()->query(
             $sql,
-            \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE
+            \Laminas\Db\Adapter\Adapter::QUERY_MODE_EXECUTE
         );
         $urls = [];
         foreach ($result as $res) {
@@ -87,7 +87,7 @@ class Search extends \VuFind\Db\Table\Search
      *
      * @param int $uid User ID
      *
-     * @return \Zend\Db\ResultSet\ResultSet
+     * @return \Laminas\Db\ResultSet\ResultSet
      */
     public function getSavedSearches($uid)
     {

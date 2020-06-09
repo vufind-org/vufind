@@ -30,7 +30,7 @@ namespace Finna\Controller;
 
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Zend\Stdlib\Parameters;
+use Laminas\Stdlib\Parameters;
 
 /**
  * Controller for the public favorite lists.

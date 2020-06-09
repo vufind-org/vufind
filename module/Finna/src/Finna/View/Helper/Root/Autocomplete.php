@@ -36,21 +36,21 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Autocomplete extends \Zend\View\Helper\AbstractHelper
+class Autocomplete extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Search configuration.
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $searchConfig = null;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $searchConfig Search configiration.
+     * @param \Laminas\Config\Config $searchConfig Search configiration.
      */
-    public function __construct(\Zend\Config\Config $searchConfig)
+    public function __construct(\Laminas\Config\Config $searchConfig)
     {
         $this->searchConfig = $searchConfig;
     }

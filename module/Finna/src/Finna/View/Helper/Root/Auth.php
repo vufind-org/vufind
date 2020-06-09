@@ -44,11 +44,11 @@ class Auth extends \VuFind\View\Helper\Root\Auth
      * @param \VuFind\Auth\Manager              $manager          Authentication
      * manager
      * @param \VuFind\Auth\ILSAuthenticator     $ilsAuthenticator ILS Authenticator
-     * @param \Zend\Http\PhpEnvironment\Request $request          Request
+     * @param \Laminas\Http\PhpEnvironment\Request $request          Request
      */
     public function __construct(\VuFind\Auth\Manager $manager,
         \VuFind\Auth\ILSAuthenticator $ilsAuthenticator,
-        \Zend\Http\PhpEnvironment\Request $request
+        \Laminas\Http\PhpEnvironment\Request $request
     ) {
         parent::__construct($manager, $ilsAuthenticator);
         $this->request = $request;

@@ -36,7 +36,7 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class SearchTabsRecommendations extends \Zend\View\Helper\AbstractHelper
+class SearchTabsRecommendations extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Recommendation config

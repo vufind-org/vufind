@@ -29,7 +29,7 @@ namespace Finna\Db\Table;
 
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 /**
  * Table Definition for cache

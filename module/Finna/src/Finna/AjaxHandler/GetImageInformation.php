@@ -33,8 +33,8 @@ use VuFind\Db\Table\UserList;
 use VuFind\Record\Loader;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * GetImageInformation AJAX handler

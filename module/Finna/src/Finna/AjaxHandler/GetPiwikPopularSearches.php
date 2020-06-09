@@ -30,9 +30,9 @@ namespace Finna\AjaxHandler;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * GetPiwikPopularSearches AJAX handler
@@ -45,7 +45,7 @@ use Zend\View\Renderer\RendererInterface;
  */
 class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
     implements TranslatorAwareInterface, \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

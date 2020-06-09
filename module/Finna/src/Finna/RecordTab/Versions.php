@@ -47,16 +47,16 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     /**
      * Main configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param \Laminas\Config\Config $config Configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }

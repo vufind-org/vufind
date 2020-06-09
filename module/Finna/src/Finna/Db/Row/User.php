@@ -29,7 +29,7 @@
  */
 namespace Finna\Db\Row;
 
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Row Definition for user
@@ -67,7 +67,7 @@ class User extends \VuFind\Db\Row\User
     /**
      * Get all of the lists associated with this user.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getLists()
     {
@@ -163,13 +163,13 @@ class User extends \VuFind\Db\Row\User
     /**
      * Get all library cards associated with the user.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      * @throws \VuFind\Exception\LibraryCard
      */
     public function getLibraryCards()
     {
         if (!$this->libraryCardsEnabled()) {
-            return new \Zend\Db\ResultSet\ResultSet();
+            return new \Laminas\Db\ResultSet\ResultSet();
         }
 
         $userId = $this->id;

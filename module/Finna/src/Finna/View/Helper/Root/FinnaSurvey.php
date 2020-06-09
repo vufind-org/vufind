@@ -36,21 +36,21 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class FinnaSurvey extends \Zend\View\Helper\AbstractHelper
+class FinnaSurvey extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param \Laminas\Config\Config $config Configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }

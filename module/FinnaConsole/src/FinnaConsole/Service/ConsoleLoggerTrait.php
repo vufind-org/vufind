@@ -28,8 +28,8 @@
  */
 namespace FinnaConsole\Service;
 
-use Zend\Log\Logger;
-use Zend\Log\Writer\Stream;
+use Laminas\Log\Logger;
+use Laminas\Log\Writer\Stream;
 
 /**
  * Trait for logs in console services.

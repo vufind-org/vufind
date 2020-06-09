@@ -27,7 +27,7 @@
  */
 namespace Finna\View\Helper\Root;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Linkify a string so that the links become clickable HTML

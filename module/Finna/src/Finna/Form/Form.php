@@ -90,7 +90,7 @@ class Form extends \VuFind\Form\Form
     /**
      * View helper manager
      *
-     * @var \Zend\View\HelperPluginManager
+     * @var \Laminas\View\HelperPluginManager
      */
     protected $viewHelperManager = null;
 
@@ -169,7 +169,7 @@ class Form extends \VuFind\Form\Form
     /**
      * Set view helper manager
      *
-     * @param \Zend\View\HelperPluginManager $viewHelperManager manager
+     * @param \Laminas\View\HelperPluginManager $viewHelperManager manager
      *
      * @return void
      */
@@ -471,7 +471,7 @@ class Form extends \VuFind\Form\Form
     protected function getFormElementClass($type)
     {
         if ($type === 'hidden') {
-            return '\Zend\Form\Element\Hidden';
+            return '\Laminas\Form\Element\Hidden';
         }
 
         return parent::getFormElementClass($type);

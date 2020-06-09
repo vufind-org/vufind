@@ -29,7 +29,7 @@ namespace Finna\OnlinePayment;
 
 use Finna\OnlinePayment\TurkuPayment\TurkuPaytrailE2;
 
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 /**
  * Turku online payment handler module.
@@ -180,7 +180,7 @@ class TurkuPayment extends Paytrail
     /**
      * Process the response from payment service.
      *
-     * @param Zend\Http\Request $request Request
+     * @param Laminas\Http\Request $request Request
      *
      * @return string error message (not translated)
      *   or associative array with keys:

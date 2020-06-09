@@ -44,7 +44,7 @@ class RecordController extends \VuFind\Controller\RecordController
     /**
      * Create record feedback form and send feedback to correct recipient.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      * @throws \Exception
      */
     public function feedbackAction()
@@ -89,7 +89,7 @@ class RecordController extends \VuFind\Controller\RecordController
         $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
         $client = $httpService->createClient(
             $config->NormalizationPreview->url,
-            \Zend\Http\Request::METHOD_POST
+            \Laminas\Http\Request::METHOD_POST
         );
         $client->setParameterPost(
             ['data' => $data, 'format' => $format, 'source' => $source]
@@ -712,7 +712,7 @@ class RecordController extends \VuFind\Controller\RecordController
         $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
         $client = $httpService->createClient(
             $config->NormalizationPreview->url,
-            \Zend\Http\Request::METHOD_POST
+            \Laminas\Http\Request::METHOD_POST
         );
         $client->setParameterPost(
             ['func' => 'get_sources']
@@ -748,7 +748,7 @@ class RecordController extends \VuFind\Controller\RecordController
                 return $res;
             }
         );
-        $view = new \Zend\View\Model\ViewModel(
+        $view = new \Laminas\View\Model\ViewModel(
             [
                 'sources' => $sources
             ]

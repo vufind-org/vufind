@@ -94,7 +94,7 @@ class VerifyResourceMetadata extends AbstractService
      *
      * @return boolean success
      */
-    public function run($arguments, \Zend\Stdlib\RequestInterface $request)
+    public function run($arguments, \Laminas\Stdlib\RequestInterface $request)
     {
         $this->msg('Resource metadata verification started');
         $count = $fixed = 0;

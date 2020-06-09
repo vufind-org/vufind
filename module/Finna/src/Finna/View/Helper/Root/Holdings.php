@@ -28,7 +28,7 @@
  */
 namespace Finna\View\Helper\Root;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Holdings Settings Helper
@@ -45,16 +45,16 @@ class Holdings extends AbstractHelper
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      */
-    public function __construct(\Zend\Config\Config $config = null)
+    public function __construct(\Laminas\Config\Config $config = null)
     {
         $this->config = $config;
     }

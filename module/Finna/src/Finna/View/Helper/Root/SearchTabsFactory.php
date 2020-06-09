@@ -30,7 +30,7 @@
 namespace Finna\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * SearchTabs helper factory.
@@ -68,7 +68,7 @@ class SearchTabsFactory implements FactoryInterface
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewHelperManager')->get('url'),
             $container->get(\VuFind\Search\SearchTabsHelper::class),
-            $container->get(\Zend\Session\SessionManager::class),
+            $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Db\Table\PluginManager::class)
         );
     }

@@ -959,7 +959,7 @@ url             = https://www.myendnoteweb.com/EndNoteWeb.html
 ;port = 8000
 
 ; Default HTTP settings can be loaded here. These values will be passed to
-; the \Zend\Http\Client's setOptions method.
+; the \Laminas\Http\Client's setOptions method.
 [Http]
 ;sslcapath = "/etc/ssl/certs"
 sslcafile = "/etc/ssl/certs/ca-bundle.crt"

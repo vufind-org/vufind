@@ -41,7 +41,7 @@ class BarcodeController extends \VuFind\Controller\AbstractBase
     /**
      * Send barcode data for display in the view
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function showAction()
     {

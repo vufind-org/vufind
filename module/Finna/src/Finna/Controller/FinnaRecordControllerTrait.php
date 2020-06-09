@@ -27,7 +27,7 @@
  */
 namespace Finna\Controller;
 
-use Zend\Escaper\Escaper;
+use Laminas\Escaper\Escaper;
 
 /**
  * Finna record controller trait.
@@ -45,7 +45,7 @@ trait FinnaRecordControllerTrait
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {

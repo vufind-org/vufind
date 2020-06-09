@@ -49,7 +49,7 @@ $locations = $this->driver->getLocations();
 
 <?php
   $this->inlineScript(
-    \Zend\View\Helper\HeadScript::SCRIPT,
+    \Laminas\View\Helper\HeadScript::SCRIPT,
     'finna.record.setupLocationsEad3Tab();',
     'SET'
   );

@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetAuthorityFullInfoFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -74,10 +74,10 @@ class GetAuthorityFullInfoFactory
             $recommendManager->get('authorityrecommend'),
             $resultsManager,
             $tablePluginManager->get(\VuFind\Db\Table\Search::class),
-            new \Zend\Session\Container(
-                'Authority', $container->get(\Zend\Session\SessionManager::class)
+            new \Laminas\Session\Container(
+                'Authority', $container->get(\Laminas\Session\SessionManager::class)
             ),
-            $container->get(\Zend\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class)
         );
         return $result;
     }

@@ -75,7 +75,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     /**
      * Configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -91,13 +91,13 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
      *
      * @param AbstractBackend     $primary   Primary backend
      * @param AbstractBackend     $secondary Secondary backend
-     * @param \Zend\Config\Config $config    Blender configuration
+     * @param \Laminas\Config\Config $config    Blender configuration
      * @param array               $mappings  Mappings configuration
      *
      * @return void
      */
     public function __construct(AbstractBackend $primary, AbstractBackend $secondary,
-        \Zend\Config\Config $config, $mappings
+        \Laminas\Config\Config $config, $mappings
     ) {
         $this->primaryBackend = $primary;
         $this->secondaryBackend = $secondary;

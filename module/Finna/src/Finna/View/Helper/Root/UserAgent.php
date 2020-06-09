@@ -36,12 +36,12 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class UserAgent extends \Zend\View\Helper\AbstractHelper
+class UserAgent extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Request object
      *
-     * @var \Zend\Http\PhpEnvironment\Request
+     * @var \Laminas\Http\PhpEnvironment\Request
      */
     protected $request;
 
@@ -55,9 +55,9 @@ class UserAgent extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Zend\Http\PhpEnvironment\Request $request Request
+     * @param Laminas\Http\PhpEnvironment\Request $request Request
      */
-    public function __construct(\Zend\Http\PhpEnvironment\Request $request)
+    public function __construct(\Laminas\Http\PhpEnvironment\Request $request)
     {
         $this->request = $request;
     }

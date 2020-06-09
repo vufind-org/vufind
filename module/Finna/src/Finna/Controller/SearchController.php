@@ -203,7 +203,7 @@ class SearchController extends \VuFind\Controller\SearchController
     /**
      * StreetSearch action.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function streetSearchAction()
     {
@@ -213,7 +213,7 @@ class SearchController extends \VuFind\Controller\SearchController
     /**
      * StreetSearch action alias.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function streetAction()
     {

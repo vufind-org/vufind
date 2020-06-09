@@ -69,11 +69,11 @@ class ScheduledSearchController
     /**
      * Set the request for params
      *
-     * @param \Zend\Console\Request $request Request
+     * @param \Laminas\Console\Request $request Request
      *
      * @return void
      */
-    public function setRequest(\Zend\Console\Request $request)
+    public function setRequest(\Laminas\Console\Request $request)
     {
         $this->request = $request;
     }
@@ -81,7 +81,7 @@ class ScheduledSearchController
     /**
      * Send notifications.
      *
-     * @return \Zend\Console\Response
+     * @return \Laminas\Console\Response
      */
     public function notifyAction()
     {

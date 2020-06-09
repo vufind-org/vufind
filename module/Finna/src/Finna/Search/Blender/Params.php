@@ -53,7 +53,7 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Blender configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $blenderConfig;
 
@@ -73,7 +73,7 @@ class Params extends \Finna\Search\Solr\Params
      * @param AuthorityHelper              $authorityHelper Authority helper
      * @param \VuFind\Date\Converter       $dateConverter   Date converter
      * @param \VuFind\Search\Base\Params   $secondaryParams Secondary search params
-     * @param \Zend\Config\Config          $blenderConfig   Blender configuration
+     * @param \Laminas\Config\Config          $blenderConfig   Blender configuration
      * @param array                        $mappings        Blender mappings
      */
     public function __construct(\VuFind\Search\Base\Options $options,
@@ -82,7 +82,7 @@ class Params extends \Finna\Search\Solr\Params
         AuthorityHelper $authorityHelper,
         \VuFind\Date\Converter $dateConverter,
         \VuFind\Search\Base\Params $secondaryParams,
-        \Zend\Config\Config $blenderConfig,
+        \Laminas\Config\Config $blenderConfig,
         $mappings
     ) {
         parent::__construct(

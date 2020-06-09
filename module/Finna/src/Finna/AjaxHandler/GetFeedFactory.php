@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetFeedFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetFeedFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

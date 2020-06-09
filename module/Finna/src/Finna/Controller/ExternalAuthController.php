@@ -27,7 +27,7 @@
  */
 namespace Finna\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * External Authentication/Authorization Controller

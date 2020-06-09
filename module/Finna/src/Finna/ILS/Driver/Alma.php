@@ -1601,7 +1601,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         );
 
         // Set HTTP method
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        $client->setMethod(\Laminas\Http\Request::METHOD_POST);
 
         // Set body
         $client->setRawBody(json_encode($body));

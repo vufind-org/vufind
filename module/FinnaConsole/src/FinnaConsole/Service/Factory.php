@@ -28,8 +28,8 @@
  */
 namespace FinnaConsole\Service;
 
-use Zend\Console\Console;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Console\Console;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Factory for various top-level VuFind services.
@@ -55,7 +55,7 @@ class Factory
         $table = $sm->get(\VuFind\Db\Table\PluginManager::class)->get('User');
         $renderer = $sm->get('ViewRenderer');
         $configReader = $sm->get(\VuFind\Config\PluginManager::class);
-        $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+        $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
 
         return new AccountExpirationReminders(
             $table, $renderer, $configReader, $translator, $sm
@@ -80,7 +80,7 @@ class Factory
         $renderer = $sm->get('ViewRenderer');
         $loader = $sm->get(\VuFind\Record\Loader::class);
         $hmac = $sm->get(\VuFind\Crypt\HMAC::class);
-        $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+        $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
 
         return new DueDateReminders(
             $userTable, $dueDateReminderTable, $catalog,

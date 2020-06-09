@@ -36,21 +36,21 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class EDS extends \Zend\View\Helper\AbstractHelper
+class EDS extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * EDS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config EDS configuration
+     * @param \Laminas\Config\Config $config EDS configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }

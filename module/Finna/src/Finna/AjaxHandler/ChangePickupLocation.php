@@ -27,7 +27,7 @@
  */
 namespace Finna\AjaxHandler;
 
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler for changing pickup location.
@@ -39,7 +39,7 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
-    implements \Zend\Log\LoggerAwareInterface
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

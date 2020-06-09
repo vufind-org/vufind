@@ -30,7 +30,7 @@ namespace FinnaApi\Controller;
 use FinnaApi\Formatter\RecordFormatter;
 use VuFindApi\Controller\SearchApiController;
 use VuFindApi\Formatter\FacetFormatter;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Factory for controllers.
@@ -100,7 +100,7 @@ class Factory
         $recordFields = $sm->get('VuFind\YamlReader')
             ->get('SearchApiRecordFields.yaml');
         $helperManager = $sm->get('ViewHelperManager');
-        $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+        $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
         $rf = new RecordFormatter($recordFields, $helperManager, $translator);
         $controller = new SearchApiController($sm, $rf, new FacetFormatter());
         return $controller;

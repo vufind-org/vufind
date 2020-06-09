@@ -196,10 +196,10 @@ class Loader extends \VuFind\Cover\Loader
         header("Content-Type: $contentType");
         header("Content-disposition: attachment; filename=\"{$filename}\"");
         $client = $this->httpService->createClient(
-            $url, \Zend\Http\Request::METHOD_GET, 300
+            $url, \Laminas\Http\Request::METHOD_GET, 300
         );
         $client->setStream();
-        $adapter = new \Zend\Http\Client\Adapter\Curl();
+        $adapter = new \Laminas\Http\Client\Adapter\Curl();
         $client->setAdapter($adapter);
         $adapter->setOptions(
             [
@@ -438,7 +438,7 @@ class Loader extends \VuFind\Cover\Loader
 
         // Attempt to pull down the image:
         $client = $this->httpService->createClient(
-            $url, \Zend\Http\Request::METHOD_GET, 20
+            $url, \Laminas\Http\Request::METHOD_GET, 20
         );
         $client->setStream($tempFile);
         $result = $client->send();

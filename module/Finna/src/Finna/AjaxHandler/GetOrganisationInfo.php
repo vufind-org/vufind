@@ -33,7 +33,7 @@ use Finna\OrganisationInfo\OrganisationInfo;
 use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler for getting organisation info.
@@ -47,7 +47,7 @@ use Zend\Mvc\Controller\Plugin\Params;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
-    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface,
+    implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -248,7 +248,7 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
      * @param string $logMsg     Message to output to the error log.
      * @param int    $httpStatus HTTPs status of the JSOn response.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function handleError($outputMsg, $logMsg = '', $httpStatus = 400)
     {

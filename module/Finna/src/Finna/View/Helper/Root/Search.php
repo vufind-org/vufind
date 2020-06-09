@@ -66,7 +66,7 @@ class Search extends \VuFind\View\Helper\Bootstrap3\Search
      * @param string                          $msg     HTML to display at the top of
      * the spelling section.
      * @param \VuFind\Search\Base\Results     $results Results object
-     * @param \Zend\View\Renderer\PhpRenderer $view    View renderer object
+     * @param \Laminas\View\Renderer\PhpRenderer $view    View renderer object
      *
      * @return string
      */
@@ -105,7 +105,7 @@ class Search extends \VuFind\View\Helper\Bootstrap3\Search
      * Render an expand link.
      *
      * @param string                          $url  Link href
-     * @param \Zend\View\Renderer\PhpRenderer $view View renderer object
+     * @param \Laminas\View\Renderer\PhpRenderer $view View renderer object
      *
      * @return string
      */

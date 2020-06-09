@@ -36,7 +36,7 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class HtmlElement extends \Zend\View\Helper\AbstractHelper
+class HtmlElement extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Boolean attributes
@@ -61,7 +61,7 @@ class HtmlElement extends \Zend\View\Helper\AbstractHelper
     /**
      * HTML escaper
      *
-     * @var \Zend\Escaper\Escaper
+     * @var \Laminas\Escaper\Escaper
      */
     protected $escaper;
 
@@ -70,7 +70,7 @@ class HtmlElement extends \Zend\View\Helper\AbstractHelper
      */
     public function __construct()
     {
-        $this->escaper = new \Zend\Escaper\Escaper('utf-8');
+        $this->escaper = new \Laminas\Escaper\Escaper('utf-8');
     }
 
     /**

@@ -27,7 +27,7 @@
  */
 namespace Finna\Cache;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Finna Cache Manager

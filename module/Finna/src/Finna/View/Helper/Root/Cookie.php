@@ -38,7 +38,7 @@ use VuFind\Cookie\CookieManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Cookie extends \Zend\View\Helper\AbstractHelper
+class Cookie extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Cookie manager

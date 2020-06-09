@@ -32,7 +32,7 @@ namespace Finna\View\Helper\Root;
 use Finna\OrganisationInfo\OrganisationInfo;
 use Finna\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\Results\PluginManager;
-use Zend\Cache\Storage\StorageInterface;
+use Laminas\Cache\Storage\StorageInterface;
 
 /**
  * Organisations list view helper
@@ -44,8 +44,8 @@ use Zend\Cache\Storage\StorageInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
-    \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
+class OrganisationsList extends \Laminas\View\Helper\AbstractHelper implements
+    \VuFind\I18n\Translator\TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

@@ -36,7 +36,7 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class OrganisationDisplayName extends \Zend\View\Helper\AbstractHelper
+class OrganisationDisplayName extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Get translated organisation display name.

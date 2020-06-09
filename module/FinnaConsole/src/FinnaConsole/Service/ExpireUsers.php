@@ -28,9 +28,9 @@
  */
 namespace FinnaConsole\Service;
 
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Select;
 
-use Zend\Stdlib\RequestInterface as Request;
+use Laminas\Stdlib\RequestInterface as Request;
 
 /**
  * Console service for anonymizing expired user accounts.
@@ -119,7 +119,7 @@ class ExpireUsers extends AbstractService
      *
      * @param int $days Preserve users active less than provided amount of days ago
      *
-     * @return \Zend\Db\ResultSet\ResultSet
+     * @return \Laminas\Db\ResultSet\ResultSet
      */
     protected function getExpiredUsers($days)
     {

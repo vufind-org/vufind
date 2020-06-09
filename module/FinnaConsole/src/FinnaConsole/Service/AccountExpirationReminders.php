@@ -31,12 +31,12 @@ namespace FinnaConsole\Service;
 
 use DateInterval;
 use DateTime;
-use Zend\Db\Sql\Select;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Stdlib\RequestInterface as Request;
+use Laminas\Db\Sql\Select;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\Stdlib\RequestInterface as Request;
 
-use Zend\View\Resolver\AggregateResolver;
-use Zend\View\Resolver\TemplatePathStack;
+use Laminas\View\Resolver\AggregateResolver;
+use Laminas\View\Resolver\TemplatePathStack;
 
 /**
  * Console service for reminding users x days before account expiration
@@ -70,7 +70,7 @@ class AccountExpirationReminders extends AbstractService
     /**
      * View renderer
      *
-     * @var Zend\View\Renderer\PhpRenderer
+     * @var Laminas\View\Renderer\PhpRenderer
      */
     protected $renderer = null;
 
@@ -94,7 +94,7 @@ class AccountExpirationReminders extends AbstractService
     /**
      * Translator
      *
-     * @var Zend\I18n\Translator\Translator
+     * @var Laminas\I18n\Translator\Translator
      */
     protected $translator = null;
 
@@ -129,7 +129,7 @@ class AccountExpirationReminders extends AbstractService
     /**
      * Datasource configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $datasourceConfig = null;
 
@@ -172,7 +172,7 @@ class AccountExpirationReminders extends AbstractService
      * Constructor
      *
      * @param Finna\Db\Table\User            $table          User table.
-     * @param Zend\View\Renderer\PhpRenderer $renderer       View renderer.
+     * @param Laminas\View\Renderer\PhpRenderer $renderer       View renderer.
      * @param VuFind\Config                  $configReader   Config reader.
      * @param VuFind\Translator              $translator     Translator.
      * @param ServiceManager                 $serviceManager Service manager.

@@ -27,7 +27,7 @@
  */
 namespace FinnaConsole\Service;
 
-use Zend\Stdlib\RequestInterface as Request;
+use Laminas\Stdlib\RequestInterface as Request;
 
 /**
  * Interface console services.

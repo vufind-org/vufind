@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
 
 use VuFindSearch\Backend\BackendInterface;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Blender backend.
