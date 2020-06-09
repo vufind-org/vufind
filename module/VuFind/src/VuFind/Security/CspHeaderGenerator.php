@@ -100,11 +100,9 @@ class CspHeaderGenerator
      */
     protected function createHeaderObject()
     {
-        if ($this->config->CSP->report_only || 'development' == APPLICATION_ENV) {
-            $cspHeader = new ContentSecurityPolicyReportOnly();
-        } else {
-            $cspHeader = new ContentSecurityPolicy();
-        }
-        return $cspHeader;
+        $reportOnly = $this->config->CSP->report_only[APPLICATION_ENV] ?? false;
+        return $reportOnly
+            ? new ContentSecurityPolicyReportOnly()
+            : new ContentSecurityPolicy();
     }
 }
