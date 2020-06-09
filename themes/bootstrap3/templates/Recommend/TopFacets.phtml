@@ -59,12 +59,12 @@
 $script = <<<JS
 $('.more-facets').click(function(e) {
   title = $(this).data('title');
-  moreFacets('NarrowGroupHidden-' + title);
+  moreFacets('NarrowGroupHidden_' + title);
   return false;
 });
 $('.less-facets').click(function(e) {
   title = $(this).data('title');
-  lessFacets('NarrowGroupHidden-' + title);
+  lessFacets('NarrowGroupHidden_' + title);
   return false;
 });
 collapseTopFacets()
