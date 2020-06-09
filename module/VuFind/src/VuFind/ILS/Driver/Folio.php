@@ -401,6 +401,22 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Check item location against list of configured locations
+     * where holds should be offered
+     *
+     * @param string $locationName locationName from getHolding
+     *
+     * @return bool
+     */
+    protected function isHoldable($locationName)
+    {
+        return !in_array(
+            $locationName,
+            (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
+        );
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -450,6 +466,7 @@ class Folio extends AbstractAPI implements
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
+                    'is_holdable' => $this->isHoldable($locationName),
                     'notes' => array_map($notesFormatter, $item->notes ?? []),
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
