@@ -29,7 +29,6 @@
 namespace Finna\Recommend;
 
 use Finna\Search\Solr\AuthorityHelper;
-use Zend\StdLib\Parameters;
 
 /**
  * AuthorityRecommend Module
@@ -159,7 +158,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

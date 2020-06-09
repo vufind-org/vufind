@@ -45,7 +45,7 @@ class AuthorizationNotification extends \Laminas\View\Helper\AbstractHelper
     /**
      * Authorization service
      *
-     * @var Zend\Service\AuthorizationService
+     * @var AuthorizationService
      */
     protected $authService;
 

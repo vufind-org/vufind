@@ -319,7 +319,7 @@ $config = [
         ]
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
-    // unrelated to specific Zend Framework 2 components).
+    // unrelated to specific framework components).
     'vufind' => [
         'plugin_managers' => [
             'ajaxhandler' => [

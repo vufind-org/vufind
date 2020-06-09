@@ -97,7 +97,7 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -127,10 +127,10 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Translate a request for the secondary backend
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return \Zend\StdLib\Parameters
+     * @return \Laminas\StdLib\Parameters
      */
     protected function translateRequest($request)
     {

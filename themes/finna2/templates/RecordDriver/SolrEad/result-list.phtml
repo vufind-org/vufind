@@ -52,7 +52,7 @@ if ($img):
           <?php endif; ?>
 
           <div class="resultHierarchyLinks">
-            <?php // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
+            <?php // The funky comparison below is due to Laminas translator not supporting empty values (see ExtendedIniReader) ?>
             <?php if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><?php endif; ?>
             <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
             <?php if ($origination = $this->driver->getOrigination()): ?>

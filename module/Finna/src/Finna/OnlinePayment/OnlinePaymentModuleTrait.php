@@ -64,7 +64,7 @@ trait OnlinePaymentModuleTrait
      *
      * @param string $url      URL
      * @param string $body     Request body
-     * @param array  $options  Zend HTTP client options
+     * @param array  $options  Laminas HTTP client options
      * @param array  $headers  HTTP headers (key-value list).
      * @param string $username Username for HTTP basic authentication.
      * @param string $password Password for HTTP basic authentication.
