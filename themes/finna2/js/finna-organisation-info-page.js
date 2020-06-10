@@ -289,6 +289,10 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       }
     }
 
+    if ('emails' in data.details) {
+      holder.find('.email-contact .emails').html(data.details.emails);
+    }
+
     if ('homepage' in data) {
       holder.find('.office-website > a').attr('href', data.homepage);
       holder.find('.office-website').show();

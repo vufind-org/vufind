@@ -1,0 +1,5 @@
+<ul>
+<?php foreach ($this->emails as $email): ?>
+  <li><p><i class="fa fa-envelope"></i><a href="mailto:<?=$this->escapeHtmlAttr($email['email'])?>"><?=$this->escapeHtml($email['email'])?></a><?= isset($email['name']) && count($this->emails) > 1 ? (' / ' . $this->escapeHtml($email['name'])) : ''?></p></li>
+<?php endforeach ?>
+</ul>

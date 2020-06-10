@@ -243,6 +243,10 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     if ('phone' in response) {
       holder.find('.phone').attr('data-original-title', response.phone).show();
     }
+    if ('emails' in response) {
+      holder.find('.emails').attr('data-original-title', response.emails).attr('data-toggle', 'tooltip').show();
+      finna.layout.initToolTips(holder);
+    }
 
     if ('links' in response) {
       var links = response.links;
@@ -302,7 +306,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     }
 
     if ('email' in data) {
-      holder.find('.email').attr('href', 'mailto:' + data.email).show();
+      holder.find('.email.info-element').wrap($('<a/>').attr('href', 'mailto:' + data.email)).show();
     }
 
     var detailsLinkHolder = holder.find('.details-link').show();
