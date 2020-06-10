@@ -354,7 +354,9 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                     $style = $this->extractStyle($hit['_source']['full_text']);
                     $style = $this->normalizeCSSClasses($doc_id, $page, $style);
                     $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
-                    $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
+                    $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/im', '$1', $snippet_page); //remove styles with absolute positions
+                    // Disable links to avoid failing internal references
+                    $snippet_page = preg_replace('/<a[^>]*?>/im','<a style="color:inherit; text-decoration:inherit; cursor:inherit">', $snippet_page);
                     $snippet = $this->extractSnippetParagraph($snippet_page);
                     array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style]);
                 } else {
