@@ -27,6 +27,8 @@
  */
 namespace Finna\Controller;
 
+use VuFindSearch\ParamBag;
+
 /**
  * Record Controller
  *
@@ -135,14 +137,18 @@ class RecordController extends \VuFind\Controller\RecordController
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
+     * @param ParamBag $params Search backend parameters
+     * @param bool     $force  Set to true to force a reload of the record, even if
+     * already loaded (useful if loading a record using different parameters)
+     *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord()
+    protected function loadRecord(ParamBag $params = null, bool $force = false)
     {
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         // 0 = preview record
         if ($id != '0') {
-            return parent::loadRecord();
+            return parent::loadRecord($params, $force);
         }
         $data = $this->params()->fromPost(
             'data', $this->params()->fromQuery('data', '')
