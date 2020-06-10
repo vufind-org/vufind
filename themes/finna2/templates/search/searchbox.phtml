@@ -60,6 +60,7 @@
          || ($module === 'eds' && $action === 'search' && $this->searchType != 'advanced')
          || ($module === 'summon' && $action === 'search' && $this->searchType != 'advanced')
          || ($module == 'combined' && $action == 'results')
+         || ($module == 'authority' && $action == 'search')
       ) {
          $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
          $this->layout()->searchTabs = $searchTabs;
@@ -105,7 +106,7 @@
             $html = '<span><i class="fa fa-arrow-alt-left"></i></span>';
             $html .= '<span class="back-to-search-text hidden-xs hidden-sm">' . $this->transEsc('Back to search results') . '</span>';
             $previousSearch = $this->searchMemory()->getLastSearchLink($html);
-            if ($previousSearch !== ''):
+            if ($previousSearch !== '' && $this->searchMemory()->getLastSearchClassId() === $this->searchClassId):
           ?>
             <div class="back-to-search"><?=$previousSearch?></div>
           <?php endif; ?>
@@ -242,6 +243,10 @@
 
           <?php if ($this->summon()->isAvailable() && ($browse || $this->searchClassId !== 'Summon')) : ?>
           <a href="<?=$this->url('summon-home');?>" class="btn btn-link btn-primo"><i class="fa fa-search"></i> <?=$this->transEsc("Summon Search")?></a>
+          <?php endif; ?>
+
+          <?php if ($this->authority()->isAvailable() && ($browse || $this->searchClassId !== 'SolrAuth')) : ?>
+            <a href="<?=$this->url('authority-home');?>" class="btn btn-link btn-authority"><i class="fa fa-search"></i> <?=$this->transEsc("Authority Search")?></a>
           <?php endif; ?>
         </div>
       <?php endif; ?>

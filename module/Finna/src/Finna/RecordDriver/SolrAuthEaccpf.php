@@ -39,9 +39,23 @@ namespace Finna\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrAuthEacCpf extends \VuFind\RecordDriver\SolrAuthDefault
+class SolrAuthEacCpf extends SolrAuthDefault
 {
+    use SolrAuthFinnaTrait;
     use XmlReaderTrait;
+
+    /**
+     * Get authority title
+     *
+     * @return string|null
+     */
+    public function getTitle()
+    {
+        $record = $this->getXmlRecord();
+        return isset($record->cpfDescription->identity->nameEntry->part[0])
+            ? (string)$record->cpfDescription->identity->nameEntry->part[0]
+            : null;
+    }
 
     /**
      * Get an array of alternative titles for the record.
@@ -61,27 +75,13 @@ class SolrAuthEacCpf extends \VuFind\RecordDriver\SolrAuthDefault
     /**
      * Return description
      *
-     * @return string|null
+     * @return array|null
      */
-    public function getDescription()
+    public function getSummary()
     {
         $record = $this->getXmlRecord();
         if (isset($record->cpfDescription->description->biogHist->p)) {
-            return (string)$record->cpfDescription->description->biogHist->p;
-        }
-        return null;
-    }
-
-    /**
-     * Get authority title
-     *
-     * @return string|null
-     */
-    public function getTitle()
-    {
-        $record = $this->getXmlRecord();
-        if (isset($record->cpfDescription->identity->nameEntry->part[0])) {
-            return (string)$record->cpfDescription->identity->nameEntry->part[0];
+            return [(string)$record->cpfDescription->description->biogHist->p];
         }
         return null;
     }

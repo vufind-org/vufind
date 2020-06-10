@@ -70,7 +70,8 @@ class AuthorityRecommendFactory
             new \Laminas\Session\Container(
                 'Authority', $container->get(\Laminas\Session\SessionManager::class)
             ),
-            $container->get(\VuFind\Cookie\CookieManager::class)
+            $container->get(\VuFind\Cookie\CookieManager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

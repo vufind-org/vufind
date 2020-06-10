@@ -58,7 +58,9 @@ class RecordDataFormatterFactory
         $helper->setDefaults('core', $this->getDefaultCoreSpecs());
         $helper->setDefaults('description', $this->getDefaultDescriptionSpecs());
         $helper->setDefaults('authority', $this->getDefaultAuthoritySpecs());
-
+        $helper->setDefaults(
+            'authorityRecommend', $this->getDefaultAuthorityRecommendSpecs()
+        );
         return $helper;
     }
 
@@ -458,7 +460,8 @@ class RecordDataFormatterFactory
             ]
         );
         $setTemplateLine(
-            'Subjects', 'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml',
+            'Subjects',
+            'getAllSubjectHeadingsExtended', 'data-allSubjectHeadingsExtended.phtml',
             [
                 'context' => ['class' => 'recordSubjects']
             ]
@@ -914,7 +917,7 @@ class RecordDataFormatterFactory
         };
 
         $setMultiTemplateLine(
-            'Relations', 'getNonPresenterAuthors', $getRelations
+            'Archive Relations', 'getNonPresenterAuthors', $getRelations
         );
 
         return $lines;
@@ -958,13 +961,51 @@ class RecordDataFormatterFactory
     public function getDefaultAuthoritySpecs()
     {
         $spec = new SpecBuilder();
-        $spec->setLine('Other Titles', 'getAlternativeTitles');
-        $spec->setLine('Date of birth', 'getBirthDate');
-        $spec->setLine('Date of death', 'getDeathDate');
+        $spec->setTemplateLine(
+            'Date of birth', 'getBirthDateAndPlace', 'data-line-with-detail.phtml'
+        );
+        $spec->setTemplateLine(
+            'Date of death', 'getDeathDateAndPlace', 'data-line-with-detail.phtml'
+        );
+
         $spec->setLine('Established', 'getEstablishedDate');
         $spec->setLine('Terminated', 'getTerminatedDate');
         $spec->setLine('Awards', 'getAwards');
-
+        $spec->setLine('Occupation', 'getOccupations');
+        $spec->setLine('Field of Activity', 'getFieldsOfActivity');
+        $spec->setLine('Place of Residence', 'getPlaceOfResidence');
+        $spec->setTemplateLine(
+            'Other Forms of Name', 'getAlternativeTitles',
+            'data-lines-with-detail.phtml'
+        );
+        $spec->setLine('Associated Place', 'getAssociatedPlace');
+        $spec->setTemplateLine(
+            'Related Places', 'getRelatedPlaces', 'data-lines-with-detail.phtml'
+        );
+        $spec->setTemplateLine(
+            'Identifiers', 'getOtherIdentifiers', 'data-lines-with-detail.phtml'
+        );
+        $spec->setTemplateLine('Sources', 'getSources', 'data-sources.phtml');
+        $spec->setTemplateLine(
+            'Related Authorities', 'getRelations', 'data-relations-author.phtml'
+        );
+        $spec->setLine('Additional Information', 'getAdditionalInformation');
         return $spec->getArray();
+    }
+
+    /**
+     * Get default specifications for displaying data in the
+     * authority recommend module.
+     *
+     * @return array
+     */
+    public function getDefaultAuthorityRecommendSpecs()
+    {
+        $specs = $this->getDefaultAuthoritySpecs();
+        if (isset($specs['Relations'])) {
+            $specs['Relations']['template']
+                = 'data-relations-author-recommend.phtml';
+        }
+        return $specs;
     }
 }

@@ -1,11 +1,10 @@
 <?php
 /**
- * Factory for SolrLido record drivers.
+ * Factory for GetRecordInfoByAuthority AJAX handler.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,27 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  RecordDrivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  AJAX
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace Finna\RecordDriver;
+namespace Finna\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for SolrLido record drivers.
+ * Factory for GetRecordInfoByAuthority AJAX handler.
  *
  * @category VuFind
- * @package  RecordDrivers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  AJAX
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrLidoFactory extends \VuFind\RecordDriver\SolrDefaultFactory
+class GetRecordInfoByAuthorityFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -56,12 +54,21 @@ class SolrLidoFactory extends \VuFind\RecordDriver\SolrDefaultFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $driver = parent::__invoke($container, $requestedName, $options);
-        $driver->attachDateConverter($container->get(\VuFind\Date\Converter::class));
-        return $driver;
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $result = new $requestedName(
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get('ViewRenderer')->plugin('record'),
+            $container->get(\VuFind\RecordTab\TabManager::class)
+        );
+        return $result;
     }
 }

@@ -54,13 +54,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected $simpleXML;
 
     /**
-     * Date Converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
-
-    /**
      * Blacklist for undisplayable file formats
      *
      * @var array
@@ -73,18 +66,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $cachedImages;
-
-    /**
-     * Attach date converter
-     *
-     * @param \VuFind\Date\Converter $dateConverter Date Converter
-     *
-     * @return void
-     */
-    public function attachDateConverter($dateConverter)
-    {
-        $this->dateConverter = $dateConverter;
-    }
 
     /**
      * Constructor
@@ -453,13 +434,19 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     if (strlen($endDate) == 7) {
                         $endDateType = 'Y-m';
                     }
-                    $date = $this->dateConverter->convertToDisplayDate(
-                        $startDateType, $startDate
-                    );
+
+                    $date = $this->dateConverter
+                        ? $this->dateConverter->convertToDisplayDate(
+                            $startDateType, $startDate
+                        )
+                        : $startDate;
+
                     if ($startDate != $endDate) {
-                        $date .= '-' . $this->dateConverter->convertToDisplayDate(
-                            $endDateType, $endDate
-                        );
+                        $date .= '-' . ($this->dateConverter
+                            ? $this->dateConverter->convertToDisplayDate(
+                                $endDateType, $endDate
+                            )
+                            : $endDate);
                     }
                 }
             }

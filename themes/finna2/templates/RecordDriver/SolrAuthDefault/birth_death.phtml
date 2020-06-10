@@ -1,0 +1,9 @@
+<div class="date-info">
+  <?php if (!empty($this->birth['data'])): ?>
+    <span class="birth"><?=$this->transEsc('authority_date_birth', ['%%date%%' => $birth['data']])?><?= !empty($this->birth['detail']) ? ' (' . $this->escapeHtml($this->birth['detail']) . ')' : '' ?></span>
+  <?php endif ?>
+  <?php if (!empty($this->death['data'])): ?>
+    <?= !empty($this->birth['data']) ? ' - ' : ''?>
+    <span class="death"><?=$this->transEsc('authority_date_death', ['%%date%%' => $death['data']])?><?= !empty($this->death['detail']) ? ' (' . $this->escapeHtml($this->death['detail']) . ')' : '' ?></span>
+  <?php endif ?>
+</div>  

@@ -466,17 +466,6 @@ trait SolrFinnaTrait
     }
 
     /**
-     * Get sector
-     *
-     * @return string
-     */
-    public function getSector()
-    {
-        $sector = (string)($this->fields['sector_str_mv'][0] ?? '');
-        return $sector;
-    }
-
-    /**
      * Get all the original languages associated with the record
      *
      * @return array

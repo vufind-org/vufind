@@ -1,0 +1,73 @@
+; This configuration file controls the Authority module; see facets.ini and
+; searches.ini for detailed comments on the meaning of all settings.
+[General]
+default_handler      = MainHeading    ; Search handler to use if none is specified
+default_sort         = relevance
+case_sensitive_bools = true
+default_side_recommend[] = SideFacets:Facets:CheckboxFacets:authority
+
+; Set this to true in order to highlight keywords from the search query when they
+; appear in fields displayed in search results.
+highlighting = true
+
+; Set this to restrict the list of fields that will be highlighted (the hl.fl
+; Solr parameter); default = '*' for all fields:
+highlighting_fields = "heading_keywords,use_for_keywords"
+
+; Set this to true in order to include a text snippet in the search results when
+; a keyword match is found in a field that is not normally displayed as part of
+; the listing.  For finer control over which fields are used for snippets, see
+; the record driver code (web/RecordDrivers/IndexRecord.php).
+;
+; For control over snippet captions, see the [Snippet_Captions] section below.
+snippets = true
+
+default_limit        = 50
+limit_options        = 20,50,100
+
+[Basic_Searches]
+MainHeading         = "Author Name"
+Heading             = "All Names"
+AllFields           = "All Fields"
+
+[Sorting]
+relevance = sort_relevance
+heading   = "Heading"
+
+[Facets]
+source             = "Authority File"
+record_type        = "Type"
+field_of_activity    = "Field of activity"
+occupation         = "Occupation"
+gender             = "Gender"
+language           = "Language"
+birth_date          = "Date of birth"
+birth_place         = "Place of birth"
+death_date          = "Date of death"
+death_place         = "Place of death"
+country            = "Associated country"
+related_place       = "Other associated place"
+
+[FacetLabels]
+labelSections[] = Facets
+
+[Autocomplete]
+enabled = true
+
+[Autocomplete_Types]
+AllFields = SolrAuth
+MainHeading = "SolrAuth:MainHeading"
+Heading = "SolrAuth:Heading"
+
+[Views]
+list = List
+condensed = Condensed
+
+; This section defines how records are handled when being fetched from Solr.
+[Records]
+; Priority order (descending) for record sources (record ID prefixes separated
+; from the actual record by period, e.g. testsrc.12345)
+;sources = testsrc
+
+[Advanced_Settings]
+translated_facets[] = record_type

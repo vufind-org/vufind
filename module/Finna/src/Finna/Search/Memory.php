@@ -41,18 +41,21 @@ class Memory extends \VuFind\Search\Memory
     /**
      * Remember last search Id and type
      *
-     * @param string $searchId   Last search Id.
-     * @param string $searchType last search type.
-     * @param string $lookfor    last search lookfor.
+     * @param string $searchId      Last search Id.
+     * @param string $searchType    last search type.
+     * @param string $lookfor       last search lookfor.
+     * @param string $searchClassId last search class Id.
      *
      * @return void
      */
-    public function rememberSearchData($searchId, $searchType, $lookfor)
-    {
+    public function rememberSearchData(
+        $searchId, $searchType, $lookfor, $searchClassId = 'Solr'
+    ) {
         $this->session->searchData = (object)[
             'id' => $searchId,
             'type' => $searchType,
-            'lookfor' => $lookfor
+            'lookfor' => $lookfor,
+            'searchClassId' => $searchClassId
         ];
     }
 

@@ -1,0 +1,7 @@
+<?php foreach ($this->data as $line): ?>
+  <?php if (empty($line['data'])) {
+    continue;
+  }
+  ?>
+  <?=$this->escapeHtml($line['data'])?><?= !empty($line['detail']) ? ' (' . $this->escapeHtml($line['detail']) . ')' : ''?><br/>
+<?php endforeach ?>

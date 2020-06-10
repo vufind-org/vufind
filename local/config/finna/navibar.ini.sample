@@ -31,6 +31,7 @@ summon_advanced = 'summon-advanced'
 browse = 'browse-home'
 browse-database = 'browse-database'
 browse-journal = 'browse-journal'
+authority_search = 'authority-home'
 history = 'search-history'
 
 [about_us]
