@@ -5,11 +5,9 @@
   $this->headMeta()->appendName('robots', 'noindex,follow');
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-  if (isset($this->overrideTitle)) {
-      $this->headTitle($this->translate($this->overrideTitle));
-  } else {
-      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
-  }
+  $headTitle = $this->slot('head-title')
+    ->get((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
+  $this->headTitle($headTitle);
   $account = $this->auth()->getManager();
   $searchType = $this->params->getSearchType();
   $geoFilter = '';
@@ -34,11 +32,7 @@
     );
 
   // Set up breadcrumbs:
-  if (isset($this->overrideTitle)) {
-    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($this->overrideTitle) . '</li>';
-  } else {
-    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
-  }
+  $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
 
   $searchData = [
       'results' => $this->results,
@@ -148,8 +142,8 @@
 <div class="results result-view-<?=$this->escapeHtmlAttr($this->params->getView())?>">
   <?php if ($recordTotal < 1): ?>
     <p>
-      <?php if (isset($this->overrideEmptyMessage)): ?>
-      <p><?=$this->overrideEmptyMessage?></p>
+      <?php if (null !== $this->slot('empty-message')->get()): ?>
+        <p><?=$this->slot('empty-message')->get()?></p>
       <?php elseif ($lookfor == '' && $this->params->getSearchClassId() == 'Primo'): ?>
         <?php $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
         <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
