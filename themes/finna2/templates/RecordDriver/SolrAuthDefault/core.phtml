@@ -1,0 +1,100 @@
+<!-- START of: finna - RecordDriver/SolrAuthDefault/core.phtml -->
+<?php
+  $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+  $formats = $this->driver->getFormats();
+  $thumbnail = null;
+  if ($this->driver->getAllImages()) {
+    $img = $this->recordImage($this->record($this->driver));
+    $images = $img->getAllImagesAsCoverLinks(
+      $this->layout()->userLang, $params
+    );
+    $thumbnail = false;
+    $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+    ob_start(); ?>
+    <div class="media-<?=$thumbnailAlignment ?>">
+      <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', [
+        'img' => $img, 'disableModal' => true, 'source' => 'SolrAuth', 'imageRightsLabel' => 'Image Rights Authority',
+        'numOfImages' => ['mobile' => 4, 'normal' => 4]
+      ]);?>
+      <?php if ($this->resolver('record/record-organisation-menu.phtml')): ?>
+      <div class="organisation-menu">
+        <?=$this->render('record/record-organisation-menu.phtml') ?>
+      </div>
+      <?php endif; ?>
+      <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
+    </div>
+    <?php $thumbnail = ob_get_contents(); ?>
+    <?php ob_end_clean(); ?>
+  <?php } ?>
+
+
+
+<?php $this->headScript()->appendFile("finna-record.js"); ?>
+<div class="media" vocab="http://schema.org/" resource="#record">
+  <div class="visible-xs">
+    <p class="format"><?=$this->translationEmpty('authority_' . $formats[0]) ? $formats[0] : $this->transEsc('authority_' . $formats[0])?></p>
+    <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
+  </div>
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
+  <div class="media-body record-information">
+      <div class="hidden-xs">
+        <p class="format"><?=$this->translationEmpty('authority_' . $formats[0]) ? $formats[0] : $this->transEsc('authority_' . $formats[0])?></p>
+        <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
+      </div>
+      <?php if ($occupations = $this->driver->getOccupations()): ?>
+        <div class="occupation"><?=implode(', ', $occupations)?></div>
+      <?php endif; ?>
+      <?php if ($this->driver->isPerson()): ?>
+        <?= $this->record($this->driver)->getAuthorityBirthDeathWithPlace()?>
+      <?php endif; ?>
+      <?/* Display anchor links to authority records tabs */?>
+      <?php if ($authSummary = $this->record($this->driver)->getAuthoritySummary(true)): ?>
+        <div class="authority-records-summary">
+          <?= $authSummary ?>
+        </div>
+      <?php endif; ?>
+
+      <?php $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
+      <div class="truncate-field wide recordSummary">
+        <p class="summary">
+        <?php foreach ($summ as $field): ?>
+          <?=$this->cleanHtml($field)?><br/>
+        <?php endforeach; ?>
+        </p>
+      </div>
+      <?php endif; ?>
+
+      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <?php /* Display the lists that this record is saved to */ ?>
+        <div class="savedLists" id="savedLists">
+          <strong><?=$this->transEsc("Saved in")?>:</strong>
+        </div>
+      <?php endif; ?>
+
+      <?/* Display Main Details */?>
+      <?php
+        $formatter = $this->recordDataFormatter();
+        $coreFields = $formatter->getDefaults('authority');
+        $coreFields = $formatter->getData($driver, $coreFields);
+      ?>
+      <?php if (!empty($coreFields)): ?>
+        <table class="table table-finna-record record-details">
+          <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
+        </table>
+      <?php endif; ?>
+      <?/* End Main Details */?>
+
+      <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
+      <div>
+        <?=$this->render($template)?>
+      </div>
+      <?php endif; ?>
+  </div>
+  <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
+
+</div>
+<!-- END of: finna - RecordDriver/SolrAuthDefault/core.phtml -->

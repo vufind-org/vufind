@@ -96,3 +96,20 @@ tabs[Map] = Map
 tabs[Versions] = Versions
 tabs[Details] = StaffViewArray
 defaultTab = null
+
+[Finna\RecordDriver\SolrAuthDefault]
+tabs[AuthorityRecordsAuthor] = AuthorityRecordsAuthor
+tabs[AuthorityRecordsTopic] = AuthorityRecordsTopic
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[Finna\RecordDriver\SolrAuthForward]
+tabs[AuthorityRecordsAuthor] = AuthorityRecordsAuthor
+tabs[Details] = StaffViewArray
+defaultTab = null
+
+[Finna\RecordDriver\SolrAuthMarc]
+tabs[AuthorityRecordsAuthor] = AuthorityRecordsAuthor
+tabs[AuthorityRecordsTopic] = AuthorityRecordsTopic
+tabs[Details] = StaffViewMarc
+defaultTab = null

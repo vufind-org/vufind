@@ -266,6 +266,7 @@ JS;
           $searchId = $this->searchMemory()->getLastSearchId();
           $searchType = $this->searchMemory()->getLastSearchType();
           $lookfor = $this->searchMemory()->getLastSearchLookfor();
+          $lastSearchClassId = $this->searchMemory()->getLastSearchClassId();
 
           //parse querystring to variables
           parse_str($url, $parsed);
@@ -289,23 +290,29 @@ JS;
                 ]
             );
           } else {
-            $filters = [];
-            foreach ($parsed as $key => $filter) {
-              if (strpos($key, 'filter') !== false) {
-                //used filters to filterArray
-                foreach ($filter as $value) {
-                  $filterArray = explode(':', $value, 2);
-                  $filterKey = $filterArray[0];
-                  $filterValue = trim($filterArray[1], '"');
-                  if (array_key_exists($filterKey, $filters)) {
-                    array_push($filters[$filterKey], $filterValue);
-                  } else {
-                    $filters[$filterKey] = [$filterValue];
+            if ($this->searchClassId === $lastSearchClassId) {
+              // Init filters only when backendId has not been changed since last search
+              $filters = [];
+              foreach ($parsed as $key => $filter) {
+                if (strpos($key, 'filter') !== false) {
+                  //used filters to filterArray
+                  foreach ($filter as $value) {
+                    $filterArray = explode(':', $value, 2);
+                    $filterKey = $filterArray[0];
+                    $filterValue = trim($filterArray[1], '"');
+                    if (array_key_exists($filterKey, $filters)) {
+                      array_push($filters[$filterKey], $filterValue);
+                    } else {
+                      $filters[$filterKey] = [$filterValue];
+                    }
                   }
+                } elseif (strpos($key, 'type') !== false) {
+                  $type = explode('#', $filter)[0];
                 }
-              } elseif (strpos($key, 'type') !== false) {
-                $type = explode('#', $filter)[0];
               }
+            } else {
+              // BackendId changed since last search, reset search term
+              $lookfor = '';
             }
 
             $this->layout()->searchbox = $this->context($this)->renderInContext(

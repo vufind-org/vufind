@@ -1,0 +1,8 @@
+<?php
+  if ($data) {
+    $helper = $this->record($this->driver);
+  }
+?>
+<?php foreach ($data as $relation): ?>
+  <?=$helper->getAuthorityLinkElement('author', $relation['name'], $relation, ['role' => true, 'authorityType' => $relation['type'] ?? null])?><br>
+<?php endforeach; ?>

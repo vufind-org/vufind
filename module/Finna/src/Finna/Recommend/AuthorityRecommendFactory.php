@@ -70,7 +70,8 @@ class AuthorityRecommendFactory
             new \Zend\Session\Container(
                 'Authority', $container->get(\Zend\Session\SessionManager::class)
             ),
-            $container->get(\VuFind\Cookie\CookieManager::class)
+            $container->get(\VuFind\Cookie\CookieManager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

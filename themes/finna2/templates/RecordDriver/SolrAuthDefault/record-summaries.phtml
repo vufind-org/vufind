@@ -1,0 +1,9 @@
+<div class="authority-record-summary-container">
+  <?php if ($this->summary['author']['cnt'] ?? false): ?>
+    <?= $this->record($this->driver)->renderTemplate('record-summary.phtml', ['driver' => $this->driver, 'type' => 'author', 'summary' => $this->summary['author']]) ?>
+  <?php endif; ?>
+
+  <?php if ($this->summary['topic']['cnt'] ?? false): ?>
+    <?= $this->record($this->driver)->renderTemplate('record-summary.phtml', ['driver' => $this->driver, 'type' => 'topic', 'summary' => $this->summary['topic']]) ?>
+  <?php endif; ?>
+</div>

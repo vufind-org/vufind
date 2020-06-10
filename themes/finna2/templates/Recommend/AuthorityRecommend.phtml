@@ -63,13 +63,14 @@ JS;
     if ($displayQuery) {
       $searchIndex = $this->contextParams['searchIndex'] ?? null;
       $urlQuery = $results->getUrlQuery()->setSearchTerms('');
-      $callback = function ($record) use ($displayQuery, $that, $urlQuery) {
+      $authorityLinkType = $this->recommend->getAuthorityLinkType();
+      $callback = function ($record) use ($displayQuery, $that, $urlQuery, $authorityLinkType) {
           // Generate a new search URL that replaces the user's current term
           // with the authority term:
           $id = $record->getUniqueId();
           $formats = $record->getFormats();
-          $authoritySearchUrl = $urlQuery->setAuthorId($id);
-          $html = '<span class="authority-page-link"><a class="authority-page" href="' . $authoritySearchUrl . '"><i class="fa' . (!empty($formats) ? ' fa-authority-' . $this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0])) : '') . '"></i> ' . $that->escapeHtml($record->getBreadCrumb()) . '</a></span>';
+          $authorityUrl = $authorityLinkType === 'search' ? $urlQuery->setAuthorId($id) : $this->url('solrauthrecord', ['id' => $id]);
+          $html = '<span class="authority-page-link"><a class="authority-page" href="' . $authorityUrl . '"><i class="fa' . (!empty($formats) ? ' fa-authority-' . $this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0])) : '') . '"></i> ' . $that->escapeHtml($record->getBreadCrumb()) . '</a></span>';
           return $html;
       };
       $content = implode(', ', array_map($callback, $data));

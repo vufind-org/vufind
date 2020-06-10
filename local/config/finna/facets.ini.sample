@@ -257,7 +257,9 @@ facet_limit      = -1
 ;map_selection = ""
 
 [ExtraFacetLabels]
+author2_id_str_mv = Author
 author2_id_role_str_mv = Author role
+topic_id_str_mv     = Topic
 
 [AvailableFacetSortOptions]
 ; By default all Solr facets can be sorted by count and alphabetically.

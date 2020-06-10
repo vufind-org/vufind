@@ -53,6 +53,13 @@ class AuthorityHelper
     const AUTHOR_ID_ROLE_FACET = 'author2_id_role_str_mv';
 
     /**
+     * Index field for author2-ids.
+     *
+     * @var string
+     */
+    const TOPIC_ID_FACET = 'topic_id_str_mv';
+
+    /**
      * Delimiter used to separate author id and role.
      *
      * @var string
@@ -67,6 +74,13 @@ class AuthorityHelper
     protected $recordLoader;
 
     /**
+     * Search runner
+     *
+     * @var \VuFind\Search\SearchRunner
+     */
+    protected $searchRunner;
+
+    /**
      * Translator
      *
      * @var \VuFind\Translator
@@ -74,17 +88,43 @@ class AuthorityHelper
     protected $translator;
 
     /**
+     * Authority config
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $authorityConfig;
+
+    /**
+     * Authority search config
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $authoritySearchConfig;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader              $recordLoader Record loader
-     * @param \VuFind\View\Helper\Root\Translate $translator   Translator view helper
+     * @param \VuFind\Record\Loader              $recordLoader          Record loader
+     * @param \VuFind\Search\SearchRunner        $searchRunner          Search runner
+     * @param \VuFind\View\Helper\Root\Translate $translator            Translator
+     * view helper
+     * @param \Zend\Config\Config                $authorityConfig       Authority
+     * config
+     * @param \Zend\Config\Config                $authoritySearchConfig Authority
+     * search config
      */
     public function __construct(
         \VuFind\Record\Loader $recordLoader,
-        \VuFind\View\Helper\Root\Translate $translator
+        \VuFind\Search\SearchRunner $searchRunner,
+        \VuFind\View\Helper\Root\Translate $translator,
+        \Zend\Config\Config $authorityConfig,
+        \Zend\Config\Config $authoritySearchConfig
     ) {
         $this->recordLoader = $recordLoader;
+        $this->searchRunner = $searchRunner;
         $this->translator = $translator;
+        $this->authorityConfig = $authorityConfig;
+        $this->authoritySearchConfig = $authoritySearchConfig;
     }
 
     /**
@@ -130,14 +170,18 @@ class AuthorityHelper
      */
     protected function processFacets($facetSet)
     {
+        $authIds = [];
         foreach ($this->getAuthorIdFacets() as $field) {
-            $ids = [];
             $facetList = $facetSet[$field]['list'] ?? [];
+            $authIds[$field] = [];
             foreach ($facetList as $facet) {
                 list($id, $role) = $this->extractRole($facet['displayText']);
-                $ids[] = $id;
+                $authIds[$field][] = $id;
             }
-
+        }
+        foreach ($this->getAuthorIdFacets() as $field) {
+            $facetList = $facetSet[$field]['list'] ?? [];
+            $ids = $authIds[$field] ?? [];
             $records
                 = $this->recordLoader->loadBatchForSource($ids, 'SolrAuth', true);
             foreach ($facetList as &$facet) {
@@ -166,7 +210,8 @@ class AuthorityHelper
     {
         return [
             AuthorityHelper::AUTHOR_ID_ROLE_FACET,
-            AuthorityHelper::AUTHOR2_ID_FACET
+            AuthorityHelper::AUTHOR2_ID_FACET,
+            AuthorityHelper::TOPIC_ID_FACET
         ];
     }
 
@@ -207,6 +252,72 @@ class AuthorityHelper
             list($id, $role) = explode($separator, $value, 2);
         }
         return [$id, $role];
+    }
+
+    /**
+     * Return biblio records that are linked to author.
+     *
+     * @param string $id        Authority id
+     * @param string $field     Solr field to search by (author, topic)
+     * @param bool   $onlyCount Return only record count
+     * (does not fetch record data from index)
+     *
+     * @return \VuFind\Search\Results|int
+     */
+    public function getRecordsByAuthorityId(
+        $id, $field = AUTHOR2_ID_FACET, $onlyCount = false
+    ) {
+        $query = $this->getRecordsByAuthorityQuery($id, $field);
+        $results = $this->searchRunner->run(
+            ['lookfor' => $query, 'fl' => 'id'],
+            'Solr',
+            function ($runner, $params, $searchId) use ($onlyCount) {
+                $params->setLimit($onlyCount ? 0 : 100);
+                $params->setPage(1);
+            }
+        );
+        return $onlyCount ? $results->getResultTotal() : $results;
+    }
+
+    /**
+     * Return query for fetching biblio records by authority id.
+     *
+     * @param string $id    Authority id
+     * @param string $field Solr field to search by (author, topic)
+     *
+     * @return string
+     */
+    public function getRecordsByAuthorityQuery($id, $field)
+    {
+        return "$field:\"$id\"";
+    }
+
+    /**
+     * Check if authority search is enabled.
+     *
+     * @return bool
+     */
+    public function isAuthoritySearchEnabled()
+    {
+        return $this->authoritySearchConfig->General->enabled ?? false;
+    }
+
+    /**
+     * Get authority link type.
+     *
+     * @param string $type authority type
+     *
+     * @return Link type (page or search) or null when authority links are disabled.
+     */
+    public function getAuthorityLinkType($type = 'author')
+    {
+        $setting = $this->authorityConfig->authority_links ?? null;
+        $setting = $setting[$type] ?? $setting['*'] ?? $setting;
+        if ($setting === '1') {
+            // Backward compatibility
+            $setting = 'search';
+        }
+        return in_array($setting, ['page', 'search']) ? $setting : null;
     }
 
     /**

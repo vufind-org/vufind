@@ -221,25 +221,6 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Save a search to the history in the database.
-     * Save search Id and type to memory
-     *
-     * @param \VuFind\Search\Base\Results $results Search results
-     *
-     * @return void
-     */
-    public function saveSearchToHistory($results)
-    {
-        parent::saveSearchToHistory($results);
-        $this->getSearchMemory()->rememberSearchData(
-            $results->getSearchId(),
-            $results->getParams()->getSearchType(),
-            $results->getUrlQuery()->isQuerySuppressed()
-                ? '' : $results->getParams()->getDisplayQuery()
-        );
-    }
-
-    /**
      * Returns a list of all items associated with one facet for the lightbox
      *
      * Parameters:

@@ -15,6 +15,10 @@
   }
 ?>
 <?php foreach ($formatMap as $format): ?>
-  <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($format)?></span>
+  <?php
+    $formatLabel = $this->driver->tryMethod('isAuthorityRecord') ? 'authority_' : '';
+    $formatLabel .= $format;
+  ?>
+  <span class="label label-info iconlabel format-<?=$this->record($this->driver)->getFormatClass($format)?>"><?=$this->transEsc($formatLabel)?></span>
 <?php endforeach; ?>
 <?php // <!-- END of: finna - RecordDriver/DefaultRecord/format-list.phtml --> ?>

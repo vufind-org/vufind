@@ -1,0 +1,99 @@
+<!-- START of: finna - RecordDriver/SolrAuthDefault/result-condensed.phtml -->
+<?php
+  $formats = $this->driver->getFormats();
+  // Thumbnail
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  if ($img):
+    ob_start(); ?>
+    <?=$img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250]]) ?>
+    <?php $thumbnail = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+<?php endif;?>
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view authority">
+  <div class="condensed-collapse-toggle">
+    <div class="condensed-body authority">
+      <i class="fa fa-arrow-right"></i>
+      <div class="resultItemFormat"><?=$this->translationEmpty('authority_' . $formats[0]) ? $formats[0] : $this->transEsc('authority_' . $formats[0])?></div>
+      <div class="title-container">
+        <div>
+          <h2 class="title">
+            <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+              <?=$this->record($this->driver)->getTitleHtml()?><span class="sr-only"> <?=$this->transEsc('To the record')?></span>
+            </a>
+          </h2>
+        </div>
+        <?= $this->record($this->driver)->getAuthorityBirthDeath()?>
+      </div>
+      <?php if ($occupations = $this->driver->getOccupations()): ?>
+        <div class="occupation"><?=$this->escapeHtml(implode(', ', $occupations))?></div>
+      <?php endif; ?>
+      <div class="authority-record-info"></div>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="media condensed-collapse-data">
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <div class="media-left resultThumb">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+      <?=$thumbnail ?>
+    </div>
+  <?php endif; ?>
+    <div class="media-body">
+      <div class="result-body">
+        <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+          <?php if (!empty($snippet['caption'])): ?>
+            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
+          <?php endif; ?>
+          <?php if (!empty($snippet['snippet'])): ?>
+            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
+          <?php endif; ?>
+        <?php endif; ?>
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <?php /* Saved lists */ ?>
+          <div class="savedLists">
+            <strong><?=$this->transEsc("Saved in")?>:</strong>
+          </div>
+        <?php endif; ?>
+        <?=$this->render('list/list-notes.phtml')?>
+      </div>
+      <div class="hidden-print add-to-favorite-col">
+        <?php /* Display qrcode if appropriate: */ ?>
+        <?php if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+          <?php
+            // Add JS Variables for QrCode
+            $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
+          ?>
+          <div class="hidden-xs">
+            <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="finnaQrcodeLink" title="<?=$this->transEsc('qrcode_show')?>" rel="nofollow">
+              <i class="fa fa-qr-code" aria-hidden="true"><span class="sr-only"><?=$this->transEsc('QR Code')?></span></i>
+            </a>
+            <div class="qrcode hidden">
+              <script type="text/template" class="qrCodeImgTag">
+              <img alt="" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+              </script>
+            </div><br/>
+          </div>
+        <?php endif; ?>
+
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <?php /* Add to favorites */ ?>
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
+        <?php endif; ?>
+
+          <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+      </div>
+    </div>
+  </div>
+  <?php if ($thumbnail && $thumbnailAlignment === 'right'): ?>
+    <div class="media-right resultThumb">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+      <?=$thumbnail ?>
+    </div>
+  <?php endif; ?>
+  <div class="clearfix visible-xs"></div>
+</div>
+<!-- END of: finna - RecordDriver/SolrAuthDefault/result-condensed.phtml -->

@@ -1,0 +1,10 @@
+<div class="info-row <?=$this->type?>">
+    <?php if ($title = ($this->summary['title'] ?? null)): ?>
+      <div class="text"><?= $this->transEsc($title)?></div>
+    <?php endif ?>
+    <div class="count">
+      <?php if ($tabUrl = $this->summary['tabUrl']): ?><a href="<?=$this->escapeHtmlAttr($tabUrl)?>#tabnav"><?php endif ?>
+        <?=$this->transEsc($this->summary['label'], ['%%count%%' => $this->summary['cnt']]);?>
+      <?php if ($tabUrl):?></a><?php endif ?>
+    </div>
+  </div>

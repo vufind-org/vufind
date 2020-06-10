@@ -365,6 +365,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         if ($url === 'organisationinfo-home') {
             return $this->getViewHelper('organisationInfo')->isAvailable();
         }
+        if ($url === 'authority-home') {
+            return $this->getViewHelper('authority')->isAvailable();
+        }
         return true;
     }
 

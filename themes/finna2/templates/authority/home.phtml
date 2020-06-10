@@ -1,0 +1,29 @@
+<!-- START of: finna - authority/home.phtml -->
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Authority Search'));
+  $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->transEsc('Authority Search') . '</h1></div>';
+
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'SolrAuth';
+  }
+
+  $this->layout()->breadcrumbs = false;
+  $this->layout()->logosection = true;
+  $this->layout()->ignoreHiddenFilterMemory = true;
+?>
+<!--  Begin home.phtml and close page container for extra styling  -->
+</div>
+<div class="container-fluid authority-home">
+  <div class="container">
+    <div>
+      <?php if ($template = $this->content()->findTemplateForLng('authority/home-1')): ?>
+        <?=$this->render($template)?>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+<!-- reopen container -->
+<div class="container">
+<!-- END of: finna - authority/home.phtml -->

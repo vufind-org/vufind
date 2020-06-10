@@ -1,0 +1,14 @@
+<?php foreach ($data as $url): ?>
+  <?php
+    $title = $this->escapeHtml($url['title']);
+    if (!empty($url['info'])) {
+      $title .= ' <span class="info">' . $this->escapeHtml($url['info']) . '</span>';
+    }
+  ?>
+  <?php if (!empty($url['url'])): ?>
+    <a href="<?=$this->escapeHtmlAttr($url['url'])?>"><?=$title?></a><?= $this->escapeHtml($url['subtitle']) ? (' ' . $this->escapeHtml($url['subtitle'])) : '' ?>
+  <?php else: ?>
+    <?=$title?>
+  <?php endif; ?>
+  <br />
+<?php endforeach; ?>

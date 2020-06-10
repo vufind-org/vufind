@@ -50,13 +50,6 @@ use Finna\Search\Solr\AuthorityHelper;
 class Record extends \VuFind\View\Helper\Root\Record
 {
     /**
-     * Datasource configuration
-     *
-     * @var \Zend\Config\Config
-     */
-    protected $datasourceConfig;
-
-    /**
      * Record loader
      *
      * @var \VuFind\Record\Loader
@@ -92,6 +85,13 @@ class Record extends \VuFind\View\Helper\Root\Record
     protected $urlHelper;
 
     /**
+     * Record link helper
+     *
+     * @var \VuFind\View\Helper\Root\RecordLink
+     */
+    protected $recordLinkHelper;
+
+    /**
      * Image cache
      *
      * @var array
@@ -117,30 +117,30 @@ class Record extends \VuFind\View\Helper\Root\Record
      *
      * @param \Zend\Config\Config                 $config           VuFind
      * configuration
-     * @param \Zend\Config\Config                 $datasourceConfig Datasource
-     * configuration
      * @param \VuFind\Record\Loader               $loader           Record loader
      * @param \Finna\View\Helper\Root\RecordImage $recordImage      Record image
      * helper
      * @param \Finna\Search\Solr\AuthorityHelper  $authorityHelper  Authority helper
      * @param \VuFind\View\Helper\Root\Url        $urlHelper        Url helper
+     * @param \VuFind\View\Helper\Root\RecordLink $recordLinkHelper Record link
+     * helper
      * @param \VuFind\RecordTab\TabManager        $tabManager       Tab manager
      */
     public function __construct(
         \Zend\Config\Config $config,
-        \Zend\Config\Config $datasourceConfig,
         \VuFind\Record\Loader $loader,
         \Finna\View\Helper\Root\RecordImage $recordImage,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper,
         \VuFind\View\Helper\Root\Url $urlHelper,
+        \VuFind\View\Helper\Root\RecordLink $recordLinkHelper,
         \VuFind\RecordTab\TabManager $tabManager
     ) {
         parent::__construct($config);
-        $this->datasourceConfig = $datasourceConfig;
         $this->loader = $loader;
         $this->recordImageHelper = $recordImage;
         $this->authorityHelper = $authorityHelper;
         $this->urlHelper = $urlHelper;
+        $this->recordLinkHelper = $recordLinkHelper;
         $this->tabManager = $tabManager;
     }
 
@@ -240,31 +240,39 @@ class Record extends \VuFind\View\Helper\Root\Record
 
     /**
      * Render the link of the specified type.
+     * Fallbacks from 'authority-page' to 'author' when needed.
      *
-     * @param string $type    Link type
-     * @param string $lookfor String to search for at link
-     * @param array  $params  Optional array of parameters for the link template
+     * @param string $type     Link type
+     * @param string $lookfor  String to search for at link
+     * @param array  $params   Optional array of parameters for the link template
+     * @param bool   $withInfo return an array with link HTML and returned link type.
      *
      * @return string
      */
-    public function getLink($type, $lookfor, $params = [])
+    public function getLink($type, $lookfor, $params = [], $withInfo = false)
     {
         if (is_array($lookfor)) {
             $lookfor = $lookfor['name'];
         }
         $searchAction = !empty($this->getView()->browse)
-            ? 'browse-' . $this->getView()->browse : '';
+            ? 'browse-' . $this->getView()->browse : $params['searchAction'] ?? '';
         $params = $params ?? [];
         $filter = null;
 
+        $linkType = $params['linkType'] ?? $this->getAuthorityLinkType($type);
         // Attempt to switch Author search link to Authority link.
-        if ($this->isAuthorityLinksEnabled()
-            && $type === 'author'
+        if (null !== $linkType
+            && in_array($type, ['author', 'author-id', 'subject'])
             && isset($params['id'])
-            && $authId = $this->getAuthorityId($type, $params['id'])
+            && $authId = $this->driver->getAuthorityId(
+                $params['id'], $type
+            )
         ) {
-            $filter = sprintf('%s:"%s"', AuthorityHelper::AUTHOR2_ID_FACET, $authId);
-            $type = 'author-id';
+            $type = "authority-$linkType";
+            $filter = $linkType === 'search'
+                ? $params['filter']
+                    ?? sprintf('%s:"%s"', AuthorityHelper::AUTHOR2_ID_FACET, $authId)
+                : $authId;
         }
 
         $params = array_merge(
@@ -283,7 +291,7 @@ class Record extends \VuFind\View\Helper\Root\Record
         $result .= $this->getView()->plugin('searchTabs')
             ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
 
-        return $result;
+        return $withInfo ? [$result, $type] : $result;
     }
 
     /**
@@ -317,7 +325,6 @@ class Record extends \VuFind\View\Helper\Root\Record
 
     /**
      * Render a authority search link or fallback to Author search.
-     * This returns an a-tag.
      *
      * @param string $type    Link type
      * @param string $lookfor Link label or string to search for at link
@@ -325,30 +332,47 @@ class Record extends \VuFind\View\Helper\Root\Record
      * @param array  $data    Additional link data
      * @param array  $params  Optional array of parameters for the link template
      *
-     * @return string
+     * @return string HTML
      */
     public function getAuthorityLinkElement(
         $type, $lookfor, $data, $params = []
     ) {
         $id = $data['id'] ?? null;
-        $url = $this->getLink($type, $lookfor, $params + ['id' => $id]);
-        $authId = $this->getAuthorityId($type, $id);
+        list($url, $urlType)
+            = $this->getLink($type, $lookfor, $params + ['id' => $id], true);
 
+        if (!$this->isAuthorityEnabled()
+            || !in_array($urlType, ['authority-search', 'authority-page'])
+        ) {
+            $author = [
+               'name' => $data['name'] ?? null,
+               'date' => !empty($data['date']) ? $data['date'] : null,
+               'role' => !empty($data['role']) ? $data['role'] : null
+            ];
+            // NOTE: currently this fallbacks always to a author-link
+            // (extend to handle subject/topic fallbacks when needed).
+            return $this->getAuthorLinkElement($url, $author);
+        }
+
+        $authId = $this->driver->getAuthorityId($id, $type);
         $authorityType = $params['authorityType'] ?? null;
         $authorityType
             = $this->config->Authority->typeMap->{$authorityType} ?? $authorityType;
 
         $elementParams = [
            'url' => trim($url),
+           'record' => $this->driver,
+           'searchAction' => $params['searchAction'] ?? null,
            'label' => $lookfor,
            'id' => $authId,
            'authorityLink' => $id && $this->isAuthorityLinksEnabled(),
            'showInlineInfo' => !empty($params['showInlineInfo'])
-             && $this->isAuthorityInlineInfoEnabled(),
+               && $this->isAuthorityInlineInfoEnabled(),
            'recordSource' => $this->driver->getDataSource(),
            'type' => $type,
            'authorityType' => $authorityType,
-           'record' => $this->driver
+           'title' => $params['title'] ?? null,
+           'classes' => $params['class'] ?? []
         ];
 
         if (isset($params['additionalData'])) {
@@ -374,13 +398,12 @@ class Record extends \VuFind\View\Helper\Root\Record
             }
         }
 
-        return $this->renderTemplate(
-            'authority-link-element.phtml', $elementParams
-        );
+        return $this->renderTemplate('authority-link-element.phtml', $elementParams);
     }
 
     /**
      * Is authority links enabled?
+     * Utility function for rendering an author search link element.
      *
      * @return bool
      */
@@ -391,14 +414,22 @@ class Record extends \VuFind\View\Helper\Root\Record
     }
 
     /**
-     * Is authority inline info enabled?
+     * Utility function for rendering an author search link element.
      *
-     * @return bool
+     * @param string $url  Link URL
+     * @param array  $data Author data (name, role, date)
+     *
+     * @return string HTML
      */
-    protected function isAuthorityInlineInfoEnabled()
+    protected function getAuthorLinkElement($url, $data)
     {
-        return $this->isAuthorityEnabled()
-            && ($this->config->Authority->authority_info ?? false);
+        $params = [
+           'url' => $url,
+           'record' => $this->driver,
+           'author' => $data
+        ];
+
+        return $this->renderTemplate('author-link-element.phtml', $params);
     }
 
     /**
@@ -408,41 +439,33 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     protected function isAuthorityEnabled()
     {
-        if (!is_callable([$this->driver, 'getDatasource'])) {
-            return false;
+        return (bool)$this->config->Authority->enabled ?? false;
+    }
+
+    /**
+     * Get authority link type.
+     *
+     * @param string $type authority type
+     *
+     * @return Link type (string) or null when authority links are disabled.
+     */
+    protected function getAuthorityLinkType($type = 'author')
+    {
+        if (!$this->driver->isAuthorityEnabled()) {
+            return null;
         }
-        $recordSource = $this->driver->getDatasource();
-        return isset($this->datasourceConfig[$recordSource]['authority']);
+        return $this->authorityHelper->getAuthorityLinkType($type);
     }
 
     /**
-     * Format authority id by prefixing the given id with authority record source.
+     * Is authority inline info enabled?
      *
-     * @param string $type Authority type (e.g. author)
-     * @param string $id   Authority id
-     *
-     * @return string
+     * @return bool
      */
-    protected function getAuthorityId($type, $id)
+    protected function isAuthorityInlineInfoEnabled()
     {
-        $recordSource = $this->driver->getDataSource();
-        $authSrc = $this->datasourceConfig[$recordSource]['authority'][$type]
-            ?? $this->datasourceConfig[$recordSource]['authority']['*']
-            ?? null;
-        return $authSrc ? $this->getAuthorityIdForSource($id, $authSrc) : null;
-    }
-
-    /**
-     * Prefix authority id with authority record source.
-     *
-     * @param string $id     Authority id
-     * @param string $source Authority source
-     *
-     * @return string
-     */
-    protected function getAuthorityIdForSource($id, $source)
-    {
-        return "$source.$id";
+        return $this->driver->isAuthorityEnabled()
+            && ($this->config->Authority->authority_info ?? false);
     }
 
     /**
@@ -697,6 +720,9 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function containsNonImageURL($urls, $imageURLs)
     {
+        if (!$urls) {
+            return false;
+        }
         foreach ($urls as $url) {
             if (!isset($imageURLs[$url['url']])) {
                 return true;
@@ -715,6 +741,9 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function containsPdfUrl($urls)
     {
+        if (!$urls) {
+            return false;
+        }
         foreach ($urls as $url) {
             if (strcasecmp(pathinfo($url['url'], PATHINFO_EXTENSION), 'pdf') === 0) {
                 return true;
@@ -770,5 +799,112 @@ class Record extends \VuFind\View\Helper\Root\Record
             }
         }
         return '';
+    }
+
+    /**
+     * Check if the record driver has a tab (regardless of whether it's active)
+     *
+     * @param string $tab Tab
+     *
+     * @return bool
+     */
+    public function hasTab($tab)
+    {
+        $tabs = $this->tabManager->getTabServices($this->driver);
+        return isset($tabs[$tab]);
+    }
+
+    /**
+     * Return author birth and death date.
+     *
+     * @return string HTML
+     */
+    public function getAuthorityBirthDeath()
+    {
+        if (!$this->driver->isAuthorityRecord()) {
+            return '';
+        }
+        $birth = $this->driver->getBirthDateAndPlace();
+        $death = $this->driver->getDeathDateAndPlace();
+        if ($birth) {
+            $birth['detail'] = null;
+        }
+        if ($death) {
+            $death['detail'] = null;
+        }
+
+        return $this->renderTemplate('birth_death.phtml', compact('birth', 'death'));
+    }
+
+    /**
+     * Return author birth and death date and place.
+     *
+     * @return string HTML
+     */
+    public function getAuthorityBirthDeathWithPlace()
+    {
+        if (!$this->driver->isAuthorityRecord()) {
+            return '';
+        }
+        $birth = $this->driver->getBirthDateAndPlace();
+        $death = $this->driver->getDeathDateAndPlace();
+
+        return $this->renderTemplate('birth_death.phtml', compact('birth', 'death'));
+    }
+
+    /**
+     * Return number of linked biblio records for an authority record.
+     * Returns an array with keys 'author' and 'topic'
+     * (number of biblio records where the authority is an author/topic)
+     *
+     * @param bool $onAuthorityPage Called from authority record page?
+     *
+     * @return array
+     */
+    public function getAuthoritySummary($onAuthorityPage = false)
+    {
+        $id = $this->driver->getUniqueID();
+        $authorCnt = $this->authorityHelper->getRecordsByAuthorityId(
+            $id, AuthorityHelper::AUTHOR2_ID_FACET, true
+        );
+        $topicCnt = $this->authorityHelper->getRecordsByAuthorityId(
+            $id, AuthorityHelper::TOPIC_ID_FACET, true
+        );
+
+        $tabs = array_keys($this->tabManager->getTabsForRecord($this->driver));
+
+        $summary = [
+            'author' => [
+                'cnt' => $authorCnt,
+                'tabUrl' => in_array('AuthorityRecordsAuthor', $tabs)
+                    ? $this->recordLinkHelper->getTabUrl(
+                        $this->driver, 'AuthorityRecordsAuthor'
+                    )
+                    : null
+            ],
+            'topic' => [
+                'cnt' => $topicCnt,
+                'tabUrl' => in_array('AuthorityRecordsTopic', $tabs)
+                    ? $this->recordLinkHelper->getTabUrl(
+                        $this->driver, 'AuthorityRecordsTopic'
+                    )
+                    : null
+            ]
+        ];
+
+        if ($onAuthorityPage) {
+            $summary['author']['title'] = 'authority_records_author';
+            $summary['topic']['title'] = 'authority_records_topic';
+            $summary['author']['label'] = $summary['topic']['label']
+                = 'authority_records_count';
+        } else {
+            $summary['author']['label'] = 'authority_records_author_count';
+            $summary['topic']['label'] = 'authority_records_topic_count';
+        }
+
+        return $this->renderTemplate(
+            'record-summaries.phtml',
+            ['summary' => $summary, 'driver' => $this->driver]
+        );
     }
 }

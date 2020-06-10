@@ -1,0 +1,31 @@
+<?php //Don't add START and END comments ?>
+<?php if (!empty($data)): ?>
+<div class="truncate-field" data-rows="5">
+  <?php foreach ($data as $field): ?>
+  <div class="subjectLine" property="keywords">
+    <?php $subject = ''; ?>
+    <?php
+      if (count($field['heading']) == 1) {
+          $field['heading'] = explode('--', $field['heading'][0]);
+      }
+    ?>
+    <?php $i = 0; foreach ($field['heading'] as $subfield): ?>
+      <?php
+        $first = $i++ === 0;
+        $authId = $first && isset($field['id']) ? $field['id'] : null;
+        $authType = $field['authType'] ?? 'Personal Name';
+      ?>
+      <?= $first ? '' : ' &#8594; '?>
+      <?php $subject = trim($subject . ' ' . $subfield); ?>
+      <?php if ($authId): ?>
+        <?=$this->record($this->driver)->getAuthorityLinkElement('subject', $subfield, ['name' => $subject, 'id' => $authId], ['authorityType' => $authType, 'class' => ['backlink'], 'title' => $subfield])?>
+      <?php else: ?>
+        <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>">
+          <?=trim($this->escapeHtml($subfield))?>
+        </a>
+      <?php endif ?>
+    <?php endforeach; ?>
+  </div>
+  <?php endforeach; ?>
+</div>
+<?php endif; ?>

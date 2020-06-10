@@ -1,12 +1,78 @@
 @iconFontSize: 1.3em;
 
+.record.sourceSolrAuth {
+  // .media and .media-body code added to fix IE11 display: table-cell issues
+  .media {
+    display: block;
+  }
+  .format {
+      font-weight: bold;
+  }
+}
+
+.result.condensed-list-view .condensed-collapse-toggle .condensed-body.authority {
+  width: 100%;
+}
+.result {
+  .authority-record-info .authority-record-summary-container {
+    display: flex;
+    align-items: baseline;
+    .author {
+      margin-right: 20px;
+    }
+  }
+}
+.result.condensed-list-view {
+  .title-container {
+    display: flex;
+    flex-wrap: wrap;
+    .title {
+      margin-right: 10px;
+    }
+    .date-info {
+    }
+  }
+}
 a.authority-link {
+  .authority-label {
+    vertical-align: middle;
+  }
+  display: inline-block;
   &::after {
     margin-left: 5px;
   }
   i {
-    vertical-align: middle;
+    margin-right: 0.1em;
     font-size: @iconFontSize;
+    vertical-align: middle;
+  }
+}
+.record-information .record-core-metadata .recordAuthors .authority {
+    display: inline-block;
+}
+.record-main {
+  .authority-records-summary {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    > div {
+      .info-row {
+        display: flex;
+        align-items: baseline;
+      }
+      .text {
+        font-weight: 700;
+        width: 30%;
+      }
+      .count {
+        font-size: 1.4em;
+      }
+    }
+  }
+  .table-finna-record record-details {
+    .info {
+      color: @gray;
+      font-size: 0.9em;
+    }
   }
 }
 .authority {
@@ -203,4 +269,13 @@ a.authority-link {
       }
     }
   }
+}
+.record-accordions .authority-records {
+    .pagination-container {
+        margin-bottom: 20px;
+    }
+    .search-btn-container {
+        margin-top: 25px;
+        text-align: center;
+    }
 }

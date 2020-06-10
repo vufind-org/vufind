@@ -45,6 +45,25 @@ trait SolrCommonFinnaTrait
     use FinnaRecordTrait;
 
     /**
+     * Date Converter
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
+
+    /**
+     * Attach date converter
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date Converter
+     *
+     * @return void
+     */
+    public function attachDateConverter($dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
      * Sanitize HTML.
      * If validation is enabled and the stripped HTML is invalid,
      * all tags are stripped.
@@ -147,5 +166,15 @@ trait SolrCommonFinnaTrait
             $params = ['url' => $params];
         }
         return $params;
+    }
+
+    /**
+     * Get sector
+     *
+     * @return string
+     */
+    public function getSector()
+    {
+        return (string)($this->fields['sector_str_mv'][0] ?? '');
     }
 }
