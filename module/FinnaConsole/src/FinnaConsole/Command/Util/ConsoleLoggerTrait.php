@@ -26,10 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
-
-use Laminas\Log\Logger;
-use Laminas\Log\Writer\Stream;
+namespace FinnaConsole\Command\Util;
 
 /**
  * Trait for logs in console services.
@@ -40,39 +37,10 @@ use Laminas\Log\Writer\Stream;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @todo     Use Symfony output
  */
 trait ConsoleLoggerTrait
 {
-    /**
-     * Logger
-     *
-     * @var Logger
-     */
-    protected $logger = null;
-
-    /**
-     * Error logger
-     *
-     * @var Logger
-     */
-    protected $errLogger = null;
-
-    /**
-     * Init logging.
-     *
-     * @return void
-     */
-    public function initLogging()
-    {
-        $writer = new Stream('php://output');
-        $this->logger = new Logger();
-        $this->logger->addWriter($writer);
-
-        $writer = new Stream('php://stderr');
-        $this->errLogger = new Logger();
-        $this->errLogger->addWriter($writer);
-    }
-
     /**
      * Log an exception triggered by ZF2 for administrative purposes.
      *
@@ -117,7 +85,7 @@ trait ConsoleLoggerTrait
             }
         }
 
-        $this->logger->err($baseError . $backtrace);
+        $this->err($baseError . $backtrace);
     }
 
     /**
@@ -160,8 +128,8 @@ trait ConsoleLoggerTrait
      */
     protected function msg($msg)
     {
-        $msg = '[' . getmypid() . "] $msg";
-        $this->logger->info($msg);
+        $msg = '[' . getmypid() . "] $msg\n";
+        file_put_contents('php://stdout', $msg, FILE_APPEND);
     }
 
     /**
@@ -179,11 +147,11 @@ trait ConsoleLoggerTrait
             if ('=' === $publishedMsg) {
                 $publishedMsg = $msg;
             }
-            $publishedMsg = '[' . getmypid() . "] $publishedMsg";
-            $this->errLogger->err($publishedMsg);
+            $publishedMsg = '[' . getmypid() . "] $publishedMsg\n";
+            file_put_contents('php://stderr', $publishedMsg, FILE_APPEND);
         }
-        $msg = '[' . getmypid() . "] $msg";
-        $this->logger->err($msg);
+        $msg = "ERROR: $msg";
+        $this->msg($msg);
     }
 
     /**
@@ -195,7 +163,7 @@ trait ConsoleLoggerTrait
      */
     protected function warn($msg)
     {
-        $msg = '[' . getmypid() . "] $msg";
-        $this->logger->warn($msg);
+        $msg = "WARNING: $msg";
+        $this->msg($msg);
     }
 }

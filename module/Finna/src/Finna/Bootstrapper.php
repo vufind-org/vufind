@@ -141,7 +141,7 @@ class Bootstrapper
         };
 
         // Attach with a high priority
-        if (!Console::isConsole()) {
+        if (PHP_SAPI !== 'cli') {
             $this->events->attach('dispatch', $callback, 11000);
         }
     }
@@ -158,11 +158,11 @@ class Bootstrapper
 
         $callback = function ($event) use ($config, $sm) {
             // Special initialization only for CLI and API routes
-            if (!Console::isConsole() && !$this->isApiRoute($event)) {
+            if (PHP_SAPI !== 'cli' && !$this->isApiRoute($event)) {
                 return;
             }
             $request = $event->getRequest();
-            if (Console::isConsole()) {
+            if (PHP_SAPI === 'cli') {
                 $language = $config->Site->language;
             } elseif (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
@@ -187,13 +187,6 @@ class Bootstrapper
                         . ' Please disable translation or install the extension.'
                     );
                 }
-            }
-            // Send key values to view:
-            $viewManager = $sm->get('ViewManager');
-            if (!($viewManager instanceof \Laminas\Mvc\Console\View\ViewManager)) {
-                $viewModel = $viewManager->getViewModel();
-                $viewModel->setVariable('userLang', $language);
-                $viewModel->setVariable('allLangs', $config->Languages);
             }
         };
         $this->events->attach('dispatch.error', $callback, 9000);

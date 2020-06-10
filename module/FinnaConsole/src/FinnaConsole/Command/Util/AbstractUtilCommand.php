@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
+
+use Symfony\Component\Console\Command\Command;
 
 /**
  * Abstract base class for console services.
@@ -33,10 +35,11 @@ namespace FinnaConsole\Service;
  * @category VuFind
  * @package  Service
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-abstract class AbstractService implements ConsoleServiceInterface
+abstract class AbstractUtilCommand extends Command
 {
     use ConsoleLoggerTrait;
     use ViewPathTrait;

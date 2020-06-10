@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,16 +27,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
 
 use DateInterval;
 use DateTime;
 use Laminas\Db\Sql\Select;
-use Laminas\ServiceManager\ServiceManager;
-use Laminas\Stdlib\RequestInterface as Request;
-
+use Laminas\Mvc\I18n\Translator;
 use Laminas\View\Resolver\AggregateResolver;
 use Laminas\View\Resolver\TemplatePathStack;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console service for reminding users x days before account expiration
@@ -49,9 +51,16 @@ use Laminas\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class AccountExpirationReminders extends AbstractService
+class AccountExpirationReminders extends AbstractUtilCommand
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'util/account_expiration_reminders';
 
     /**
      * Current view local configuration directory.
@@ -68,6 +77,27 @@ class AccountExpirationReminders extends AbstractService
     protected $viewBaseDir = null;
 
     /**
+     * Table for user accounts
+     *
+     * @var \VuFind\Db\Table\User
+     */
+    protected $userTable;
+
+    /**
+     * Table for searches
+     *
+     * @var \VuFind\Db\Table\Search
+     */
+    protected $searchTable;
+
+    /**
+     * Table for resources
+     *
+     * @var \VuFind\Db\Table\Resource
+     */
+    protected $resourceTable;
+
+    /**
      * View renderer
      *
      * @var Laminas\View\Renderer\PhpRenderer
@@ -75,35 +105,39 @@ class AccountExpirationReminders extends AbstractService
     protected $renderer = null;
 
     /**
-     * Table for user accounts
+     * Datasource configuration
      *
-     * @var \VuFind\Db\Table\User
+     * @var \Laminas\Config\Config
      */
-    protected $table = null;
+    protected $datasourceConfig;
 
     /**
-     * ServiceManager
+     * Mailer
      *
-     * ServiceManager is used for creating VuFind\Mailer objects as needed
-     * (mailer is not shared as its connection might time out otherwise).
-     *
-     * @var ServiceManager
+     * @var \VuFind\Mailer\Mailer
      */
-    protected $serviceManager = null;
+    protected $mailer;
 
     /**
      * Translator
      *
-     * @var Laminas\I18n\Translator\Translator
+     * @var \Laminas\Mvc\I18n\Translator
      */
-    protected $translator = null;
+    protected $translator;
+
+    /**
+     * Config manager
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configManager;
 
     /**
      * UrllHelper
      *
      * @var urlHelper
      */
-    protected $urlHelper = null;
+    protected $urlHelper;
 
     /**
      * Current institution.
@@ -125,20 +159,6 @@ class AccountExpirationReminders extends AbstractService
      * @var object
      */
     protected $currentMultiBackendConfig = null;
-
-    /**
-     * Datasource configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $datasourceConfig = null;
-
-    /**
-     * ConfigReader
-     *
-     * @var \VuFind\Config
-     */
-    protected $configReader = null;
 
     /**
      * Expiration time in days
@@ -171,37 +191,119 @@ class AccountExpirationReminders extends AbstractService
     /**
      * Constructor
      *
-     * @param Finna\Db\Table\User            $table          User table.
-     * @param Laminas\View\Renderer\PhpRenderer $renderer       View renderer.
-     * @param VuFind\Config                  $configReader   Config reader.
-     * @param VuFind\Translator              $translator     Translator.
-     * @param ServiceManager                 $serviceManager Service manager.
+     * @param \VuFind\Db\Table\User              $userTable   User table
+     * @param \VuFind\Db\Table\Search            $searchTable User table
+     * @param \VuFind\Db\Table\Resource          $resTable    User table
+     * @param \Laminas\View\Renderer\PhpRenderer $renderer    View renderer
+     * @param \Laminas\Config\Config             $dsConfig    Data source config
+     * @param \VuFind\Mailer\Mailer              $mailer      Mailer
+     * @param Translator                         $translator  Translator
+     * @param \VuFind\Config\PluginManager       $configMgr   Config manager
      */
     public function __construct(
-        $table, $renderer, $configReader, $translator, $serviceManager
+        \Finna\Db\Table\User $userTable,
+        \Finna\Db\Table\Search $searchTable,
+        \Finna\Db\Table\Resource $resTable,
+        \Laminas\View\Renderer\PhpRenderer $renderer,
+        \Laminas\Config\Config $dsConfig,
+        \VuFind\Mailer\Mailer $mailer,
+        Translator $translator,
+        \VuFind\Config\PluginManager $configMgr
     ) {
-        $this->table = $table;
+        $this->userTable = $userTable;
+        $this->searchTable = $searchTable;
+        $this->resourceTable = $resTable;
         $this->renderer = $renderer;
-        $this->datasourceConfig = $configReader->get('datasources');
+        $this->datasourceConfig = $dsConfig;
+        $this->mailer = $mailer;
         $this->translator = $translator;
-        $this->serviceManager = $serviceManager;
+        $this->configManager = $configMgr;
         $this->urlHelper = $renderer->plugin('url');
+
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array   $arguments Command line arguments.
-     * @param Request $request   Full request
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments, Request $request)
+    protected function configure()
     {
-        if (!$this->collectScriptArguments($arguments)) {
-            $this->msg($this->getUsage());
-            return false;
+        parent::configure();
+        $this
+            ->setDescription(
+                'Send email reminders to users whose accounts are about to expire.'
+            )
+            ->addArgument(
+                'vufind_dir',
+                InputArgument::REQUIRED,
+                'VuFind base installation directory'
+            )
+            ->addArgument('view_dir', InputArgument::REQUIRED, 'View directory')
+            ->addArgument(
+                'expiration_days',
+                InputArgument::REQUIRED,
+                'After how many inactive days a user account will expire.'
+                . 'Values less than 180 are not valid.'
+            )
+            ->addArgument(
+                'remind_days_before',
+                InputArgument::REQUIRED,
+                'Begin reminding the user x days before the actual expiration'
+            )
+            ->addArgument(
+                'frequency',
+                InputArgument::REQUIRED,
+                'How often (in days) the user will be reminded'
+            )
+            ->addOption(
+                'report',
+                null,
+                InputOption::VALUE_NONE,
+                'If set, only a report of messages to be sent is generated'
+            );
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // Current view local configuration directory
+        $this->baseDir = $input->getArgument('vufind_dir');
+
+        // Current view local basedir
+        $this->viewBaseDir = $input->getArgument('view_dir');
+
+        // Inactive user account will expire in expirationDays days
+        $this->expirationDays = $input->getArgument('expiration_days');
+
+        if (!is_numeric($this->expirationDays) || $this->expirationDays < 180) {
+            $output->writeln('expiration_days must be at least 180.');
+            return 1;
         }
+
+        // Start reminding remindDaysBefore before expiration
+        $this->remindDaysBefore = $input->getArgument('remind_days_before');
+        if (!is_numeric($this->expirationDays) || $this->expirationDays <= 0) {
+            $output->writeln('remind_days must be at least 1.');
+            return 1;
+        }
+
+        // Remind every reminderFrequency days when reminding period has started
+        $this->reminderFrequency = $input->getArgument('frequency');
+        if (!is_numeric($this->reminderFrequency) || $this->reminderFrequency <= 0) {
+            $output->writeln('frequency must be at least 1.');
+            return 1;
+        }
+
+        $this->reportOnly = (bool)$input->getOption('report');
 
         try {
             $users = $this->getUsersToRemind(
@@ -233,10 +335,10 @@ class AccountExpirationReminders extends AbstractService
             while ($e = $e->getPrevious()) {
                 $this->err("  Previous exception: " . $e->getMessage());
             }
-            exit(1);
+            return 1;
         }
 
-        return true;
+        return 0;
     }
 
     /**
@@ -268,7 +370,7 @@ class AccountExpirationReminders extends AbstractService
 
         $initialReminderThreshold = time() + $frequency * 86400;
 
-        $users = $this->table->select(
+        $users = $this->userTable->select(
             function (Select $select) use ($limitDate) {
                 $select->where->lessThan('last_login', $limitDate);
                 $select->where->notEqualTo(
@@ -277,11 +379,6 @@ class AccountExpirationReminders extends AbstractService
                 );
             }
         );
-
-        $tableManager
-            = $this->serviceManager->get(\VuFind\Db\Table\PluginManager::class);
-        $searchTable = $tableManager->get('Search');
-        $resourceTable = $tableManager->get('Resource');
 
         $results = [];
         foreach ($users as $user) {
@@ -322,8 +419,8 @@ class AccountExpirationReminders extends AbstractService
             // if there is none.
             if ($user->finna_due_date_reminder === 0
                 && $user->getTags()->count() === 0
-                && $searchTable->getSearches('', $user->id)->count() === 0
-                && $resourceTable->getFavorites($user->id)->count() === 0
+                && count($this->searchTable->getSearches('', $user->id)) === 0
+                && count($this->resourceTable->getFavorites($user->id)) === 0
             ) {
                 $this->msg(
                     "User {$user->username} (id {$user->id}) has no saved content"
@@ -392,19 +489,17 @@ class AccountExpirationReminders extends AbstractService
             $stack = new TemplatePathStack(['script_paths' => $templateDirs]);
             $resolver->attach($stack);
 
-            $configLoader
-                = $this->serviceManager->get(\VuFind\Config\PluginManager::class);
             // Build the config path as a relative path from LOCAL_OVERRIDE_DIR.
             // This is a bit of a hack, but the configuration plugin manager doesn't
             // currently support specifying an absolute path alone.
             $parts = explode('/', LOCAL_OVERRIDE_DIR);
             $configPath = str_repeat('../', count($parts))
                 . ".$viewPath/local/config/vufind";
-            $this->currentSiteConfig = $configLoader->get(
+            $this->currentSiteConfig = $this->configManager->get(
                 'config.ini',
                 compact('configPath')
             );
-            $this->currentMultiBackendConfig = $configLoader->get(
+            $this->currentMultiBackendConfig = $this->configManager->get(
                 'MultiBackend.ini',
                 compact('configPath')
             );
@@ -565,87 +660,27 @@ $message
 
 EOT;
             } else {
-                $this->serviceManager->build(\VuFind\Mailer\Mailer::class)->send(
-                    $to, $from, $subject, $message
-                );
+                try {
+                    $this->mailer->send($to, $from, $subject, $message);
+                } catch (\Exception $e) {
+                    $this->warn(
+                        'First attempt at sending email failed, trying again'
+                    );
+                    $this->mailer->resetConnection();
+                    $this->mailer->send($to, $from, $subject, $message);
+                }
                 $user->finna_last_expiration_reminder = date('Y-m-d H:i:s');
                 $user->save();
             }
         } catch (\Exception $e) {
             $this->err(
-                "Failed to send an expiration reminder to user {$user->username} "
-                . " (id {$user->id})",
+                "Failed to send an expiration reminder to user {$user->username}"
+                    . " (id {$user->id})",
                 'Failed to send an expiration reminder to a user'
             );
             $this->err('   ' . $e->getMessage());
             return false;
         }
         return true;
-    }
-
-    /**
-     * Collect command line arguments.
-     *
-     * @param array $arguments Arguments
-     *
-     * @return void
-     */
-    protected function collectScriptArguments($arguments)
-    {
-        // Current view local configuration directory
-        $this->baseDir = $arguments[0] ?? false;
-
-        // Current view local basedir
-        $this->viewBaseDir = $arguments[1] ?? false;
-
-        // Inactive user account will expire in expirationDays days
-        $this->expirationDays = (isset($arguments[2]) && $arguments[2] >= 180)
-            ? $arguments[2] : false;
-
-        // Start reminding remindDaysBefore before expiration
-        $this->remindDaysBefore = (isset($arguments[3]) && $arguments[3] > 0)
-            ? $arguments[3] : false;
-
-        // Remind every reminderFrequency days when reminding period has started
-        $this->reminderFrequency = (isset($arguments[4]) && $arguments[4] > 0)
-            ? $arguments[4] : false;
-
-        $this->reportOnly = isset($arguments[5]);
-
-        if (!$this->baseDir
-            || !$this->viewBaseDir
-            || !$this->expirationDays
-            || !$this->remindDaysBefore
-            || !$this->reminderFrequency
-        ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Get usage information.
-     *
-     * @return string
-     */
-    protected function getUsage()
-    {
-        // @codingStandardsIgnoreStart
-        return <<<EOT
-Usage:
-  php index.php util expiration_reminders <vufind_dir> <view_dir> <expiration_days> <remind_days_before> <frequency> [report]
-
-  Sends a reminder for those users whose account will expire in <remind_days_before> days.
-    vufind_dir          VuFind base installation directory
-    view_dir            View directory
-    expiration_days     After how many inactive days a user account will expire.
-                        Values less than 180 are not valid.
-    remind_days_before  Begin reminding the user x days before the actual expiration
-    frequency           How often (in days) the user will be reminded
-    report              If set, only a report of messages to be sent is generated
-
-EOT;
-        // @codingStandardsIgnoreEnd
     }
 }

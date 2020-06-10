@@ -2,46 +2,41 @@
 namespace FinnaConsole\Module\Configuration;
 
 $config = [
-    'controllers' => [
-        'factories' => [
-            'FinnaConsole\Controller\ScheduledSearchController' => 'VuFind\Controller\AbstractBaseFactory',
-            'FinnaConsole\Controller\UtilController' => 'VuFind\Controller\AbstractBaseFactory',
+    'vufind' => [
+        'plugin_managers' => [
+            'command' => [
+                /* see VuFindConsole\Command\PluginManager for defaults */
+                'factories' => [
+                    'FinnaConsole\Command\ScheduledSearch\NotifyCommand' => 'VuFindConsole\Command\ScheduledSearch\NotifyCommandFactory',
+                    'FinnaConsole\Command\Util\AccountExpirationReminders' => 'FinnaConsole\Command\Util\AccountExpirationRemindersFactory',
+                    'FinnaConsole\Command\Util\DueDateReminders' => 'FinnaConsole\Command\Util\DueDateRemindersFactory',
+                    'FinnaConsole\Command\Util\ExpireUsers' => 'FinnaConsole\Command\Util\ExpireUsersFactory',
+                    'FinnaConsole\Command\Util\ImportComments' => 'FinnaConsole\Command\Util\ImportCommentsFactory',
+                    'FinnaConsole\Command\Util\OnlinePaymentMonitor' => 'FinnaConsole\Command\Util\OnlinePaymentMonitorFactory',
+                    'FinnaConsole\Command\Util\ScheduledAlerts' => 'VuFindConsole\Command\ScheduledSearch\NotifyCommandFactory',
+                    'FinnaConsole\Command\Util\UpdateSearchHashes' => 'FinnaConsole\Command\Util\UpdateSearchHashesFactory',
+                    'FinnaConsole\Command\Util\VerifyRecordLinks' => 'FinnaConsole\Command\Util\VerifyRecordLinksFactory',
+                    'FinnaConsole\Command\Util\VerifyResourceMetadata' => 'FinnaConsole\Command\Util\VerifyResourceMetadataFactory',
+                ],
+                'aliases' => [
+                    'util/account_expiration_reminders' => 'FinnaConsole\Command\Util\AccountExpirationReminders',
+                    'util/due_date_reminders' => 'FinnaConsole\Command\Util\DueDateReminders',
+                    'util/expire_finna_cache' => 'FinnaConsole\Command\Util\ExpireFinnaCache',
+                    'util/expire_users' => 'FinnaConsole\Command\Util\ExpireUsers',
+                    'util/import_comments' => 'FinnaConsole\Command\Util\ImportComments',
+                    'util/online_payment_monitor' => 'FinnaConsole\Command\Util\OnlinePaymentMonitor',
+                    'util/update_search_hashes' => 'FinnaConsole\Command\Util\UpdateSearchHashes',
+                    'util/verify_record_links' => 'FinnaConsole\Command\Util\VerifyRecordLinks',
+                    'util/verify_resource_metadata' => 'FinnaConsole\Command\Util\VerifyResourceMetadata',
+
+                    'VuFindConsole\Command\ScheduledSearch\NotifyCommand' => 'FinnaConsole\Command\ScheduledSearch\NotifyCommand',
+
+                    // Back-compatibility:
+                    'util/scheduled_alerts' => 'FinnaConsole\Command\Util\ScheduledAlerts',
+                ],
+            ],
         ],
-        'aliases' => [
-            'VuFindConsole\Controller\ScheduledSearchController' => 'FinnaConsole\Controller\ScheduledSearchController',
-            'VuFindConsole\Controller\UtilController' => 'FinnaConsole\Controller\UtilController',
-        ]
     ],
-    'service_manager' => [
-        'factories' => [
-            'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
-            'Finna\AccountExpirationReminders' => 'FinnaConsole\Service\Factory::getAccountExpirationReminders',
-            'Finna\DueDateReminders' => 'FinnaConsole\Service\Factory::getDueDateReminders',
-            'Finna\EncryptCatalogPasswords' => 'FinnaConsole\Service\Factory::getEncryptCatalogPasswords',
-            'Finna\ExpireUsers' => 'FinnaConsole\Service\Factory::getExpireUsers',
-            'Finna\ImportComments' => 'FinnaConsole\Service\Factory::getImportComments',
-            'Finna\OnlinePaymentMonitor' => 'FinnaConsole\Service\Factory::getOnlinePaymentMonitor',
-            'Finna\UpdateSearchHashes' => 'FinnaConsole\Service\Factory::getUpdateSearchHashes',
-            'Finna\VerifyRecordLinks' => 'FinnaConsole\Service\Factory::getVerifyRecordLinks',
-            'Finna\VerifyResourceMetadata' => 'FinnaConsole\Service\Factory::getVerifyResourceMetadata'
-        ]
-    ]
 ];
-
-$routes = [
-    'util/due_date_reminders' => 'util due_date_reminders <vufind_dir> <view_dir>',
-    'util/encrypt_catalog_passwords' => 'util encrypt_catalog_passwords Y',
-    'util/expire_finna_cache' => 'util expire_finna_cache [--help|-h] [--batch=] [--sleep=] [<daysOld>]',
-    'util/expire_users' => 'util expire_users <days>',
-    'util/import_comments' => 'util import_comments [--source=] [--file=] [--log=] [--defaultdate=] [--onlyratings]',
-    'util/online_payment_monitor' => 'util online_payment_monitor <expire_hours> <from_email> <report_interval_hours>',
-    'util/scheduled_alerts' => 'util scheduled_alerts <view_base_directory> <VuFind_local_configuration_directory>',
-    'util/update_search_hashes' => 'util update_search_hashes Y',
-    'util/verify_record_links' => 'util verify_record_links',
-    'util/verify_resource_metadata' => 'util verify_resource_metadata [--index=]'
-];
-
-$routeGenerator = new \VuFindConsole\Route\RouteGenerator();
-$routeGenerator->addRoutes($config, $routes);
 
 return $config;

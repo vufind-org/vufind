@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,14 +26,18 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
 
 use Laminas\Db\Sql\Select;
-
-use Laminas\Stdlib\RequestInterface as Request;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console service for anonymizing expired user accounts.
+ *
+ * Does not use the AbstractExpireCommand since we need special processing for
+ * comment removal.
  *
  * @category VuFind
  * @package  Service
@@ -42,10 +46,19 @@ use Laminas\Stdlib\RequestInterface as Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ExpireUsers extends AbstractService
+class ExpireUsers extends AbstractUtilCommand
 {
+    use \FinnaConsole\Command\Util\ConsoleLoggerTrait;
+
     /**
-     * Table for user accounts
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'util/expire_users';
+
+    /**
+     * Table on which to expire rows
      *
      * @var \VuFind\Db\Table\User
      */
@@ -57,38 +70,72 @@ class ExpireUsers extends AbstractService
     protected $removeComments;
 
     /**
+     * Minimum (and default) legal age of rows to delete.
+     *
+     * @var int
+     */
+    protected $minAge = 180;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Db\Table\User $table          User table
-     * @param bool                  $removeComments Whether to delete comments
+     * @param \Finna\Db\Table\User   $table  Table on which to expire rows
+     * @param \Laminas\Config\Config $config Main configuration
      */
-    public function __construct(\VuFind\Db\Table\User $table, $removeComments)
-    {
+    public function __construct(
+        \VuFind\Db\Table\User $table,
+        \Laminas\Config\Config $config
+    ) {
         $this->table = $table;
-        $this->removeComments = $removeComments;
+        $this->removeComments
+            = $config->Authentication->delete_comments_with_user ?? true;
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array   $arguments Command line arguments.
-     * @param Request $request   Full request
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments, Request $request)
+    protected function configure()
     {
-        if (!isset($arguments[0]) || (int)$arguments[0] < 180) {
-            echo "Usage:\n  php index.php util expire_users <days>\n\n"
-                . "  Removes all user accounts that have not been logged into\n"
-                . "  for past <days> days. Values below 180 are not accepted.\n";
-            return false;
+        $this
+            ->setDescription('Expire old users in the database')
+            ->addArgument(
+                'age',
+                InputArgument::OPTIONAL,
+                'the age (in days) of users to expire',
+                $this->minAge
+            );
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // Collect arguments/options:
+        $daysOld = floatval($input->getArgument('age'));
+
+        // Abort if we have an invalid expiration age.
+        if ($daysOld < $this->minAge) {
+            $output->writeln(
+                str_replace(
+                    '%%age%%', $this->minAge,
+                    'Expiration age must be at least %%age%% days.'
+                )
+            );
+            return 1;
         }
 
         try {
-            $users = $this->getExpiredUsers($arguments[0]);
             $count = 0;
-
+            $users = $this->getExpiredUsers($daysOld);
             foreach ($users as $user) {
                 $this->msg("Removing user: " . $user->username);
                 $user->delete($this->removeComments);
@@ -114,12 +161,13 @@ class ExpireUsers extends AbstractService
         return true;
     }
 
+
     /**
      * Returns all users that have not been active for given amount of days.
      *
      * @param int $days Preserve users active less than provided amount of days ago
      *
-     * @return \Laminas\Db\ResultSet\ResultSet
+     * @return \Finna\Db\Row\User[]
      */
     protected function getExpiredUsers($days)
     {

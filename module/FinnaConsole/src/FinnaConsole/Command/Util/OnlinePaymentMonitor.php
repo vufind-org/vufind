@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2018.
+ * Copyright (C) The National Library of Finland 2016-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,13 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
 
 use Finna\Db\Row\User;
 use Finna\Db\Table\Transaction;
 
 use Laminas\ServiceManager\ServiceManager;
-use Laminas\Stdlib\RequestInterface as Request;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console service for processing unregistered online payments.
@@ -44,150 +46,162 @@ use Laminas\Stdlib\RequestInterface as Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OnlinePaymentMonitor extends AbstractService
+class OnlinePaymentMonitor extends AbstractUtilCommand
 {
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'util/online_payment_monitor';
+
     /**
      * ILS connection.
      *
-     * @var \Finna\ILS\Connection
+     * @var \VuFind\ILS\Connection
      */
-    protected $catalog = null;
-
-    /**
-     * Configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $mainConfig = null;
+    protected $catalog;
 
     /**
      * Datasource configuration
      *
      * @var \Laminas\Config\Config
      */
-    protected $datasourceConfig = null;
-
-    /**
-     * Table for user accounts
-     *
-     * @var \VuFind\Config
-     */
-    protected $configReader = null;
+    protected $datasourceConfig;
 
     /**
      * Transaction table
      *
      * @var \Finna\Db\Table\Transaction
      */
-    protected $transactionTable = null;
+    protected $transactionTable;
 
     /**
      * User account table
      *
      * @var \Finna\Db\Table\User
      */
-    protected $userTable = null;
+    protected $userTable;
 
     /**
-     * ServiceManager
+     * Mailer
      *
-     * ServiceManager is used for creating VuFind\Mailer objects as needed
-     * (mailer is not shared as its connection might time out otherwise).
-     *
-     * @var ServiceManager
+     * @var \VuFind\Mailer\Mailer
      */
-    protected $serviceManager = null;
-
-    /**
-     * View manager
-     *
-     * @var Laminas\Mvc\View\Console\ViewManage
-     */
-    protected $viewManager = null;
+    protected $mailer;
 
     /**
      * View renderer
      *
-     * @var Laminas\View\Renderer\PhpRenderer
+     * @var \Laminas\View\Renderer\PhpRenderer
      */
-    protected $viewRenderer = null;
+    protected $viewRenderer;
 
     /**
      * Number of hours before considering unregistered transactions to be expired.
      *
      * @var int
      */
-    protected $expireHours;
+    protected $expireHours = 3;
 
     /**
      * Send eamil address for notification of expired transactions.
      *
      * @var string
      */
-    protected $fromEmail;
-
-    /**
-     * Interval (in hours) when to re-send repor of unresolved transactions.
-     *
-     * @var int
-     */
-    protected $reportIntervalHours;
-
-    /**
-     * Minimum age of paid transactions before they're considered failed.
-     *
-     * @var int
-     */
-    protected $minimumPaidAge;
+    protected $fromEmail = '';
 
     /**
      * Constructor
      *
-     * @param \Finna\ILS\Connection               $catalog          Catalog
-     *                                                              connection
-     * @param \Finna\Db\Table\Transaction         $transactionTable Transaction table
-     * @param \Finna\Db\Table\User                $userTable        User table
-     * @param \VuFind\Config                      $configReader     Config reader
-     * @param \Laminas\ServiceManager\ServiceManager $serviceManager   Service manager.
-     * @param \Laminas\Mvc\View\Console\ViewManage   $viewManager      View manager
-     * @param Laminas\View\Renderer\PhpRenderer      $viewRenderer     View renderer
+     * @param \VuFind\ILS\Connection             $catalog          Catalog connection
+     * @param \Finna\Db\Table\Transaction        $transactionTable Transaction table
+     * @param \Finna\Db\Table\User               $userTable        User table
+     * @param \Laminas\Config\Config             $dsConfig         Data source config
+     * @param \Laminas\View\Renderer\PhpRenderer $viewRenderer     View renderer
+     * @param \VuFind\Mailer\Mailer              $mailer           Mailer
      */
-    public function __construct($catalog, $transactionTable, $userTable,
-        $configReader, $serviceManager, $viewManager, $viewRenderer
+    public function __construct(
+        \VuFind\ILS\Connection $catalog,
+        \Finna\Db\Table\Transaction $transactionTable,
+        \Finna\Db\Table\User $userTable,
+        \Laminas\Config\Config $dsConfig,
+        \Laminas\View\Renderer\PhpRenderer $viewRenderer,
+        \VuFind\Mailer\Mailer $mailer
     ) {
         $this->catalog = $catalog;
-        $this->datasourceConfig = $configReader->get('datasources');
-        $this->configReader = $configReader;
         $this->transactionTable = $transactionTable;
         $this->userTable = $userTable;
-        $this->serviceManager = $serviceManager;
-        $this->viewManager = $viewManager;
+        $this->datasourceConfig = $dsConfig;
         $this->viewRenderer = $viewRenderer;
+        $this->mailer = $mailer;
+
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array   $arguments Command line arguments.
-     * @param Request $request   Full request
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments, Request $request)
+    protected function configure()
     {
-        if (count($arguments) < 3) {
-            echo $this->usage();
-            return false;
+        $this
+            ->setDescription(
+                'Validate unregistered online payment transactions and send error'
+                    . ' notifications'
+            )
+            ->addArgument(
+                'expire_hours',
+                InputArgument::REQUIRED,
+                'Number of hours before considering unregistered transaction to be'
+                    . ' expired.'
+            )
+            ->addArgument(
+                'from_email',
+                InputArgument::REQUIRED,
+                'Sender email address for notification of expired transactions'
+            )
+            ->addArgument(
+                'report_interval_hours',
+                InputArgument::REQUIRED,
+                'Interval when to re-send report of unresolved transactions'
+            )
+            ->addArgument(
+                'minimum_paid_age',
+                InputArgument::OPTIONAL,
+                "Minimum age of transactions in 'paid' status until they are"
+                    . 'considered failed (seconds, default 120)',
+                120
+            );
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->expireHours = $input->getArgument('expire_hours');
+        $this->fromEmail = $input->getArgument('from_email');
+        $reportIntervalHours = $input->getArgument('report_interval_hours');
+        $minimumPaidAge = intval($input->getArgument('minimum_paid_age'));
+
+        // Abort if we have an invalid minimum paid age.
+        if ($minimumPaidAge < 10) {
+            $output->writeln('Minimum paid age must be at least 10 seconds');
+            return 1;
         }
 
-        $this->collectScriptArguments($arguments);
         $this->msg('OnlinePayment monitor started');
-
         $expiredCnt = $failedCnt = $registeredCnt = $remindCnt = 0;
         $report = [];
         $user = false;
-        $failed = $this->transactionTable
-            ->getFailedTransactions($this->minimumPaidAge);
+        $failed = $this->transactionTable->getFailedTransactions($minimumPaidAge);
         foreach ($failed as $t) {
             $this->processTransaction(
                 $t, $report, $registeredCnt, $expiredCnt, $failedCnt, $user
@@ -196,9 +210,8 @@ class OnlinePaymentMonitor extends AbstractService
 
         // Report paid and unregistered transactions whose registration
         // can not be re-tried:
-        $unresolved = $this->transactionTable->getUnresolvedTransactions(
-            $this->reportIntervalHours
-        );
+        $unresolved = $this->transactionTable
+            ->getUnresolvedTransactions($reportIntervalHours);
         foreach ($unresolved as $t) {
             $this->processUnresolvedTransaction($t, $report, $remindCnt);
         }
@@ -459,46 +472,5 @@ class OnlinePaymentMonitor extends AbstractService
                 }
             }
         }
-    }
-
-    /**
-     * Collect command line arguments.
-     *
-     * @param array $arguments Command line arguments
-     *
-     * @return void
-     */
-    protected function collectScriptArguments($arguments)
-    {
-        $this->expireHours = $arguments[0];
-        $this->fromEmail = $arguments[1];
-        $this->reportIntervalHours = $arguments[2];
-        $this->minimumPaidAge = $arguments[3] ?? 120;
-    }
-
-    /**
-     * Get usage information.
-     *
-     * @return string
-     */
-    protected function usage()
-    {
-        // @codingStandardsIgnoreStart
-        return <<<EOT
-Usage:
-  php index.php util online_payment_monitor <expire_hours> <from_email>
-    <report_interval_hours> [minimum_paid_age]
-
-  Validates unregistered online payment transactions.
-    expire_hours          Number of hours before considering unregistered
-                          transaction to be expired.
-    from_email            Sender email address for notification of expired
-                          transactions
-    report_interval_hours Interval when to re-send report of unresolved transactions
-    minimum_paid_age      Minimum age of transactions in 'paid' status until they are
-                          considered failed (seconds, default 120)
-
-EOT;
-        // @codingStandardsIgnoreEnd
     }
 }

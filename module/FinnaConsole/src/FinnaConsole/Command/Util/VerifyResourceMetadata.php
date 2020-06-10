@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
 
-use Finna\Db\Table\Resource;
+use Finna\Db\Table\Resource as ResourceTable;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console service for verifying metadata of saved records.
@@ -40,13 +43,19 @@ use Finna\Db\Table\Resource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class VerifyResourceMetadata extends AbstractService
-    implements ConsoleServiceInterface
+class VerifyResourceMetadata extends AbstractUtilCommand
 {
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'util/verify_resource_metadata';
+
     /**
      * Resource table.
      *
-     * @var Resource
+     * @var ResourceTable
      */
     protected $resourceTable;
 
@@ -74,31 +83,50 @@ class VerifyResourceMetadata extends AbstractService
     /**
      * Constructor
      *
-     * @param Resource               $resourceTable Resource table
+     * @param ResourceTable          $resourceTable Resource table
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param \VuFind\Record\Loader  $recordLoader  Record loader
      */
-    public function __construct(Resource $resourceTable,
+    public function __construct(ResourceTable $resourceTable,
         \VuFind\Date\Converter $dateConverter, \VuFind\Record\Loader $recordLoader
     ) {
         $this->resourceTable = $resourceTable;
         $this->dateConverter = $dateConverter;
         $this->recordLoader = $recordLoader;
+
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array   $arguments Command line arguments
-     * @param Request $request   Full request
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments, \Laminas\Stdlib\RequestInterface $request)
+    protected function configure()
+    {
+        $this
+            ->setDescription('Verify and update metadata for saved records')
+            ->addOption(
+                'index',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Search index to check (by default all indexes are checked)'
+            );
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->msg('Resource metadata verification started');
         $count = $fixed = 0;
-        $index = $request->getParam('index');
+        $index = $input->getOption('index');
         $callback = function ($select) use ($index) {
             if ($index) {
                 $select->where->equalTo('source', $index);

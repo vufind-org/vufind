@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2013-2017.
+ * Copyright (C) The National Library of Finland 2013-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,12 +27,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
 
-use Laminas\ServiceManager\ServiceManager;
-use Laminas\Stdlib\RequestInterface as Request;
+use Laminas\Mvc\I18n\Translator;
 use Laminas\View\Resolver\AggregateResolver;
 use Laminas\View\Resolver\TemplatePathStack;
+use Laminas\View\Renderer\PhpRenderer;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console service for sending due date reminders.
@@ -45,12 +48,100 @@ use Laminas\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class DueDateReminders extends AbstractService
+class DueDateReminders extends AbstractUtilCommand
 {
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     * @override
+     */
+    protected static $defaultName = 'util/due_date_reminders';
+
     /**
      * Date format for due dates in database.
      */
     const DUE_DATE_FORMAT = 'Y-m-d H:i:s';
+
+    /**
+     * ILS connection.
+     *
+     * @var \Finna\ILS\Connection
+     */
+    protected $catalog;
+
+    /**
+     * Main configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $mainConfig;
+
+    /**
+     * Datasource configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $datasourceConfig;
+
+    /**
+     * Due date reminders table
+     *
+     * @var \Finna\Db\Table\DueDateReminder
+     */
+    protected $dueDateReminderTable;
+
+    /**
+     * User account table
+     *
+     * @var \Finna\Db\Table\User
+     */
+    protected $userTable;
+
+    /**
+     * Record loader
+     *
+     * @var \VuFind\Record\Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * URL Helper
+     *
+     * @var \VuFind\View\Helper\Root\Url
+     */
+    protected $urlHelper;
+
+    /**
+     * HMAC
+     *
+     * @var \VuFind\Crypt\HMAC
+     */
+    protected $hmac;
+
+    /**
+     * View renderer
+     *
+     * @var PhpRenderer
+     */
+    protected $viewRenderer;
+
+    /**
+     * Mailer
+     *
+     * @var \VuFind\Mailer\Mailer
+     */
+    protected $mailer;
+
+    /**
+     * Translator
+     *
+     * We don't use the interface and trait since the trait only defines an interface
+     * and we need the actual class for addTranslationFile().
+     *
+     * @var Translator
+     */
+    protected $translator;
 
     /**
      * Current view local configuration directory.
@@ -65,83 +156,6 @@ class DueDateReminders extends AbstractService
      * @var string
      */
     protected $viewBaseDir = null;
-
-    /**
-     * ILS connection.
-     *
-     * @var \Finna\ILS\Connection
-     */
-    protected $catalog = null;
-
-    /**
-     * Main configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $mainConfig = null;
-
-    /**
-     * Datasource configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $datasourceConfig = null;
-
-    /**
-     * Table for user accounts
-     *
-     * @var \VuFind\Config
-     */
-    protected $configReader = null;
-
-    /**
-     * Due date reminders table
-     *
-     * @var \Finna\Db\Table\DueDateReminder
-     */
-    protected $dueDateReminderTable = null;
-
-    /**
-     * User account table
-     *
-     * @var \Finna\Db\Table\User
-     */
-    protected $userTable = null;
-
-    /**
-     * Translator
-     *
-     * @var \VuFind\Translator
-     */
-    protected $translator = null;
-
-    /**
-     * Translator
-     *
-     * @var \VuFind\Translator
-     */
-    protected $recordLoader = null;
-
-    /**
-     * Translator
-     *
-     * @var \VuFind\Translator
-     */
-    protected $urlHelper = null;
-
-    /**
-     * HMAC
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac = null;
-
-    /**
-     * View renderer
-     *
-     * @var Laminas\View\Renderer\PhpRenderer
-     */
-    protected $viewRenderer = null;
 
     /**
      * Current institution.
@@ -165,37 +179,37 @@ class DueDateReminders extends AbstractService
     protected $currentViewPath = null;
 
     /**
-     * ServiceManager
-     *
-     * ServiceManager is used for creating VuFind\Mailer objects as needed
-     * (mailer is not shared as its connection might time out otherwise).
-     *
-     * @var ServiceManager
-     */
-    protected $serviceManager = null;
-
-    /**
      * Constructor
      *
-     * @param Finna\Db\Table\User            $userTable            User table.
-     * @param Finna\Db\Table\DueDateReminder $dueDateReminderTable Due date
-     *                                                             reminder table.
-     * @param VuFind\ILS\Connection          $catalog              ILS connection.
-     * @param VuFind\Config                  $configReader         Config reader.
-     * @param Laminas\View\Renderer\PhpRenderer $renderer             View renderer.
-     * @param VuFind\RecordLoader            $recordLoader         Record loader.
-     * @param VuFind\Crypt\HMAC              $hmac                 HMAC.
-     * @param VuFind\Translator              $translator           Translator.
-     * @param ServiceManager                 $serviceManager       Service manager.
+     * @param \Finna\Db\Table\User            $userTable            User table
+     * @param \Finna\Db\Table\DueDateReminder $dueDateReminderTable Due date
+     * reminder table
+     * @param \VuFind\ILS\Connection          $catalog              ILS connection
+     * @param \Laminas\Config\Config          $mainConfig           Main config
+     * @param \Laminas\Config\Config          $dsConfig             Data source
+     * config
+     * @param PhpRenderer                     $renderer             View renderer
+     * @param \VuFind\Record\Loader           $recordLoader         Record loader
+     * @param \VuFind\Crypt\HMAC              $hmac                 HMAC
+     * @param \VuFind\Mailer\Mailer           $mailer               Mailer
+     * @param Translator                      $translator           Translator
      */
     public function __construct(
-        $userTable, $dueDateReminderTable, $catalog, $configReader,
-        $renderer, $recordLoader, $hmac, $translator, $serviceManager
+        \Finna\Db\Table\User $userTable,
+        \Finna\Db\Table\DueDateReminder $dueDateReminderTable,
+        \VuFind\ILS\Connection $catalog,
+        \Laminas\Config\Config $mainConfig,
+        \Laminas\Config\Config $dsConfig,
+        PhpRenderer $renderer,
+        \VuFind\Record\Loader $recordLoader,
+        \VuFind\Crypt\HMAC $hmac,
+        \VuFind\Mailer\Mailer $mailer,
+        Translator $translator
     ) {
         $this->userTable = $userTable;
         $this->dueDateReminderTable = $dueDateReminderTable;
         $this->catalog = $catalog;
-        $this->mainConfig = $configReader->get('config');
+        $this->mainConfig = $mainConfig;
 
         if (isset($this->mainConfig->Catalog->loadNoILSOnFailure)
             && $this->mainConfig->Catalog->loadNoILSOnFailure
@@ -203,35 +217,51 @@ class DueDateReminders extends AbstractService
             throw new \Exception('Catalog/loadNoILSOnFailure must not be enabled');
         }
 
-        $this->datasourceConfig = $configReader->get('datasources');
-        $this->configReader = $configReader;
+        $this->datasourceConfig = $dsConfig;
         $this->viewRenderer = $renderer;
-        $this->translator = $translator;
         $this->urlHelper = $renderer->plugin('url');
         $this->recordLoader = $recordLoader;
         $this->hmac = $hmac;
-        $this->serviceManager = $serviceManager;
+        $this->mailer = $mailer;
+        $this->translator = $translator;
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array   $arguments Command line arguments.
-     * @param Request $request   Full request
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments, Request $request)
+    protected function configure()
     {
+        parent::configure();
+        $this
+            ->setDescription('Send due date reminders.')
+            ->addArgument(
+                'vufind_dir',
+                InputArgument::REQUIRED,
+                'VuFind base installation directory'
+            )
+            ->addArgument('view_dir', InputArgument::REQUIRED, 'View directory');
+    }
+
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // Current view local configuration directory
+        $this->baseDir = $input->getArgument('vufind_dir');
+
+        // Current view local basedir
+        $this->viewBaseDir = $input->getArgument('view_dir');
+
         $this->msg('Sending due date reminders');
-
-        if (count($arguments) < 2) {
-            $this->msg($this->getUsage());
-            return false;
-        } else {
-            $this->collectScriptArguments($arguments);
-        }
-
         try {
             $users = $this->userTable->getUsersWithDueDateReminders();
             $this->msg('Processing ' . count($users) . ' users');
@@ -314,7 +344,8 @@ class DueDateReminders extends AbstractService
             $card = $user->getLibraryCard($card['id']);
             try {
                 $patron = $this->catalog->patronLogin(
-                    $card->cat_username, $card->cat_password
+                    $card->cat_username,
+                    $card->cat_password
                 );
             } catch (\Exception $e) {
                 $this->err(
@@ -392,7 +423,9 @@ class DueDateReminders extends AbstractService
                     $record = null;
                     if (isset($loan['id'])) {
                         $record = $this->recordLoader->load(
-                            $loan['id'], 'Solr', true
+                            $loan['id'],
+                            'Solr',
+                            true
                         );
                     }
 
@@ -477,7 +510,9 @@ class DueDateReminders extends AbstractService
             ->setLocale($language);
 
         $key = $this->dueDateReminderTable->getUnsubscribeSecret(
-            $this->hmac, $user, $user->id
+            $this->hmac,
+            $user,
+            $user->id
         );
         $urlParams = [
             'id' => $user->id,
@@ -516,49 +551,36 @@ class DueDateReminders extends AbstractService
             'userInstitution' => $userInstitution
         ];
 
+        $urlHelper = $this->urlHelper;
         if (!empty($errors)) {
             $subject = $this->translator->translate('due_date_email_error');
             $params['url'] = $baseUrl
-                . $this->urlHelper->__invoke('librarycards-home');
+                . $urlHelper('librarycards-home');
             $params['errors'] = $errors;
         } else {
             $subject = $this->translator->translate('due_date_email_subject');
             $params['url'] = $baseUrl
-                . $this->urlHelper->__invoke('myresearch-checkedout');
+                . $urlHelper('myresearch-checkedout');
         }
         $message = $this->viewRenderer
             ->render('Email/due-date-reminder.phtml', $params);
-        for ($attempt = 1; $attempt <= 2; $attempt++) {
+        $to = $user->email;
+        $from = $this->currentSiteConfig['Site']['email'];
+        try {
             try {
-                $to = $user->email;
-                $from = $this->currentSiteConfig['Site']['email'];
-                $this->serviceManager->build(\VuFind\Mailer\Mailer::class)->send(
-                    $to,
-                    $from,
-                    $subject,
-                    $message
-                );
+                $this->mailer->send($to, $from, $subject, $message);
             } catch (\Exception $e) {
-                if ($attempt === 1) {
-                    // Reset connection and try again
-                    $this->warn('First attempt at sending email failed');
-                    try {
-                        $this->serviceManager->get(\VuFind\Mailer\Mailer::class)
-                            ->getTransport()->disconnect();
-                    } catch (\Exception $e) {
-                        // Do nothing
-                    }
-                    continue;
-                }
-                $this->err(
-                    "Failed to send due date reminders to user {$user->username} "
-                        . " (id {$user->id})",
-                    'Failed to send due date reminders to a user'
-                );
-                $this->err('   ' . $e->getMessage());
-                return false;
+                $this->mailer->resetConnection();
+                $this->mailer->send($to, $from, $subject, $message);
             }
-            break;
+        } catch (\Exception $e) {
+            $this->err(
+                "Failed to send due date reminders to user {$user->username}"
+                    . " (id {$user->id})",
+                'Failed to send due date reminders to a user'
+            );
+            $this->err('   ' . $e->getMessage());
+            return false;
         }
 
         foreach ($remindLoans as $loan) {
@@ -573,40 +595,5 @@ class DueDateReminders extends AbstractService
         }
 
         return true;
-    }
-
-    /**
-     * Collect command line arguments.
-     *
-     * @param array $arguments Arguments
-     *
-     * @return void
-     */
-    protected function collectScriptArguments($arguments)
-    {
-        // VuFind base directory
-        $this->baseDir = $arguments[0] ?? false;
-        // Base directory for all views.
-        $this->viewBaseDir = $arguments[1] ?? '..';
-    }
-
-    /**
-     * Get usage information.
-     *
-     * @return string
-     */
-    protected function getUsage()
-    {
-        // @codingStandardsIgnoreStart
-        return <<<EOT
-Usage:
-  php index.php util due_date_reminders <vufind_dir> <view_dir>
-
-  Sends due date reminders.
-    vufind_dir    VuFind base installation directory
-    view_dir      View directory
-
-EOT;
-        // @codingStandardsIgnoreEnd
     }
 }

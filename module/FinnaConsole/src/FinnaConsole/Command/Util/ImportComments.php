@@ -25,10 +25,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
 
+use FinnaConsole\Command\Util\AbstractUtilCommand;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Laminas\Stdlib\RequestInterface as Request;
 
 /**
  * Console service for importing record comments.
@@ -39,8 +43,15 @@ use Laminas\Stdlib\RequestInterface as Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ImportComments extends AbstractService implements ConsoleServiceInterface
+class ImportComments extends AbstractUtilCommand
 {
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'util/import_comments';
+
     /**
      * Comments table
      *
@@ -83,49 +94,86 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
         $this->commentsTable = $comments;
         $this->commentsRecordTable = $commentsRecord;
         $this->resourceTable = $resource;
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array   $arguments Command line arguments
-     * @param Request $request   Full request
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments, Request $request)
+    protected function configure()
     {
-        $sourceId = $request->getParam('source');
-        $importFile = $request->getParam('file');
-        $this->logFile = $request->getParam('log');
-        $onlyRatings = !empty($request->getParam('onlyratings'));
+        $this
+            ->setDescription('Import comments from a CSV file.')
+            ->addArgument(
+                'source',
+                InputArgument::REQUIRED,
+                'Datasource ID in the index'
+            )
+            ->addArgument(
+                'file',
+                InputArgument::REQUIRED,
+                'CSV file with record id, date, comment and optional rating'
+            )
+            ->addArgument(
+                'log',
+                InputArgument::REQUIRED,
+                'Log file for results'
+            )
+            ->addArgument(
+                'defaultdate',
+                InputArgument::OPTIONAL,
+                'Date to use for records without a valid timestamp (default is'
+                    . 'current date)'
+            )
+            ->addOption(
+                'onlyratings',
+                null,
+                InputOption::VALUE_NONE,
+                'The file contains only ratings'
+            );
+    }
 
-        if (!$sourceId || !$importFile || !$this->logFile) {
-            echo $this->usage();
-            return false;
-        }
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $sourceId = $input->getArgument('source');
+        $importFile = $input->getArgument('file');
+        $this->logFile = $input->getArgument('log');
+        $onlyRatings = $input->getOption('onlyratings');
 
-        $defaultDate = $request->getParam('defaultdate');
+        $defaultDate = $input->getArgument('defaultdate');
         $defaultTimestamp = strtotime(
             date('Y-m-d', $defaultDate ? strtotime($defaultDate) : time())
         );
 
-        $this->log('Started import of ' . $importFile);
-        $this->log('Default date is ' . date('Y-m-d', $defaultTimestamp));
+        $this->log("Started import of $importFile", true);
+        $this->log('Default date is ' . date('Y-m-d', $defaultTimestamp), true);
 
-        $this->msg('Import started');
         $count = 0;
         $imported = 0;
 
         if (($fh = fopen($importFile, 'r')) === false) {
-            die("Could not open import file for reading\n");
+            $this->log('Could not open import file for reading', true);
+            return 1;
         }
         $idPrefix = $sourceId . '.';
         while (($data = fgetcsv($fh)) !== false) {
             ++$count;
             $num = count($data);
             if ($num < 3) {
-                die("Could not read CSV line $count (only $num elements found)\n");
+                $this->log(
+                    "Could not read CSV line $count (only $num elements found)", true
+                );
+                return 1;
             }
             $recordId = $data[0];
             $timestamp = $data[1] === '\N'
@@ -143,7 +191,8 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
                 $rating = $data[3] ?? null;
             }
             if (null !== $rating && ($rating < 0 || $rating > 5)) {
-                die("Invalid rating $rating on row $count\n");
+                $this->log("Invalid rating $rating on row $count", true);
+                return 1;
             }
             list($recordId, $timestamp, $comment) = $data;
 
@@ -191,52 +240,30 @@ class ImportComments extends AbstractService implements ConsoleServiceInterface
             $this->log("Added comment {$row->id} for record $recordId");
         }
         fclose($fh);
-        $this->msg(
-            "Import completed with $count comments processed and $imported imported"
-        );
         $this->log(
-            "Import completed with $count comments processed and $imported imported"
+            "Import completed with $count comments processed and $imported imported",
+            true
         );
 
         return true;
     }
 
     /**
-     * Get script usage information.
-     *
-     * @return string
-     */
-    protected function usage()
-    {
-        $appPath = APPLICATION_PATH;
-        return <<<EOT
-Usage:
-  php index.php util import_comments --source=<datasource_id> --file=<file>
-      --log=<logfile> [--defaultdate=<date>] [--onlyratings]
-
-  Imports comments from a CSV file.
-    datasource_id Datasource ID in the index
-    file          CSV file with record id, date, comment and optional rating
-    logfile       Log file for results
-    defaultdate   Date to use for records without a valid timestamp
-                  (defaults to today)
-    onlyratings   The file contains only ratings
-
-EOT;
-    }
-
-    /**
      * Write a log message
      *
-     * @param string $msg Message
+     * @param string $msg    Message
+     * @param bool   $screen Whether to output the message on screen too
      *
      * @return void
      */
-    protected function log($msg)
+    protected function log($msg, $screen = false)
     {
-        $msg = date('Y-m-d H:i:s') . " $msg\n";
-        if (false === file_put_contents($this->logFile, $msg, FILE_APPEND)) {
+        $msg = date('Y-m-d H:i:s') . " $msg";
+        if (false === file_put_contents($this->logFile, "$msg\n", FILE_APPEND)) {
             die("Failed to write to log file\n");
+        }
+        if ($screen) {
+            $this->msg($msg);
         }
     }
 }

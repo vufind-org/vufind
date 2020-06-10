@@ -1,6 +1,6 @@
 <?php
 /**
- * CLI Controller Module (scheduled search tools)
+ * Console command: notify users of scheduled searches.
  *
  * PHP version 7
  *
@@ -21,17 +21,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Console
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace FinnaConsole\Controller;
+namespace FinnaConsole\Command\ScheduledSearch;
+
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * CLI Controller Module (scheduled search tools)
+ * Console command: notify users of scheduled searches.
  *
  * This service works in three phases:
  *
@@ -46,18 +50,26 @@ namespace FinnaConsole\Controller;
  * 3. Scheduled alerts for a given view are processed.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Command
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class ScheduledSearchController
-    extends \VuFindConsole\Controller\ScheduledSearchController
+class NotifyCommand extends \VuFindConsole\Command\ScheduledSearch\NotifyCommand
 {
-    use \FinnaConsole\Service\ConsoleLoggerTrait;
-    use \FinnaConsole\Service\ViewPathTrait;
+    use \FinnaConsole\Command\Util\ConsoleLoggerTrait;
+    use \FinnaConsole\Command\Util\ViewPathTrait;
+
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * Used via reflection, don't remove even though it's the same as in parent class
+     *
+     * @var string
+     */
+    protected static $defaultName = 'scheduledsearch/notify';
 
     /**
      * Local configuration directory name
@@ -67,29 +79,27 @@ class ScheduledSearchController
     protected $confDir = 'local';
 
     /**
-     * Set the request for params
+     * Run the command.
      *
-     * @param \Laminas\Console\Request $request Request
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
      *
-     * @return void
+     * @return int 0 for success
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function setRequest(\Laminas\Console\Request $request)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->request = $request;
-    }
+        // Base directory for all views.
+        $this->viewBaseDir = $input->getArgument('view_base');
+        // Current view local configuration directory
+        $this->baseDir = $input->getArgument('local_conf');
+        // Schedule base url for alerts to send
+        $this->scheduleBaseUrl = $input->getArgument('schedule_base_url') ?? false;
 
-    /**
-     * Send notifications.
-     *
-     * @return \Laminas\Console\Response
-     */
-    public function notifyAction()
-    {
-        $this->initLogging();
-        $this->collectScriptArguments();
-
+        $this->output = $output;
         try {
-            if (!$this->localDir = getenv('VUFIND_LOCAL_DIR')) {
+            if (!($this->localDir = getenv('VUFIND_LOCAL_DIR'))) {
                 $this->msg('Switching to VuFind configuration');
                 $this->switchInstitution($this->baseDir);
             } elseif (!$this->scheduleBaseUrl) {
@@ -107,57 +117,43 @@ class ScheduledSearchController
             while ($e = $e->getPrevious()) {
                 $this->err("  Previous exception: " . $e->getMessage());
             }
-            exit(1);
+            return 1;
         }
 
         $this->processViewAlerts();
-        return $this->getSuccessResponse();
+        return 0;
     }
 
     /**
-     * Collect script parameters and print usage
-     * information when all required parameters were not given.
+     * Configure the command.
      *
      * @return void
      */
-    protected function collectScriptArguments()
+    protected function configure()
     {
-        $arguments = $this->getRequest()->getParams()->toArray();
-        $argv = array_splice($arguments, 2, -2);
-
-        // Base directory for all views.
-        $this->viewBaseDir = $argv[0] ?? '..';
-        // Current view local configuration directory
-        $this->baseDir = $argv[1] ?? false;
-        // Schedule base url for alerts to send
-        $this->scheduleBaseUrl = $argv[2] ?? false;
-
-        if (!$this->viewBaseDir || !$this->baseDir) {
-            echo $this->usage();
-            exit(1);
-        }
-    }
-
-    /**
-     * Get script usage information.
-     *
-     * @return string
-     */
-    protected function usage()
-    {
-        $appPath = APPLICATION_PATH;
-        return <<<EOT
-Usage:
-  php $appPath/util/scheduled_alerts.php <view_base> <local_conf>
-
-  Sends scheduled alerts.
-    view_base  View base directory
-    local_conf VuFind local configuration directory
+        parent::configure();
+        $this
+            ->setHelp(<<<EOT
+Sends scheduled search email notifications.
 
 For example:
-  php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
+  scheduledsearch/notify /tmp/finna /tmp/NDL-VuFind2/local
 
-EOT;
+EOT
+            )
+            ->addArgument(
+                'view_base', InputArgument::REQUIRED, 'View base directory'
+            )
+            ->addArgument(
+                'local_conf',
+                InputArgument::REQUIRED,
+                'VuFind local configuration directory'
+            )
+            ->addArgument(
+                'schedule_base_url',
+                InputArgument::OPTIONAL,
+                'Base URL to switch to'
+            );
     }
 
     /**
@@ -167,7 +163,7 @@ EOT;
      */
     protected function processAlerts()
     {
-        $baseDirs = $this->getTable('search')->getScheduleBaseUrls();
+        $baseDirs = $this->searchTable->getScheduleBaseUrls();
         $this->msg('Processing alerts for ' . count($baseDirs) . ' views: ');
         $this->msg('  ' . implode(', ', $baseDirs));
         foreach ($baseDirs as $url) {
@@ -214,7 +210,7 @@ EOT;
         $appDir = substr($localDir, 0, strrpos($localDir, "/{$this->confDir}"));
         $script = "$appDir/public/index.php";
 
-        $args = ['util', 'scheduled_alerts', $this->viewBaseDir, $localDir];
+        $args = ['scheduledsearch', 'notify', $this->viewBaseDir, $localDir];
         if ($scheduleBaseUrl) {
             $args[] = "'$scheduleBaseUrl'";
         }
@@ -233,12 +229,14 @@ EOT;
     /**
      * Send scheduled alerts for a view.
      *
+     * Finna: Use the specified base url
+     *
      * @return void
      */
     protected function processViewAlerts()
     {
         $todayTime = new \DateTime();
-        $scheduled = $this->getTable('search')
+        $scheduled = $this->searchTable
             ->getScheduledSearches($this->scheduleBaseUrl);
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
@@ -262,7 +260,7 @@ EOT;
             }
             $searchTime = date('Y-m-d H:i:s');
             if ($s->setLastExecuted($searchTime) === 0) {
-                $this->err("Error updating last_executed date for search $searchId");
+                $this->err("Error updating last_executed date for search {$s->id}");
             }
         }
         $this->msg('Done processing searches');

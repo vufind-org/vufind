@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace FinnaConsole\Service;
+namespace FinnaConsole\Command\Util;
+
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console service for updating search hashes.
@@ -36,8 +39,15 @@ namespace FinnaConsole\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class UpdateSearchHashes extends AbstractService
+class UpdateSearchHashes extends AbstractUtilCommand
 {
+    /**
+     * The name of the command (the part after "public/index.php")
+     *
+     * @var string
+     */
+    protected static $defaultName = 'util/update_search_hashes';
+
     /**
      * Table for searches
      *
@@ -50,7 +60,7 @@ class UpdateSearchHashes extends AbstractService
      *
      * @var \VuFind\Search\Results\PluginManager
      */
-    protected $manager;
+    protected $resultsManager;
 
     /**
      * Constructor
@@ -62,24 +72,31 @@ class UpdateSearchHashes extends AbstractService
         \VuFind\Db\Table\Search $table, \VuFind\Search\Results\PluginManager $manager
     ) {
         $this->table = $table;
-        $this->manager = $manager;
+        $this->resultsManager = $manager;
+
+        parent::__construct();
     }
 
     /**
-     * Run service.
+     * Configure the command.
      *
-     * @param array $arguments Command line arguments.
-     *
-     * @return boolean success
+     * @return void
      */
-    public function run($arguments)
+    protected function configure()
     {
-        if (!isset($arguments[0]) || $arguments[0] != 'Y') {
-            echo "Usage:\n  php index.php util update_search_hashes Y\n\n"
-                . "  Update hashes of saved searches.\n";
-            return false;
-        }
+        $this->setDescription('Update hashes of saved searches');
+    }
 
+    /**
+     * Run the command.
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return int 0 for success
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $searchWhere = ['checksum' => null, 'saved' => 1];
         $searchRows = $this->table->select($searchWhere);
         if (count($searchRows) > 0) {
@@ -102,7 +119,7 @@ class UpdateSearchHashes extends AbstractService
                         ++$orFilterCount;
                         $searchRow->search_object = serialize($minified);
                     }
-                    $searchObj = $minified->deminify($this->manager);
+                    $searchObj = $minified->deminify($this->resultsManager);
                     $url = $searchObj->getUrlQuery()->getParams();
                     $checksum = crc32($url) & 0xFFFFFFF;
                     $searchRow->checksum = $checksum;
