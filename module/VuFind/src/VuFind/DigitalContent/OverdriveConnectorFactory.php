@@ -33,7 +33,7 @@ namespace VuFind\DigitalContent;
 use Interop\Container\ContainerInterface;
 
 /**
- * Generic Amazon content plugin factory.
+ * Overdrive Connector factory.
  *
  * @category VuFind
  * @package  DigitalContent
