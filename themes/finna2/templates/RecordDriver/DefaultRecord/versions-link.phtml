@@ -1,7 +1,6 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/versions-link.phtml -->
 <?php
-  $params = $this->searchMemory()->getLastSearchParams($this->driver->getSourceIdentifier());
-  $versions = isset($this->tabs['Versions']) ? $this->driver->tryMethod('getOtherVersionCount', [$params]) : 0;
+  $versions = isset($this->tabs['Versions']) ? $this->driver->tryMethod('getOtherVersionCount') : 0;
 
   if ($versions):
 ?>

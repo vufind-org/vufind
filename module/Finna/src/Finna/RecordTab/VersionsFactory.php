@@ -64,7 +64,6 @@ class VersionsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(ConfigManager::class)->get('config');
-        $searchMemory = $container->get('ViewRenderer')->plugin('searchMemory');
-        return new $requestedName($config, $searchMemory);
+        return new $requestedName($config);
     }
 }
