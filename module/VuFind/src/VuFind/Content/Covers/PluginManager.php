@@ -46,7 +46,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'amazon' => Amazon::class,
+        Amazon::class => Deprecated::class,
+        'amazon' => Deprecated::class,
         'booksite' => Booksite::class,
         'buchhandel' => Buchhandel::class,
         'browzine' => BrowZine::class,
