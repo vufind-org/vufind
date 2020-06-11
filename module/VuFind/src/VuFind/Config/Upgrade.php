@@ -505,13 +505,25 @@ class Upgrade
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
-        $hasAmazonReview = stristr($config['Content']['reviews'] ?? '', 'amazon');
-        $hasAmazonCover = stristr($config['Content']['coverimages'] ?? '', 'amazon');
+        $hasAmazonReview = isset($config['Content']['reviews'])
+            && stristr($config['Content']['reviews'], 'amazon');
+        $hasAmazonCover = isset($config['Content']['coverimages'])
+            && stristr($config['Content']['coverimages'], 'amazon');
         if ($hasAmazonReview || $hasAmazonCover) {
-            $this->addWarning(
-                'WARNING: You have Amazon content enabled, but VuFind no longer '
-                . 'supports it. You should remove Amazon references from config.ini.'
-            );
+            if (!isset($config['Content']['amazonsecret'])) {
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
+                    . 'the required amazonsecret setting in the [Content] section '
+                    . 'of config.ini'
+                );
+            }
+            if (!isset($config['Content']['amazonassociate'])) {
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
+                    . 'the required amazonassociate setting in the [Content] section'
+                    . ' of config.ini'
+                );
+            }
         }
     }
 

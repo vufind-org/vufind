@@ -74,6 +74,8 @@
         "wikimedia/composer-merge-plugin": "1.4.1",
         "wikimedia/less.php": "2.0.0",
         "yajra/laravel-pdo-via-oci8": "2.1.1",
+        "zendframework/zendrest": "2.0.2",
+        "zendframework/zendservice-amazon": "2.3.1",
         "zf-commons/zfc-rbac": "2.6.3"
     },
     "require-dev": {
