@@ -439,7 +439,9 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     protected function isAuthorityEnabled()
     {
-        return (bool)$this->config->Authority->enabled ?? false;
+        return
+            $this->config->Authority
+            && (bool)$this->config->Authority->enabled ?? false;
     }
 
     /**
