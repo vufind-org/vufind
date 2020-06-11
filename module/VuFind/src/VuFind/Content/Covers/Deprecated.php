@@ -1,10 +1,11 @@
 <?php
 /**
- * Generic Amazon content loader.
+ * Deprecated cover content loader (for backward-compatibility with deprecated
+ * settings).
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,10 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content;
+namespace VuFind\Content\Covers;
 
 /**
- * Generic Amazon content loader.
+ * Deprecated cover content loader (for backward-compatibility with deprecated
+ * settings).
  *
  * @category VuFind
  * @package  Content
@@ -36,53 +38,23 @@ namespace VuFind\Content;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractAmazon extends AbstractBase
+class Deprecated extends \VuFind\Content\AbstractCover
 {
     /**
-     * Associate ID
+     * Get image URL for a particular API key and set of IDs (or false if invalid).
      *
-     * @var string
-     */
-    protected $associate;
-
-    /**
-     * Secret key
+     * @param string $key  API key
+     * @param string $size Size of image to load (small/medium/large)
+     * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object and 'issn' pointing to a string)
      *
-     * @var string
-     */
-    protected $secret;
-
-    /**
-     * "Supplied by Amazon" label, appropriately translated
+     * @return string|bool
      *
-     * @var string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected $label;
-
-    /**
-     * Constructor
-     *
-     * @param string $associate Associate ID
-     * @param string $secret    Secret key
-     * @param string $label     "Supplied by Amazon" label, appropriately translated
-     */
-    public function __construct($associate, $secret, $label)
+    public function getUrl($key, $size, $ids)
     {
-        $this->associate = $associate;
-        $this->secret = $secret;
-        $this->label = $label;
-    }
-
-    /**
-     * Get copyright message
-     *
-     * @param string $isbn ISBN to use for linking
-     *
-     * @return string
-     */
-    protected function getCopyright($isbn)
-    {
-        return '<div><a target="new" href="http://amazon.com/dp/'
-            . $isbn . '">' . htmlspecialchars($this->label) . '</a></div>';
+        error_log('Deprecated cover provider called; check configuration.');
+        return false;
     }
 }
