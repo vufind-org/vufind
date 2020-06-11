@@ -171,6 +171,9 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
 
         $urlHelper = $this->getView()->plugin('url');
         $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
-        return $urlHelper($route, [], ['query' => $urlParams]);
+        $hiddenFilters = $this->getView()->plugin('searchTabs')
+            ->getCurrentHiddenFilterParams($driver->getSourceIdentifier());
+
+        return $urlHelper($route, [], ['query' => $urlParams]) . $hiddenFilters;
     }
 }

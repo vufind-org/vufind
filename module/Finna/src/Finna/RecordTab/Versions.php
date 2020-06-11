@@ -29,6 +29,7 @@ namespace Finna\RecordTab;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\View\Helper\Root\SearchMemory;
 
 /**
  * Versions tab
@@ -52,13 +53,23 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     protected $config;
 
     /**
+     * Search memory plugin
+     *
+     * @var SearchMemory
+     */
+    protected $searchMemory;
+
+    /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param \Zend\Config\Config $config       Configuration
+     * @param SearchMemory        $searchMemory Search memory view helper
      */
-    public function __construct(\Zend\Config\Config $config)
-    {
+    public function __construct(\Zend\Config\Config $config,
+        SearchMemory $searchMemory
+    ) {
         $this->config = $config;
+        $this->searchMemory = $searchMemory;
     }
 
     /**
@@ -69,8 +80,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     public function isActive()
     {
         if (!empty($this->config->Record->display_versions)) {
-            return $this->getRecordDriver()
-                ->tryMethod('getOtherVersionCount', [], 0) > 0;
+            return $this->getOtherVersionCount() > 0;
         }
         return false;
     }
@@ -82,7 +92,21 @@ class Versions extends \VuFind\RecordTab\AbstractBase
      */
     public function getDescription()
     {
-        $count = $this->getRecordDriver()->tryMethod('getOtherVersionCount', [], 0);
+        $count = $this->getOtherVersionCount();
         return $this->translate('other_versions_title', ['%%count%%' => $count]);
+    }
+
+    /**
+     * Get other version count
+     *
+     * @return int
+     */
+    protected function getOtherVersionCount()
+    {
+        $driver = $this->getRecordDriver();
+        $sourceId = $driver->getSourceIdentifier();
+        $params = $this->searchMemory->getLastSearchParams($sourceId);
+
+        return $driver->tryMethod('getOtherVersionCount', [$params], 0);
     }
 }

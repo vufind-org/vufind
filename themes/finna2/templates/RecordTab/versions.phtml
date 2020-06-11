@@ -1,6 +1,7 @@
 <!-- START of: finna - RecordTab/versions.phtml -->
 <?php
-  $results = $this->driver->tryMethod('getVersions', [false, 20]);
+  $params = $this->searchMemory()->getLastSearchParams($this->driver->getSourceIdentifier());
+  $results = $this->driver->tryMethod('getVersions', [false, 20, $params]);
   $view = 'list';
 ?>
 <div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">

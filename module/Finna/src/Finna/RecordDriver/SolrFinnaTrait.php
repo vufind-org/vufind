@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library 2015-2019.
+ * Copyright (C) The National Library 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,6 +27,8 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Finna\RecordDriver;
+
+use VuFind\Search\Solr\Params;
 
 /**
  * Additional functionality for Finna Solr records.
@@ -960,9 +962,11 @@ trait SolrFinnaTrait
     /**
      * Return count of other versions available
      *
+     * @param Params $lastParams Search params for proper filtering
+     *
      * @return int
      */
-    public function getOtherVersionCount()
+    public function getOtherVersionCount($lastParams)
     {
         if (null === $this->searchService) {
             return false;
@@ -975,6 +979,7 @@ trait SolrFinnaTrait
         if (!isset($this->otherVersionsCount)) {
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', 0);
+            $this->addFilters($params, $lastParams);
             $results = $this->searchService->workExpressions(
                 $this->getSourceIdentifier(),
                 $this->getUniqueID(),
@@ -989,12 +994,13 @@ trait SolrFinnaTrait
     /**
      * Retrieve versions as a search result
      *
-     * @param bool $includeSelf Whether to include this record
-     * @param int  $count       Maximum number of records to display
+     * @param bool   $includeSelf Whether to include this record
+     * @param int    $count       Maximum number of records to display
+     * @param Params $lastParams  Search params for proper filtering
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function getVersions($includeSelf = false, $count = 20)
+    public function getVersions($includeSelf, $count, $lastParams)
     {
         if (null === $this->searchService) {
             return false;
@@ -1007,6 +1013,7 @@ trait SolrFinnaTrait
         if (!isset($this->otherVersions)) {
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', min($count, 100));
+            $this->addFilters($params, $lastParams);
             $this->otherVersions = $this->searchService->workExpressions(
                 $this->getSourceIdentifier(),
                 $includeSelf ? '' : $this->getUniqueID(),
@@ -1015,5 +1022,26 @@ trait SolrFinnaTrait
             );
         }
         return $this->otherVersions;
+    }
+
+    /**
+     * Add filters to params
+     *
+     * @param \VuFindSearch\ParamBag $paramBag Params
+     * @param Params                 $params   Search params
+     *
+     * @return void
+     */
+    protected function addFilters(\VuFindSearch\ParamBag $paramBag, Params $params)
+    {
+        if (null === $params) {
+            return;
+        }
+        $params = clone $params;
+        // Remove any non-hidden filters
+        $params->removeAllFilters();
+        foreach ($params->getFilterSettings() as $filter) {
+            $paramBag->add('fq', $filter);
+        }
     }
 }
