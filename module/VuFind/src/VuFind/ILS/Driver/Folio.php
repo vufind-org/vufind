@@ -625,7 +625,9 @@ class Folio extends AbstractAPI implements
             'zip' => $profile->personal->addresses[0]->postalCode ?? null,
             'phone' => $profile->personal->phone ?? null,
             'mobile_phone' => $profile->personal->mobilePhone ?? null,
-            'expiration_date' => $profile->expirationDate ?? null,
+            'expiration_date' => $this->dateConverter->convertToDisplayDate(
+                "Y-m-d H:i", $profile->expirationDate
+            ) ?? null,
         ];
     }
 
