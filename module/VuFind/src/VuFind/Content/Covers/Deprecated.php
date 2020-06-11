@@ -41,6 +41,21 @@ namespace VuFind\Content\Covers;
 class Deprecated extends \VuFind\Content\AbstractCover
 {
     /**
+     * Does this plugin support the provided ID array?
+     *
+     * @param array $ids IDs that will later be sent to load() -- see below.
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supports($ids)
+    {
+        error_log('Deprecated cover provider called; check configuration.');
+        return false;
+    }
+
+    /**
      * Get image URL for a particular API key and set of IDs (or false if invalid).
      *
      * @param string $key  API key
@@ -54,7 +69,6 @@ class Deprecated extends \VuFind\Content\AbstractCover
      */
     public function getUrl($key, $size, $ids)
     {
-        error_log('Deprecated cover provider called; check configuration.');
         return false;
     }
 }

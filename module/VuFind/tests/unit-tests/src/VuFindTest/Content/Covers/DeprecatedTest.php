@@ -64,7 +64,7 @@ class DeprecatedTest extends \PHPUnit\Framework\TestCase
      */
     protected function getUrl($size, $isbn = '0739313126')
     {
-        $deprecated = new \VuFind\Content\Cover\Deprecated();
+        $deprecated = new \VuFind\Content\Covers\Deprecated();
         $params = empty($isbn) ? [] : ['isbn' => new ISBN($isbn)];
         return $deprecated->getUrl('fakekey', $size, $params);
     }
