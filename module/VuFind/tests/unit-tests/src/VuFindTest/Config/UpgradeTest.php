@@ -502,4 +502,42 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $results['Primo.ini']['General']['url']
         );
     }
+
+    /**
+     * Test deprecated Amazon cover content warning.
+     *
+     * @return void
+     */
+    public function testAmazonCoverWarning()
+    {
+        $upgrader = $this->getUpgrader('amazoncover');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
+                . 'ports it. You should remove Amazon references from config.ini.',
+                $warnings
+            )
+        );
+    }
+
+    /**
+     * Test deprecated Amazon review content warning.
+     *
+     * @return void
+     */
+    public function testAmazonReviewWarning()
+    {
+        $upgrader = $this->getUpgrader('amazonreview');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
+                . 'ports it. You should remove Amazon references from config.ini.',
+                $warnings
+            )
+        );
+    }
 }
