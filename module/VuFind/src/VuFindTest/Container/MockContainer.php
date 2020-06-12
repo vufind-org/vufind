@@ -140,7 +140,7 @@ class MockContainer implements ContainerInterface
      */
     public function has($rawId)
     {
-    	$id = $this->aliases[$rawId] ?? $rawId;
+        $id = $this->aliases[$rawId] ?? $rawId;
         // Assume every service exists unless explicitly disabled
         return !in_array($id, $this->disabled);
     }
