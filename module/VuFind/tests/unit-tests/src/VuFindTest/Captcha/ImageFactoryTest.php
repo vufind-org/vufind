@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\Captcha;
 
-use VuFind\Captcha\ImageFactory;
-
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
