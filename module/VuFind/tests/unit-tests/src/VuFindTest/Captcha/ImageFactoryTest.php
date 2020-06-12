@@ -81,9 +81,11 @@ class ImageFactoryTest extends \VuFindTest\Unit\MockContainerTest
             }
         };
         $result = $factory($this->container, get_class($fakeImage));
+        $expectedFont = APPLICATION_PATH
+        . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf';
+        $this->assertTrue(file_exists($expectedFont));
         $expected = [
-            'font' => APPLICATION_PATH
-                . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
+            'font' => $expectedFont,
             'imgDir' => '/tmp'
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
