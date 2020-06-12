@@ -18,4 +18,4 @@
   <li class="active" title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
 <?php endif; ?>
 <?php $dropdownToggle = '$(\'.dropdown-toggle\').dropdown()'; ?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $dropdownToggle, 'SET');
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $dropdownToggle, 'SET');
