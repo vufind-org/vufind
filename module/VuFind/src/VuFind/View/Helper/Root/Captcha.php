@@ -28,8 +28,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * Captcha view helper
  *

@@ -38,5 +38,4 @@ namespace VuFind\Captcha;
  */
 class Figlet extends LaminasBase
 {
-
 }
