@@ -586,13 +586,18 @@ class Upgrade
         }
 
         // Upgrade CAPTCHA Options
-        $oldKeys
-            = ['siteKey', 'publicKey', 'secretKey', 'privateKey'];
-        foreach ($oldKeys as $key) {
-            if (isset($newConfig['Captcha'][$key])) {
-                $newConfig['Captcha']['recaptcha_' . $key]
-                    = $newConfig['Captcha'][$key];
-                unset($newConfig['Captcha'][$key]);
+        $legacySettingsMap = [
+            'publicKey' => 'recaptcha_siteKey',
+            'siteKey' => 'recaptcha_siteKey',
+            'privateKey' => 'recaptcha_secretKey',
+            'secretKey' => 'recaptcha_secretKey',
+            'theme' => 'recaptcha_theme',
+        ];
+        foreach ($legacySettingsMap as $old => $new) {
+            if (isset($newConfig['Captcha'][$old])) {
+                $newConfig['Captcha'][$new]
+                    = $newConfig['Captcha'][$old];
+                unset($newConfig['Captcha'][$old]);
             }
         }
 

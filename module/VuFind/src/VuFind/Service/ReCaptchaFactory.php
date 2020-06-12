@@ -65,27 +65,35 @@ class ReCaptchaFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        $deprecatedKeys = ['siteKey', 'publicKey', 'secretKey', 'privateKey'];
-        foreach ($deprecatedKeys as $deprecatedKey) {
-            if (isset($config->Captcha->$deprecatedKey)) {
-                throw new \Exception(
-                    'Deprecated ' . $deprecatedKey . ' setting found'
-                    . ' in config.ini - please use recaptcha_' . $deprecatedKey
-                    . ' instead.'
+        $legacySettingsMap = [
+            'publicKey' => 'recaptcha_siteKey',
+            'siteKey' => 'recaptcha_siteKey',
+            'privateKey' => 'recaptcha_secretKey',
+            'secretKey' => 'recaptcha_secretKey',
+            'theme' => 'recaptcha_theme',
+        ];
+
+        $recaptchaConfig = $config->Captcha->toArray();
+        foreach ($legacySettingsMap as $old => $new) {
+            if (isset($recaptchaConfig[$old])) {
+                error_log(
+                    'Deprecated ' . $old . ' setting found in config.ini - '
+                    . 'please use ' . $new . ' instead.'
                 );
+                if (!isset($recaptchaConfig[$new])) {
+                    $recaptchaConfig[$new] = $recaptchaConfig[$old];
+                }
             }
         }
 
-        $siteKey = $config->Captcha->recaptcha_siteKey ??
-            $config->Captcha->recaptcha_publicKey ?? '';
-        $secretKey = $config->Captcha->recaptcha_secretKey ??
-            $config->Captcha->recaptcha_privateKey ?? '';
+        $siteKey = $recaptchaConfig['recaptcha_siteKey'] ?? '';
+        $secretKey = $recaptchaConfig['recaptcha_secretKey'] ?? '';
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
         $rcOptions = ['lang' => $translator->getLocale()];
-        if (isset($config->Captcha->recaptcha_theme)) {
-            $rcOptions['theme'] = $config->Captcha->recaptcha_theme;
+        if (isset($recaptchaConfig['recaptcha_theme'])) {
+            $rcOptions['theme'] = $recaptchaConfig['recaptcha_theme'];
         }
         return new $requestedName(
             $siteKey, $secretKey, ['ssl' => true], $rcOptions, null, $httpClient
