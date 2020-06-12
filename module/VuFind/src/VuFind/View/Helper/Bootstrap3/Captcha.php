@@ -54,49 +54,9 @@ class Captcha extends \VuFind\View\Helper\Root\Captcha
             return false;
         }
 
-        if ($wrapHtml) {
-            $html = '<div class="form-group">';
-        }
-
-        $translator = $this->getView()->plugin('transEsc');
-        if (count($this->captchas) == 1) {
-            $html .= '<label class="control-label">'
-                . $translator('captcha_label_single')
-                . '</label>';
-            $html .= '<p>';
-            $html .= $this->captchas[0]->getHtml();
-            $html .= '</p>';
-        } else {
-            // nav
-            $html .= '<label class="control-label">'
-                . $translator('captcha_label_multiple')
-                . '</label>';
-            $html .= '<ul class="nav nav-tabs">';
-            foreach ($this->captchas as $i => $captcha) {
-                $active = $i == 0 ? ' class="active"' : '';
-                $html .= '<li' . $active . '>';
-                $html .= '<a href="#' . $captcha->getId() . '" '
-                      . 'role="tab" data-toggle="tab">' . $captcha->getId()
-                      . '</a>';
-                $html .= '</li>';
-            }
-            $html .= '</ul>';
-
-            // panes
-            $html .= '<div class="tab-content">';
-            foreach ($this->captchas as $i => $captcha) {
-                $active = $i == 0 ? ' active' : '';
-                $html .= '<div class="tab-pane fade in' . $active
-                      . '" id="' . $captcha->getId() . '">';
-                $html .= $captcha->getHtml();
-                $html .= '</div>';
-            }
-            $html .= '</div>';
-        }
-        if ($wrapHtml) {
-            $html .= '</div>';
-        }
-
-        return $html;
+        return $this->getView()->render(
+            'Helpers/captcha', ['wrapHtml' => $wrapHtml,
+                                'captchas' => $this->captchas]
+        );
     }
 }
