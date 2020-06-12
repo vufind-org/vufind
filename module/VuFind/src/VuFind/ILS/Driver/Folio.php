@@ -616,10 +616,10 @@ class Folio extends AbstractAPI implements
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
         $expiration = isset($profile->expirationDate)
-        ? $this->dateConverter->convertToDisplayDate(
-            "Y-m-d H:i", $profile->expirationDate
-        )
-        : null;
+            ? $this->dateConverter->convertToDisplayDate(
+                "Y-m-d H:i", $profile->expirationDate
+            )
+            : null;
         return [
             'id' => $profile->id,
             'firstname' => $profile->personal->firstName ?? null,
