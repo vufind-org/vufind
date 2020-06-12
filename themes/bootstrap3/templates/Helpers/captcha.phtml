@@ -4,7 +4,7 @@
 
 <?php if (count($this->captchas) == 1):?>
   <label class="control-label"><?=$this->transEsc('captcha_label_single')?></label>
-  <p><?=$this->captchas[0]->getHtml()?></p>
+  <p><?=$this->captcha()->getHtmlForCaptcha($this->captchas[0])?></p>
 <?php else:?>
   <label class="control-label"><?=$this->transEsc('captcha_label_multiple')?></label>
   <!-- nav -->
@@ -22,7 +22,7 @@
     <?php foreach ($this->captchas as $i => $captcha):?>
       <?php $active = $i == 0 ? ' active' : ''?>
       <div class="tab-pane fade in<?=$active?>" id="<?=$captcha->getId()?>">
-        <?=$captcha->getHtml()?>
+        <?=$this->captcha()->getHtmlForCaptcha($captcha)?>
       </div>
     <?php endforeach;?>
   </div>

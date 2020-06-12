@@ -61,13 +61,6 @@ abstract class AbstractBase
     }
 
     /**
-     * Generate HTML depending on CAPTCHA type.
-     *
-     * @return string
-     */
-    abstract public function getHtml(): string;
-
-    /**
      * Pull the captcha field from controller params and check them for accuracy
      *
      * @param Params $params Controller params

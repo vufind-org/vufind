@@ -1,0 +1,7 @@
+<?php
+  $laminasCaptcha = $this->captcha->getCaptcha();
+  $id = $laminasCaptcha->generate();
+?>
+<pre><?=$laminasCaptcha->getFiglet()->render($laminasCaptcha->getWord())?></pre>
+<p>Please enter what you see: <input name="<?=$this->captcha->getHtmlInputId()?>"></p>
+<input type="hidden" name="<?=$this->captcha->getHtmlInternalId()?>" value="<?=$id?>">

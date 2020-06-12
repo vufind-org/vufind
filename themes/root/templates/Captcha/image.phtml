@@ -1,0 +1,8 @@
+<?php
+  $laminasCaptcha = $this->captcha->getCaptcha();
+  $id = $laminasCaptcha->generate();
+?>
+<img src="<?=$this->captcha->getCacheBasePath() . $id . $laminasCaptcha->getSuffix();?>">
+<br/><br/>
+<input name="<?=$this->captcha->getHtmlInputId()?>">
+<input type="hidden" name="<?=$this->captchaHtmlInternalId?>" value="<?=$id?>">

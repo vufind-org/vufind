@@ -40,7 +40,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class Captcha extends AbstractHelper
+abstract class Captcha extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Captcha services
@@ -77,6 +77,22 @@ abstract class Captcha extends AbstractHelper
     public function __invoke(): \VuFind\View\Helper\Root\Captcha
     {
         return $this;
+    }
+
+    /**
+     * Generate HTML of a single CAPTCHA (redirect to template)
+     *
+     * @param \VuFind\Captcha\AbstractBase $captcha Captcha
+     *
+     * @return string
+     */
+    public function getHtmlForCaptcha(\VuFind\Captcha\AbstractBase $captcha): string
+    {
+        return $this->renderClassTemplate(
+            'Captcha/%s',
+            strtolower(get_class($captcha)),
+            ['captcha' => $captcha]
+        );
     }
 
     /**

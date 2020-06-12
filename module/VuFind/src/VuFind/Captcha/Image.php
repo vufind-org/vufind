@@ -59,19 +59,12 @@ class Image extends LaminasBase
     }
 
     /**
-     * Generate HTML depending on CAPTCHA type.
+     * Getter for template
      *
      * @return string
      */
-    public function getHtml(): string
+    public function getCacheBasePath(): string
     {
-        $id = $this->captcha->generate();
-        $imgUrl = $this->cacheBasePath . $id . $this->captcha->getSuffix();
-        $html = '<img src="' . $imgUrl . '">';
-        $html .= '<br/><br/>';
-        $html .= '<input name="' . $this->captchaHtmlInputId . '">';
-        $html .= '<input type="hidden" name="'
-               . $this->captchaHtmlInternalId . '" value="' . $id . '">';
-        return $html;
+        return $this->cacheBasePath;
     }
 }

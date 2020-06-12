@@ -88,4 +88,34 @@ abstract class LaminasBase extends AbstractBase
         ];
         return $this->captcha->isValid($validateParams);
     }
+
+    /**
+     * Laminas CAPTCHA object
+     *
+     * @return \Laminas\Captcha\AbstractWord
+     */
+    public function getCaptcha(): \Laminas\Captcha\AbstractWord
+    {
+        return $this->captcha;
+    }
+
+    /**
+     * Getter for template
+     *
+     * @return string
+     */
+    public function getHtmlInternalId(): string
+    {
+        return $this->captchaHtmlInternalId;
+    }
+
+    /**
+     * Getter for template
+     *
+     * @return string
+     */
+    public function getHtmlInputId(): string
+    {
+        return $this->captchaHtmlInputId;
+    }
 }
