@@ -67,7 +67,7 @@ var TueFind = {
                     var snippets = json['snippets'];
                     $("#snippet_place_holder_" + doc_id).each(function () {
                         if(snippets)
-                          $(this).replaceWith('<div id="snippets_' + doc_id + '">' + snippets.join('<br/>') + '<br/>' +'</div>');
+                          $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
                     });
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
@@ -77,14 +77,15 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '</br>[' + a.page + ']');
-                               $(this).html(snippets_and_pages.join('<hr/>'));
+                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>[' + a.page + ']');
+                               $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else
                                $(this).html(snippets.map(a => a.snippet).join('<br/>'));
                         } else
                             $(this).html("");
                     });
+                    //$(this).append("<hr>"); // Separate sources
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
                 });
             }, // end success
