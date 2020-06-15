@@ -555,5 +555,6 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('public', $captcha['recaptcha_siteKey']);
         $this->assertEquals('private', $captcha['recaptcha_secretKey']);
         $this->assertEquals('theme', $captcha['recaptcha_theme']);
+        $this->assertEquals(['recaptcha'], $captcha['types']);
     }
 }

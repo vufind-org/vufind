@@ -593,12 +593,19 @@ class Upgrade
             'secretKey' => 'recaptcha_secretKey',
             'theme' => 'recaptcha_theme',
         ];
+        $foundRecaptcha = false;
         foreach ($legacySettingsMap as $old => $new) {
             if (isset($newConfig['Captcha'][$old])) {
                 $newConfig['Captcha'][$new]
                     = $newConfig['Captcha'][$old];
                 unset($newConfig['Captcha'][$old]);
             }
+            if (isset($newConfig['Captcha'][$new])) {
+                $foundRecaptcha = true;
+            }
+        }
+        if ($foundRecaptcha && !isset($newConfig['Captcha']['types'])) {
+            $newConfig['Captcha']['types'] = ['recaptcha'];
         }
 
         // Warn the user about deprecated WorldCat settings:
