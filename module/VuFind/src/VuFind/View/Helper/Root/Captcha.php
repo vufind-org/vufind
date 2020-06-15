@@ -38,7 +38,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class Captcha extends AbstractClassBasedTemplateRenderer
+class Captcha extends AbstractClassBasedTemplateRenderer
 {
     /**
      * Captcha services
@@ -101,9 +101,17 @@ abstract class Captcha extends AbstractClassBasedTemplateRenderer
      *
      * @return string
      */
-    abstract public function html(bool $useCaptcha = true,
-        bool $wrapHtml = true
-    ): string;
+    public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
+    {
+        if (count($this->captchas) == 0 || !$useCaptcha) {
+            return false;
+        }
+
+        return $this->getView()->render(
+            'Helpers/captcha', ['wrapHtml' => $wrapHtml,
+                                'captchas' => $this->captchas]
+        );
+    }
 
     /**
      * Get list of URLs with JS dependancies to load for the active CAPTCHA type.
