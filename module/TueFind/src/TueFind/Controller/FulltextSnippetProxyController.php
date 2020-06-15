@@ -408,6 +408,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                  ]);
             }
         }
+        // Deduplicate snippets (array_values for fixing indices)
+        $snippets['snippets'] = array_values(array_unique($snippets['snippets'], SORT_REGULAR));
 
         return new JsonModel([
                'status' => 'SUCCESS',
