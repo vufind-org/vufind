@@ -32,7 +32,7 @@
 <?php $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="media" vocab="http://schema.org/" resource="#record">
   <div class="visible-xs">
-    <p class="format"><?=$this->translationEmpty('authority_' . $formats[0]) ? $formats[0] : $this->transEsc('authority_' . $formats[0])?></p>
+    <p class="format"><?=$this->transEsc($formats[0])?></p>
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
@@ -40,7 +40,7 @@
   <?php endif; ?>
   <div class="media-body record-information">
       <div class="hidden-xs">
-        <p class="format"><?=$this->translationEmpty('authority_' . $formats[0]) ? $formats[0] : $this->transEsc('authority_' . $formats[0])?></p>
+        <p class="format"><?=$this->transEsc($formats[0])?></p>
         <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
       </div>
       <?php if ($occupations = $this->driver->getOccupations()): ?>
