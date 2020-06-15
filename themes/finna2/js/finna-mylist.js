@@ -134,6 +134,7 @@ finna.myList = (function finnaMyList() {
       truncateEl.wrap(truncateDone + '>');
       var newTruncate = tempDom.find('.truncate-field');
       truncateEl.contents().unwrap();
+      newTruncate.find('details').wrap('<div>');
 
       // Remove <summary> element and add its value to data-label attribute
       if (newTruncate.find(':first-child').is('summary')) {
@@ -154,6 +155,7 @@ finna.myList = (function finnaMyList() {
       }
       truncateEl.prepend($('<summary>' + summaryText + '</summary>'));
       truncateEl.wrap("<truncate>");
+      tempDom.find('.truncate-field details').unwrap();
       tempDom.find('.truncate-field').children().unwrap();
       desc = tempDom[0].innerHTML;
     }
