@@ -261,7 +261,7 @@ VuFind.register('cart', function Cart() {
 function cartFormHandler(event, data) {
   var keys = [];
   for (var i in data) {
-    if (data.hasOwnProperty(i)) {
+    if (Object.prototype.hasOwnProperty.call(data, i)) {
       keys.push(data[i].name);
     }
   }
