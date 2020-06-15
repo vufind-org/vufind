@@ -355,6 +355,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                     $style = $this->normalizeCSSClasses($doc_id, $page, $style);
                     $snippet_page = $this->normalizeCSSClasses($doc_id, $page, $highlight_result);
                     $snippet_page = preg_replace('/(<[^>]+) style=[\\s]*".*?"/i', '$1', $snippet_page); //remove styles with absolute positions
+                    // Disable links to avoid failing internal references
+                    $snippet_page = preg_replace('/<a[^>]*?>/i','<a style="color:inherit; text-decoration:inherit; cursor:inherit">', $snippet_page);
                     $snippet = $this->extractSnippetParagraph($snippet_page);
                     array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style]);
                 } else {
@@ -406,6 +408,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                  ]);
             }
         }
+        // Deduplicate snippets (array_values for fixing indices)
+        $snippets['snippets'] = array_values(array_unique($snippets['snippets'], SORT_REGULAR));
 
         return new JsonModel([
                'status' => 'SUCCESS',
