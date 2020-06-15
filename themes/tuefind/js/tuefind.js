@@ -85,7 +85,6 @@ var TueFind = {
                         } else
                             $(this).html("");
                     });
-                    //$(this).append("<hr>"); // Separate sources
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
                 });
             }, // end success
