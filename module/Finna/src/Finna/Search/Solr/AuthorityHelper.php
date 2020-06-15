@@ -67,6 +67,20 @@ class AuthorityHelper
     const AUTHOR_ID_ROLE_SEPARATOR = '###';
 
     /**
+     * Authority link type: authority page.
+     *
+     * @var string
+     */
+    const LINK_TYPE_PAGE = 'page';
+
+    /**
+     * Authority link type: search results filtered by authority id.
+     *
+     * @var string
+     */
+    const LINK_TYPE_SEARCH = 'search';
+
+    /**
      * Record loader
      *
      * @var \VuFind\Record\Loader
@@ -314,9 +328,11 @@ class AuthorityHelper
         $setting = $setting[$type] ?? $setting['*'] ?? $setting;
         if ($setting === '1') {
             // Backward compatibility
-            $setting = 'search';
+            $setting = self::LINK_TYPE_SEARCH;
         }
-        return in_array($setting, ['page', 'search']) ? $setting : null;
+        return
+            in_array($setting, [self::LINK_TYPE_PAGE, self::LINK_TYPE_SEARCH])
+            ? $setting : null;
     }
 
     /**

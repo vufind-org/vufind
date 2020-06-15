@@ -242,15 +242,22 @@ class Record extends \VuFind\View\Helper\Root\Record
      * Render the link of the specified type.
      * Fallbacks from 'authority-page' to 'author' when needed.
      *
-     * @param string $type     Link type
-     * @param string $lookfor  String to search for at link
-     * @param array  $params   Optional array of parameters for the link template
-     * @param bool   $withInfo return an array with link HTML and returned link type.
+     * @param string $type              Link type
+     * @param string $lookfor           String to search for at link
+     * @param array  $params            Optional array of parameters for the
+     * link template
+     * @param bool   $withInfo          return an array with link HTML and
+     * returned linktype.
+     * @param bool   $searchTabsFilters Include search tabs hiddenFilters in
+     * the URL (needed when the link performs a search, but not when linking
+     * to authority page).
      *
      * @return string
      */
-    public function getLink($type, $lookfor, $params = [], $withInfo = false)
-    {
+    public function getLink(
+        $type, $lookfor, $params = [], $withInfo = false,
+        $searchTabsFilters = true
+    ) {
         if (is_array($lookfor)) {
             $lookfor = $lookfor['name'];
         }
@@ -288,8 +295,10 @@ class Record extends \VuFind\View\Helper\Root\Record
             'link-' . $type . '.phtml', $params
         );
 
-        $result .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+        if ($searchTabsFilters) {
+            $result .= $this->getView()->plugin('searchTabs')
+                ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+        }
 
         return $withInfo ? [$result, $type] : $result;
     }
@@ -338,8 +347,16 @@ class Record extends \VuFind\View\Helper\Root\Record
         $type, $lookfor, $data, $params = []
     ) {
         $id = $data['id'] ?? null;
+
+        // Discard search tabs hiddenFilters when jumping to Authority page
+        $preserveSearchTabsFilters
+            = $this->getAuthorityLinkType() !== AuthorityHelper::LINK_TYPE_PAGE;
+
         list($url, $urlType)
-            = $this->getLink($type, $lookfor, $params + ['id' => $id], true);
+            = $this->getLink(
+                $type, $lookfor, $params + ['id' => $id], true,
+                $preserveSearchTabsFilters
+            );
 
         if (!$this->isAuthorityEnabled()
             || !in_array($urlType, ['authority-search', 'authority-page'])
