@@ -103,7 +103,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             return true;
         }
         $this->captcha->setErrorMode('none');
-        return $this->captcha->validate();
+        return $this->captcha->verify();
     }
 
     /**
