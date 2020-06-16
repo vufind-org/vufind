@@ -1,16 +1,15 @@
 <?php $account = $this->auth()->getManager(); ?>
 <div class="banner container navbar">
   <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
-      <span class="sr-only">Toggle navigation</span>
-      <i class="fa fa-bars" aria-hidden="true"></i>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-hidden="true">
+      <i class="fa fa-bars"></i>
     </button>
     <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
   </div>
   <?php if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">
       <nav>
-        <ul role="navigation" class="nav navbar-nav navbar-right flip">
+        <ul class="nav navbar-nav navbar-right flip">
           <?php if ($this->feedback()->tabEnabled()): ?>
             <li>
               <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc("Feedback")?></a>
@@ -84,8 +83,8 @@
 </div>
 <?php if ($this->layout()->searchbox !== false): ?>
   <div class="search container navbar">
-    <nav class="nav searchbox hidden-print">
+    <div class="nav searchbox hidden-print" role="search">
       <?=$this->layout()->searchbox ?>
-    </nav>
+    </div>
   </div>
 <?php endif; ?>

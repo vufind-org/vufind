@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Helper class for displaying search-related HTML chunks.
+ * Unit tests for Deprecated cover loader.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,46 +21,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org
  */
-namespace VuFind\View\Helper\Bootstrap3;
+namespace VuFindTest\Content\Covers;
+
+use VuFindCode\ISBN;
 
 /**
- * Helper class for displaying search-related HTML chunks.
+ * Unit tests for Deprecated cover loader.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org
  */
-class Search extends \VuFind\View\Helper\AbstractSearch
+class DeprecatedTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get the CSS classes for the container holding the suggestions.
+     * Test that the handler never actually does anything.
      *
-     * @return string
+     * @return void
      */
-    protected function getContainerClass()
+    public function testEverythingDisabled()
     {
-        return 'alert alert-info';
+        $sizes = ['small', 'medium', 'large'];
+        foreach ($sizes as $size) {
+            $this->assertFalse($this->getUrl($size));
+        }
     }
 
     /**
-     * Render an expand link.
+     * Simulate retrieval of a cover URL for a particular size.
      *
-     * @param string                             $url  Link href
-     * @param \Laminas\View\Renderer\PhpRenderer $view View renderer object
+     * @param string $size  Size to retrieve
+     * @param string $isbn  ISBN to retrieve (empty for none)
      *
      * @return string
      */
-    protected function renderExpandLink($url, $view)
+    protected function getUrl($size, $isbn = '0739313126')
     {
-        return ' <a href="' . $url
-            . '" title="' . $view->transEsc('spell_expand_alt')
-            . '">(' . $view->transEsc('spell_expand_alt') . ')</a>';
+        $deprecated = new \VuFind\Content\Covers\Deprecated();
+        $params = empty($isbn) ? [] : ['isbn' => new ISBN($isbn)];
+        return $deprecated->getUrl('fakekey', $size, $params);
     }
 }

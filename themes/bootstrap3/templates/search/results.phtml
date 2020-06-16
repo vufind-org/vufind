@@ -53,7 +53,7 @@
     <?php endforeach; ?>
   <?php endif; ?>
   <?=$this->flashmessages()?>
-  <nav class="search-header hidden-print">
+  <div class="search-header hidden-print">
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
@@ -72,7 +72,7 @@
         <?=$this->render('search/controls/view.phtml')?>
       </div>
     <?php endif; ?>
-  </nav>
+  </div>
   <?php /* End Listing Options */ ?>
 
   <?php if ($recordTotal < 1): ?>
