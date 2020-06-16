@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2018.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -309,6 +309,7 @@ $config = [
             'FinnaSearch\Service' => 'VuFind\Service\SearchServiceFactory',
 
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
+            'VuFindHttp\HttpService' => 'Finna\Service\HttpServiceFactory',
 
             'Laminas\Session\SessionManager' => 'Finna\Session\ManagerFactory',
         ],
