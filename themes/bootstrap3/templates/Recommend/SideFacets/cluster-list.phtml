@@ -46,17 +46,4 @@
   <a class="facet narrow-toggle <?=$moreClass ?> less-facets" href="#" data-title="<?=$this->escapeHtmlAttr($this->title) ?>">
     <span class="text"><?=$this->transEsc('less')?> ...</span>
   </a>
-<?php endif; ?>
-<?php
-$script = <<<JS
-$('.more-facets').click(function(e) {
-  title = $(this).data('title');
-  return moreFacets('narrowGroupHidden-' + title);
-});
-$('.less-facets').click(function(e) {
-  title = $(this).data('title');
-  return lessFacets('narrowGroupHidden-' + title);
-});
-JS;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+<?php endif;

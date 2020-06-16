@@ -147,17 +147,6 @@ function deparam(url) {
   return request;
 }
 
-// Sidebar
-function moreFacets(id) {
-  $('.' + id).removeClass('hidden');
-  $('#more-' + id).addClass('hidden');
-  return false;
-}
-function lessFacets(id) {
-  $('.' + id).addClass('hidden');
-  $('#more-' + id).removeClass('hidden');
-  return false;
-}
 function getUrlRoot(url) {
   // Parse out the base URL for the current record:
   var urlroot = null;
