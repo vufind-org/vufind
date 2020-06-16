@@ -49,7 +49,8 @@ use VuFind\Exception\ILS as ILSException;
  */
 class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \VuFind\I18n\Translator\TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

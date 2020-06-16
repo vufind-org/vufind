@@ -97,9 +97,9 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
      * @param \VuFind\Search\Results\PluginManager $results         Results
      * plugin manager
      * @param \Finna\Search\Solr\AuthorityHelper   $authorityHelper Authority helper
-     * @param \Laminas\Session\Container              $session         Session
+     * @param \Laminas\Session\Container           $session         Session
      * @param \VuFind\Cookie\CookieManager         $cookieManager   Cookiemanager
-     * @param \Laminas\Config\Config                  $config          Configuration
+     * @param \Laminas\Config\Config               $config          Configuration
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,

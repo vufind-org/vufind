@@ -82,10 +82,10 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
      * Recaptcha constructor.
      *
      * @param \Laminas\ReCaptcha\ReCaptcha $r              ReCaptcha object
-     * @param \VuFind\Config                   $config         Configuration
-     * @param \VuFind\Auth\Manager             $authManager    Authentication Manager
-     * @param SessionManager                   $sessionManager Session Manager
-     * @param TranslatorInterface              $translator     Translator
+     * @param \VuFind\Config               $config         Configuration
+     * @param \VuFind\Auth\Manager         $authManager    Authentication Manager
+     * @param SessionManager               $sessionManager Session Manager
+     * @param TranslatorInterface          $translator     Translator
      *
      * @return Recaptcha
      */

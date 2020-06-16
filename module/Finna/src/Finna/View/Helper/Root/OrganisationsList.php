@@ -31,8 +31,8 @@ namespace Finna\View\Helper\Root;
 
 use Finna\OrganisationInfo\OrganisationInfo;
 use Finna\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Search\Results\PluginManager;
 use Laminas\Cache\Storage\StorageInterface;
+use VuFind\Search\Results\PluginManager;
 
 /**
  * Organisations list view helper
@@ -45,7 +45,8 @@ use Laminas\Cache\Storage\StorageInterface;
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class OrganisationsList extends \Laminas\View\Helper\AbstractHelper implements
-    \VuFind\I18n\Translator\TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

@@ -115,8 +115,7 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config                 $config           VuFind
-     * configuration
+     * @param \Laminas\Config\Config              $config           VuFind config
      * @param \VuFind\Record\Loader               $loader           Record loader
      * @param \Finna\View\Helper\Root\RecordImage $recordImage      Record image
      * helper

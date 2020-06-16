@@ -28,6 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 use Laminas\Http\Request;
+use Laminas\Router\Http\TreeRouteStack;
 
 /**
  * Navibar view helper
@@ -57,7 +58,7 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
     /**
      * Organisation info
      *
-     * @var Finna\OrganisationInfo\OrganisationInfo
+     * @var \Finna\OrganisationInfo\OrganisationInfo
      */
     protected $organisationInfo;
 
@@ -78,20 +79,20 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
     /**
      * Router object
      *
-     * @var Laminas\Router\Http\TreeRouteStack
+     * @var TreeRouteStack
      */
     protected $router;
 
     /**
      * Constructor
      *
-     * @param Laminas\Config\Config              $config           Menu configuration
-     * @param OrganisationInfo                $organisationInfo Organisation info
-     * @param Laminas\Router\Http\TreeRouteStack $router           Route helper
+     * @param \Laminas\Config\Config $config           Menu configuration
+     * @param OrganisationInfo       $organisationInfo Organisation info
+     * @param TreeRouteStack         $router           Route helper
      */
     public function __construct(\Laminas\Config\Config $config,
         \Finna\OrganisationInfo\OrganisationInfo $organisationInfo,
-        \Laminas\Router\Http\TreeRouteStack $router
+        TreeRouteStack $router
     ) {
         $this->config = $config;
         $this->organisationInfo = $organisationInfo;

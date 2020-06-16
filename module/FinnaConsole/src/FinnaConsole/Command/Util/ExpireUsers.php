@@ -161,7 +161,6 @@ class ExpireUsers extends AbstractUtilCommand
         return true;
     }
 
-
     /**
      * Returns all users that have not been active for given amount of days.
      *

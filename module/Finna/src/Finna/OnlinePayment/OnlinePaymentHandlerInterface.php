@@ -47,7 +47,7 @@ interface OnlinePaymentHandlerInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config     $config     Configuration as key-value pairs.
+     * @param \Laminas\Config\Config  $config     Configuration as key-value pairs.
      * @param \VuFindHttp\HttpService $http       HTTP service
      * @param TranslatorInterface     $translator Translator
      */

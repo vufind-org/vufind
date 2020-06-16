@@ -133,7 +133,8 @@ class NotifyCommand extends \VuFindConsole\Command\ScheduledSearch\NotifyCommand
     {
         parent::configure();
         $this
-            ->setHelp(<<<EOT
+            ->setHelp(
+                <<<EOT
 Sends scheduled search email notifications.
 
 For example:

@@ -30,10 +30,10 @@ namespace Finna\AjaxHandler;
 
 use Finna\Db\Table\Transaction as TransactionTable;
 use Finna\OnlinePayment\OnlinePayment;
+use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Table\UserCard as UserCardTable;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
-use Laminas\Session\Container as SessionContainer;
 
 /**
  * Abstract base class for online payment handlers.

@@ -88,19 +88,19 @@ class GetAuthorityFullInfo extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\View\Renderer\RendererInterface $renderer           View renderer
-     * @param \Finna\Recommend\AuthorityRecommend   $authorityRecommend Authority
+     * @param RendererInterface                    $renderer           View renderer
+     * @param AuthorityRecommend                   $authorityRecommend Authority
      * Recommend
-     * @param \VuFind\Search\Results\PluginManager  $resultsManager     Search
+     * @param \VuFind\Search\Results\PluginManager $resultsManager     Search
      * results manager
-     * @param \VuFInd\Db\Table\Search               $searchTable        Search table
-     * @param \Laminas\Session\Container               $session            Session
-     * @param \Laminas\Session\SessionManager          $sessionManager     Session
+     * @param \VuFInd\Db\Table\Search              $searchTable        Search table
+     * @param \Laminas\Session\Container           $session            Session
+     * @param \Laminas\Session\SessionManager      $sessionManager     Session
      * manager
      */
     public function __construct(
-        \Laminas\View\Renderer\RendererInterface $renderer,
-        \Finna\Recommend\AuthorityRecommend $authorityRecommend,
+        RendererInterface $renderer,
+        AuthorityRecommend $authorityRecommend,
         \VuFind\Search\Results\PluginManager $resultsManager,
         \VuFInd\Db\Table\Search $searchTable,
         \Laminas\Session\Container $session,
@@ -141,7 +141,8 @@ class GetAuthorityFullInfo extends \VuFind\AjaxHandler\AbstractBase
         $savedSearch = $minSO->deminify($this->resultsManager);
         $searchParams = $savedSearch->getParams();
 
-        $this->authorityRecommend->init($searchParams, $request);
+        $this->authorityRecommend
+            ->init($searchParams, $params->getController()->getRequest());
         $this->authorityRecommend->process($savedSearch);
         $recommendations = $this->authorityRecommend->getRecommendations();
 

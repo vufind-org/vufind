@@ -27,10 +27,10 @@
  */
 namespace Finna\AjaxHandler;
 
-use VuFind\Db\Row\User;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Db\Row\User;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * AJAX handler for retrieving lists.

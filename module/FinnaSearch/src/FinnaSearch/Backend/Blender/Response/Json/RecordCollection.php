@@ -69,7 +69,7 @@ class RecordCollection
      * Constructor
      *
      * @param \Laminas\Config\Config $config   Configuration
-     * @param array               $mappings Mappings configuration
+     * @param array                  $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
     {

@@ -29,11 +29,11 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Feed\Feed as FeedService;
-use VuFind\Session\Settings as SessionSettings;
 use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * GetOrganisationPageFeed AJAX handler

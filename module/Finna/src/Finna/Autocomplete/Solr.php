@@ -95,7 +95,7 @@ class Solr extends \VuFind\Autocomplete\Solr
     /**
      * Constructor
      *
-     * @param PluginManager       $results      Results plugin manager
+     * @param PluginManager          $results      Results plugin manager
      * @param \Laminas\Config\Config $facetConfig  Facet configuration
      * @param \Laminas\Config\Config $searchConfig Search configuration
      */

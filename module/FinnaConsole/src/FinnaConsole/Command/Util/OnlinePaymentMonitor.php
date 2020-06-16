@@ -31,7 +31,6 @@ namespace FinnaConsole\Command\Util;
 use Finna\Db\Row\User;
 use Finna\Db\Table\Transaction;
 
-use Laminas\ServiceManager\ServiceManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -27,13 +27,13 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
-use Laminas\Config\Config;
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
 
 /**
  * "Get Search Tabs Recommendations" AJAX handler

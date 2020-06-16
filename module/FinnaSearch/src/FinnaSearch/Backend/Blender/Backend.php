@@ -89,10 +89,10 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     /**
      * Constructor.
      *
-     * @param AbstractBackend     $primary   Primary backend
-     * @param AbstractBackend     $secondary Secondary backend
+     * @param AbstractBackend        $primary   Primary backend
+     * @param AbstractBackend        $secondary Secondary backend
      * @param \Laminas\Config\Config $config    Blender configuration
-     * @param array               $mappings  Mappings configuration
+     * @param array                  $mappings  Mappings configuration
      *
      * @return void
      */

@@ -85,7 +85,7 @@ class Suomifi extends Shibboleth
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
-     * @param string                            $param   Parameter name
+     * @param string                               $param   Parameter name
      *
      * @throws AuthException
      * @return mixed

@@ -32,12 +32,12 @@
 namespace Finna\ILS\Driver;
 
 use DOMDocument;
+use Laminas\Db\Sql\Ddl\Column\Boolean;
 use SoapClient;
 use VuFind\Config\Locator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
-use Laminas\Db\Sql\Ddl\Column\Boolean;
 
 /**
  * Axiell Web Services ILS Driver

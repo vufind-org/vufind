@@ -28,9 +28,9 @@
  */
 namespace Finna\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
-use Laminas\Db\Adapter\Adapter;
 
 /**
  * Table Definition for online payment transaction

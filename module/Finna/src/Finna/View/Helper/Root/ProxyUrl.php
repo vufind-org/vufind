@@ -27,8 +27,8 @@
  */
 namespace Finna\View\Helper\Root;
 
-use VuFind\Net\ipAddressUtils;
 use Laminas\Config\Config;
+use VuFind\Net\ipAddressUtils;
 
 /**
  * Proxy URL view helper
@@ -67,7 +67,7 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
      *
      * @param \Laminas\Config\Config $config      VuFind configuration
      * @param \Laminas\Config\Config $permissions Permissions configuration
-     * @param ipAddressUtils      $ipUtils     IP address utils
+     * @param ipAddressUtils         $ipUtils     IP address utils
      */
     public function __construct(Config $config, Config $permissions,
         ipAddressUtils $ipUtils

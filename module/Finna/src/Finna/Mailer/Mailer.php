@@ -29,9 +29,10 @@
  */
 namespace Finna\Mailer;
 
-use VuFind\Exception\Mail as MailException;
 use Laminas\Mail\Address;
-use Laminas\Mail\Message;
+use Laminas\View\Renderer\PhpRenderer as ViewRenderer;
+use VuFind\Exception\Mail as MailException;
+use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 
 /**
  * VuFind Mailer Class
@@ -48,16 +49,13 @@ class Mailer  extends \VuFind\Mailer\Mailer
     /**
      * Send an email message representing a record.
      *
-     * @param string                            $to      Recipient email address
-     * @param string|\Laminas\Mail\Address         $from    Sender name and email
-     * address
-     * @param string                            $msg     User notes to include in
-     * message
-     * @param \VuFind\RecordDriver\AbstractBase $records Record being emailed
-     * @param \Laminas\View\Renderer\PhpRenderer   $view    View object (used to render
-     * email templates)
-     * @param string                            $subject Subject for email (optional)
-     * @param string                            $cc      CC recipient (null for none)
+     * @param string           $to      Recipient email address
+     * @param string|Address   $from    Sender name and email address
+     * @param string           $msg     User notes to include in message
+     * @param AbstractRecord[] $records Records being emailed
+     * @param ViewRenderer     $view    View object (used to render email templates)
+     * @param string           $subject Subject for email  (optional)
+     * @param string           $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void

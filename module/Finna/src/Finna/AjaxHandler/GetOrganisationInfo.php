@@ -30,10 +30,10 @@
 namespace Finna\AjaxHandler;
 
 use Finna\OrganisationInfo\OrganisationInfo;
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
-use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler for getting organisation info.

@@ -28,11 +28,11 @@
  */
 namespace Finna\Feed;
 
-use VuFind\Cache\Manager as CacheManager;
-use VuFindTheme\View\Helper\ImageLink;
 use Laminas\Config\Config;
 use Laminas\Feed\Reader\Reader;
 use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Cache\Manager as CacheManager;
+use VuFindTheme\View\Helper\ImageLink;
 
 /**
  * Feed service

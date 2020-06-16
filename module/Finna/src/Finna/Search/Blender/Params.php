@@ -73,7 +73,7 @@ class Params extends \Finna\Search\Solr\Params
      * @param AuthorityHelper              $authorityHelper Authority helper
      * @param \VuFind\Date\Converter       $dateConverter   Date converter
      * @param \VuFind\Search\Base\Params   $secondaryParams Secondary search params
-     * @param \Laminas\Config\Config          $blenderConfig   Blender configuration
+     * @param \Laminas\Config\Config       $blenderConfig   Blender configuration
      * @param array                        $mappings        Blender mappings
      */
     public function __construct(\VuFind\Search\Base\Options $options,

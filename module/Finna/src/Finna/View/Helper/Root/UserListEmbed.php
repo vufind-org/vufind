@@ -73,7 +73,7 @@ class UserListEmbed extends \Laminas\View\Helper\AbstractHelper
      *
      * @param \VuFind\Search\Favorites\Results $results   Results
      * @param \VuFind\Db\Table\UserList        $listTable UserList table
-     * @param \Laminas\View\Model\ViewModel       $viewModel View model
+     * @param \Laminas\View\Model\ViewModel    $viewModel View model
      */
     public function __construct(
         \VuFind\Search\Favorites\Results $results,

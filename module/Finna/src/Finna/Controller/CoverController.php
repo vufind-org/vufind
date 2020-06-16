@@ -66,11 +66,11 @@ class CoverController extends \VuFind\Controller\CoverController
     /**
      * Constructor
      *
-     * @param Loader                $loader       Cover loader
-     * @param CachingProxy          $proxy        Proxy loader
-     * @param SessionSettings       $ss           Session settings
-     * @param \Laminas\Config\Config   $datasources  Data source settings
-     * @param \VuFind\Record\Loader $recordLoader Record loader
+     * @param Loader                 $loader       Cover loader
+     * @param CachingProxy           $proxy        Proxy loader
+     * @param SessionSettings        $ss           Session settings
+     * @param \Laminas\Config\Config $datasources  Data source settings
+     * @param \VuFind\Record\Loader  $recordLoader Record loader
      */
     public function __construct(Loader $loader, CachingProxy $proxy,
         SessionSettings $ss, \Laminas\Config\Config $datasources,

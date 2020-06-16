@@ -28,9 +28,9 @@
 namespace FinnaApi\Controller;
 
 use FinnaApi\Formatter\RecordFormatter;
+use Laminas\ServiceManager\ServiceManager;
 use VuFindApi\Controller\SearchApiController;
 use VuFindApi\Formatter\FacetFormatter;
-use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Factory for controllers.

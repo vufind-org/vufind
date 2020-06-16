@@ -96,9 +96,9 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      * Constructor.
      *
      * @param \Laminas\Config\Config             $config        Configuration
-     * @param \VuFind\Cache\Manager           $cacheManager  Cache manager
+     * @param \VuFind\Cache\Manager              $cacheManager  Cache manager
      * @param \Laminas\View\Renderer\PhpRenderer $viewRenderer  View renderer
-     * @param \VuFind\Date\Converter          $dateConverter Date converter
+     * @param \VuFind\Date\Converter             $dateConverter Date converter
      */
     public function __construct(\Laminas\Config\Config $config,
         \VuFind\Cache\Manager $cacheManager,

@@ -30,9 +30,9 @@
 namespace FinnaConsole\Command\Util;
 
 use Laminas\Mvc\I18n\Translator;
+use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\AggregateResolver;
 use Laminas\View\Resolver\TemplatePathStack;
-use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +54,6 @@ class DueDateReminders extends AbstractUtilCommand
      * The name of the command (the part after "public/index.php")
      *
      * @var string
-     * @override
      */
     protected static $defaultName = 'util/due_date_reminders';
 

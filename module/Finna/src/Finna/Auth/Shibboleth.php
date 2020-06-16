@@ -171,7 +171,8 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
     public function logout($url)
     {
         // Check for a dynamic logout url:
-        $session = new \Laminas\Session\Container('Shibboleth', $this->sessionManager);
+        $session
+            = new \Laminas\Session\Container('Shibboleth', $this->sessionManager);
         if (!empty($session['logoutUrl'])) {
             $url = $session['logoutUrl'] . '?return=' . urlencode($url);
             return $url;
@@ -186,7 +187,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
-     * @param string                            $param   Parameter name
+     * @param string                               $param   Parameter name
      *
      * @return mixed
      */
