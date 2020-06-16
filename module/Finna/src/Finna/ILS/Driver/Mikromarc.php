@@ -711,7 +711,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             );
 
             $transaction[$serviceCodeMap[$code]] = $entryTime;
-            if (isset($item['MarcRecordTitle'])) {
+            if (isset($entry['MarcRecordTitle'])) {
                 $transaction['title'] = $entry['MarcRecordTitle'];
             }
             if ($params['sort'] == 'checkout ' . $sort
@@ -1541,7 +1541,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'callnumber' => $shelf,
                 'duedate' => $duedate,
                 'barcode' => $item['Barcode'],
-                'item_notes' => [isset($items['notes']) ? $item['notes'] : null],
+                'item_notes' => [$item['notes'] ?? null],
                 'number' => $number,
             ];
 

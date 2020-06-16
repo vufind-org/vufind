@@ -777,8 +777,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 ];
                 $agentAttrs = $agent->AgentName->attributes();
                 foreach ($includeAttrs as $key => $attr) {
-                    if (!empty($agentAttrs{$attr})) {
-                        $item[$key] = (string)$agentAttrs{$attr};
+                    if (!empty($agentAttrs->{$attr})) {
+                        $item[$key] = (string)$agentAttrs->{$attr};
                     }
                 }
                 $result[] = $item;
@@ -807,8 +807,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 ];
                 $agentAttrs = $agent->AgentName->attributes();
                 foreach ($includeAttrs as $key => $attr) {
-                    if (!empty($agentAttrs{$attr})) {
-                        $item[$key] = (string)$agentAttrs{$attr};
+                    if (!empty($agentAttrs->{$attr})) {
+                        $item[$key] = (string)$agentAttrs->{$attr};
                     }
                 }
                 $result[] = $item;
@@ -948,8 +948,8 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         $xml = $this->getRecordXML();
         foreach ($xml->ProductionEvent as $event) {
             $attributes = $event->ProductionEventType->attributes();
-            if (!empty($attributes{$attribute})) {
-                return (string)$attributes{$attribute};
+            if (!empty($attributes->{$attribute})) {
+                return (string)$attributes->{$attribute};
             }
         }
         return '';
