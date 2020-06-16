@@ -265,7 +265,7 @@ class AuthorityHelper
      * @return \VuFind\Search\Results|int
      */
     public function getRecordsByAuthorityId(
-        $id, $field = AUTHOR2_ID_FACET, $onlyCount = false
+        $id, $field = AuthorityHelper::AUTHOR2_ID_FACET, $onlyCount = false
     ) {
         $query = $this->getRecordsByAuthorityQuery($id, $field);
         $results = $this->searchRunner->run(
