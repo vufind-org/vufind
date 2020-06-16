@@ -177,4 +177,15 @@ trait SolrCommonFinnaTrait
     {
         return (string)($this->fields['sector_str_mv'][0] ?? '');
     }
+
+    /**
+     * Return local record IDs (only works with dedup records)
+     *
+     * @return array
+     */
+    public function getLocalIds()
+    {
+        return isset($this->fields['local_ids_str_mv'])
+            ? $this->fields['local_ids_str_mv'] : [];
+    }
 }

@@ -316,17 +316,6 @@ trait SolrFinnaTrait
     }
 
     /**
-     * Return local record IDs (only works with dedup records)
-     *
-     * @return array
-     */
-    public function getLocalIds()
-    {
-        return isset($this->fields['local_ids_str_mv'])
-            ? $this->fields['local_ids_str_mv'] : [];
-    }
-
-    /**
      * Get an array of dedup and link data associated with the record.
      *
      * @return array
