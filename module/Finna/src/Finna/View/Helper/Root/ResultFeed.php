@@ -63,7 +63,7 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
     /**
      * Support method to turn a record driver object into an RSS entry.
      *
-     * @param Zend\Feed\Writer\Feed             $feed   Feed to update
+     * @param Laminas\Feed\Writer\Feed          $feed   Feed to update
      * @param \VuFind\RecordDriver\AbstractBase $record Record to add to feed
      *
      * @return void
@@ -80,7 +80,7 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         $recordLink = $this->getView()->plugin('recordLink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
-        } catch (\Zend\Router\Exception\RuntimeException $e) {
+        } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
             $url = $record->tryMethod('getUrl');

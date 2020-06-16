@@ -28,6 +28,8 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Db\Table\UserList as UserListTable;
@@ -36,8 +38,6 @@ use VuFind\Favorites\FavoritesService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * AJAX handler for importing favorites.

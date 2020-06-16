@@ -47,7 +47,7 @@ class OnlinePayment implements \VuFind\I18n\Translator\TranslatorAwareInterface,
     /**
      * Configuration.
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -73,7 +73,7 @@ class OnlinePayment implements \VuFind\I18n\Translator\TranslatorAwareInterface,
      * @param Config               $config       Configuration
      */
     public function __construct(\VuFind\Db\Table\PluginManager $tableManager,
-        \VuFind\Log\Logger $logger, \Zend\Config\Config $config
+        \VuFind\Log\Logger $logger, \Laminas\Config\Config $config
     ) {
         $this->tableManager = $tableManager;
         $this->logger = $logger;

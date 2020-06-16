@@ -29,7 +29,7 @@
  */
 namespace Finna\OnlinePayment;
 
-use Zend\I18n\Translator\TranslatorInterface;
+use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
  * OnlinePayment handler interface.
@@ -47,18 +47,18 @@ interface OnlinePaymentHandlerInterface
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config     $config     Configuration as key-value pairs.
+     * @param \Laminas\Config\Config  $config     Configuration as key-value pairs.
      * @param \VuFindHttp\HttpService $http       HTTP service
      * @param TranslatorInterface     $translator Translator
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         \VuFindHttp\HttpService $http, TranslatorInterface $translator
     );
 
     /**
      * Return payment response parameters.
      *
-     * @param Zend\Http\Request $request Request
+     * @param Laminas\Http\Request $request Request
      *
      * @return array
      */
@@ -89,7 +89,7 @@ interface OnlinePaymentHandlerInterface
     /**
      * Process the response from payment service.
      *
-     * @param Zend\Http\Request $request Request
+     * @param Laminas\Http\Request $request Request
      *
      * @return string error message (not translated)
      *   or associative array with keys:

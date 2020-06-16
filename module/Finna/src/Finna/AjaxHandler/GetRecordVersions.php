@@ -27,11 +27,11 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler for fetching versions link

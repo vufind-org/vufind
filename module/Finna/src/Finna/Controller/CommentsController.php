@@ -28,7 +28,7 @@
  */
 namespace Finna\Controller;
 
-use Zend\Session\Container as SessionContainer;
+use Laminas\Session\Container as SessionContainer;
 
 /**
  * Comments Controller.
@@ -82,7 +82,7 @@ class CommentsController extends \VuFind\Controller\AbstractBase
         if (!$user) {
             $session = new SessionContainer(
                 'inappropriateComments',
-                $this->serviceLocator->get(\Zend\Session\SessionManager::class)
+                $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
             );
             if (!isset($session->comments)) {
                 $session->comments = [];

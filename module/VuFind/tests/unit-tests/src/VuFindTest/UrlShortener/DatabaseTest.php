@@ -28,13 +28,13 @@
 namespace VuFindTest\UrlShortener;
 
 use Exception;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Driver\ConnectionInterface;
+use Laminas\Db\Adapter\Driver\DriverInterface;
+use Laminas\Db\ResultSet;
 use PHPUnit\Framework\TestCase;
 use VuFind\Db\Table\Shortlinks;
 use VuFind\UrlShortener\Database;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Adapter\Driver\ConnectionInterface;
-use Zend\Db\Adapter\Driver\DriverInterface;
-use Zend\Db\ResultSet;
 
 /**
  * "Database" URL shortener test.

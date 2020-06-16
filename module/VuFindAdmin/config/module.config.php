@@ -24,7 +24,7 @@ $config = [
     'router' => [
         'routes' => [
             'admin' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Admin',
                     'defaults' => [
@@ -35,7 +35,7 @@ $config = [
                 'may_terminate' => true,
                 'child_routes' => [
                     'disabled' => [
-                        'type' => 'Zend\Router\Http\Literal',
+                        'type' => 'Laminas\Router\Http\Literal',
                         'options' => [
                             'route'    => '/Disabled',
                             'defaults' => [
@@ -45,7 +45,7 @@ $config = [
                         ]
                     ],
                     'config' => [
-                        'type' => 'Zend\Router\Http\Segment',
+                        'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Config[/:action]',
                             'defaults' => [
@@ -55,7 +55,7 @@ $config = [
                         ]
                     ],
                     'maintenance' => [
-                        'type' => 'Zend\Router\Http\Segment',
+                        'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Maintenance[/:action]',
                             'defaults' => [
@@ -65,7 +65,7 @@ $config = [
                         ]
                     ],
                     'social' => [
-                        'type' => 'Zend\Router\Http\Segment',
+                        'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Social[/:action]',
                             'defaults' => [
@@ -75,7 +75,7 @@ $config = [
                         ]
                     ],
                     'tags' => [
-                        'type' => 'Zend\Router\Http\Segment',
+                        'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Tags[/:action]',
                             'defaults' => [
@@ -85,7 +85,7 @@ $config = [
                         ]
                     ],
                     'overdrive' => [
-                        'type' => 'Zend\Router\Http\Segment',
+                        'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
                             'route'    => '/Overdrive',
                             'defaults' => [

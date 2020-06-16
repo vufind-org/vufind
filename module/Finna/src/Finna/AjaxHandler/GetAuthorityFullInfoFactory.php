@@ -28,6 +28,7 @@
 namespace Finna\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for GetAuthorityFullInfo AJAX handler.
@@ -38,8 +39,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetAuthorityFullInfoFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetAuthorityFullInfoFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -74,10 +74,10 @@ class GetAuthorityFullInfoFactory
             $recommendManager->get('authorityrecommend'),
             $resultsManager,
             $tablePluginManager->get(\VuFind\Db\Table\Search::class),
-            new \Zend\Session\Container(
-                'Authority', $container->get(\Zend\Session\SessionManager::class)
+            new \Laminas\Session\Container(
+                'Authority', $container->get(\Laminas\Session\SessionManager::class)
             ),
-            $container->get(\Zend\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class)
         );
         return $result;
     }

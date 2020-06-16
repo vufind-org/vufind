@@ -3,11 +3,10 @@
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
   $this->headMeta()->appendName('robots', 'noindex,follow');
-  if (isset($this->overrideTitle)) {
-    $this->headTitle($this->overrideTitle);
-  } else {
-      $this->headTitle((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
-  }
+
+  $headTitle = $this->slot('head-title')
+        ->get((empty($lookfor) ? "{$this->transEsc('history_empty_search')}" : "{$lookfor}") . ' | ' . $this->translate('Search Results'));
+  $this->headTitle($headTitle);
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -30,12 +29,7 @@
   $combinedResults = $this->results;
 
   // Set up breadcrumbs:
-  if (isset($this->overrideTitle)) {
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
-  } else {
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Combined Search') . ': ' .
-      $this->escapeHtml($lookfor) . '</li>';
-  }
+  $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
 
   // Enable cart if appropriate:
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();

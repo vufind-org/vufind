@@ -44,7 +44,7 @@ namespace Finna\OrganisationInfo;
  */
 class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -53,7 +53,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Organisation configuration.
      *
-     * @var Zend\Config\Config
+     * @var Laminas\Config\Config
      */
     protected $config = null;
 
@@ -67,7 +67,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * View Renderer
      *
-     * @var \Zend\View\Renderer\PhpRenderer
+     * @var \Laminas\View\Renderer\PhpRenderer
      */
     protected $viewRenderer;
 
@@ -95,14 +95,14 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
     /**
      * Constructor.
      *
-     * @param \Zend\Config\Config             $config        Configuration
-     * @param \VuFind\Cache\Manager           $cacheManager  Cache manager
-     * @param \Zend\View\Renderer\PhpRenderer $viewRenderer  View renderer
-     * @param \VuFind\Date\Converter          $dateConverter Date converter
+     * @param \Laminas\Config\Config             $config        Configuration
+     * @param \VuFind\Cache\Manager              $cacheManager  Cache manager
+     * @param \Laminas\View\Renderer\PhpRenderer $viewRenderer  View renderer
+     * @param \VuFind\Date\Converter             $dateConverter Date converter
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         \VuFind\Cache\Manager $cacheManager,
-        \Zend\View\Renderer\PhpRenderer $viewRenderer,
+        \Laminas\View\Renderer\PhpRenderer $viewRenderer,
         \VuFind\Date\Converter $dateConverter
     ) {
         $this->config = $config;
@@ -641,7 +641,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         }
         if (!$response) {
             $client = $this->httpService->createClient(
-                $url, \Zend\Http\Request::METHOD_GET, 10
+                $url, \Laminas\Http\Request::METHOD_GET, 10
             );
             $result = $client->send();
             if ($result->isSuccess()) {

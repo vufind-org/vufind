@@ -27,7 +27,7 @@
  */
 namespace Finna\View\Helper\Root;
 
-use Zend\Stdlib\Parameters;
+use Laminas\Stdlib\Parameters;
 
 /**
  * View helper for embedding a user list.
@@ -38,7 +38,7 @@ use Zend\Stdlib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class UserListEmbed extends \Zend\View\Helper\AbstractHelper
+class UserListEmbed extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Favorites results
@@ -64,7 +64,7 @@ class UserListEmbed extends \Zend\View\Helper\AbstractHelper
     /**
      * View model
      *
-     * @var \Zend\View\Model\ViewModel
+     * @var \Laminas\View\Model\ViewModel
      */
     protected $viewModel;
 
@@ -73,12 +73,12 @@ class UserListEmbed extends \Zend\View\Helper\AbstractHelper
      *
      * @param \VuFind\Search\Favorites\Results $results   Results
      * @param \VuFind\Db\Table\UserList        $listTable UserList table
-     * @param \Zend\View\Model\ViewModel       $viewModel View model
+     * @param \Laminas\View\Model\ViewModel    $viewModel View model
      */
     public function __construct(
         \VuFind\Search\Favorites\Results $results,
         \VuFind\Db\Table\UserList $listTable,
-        \Zend\View\Model\ViewModel $viewModel
+        \Laminas\View\Model\ViewModel $viewModel
     ) {
         $this->results = $results;
         $this->listTable = $listTable;

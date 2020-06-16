@@ -45,7 +45,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
      *
      * An empty response with HTTP code 200 is returned
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function onlinePaymentNotifyAction()
     {

@@ -29,7 +29,7 @@
 namespace Finna\Related;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Work Expressions related record module (and subclasses).

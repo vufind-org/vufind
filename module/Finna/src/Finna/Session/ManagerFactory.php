@@ -60,7 +60,7 @@ class ManagerFactory extends \VuFind\Session\ManagerFactory
         array $options = null
     ) {
         $sessionManager = parent::__invoke($container, $requestedName, $options);
-        $storage = new \Zend\Session\Container('SessionState', $sessionManager);
+        $storage = new \Laminas\Session\Container('SessionState', $sessionManager);
         if (empty($storage->sessionStartTime)) {
             $storage->sessionStartTime = time();
         }

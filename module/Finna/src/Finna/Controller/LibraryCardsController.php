@@ -93,7 +93,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         $view = parent::editCardAction();
 
-        if (!($view instanceof \Zend\View\Model\ViewModel)) {
+        if (!($view instanceof \Laminas\View\Model\ViewModel)) {
             return $view;
         }
 
@@ -345,7 +345,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
     {
         // Verify hash
         $sessionManager = $this->serviceLocator->get(\VuFind\SessionManager::class);
-        $session = new \Zend\Session\Container('registerPatron', $sessionManager);
+        $session = new \Laminas\Session\Container('registerPatron', $sessionManager);
         $hash = $this->params()->fromQuery(
             'hash',
             $this->params()->fromPost('hash', '')
@@ -490,7 +490,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
     {
         // Verify hash
         $sessionManager = $this->serviceLocator->get(\VuFind\SessionManager::class);
-        $session = new \Zend\Session\Container('registerPatron', $sessionManager);
+        $session = new \Laminas\Session\Container('registerPatron', $sessionManager);
         $hash = $this->params()->fromQuery(
             'hash',
             $this->params()->fromPost('hash', '')

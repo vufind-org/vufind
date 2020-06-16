@@ -29,9 +29,9 @@
 namespace Finna\ILS\Driver;
 
 use Finna\ILS\SIP2;
+use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager/VoyagerRestful Common Trait

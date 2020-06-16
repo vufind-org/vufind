@@ -31,9 +31,9 @@ namespace Finna\I18n\Translator;
 
 /**
  * Lightweight translator aware marker interface (used as an alternative to
- * \Zend\I18n\Translator\TranslatorAwareInterface, which requires an excessive
+ * \Laminas\I18n\Translator\TranslatorAwareInterface, which requires an excessive
  * number of methods to be implemented).  If we switch to PHP 5.4 traits in the
- * future, we can eliminate this interface in favor of the default Zend version.
+ * future, we can eliminate this interface in favor of the default Laminas version.
  *
  * @category VuFind
  * @package  Translator

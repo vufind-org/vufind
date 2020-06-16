@@ -13,9 +13,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Mail\Address;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
-use Zend\Mail\Address;
 
 /**
  * Controller for configurable forms (feedback etc).
@@ -32,7 +32,7 @@ class FeedbackController extends AbstractBase
     /**
      * Display Feedback home form.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -55,7 +55,12 @@ class FeedbackController extends AbstractBase
         $user = $this->getUser();
 
         $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
-        $form->setFormId($formId);
+        $params = [];
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')
+        ) {
+            $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        $form->setFormId($formId, $params);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");

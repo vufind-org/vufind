@@ -27,9 +27,11 @@
  */
 namespace Finna\View\Helper\Root;
 
-use VuFind\Search\Results\PluginManager;
+use Laminas\Session\SessionManager;
+use Laminas\View\Helper\Url;
+use VuFind\Db\Table\PluginManager as TableManager;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchTabsHelper;
-use Zend\View\Helper\Url;
 
 /**
  * "Search tabs" view helper
@@ -45,7 +47,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     /**
      * Database manager
      *
-     * @var PluginManager
+     * @var TableManager
      */
     protected $table;
 
@@ -70,11 +72,11 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param Url              $url     URL helper
      * @param SearchTabsHelper $helper  Search tabs helper
      * @param SessionManager   $session Session manager
-     * @param PluginManager    $table   Database manager
+     * @param TableManager     $table   Database manager
      */
-    public function __construct(PluginManager $results, Url $url,
-        SearchTabsHelper $helper, \Zend\Session\SessionManager $session,
-        \VuFind\Db\Table\PluginManager $table
+    public function __construct(ResultsManager $results, Url $url,
+        SearchTabsHelper $helper, SessionManager $session,
+        TableManager $table
     ) {
         parent::__construct($results, $url, $helper);
         $this->session = $session;

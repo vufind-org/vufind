@@ -27,7 +27,7 @@
  */
 namespace FinnaConsole;
 
-use Zend\Console\Adapter\AdapterInterface as Console;
+use Laminas\Console\Adapter\AdapterInterface as Console;
 
 /**
  * Module for storing local overrides for VuFindConsole.
@@ -38,8 +38,8 @@ use Zend\Console\Adapter\AdapterInterface as Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterface,
-    \Zend\ModuleManager\Feature\ConsoleBannerProviderInterface
+class Module implements \Laminas\ModuleManager\Feature\ConsoleUsageProviderInterface,
+    \Laminas\ModuleManager\Feature\ConsoleBannerProviderInterface
 {
     /**
      * Get module configuration
@@ -59,7 +59,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],
@@ -73,7 +73,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
      * The banner is shown in the console window, when the user supplies invalid
      * command-line parameters or invokes the application with no parameters.
      *
-     * The method is called with active Zend\Console\Adapter\AdapterInterface that
+     * The method is called with active Laminas\Console\Adapter\AdapterInterface that
      * can be used to directly access Console and send output.
      *
      * @param Console $console Console adapter

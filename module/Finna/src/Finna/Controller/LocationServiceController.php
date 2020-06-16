@@ -64,7 +64,7 @@ class LocationServiceController extends \VuFind\Controller\AbstractBase
         $locationService = $this->serviceLocator
             ->get(\Finna\LocationService\LocationService::class);
         $language = $this->serviceLocator
-            ->get(\Zend\Mvc\I18n\Translator::class)->getLocale();
+            ->get(\Laminas\Mvc\I18n\Translator::class)->getLocale();
 
         $config = $locationService->getConfig(
             $source, $title, $callnumber, $collection, $location, $language

@@ -29,13 +29,13 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Db\Table\CommentsRecord;
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Controller\Plugin\Recaptcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Comments;
 use VuFind\Db\Table\Record;
 use VuFind\Db\Table\Resource;
 use VuFind\Search\SearchRunner;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler to comment on a record.

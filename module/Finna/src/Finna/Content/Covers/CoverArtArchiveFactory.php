@@ -28,6 +28,7 @@
 namespace Finna\Content\Covers;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * BrowZine cover loader factory
@@ -38,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class CoverArtArchiveFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class CoverArtArchiveFactory implements FactoryInterface
 {
     /**
      * Create an object

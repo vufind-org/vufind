@@ -27,10 +27,10 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\UserList;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler for editing a list.
@@ -119,7 +119,7 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
             : $this->userList->getExisting($listParams['id']);
 
         $finalId = $list->updateFromRequest(
-            $this->user, new \Zend\Stdlib\Parameters($listParams)
+            $this->user, new \Laminas\Stdlib\Parameters($listParams)
         );
 
         $listParams['id'] = $finalId;

@@ -41,7 +41,7 @@ trait BrowseActionTrait
     /**
      * Return browse action from the request.
      *
-     * @param \Zend\Http\Request $request Request
+     * @param \Laminas\Http\Request $request Request
      *
      * @return null|string Browse action or null if request is not a browse action
      */

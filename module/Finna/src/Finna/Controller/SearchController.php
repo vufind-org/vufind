@@ -203,7 +203,7 @@ class SearchController extends \VuFind\Controller\SearchController
     /**
      * StreetSearch action.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function streetSearchAction()
     {
@@ -213,7 +213,7 @@ class SearchController extends \VuFind\Controller\SearchController
     /**
      * StreetSearch action alias.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function streetAction()
     {
@@ -282,7 +282,7 @@ class SearchController extends \VuFind\Controller\SearchController
 
         $view = $this->forwardTo('Search', 'Results');
 
-        $view->overrideTitle = "browse_extended_$type";
+        $view->plugin('slot')->set('head-title', "browse_extended_$type");
         $type = strtolower($type);
         $view->browse = $type;
         $view->defaultBrowseHandler = $config['type'];

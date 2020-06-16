@@ -39,7 +39,7 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class StreetSearch extends \Zend\View\Helper\AbstractHelper
+class StreetSearch extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * This component outputs code for Finna Street

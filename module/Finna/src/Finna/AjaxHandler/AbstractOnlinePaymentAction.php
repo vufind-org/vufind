@@ -30,10 +30,10 @@ namespace Finna\AjaxHandler;
 
 use Finna\Db\Table\Transaction as TransactionTable;
 use Finna\OnlinePayment\OnlinePayment;
+use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Table\UserCard as UserCardTable;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Session\Container as SessionContainer;
 
 /**
  * Abstract base class for online payment handlers.
@@ -46,7 +46,7 @@ use Zend\Session\Container as SessionContainer;
  * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractBase
-    implements \Zend\Log\LoggerAwareInterface
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -110,13 +110,13 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
     /**
      * Process payment request.
      *
-     * @param Zend\Http\Request $request Request
+     * @param Laminas\Http\Request $request Request
      *
      * @return array Associative array with keys
      *   - 'success' (boolean)
      *   - 'msg' (string) error message if payment could not be processed.
      */
-    protected function processPayment(\Zend\Http\Request $request)
+    protected function processPayment(\Laminas\Http\Request $request)
     {
         $params = array_merge(
             $request->getQuery()->toArray(),
@@ -182,7 +182,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
                 $userCard['cat_username'], $userCard->getCatPassword()
             );
         } catch (\Exception $e) {
-            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
+            $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
         }
 
         // Process the payment request regardless of whether patron login succeeds to
@@ -213,7 +213,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
                 $fines = $this->ils->getMyFines($patron);
                 $finesAmount = $this->ils->getOnlinePayableAmount($patron, $fines);
             } catch (\Exception $e) {
-                $this->logger->logException($e, new \Zend\Stdlib\Parameters());
+                $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
                 return ['success' => false];
             }
 
@@ -250,7 +250,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
                 'Payment registration error (patron ' . $patron['id'] . '): '
                 . $e->getMessage()
             );
-            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
+            $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
 
             $result = $this->transactionTable->setTransactionRegistrationFailed(
                 $tId, $e->getMessage()

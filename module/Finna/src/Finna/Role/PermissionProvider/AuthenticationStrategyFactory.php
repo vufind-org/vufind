@@ -42,7 +42,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class AuthenticationStrategyFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -70,9 +70,9 @@ class AuthenticationStrategyFactory
             $container->get(\Finna\Auth\Manager::class),
             $container->get(\Finna\ILS\Connection::class),
             $container->get(\Finna\Auth\ILSAuthenticator::class),
-            new \Zend\Session\Container(
+            new \Laminas\Session\Container(
                 'AuthenticationStrategy',
-                $container->get(\Zend\Session\SessionManager::class)
+                $container->get(\Laminas\Session\SessionManager::class)
             )
         );
     }

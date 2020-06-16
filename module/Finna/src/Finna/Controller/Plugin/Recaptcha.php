@@ -28,8 +28,8 @@
  */
 namespace Finna\Controller\Plugin;
 
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Session\SessionManager;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Session\SessionManager;
 
 /**
  * Recaptcha controller plugin.
@@ -81,11 +81,11 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
     /**
      * Recaptcha constructor.
      *
-     * @param \ZendService\ReCaptcha\ReCaptcha $r              ReCaptcha object
-     * @param \VuFind\Config                   $config         Configuration
-     * @param \VuFind\Auth\Manager             $authManager    Authentication Manager
-     * @param SessionManager                   $sessionManager Session Manager
-     * @param TranslatorInterface              $translator     Translator
+     * @param \Laminas\ReCaptcha\ReCaptcha $r              ReCaptcha object
+     * @param \VuFind\Config               $config         Configuration
+     * @param \VuFind\Auth\Manager         $authManager    Authentication Manager
+     * @param SessionManager               $sessionManager Session Manager
+     * @param TranslatorInterface          $translator     Translator
      *
      * @return Recaptcha
      */
@@ -150,7 +150,7 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
         }
 
         // Session checks
-        $storage = new \Zend\Session\Container(
+        $storage = new \Laminas\Session\Container(
             'SessionState', $this->sessionManager
         );
         if (empty($storage->sessionStartTime)) {

@@ -28,7 +28,7 @@
 namespace Finna\Search\Solr;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Authority recommendations helper factory.

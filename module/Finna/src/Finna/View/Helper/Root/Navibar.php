@@ -27,7 +27,8 @@
  */
 namespace Finna\View\Helper\Root;
 
-use Zend\Http\Request;
+use Laminas\Http\Request;
+use Laminas\Router\Http\TreeRouteStack;
 
 /**
  * Navibar view helper
@@ -38,7 +39,7 @@ use Zend\Http\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Navibar extends \Zend\View\Helper\AbstractHelper
+class Navibar extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * View helpers
@@ -50,14 +51,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     /**
      * Menu configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Organisation info
      *
-     * @var Finna\OrganisationInfo\OrganisationInfo
+     * @var \Finna\OrganisationInfo\OrganisationInfo
      */
     protected $organisationInfo;
 
@@ -78,20 +79,20 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     /**
      * Router object
      *
-     * @var Zend\Router\Http\TreeRouteStack
+     * @var TreeRouteStack
      */
     protected $router;
 
     /**
      * Constructor
      *
-     * @param Zend\Config\Config              $config           Menu configuration
-     * @param OrganisationInfo                $organisationInfo Organisation info
-     * @param Zend\Router\Http\TreeRouteStack $router           Route helper
+     * @param \Laminas\Config\Config $config           Menu configuration
+     * @param OrganisationInfo       $organisationInfo Organisation info
+     * @param TreeRouteStack         $router           Route helper
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         \Finna\OrganisationInfo\OrganisationInfo $organisationInfo,
-        \Zend\Router\Http\TreeRouteStack $router
+        TreeRouteStack $router
     ) {
         $this->config = $config;
         $this->organisationInfo = $organisationInfo;
@@ -519,7 +520,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      *
      * @param string $id Helper id
      *
-     * @return \Zend\View\Helper
+     * @return \Laminas\View\Helper
      */
     protected function getViewHelper($id)
     {

@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2018.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,7 @@ $config = [
     'router' => [
         'routes' => [
             'comments-inappropriate' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Comments/Inappropriate/[:id]',
                     'constraints' => [
@@ -45,7 +45,7 @@ $config = [
                 ]
             ],
             'feed-content-page' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/FeedContent[/:page][/:element]',
                     'constraints' => [
@@ -58,7 +58,7 @@ $config = [
                 ],
             ],
             'list-save' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/List/[:id]/save',
                     'constraints' => [
@@ -72,7 +72,7 @@ $config = [
                 ]
             ],
             'list-page' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/List[/:lid]',
                     'constraints' => [
@@ -85,7 +85,7 @@ $config = [
                 ],
             ],
             'myresearch-changemessagingsettings' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/ChangeMessagingSettings',
                     'defaults' => [
@@ -95,7 +95,7 @@ $config = [
                 ],
             ],
             'myresearch-changeprofileaddress' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/ChangeProfileAddress',
                     'defaults' => [
@@ -105,7 +105,7 @@ $config = [
                 ],
             ],
             'myresearch-unsubscribe' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/Unsubscribe',
                     'defaults' => [
@@ -115,7 +115,7 @@ $config = [
                 ],
             ],
             'myresearch-export' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/Export',
                     'defaults' => [
@@ -125,7 +125,7 @@ $config = [
                 ],
             ],
             'myresearch-import' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/MyResearch/Import',
                     'defaults' => [
@@ -135,7 +135,7 @@ $config = [
                 ],
             ],
             'record-feedback' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Record/[:id]/Feedback',
                     'constraints' => [
@@ -149,7 +149,7 @@ $config = [
                 ]
             ],
             'record-preview' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/RecordPreview',
                     'defaults' => [
@@ -159,7 +159,7 @@ $config = [
                 ],
             ],
             'solrrecord-feedback' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Record/[:id]/Feedback',
                     'constraints' => [
@@ -173,7 +173,7 @@ $config = [
                 ]
             ],
             'solrauthrecord-feedback' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/AuthorityRecord/[:id]/Feedback',
                     'constraints' => [
@@ -191,7 +191,7 @@ $config = [
     ],
     'route_manager' => [
         'aliases' => [
-            'Zend\Mvc\Router\Http\Segment' => 'Zend\Router\Http\Segment'
+            'Laminas\Mvc\Router\Http\Segment' => 'Laminas\Router\Http\Segment'
         ]
     ],
     'controllers' => [
@@ -291,7 +291,6 @@ $config = [
             'Finna\Feed\Feed' => 'Finna\Feed\FeedFactory',
             'Finna\Form\Form' => 'Finna\Form\FormFactory',
             'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
-            'Finna\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
             'Finna\LocationService\LocationService' => 'Finna\LocationService\LocationServiceFactory',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
             'Finna\OAI\Server' => 'VuFind\OAI\ServerFactory',
@@ -304,14 +303,15 @@ $config = [
             'Finna\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'Finna\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'Finna\Search\Solr\AuthorityHelper' => 'Finna\Search\Solr\AuthorityHelperFactory',
-            'Finna\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'Finna\Search\Solr\HierarchicalFacetHelper' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\Favorites\FavoritesService' => 'Finna\Favorites\FavoritesServiceFactory',
 
             'FinnaSearch\Service' => 'VuFind\Service\SearchServiceFactory',
 
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
+            'VuFindHttp\HttpService' => 'Finna\Service\HttpServiceFactory',
 
-            'Zend\Session\SessionManager' => 'Finna\Session\ManagerFactory',
+            'Laminas\Session\SessionManager' => 'Finna\Session\ManagerFactory',
         ],
         'aliases' => [
             'VuFind\Auth\Manager' => 'Finna\Auth\Manager',
@@ -324,7 +324,6 @@ $config = [
             'VuFind\Favorites\FavoritesService' => 'Finna\Favorites\FavoritesService',
             'VuFind\Form\Form' => 'Finna\Form\Form',
             'VuFind\ILS\Connection' => 'Finna\ILS\Connection',
-            'VuFind\ILS\Logic\Holds' => 'Finna\ILS\Logic\Holds',
             'VuFind\Mailer\Mailer' => 'Finna\Mailer\Mailer',
             'VuFind\OAI\Server' => 'Finna\OAI\Server',
             'VuFind\Record\Loader' => 'Finna\Record\Loader',
@@ -338,7 +337,7 @@ $config = [
         ]
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
-    // unrelated to specific Zend Framework 2 components).
+    // unrelated to specific framework components).
     'vufind' => [
         'plugin_managers' => [
             'ajaxhandler' => [
@@ -754,8 +753,8 @@ $config = [
             'related' => [
                 'factories' => [
                     'Finna\Related\RecordDriverRelated' => 'Finna\Related\RecordDriverRelatedFactory',
-                    'Finna\Related\Nothing' => 'Zend\ServiceManager\Factory\InvokableFactory',
-                    'Finna\Related\SimilarDeferred' => 'Zend\ServiceManager\Factory\InvokableFactory',
+                    'Finna\Related\Nothing' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+                    'Finna\Related\SimilarDeferred' => 'Laminas\ServiceManager\Factory\InvokableFactory',
                     'Finna\Related\WorkExpressions' => 'Finna\Related\WorkExpressionsFactory',
                 ],
                 'aliases' =>  [

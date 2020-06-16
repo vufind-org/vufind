@@ -27,6 +27,8 @@
  */
 namespace Finna\View\Helper\Root;
 
+use Laminas\Http\PhpEnvironment\Request;
+
 /**
  * Authentication view helper
  *
@@ -41,14 +43,12 @@ class Auth extends \VuFind\View\Helper\Root\Auth
     /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager              $manager          Authentication
-     * manager
-     * @param \VuFind\Auth\ILSAuthenticator     $ilsAuthenticator ILS Authenticator
-     * @param \Zend\Http\PhpEnvironment\Request $request          Request
+     * @param \VuFind\Auth\Manager          $manager          Authentication manager
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
+     * @param Request                       $request          Request
      */
     public function __construct(\VuFind\Auth\Manager $manager,
-        \VuFind\Auth\ILSAuthenticator $ilsAuthenticator,
-        \Zend\Http\PhpEnvironment\Request $request
+        \VuFind\Auth\ILSAuthenticator $ilsAuthenticator, Request $request
     ) {
         parent::__construct($manager, $ilsAuthenticator);
         $this->request = $request;

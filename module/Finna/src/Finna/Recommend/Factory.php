@@ -29,7 +29,7 @@
  */
 namespace Finna\Recommend;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Recommendation Module Factory Class

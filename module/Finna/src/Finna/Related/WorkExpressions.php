@@ -65,7 +65,7 @@ class WorkExpressions implements \VuFind\Related\RelatedInterface
     /**
      * Search configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $searchConfig;
 
@@ -86,11 +86,11 @@ class WorkExpressions implements \VuFind\Related\RelatedInterface
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Service $search       Search service
-     * @param \Zend\Config\Config   $searchConfig Search configuration
+     * @param \VuFindSearch\Service  $search       Search service
+     * @param \Laminas\Config\Config $searchConfig Search configuration
      */
     public function __construct(\VuFindSearch\Service $search,
-        \Zend\Config\Config $searchConfig
+        \Laminas\Config\Config $searchConfig
     ) {
         $this->searchService = $search;
         $this->searchConfig = $searchConfig;

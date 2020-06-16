@@ -40,7 +40,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class TotalIndexed extends \Zend\View\Helper\AbstractHelper
+class TotalIndexed extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Cache manager

@@ -53,7 +53,7 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Blender configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $blenderConfig;
 
@@ -73,7 +73,7 @@ class Params extends \Finna\Search\Solr\Params
      * @param AuthorityHelper              $authorityHelper Authority helper
      * @param \VuFind\Date\Converter       $dateConverter   Date converter
      * @param \VuFind\Search\Base\Params   $secondaryParams Secondary search params
-     * @param \Zend\Config\Config          $blenderConfig   Blender configuration
+     * @param \Laminas\Config\Config       $blenderConfig   Blender configuration
      * @param array                        $mappings        Blender mappings
      */
     public function __construct(\VuFind\Search\Base\Options $options,
@@ -82,7 +82,7 @@ class Params extends \Finna\Search\Solr\Params
         AuthorityHelper $authorityHelper,
         \VuFind\Date\Converter $dateConverter,
         \VuFind\Search\Base\Params $secondaryParams,
-        \Zend\Config\Config $blenderConfig,
+        \Laminas\Config\Config $blenderConfig,
         $mappings
     ) {
         parent::__construct(
@@ -97,7 +97,7 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -127,10 +127,10 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Translate a request for the secondary backend
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return \Zend\StdLib\Parameters
+     * @return \Laminas\StdLib\Parameters
      */
     protected function translateRequest($request)
     {

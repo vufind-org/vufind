@@ -27,13 +27,13 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds as HoldLogic;
 use VuFind\Record\Loader;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * AJAX handler for fetching holdings details

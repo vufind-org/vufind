@@ -38,8 +38,8 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadScript extends \Zend\View\Helper\HeadScript
-    implements \Zend\Log\LoggerAwareInterface
+class HeadScript extends \Laminas\View\Helper\HeadScript
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;

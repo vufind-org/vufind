@@ -29,7 +29,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 
 /**
  * Controller for mostly static pages that doesn't fall under any particular
@@ -62,39 +62,15 @@ class ContentController extends AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
-        $language = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class)
-            ->getLocale();
-        $defaultLanguage = $this->getConfig()->Site->language;
-
-        // Try to find a template using
-        // 1.) Current language suffix
-        // 2.) Default language suffix
-        // 3.) No language suffix
-        $templates = [
-            "{$page}_$language",
-            "{$page}_$defaultLanguage",
-            $page,
-        ];
-
         $pathPrefix = "templates/content/";
+        $pageLocator = $this->serviceLocator
+            ->get(\VuFind\Content\PageLocator::class);
+        $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
 
-        foreach ($templates as $template) {
-            foreach ($this->types as $type) {
-                $filename = "$pathPrefix$template.$type";
-                $path = $themeInfo->findContainingTheme($filename, true);
-                if (null != $path) {
-                    $page = $template;
-                    $renderer = $type;
-                    break 2;
-                }
-            }
-        }
-
-        $method = isset($renderer) ? 'getViewFor' . ucwords($renderer) : false;
+        $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 
         return $method && is_callable([$this, $method])
-            ? $this->$method($page, $path)
+            ? $this->$method($data['page'], $data['path'])
             : $this->notFoundAction($this->getResponse());
     }
 
@@ -107,7 +83,7 @@ class ContentController extends AbstractBase
     {
         $response   = $this->response;
 
-        if ($response instanceof \Zend\Http\Response) {
+        if ($response instanceof \Laminas\Http\Response) {
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);

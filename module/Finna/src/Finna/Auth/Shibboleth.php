@@ -48,7 +48,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -131,7 +131,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         if (isset($shib->logout_attribute)) {
             $url = $this->getServerParam($request, $shib->logout_attribute);
             if ($url) {
-                $session = new \Zend\Session\Container(
+                $session = new \Laminas\Session\Container(
                     'Shibboleth', $this->sessionManager
                 );
                 $session['logoutUrl'] = $url;
@@ -171,7 +171,8 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
     public function logout($url)
     {
         // Check for a dynamic logout url:
-        $session = new \Zend\Session\Container('Shibboleth', $this->sessionManager);
+        $session
+            = new \Laminas\Session\Container('Shibboleth', $this->sessionManager);
         if (!empty($session['logoutUrl'])) {
             $url = $session['logoutUrl'] . '?return=' . urlencode($url);
             return $url;
@@ -184,9 +185,9 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
      * Get a server parameter taking into account any environment variables
      * redirected by Apache mod_rewrite.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
-     * @param string                            $param   Parameter name
+     * @param string                               $param   Parameter name
      *
      * @return mixed
      */

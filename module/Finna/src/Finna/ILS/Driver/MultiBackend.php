@@ -585,7 +585,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
                     return $config;
                 }
             }
-        } catch (\Zend\Config\Exception\RuntimeException $e) {
+        } catch (\Laminas\Config\Exception\RuntimeException $e) {
             // Fall through
         }
         return parent::getDriverConfig($source);

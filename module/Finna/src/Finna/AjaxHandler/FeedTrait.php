@@ -29,8 +29,8 @@
  */
 namespace Finna\AjaxHandler;
 
-use Zend\Config\Config;
-use Zend\View\Renderer\RendererInterface;
+use Laminas\Config\Config;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * Feed support trait

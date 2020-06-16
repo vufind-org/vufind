@@ -28,8 +28,8 @@
  */
 namespace Finna\Db\Row;
 
-use Zend\Crypt\BlockCipher;
-use Zend\Crypt\Symmetric\Openssl;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 
 /**
  * Row Definition for user_card
@@ -60,18 +60,18 @@ class UserCard extends \VuFind\Db\Row\UserCard
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
     /**
      * Configuration setter
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    public function setConfig(\Zend\Config\Config $config)
+    public function setConfig(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }

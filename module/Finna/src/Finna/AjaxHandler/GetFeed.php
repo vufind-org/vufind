@@ -30,11 +30,11 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Feed\Feed as FeedService;
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Url;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\Mvc\Controller\Plugin\Url;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * GetFeed AJAX handler

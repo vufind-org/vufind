@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Auth\ILS;
 use VuFind\Db\Table\User;
-use Zend\Stdlib\Parameters;
 
 /**
  * ILS authentication test class.
@@ -105,10 +105,10 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Zend\Config\Config([])));
+            ->will($this->returnValue(new \Laminas\Config\Config([])));
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
-                new \Zend\Config\Config(['driver' => 'Sample']),
+                new \Laminas\Config\Config(['driver' => 'Sample']),
                 $driverManager, $mockConfigReader
             ),
             $authenticator
@@ -136,15 +136,15 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
@@ -235,7 +235,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Zend\Config\Config($config));
+        $auth->setConfig(new \Laminas\Config\Config($config));
         $auth->authenticate($this->getLoginRequest());
     }
 
@@ -344,7 +344,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         $patron = ['cat_username' => 'testuser', 'cat_id' => '1234'];
         $auth = $this->getAuth($driver, $patron);
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Zend\Config\Config($config));
+        $auth->setConfig(new \Laminas\Config\Config($config));
         $user = $auth->updatePassword($request);
         $this->assertEquals('1234', $user->username);
         $this->assertEquals('newpass', $user->getCatPassword());

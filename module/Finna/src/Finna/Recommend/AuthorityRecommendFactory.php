@@ -40,7 +40,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class AuthorityRecommendFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -67,8 +67,8 @@ class AuthorityRecommendFactory
         return new $requestedName(
             $container->get(ResultsManager::class),
             $container->get(\Finna\Search\Solr\AuthorityHelper::class),
-            new \Zend\Session\Container(
-                'Authority', $container->get(\Zend\Session\SessionManager::class)
+            new \Laminas\Session\Container(
+                'Authority', $container->get(\Laminas\Session\SessionManager::class)
             ),
             $container->get(\VuFind\Cookie\CookieManager::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config')

@@ -65,7 +65,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->container->set('VuFind\Auth\Manager', $authManager);
 
         // Set up capability configuration:
-        $cfg = new \Zend\Config\Config(
+        $cfg = new \Laminas\Config\Config(
             ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']]
         );
         $capabilities = new AccountCapabilities($cfg, $authManager);

@@ -60,7 +60,7 @@ class UserCardFactory extends \VuFind\Db\Row\RowGatewayFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $prototype = new $requestedName(
             $adapter, ...($options !== null ? $options : [])
         );

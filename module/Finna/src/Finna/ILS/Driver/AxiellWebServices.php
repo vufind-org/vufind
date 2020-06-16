@@ -32,12 +32,12 @@
 namespace Finna\ILS\Driver;
 
 use DOMDocument;
+use Laminas\Db\Sql\Ddl\Column\Boolean;
 use SoapClient;
 use VuFind\Config\Locator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
-use Zend\Db\Sql\Ddl\Column\Boolean;
 
 /**
  * Axiell Web Services ILS Driver
@@ -53,7 +53,7 @@ use Zend\Db\Sql\Ddl\Column\Boolean;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
-    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface,
+    implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -699,7 +699,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      *
      * This is responsible for canceling holds.
      *
-     * @param string $cancelDetails The request details
+     * @param array $cancelDetails The request details
      *
      * @throws ILSException
      *

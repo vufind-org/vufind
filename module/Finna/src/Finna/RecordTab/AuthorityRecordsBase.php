@@ -68,11 +68,11 @@ class AuthorityRecordsBase extends \VuFind\RecordTab\AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config                $config          Configuration
+     * @param \Laminas\Config\Config             $config          Configuration
      * @param \Finna\Search\Solr\AuthorityHelper $authorityHelper Authority helper
      */
     public function __construct(
-        \Zend\Config\Config $config,
+        \Laminas\Config\Config $config,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper
     ) {
         $this->authorityHelper = $authorityHelper;

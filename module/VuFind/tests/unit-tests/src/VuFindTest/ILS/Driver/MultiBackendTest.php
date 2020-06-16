@@ -29,8 +29,8 @@
  */
 namespace VuFindTest\ILS\Driver;
 
+use Laminas\Log\Writer\Mock;
 use VuFind\ILS\Driver\MultiBackend;
-use Zend\Log\Writer\Mock;
 
 /**
  * ILS driver test
@@ -80,15 +80,15 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testLogging()
     {
-        $logger = new \Zend\Log\Logger();
-        $writer = new \Zend\Log\Writer\Mock();
+        $logger = new \Laminas\Log\Logger();
+        $writer = new \Laminas\Log\Writer\Mock();
         $logger->addWriter($writer);
 
         $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
-                $this->throwException(new \Zend\Config\Exception\RuntimeException())
+                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
             );
         $driver = new MultiBackend(
             $mockPM, $this->getMockILSAuthenticator(), $this->getMockSM()
@@ -201,12 +201,12 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $val = $this->callMethod($driver, 'getDriverConfig', ['good']);
         $this->assertEquals($configData, $val);
 
-        $config = new \Zend\Config\Config($configData);
+        $config = new \Laminas\Config\Config($configData);
         $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
-                $this->throwException(new \Zend\Config\Exception\RuntimeException())
+                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
             );
         $driver = new MultiBackend(
             $mockPM, $this->getMockILSAuthenticator(), $this->getMockSM()
@@ -2308,7 +2308,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     protected function getPluginManager()
     {
         $configData = ['config' => 'values'];
-        $config = new \Zend\Config\Config($configData);
+        $config = new \Laminas\Config\Config($configData);
         $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
@@ -2368,7 +2368,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockDemoDriver($methods)
     {
-        $session = $this->getMockBuilder(\Zend\Session\Container::class)
+        $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setMethods($methods)

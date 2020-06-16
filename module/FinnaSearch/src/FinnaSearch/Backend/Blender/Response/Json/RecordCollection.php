@@ -47,7 +47,7 @@ class RecordCollection
     /**
      * Configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -68,8 +68,8 @@ class RecordCollection
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config   Configuration
-     * @param array               $mappings Mappings configuration
+     * @param \Laminas\Config\Config $config   Configuration
+     * @param array                  $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
     {

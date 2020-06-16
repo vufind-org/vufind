@@ -959,7 +959,7 @@ url             = https://www.myendnoteweb.com/EndNoteWeb.html
 ;port = 8000
 
 ; Default HTTP settings can be loaded here. These values will be passed to
-; the \Zend\Http\Client's setOptions method.
+; the \Laminas\Http\Client's setOptions method.
 [Http]
 ;sslcapath = "/etc/ssl/certs"
 sslcafile = "/etc/ssl/certs/ca-bundle.crt"
@@ -1387,11 +1387,11 @@ HMACkey = mySuperSecretValue
 ; VUFIND_CACHE_DIR (see httpd-vufind.conf). The default location is inside the
 ; local settings directory.
 [Cache]
-; Set time to live value for Zend caches (in seconds), 0 means maximum possible.
+; Set time to live value for caches (in seconds), 0 means maximum possible.
 ttl = 60
 ; Override umask for cache directories and files.
 ;umask = 022
-; Permissions for Zend-created cache directories and files, subject to umask
+; Permissions for framework-created cache directories and files, subject to umask
 ; Default dir_permission seems to be 0700.
 dir_permission = 0770
 ; Default file_permission seems to be 0600.

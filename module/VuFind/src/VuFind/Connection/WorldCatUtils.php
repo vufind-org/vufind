@@ -27,7 +27,7 @@
  */
 namespace VuFind\Connection;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * World Cat Utilities
@@ -40,21 +40,21 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
+class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * WorldCat configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * HTTP client
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $client;
 
@@ -75,15 +75,15 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Config|string     $config WorldCat configuration (either a full Config
-     * object, or a string containing the id setting).
-     * @param \Zend\Http\Client $client HTTP client
-     * @param bool              $silent Should we silently ignore HTTP failures?
-     * @param string            $ip     Current server IP address (optional, but
+     * @param Config|string        $config WorldCat configuration (either a full
+     * Config object, or a string containing the id setting).
+     * @param \Laminas\Http\Client $client HTTP client
+     * @param bool                 $silent Should we silently ignore HTTP failures?
+     * @param string               $ip     Current server IP address (optional, but
      * needed for xID token hashing
      */
-    public function __construct($config, \Zend\Http\Client $client, $silent = true,
-        $ip = null
+    public function __construct($config, \Laminas\Http\Client $client,
+        $silent = true, $ip = null
     ) {
         // Legacy compatibility -- prior to VuFind 2.4, this parameter was a string.
         if (!($config instanceof Config)) {

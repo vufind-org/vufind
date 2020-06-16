@@ -27,6 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Exception;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
@@ -74,7 +75,7 @@ class Folio extends AbstractAPI implements
     /**
      * Session cache
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
@@ -121,10 +122,11 @@ class Folio extends AbstractAPI implements
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
-     * @param \Zend\Http\Headers $req_headers Headers object
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
+     * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
      */
@@ -160,12 +162,12 @@ class Folio extends AbstractAPI implements
      *
      * Add X-Okapi headers and Content-Type to every request
      *
-     * @param \Zend\Http\Headers $headers the request headers
-     * @param object             $params  the parameters object
+     * @param \Laminas\Http\Headers $headers the request headers
+     * @param object                $params  the parameters object
      *
      * @return array
      */
-    public function preRequest(\Zend\Http\Headers $headers, $params)
+    public function preRequest(\Laminas\Http\Headers $headers, $params)
     {
         $headers->addHeaderLine('Accept', 'application/json');
         if (!$headers->has('Content-Type')) {
@@ -399,6 +401,22 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Check item location against list of configured locations
+     * where holds should be offered
+     *
+     * @param string $locationName locationName from getHolding
+     *
+     * @return bool
+     */
+    protected function isHoldable($locationName)
+    {
+        return !in_array(
+            $locationName,
+            (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
+        );
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -435,17 +453,21 @@ class Folio extends AbstractAPI implements
             $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
+            $notesFormatter = function ($note) {
+                return $note->note ?? '';
+            };
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $itemBody->items[$j]->id,
                     'holding_id' => $holding->id,
-                    'number' => count($items),
+                    'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
-                    'notes' => $item->notes ?? [],
+                    'is_holdable' => $this->isHoldable($locationName),
+                    'notes' => array_map($notesFormatter, $item->notes ?? []),
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
@@ -606,7 +628,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'username == "' . $patron['username'] . '"'];
+        $query = ['query' => 'id == "' . $patron['id'] . '"'];
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
@@ -669,7 +691,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyTransactions($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id']];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $response = $this->makeRequest("GET", '/circulation/loans', $query);
         $json = json_decode($response->getBody());
         if (count($json->loans) == 0) {
@@ -686,10 +708,74 @@ class Folio extends AbstractAPI implements
                 'id' => $this->getBibId($trans->item->instanceId),
                 'item_id' => $trans->item->id,
                 'barcode' => $trans->item->barcode,
+                'renew' => $trans->renewalCount ?? 0,
+                'renewable' => true,
                 'title' => $trans->item->title,
             ];
         }
         return $transactions;
+    }
+
+    /**
+     * Get FOLIO loan IDs for use in renewMyItems.
+     *
+     * @param array $transaction An single transaction
+     * array from getMyTransactions
+     *
+     * @return string The FOLIO loan ID for this loan
+     */
+    public function getRenewDetails($transaction)
+    {
+        return $transaction['item_id'];
+    }
+
+    /**
+     * Attempt to renew a list of items for a given patron.
+     *
+     * @param array $renewDetails An associative array with
+     * patron and details
+     *
+     * @return array $renewResult result of attempt to renew loans
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $renewalResults = ['details' => []];
+        foreach ($renewDetails['details'] as $loanId) {
+            $requestbody = [
+                'itemId' => $loanId,
+                'userId' => $renewDetails['patron']['id']
+            ];
+            $response = $this->makeRequest(
+                'POST', '/circulation/renew-by-id', json_encode($requestbody)
+            );
+            if ($response->isSuccess()) {
+                $json = json_decode($response->getBody());
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->dateConverter->convertToDisplayDate(
+                        "Y-m-d H:i", $json->dueDate
+                    ),
+                    'new_time' => $this->dateConverter->convertToDisplayTime(
+                        "Y-m-d H:i", $json->dueDate
+                    ),
+                    'item_id' => $json->itemId,
+                    'sysMessage' => $json->action
+                ];
+            } else {
+                try {
+                    $json = json_decode($response->getBody());
+                    $sysMessage = $json->errors[0]->message;
+                } catch (Exception $e) {
+                    $sysMessage = "Renewal Failed";
+                }
+                $renewal = [
+                    'success' => false,
+                    'sysMessage' => $sysMessage
+                ];
+            }
+            $renewalResults['details'][$loanId] = $renewal;
+        }
+        return $renewalResults;
     }
 
     /**
@@ -705,13 +791,14 @@ class Folio extends AbstractAPI implements
      */
     public function getPickupLocations($patron)
     {
-        $response = $this->makeRequest('GET', '/locations');
+        $query = ['query' => 'pickupLocation=true'];
+        $response = $this->makeRequest('GET', '/service-points', $query);
         $json = json_decode($response->getBody());
         $locations = [];
-        foreach ($json->locations as $location) {
+        foreach ($json->servicepoints as $servicepoint) {
             $locations[] = [
-                'locationID' => $location->id,
-                'locationDisplay' => $location->name
+                'locationID' => $servicepoint->id,
+                'locationDisplay' => $servicepoint->discoveryDisplayName
             ];
         }
         return $locations;
@@ -760,7 +847,8 @@ class Folio extends AbstractAPI implements
     public function getMyHolds($patron)
     {
         $query = [
-            'query' => 'requesterId == "' . $patron['id'] . '"'
+            'query' => '(requesterId == "' . $patron['id'] . '"  ' .
+            'and status == Open*)'
         ];
         $response = $this->makeRequest('GET', '/request-storage/requests', $query);
         $json = json_decode($response->getBody());
@@ -771,11 +859,13 @@ class Folio extends AbstractAPI implements
             $expireDate = isset($hold->requestExpirationDate)
                 ? date_create($hold->requestExpirationDate) : null;
             $holds[] = [
-                'type' => 'Hold',
+                'type' => $hold->requestType,
                 'create' => date_format($requestDate, "j M Y"),
                 'expire' => isset($expireDate)
                     ? date_format($expireDate, "j M Y") : "",
                 'id' => $this->getBibId(null, null, $hold->itemId),
+                'item_id' => $hold->itemId,
+                'reqnum' => $hold->id,
                 'title' => $hold->item->title
             ];
         }
@@ -795,6 +885,7 @@ class Folio extends AbstractAPI implements
      */
     public function placeHold($holdDetails)
     {
+        $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         try {
             $requiredBy = date_create_from_format(
                 'm-d-Y',
@@ -803,33 +894,105 @@ class Folio extends AbstractAPI implements
         } catch (Exception $e) {
             throw new ILSException('hold_date_invalid');
         }
-        // Get status to separate Holds (on checked out items) and Pages on a
-        $status = $this->getStatus($holdDetails['item_id']);
         $requestBody = [
-            'requestType' => $item->status->name == 'Available' ? 'Page' : 'Hold',
-            'requestDate' => date('c'),
-            'requesterId' => $holdDetails['patron']['id'],
-            'requester' => [
-                'firstName' => $holdDetails['patron']['firstname'] ?? '',
-                'lastName' => $holdDetails['patron']['lastname'] ?? ''
-            ],
             'itemId' => $holdDetails['item_id'],
+            'requestType' => $holdDetails['status'] == 'Available'
+                ? 'Page' : $default_request,
+            'requesterId' => $holdDetails['patron']['id'],
+            'requestDate' => date('c'),
             'fulfilmentPreference' => 'Hold Shelf',
             'requestExpirationDate' => date_format($requiredBy, 'Y-m-d'),
+            'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
         $response = $this->makeRequest(
             'POST',
-            '/request-storage/requests',
+            '/circulation/requests',
             json_encode($requestBody)
         );
         if ($response->isSuccess()) {
-            return [
+            $json = json_decode($response->getBody());
+            $result = [
                 'success' => true,
-                'status' => $response->getBody()
+                'status' => $json->status
             ];
         } else {
-            throw new ILSException($response->getBody());
+            try {
+                $json = json_decode($response->getBody());
+                $result = [
+                    'success' => false,
+                    'status' => $json->errors[0]->message
+                ];
+            } catch (Exception $e) {
+                throw new ILSException($response->getBody());
+            }
         }
+        return $result;
+    }
+
+    /**
+     * Get FOLIO hold IDs for use in cancelHolds.
+     *
+     * @param array $hold An single request
+     * array from getMyHolds
+     *
+     * @return string request ID for this request
+     */
+    public function getCancelHoldDetails($hold)
+    {
+        return $hold['reqnum'];
+    }
+
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        $details = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $cancelResult = ['items' => []];
+
+        foreach ($details as $requestId) {
+            $response = $this->makeRequest(
+                'GET', '/circulation/requests/' . $requestId
+            );
+            $request_json = json_decode($response->getBody());
+
+            // confirm request belongs to signed in patron
+            if ($request_json->requesterId != $patron['id']) {
+                throw new ILSException("Invalid Request");
+            }
+            // Change status to Closed and add cancellationID
+            $request_json->status = 'Closed - Cancelled';
+            $request_json->cancellationReasonId
+                = $this->config['Holds']['cancellation_reason'];
+            $cancel_response = $this->makeRequest(
+                'PUT', '/circulation/requests/' . $requestId,
+                json_encode($request_json)
+            );
+            if ($cancel_response->getStatusCode() == 204) {
+                $count++;
+                $cancelResult['items'][$request_json->itemId] = [
+                    'success' => true,
+                    'status' => 'hold_cancel_success'
+                ];
+            } else {
+                $cancelResult['items'][$request_json->itemId] = [
+                    'success' => false,
+                    'status' => 'hold_cancel_fail'
+                ];
+            }
+        }
+        $cancelResult['count'] = $count;
+        return $cancelResult;
     }
 
     /**

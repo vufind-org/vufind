@@ -46,7 +46,7 @@ class AuthorityController extends \Finna\Controller\SearchController
     /**
      * Record action -- display a record
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function recordAction()
     {

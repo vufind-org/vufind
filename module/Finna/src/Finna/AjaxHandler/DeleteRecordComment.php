@@ -28,7 +28,7 @@
  */
 namespace Finna\AjaxHandler;
 
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler to delete a record comment.

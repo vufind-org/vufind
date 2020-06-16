@@ -29,8 +29,8 @@ namespace Finna\AjaxHandler;
 
 use Finna\Recommend\AuthorityRecommend;
 
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * AJAX handler for getting authority information for recommendations.
@@ -74,37 +74,37 @@ class GetAuthorityFullInfo extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Session
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
      * Session manager
      *
-     * @var \Zend\Session\SessionManager
+     * @var \Laminas\Session\SessionManager
      */
     protected $sessionManager;
 
     /**
      * Constructor
      *
-     * @param \Zend\View\Renderer\RendererInterface $renderer           View renderer
-     * @param \Finna\Recommend\AuthorityRecommend   $authorityRecommend Authority
+     * @param RendererInterface                    $renderer           View renderer
+     * @param AuthorityRecommend                   $authorityRecommend Authority
      * Recommend
-     * @param \VuFind\Search\Results\PluginManager  $resultsManager     Search
+     * @param \VuFind\Search\Results\PluginManager $resultsManager     Search
      * results manager
-     * @param \VuFInd\Db\Table\Search               $searchTable        Search table
-     * @param \Zend\Session\Container               $session            Session
-     * @param \Zend\Session\SessionManager          $sessionManager     Session
+     * @param \VuFInd\Db\Table\Search              $searchTable        Search table
+     * @param \Laminas\Session\Container           $session            Session
+     * @param \Laminas\Session\SessionManager      $sessionManager     Session
      * manager
      */
     public function __construct(
-        \Zend\View\Renderer\RendererInterface $renderer,
-        \Finna\Recommend\AuthorityRecommend $authorityRecommend,
+        RendererInterface $renderer,
+        AuthorityRecommend $authorityRecommend,
         \VuFind\Search\Results\PluginManager $resultsManager,
         \VuFInd\Db\Table\Search $searchTable,
-        \Zend\Session\Container $session,
-        \Zend\Session\SessionManager $sessionManager
+        \Laminas\Session\Container $session,
+        \Laminas\Session\SessionManager $sessionManager
     ) {
         $this->renderer = $renderer;
         $this->authorityRecommend = $authorityRecommend;
@@ -141,7 +141,8 @@ class GetAuthorityFullInfo extends \VuFind\AjaxHandler\AbstractBase
         $savedSearch = $minSO->deminify($this->resultsManager);
         $searchParams = $savedSearch->getParams();
 
-        $this->authorityRecommend->init($searchParams, $request);
+        $this->authorityRecommend
+            ->init($searchParams, $params->getController()->getRequest());
         $this->authorityRecommend->process($savedSearch);
         $recommendations = $this->authorityRecommend->getRecommendations();
 

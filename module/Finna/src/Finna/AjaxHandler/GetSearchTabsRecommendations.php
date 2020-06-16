@@ -27,13 +27,13 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Table\Search as SearchTable;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Search Tabs Recommendations" AJAX handler
@@ -174,7 +174,7 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
             }
             foreach ($tabs['tabs'] as $tab) {
                 if ($tab['id'] == $recommendation) {
-                    $uri = new \Zend\Uri\Uri($tab['url']);
+                    $uri = new \Laminas\Uri\Uri($tab['url']);
                     $count = $this->config->SearchTabsRecommendations->count ?? 2;
                     $otherResults = $this->searchRunner->run(
                         $uri->getQueryAsArray(),

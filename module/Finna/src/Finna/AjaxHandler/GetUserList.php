@@ -28,8 +28,8 @@
 namespace Finna\AjaxHandler;
 
 use Finna\View\Helper\Root\UserlistEmbed;
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * Get user list items.

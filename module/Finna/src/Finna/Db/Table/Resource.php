@@ -27,7 +27,7 @@
  */
 namespace Finna\Db\Table;
 
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Sql\Expression;
 
 /**
  * Table Definition for resource
@@ -51,7 +51,7 @@ class Resource extends \VuFind\Db\Table\Resource
      * @param int    $offset Offset for results
      * @param int    $limit  Limit for results (null for none)
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      * @todo   Refactor to avoid duplication
      */
     public function getFavorites($user, $list = null, $tags = [],
@@ -127,10 +127,10 @@ class Resource extends \VuFind\Db\Table\Resource
     /**
      * Apply a sort parameter to a query on the resource table.
      *
-     * @param \Zend\Db\Sql\Select $query Query to modify
-     * @param string              $sort  Field to use for sorting (may include 'desc'
-     * qualifier)
-     * @param string              $alias Alias to the resource table (defaults to
+     * @param \Laminas\Db\Sql\Select $query Query to modify
+     * @param string                 $sort  Field to use for sorting (may include
+     * 'desc' qualifier)
+     * @param string                 $alias Alias to the resource table (defaults to
      * 'resource')
      *
      * @return void

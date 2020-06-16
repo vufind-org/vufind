@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\AjaxHandler;
 
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\AjaxHandler\Recommend;
 use VuFind\AjaxHandler\RecommendFactory;
 use VuFind\Recommend\PluginManager;
@@ -35,7 +36,6 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
-use Zend\View\Renderer\PhpRenderer;
 
 /**
  * Recommend test class.

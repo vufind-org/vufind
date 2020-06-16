@@ -7,7 +7,7 @@ $(document).ready(function() {
 });
 JS;
     ?>
-    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <?php else: ?>
     <?php
     $script = <<<JS
@@ -16,7 +16,7 @@ $('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', funct
 });
 JS;
     ?>
-    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <?php endif; ?>
 <div id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
      data-facet="<?=$this->escapeHtmlAttr($title)?>"

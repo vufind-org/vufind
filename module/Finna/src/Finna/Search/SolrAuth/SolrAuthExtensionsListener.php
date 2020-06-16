@@ -29,8 +29,8 @@
  */
 namespace Finna\Search\SolrAuth;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 
 /**
  * Finna Solr extensions listener.

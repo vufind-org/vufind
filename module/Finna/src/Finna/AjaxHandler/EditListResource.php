@@ -27,10 +27,10 @@
  */
 namespace Finna\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\UserResource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * AJAX handler for editing a list resource.

@@ -38,7 +38,7 @@ use Finna\LocationService\LocationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Callnumber extends \Zend\View\Helper\AbstractHelper
+class Callnumber extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Location Service.

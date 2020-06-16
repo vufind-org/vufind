@@ -31,8 +31,8 @@
 namespace Finna\OnlinePayment;
 
 use Finna\Db\Row\Transaction;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Log\LoggerAwareInterface;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Log\LoggerAwareInterface;
 
 /**
  * Payment base handler
@@ -56,7 +56,7 @@ abstract class BaseHandler implements OnlinePaymentHandlerInterface,
     /**
      * Configuration.
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -77,11 +77,11 @@ abstract class BaseHandler implements OnlinePaymentHandlerInterface,
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config     $config     Configuration as key-value pairs.
+     * @param \Laminas\Config\Config  $config     Configuration as key-value pairs.
      * @param \VuFindHttp\HttpService $http       HTTP service
      * @param TranslatorInterface     $translator Translator
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         \VuFindHttp\HttpService $http, TranslatorInterface $translator
     ) {
         $this->config = $config;

@@ -27,6 +27,8 @@
  */
 namespace Finna\Controller;
 
+use VuFindSearch\ParamBag;
+
 /**
  * Record Controller
  *
@@ -44,7 +46,7 @@ class RecordController extends \VuFind\Controller\RecordController
     /**
      * Create record feedback form and send feedback to correct recipient.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      * @throws \Exception
      */
     public function feedbackAction()
@@ -89,7 +91,7 @@ class RecordController extends \VuFind\Controller\RecordController
         $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
         $client = $httpService->createClient(
             $config->NormalizationPreview->url,
-            \Zend\Http\Request::METHOD_POST
+            \Laminas\Http\Request::METHOD_POST
         );
         $client->setParameterPost(
             ['data' => $data, 'format' => $format, 'source' => $source]
@@ -135,14 +137,18 @@ class RecordController extends \VuFind\Controller\RecordController
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
+     * @param ParamBag $params Search backend parameters
+     * @param bool     $force  Set to true to force a reload of the record, even if
+     * already loaded (useful if loading a record using different parameters)
+     *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord()
+    protected function loadRecord(ParamBag $params = null, bool $force = false)
     {
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         // 0 = preview record
         if ($id != '0') {
-            return parent::loadRecord();
+            return parent::loadRecord($params, $force);
         }
         $data = $this->params()->fromPost(
             'data', $this->params()->fromQuery('data', '')
@@ -712,7 +718,7 @@ class RecordController extends \VuFind\Controller\RecordController
         $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
         $client = $httpService->createClient(
             $config->NormalizationPreview->url,
-            \Zend\Http\Request::METHOD_POST
+            \Laminas\Http\Request::METHOD_POST
         );
         $client->setParameterPost(
             ['func' => 'get_sources']
@@ -748,7 +754,7 @@ class RecordController extends \VuFind\Controller\RecordController
                 return $res;
             }
         );
-        $view = new \Zend\View\Model\ViewModel(
+        $view = new \Laminas\View\Model\ViewModel(
             [
                 'sources' => $sources
             ]

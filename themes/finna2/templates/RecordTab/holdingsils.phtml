@@ -119,7 +119,7 @@
       <?=$openUrl->renderTemplate()?>
       <?php
         $loadOpenURLs = "finna.openUrl.initLinks($('.holdings-urls'));";
-        echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadOpenURLs, 'SET')
+        echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadOpenURLs, 'SET')
       ?>
     <?php endif; ?>
     <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
@@ -348,7 +348,7 @@
 
 <?php
   $this->inlineScript(
-    \Zend\View\Helper\HeadScript::SCRIPT,
+    \Laminas\View\Helper\HeadScript::SCRIPT,
     'finna.record.setupHoldingsTab();',
     'SET'
   );

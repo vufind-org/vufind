@@ -50,6 +50,6 @@
 <?= $this->unsubscribeUrl ?>
 
 
-<?=$this->translate('messaging_organisation'); ?>: <?=$this->transEsc("source_{$this->userInstitution}"); ?>
+<?=$this->translate('messaging_organisation'); ?>: <?=$this->translate("source_{$this->userInstitution}", [], $this->userInstitution); ?>
 
 <?=$this->baseUrl ?>

@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\UrlShortener\UrlShortenerInterface;
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Short link controller

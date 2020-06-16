@@ -41,11 +41,11 @@ trait FinnaAuthorityControllerTrait
     /**
      * Handle onDispatch event
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
         $authorityHelper = $this->getViewRenderer()->plugin('authority');
         if (!$authorityHelper->isAvailable()) {

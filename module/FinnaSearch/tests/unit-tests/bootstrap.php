@@ -7,10 +7,10 @@
  * @license   http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @copyright Copyright (C) Villanova University 2011
  */
-require_once'Zend/Loader/AutoloaderFactory.php';
-\Zend\Loader\AutoloaderFactory::factory(
+require_once 'Laminas/Loader/AutoloaderFactory.php';
+\Laminas\Loader\AutoloaderFactory::factory(
     [
-        'Zend\Loader\StandardAutoloader' => [
+        'Laminas\Loader\StandardAutoloader' => [
             'namespaces' => [
                 'FinnaSearch' => realpath(__DIR__ . '/../../src/FinnaSearch'),
                 'VuFindTest' => realpath(__DIR__ . '/src/VuFindTest'),

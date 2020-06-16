@@ -28,6 +28,7 @@
 namespace Finna\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for ImportFavorites AJAX handler.
@@ -38,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ImportFavoritesFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class ImportFavoritesFactory implements FactoryInterface
 {
     /**
      * Create an object

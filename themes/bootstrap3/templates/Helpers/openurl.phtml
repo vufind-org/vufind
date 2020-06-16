@@ -1,5 +1,5 @@
 <?php
-  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'openurl.js', 'SET');
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'openurl.js', 'SET');
   $classes = '';
   if ($this->openUrlEmbed) {
     $classes = "fulltext";

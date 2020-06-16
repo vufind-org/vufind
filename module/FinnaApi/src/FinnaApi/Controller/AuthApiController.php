@@ -39,7 +39,7 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org Main Page
  */
 class AuthApiController extends \VuFindApi\Controller\ApiController
-    implements \VuFindApi\Controller\ApiInterface, \Zend\Log\LoggerAwareInterface
+    implements \VuFindApi\Controller\ApiInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindApi\Controller\ApiTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -47,12 +47,12 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
         // Add CORS headers and handle OPTIONS requests. This is a simplistic
         // approach since we allow any origin. For more complete CORS handling
@@ -80,7 +80,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
     /**
      * Retrieve backends available for library card authentication
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function getLoginTargetsAction()
     {
@@ -126,7 +126,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
     /**
      * Login with library card and return status
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function libraryCardLoginAction()
     {

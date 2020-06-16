@@ -28,6 +28,7 @@
 namespace Finna\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for GetContentFeed AJAX handler.
@@ -38,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetContentFeedFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetContentFeedFactory implements FactoryInterface
 {
     /**
      * Create an object

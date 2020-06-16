@@ -290,7 +290,7 @@ class CPU extends BaseHandler
     /**
      * Return payment response parameters.
      *
-     * @param Zend\Http\Request $request Request
+     * @param Laminas\Http\Request $request Request
      *
      * @return array
      */
@@ -332,7 +332,7 @@ class CPU extends BaseHandler
     /**
      * Process the response from payment service.
      *
-     * @param Zend\Http\Request $request Request
+     * @param Laminas\Http\Request $request Request
      *
      * @return string error message (not translated)
      *   or associative array with keys:

@@ -43,6 +43,46 @@ use VuFindSearch\Backend\EDS\QueryBuilder;
 class QueryBuilderTest extends TestCase
 {
     /**
+     * Given a response, decode the JSON query objects for easier reading.
+     *
+     * @param array $response Raw response
+     *
+     * @return array
+     */
+    protected function decodeResponse($response)
+    {
+        foreach ($response as $i => $raw) {
+            $response[$i] = json_decode($raw, true);
+        }
+        return $response;
+    }
+
+    /**
+     * Test special case for blank queries.
+     *
+     * @return void
+     */
+    public function testBlankSearch()
+    {
+        $qb = new QueryBuilder();
+        $params = $qb->build(new \VuFindSearch\Query\Query());
+        $response = $params->getArrayCopy();
+        $response['query'] = $this->decodeResponse($response['query']);
+        $this->assertEquals(
+            [
+                'query' => [
+                    [
+                        'term' => '(FT yes) OR (FT no)',
+                        'field' => null,
+                        'bool' => 'AND',
+                    ],
+                ]
+            ],
+            $response
+        );
+    }
+
+    /**
      * Test query parsing.
      *
      * @return void
@@ -51,11 +91,23 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
-            ['advanced', ['AND,cheese', 'AND,SU:test']]
+            [
+                'advanced',
+                [
+                    [
+                        'term' => 'cheese',
+                        'field' => null,
+                        'bool' => 'AND',
+                    ],
+                    [
+                        'term' => 'test',
+                        'field' => 'SU',
+                        'bool' => 'AND',
+                    ]
+                ]
+            ]
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
@@ -66,7 +118,9 @@ class QueryBuilderTest extends TestCase
                 )
             );
             $response = $qb->build($q);
-            $this->assertEquals($output, $response->get('query'));
+            $this->assertEquals(
+                $output, $this->decodeResponse($response->get('query'))
+            );
         }
     }
 }

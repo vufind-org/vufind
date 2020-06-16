@@ -31,13 +31,13 @@
 namespace VuFind\ILS\Driver;
 
 use File_MARC;
+use Laminas\Validator\EmailAddress as EmailAddressValidator;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Yajra\Pdo\Oci8;
-use Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver
@@ -51,7 +51,7 @@ use Zend\Validator\EmailAddress as EmailAddressValidator;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Voyager extends AbstractBase
-    implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
+    implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {

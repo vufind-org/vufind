@@ -44,7 +44,7 @@ class ContentController extends \VuFind\Controller\ContentController
     /**
      * Default action if none provided
      *
-     * @return Zend\View\Model\ViewModel
+     * @return Laminas\View\Model\ViewModel
      */
     public function contentAction()
     {

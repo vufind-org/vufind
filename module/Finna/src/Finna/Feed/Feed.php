@@ -28,11 +28,11 @@
  */
 namespace Finna\Feed;
 
+use Laminas\Config\Config;
+use Laminas\Feed\Reader\Reader;
+use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Cache\Manager as CacheManager;
 use VuFindTheme\View\Helper\ImageLink;
-use Zend\Config\Config;
-use Zend\Feed\Reader\Reader;
-use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * Feed service
@@ -46,7 +46,7 @@ use Zend\Mvc\Controller\Plugin\Url;
  */
 class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -204,7 +204,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
 
     /**
      * Return feed content and settings in an array with the keys:
-     *   - 'channel' Zend\Feed\Reader\Feed\Rss Feed
+     *   - 'channel' Laminas\Feed\Reader\Feed\Rss Feed
      *   - 'items'   array                     Feed item data
      *   - 'config'  VuFind\Config             Feed configuration
      *   - 'modal'   boolean                   Display feed content in a modal
@@ -235,7 +235,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
      */
     public function readFeedFromUrl($id, $url, $config, $viewUrl)
     {
-        $config = new \Zend\Config\Config($config);
+        $config = new \Laminas\Config\Config($config);
         return $this->processReadFeed($config, $viewUrl, $id);
     }
 

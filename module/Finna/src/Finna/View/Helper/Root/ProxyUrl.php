@@ -27,8 +27,8 @@
  */
 namespace Finna\View\Helper\Root;
 
+use Laminas\Config\Config;
 use VuFind\Net\ipAddressUtils;
-use Zend\Config\Config;
 
 /**
  * Proxy URL view helper
@@ -65,9 +65,9 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config      VuFind configuration
-     * @param \Zend\Config\Config $permissions Permissions configuration
-     * @param ipAddressUtils      $ipUtils     IP address utils
+     * @param \Laminas\Config\Config $config      VuFind configuration
+     * @param \Laminas\Config\Config $permissions Permissions configuration
+     * @param ipAddressUtils         $ipUtils     IP address utils
      */
     public function __construct(Config $config, Config $permissions,
         ipAddressUtils $ipUtils
@@ -191,7 +191,7 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
         }
 
         $this->ipInRange = false;
-        $remoteAddress = new \Zend\Http\PhpEnvironment\RemoteAddress();
+        $remoteAddress = new \Laminas\Http\PhpEnvironment\RemoteAddress();
         $remoteIp = $remoteAddress->getIpAddress();
         // Iterate all permissions with ipRanges. We'll accept any range for now.
         foreach ($this->permissions as $permission) {

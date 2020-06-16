@@ -29,11 +29,11 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Feed\Feed as FeedService;
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Url;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\Mvc\Controller\Plugin\Url;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * GetOrganisationPageFeed AJAX handler
@@ -46,7 +46,7 @@ use Zend\View\Renderer\RendererInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
-    implements \Zend\Log\LoggerAwareInterface
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use FeedTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -161,7 +161,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
      * @param string $logMsg     Message to output to the error log.
      * @param int    $httpStatus HTTPs status of the JSOn response.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function handleError($outputMsg, $logMsg = '', $httpStatus = 400)
     {

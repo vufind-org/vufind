@@ -17,7 +17,7 @@
   $baseUrl = $this->serverUrl();
 
   // Fetch correct image link and metadata here for Facebook, Pinterest and Twitter
-  $this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA); // See: http://framework.zend.com/manual/current/en/modules/zend.view.helpers.head-meta.html
+  $this->doctype(Laminas\View\Helper\Doctype::XHTML1_RDFA); // See: https://docs.laminas.dev/laminas-view/helpers/head-meta/
   $this->headMeta()->setProperty('og:title', $this->driver->getShortTitle());
   if ($summary) {
     $this->headMeta()->setProperty('og:description', mb_strimwidth($this->stripTags($summary[0]), 0, 156, '...', 'utf-8')); // max 156

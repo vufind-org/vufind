@@ -29,7 +29,7 @@
 namespace Finna\Recommend;
 
 use Finna\Search\Solr\AuthorityHelper;
-use Zend\StdLib\Parameters;
+use VuFindSearch\Backend\Exception\RequestErrorException;
 
 /**
  * AuthorityRecommend Module
@@ -73,7 +73,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
     /**
      * Session
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session = null;
 
@@ -87,7 +87,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
     /**
      * Config
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
@@ -97,16 +97,16 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
      * @param \VuFind\Search\Results\PluginManager $results         Results
      * plugin manager
      * @param \Finna\Search\Solr\AuthorityHelper   $authorityHelper Authority helper
-     * @param \Zend\Session\Container              $session         Session
+     * @param \Laminas\Session\Container           $session         Session
      * @param \VuFind\Cookie\CookieManager         $cookieManager   Cookiemanager
-     * @param \Zend\Config\Config                  $config          Configuration
+     * @param \Laminas\Config\Config               $config          Configuration
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,
         \Finna\Search\Solr\AuthorityHelper $authorityHelper,
-        \Zend\Session\Container $session,
+        \Laminas\Session\Container $session,
         \VuFind\Cookie\CookieManager $cookieManager,
-        \Zend\Config\Config $config
+        \Laminas\Config\Config $config
     ) {
         $this->resultsManager = $results;
         $this->authorityHelper = $authorityHelper;
@@ -181,7 +181,7 @@ class AuthorityRecommend extends \VuFind\Recommend\AuthorityRecommend
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

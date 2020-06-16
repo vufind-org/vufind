@@ -53,7 +53,7 @@ class Solr extends \VuFind\Autocomplete\Solr
     /**
      * Facet configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $facetConfig;
 
@@ -74,7 +74,7 @@ class Solr extends \VuFind\Autocomplete\Solr
     /**
      * Search configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $searchConfig;
 
@@ -88,16 +88,16 @@ class Solr extends \VuFind\Autocomplete\Solr
     /**
      * Current request
      *
-     * @var \Zend\Stdlib\Parameters
+     * @var \Laminas\Stdlib\Parameters
      */
     protected $request = null;
 
     /**
      * Constructor
      *
-     * @param PluginManager       $results      Results plugin manager
-     * @param \Zend\Config\Config $facetConfig  Facet configuration
-     * @param \Zend\Config\Config $searchConfig Search configuration
+     * @param PluginManager          $results      Results plugin manager
+     * @param \Laminas\Config\Config $facetConfig  Facet configuration
+     * @param \Laminas\Config\Config $searchConfig Search configuration
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
         $facetConfig, $searchConfig
@@ -255,7 +255,7 @@ class Solr extends \VuFind\Autocomplete\Solr
     /**
      * Set current request.
      *
-     * @param \Zend\Stdlib\Parameters $request Request
+     * @param \Laminas\Stdlib\Parameters $request Request
      *
      * @return void
      */

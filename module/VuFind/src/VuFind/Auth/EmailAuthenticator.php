@@ -27,9 +27,10 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\RemoteAddress;
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\DB\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
-use Zend\Http\PhpEnvironment\RemoteAddress;
 
 /**
  * Class for managing email-based authentication.
@@ -50,7 +51,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Session Manager
      *
-     * @var \Zend\Session\SessionManager
+     * @var \Laminas\Session\SessionManager
      */
     protected $sessionManager = null;
 
@@ -71,7 +72,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * View Renderer
      *
-     * @var \Zend\View\Renderer\RendererInterface
+     * @var \Laminas\View\Renderer\RendererInterface
      */
     protected $viewRenderer = null;
 
@@ -85,7 +86,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -106,19 +107,19 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Constructor
      *
-     * @param \Zend\Session\SessionManager          $session      Session Manager
-     * @param \VuFind\Validator\Csrf                $csrf         CSRF Validator
-     * @param \VuFind\Mailer\Mailer                 $mailer       Mailer
-     * @param \Zend\View\Renderer\RendererInterface $viewRenderer View Renderer
-     * @param RemoteAddress                         $remoteAddr   Remote address
-     * @param \Zend\Config\Config                   $config       Configuration
-     * @param AuthHashTable                         $authHash     AuthHash Table
+     * @param \Laminas\Session\SessionManager          $session      Session Manager
+     * @param \VuFind\Validator\Csrf                   $csrf         CSRF Validator
+     * @param \VuFind\Mailer\Mailer                    $mailer       Mailer
+     * @param \Laminas\View\Renderer\RendererInterface $viewRenderer View Renderer
+     * @param RemoteAddress                            $remoteAddr   Remote address
+     * @param \Laminas\Config\Config                   $config       Configuration
+     * @param AuthHashTable                            $authHash     AuthHash Table
      */
-    public function __construct(\Zend\Session\SessionManager $session,
+    public function __construct(\Laminas\Session\SessionManager $session,
         \VuFind\Validator\Csrf $csrf, \VuFind\Mailer\Mailer $mailer,
-        \Zend\View\Renderer\RendererInterface $viewRenderer,
+        \Laminas\View\Renderer\RendererInterface $viewRenderer,
         RemoteAddress $remoteAddr,
-        \Zend\Config\Config $config, AuthHashTable $authHash
+        \Laminas\Config\Config $config, AuthHashTable $authHash
     ) {
         $this->sessionManager = $session;
         $this->csrf = $csrf;
@@ -233,11 +234,11 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * Check if the given request is a valid login request
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     * @param Request $request Request object.
      *
      * @return bool
      */
-    public function isValidLoginRequest(\Zend\Http\PhpEnvironment\Request $request)
+    public function isValidLoginRequest(Request $request)
     {
         $hash = $request->getPost()->get(
             'hash',

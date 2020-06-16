@@ -52,7 +52,7 @@ class CoverController extends \VuFind\Controller\CoverController
     /**
      * Data source configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $datasourceConfig;
 
@@ -66,14 +66,14 @@ class CoverController extends \VuFind\Controller\CoverController
     /**
      * Constructor
      *
-     * @param Loader                $loader       Cover loader
-     * @param CachingProxy          $proxy        Proxy loader
-     * @param SessionSettings       $ss           Session settings
-     * @param \Zend\Config\Config   $datasources  Data source settings
-     * @param \VuFind\Record\Loader $recordLoader Record loader
+     * @param Loader                 $loader       Cover loader
+     * @param CachingProxy           $proxy        Proxy loader
+     * @param SessionSettings        $ss           Session settings
+     * @param \Laminas\Config\Config $datasources  Data source settings
+     * @param \VuFind\Record\Loader  $recordLoader Record loader
      */
     public function __construct(Loader $loader, CachingProxy $proxy,
-        SessionSettings $ss, \Zend\Config\Config $datasources,
+        SessionSettings $ss, \Laminas\Config\Config $datasources,
         \VuFind\Record\Loader $recordLoader
     ) {
         parent::__construct($loader, $proxy, $ss);
@@ -84,7 +84,7 @@ class CoverController extends \VuFind\Controller\CoverController
     /**
      * Function to download images from the provider instead of cache
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function downloadAction()
     {
@@ -123,7 +123,7 @@ class CoverController extends \VuFind\Controller\CoverController
     /**
      * Send image data for display in the view
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function showAction()
     {
@@ -167,7 +167,7 @@ class CoverController extends \VuFind\Controller\CoverController
 
         // Add a filename to the headers so that saving an image defaults to a
         // sensible filename
-        if ($response instanceof \Zend\Http\PhpEnvironment\Response) {
+        if ($response instanceof \Laminas\Http\PhpEnvironment\Response) {
             $headers = $response->getHeaders();
             $contentType = $headers->get('Content-Type');
             if ($contentType && $contentType->match('image/jpeg')) {

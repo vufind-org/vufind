@@ -37,9 +37,9 @@ use FinnaSearch\Backend\Blender\Backend;
 
 use Interop\Container\ContainerInterface;
 
-use VuFindSearch\Backend\BackendInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\BackendInterface;
 
 /**
  * Factory for Blender backend.

@@ -30,7 +30,7 @@
 namespace Finna\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Recaptcha controller plugin.
@@ -68,8 +68,8 @@ class RecaptchaFactory implements FactoryInterface
             $container->get(\VuFind\Service\ReCaptcha::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config'),
             $container->get(\VuFind\Auth\Manager::class),
-            $container->get(\Zend\Session\SessionManager::class),
-            $container->get(\Zend\Mvc\I18n\Translator::class)
+            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\Laminas\Mvc\I18n\Translator::class)
         );
     }
 }

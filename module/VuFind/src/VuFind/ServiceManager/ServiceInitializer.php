@@ -28,7 +28,7 @@
 namespace VuFind\ServiceManager;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Initializer\InitializerInterface;
+use Laminas\ServiceManager\Initializer\InitializerInterface;
 
 /**
  * VuFind Service Initializer
@@ -86,11 +86,11 @@ class ServiceInitializer implements InitializerInterface
                 $sm->get(\VuFind\Db\Table\PluginManager::class)
             );
         }
-        if ($instance instanceof \Zend\Log\LoggerAwareInterface) {
+        if ($instance instanceof \Laminas\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get(\VuFind\Log\Logger::class));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
-            $instance->setTranslator($sm->get(\Zend\Mvc\I18n\Translator::class));
+            $instance->setTranslator($sm->get(\Laminas\Mvc\I18n\Translator::class));
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));

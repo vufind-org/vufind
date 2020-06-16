@@ -43,7 +43,7 @@ class Suomifi extends Shibboleth
     /**
      * Set configuration.
      *
-     * @param \Zend\Config\Config $config Configuration to set
+     * @param \Laminas\Config\Config $config Configuration to set
      *
      * @return void
      */
@@ -52,7 +52,7 @@ class Suomifi extends Shibboleth
         // Replace Shibboleth config section with Shibboleth_suomifi
         $data = $config->toArray();
         $data['Shibboleth'] = $data['Shibboleth_suomifi'];
-        $config = new \Zend\Config\Config($data);
+        $config = new \Laminas\Config\Config($data);
 
         parent::setConfig($config);
     }
@@ -83,9 +83,9 @@ class Suomifi extends Shibboleth
      * Get a server parameter taking into account any environment variables
      * redirected by Apache mod_rewrite.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
-     * @param string                            $param   Parameter name
+     * @param string                               $param   Parameter name
      *
      * @throws AuthException
      * @return mixed

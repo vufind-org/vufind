@@ -1,0 +1,3 @@
+# This is the record fields api configuration for the secondary search handler.
+# By default, it simply inherits rules from the parent configuration.
+"@parent_yaml": "SearchApiRecordFields.yaml"

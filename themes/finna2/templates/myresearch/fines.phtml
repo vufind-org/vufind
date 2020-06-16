@@ -201,7 +201,7 @@
 <?php if (isset($this->registerPayment) && $this->registerPayment): ?>
   <?php $this->headScript()->appendFile('finna-online-payment.js'); ?>
   <?=$this->inlineScript(
-    \Zend\View\Helper\HeadScript::SCRIPT,
+    \Laminas\View\Helper\HeadScript::SCRIPT,
     '$(document).ready(function() {'
         . "finna.onlinePayment.registerPayment('" . $this->json($registerPaymentParams) . "');" . '
     });',

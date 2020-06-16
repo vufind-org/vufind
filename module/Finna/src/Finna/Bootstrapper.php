@@ -28,8 +28,8 @@
  */
 namespace Finna;
 
-use Zend\Console\Console;
-use Zend\Mvc\MvcEvent;
+use Laminas\Console\Console;
+use Laminas\Mvc\MvcEvent;
 
 /**
  * VuFind Bootstrapper
@@ -48,7 +48,7 @@ class Bootstrapper
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
@@ -62,14 +62,14 @@ class Bootstrapper
     /**
      * Event manager
      *
-     * @var \Zend\EventManager\EventManagerInterface
+     * @var \Laminas\EventManager\EventManagerInterface
      */
     protected $events;
 
     /**
      * Constructor
      *
-     * @param MvcEvent $event Zend MVC Event object
+     * @param MvcEvent $event Laminas MVC Event object
      */
     public function __construct(MvcEvent $event)
     {
@@ -141,7 +141,7 @@ class Bootstrapper
         };
 
         // Attach with a high priority
-        if (!Console::isConsole()) {
+        if (PHP_SAPI !== 'cli') {
             $this->events->attach('dispatch', $callback, 11000);
         }
     }
@@ -158,11 +158,11 @@ class Bootstrapper
 
         $callback = function ($event) use ($config, $sm) {
             // Special initialization only for CLI and API routes
-            if (!Console::isConsole() && !$this->isApiRoute($event)) {
+            if (PHP_SAPI !== 'cli' && !$this->isApiRoute($event)) {
                 return;
             }
             $request = $event->getRequest();
-            if (Console::isConsole()) {
+            if (PHP_SAPI === 'cli') {
                 $language = $config->Site->language;
             } elseif (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
@@ -177,23 +177,16 @@ class Bootstrapper
             }
 
             try {
-                $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+                $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
                 $translator->setLocale($language);
                 $this->addLanguageToTranslator($translator, $language);
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
+            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'
                         . ' Please disable translation or install the extension.'
                     );
                 }
-            }
-            // Send key values to view:
-            $viewManager = $sm->get('ViewManager');
-            if (!($viewManager instanceof \Zend\Mvc\Console\View\ViewManager)) {
-                $viewModel = $viewManager->getViewModel();
-                $viewModel->setVariable('userLang', $language);
-                $viewModel->setVariable('allLangs', $config->Languages);
             }
         };
         $this->events->attach('dispatch.error', $callback, 9000);

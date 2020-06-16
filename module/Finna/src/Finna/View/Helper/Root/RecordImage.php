@@ -39,12 +39,12 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class RecordImage extends \Zend\View\Helper\AbstractHelper
+class RecordImage extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Record view helper
      *
-     * @var Zend\View\Helper\Record
+     * @var Laminas\View\Helper\Record
      */
     protected $record;
 

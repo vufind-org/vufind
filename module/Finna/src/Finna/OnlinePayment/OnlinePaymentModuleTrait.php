@@ -64,7 +64,7 @@ trait OnlinePaymentModuleTrait
      *
      * @param string $url      URL
      * @param string $body     Request body
-     * @param array  $options  Zend HTTP client options
+     * @param array  $options  Laminas HTTP client options
      * @param array  $headers  HTTP headers (key-value list).
      * @param string $username Username for HTTP basic authentication.
      * @param string $password Password for HTTP basic authentication.
@@ -80,7 +80,7 @@ trait OnlinePaymentModuleTrait
     ) {
         try {
             $client = $this->http->createClient(
-                $url, \Zend\Http\Request::METHOD_POST, 30
+                $url, \Laminas\Http\Request::METHOD_POST, 30
             );
             if (!empty($username) && !empty($password)) {
                 $client->setAuth($username, $password);
@@ -101,7 +101,7 @@ trait OnlinePaymentModuleTrait
                 "Error posting request: " . $e->getMessage()
                 . ", url: $url, body: $body, headers: " . var_export($headers, true)
             );
-            $this->logger->logException($e, new \Zend\Stdlib\Parameters());
+            $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
             return false;
         }
 

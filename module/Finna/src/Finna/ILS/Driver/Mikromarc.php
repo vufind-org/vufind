@@ -49,7 +49,8 @@ use VuFind\Exception\ILS as ILSException;
  */
 class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -710,7 +711,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             );
 
             $transaction[$serviceCodeMap[$code]] = $entryTime;
-            if (isset($item['MarcRecordTitle'])) {
+            if (isset($entry['MarcRecordTitle'])) {
                 $transaction['title'] = $entry['MarcRecordTitle'];
             }
             if ($params['sort'] == 'checkout ' . $sort
@@ -1540,7 +1541,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 'callnumber' => $shelf,
                 'duedate' => $duedate,
                 'barcode' => $item['Barcode'],
-                'item_notes' => [isset($items['notes']) ? $item['notes'] : null],
+                'item_notes' => [$item['notes'] ?? null],
                 'number' => $number,
             ];
 
@@ -1796,7 +1797,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @param string $url Request URL
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      */
     protected function createHttpClient($url)
     {
@@ -1806,7 +1807,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             && !$this->config['Http']['ssl_verify_peer_name']
         ) {
             $adapter = $client->getAdapter();
-            if ($adapter instanceof \Zend\Http\Client\Adapter\Socket) {
+            if ($adapter instanceof \Laminas\Http\Client\Adapter\Socket) {
                 $context = $adapter->getStreamContext();
                 $res = stream_context_set_option(
                     $context, 'ssl', 'verify_peer_name', false
@@ -1814,7 +1815,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 if (!$res) {
                     throw new \Exception('Unable to set sslverifypeername option');
                 }
-            } elseif ($adapter instanceof \Zend\Http\Client\Adapter\Curl) {
+            } elseif ($adapter instanceof \Laminas\Http\Client\Adapter\Curl) {
                 $adapter->setCurlOption(CURLOPT_SSL_VERIFYHOST, false);
             }
         }

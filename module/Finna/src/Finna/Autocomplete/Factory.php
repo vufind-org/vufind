@@ -27,7 +27,7 @@
  */
 namespace Finna\Autocomplete;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Factory for autocomplete plugins.

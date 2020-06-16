@@ -168,7 +168,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return boolean True if search settings were found, false if not.
@@ -340,7 +340,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -376,7 +376,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize coordinate filter (coordinates, VuFind1)
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -408,7 +408,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize date range filter (search_daterange_mv)
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -801,7 +801,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -817,7 +817,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize new items filter (first_indexed)
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

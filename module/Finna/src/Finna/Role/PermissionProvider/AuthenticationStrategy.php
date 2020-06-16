@@ -31,9 +31,9 @@ namespace Finna\Role\PermissionProvider;
 use Finna\Auth\ILSAuthenticator;
 use Finna\Auth\Manager as AuthManager;
 use Finna\ILS\Connection as ILSConnection;
+use Laminas\Session\Container as SessionContainer;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Role\PermissionProvider\PermissionProviderInterface;
-use Zend\Session\Container as SessionContainer;
 
 /**
  * Authentication strategy permission provider for VuFind.

@@ -28,7 +28,7 @@
 namespace VuFind\Session;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory for instantiating session handlers
@@ -72,11 +72,11 @@ class RedisFactory implements FactoryInterface
     /**
      * Given a configuration, build the client object.
      *
-     * @param \Zend\Config\Config $config Session configuration
+     * @param \Laminas\Config\Config $config Session configuration
      *
      * @return \Credis_Client
      */
-    protected function getConnection(\Zend\Config\Config $config)
+    protected function getConnection(\Laminas\Config\Config $config)
     {
         // Set defaults if nothing set in config file.
         $host = $config->redis_host ?? 'localhost';

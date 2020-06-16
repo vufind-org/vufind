@@ -40,12 +40,12 @@ use ZfcRbac\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class AuthorizationNotification extends \Zend\View\Helper\AbstractHelper
+class AuthorizationNotification extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Authorization service
      *
-     * @var Zend\Service\AuthorizationService
+     * @var AuthorizationService
      */
     protected $authService;
 
