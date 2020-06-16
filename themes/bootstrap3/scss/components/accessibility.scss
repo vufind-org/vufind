@@ -8,12 +8,12 @@ a {
 }
 
 /* AAA Color Contrasts */
-$badge-bg: #595959 !default;
+$badge-bg: #595959;
 
-$breadcrumb-color: #535353 !default;
-$breadcrumb-active-color: #444 !default;
+$breadcrumb-color: #535353;
+$breadcrumb-active-color: #444;
 
-$state-danger-text: #8a211e !default;
+$state-danger-text: #8a211e;
 .alert-danger,
 .alert-danger a {
   color: $state-danger-text;
@@ -25,6 +25,7 @@ $state-danger-text: #8a211e !default;
  * instead of display: none, keep things sr accessible
  * https://tailwindcss.com/docs/screen-readers/
  */
+/*
 .collapse.collapse:not(.in) {
   position: absolute;
   display: block;
@@ -42,6 +43,7 @@ $state-danger-text: #8a211e !default;
 .long-view.collapse:not(.in) {
   display: none;
 }
+*/
 @media (min-width: 768px) {
   .navbar-collapse.collapse:not(.in) {
     position: static;
