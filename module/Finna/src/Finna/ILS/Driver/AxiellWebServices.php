@@ -699,7 +699,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      *
      * This is responsible for canceling holds.
      *
-     * @param string $cancelDetails The request details
+     * @param array $cancelDetails The request details
      *
      * @throws ILSException
      *
