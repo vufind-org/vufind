@@ -6,9 +6,9 @@ finna.myList = (function finnaMyList() {
   var save = false;
   var listUrl = null;
   var refreshLists = null;
-  var truncateField = '<div class="truncate-field" data-rows="1" data-row-height="5" markdown="1">';
-  var truncateTag = '[[more]]';
-
+  var truncateDone = '<div class="truncate-field" data-rows="1" data-row-height="5" markdown="1"';
+  var truncateTag = '<truncate>';
+  var truncateCloseTag = '</truncate>';
   function getEditorCursorPos(mdeditor) {
     var doc = mdeditor.codemirror.getDoc();
     var cursorPos = doc.getCursor();
@@ -30,8 +30,11 @@ finna.myList = (function finnaMyList() {
     if (value.indexOf(truncateTag) !== -1) {
       return;
     } else {
-      var moreTag = '\n' + truncateTag + '\n';
-      insertElement(moreTag, mdeditor);
+      var truncateEl = '\n' + truncateTag + '<summary></summary>\n\n' + truncateCloseTag;
+      insertElement(truncateEl, mdeditor);
+      var doc = editor.codemirror.getDoc();
+      var cursorPos = getEditorCursorPos(editor);
+      doc.setCursor({line: cursorPos.line - 2, ch: '<truncate><summary>'.length});
     }
   }
 
@@ -118,14 +121,43 @@ finna.myList = (function finnaMyList() {
   function handleTruncateField(description, addTruncate) {
     var trunc = typeof addTruncate !== 'undefined' ? addTruncate : true;
     var desc = description;
+    var summaryText = '';
+    var truncateEl = '';
+    var tempDom = '';
     if (trunc && description.indexOf(truncateTag) !== -1) {
-      desc = description.replace(truncateTag, truncateField);
-      desc += '</div>';
-    } else if (description.indexOf(truncateField) !== -1) {
-      // replace <div class="truncate-field"...> with [[more]] and
-      // get rid of the closing tag
-      desc = description.replace(truncateField, truncateTag);
-      desc = desc.substr(0, desc.length - 6);
+      // Fixes preview bug
+      desc = desc.replace('<p><truncate>', '<truncate>');
+
+      tempDom = $('<div>').append($.parseHTML(desc));
+      // Replace <truncate> with <div class="truncate-field"..>
+      truncateEl = $(tempDom).find('truncate');
+      truncateEl.wrap(truncateDone + '>');
+      var newTruncate = tempDom.find('.truncate-field');
+      truncateEl.contents().unwrap();
+      newTruncate.find('details').wrap('<div>');
+
+      // Remove <summary> element and add its value to data-label attribute
+      if (newTruncate.find(':first-child').is('summary')) {
+        summaryText = newTruncate.find(':first-child')[0];
+        newTruncate.find(':first-child')[0].remove();
+      }
+      if (typeof summaryText.innerHTML !== 'undefined') {
+        newTruncate.attr('data-label', summaryText.innerHTML);
+      }
+      desc = tempDom[0].innerHTML;
+    } else if (desc.indexOf(truncateDone) !== -1) {
+      tempDom = $('<div>').append($.parseHTML(desc));
+      // Replace <div class="truncate-field"..> with <truncate> tag and create summary element
+      truncateEl = $(tempDom).find('.truncate-field');
+      summaryText = truncateEl.attr('data-label');
+      if (typeof summaryText === 'undefined') {
+        summaryText = '';
+      }
+      truncateEl.prepend($('<summary>' + summaryText + '</summary>'));
+      truncateEl.wrap("<truncate>");
+      tempDom.find('.truncate-field details').unwrap();
+      tempDom.find('.truncate-field').children().unwrap();
+      desc = tempDom[0].innerHTML;
     }
     return desc;
   }

@@ -63,6 +63,8 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         }
 
         $requestId = $params->fromQuery('requestId');
+        $recordId = $params->fromQuery('id');
+        $itemId = $params->fromQuery('itemId');
         $pickupLocationId = $params->fromQuery('pickupLocationId');
         if (empty($requestId)) {
             return $this->formatResponse(
@@ -83,6 +85,8 @@ class ChangePickupLocation extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
             }
 
             $details = [
+                'id' => $recordId,
+                'item_id' => $itemId,
                 'requestId' => $requestId,
                 'pickupLocationId' => $pickupLocationId
             ];

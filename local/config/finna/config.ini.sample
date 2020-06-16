@@ -1334,6 +1334,9 @@ url_blacklist[] = '/booky\.fi\/(image\.php\?|description\.php\?)/'
 ;embedVideo = true
 
 ; Whether the "versions" link and record tab are enabled. Default is false.
+; Other valid values are:
+; true or "all"            - display all versions across active data sources
+; "same_source"            - display only versions from the same data source
 ;display_versions = true
 
 ; The following two sections control the Alphabetic Browse module.

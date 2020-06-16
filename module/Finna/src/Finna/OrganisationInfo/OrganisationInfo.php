@@ -549,8 +549,8 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         $with = 'schedules';
         if ($fullDetails) {
             $with .=
-                ',phoneNumbers,mailAddress,pictures,links,services,customData,
-                schedules';
+                ',phoneNumbers,emailAddresses,mailAddress,pictures,links,services,
+                customData,schedules';
         }
 
         $params = [
@@ -833,6 +833,23 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
                 $result['phone'] = $this->viewRenderer->partial(
                     "Helpers/organisation-info-phone-{$target}.phtml",
                     ['phones' => $phones]
+                );
+            } catch (\Exception $e) {
+                $this->logError($e->getmessage());
+            }
+        }
+
+        if (!empty($response['emailAddresses'])) {
+            $emails = [];
+            $dedupEmails = array_unique($response['emailAddresses'], SORT_REGULAR);
+            foreach ($dedupEmails as $address) {
+                $emails[]
+                    = ['name' => $address['name'], 'email' => $address['email']];
+            }
+            try {
+                $result['emails'] = $this->viewRenderer->partial(
+                    "Helpers/organisation-info-email-{$target}.phtml",
+                    ['emails' => $emails]
                 );
             } catch (\Exception $e) {
                 $this->logError($e->getmessage());

@@ -106,6 +106,7 @@ class CleanHtml extends \Laminas\View\Helper\AbstractHelper
             $def->addElement('summary', 'Block', 'Flow', 'Common');
             $def->addAttribute('div', 'data-rows', 'Number');
             $def->addAttribute('div', 'data-row-height', 'Number');
+            $def->addAttribute('div', 'data-label', 'Text');
             $this->purifier = new \HTMLPurifier($config);
         }
         return $this->purifier->purify($html);

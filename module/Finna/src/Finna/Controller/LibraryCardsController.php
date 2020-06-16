@@ -599,8 +599,6 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
                 return $view;
             }
 
-            $recoveryRecord->delete();
-
             $result = $catalog->recoverPassword(
                 [
                     'cat_username' => "$target." . $recoveryData['username'],
@@ -612,12 +610,16 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
             if (!empty($result['success'])) {
                 $this->flashMessenger()->addSuccessMessage('new_password_success');
+                $recoveryRecord->delete();
+                return $this->redirect()->toRoute(
+                    'myresearch-home', [], ['query' => ['redirect' => 0]]
+                );
             } else {
-                $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                $this->flashMessenger()->addErrorMessage('password_error_invalid');
+                if (!empty($result['error'])) {
+                    $this->flashMessenger()->addErrorMessage($result['error']);
+                }
             }
-            return $this->redirect()->toRoute(
-                'myresearch-home', [], ['query' => ['redirect' => 0]]
-            );
         }
         return $view;
     }

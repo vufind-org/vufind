@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2018-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -63,6 +63,8 @@ class ChangeRequestStatus extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
         }
 
         $requestId = $params->fromQuery('requestId');
+        $recordId = $params->fromQuery('id');
+        $itemId = $params->fromQuery('itemId');
         $frozen = $params->fromQuery('frozen');
         if (empty($requestId)) {
             return $this->formatResponse(
@@ -82,6 +84,8 @@ class ChangeRequestStatus extends \VuFind\AjaxHandler\AbstractIlsAndUserAction
             }
 
             $details = [
+                'id' => $recordId,
+                'item_id' => $itemId,
                 'requestId' => $requestId,
                 'frozen' => $frozen
             ];

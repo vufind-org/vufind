@@ -289,6 +289,10 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       }
     }
 
+    if ('emails' in data.details) {
+      holder.find('.email-contact .emails').html(data.details.emails);
+    }
+
     if ('homepage' in data) {
       holder.find('.office-website > a').attr('href', data.homepage);
       holder.find('.office-website').show();
@@ -428,6 +432,8 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
   function updateServices(data) {
     if ('allServices' in data.details) {
       holder.find('.services').show();
+      $('.service-header').addClass('hidden');
+      $('.service-list').empty();
       var allServices = data.details.allServices;
       $.each(allServices, function handleService(ind, obj) {
         var serviceHolder = holder.find('.service-list.' + ind).empty();

@@ -1,10 +1,10 @@
 <?php
 /**
- * Authority recommendations helper factory.
+ * Factory for KohaRest ILS driver.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2019.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  ILS_Drivers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace Finna\Search\Solr;
+namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Authority recommendations helper factory.
+ * Factory for KohaRest ILS driver.
  *
  * @category VuFind
- * @package  Search
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  ILS_Drivers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AuthorityHelperFactory implements FactoryInterface
+class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
 {
     /**
      * Create an object
@@ -61,13 +60,10 @@ class AuthorityHelperFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $confManager = $container->get(\VuFind\Config\PluginManager::class);
-        return new $requestedName(
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get('ViewRenderer')->plugin('translate'),
-            $confManager->get('config'),
-            $confManager->get('authority')
-        );
+        $sessionFactory = function ($namespace) use ($container) {
+            $manager = $container->get(\Zend\Session\SessionManager::class);
+            return new \Zend\Session\Container("KohaRest_$namespace", $manager);
+        };
+        return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }
 }

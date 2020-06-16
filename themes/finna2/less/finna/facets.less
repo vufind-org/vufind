@@ -152,17 +152,14 @@
     }
   }
   .jstree-ocl:before {
-    font-family: finnaicons;
-    font-size: 1.2em;
-    color: @action-link-color;
-    margin-left: -12px;
+   display: inline-block;
+   position: absolute;
+   padding-left: 6px;
+   width: 24px;
+   height: 24px;    
+   font-size: 16px;
   }
-  .jstree-open > .jstree-ocl:before {
-    content: "\e907";
-  }
-  .jstree-closed > .jstree-ocl:before {
-    content: "\e906";
-  }
+ 
   .jstree-leaf > .jstree-ocl:before {
     content: " ";
   }
@@ -184,14 +181,8 @@
     .datepicker.datepicker-dropdown {
         font-size: 1.4em;
     }
-    .jstree-facet .jstree-container-ul .jstree-icon:before {
-      font-size: 1.4em;
-      margin-left: -17px;
-      margin-top: -3px;
-      @media (max-width: @screen-xs-max) {
-          margin-top: -5px;
-          font-size: 1.7em;
-      }
+    .jstree-ocl:before {  
+      width: 32px;
     }
   }
 }

@@ -12,7 +12,7 @@
     $additionalDataEl = !empty($this->additionalData) ? "<span class=\"authority-additional-data\">{$this->additionalData}</span></span>" : '';
     $ariaLabel = $authorityIcon = null;
     if ($isAuthorityLink = $this->authorityLink && $this->authorityType) {
-      $ariaLabel = $this->escapeHtmlAttr($this->translate('authority_' . $this->authorityType));
+      $ariaLabel = $this->escapeHtmlAttr($this->translate($this->authorityType));
       $authorityIcon = 'fa-authority-' . $this->escapeHtmlAttr($this->record($this->record)->getFormatClass($this->authorityType));
     }
   ?>

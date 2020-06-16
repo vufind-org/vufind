@@ -174,7 +174,7 @@
                       <div class="pickup-location-container">
                         <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
                         <?php if (isset($ilsDetails['available']) && !$ilsDetails['available'] && $changePickupLocation && $requestIsEditable): ?>
-                          <div class="changeHolds" data-record-id="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" data-request-id="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" >
+                          <div class="changeHolds" data-record-id="<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" data-request-id="<?=$this->escapeHtml($ilsDetails['requestId']) ?>" data-item-id="<?=$this->escapeHtml($ilsDetails['item_id'] ?? '') ?>">
                             <span class="pickup-change-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i></span>
                             <div class="view-button pickup-location">
                               <div class="dropdown">

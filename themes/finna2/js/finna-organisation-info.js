@@ -166,7 +166,7 @@ finna.organisationInfo = (function finnaOrganisationInfo() {
       cacheSchedules(id, obj);
 
       var result = {};
-      $(['openTimes', 'scheduleDescriptions', 'periodStart', 'weekNum', 'currentWeek', 'phone', 'links', 'facility-image', 'services', 'pictures', 'rss'])
+      $(['openTimes', 'scheduleDescriptions', 'periodStart', 'weekNum', 'currentWeek', 'phone', 'emails', 'links', 'facility-image', 'services', 'pictures', 'rss'])
         .each(function handleField(ind, field) {
           var val = getField(obj, field, id);
           if (val) {

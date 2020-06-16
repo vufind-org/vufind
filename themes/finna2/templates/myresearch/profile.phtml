@@ -219,6 +219,20 @@
               <div class="my-profile-col profile-title"><?=$this->transEsc('Guarantor') ?>:</div>
               <div class="profile-text-value"><?=$this->escapeHtml($guarantorFullName) ?></div>
             <?php endif; ?>
+            <?php if (!empty($this->profile['guarantors'])): ?>
+              <?php $i = 0; ?>
+              <?php foreach ($this->profile['guarantors'] as $guarantor): ?>
+                <div class="my-profile-col profile-title"><?=++$i == 1 ? $this->transEsc('Guarantor') . ':' : ''?></div>
+                <?php
+                  $guarantorFullName = trim(
+                    ($guarantor['firstname'] ?? '')
+                    . ' '
+                    . ($guarantor['lastname'] ?? '')
+                  );
+                ?>
+                <div class="profile-text-value"><?=$this->escapeHtml($guarantorFullName) ?></div>
+              <?php endforeach; ?>
+            <?php endif; ?>
             <?php if (!empty($this->profile['guarantees'])): ?>
               <?php $i = 0; ?>
               <?php foreach ($this->profile['guarantees'] as $guarantee): ?>
