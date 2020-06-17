@@ -349,8 +349,12 @@ abstract class AbstractShibboleth extends AbstractBase
     protected function getAttribute($request, $attribute)
     {
         $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
-        return ($proxy) ? $request->getHeader($this->normalize($attribute))
-            : ($request->getServer()->get($attribute) ?? null);
+        if ($proxy) {
+            $header = $request->getHeader($this->normalize($attribute));
+            return ($header) ? $header->getFieldValue() : null;
+        } else {
+            return ($request->getServer()->get($attribute) ?? null);
+        }
     }
 
     /**

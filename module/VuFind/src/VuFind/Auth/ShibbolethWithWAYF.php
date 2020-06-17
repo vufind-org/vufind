@@ -75,6 +75,9 @@ class ShibbolethWithWAYF extends AbstractShibboleth
     protected function getShibbolethConfiguration($request)
     {
         $entityId = $this->fetchCurrentEntityId($request);
+        if (!isset($entityId) || empty($entityId)) {
+            throw new AuthException('Missing entityId in request.');
+        }
         $config = $this->config->Shibboleth->toArray();
         $idpConfig = null;
         $prefix = null;
