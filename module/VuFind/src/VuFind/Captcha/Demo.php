@@ -1,6 +1,6 @@
 <?php
 /**
- * CAPTCHA plugin manager
+ * Demo CAPTCHA (expect hard-coded value; used for test suite only).
  *
  * PHP version 7
  *
@@ -23,14 +23,14 @@
  * @package  CAPTCHA
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
 namespace VuFind\Captcha;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * CAPTCHA plugin manager
+ * Demo CAPTCHA (expect hard-coded value; used for test suite only).
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -38,40 +38,17 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class Demo extends AbstractBase
 {
     /**
-     * Default plugin aliases.
+     * Pull the captcha field from controller params and check them for accuracy
      *
-     * @var array
-     */
-    protected $aliases = [
-        'demo' => Demo::class,
-        'figlet' => Figlet::class,
-        'image' => Image::class,
-        'recaptcha' => ReCaptcha::class,
-    ];
-
-    /**
-     * Default plugin factories.
+     * @param Params $params Controller params
      *
-     * @var array
+     * @return bool
      */
-    protected $factories = [
-        Demo::class => InvokableFactory::class,
-        Figlet::class => FigletFactory::class,
-        Image::class => ImageFactory::class,
-        ReCaptcha::class => ReCaptchaFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function verify(Params $params): bool
     {
-        return AbstractBase::class;
+        return $params->fromPost('demo_captcha') === 'demo';
     }
 }
