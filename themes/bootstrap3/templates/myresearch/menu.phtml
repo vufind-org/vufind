@@ -5,7 +5,7 @@
   $ilsOnline = ('ils-none' !== $this->ils()->getOfflineMode());
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
-<h4><?=$this->transEsc('Your Account')?></h4>
+<h3><?=$this->transEsc('Your Account')?></h3>
 <div class="myresearch-menu account-menu">
   <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
@@ -71,8 +71,9 @@
     </a>
   <?php endif; ?>
 </div>
+
 <?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
-  <h4><?=$this->transEsc('Your Lists')?></h4>
+  <h3><?=$this->transEsc('Your Lists')?></h3>
   <div class="myresearch-menu">
     <a href="<?=$this->url('myresearch-favorites')?>"<?=$this->active == 'favorites' ? ' class="active"' : ''?>>
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Your Favorites')?>
