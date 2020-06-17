@@ -62,6 +62,9 @@ class UserListFactory extends RowGatewayFactory
         }
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('List', $sessionManager);
-        return parent::__invoke($container, $requestedName, [$session]);
+        return parent::__invoke(
+            $container, $requestedName,
+            [$container->get(\VuFind\Tags::class), $session]
+        );
     }
 }

@@ -795,7 +795,7 @@ class MyResearchController extends AbstractBase
                 'listId' => $current->list_id,
                 'listTitle' => $current->list_title,
                 'notes' => $current->notes,
-                'tags' => $user->getTagString($id, $current->list_id, $source)
+                'tags' => $user->getTagString($user->getTags($id, $current->list_id, $source))
             ];
         }
 
@@ -909,8 +909,22 @@ class MyResearchController extends AbstractBase
             };
 
             $results = $runner->run($request, 'Favorites', $setupCallback);
+            $listTags = [];
+
+            if ($this->listTagsEnabled()) {
+                $list = $results->getListObject();
+                $user = $this->getUser();
+                if ($list && $user) {
+                    foreach ($user->getListTags($list->id, $user->id) as $tag) {
+                        $listTags[$tag->id] = $tag->tag;
+                    }
+                }
+            }
             return $this->createViewModel(
-                ['params' => $results->getParams(), 'results' => $results]
+                [
+                    'params' => $results->getParams(), 'results' => $results,
+                    'listTags' => $listTags
+                ]
             );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
@@ -1020,7 +1034,14 @@ class MyResearchController extends AbstractBase
         }
 
         // Send the list to the view:
-        return $this->createViewModel(['list' => $list, 'newList' => $newList]);
+        return $this->createViewModel(
+            [
+                'list' => $list,
+                'newList' => $newList,
+                'listTags' => $this->listTagsEnabled()
+                    ? $user->getTagString($list->getListTags()) : null
+            ]
+        );
     }
 
     /**

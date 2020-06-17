@@ -275,28 +275,34 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Same as getTags(), but returns a string for use in edit mode rather than an
-     * array of tag objects.
+     * Get tags assigned by the user to a favorite list.
      *
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source
-     * (null for no filter).
+     * @param int $listId List id
+     *
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     */
+    public function getListTags($listId)
+    {
+        return $this->getDbTable('Tags')
+            ->getForList($listId, $this->id);
+    }
+
+    /**
+     * Returns a string for use in edit mode.
+     *
+     * @param array $tags Tags (output from getTags)
      *
      * @return string
      */
-    public function getTagString($resourceId = null, $listId = null, $source = null)
+    public function getTagString($tags)
     {
-        $myTagList = $this->getTags($resourceId, $listId, $source);
         $tagStr = '';
-        if (count($myTagList) > 0) {
-            foreach ($myTagList as $myTag) {
-                if (strstr($myTag->tag, ' ')) {
-                    $tagStr .= "\"$myTag->tag\" ";
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (strstr($tag->tag, ' ')) {
+                    $tagStr  .= "\"$tag->tag\" ";
                 } else {
-                    $tagStr .= "$myTag->tag ";
+                    $tagStr .= "$tag->tag ";
                 }
             }
         }

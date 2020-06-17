@@ -223,7 +223,7 @@ class ResourceTags extends Gateway
      * Unlink rows for the specified resource.
      *
      * @param string|array $resource ID (or array of IDs) of resource(s) to
-     * unlink (null for ALL matching resources)
+     * unlink (null for ALL matching resources, 'listTag' for user list tags)
      * @param string       $user     ID of user removing links
      * @param string       $list     ID of list to unlink (null for ALL matching
      * tags, 'none' for tags not in a list, true for tags only found in a list)
@@ -237,10 +237,16 @@ class ResourceTags extends Gateway
         $callback = function ($select) use ($resource, $user, $list, $tag) {
             $select->where->equalTo('user_id', $user);
             if (null !== $resource) {
-                if (!is_array($resource)) {
-                    $resource = [$resource];
+                if ($resource === 'listTag') {
+                    // special case -- if $resource is set to the string "listTag",
+                    // we want to retrieve tags assigned to a user list.
+                    $select->where->isNull('resource_id');
+                } else {
+                    if (!is_array($resource)) {
+                        $resource = [$resource];
+                    }
+                    $select->where->in('resource_id', $resource);
                 }
-                $select->where->in('resource_id', $resource);
             }
             if (null !== $list) {
                 if (true === $list) {
