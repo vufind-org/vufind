@@ -188,7 +188,7 @@ DROP TABLE IF EXISTS "user_resource";
 CREATE TABLE user_resource (
 id SERIAL,
 user_id int NOT NULL,
-resource_id int NOT NULL,
+resource_id int DEFAULT NULL,
 list_id int DEFAULT NULL,
 notes text,
 saved timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

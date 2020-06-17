@@ -260,7 +260,7 @@ CREATE TABLE `user_list` (
 CREATE TABLE `user_resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `resource_id` int(11) NOT NULL,
+  `resource_id` int(11) DEFAULT NULL,
   `list_id` int(11) DEFAULT NULL,
   `notes` text,
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
