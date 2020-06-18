@@ -682,7 +682,7 @@ class Loader extends \VuFind\ImageLoader
                 }
             } catch (\Exception $e) {
                 $this->debug(
-                    get_class($e) . ' during processing of ' . $apiName
+                    get_class($e) . ' during processing of ' . $handler['apiName']
                     . ': ' . $e->getMessage()
                 );
             }
