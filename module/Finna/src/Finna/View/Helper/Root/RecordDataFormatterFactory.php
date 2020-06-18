@@ -461,6 +461,13 @@ class RecordDataFormatterFactory
         );
         $setTemplateLine(
             'Subjects',
+            'getAllSubjectHeadings', 'data-allSubjectHeadings.phtml',
+            [
+                'context' => ['class' => 'recordSubjects']
+            ]
+        );
+        $setTemplateLine(
+            'subjects_extended',
             'getAllSubjectHeadingsExtended', 'data-allSubjectHeadingsExtended.phtml',
             [
                 'context' => ['class' => 'recordSubjects']
