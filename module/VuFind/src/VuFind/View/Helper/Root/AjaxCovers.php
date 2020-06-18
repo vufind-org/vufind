@@ -40,7 +40,7 @@ namespace VuFind\View\Helper\Root;
 class AjaxCovers extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Render javascript for load cover by ajax for detial
+     * Render javascript for load cover by ajax for detail
      *
      * @param string $size Size of cover
      *
@@ -53,7 +53,7 @@ class AjaxCovers extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render javascript for load cover by ajax for detial
+     * Render javascript for load cover by ajax for detail
      *
      * @param string $size Size of cover
      *
