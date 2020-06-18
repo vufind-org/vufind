@@ -6,7 +6,6 @@
     $cover = $coverDetails['html'];
     $preview = ($this->previewOverride ?? false)
       ? $this->previewOverride : $this->record($this->driver)->getPreviews();
-    echo $this->ajaxCovers()->detail('large');
   ?>
   <?php if ($QRCode || $cover || $preview): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">

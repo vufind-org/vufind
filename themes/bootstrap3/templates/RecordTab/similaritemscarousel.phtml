@@ -1,5 +1,6 @@
 <h2><?=$this->transEsc('Similar Items')?></h2>
-<?php $similarRecords = $this->tab->getResults(); ?>
+<?php $similarRecords = $this->tab->getResults();
+?>
 <?php if (!empty($similarRecords)): ?>
   <?php $perPage = 4 ?>
   <div id="similar-items-carousel" class="carousel slide" data-ride="carousel">
@@ -14,12 +15,13 @@
     <!-- Wrapper for slides -->
     <div class="carousel-inner">
       <div class="item active">
-        <?php foreach ($similarRecords as $index => $data): ?>
+        <?php foreach ($similarRecords as $index => $data):?>
           <div class="carousel-item">
             <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
               <?php $thumb = $this->record($data)->getThumbnail('large'); ?>
-              <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
-              <?=$this->ajaxCovers()->detail('large')?>
+                <?php $coverDetails = $this->record($data)->getCoverDetails('core', 'medium', $thumb);
+                $cover = $coverDetails['html'];?>
+                <?=$cover?>
               <div class="content">
                 <?php $formats = $data->getFormats(); ?>
                 <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
@@ -54,6 +56,7 @@
 <?php endif; ?>
 <?php
   $script = <<<JS
+loadCovers();
 var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {
   if(--normalizeHeightCount > 0) return;

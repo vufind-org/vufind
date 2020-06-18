@@ -463,7 +463,9 @@ class Record extends AbstractClassBasedTemplateRenderer
                     break;
                 }
             }
-
+            if ($details['size'] === false) {
+                list($details['size']) = explode(':', $preferredSize);
+            }
             $details['html'] = $this->contextHelper->renderInContext(
                 'record/cover.phtml', $details
             );

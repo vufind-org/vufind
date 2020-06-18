@@ -1,5 +1,0 @@
-<?php
-if ($this->config()->ajaxCoversEnabled()) {
-    $coversScript = "loadCoverForDetail('$size');";
-    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $coversScript, 'SET');
-}

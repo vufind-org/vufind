@@ -1,9 +1,9 @@
 /*global VuFind */
-function loadCover(data, selector) {
+function loadCoverByElement(data, element) {
   var url = VuFind.path + '/AJAX/JSON?method=' + 'getRecordCover';
   function coverCallback(response) {
     if (response.data.url !== false) {
-      $(this.elementSelector).attr("src", response.data.url);
+      element.attr("src", response.data.url);
     }
   }
   $.ajax({
@@ -11,34 +11,19 @@ function loadCover(data, selector) {
     url: url,
     method: "GET",
     data: data,
-    elementSelector: selector,
+    element: element,
     success: coverCallback
   });
 }
 
-function loadCoversForResults(size) { // eslint-disable-line no-unused-vars
-  var results = $('div.result');
-  var ids = [];
-  results.each(function addId(index, element) {
-    ids.push({
-      elementId: $(element).attr("id"),
-      data: {
-        source: $(this).find(".hiddenSource").val(),
-        recordId: $(this).find(".hiddenId").val(),
-        size: (typeof size !== 'undefined') ? size : 'small'
-      }
-    });
-  });
-  ids.forEach(function batchLoadCovers(value) {
-    loadCover(value.data, "#" + value.elementId + " .recordcover");
+function loadCovers() {
+  $('.recordcover').each(function getDataAndLoadCovers() {
+    var data = {
+      source: $(this).data('recordsource'),
+      recordId: $(this).data('recordid'),
+      size: $(this).data('coversize')
+    };
+    loadCoverByElement(data, $(this));
   });
 }
-
-function loadCoverForDetail(size) { // eslint-disable-line no-unused-vars
-  var data = {
-    source: $(".record .hiddenSource").val(),
-    recordId: $(".record .hiddenId").val(),
-    size: (typeof size !== 'undefined') ? size : 'small'
-  };
-  loadCover(data, ".record .recordcover");
-}
+$(document).ready(loadCovers);
