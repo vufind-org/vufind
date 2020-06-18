@@ -95,6 +95,10 @@ function registerAjaxCommentRecord(_context) {
       id: id,
       source: recordSource
     };
+    $(form).find("input[name^='captcha-id-'], input[name^='captcha-input-']").each(function(){
+      var input = $(this);
+      data[input.attr('name')] = input.val();
+    });
     if (typeof grecaptcha !== 'undefined') {
       var recaptcha = $(form).find('.g-recaptcha');
       if (recaptcha.length > 0) {
