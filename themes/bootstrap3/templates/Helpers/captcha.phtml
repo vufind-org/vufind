@@ -12,7 +12,7 @@
     <?php foreach ($this->captchas as $i => $captcha):?>
       <?php $active = $i == 0 ? ' class="active"' : ''?>
       <li<?=$active?>>
-        <a href="#<?=$captcha->getId()?>" role="tab" data-toggle="tab"><?=$captcha->getId()?></a>
+        <a href="#<?=$captcha->getId()?>" role="tab" data-toggle="tab"><?=$this->transEsc('captcha_method_' . strtolower($captcha->getId()), [], $captcha->getId())?></a>
       </li>
     <?php endforeach;?>
   </ul>
