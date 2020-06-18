@@ -1,4 +1,4 @@
-/*global Event, grecaptcha, isPhoneNumberValid */
+/*global grecaptcha, isPhoneNumberValid */
 /*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
 
 // IE 9< console polyfill
@@ -49,7 +49,7 @@ var VuFind = (function VuFind() {
 
   var addTranslations = function addTranslations(s) {
     for (var i in s) {
-      if (s.hasOwnProperty(i)) {
+      if (Object.prototype.hasOwnProperty.call(s, i)) {
         _translations[i] = s[i];
       }
     }
@@ -59,7 +59,7 @@ var VuFind = (function VuFind() {
     var translation = _translations[op] || op;
     if (replacements) {
       for (var key in replacements) {
-        if (replacements.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(replacements, key)) {
           translation = translation.replace(key, replacements[key]);
         }
       }
@@ -73,7 +73,7 @@ var VuFind = (function VuFind() {
   var refreshPage = function refreshPage() {
     var parts = window.location.href.split('#');
     if (typeof parts[1] === 'undefined') {
-      window.location.href = window.location.href;
+      window.location.reload();
     } else {
       var href = parts[0];
       // Force reload with a timestamp

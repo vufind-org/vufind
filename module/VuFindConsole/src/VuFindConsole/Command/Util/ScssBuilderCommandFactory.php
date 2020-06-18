@@ -1,10 +1,10 @@
 <?php
 /**
- * Generic Amazon content plugin factory.
+ * Factory for Util/ScssBuilder command.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content;
+namespace VuFindConsole\Command\Util;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Generic Amazon content plugin factory.
+ * Factory for Util/ScssBuilder command.
  *
  * @category VuFind
- * @package  Content
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractAmazonFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class ScssBuilderCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,18 +58,8 @@ class AbstractAmazonFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
-        }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $associate = isset($config->Content->amazonassociate)
-            ? $config->Content->amazonassociate : null;
-        $secret = isset($config->Content->amazonsecret)
-            ? $config->Content->amazonsecret : null;
-        $label = $container->get(\Laminas\Mvc\I18n\Translator::class)->translate(
-            'Supplied by Amazon'
-        );
-        return new $requestedName($associate, $secret, $label);
+        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
+        $cacheDir = $cacheManager->getCacheDir() . 'scss/';
+        return new $requestedName($cacheDir, ...($options ?? []));
     }
 }

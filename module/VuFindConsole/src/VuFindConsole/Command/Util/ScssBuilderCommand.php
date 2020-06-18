@@ -1,10 +1,10 @@
 <?php
 /**
- * Generic Amazon content loader.
+ * Console command: build CSS from SCSS.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,69 +20,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content;
+namespace VuFindConsole\Command\Util;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
+use VuFindTheme\ScssCompiler;
 
 /**
- * Generic Amazon content loader.
+ * Console command: build CSS from SCSS.
  *
  * @category VuFind
- * @package  Content
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractAmazon extends AbstractBase
+class ScssBuilderCommand extends AbstractCssBuilderCommand
 {
     /**
-     * Associate ID
+     * The name of the command (the part after "public/index.php")
      *
      * @var string
      */
-    protected $associate;
+    protected static $defaultName = 'util/scssBuilder';
 
     /**
-     * Secret key
+     * Name of precompiler format
      *
      * @var string
      */
-    protected $secret;
+    protected $format = 'SCSS';
 
     /**
-     * "Supplied by Amazon" label, appropriately translated
+     * Build the LESS compiler.
      *
-     * @var string
-     */
-    protected $label;
-
-    /**
-     * Constructor
+     * @param OutputInterface $output Output object
      *
-     * @param string $associate Associate ID
-     * @param string $secret    Secret key
-     * @param string $label     "Supplied by Amazon" label, appropriately translated
+     * @return ScssCompiler
      */
-    public function __construct($associate, $secret, $label)
+    protected function getCompiler(OutputInterface $output)
     {
-        $this->associate = $associate;
-        $this->secret = $secret;
-        $this->label = $label;
-    }
-
-    /**
-     * Get copyright message
-     *
-     * @param string $isbn ISBN to use for linking
-     *
-     * @return string
-     */
-    protected function getCopyright($isbn)
-    {
-        return '<div><a target="new" href="http://amazon.com/dp/'
-            . $isbn . '">' . htmlspecialchars($this->label) . '</a></div>';
+        return new ScssCompiler($output);
     }
 }

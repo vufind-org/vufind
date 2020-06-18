@@ -1,10 +1,10 @@
 <?php
 /**
- * Amazon cover loader factory
+ * Factory for KohaRest ILS driver.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content\Covers;
+namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Amazon cover loader factory
+ * Factory for KohaRest ILS driver.
  *
  * @category VuFind
- * @package  Content
+ * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
 {
     /**
      * Create an object
@@ -53,8 +53,6 @@ class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -62,10 +60,10 @@ class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $associate = $config->Content->amazonassociate ?? null;
-        $secret = $config->Content->amazonsecret ?? null;
-        return new $requestedName($associate, $secret);
+        $sessionFactory = function ($namespace) use ($container) {
+            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
+        };
+        return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }
 }

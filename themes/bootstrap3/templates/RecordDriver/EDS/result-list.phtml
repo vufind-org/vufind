@@ -103,7 +103,7 @@
 
       <?php /* Links from DOI linker */ ?>
       <?php $doi = $this->doi($this->driver, 'results'); if ($doi->isActive()):?>
-        <?=$doi->renderTemplate()?>
+        <div><?=$doi->renderTemplate()?></div>
       <?php endif; ?>
     </div>
     <div class="result-links hidden-print">
@@ -149,6 +149,8 @@
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
+
+      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl())?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
