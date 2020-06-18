@@ -95,7 +95,7 @@ function registerAjaxCommentRecord(_context) {
       id: id,
       source: recordSource
     };
-    $(form).find("input[name^='captcha-id-'], input[name^='captcha-input-']").each(function(){
+    $(form).find("input[name^='captcha-id-'], input[name^='captcha-input-']").each(function appendCaptchaData() {
       var input = $(this);
       data[input.attr('name')] = input.val();
     });
