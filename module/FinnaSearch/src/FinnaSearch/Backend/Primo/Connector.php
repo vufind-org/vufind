@@ -63,6 +63,24 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     protected $cacheManager = null;
 
     /**
+     * Constructor
+     *
+     * Sets up the Primo API Client
+     *
+     * @param string     $url    Primo API URL (either a host name and port or a full
+     * path to the brief search including a query string or a trailing question mark)
+     * @param string     $inst   Institution code
+     * @param HttpClient $client HTTP client
+     */
+    public function __construct($url, $inst, $client)
+    {
+        parent::__construct($url, $inst, $client);
+        if ($qs = parse_url($url, PHP_URL_QUERY)) {
+            $this->host .= "{$qs}&";
+        }
+    }
+
+    /**
      * Set hidden filters
      *
      * @param array $filters Hidden filters

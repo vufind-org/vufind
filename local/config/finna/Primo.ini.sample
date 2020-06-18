@@ -19,7 +19,8 @@ timeout = 30
 ; http://XYZ.hosted.exlibrisgroup.com:1701 where XYZ is the ID of the Primo
 ; instance (e.g. primoapac01). Use http://mlplus.hosted.exlibrisgroup.com for
 ; MetaLib Plus.
-; You may also enter the full URL including a path to the brief search if necessary.
+; You may also enter the full URL including a path to the brief search and
+; a query string if necessary.
 url = "https://ndl-pc-fe1.hosted.exlibrisgroup.com"
 
 ; This section controls the result limit options for search results. default_limit
