@@ -440,7 +440,7 @@ class Loader extends \VuFind\ImageLoader
             $urls = $this->getCoverUrls();
             foreach ($urls as $url) {
                 $success = $this->processImageURLForSource(
-                    $url['url'], $url['handler']->isCacheAllowed, $url['apiName']
+                    $url['url'], $url['handler']->isCacheAllowed(), $url['apiName']
                 );
                 if ($success) {
                     return true;
