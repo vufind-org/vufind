@@ -97,9 +97,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
 
         $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
             : ['size' => $size];
-        $this->coverLoader->storeSanitizedSettings($settings);
         $handlers = $this->coverLoader->getHandlers();
-        $ids = $this->coverLoader->getIdentifiers();
+        $ids = $this->coverLoader->getIdentifiersForSettings($settings);
 
         foreach ($handlers as $handler) {
             try {

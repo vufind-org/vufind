@@ -277,12 +277,11 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Support method for loadImage() -- sanitize and store some key values.
      *
-     * @param array $settings Settings from loadImage (with missing defaults
-     * already filled in).
+     * @param array $settings Settings from loadImage
      *
      * @return void
      */
-    public function storeSanitizedSettings($settings)
+    protected function storeSanitizedSettings($settings)
     {
         $settings = array_merge($this->getDefaultSettings(), $settings);
         $this->isbn = new ISBN($settings['isbn']);
@@ -386,7 +385,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    public function getIdentifiers()
+    protected function getIdentifiers()
     {
         $ids = [];
         if ($this->isbn && $this->isbn->isValid()) {
@@ -662,7 +661,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return array
      */
-    public function getCoverUrls()
+    protected function getCoverUrls()
     {
         $ids = $this->getIdentifiers();
         $handlers = $this->getHandlers();
@@ -711,5 +710,18 @@ class Loader extends \VuFind\ImageLoader
                 'handler' => $this->apiManager->get($apiName),
             ];
         }
+    }
+
+    /**
+     * Get identifiers for given settings
+     *
+     * @param array $settings Settings from loadImage
+     *
+     * @return array
+     */
+    public function getIdentifiersForSettings($settings)
+    {
+        $this->storeSanitizedSettings($settings);
+        return $this->getIdentifiers();
     }
 }
