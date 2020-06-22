@@ -89,6 +89,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         parent::init();
 
+        $this->patronStatusMappings['Patron::DebarredWithReason']
+            = 'patron_status_restricted_with_reason';
+
         $this->groupHoldingsByLocation
             = isset($this->config['Holdings']['group_by_location'])
             ? $this->config['Holdings']['group_by_location']
@@ -236,6 +239,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                     'query_blocks' => 1,
                     'query_relationships' => 1,
                     'query_messaging_preferences' => 1,
+                    'query_messages' => 1,
                 ]
             ]
         );
@@ -1587,5 +1591,42 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             null,
             $description
         );
+    }
+
+    /**
+     * Get a description for a block
+     *
+     * @param string $reason  Koha block reason
+     * @param array  $details Any details related to the reason
+     *
+     * @return string
+     */
+    protected function getPatronBlockReason($reason, $details)
+    {
+        $params = [];
+        switch ($reason) {
+        case 'Hold::MaximumHoldsReached':
+            $params = [
+                '%%blockCount%%' => $details['current_hold_count'],
+                '%%blockLimit%%' => $details['max_holds_allowed']
+            ];
+            break;
+        case 'Patron::Debt':
+        case 'Patron::DebtGuarantees':
+            $params = [
+                '%%blockCount%%' => $details['current_outstanding'] ?? '-',
+                '%%blockLimit%%' => $details['max_outstanding'] ?? '-'
+            ];
+            break;
+        case 'Patron::Debarred':
+            if (!empty($details['comment'])) {
+                $params = [
+                    '%%reason%%' => $details['comment']
+                ];
+                $reason = 'Patron::DebarredWithReason';
+            }
+            break;
+        }
+        return $this->translate($this->patronStatusMappings[$reason] ?? '', $params);
     }
 }
