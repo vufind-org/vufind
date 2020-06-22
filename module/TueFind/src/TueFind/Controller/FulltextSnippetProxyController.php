@@ -32,6 +32,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     protected $logger;
     protected $configLoader;
     protected $maxSnippets = 5;
+    protected $text_type_to_description_map;
     const FIELD = 'full_text';
     const DOCUMENT_ID = 'id';
     const TEXT_TYPE = 'text_type';
@@ -64,6 +65,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'full_text_cache';
         $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
+        $this->text_type_to_description_map = array_flip(self::description_to_text_type_map);
         parent::__construct($sm);
     }
 
@@ -73,15 +75,17 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function getCurrentLang() {
+        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+        return $this->getTranslatorLocale();
+    }
+
+
     protected function selectSynonymAnalyzer($synonyms) {
         if ($synonyms == "all")
             return 'synonyms_all';
-        if ($synonyms == "lang") {
-            $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
-            $current_lang = $this->getTranslatorLocale();
-            $analyzer = 'synonyms_' . $current_lang;
-            return $analyzer;
-        }
+        if ($synonyms == "lang")
+            return 'synonyms_' . $this->getCurrentLang();
         return 'fulltext_analyzer';
     }
 
@@ -137,7 +141,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $params = [
             'index' => $index,
             'body' => [
-                '_source' => $paged_results ? [ "page", "full_text", "id" ] : false,
+                '_source' => $paged_results ? [ "page", "text_type", "full_text", "id" ] : false,
                 'size' => '100',
                 'sort' => $paged_results && $verbose ? [ self::TEXT_TYPE => 'asc', 'page' => 'asc' ] : [ '_score' ],
                 'query' => [
@@ -321,6 +325,16 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     }
 
 
+    protected function extractSnippetTextType($hit) {
+       $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+       if (isset($hit['_source']['text_type'])) {
+           $text_type_description = $this->text_type_to_description_map[$hit['_source']['text_type']];
+           return $this->translate($text_type_description);
+       }
+       return $this->translate("Unknown");
+    }
+
+
     protected function extractSnippets($response) {
         $top_level_hits = [];
         $hits = [];
@@ -358,9 +372,9 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                     // Disable links to avoid failing internal references
                     $snippet_page = preg_replace('/<a[^>]*?>/i','<a style="color:inherit; text-decoration:inherit; cursor:inherit">', $snippet_page);
                     $snippet = $this->extractSnippetParagraph($snippet_page);
-                    array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style]);
+                    array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style, 'text_type' => $this->extractSnippetTextType($hit)]);
                 } else {
-                    array_push($snippets, [ 'snippet' => $highlight_result ]);
+                    array_push($snippets, [ 'snippet' => $highlight_result, 'text_type' => $this->extractSnippetTextType($hit) ]);
                 }
             }
         }
