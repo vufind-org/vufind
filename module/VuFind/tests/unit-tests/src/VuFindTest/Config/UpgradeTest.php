@@ -540,4 +540,21 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
     }
+
+    /**
+     * Test ReCaptcha setting migration.
+     *
+     * @return void
+     */
+    public function testReCaptcha()
+    {
+        $upgrader = $this->getUpgrader('recaptcha');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $captcha = $results['config.ini']['Captcha'];
+        $this->assertEquals('public', $captcha['recaptcha_siteKey']);
+        $this->assertEquals('private', $captcha['recaptcha_secretKey']);
+        $this->assertEquals('theme', $captcha['recaptcha_theme']);
+        $this->assertEquals(['recaptcha'], $captcha['types']);
+    }
 }

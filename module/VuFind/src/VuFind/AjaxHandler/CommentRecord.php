@@ -28,7 +28,7 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Controller\Plugin\Recaptcha;
+use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -54,11 +54,11 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     protected $table;
 
     /**
-     * Recaptcha controller plugin
+     * Captcha controller plugin
      *
-     * @var Recaptcha
+     * @var Captcha
      */
-    protected $recaptcha;
+    protected $captcha;
 
     /**
      * Logged in user (or false)
@@ -77,16 +77,16 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource  $table     Resource database table
-     * @param Recaptcha $recaptcha Recaptcha controller plugin
-     * @param User|bool $user      Logged in user (or false)
-     * @param bool      $enabled   Are comments enabled?
+     * @param Resource  $table   Resource database table
+     * @param Captcha   $captcha Captcha controller plugin
+     * @param User|bool $user    Logged in user (or false)
+     * @param bool      $enabled Are comments enabled?
      */
-    public function __construct(Resource $table, Recaptcha $recaptcha, $user,
+    public function __construct(Resource $table, Captcha $captcha, $user,
         $enabled = true
     ) {
         $this->table = $table;
-        $this->recaptcha = $recaptcha;
+        $this->captcha = $captcha;
         $this->user = $user;
         $this->enabled = $enabled;
     }
@@ -99,11 +99,11 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     protected function checkCaptcha()
     {
         // Not enabled? Report success!
-        if (!$this->recaptcha->active('userComments')) {
+        if (!$this->captcha->active('userComments')) {
             return true;
         }
-        $this->recaptcha->setErrorMode('none');
-        return $this->recaptcha->validate();
+        $this->captcha->setErrorMode('none');
+        return $this->captcha->verify();
     }
 
     /**
@@ -142,7 +142,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
 
         if (!$this->checkCaptcha()) {
             return $this->formatResponse(
-                $this->translate('recaptcha_not_passed'),
+                $this->translate('captcha_not_passed'),
                 self::STATUS_HTTP_FORBIDDEN
             );
         }
