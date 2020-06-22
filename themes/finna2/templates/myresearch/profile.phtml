@@ -57,7 +57,13 @@
           <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
         </div>
       <?php endif; ?>
-      <?= $this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
+      <?=$this->partial('myresearch/borrowing-block.phtml', ['blocks' => $this->blocks]); ?>
+      <?php if (!empty($this->profile['expiration_soon']) && !empty($this->profile['expiration_date'])): ?>
+        <div class="flash-message alert alert-warning">
+          <?=$this->transEsc('patron_status_card_expires_soon', ['%%expirationDate%%' => $this->profile['expiration_date']])?>
+        </div>
+      <?php endif; ?>
+      <?=$this->partial('myresearch/profile-messages.phtml', ['messages' => $this->profile['messages'] ?? []]); ?>
       <?php if (is_array($this->profile)): ?>
         <div class="myresearch-profile-header"><span><?=$this->transEsc('Library Card Settings');?></span></div>
         <div class="myresearch-profile-list library-profile">

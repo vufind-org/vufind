@@ -1,0 +1,17 @@
+<!-- START of: finna - myresearch/profile-messages.phtml -->
+<?php foreach ($this->messages as $message): ?>
+  <?php
+    $header = $this->transEsc('Message');
+    if (!empty($message['date'])) {
+      $header .= ' ' . $this->escapeHtml($message['date']);
+    }
+    if (!empty($message['library'])) {
+      $header .= ' (' . $this->escapeHtml($message['library']) . ')';
+    }
+  ?>
+  <div class="flash-message alert alert-info">
+    <div class="message-header"><?=$header?>:</div>
+    <div class="message-body"><?=$this->cleanHtml(str_replace("\n", '<br>', $message['message']))?></div>
+  </div>
+<?php endforeach; ?>
+<!-- END of: finna - myresearch/profile-messages.phtml -->

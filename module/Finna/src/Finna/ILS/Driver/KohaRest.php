@@ -310,6 +310,15 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $messagingSettings[$type] = $settings;
         }
 
+        $messages = [];
+        foreach ($result['messages'] ?? [] as $message) {
+            $messages[] = [
+                'date' => $this->convertDate($message['date']),
+                'library' => $this->getLibraryName($message['library_id']),
+                'message' => $message['message']
+            ];
+        }
+
         $phoneField = isset($this->config['Profile']['phoneNumberField'])
             ? $this->config['Profile']['phoneNumberField']
             : 'mobile';
@@ -338,6 +347,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'loan_history' => $result['privacy'],
             'messagingServices' => $messagingSettings,
             'notes' => $result['opac_notes'],
+            'messages' => $messages,
             'full_data' => $result
         ];
     }
