@@ -53,7 +53,10 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
-    FormatTextType: function(text_type) {
+    FormatTextType: function(text_type, verbose) {
+        // Suppress type tagging in Item Search view
+        if (verbose)
+            return '';
         return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
     },
 
@@ -86,11 +89,11 @@ var TueFind = {
                             }
                             if (snippets[0].hasOwnProperty('page')) {
                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) + 
-                                                                     (!verbose ? TueFind.FormatTextType(a.text_type) : ''));
+                                                                     TueFind.FormatTextType(a.text_type, verbose));
                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else {
-                               $(this).html(snippets.map(a => a.snippet + '<br/>' + (!verbose ? TueFind.FormatTextType(a.text_type) : '')).join('<br/>'));
+                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose)).join('<br/>'));
                             }
                         } else
                             $(this).html("");
