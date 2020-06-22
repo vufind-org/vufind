@@ -86,11 +86,11 @@ var TueFind = {
                             }
                             if (snippets[0].hasOwnProperty('page')) {
                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) + 
-                                                                     TueFind.FormatTextType(a.text_type));
+                                                                     (!verbose ? TueFind.FormatTextType(a.text_type) : ''));
                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else {
-                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type)).join('<br/>'));
+                               $(this).html(snippets.map(a => a.snippet + '<br/>' + (!verbose ? TueFind.FormatTextType(a.text_type) : '')).join('<br/>'));
                             }
                         } else
                             $(this).html("");
