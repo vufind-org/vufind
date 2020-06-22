@@ -341,6 +341,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'country' => $result['country'],
             'category' => $result['category_id'] ?? '',
             'expiration_date' => $expirationDate,
+            'expiration_soon' => !empty($result['expiry_date_near']),
             'hold_identifier' => $result['other_name'],
             'guarantors' => $guarantors,
             'guarantees' => $guarantees,
