@@ -578,7 +578,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
         return [
             'success' => true,
-            'status' => $code == 202
+            'status' => $result['code'] == 202
                 ? 'request_change_done' : 'request_change_accepted',
             'sys_message' => ''
         ];
@@ -1303,7 +1303,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
 
         return [
             'id' => $id,
-            'item_id' => 'HLD_' . $holding['biblionumber'],
+            'item_id' => 'HLD_' . $holdings['biblionumber'],
             'location' => $location,
             'requests_placed' => 0,
             'status' => '',
@@ -1555,5 +1555,26 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $result['reservations'] = $requests;
         }
         return $result;
+    }
+
+    /**
+     * Translate collection name
+     *
+     * @param string $code        Collection code
+     * @param string $description Collection description
+     *
+     * @return string
+     */
+    protected function translateCollection($code, $description)
+    {
+        $prefix = 'collection_';
+        if (!empty($this->config['Catalog']['id'])) {
+            $prefix .= $this->config['Catalog']['id'] . '_';
+        }
+        return $this->translate(
+            "$prefix$code",
+            null,
+            $description
+        );
     }
 }
