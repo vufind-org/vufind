@@ -2,7 +2,7 @@
 <?php if (!empty($blocks)): ?>
   <div class="borrowing-block-container alert alert-info">
     <?php foreach ($blocks as $block): ?>
-      <p class="borrowing-block"><?=$this->transEsc($block)?></p>
+      <p class="borrowing-block"><?=str_replace("\n", '<br>', $this->transEsc($block))?></p>
     <?php endforeach; ?>
   </div>
 <?php endif; ?>
