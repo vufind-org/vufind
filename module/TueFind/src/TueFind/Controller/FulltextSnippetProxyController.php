@@ -141,7 +141,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $params = [
             'index' => $index,
             'body' => [
-                '_source' => $paged_results ? [ "page", "text_type", "full_text", "id" ] : false,
+                '_source' => $paged_results ? [ "id", "full_text", "page", "text_type" ] : ["text_type"],
                 'size' => '100',
                 'sort' => $paged_results && $verbose ? [ self::TEXT_TYPE => 'asc', 'page' => 'asc' ] : [ '_score' ],
                 'query' => [
@@ -327,6 +327,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
     protected function extractSnippetTextType($hit) {
        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+
        if (isset($hit['_source']['text_type'])) {
            $text_type_description = $this->text_type_to_description_map[$hit['_source']['text_type']];
            return $this->translate($text_type_description);
@@ -372,7 +373,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                     // Disable links to avoid failing internal references
                     $snippet_page = preg_replace('/<a[^>]*?>/i','<a style="color:inherit; text-decoration:inherit; cursor:inherit">', $snippet_page);
                     $snippet = $this->extractSnippetParagraph($snippet_page);
-                    array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'style' => $style, 'text_type' => $this->extractSnippetTextType($hit)]);
+                    array_push($snippets, [ 'snippet' => $snippet, 'page' => $page, 'text_type' => $this->extractSnippetTextType($hit), 'style' => $style ]);
                 } else {
                     array_push($snippets, [ 'snippet' => $highlight_result, 'text_type' => $this->extractSnippetTextType($hit) ]);
                 }
