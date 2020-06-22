@@ -57,7 +57,7 @@ var TueFind = {
         return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
     },
 
-    FormatPage: function(page) {
+    FormatPageInformation: function(page) {
         return '[' + page + ']';
     },
 
@@ -85,7 +85,8 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPage(a.page) + TueFind.FormatTextType(a.text_type));
+                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) + 
+                                                                     TueFind.FormatTextType(a.text_type));
                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else {
