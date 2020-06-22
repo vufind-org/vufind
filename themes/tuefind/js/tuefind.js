@@ -54,7 +54,7 @@ var TueFind = {
     },
 
     FormatTextType: function(text_type) {
-        return '<span class="label label-primary iconlabel pull-right">' + text_type + '</span>';
+        return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
     },
 
     FormatPage: function(page) {
