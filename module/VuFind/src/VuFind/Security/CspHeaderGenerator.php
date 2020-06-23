@@ -29,7 +29,7 @@
 namespace VuFind\Security;
 
 use Laminas\Http\Header\ContentSecurityPolicy;
-use VuFind\Http\Header\ContentSecurityPolicyReportOnly;
+use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
 
 /**
  * VuFind class for generating Content Security Policy http headers
