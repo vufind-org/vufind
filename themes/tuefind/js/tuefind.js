@@ -64,8 +64,9 @@ var TueFind = {
         return '[' + page + ']';
     },
 
-    ItemFulltextLink : function(doc_id, query) {
-        return '<span class="pull-right"><a class="btn btn-primary btn-sm" href="/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query) + '#fulltextsearch">' +
+    ItemFulltextLink : function(doc_id, query, scope) {
+        return '<span class="pull-right"><a class="btn btn-primary btn-sm" href="/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query)
+                                                                                 +'&fulltextscope=' + scope  + '#fulltextsearch">' +
                'All Matches</a></span>';
     },
 
@@ -93,7 +94,7 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) + 
+                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
                                                                      TueFind.FormatTextType(a.text_type, verbose));
                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
@@ -104,7 +105,7 @@ var TueFind = {
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
-                    $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query));
+                    $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
             error: function (xhr, ajaxOptions, thrownError) {
@@ -230,10 +231,12 @@ var TueFind = {
         const url_query = window.location.search;
         const url_params = new URLSearchParams(url_query);
         const fulltextquery = url_params.get('fulltextquery');
+        const fulltextscope = url_params.get('fulltextscope');
         if (!fulltextquery)
            return;
         let searchForm_fulltext = $('#searchForm_fulltext');
         searchForm_fulltext.val(fulltextquery);
+        $('#itemFTSearchScope').val(fulltextscope);
         searchForm_fulltext.submit();
     }
 };

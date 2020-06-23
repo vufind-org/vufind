@@ -4,7 +4,10 @@
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(TueFind.HandlePassedFulltextQuery);', 'SET')?>
 <span>
   <select id="itemFTTextTypeScope" class="selectpicker">
-  <?php foreach ($this->driver->getFulltextTypes() as $fulltext_type):
+<?php $fulltext_types = $this->driver->getFulltextTypes();
+      if (count($fulltext_types) > 1)
+          echo '<option value="All Types">' . $this->translate('All Types') . '</option>';
+      foreach ($fulltext_types as $fulltext_type):
           switch ($fulltext_type) {
             case 'Fulltext':
                 echo '<option value="Fulltext">' . $this->translate('Fulltext') . '</option>';
@@ -19,7 +22,7 @@
                 echo '<option value="Summary">' . $this->translate('Summary') . '</option>';
                 break;
           }
-        endforeach;
+       endforeach;
   ?>
   </select>
   <select id="itemFTSearchScope" class="selectpicker">
@@ -35,7 +38,8 @@
                                                    this.searchForm_fulltext.value,
                                                    true /* be verbose, i.e. return all results*/,
                                                    document.getElementById('itemFTSearchScope').value,
-                                                   document.getElementById('itemFTTextTypeScope').value);
+                                                   (document.getElementById('itemFTTextTypeScope').value == 'All Types' ? '' :
+                                                    document.getElementById('itemFTTextTypeScope').value));
   return false; /*Prevent refresh of entire page even on first load*/">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
     <input id="searchForm_fulltext" class="searchForm form-control search-query" type="text" placeholder="<?=$this->translate('Search the fulltext of this item')?>"/>
