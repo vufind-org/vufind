@@ -64,6 +64,11 @@ var TueFind = {
         return '[' + page + ']';
     },
 
+    ItemFulltextLink : function(doc_id, query) {
+        return '<span class="pull-right"><a class="btn btn-primary btn-sm" href="/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query) + '#fulltextsearch">' +
+               'All Matches</a></span>';
+    },
+
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
         var valid_synonym_terms = new RegExp('lang|all');
         synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
@@ -99,6 +104,7 @@ var TueFind = {
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
+                    $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query));
                 });
             }, // end success
             error: function (xhr, ajaxOptions, thrownError) {
@@ -218,6 +224,17 @@ var TueFind = {
            let input_field = $(input_selector);
            input_field[0].setSelectionRange(input_field.val().length, input_field.val().length);
         }
+    },
+
+    HandlePassedFulltextQuery : function() {
+        const url_query = window.location.search;
+        const url_params = new URLSearchParams(url_query);
+        const fulltextquery = url_params.get('fulltextquery');
+        if (!fulltextquery)
+           return;
+        let searchForm_fulltext = $('#searchForm_fulltext');
+        searchForm_fulltext.val(fulltextquery);
+        searchForm_fulltext.submit();
     }
 };
 

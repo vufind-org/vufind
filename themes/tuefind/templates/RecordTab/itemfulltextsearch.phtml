@@ -1,6 +1,7 @@
 <?php
     $this->headTitle($this->translate('Item Fulltext Search') . ': ' . $this->driver->getBreadcrumb())
 ?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(TueFind.HandlePassedFulltextQuery);', 'SET')?>
 <span>
   <select id="itemFTTextTypeScope" class="selectpicker">
   <?php foreach ($this->driver->getFulltextTypes() as $fulltext_type):
