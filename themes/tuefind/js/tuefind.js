@@ -53,6 +53,17 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
+    FormatTextType: function(text_type, verbose) {
+        // Suppress type tagging in Item Search view
+        if (verbose)
+            return '';
+        return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
+    },
+
+    FormatPageInformation: function(page) {
+        return '[' + page + ']';
+    },
+
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
         var valid_synonym_terms = new RegExp('lang|all');
         synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
@@ -77,11 +88,13 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>[' + a.page + ']');
+                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) + 
+                                                                     TueFind.FormatTextType(a.text_type, verbose));
                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
-                            else
-                               $(this).html(snippets.map(a => a.snippet).join('<br/>'));
+                            else {
+                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose)).join('<br/>'));
+                            }
                         } else
                             $(this).html("");
                     });
