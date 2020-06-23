@@ -53,9 +53,9 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
-    FormatTextType: function(text_type, verbose) {
+    FormatTextType: function(text_type, verbose, types) {
         // Suppress type tagging in Item Search view
-        if (verbose)
+        if (verbose && types != "")
             return '';
         return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
     },
@@ -66,7 +66,7 @@ var TueFind = {
 
     ItemFulltextLink : function(doc_id, query, scope) {
         return '<span class="pull-right"><a class="btn btn-primary btn-sm" href="/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query)
-                                                                                 +'&fulltextscope=' + scope  + '#fulltextsearch">' +
+                                                                                 +'&fulltextscope=' + (scope ? encodeURIComponent(scope) : '')  + '#fulltextsearch">' +
                'All Matches</a></span>';
     },
 
@@ -95,17 +95,18 @@ var TueFind = {
                             }
                             if (snippets[0].hasOwnProperty('page')) {
                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
-                                                                     TueFind.FormatTextType(a.text_type, verbose));
+                                                                     TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else {
-                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose)).join('<br/>'));
+                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
                             }
                         } else
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
-                    $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
+                    if (!verbose)
+                        $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
             error: function (xhr, ajaxOptions, thrownError) {
