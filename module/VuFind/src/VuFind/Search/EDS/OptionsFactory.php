@@ -28,6 +28,7 @@
 namespace VuFind\Search\EDS;
 
 use Interop\Container\ContainerInterface;
+use VuFindSearch\Backend\EDS\ApiException;
 
 /**
  * Factory for EDS search options objects.
@@ -67,7 +68,12 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
         if (!isset($session->info)) {
             $backend = $container->get(\VuFind\Search\BackendManager::class)
                 ->get('EDS');
-            $backend->getSessionToken();
+            try {
+                $backend->getSessionToken();
+            } catch (ApiException $e) {
+                // Retry once to work around occasional 106 errors:
+                $backend->getSessionToken();
+            }
         }
         return parent::__invoke($container, $requestedName, [$session->info]);
     }
