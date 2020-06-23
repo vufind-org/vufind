@@ -65,9 +65,9 @@ var TueFind = {
     },
 
     ItemFulltextLink : function(doc_id, query, scope) {
-        return '<span class="pull-right"><a class="btn btn-primary btn-sm" href="/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query)
+        return '<span class="pull-right"><a class="btn btn-warning btn-sm" href="' + VuFind.path + '/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query)
                                                                                  +'&fulltextscope=' + (scope ? encodeURIComponent(scope) : '')  + '#fulltextsearch">' +
-               'All Matches</a></span>';
+                 VuFind.translate('All Matches') + '</a></span><br/>';
     },
 
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
