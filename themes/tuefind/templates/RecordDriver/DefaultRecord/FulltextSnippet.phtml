@@ -17,9 +17,12 @@
                 break;
             }
             $fulltext_type_filters = $this->driver->getFulltextTypeFilters();
+            $fulltext_types = $this->driver->getFulltextTypes();
       ?>
       TueFind.GetFulltextSnippets("<?=$this->url('home')?>", "<?=$this->driver->getUniqueID()?>", "<?=addslashes($query_terms);?>",
-                                   false /* don't be verbose in this context */, "<?=$synonym_type?>", "<?=implode(',', $fulltext_type_filters)?>");
+                                   false /* don't be verbose in this context */, "<?=$synonym_type?>",
+                                   "<?=(!empty($full_text_type_filters) ? implode(',', $fulltext_type_filters) :
+                                        implode(',', $fulltext_types))?>");
   </script>
 </span>
 <?php endif; ?>
