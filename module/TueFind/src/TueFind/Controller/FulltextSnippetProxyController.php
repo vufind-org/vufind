@@ -428,7 +428,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         }
         if (empty($snippets['snippets'])) {
             return new JsonModel([
-                 'status' => 'NO RESULTS'
+                'status' => 'NO RESULTS'
             ]);
         }
         // Deduplicate snippets (array_values for fixing indices)
