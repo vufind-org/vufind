@@ -1756,8 +1756,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     case 'Transfer':
                         $onHold = false;
                         if (!empty($item['availability']['notes'])) {
-                            foreach ($item['availability']['notes'] as $noteKey
-                                => $note
+                            foreach (array_keys($item['availability']['notes'])
+                                as $noteKey
                             ) {
                                 if ('Item::Held' === $noteKey) {
                                     $onHold = true;
@@ -2149,8 +2149,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getHoldBlockReason($result)
     {
         if (!empty($result['availability']['unavailabilities'])) {
-            foreach ($result['availability']['unavailabilities']
-                as $key => $reason
+            foreach (array_keys($result['availability']['unavailabilities']) as $key
             ) {
                 switch ($key) {
                 case 'Biblio::NoAvailableItems':
