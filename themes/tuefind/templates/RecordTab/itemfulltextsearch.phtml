@@ -32,14 +32,14 @@
   </select>
 </span>
 
-<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" autocomplete="off"
+<form class="searchForm form-horizontal" name="ItemFulltextSearchForm" id="ItemFulltextSearchForm" autocomplete="off"
   onSubmit="javascript:TueFind.GetFulltextSnippets(&quot;<?=$this->url('home')?>&quot;,
                                                    &quot;<?=$this->driver->getUniqueID()?>&quot;,
                                                    this.searchForm_fulltext.value,
                                                    true /* be verbose, i.e. return all results*/,
                                                    document.getElementById('itemFTSearchScope').value,
                                                    (document.getElementById('itemFTTextTypeScope').value == 'All Types' 
-                                                   ? <?=implode(',', $this->driver->getFulltextTypes())?>
+                                                   ? <?="'" . implode(',', $this->driver->getFulltextTypes()) ."'"?>
                                                    : document.getElementById('itemFTTextTypeScope').value));
   return false; /*Prevent refresh of entire page even on first load*/">
   <div class="input-group input-group-sm" style="padding-top:10px; padding-bottom:10px">
