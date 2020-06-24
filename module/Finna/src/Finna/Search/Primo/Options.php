@@ -63,6 +63,8 @@ class Options extends \VuFind\Search\Primo\Options
         if (isset($searchSettings->Autocomplete->enabled)) {
             $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
         }
+        // Load highlighting preference:
+        $this->highlight = !empty($searchSettings->General->highlighting);
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->SpecialFacets->dateRangeVis)) {
             $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis;

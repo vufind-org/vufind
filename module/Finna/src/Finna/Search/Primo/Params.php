@@ -41,6 +41,22 @@ class Params extends \VuFind\Search\Primo\Params
     use \Finna\Search\FinnaParams;
 
     /**
+     * Create search backend parameters for advanced features.
+     *
+     * @return ParamBag
+     */
+    public function getBackendParameters()
+    {
+        $backendParams = parent::getBackendParameters();
+        if ($this->getOptions()->highlightEnabled()) {
+            $backendParams->set('highlight', true);
+            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
+            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
+        }
+        return $backendParams;
+    }
+
+    /**
      * Get a formatted list of checkbox filter values ($field => array of values).
      *
      * @return array

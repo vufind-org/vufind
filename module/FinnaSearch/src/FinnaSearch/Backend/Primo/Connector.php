@@ -117,6 +117,43 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     }
 
     /**
+     * Execute a search. Adds all the querystring parameters into
+     * $this->client and returns the parsed response
+     *
+     * @param string $institution Institution
+     * @param array  $terms       Associative array:
+     *     index       string: primo index to search (default "any")
+     *     lookfor     string: actual search terms
+     * @param array  $params      Associative array of optional arguments:
+     *     phrase      bool:   true if it's a quoted phrase (default false)
+     *     onCampus    bool:   (default true)
+     *     didyoumean  bool:   (default false)
+     *     filterList  array:  (field, value) pairs to filter results (def null)
+     *     pageNumber  string: index of first record (default 1)
+     *     limit       string: number of records to return (default 20)
+     *     sort        string: value to be used by for sorting (default null)
+     *     highlight   bool:   Whether to highlight search words
+     *     Anything in $params not listed here will be ignored.
+     *
+     * Note: some input parameters accepted by Primo are not implemented here:
+     *  - dym (did you mean)
+     *  - highlight
+     *  - more (get more)
+     *  - lang (specify input language so engine can do lang. recognition)
+     *  - displayField (has to do with highlighting somehow)
+     *
+     * @throws \Exception
+     * @return array             An array of query results
+     *
+     * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
+     */
+    public function query($institution, $terms, $params = null)
+    {
+        $this->highlighting = !empty($params['highlight']);
+        return parent::query($institution, $terms, $params);
+    }
+
+    /**
      * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
@@ -288,77 +325,78 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 = 'pci.' . $res['documents'][$i]['recordid'];
 
             // Process highlighting
-            if ($this->highlighting) {
-                // VuFind strips Primo highlighting tags from the description,
-                // so we need to re-read the field (preserving highlighting tags).
-                $description = isset($doc->PrimoNMBib->record->display->description)
-                    ? (string)$doc->PrimoNMBib->record->display->description
-                    : (string)$doc->PrimoNMBib->record->search->description;
+            // VuFind strips Primo highlighting tags from the description,
+            // so we need to re-read the field (preserving highlighting tags).
+            $description = isset($doc->PrimoNMBib->record->display->description)
+                ? (string)$doc->PrimoNMBib->record->display->description
+                : (string)$doc->PrimoNMBib->record->search->description;
 
-                $description = trim(mb_substr($description, 0, 2500, 'UTF-8'));
+            $description = trim(mb_substr($description, 0, 2500, 'UTF-8'));
 
-                // these may contain all kinds of metadata, and just stripping
-                //   tags mushes it all together confusingly.
-                $description = str_replace("P>", "p>", $description);
+            // these may contain all kinds of metadata, and just stripping
+            //   tags mushes it all together confusingly.
+            $description = str_replace("P>", "p>", $description);
 
-                $d_arr = explode("<p>", $description);
-                foreach ($d_arr as &$value) {
-                    $value = trim(($value));
-                    if (trim(strip_tags($value)) === '') {
-                        // get rid of entries that would just have spaces
-                        unset($d_arr[$value]);
+            $d_arr = explode("<p>", $description);
+            foreach ($d_arr as &$value) {
+                $value = trim(($value));
+                if (trim(strip_tags($value)) === '') {
+                    // get rid of entries that would just have spaces
+                    unset($d_arr[$value]);
+                }
+            }
+
+            // now all paragraphs are converted to linebreaks
+            $description = implode("<br>", $d_arr);
+            $res['documents'][$i]['description'] = $description;
+
+            $highlightFields = [
+                'title' => 'title',
+                'creator' => 'author',
+                'description' => 'description'
+            ];
+
+            $start = '<span class="searchword">';
+            $end = '</span>';
+
+            $hilited = [];
+
+            foreach ($res['documents'][$i] as $fieldName => $fieldData) {
+                $isArr = is_array($fieldData);
+                $values = $isArr ? $fieldData : [$fieldData];
+                if (isset($highlightFields[$fieldName])) {
+                    $valuesHilited = [];
+                    foreach ($values as $val) {
+                        if (stripos($val, $start) !== false
+                            && stripos($val, $end) !== false
+                        ) {
+                            // Replace Primo hilite-tags
+                            $hilitedVal = $val;
+                            $hilitedVal = str_replace(
+                                $start, '{{{{START_HILITE}}}}', $hilitedVal
+                            );
+                            $hilitedVal = str_replace(
+                                $end, '{{{{END_HILITE}}}}', $hilitedVal
+                            );
+                            $valuesHilited[] = $hilitedVal;
+                        }
+                    }
+                    if (!empty($valuesHilited)) {
+                        $hilited[$highlightFields[$fieldName]] = $valuesHilited;
                     }
                 }
 
-                // now all paragraphs are converted to linebreaks
-                $description = implode("<br>", $d_arr);
-                $res['documents'][$i]['description'] = $description;
-
-                $highlightFields = [
-                    'title' => 'title',
-                    'creator' => 'author',
-                    'description' => 'description'
-                ];
-
-                $start = '<span class="searchword">';
-                $end = '</span>';
-
-                $hilited = [];
-
-                foreach ($res['documents'][$i] as $fieldName => $fieldData) {
-                    $isArr = is_array($fieldData);
-                    $values = $isArr ? $fieldData : [$fieldData];
-                    if (isset($highlightFields[$fieldName])) {
-                        $valuesHilited = [];
-                        foreach ($values as $val) {
-                            if (stripos($val, $start) !== false
-                                && stripos($val, $end) !== false
-                            ) {
-                                // Replace Primo hilite-tags
-                                $hilitedVal = $val;
-                                $hilitedVal = str_replace(
-                                    $start, '{{{{START_HILITE}}}}', $hilitedVal
-                                );
-                                $hilitedVal = str_replace(
-                                    $end, '{{{{END_HILITE}}}}', $hilitedVal
-                                );
-                                $valuesHilited[] = $hilitedVal;
-                            }
-                        }
-                        if (!empty($valuesHilited)) {
-                            $hilited[$highlightFields[$fieldName]] = $valuesHilited;
-                        }
-                    }
-
-                    foreach ($values as &$val) {
-                        // Strip Primo hilite-tags from record fields
-                        $val = str_replace($start, '', $val);
-                        $val = str_replace($end, '', $val);
-                    }
-                    $res['documents'][$i][$fieldName]
-                        = $isArr ? $values : $values[0];
+                foreach ($values as &$val) {
+                    // Strip Primo hilite-tags from record fields
+                    $val = str_replace($start, '', $val);
+                    $val = str_replace($end, '', $val);
                 }
-                $res['documents'][$i]['highlightDetails'] = $hilited;
+                $res['documents'][$i][$fieldName]
+                    = $isArr ? $values : $values[0];
+
+                if ($this->highlighting) {
+                    $res['documents'][$i]['highlightDetails'] = $hilited;
+                }
             }
         }
 
