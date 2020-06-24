@@ -53,15 +53,21 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
-    FormatTextType: function(text_type, verbose) {
+    FormatTextType: function(text_type, verbose, types) {
         // Suppress type tagging in Item Search view
-        if (verbose)
+        if (verbose && types != "")
             return '';
         return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
     },
 
     FormatPageInformation: function(page) {
         return '[' + page + ']';
+    },
+
+    ItemFulltextLink : function(doc_id, query, scope) {
+        return '<span class="pull-right"><a class="btn btn-warning btn-sm" href="' + VuFind.path + '/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query)
+                                                                                 +'&fulltextscope=' + (scope ? encodeURIComponent(scope) : '')  + '#fulltextsearch">' +
+                 VuFind.translate('All Matches') + '</a></span><br/>';
     },
 
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
@@ -88,17 +94,19 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) + 
-                                                                     TueFind.FormatTextType(a.text_type, verbose));
-                               $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
+                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
+                                                                     TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
+                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else {
-                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose)).join('<br/>'));
+                                $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
                             }
                         } else
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
+                    if (!verbose)
+                        $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
             error: function (xhr, ajaxOptions, thrownError) {
@@ -218,6 +226,19 @@ var TueFind = {
            let input_field = $(input_selector);
            input_field[0].setSelectionRange(input_field.val().length, input_field.val().length);
         }
+    },
+
+    HandlePassedFulltextQuery : function() {
+        const url_query = window.location.search;
+        const url_params = new URLSearchParams(url_query);
+        const fulltextquery = url_params.get('fulltextquery');
+        const fulltextscope = url_params.get('fulltextscope');
+        if (!fulltextquery)
+           return;
+        let searchForm_fulltext = $('#searchForm_fulltext');
+        searchForm_fulltext.val(fulltextquery);
+        $('#itemFTSearchScope').val(fulltextscope);
+        searchForm_fulltext.submit();
     }
 };
 
