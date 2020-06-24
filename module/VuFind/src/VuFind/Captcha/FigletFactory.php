@@ -1,10 +1,10 @@
 <?php
 /**
- * Amazon cover loader factory
+ * Factory for Figlet CAPTCHA module.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  CAPTCHA
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content\Covers;
+namespace VuFind\Captcha;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Amazon cover loader factory
+ * Figlet CAPTCHA factory.
  *
  * @category VuFind
- * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  CAPTCHA
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class FigletFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -53,8 +54,6 @@ class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -62,10 +61,20 @@ class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+
+        $figletOptions = [
+            'name' => 'figlet_captcha',
+        ];
+
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $associate = $config->Content->amazonassociate ?? null;
-        $secret = $config->Content->amazonsecret ?? null;
-        return new $requestedName($associate, $secret);
+
+        if (isset($config->Captcha->figlet_length)) {
+            $figletOptions['wordLen'] = $config->Captcha->figlet_length;
+        }
+
+        return new $requestedName(
+            new \Laminas\Captcha\Figlet($figletOptions)
+        );
     }
 }

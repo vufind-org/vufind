@@ -1,0 +1,58 @@
+@import "../vendor/bootstrap-accessibility/bootstrap-accessibility";
+@import "../vendor/a11y";
+
+/* ACCESSIBILITY IMPROVEMENTS */
+
+a {
+  text-decoration: underline;
+}
+
+/* AAA Color Contrasts */
+$badge-bg: #595959;
+
+$breadcrumb-color: #535353;
+$breadcrumb-active-color: #444;
+
+$state-danger-text: #8a211e;
+.alert-danger,
+.alert-danger a {
+  color: $state-danger-text;
+}
+
+/**
+ * OVERRIDE BS3 COLLAPSE MENU HIDDEN
+ *
+ * instead of display: none, keep things sr accessible
+ * https://tailwindcss.com/docs/screen-readers/
+ */
+/*
+.collapse.collapse:not(.in) {
+  position: absolute;
+  display: block;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  color: #000;
+  background-color: #fff;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+.long-view.collapse:not(.in) {
+  display: none;
+}
+*/
+@media (min-width: 768px) {
+  .navbar-collapse.collapse:not(.in) {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}

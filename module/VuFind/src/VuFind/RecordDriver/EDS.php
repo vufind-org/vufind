@@ -77,10 +77,8 @@ class EDS extends DefaultRecord
         if (null == $title) {
             return '';
         }
-        if (mb_strlen($title, 'UTF-8') > 20) {
-            $title = mb_substr($title, 0, 17, 'UTF-8') . '...';
-        }
-        return $title;
+        $parts = explode(':', $title);
+        return trim(current($parts));
     }
 
     /**

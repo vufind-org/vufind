@@ -66,11 +66,11 @@ class UserCommentsFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $captchaConfig = $config->Captcha->forms ?? '';
-        $useRecaptcha = trim($captchaConfig) === '*'
+        $useCaptcha = trim($captchaConfig) === '*'
             || strpos($captchaConfig, 'userComments') !== false;
         return new $requestedName(
             'enabled' === $capabilities->getCommentSetting(),
-            $useRecaptcha
+            $useCaptcha
         );
     }
 }

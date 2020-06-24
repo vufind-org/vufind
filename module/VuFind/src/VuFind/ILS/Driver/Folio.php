@@ -401,6 +401,22 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Check item location against list of configured locations
+     * where holds should be offered
+     *
+     * @param string $locationName locationName from getHolding
+     *
+     * @return bool
+     */
+    protected function isHoldable($locationName)
+    {
+        return !in_array(
+            $locationName,
+            (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
+        );
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -450,6 +466,7 @@ class Folio extends AbstractAPI implements
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
+                    'is_holdable' => $this->isHoldable($locationName),
                     'notes' => array_map($notesFormatter, $item->notes ?? []),
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
@@ -657,6 +674,11 @@ class Folio extends AbstractAPI implements
         $response = $this->makeRequest('GET', '/users', $query);
         $users = json_decode($response->getBody());
         $profile = $users->users[0];
+        $expiration = isset($profile->expirationDate)
+            ? $this->dateConverter->convertToDisplayDate(
+                "Y-m-d H:i", $profile->expirationDate
+            )
+            : null;
         return [
             'id' => $profile->id,
             'firstname' => $profile->personal->firstName ?? null,
@@ -667,7 +689,7 @@ class Folio extends AbstractAPI implements
             'zip' => $profile->personal->addresses[0]->postalCode ?? null,
             'phone' => $profile->personal->phone ?? null,
             'mobile_phone' => $profile->personal->mobilePhone ?? null,
-            'expiration_date' => $profile->expirationDate ?? null,
+            'expiration_date' => $expiration,
         ];
     }
 
