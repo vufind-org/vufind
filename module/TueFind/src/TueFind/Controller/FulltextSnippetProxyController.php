@@ -101,7 +101,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
     protected function getTextTypesFilter($types_filter) : array {
         $text_types = $this->mapTextTypeDescriptionsToTypes(explode(',', $types_filter));
-        error_log("TEXT TYPES: " . implode(' ----- ', $text_types));
         if (empty($text_types))
             return [];
         if (count($text_types) == 1)
@@ -430,7 +429,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         if (empty($snippets['snippets'])) {
             return new JsonModel([
                  'status' => 'NO RESULTS'
-             ]);
+            ]);
         }
         // Deduplicate snippets (array_values for fixing indices)
         $snippets['snippets'] = array_values(array_unique($snippets['snippets'], SORT_REGULAR));
