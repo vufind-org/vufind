@@ -1756,8 +1756,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     case 'Transfer':
                         $onHold = false;
                         if (!empty($item['availability']['notes'])) {
-                            foreach ($item['availability']['notes'] as $noteKey
-                                => $note
+                            foreach (array_keys($item['availability']['notes'])
+                                as $noteKey
                             ) {
                                 if ('Item::Held' === $noteKey) {
                                     $onHold = true;
@@ -1956,29 +1956,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (!empty($result['data']['blocks'])) {
                 $nonHoldBlock = false;
                 foreach ($result['data']['blocks'] as $reason => $details) {
-                    $params = [];
-                    if ($reason === 'Hold::MaximumHoldsReached') {
-                        $params = [
-                            '%%blockCount%%' => $details['current_hold_count'],
-                            '%%blockLimit%%' => $details['max_holds_allowed']
-                        ];
-                    } else {
+                    if ($reason !== 'Hold::MaximumHoldsReached') {
                         $nonHoldBlock = true;
                     }
-                    if (($reason == 'Patron::Debt'
-                        || $reason == 'Patron::DebtGuarantees')
-                        && !empty($details['current_outstanding'])
-                        && !empty($details['max_outstanding'])
-                    ) {
-                        $params = [
-                            '%%blockCount%%' => $details['current_outstanding'],
-                            '%%blockLimit%%' => $details['max_outstanding']
-                        ];
-                    }
-                    if (isset($this->patronStatusMappings[$reason])) {
-                        $blockReason[] = $this->translate(
-                            $this->patronStatusMappings[$reason], $params
-                        );
+                    $description = $this->getPatronBlockReason($reason, $details);
+                    if ($description) {
+                        $blockReason[] = $description;
                     }
                 }
                 // Add the generic block message to the beginning if we have blocks
@@ -2149,8 +2132,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getHoldBlockReason($result)
     {
         if (!empty($result['availability']['unavailabilities'])) {
-            foreach ($result['availability']['unavailabilities']
-                as $key => $reason
+            foreach (array_keys($result['availability']['unavailabilities']) as $key
             ) {
                 switch ($key) {
                 case 'Biblio::NoAvailableItems':
@@ -2343,5 +2325,34 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'count' => $result['headers']['X-Total-Count'] ?? count($transactions),
             $arrayKey => $transactions
         ];
+    }
+
+    /**
+     * Get a description for a block
+     *
+     * @param string $reason  Koha block reason
+     * @param array  $details Any details related to the reason
+     *
+     * @return string
+     */
+    protected function getPatronBlockReason($reason, $details)
+    {
+        $params = [];
+        switch ($reason) {
+        case 'Hold::MaximumHoldsReached':
+            $params = [
+                '%%blockCount%%' => $details['current_hold_count'],
+                '%%blockLimit%%' => $details['max_holds_allowed']
+            ];
+            break;
+        case 'Patron::Debt':
+        case 'Patron::DebtGuarantees':
+            $params = [
+                '%%blockCount%%' => $details['current_outstanding'] ?? '-',
+                '%%blockLimit%%' => $details['max_outstanding'] ?? '-'
+            ];
+            break;
+        }
+        return $this->translate($this->patronStatusMappings[$reason] ?? '', $params);
     }
 }
