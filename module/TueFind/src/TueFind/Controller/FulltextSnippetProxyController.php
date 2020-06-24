@@ -412,16 +412,24 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
                 ]);
         $verbose = isset($parameters['verbose']) && $parameters['verbose'] == '1' ? true : false;
         $synonyms = isset($parameters['synonyms']) && preg_match('/lang|all/', $parameters['synonyms']) ? $parameters['synonyms'] : "";
-        $types_filter = isset($parameters['fulltext_types']) ? $parameters['fulltext_types'] : "";
-        $snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms, $types_filter);
-        if (empty($snippets)) {
-            // Use non-paged text as fallback
-            $snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms, $types_filter);
-            if (empty($snippets)) {
-                return new JsonModel([
-                     'status' => 'NO RESULTS'
-                 ]);
+        $types_filter = isset($parameters['fulltext_types']) ? $parameters['fulltext_types'] :
+                        implode(',', array_keys(self::description_to_text_type_map)); // Iterate over all possible types
+        $snippets['snippets'] = [];
+        foreach (explode(',', $types_filter) as $type_filter) {
+            $html_snippets = $this->getPagedAndFormattedFulltext($doc_id, $search_query, $verbose, $synonyms, $type_filter);
+            if (!empty($html_snippets)) {
+                $snippets['snippets'] = array_merge($snippets['snippets'], $html_snippets['snippets']);
+                continue;
             }
+            // Use non-paged text as fallback
+            $text_snippets = $this->getFulltext($doc_id, $search_query, $verbose, $synonyms, $type_filter);
+            if (!empty($text_snippets))
+                $snippets['snippets'] = array_merge($snippets['snippets'], $text_snippets['snippets']);
+        }
+        if (empty($snippets['snippets'])) {
+            return new JsonModel([
+                'status' => 'NO RESULTS'
+            ]);
         }
         // Deduplicate snippets (array_values for fixing indices)
         $snippets['snippets'] = array_values(array_unique($snippets['snippets'], SORT_REGULAR));

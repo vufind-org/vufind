@@ -54,8 +54,8 @@ var TueFind = {
     },
 
     FormatTextType: function(text_type, verbose, types) {
-        // Suppress type tagging in Item Search view
-        if (verbose && types != "")
+        // Suppress type tagging in Item Search view if only one text type is active
+        if (verbose && !types.includes(','))
             return '';
         return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
     },
@@ -234,7 +234,10 @@ var TueFind = {
         const fulltextquery = url_params.get('fulltextquery');
         const fulltextscope = url_params.get('fulltextscope');
         if (!fulltextquery)
-           return;
+            return;
+        $('html, body').animate({
+            scrollTop: $('#itemFTSearchScope').offset().top
+        }, 'fast');
         let searchForm_fulltext = $('#searchForm_fulltext');
         searchForm_fulltext.val(fulltextquery);
         $('#itemFTSearchScope').val(fulltextscope);

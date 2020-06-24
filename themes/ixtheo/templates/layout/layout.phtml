@@ -71,6 +71,9 @@
             "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
           ]
         );
+        $this->jsTranslations()->addStrings(
+            [ "All Matches" => "All Matches" ]
+        );
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
