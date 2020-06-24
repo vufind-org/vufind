@@ -236,7 +236,7 @@ var TueFind = {
         if (!fulltextquery)
             return;
         $('html, body').animate({
-        scrollTop: $('#itemFTSearchScope').offset().top
+            scrollTop: $('#itemFTSearchScope').offset().top
         }, 'fast');
         let searchForm_fulltext = $('#searchForm_fulltext');
         searchForm_fulltext.val(fulltextquery);
