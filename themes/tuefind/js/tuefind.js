@@ -94,12 +94,12 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
+                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
                                                                      TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
-                               $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
+                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
                             else {
-                               $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
+                                $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
                             }
                         } else
                             $(this).html("");
