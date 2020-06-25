@@ -194,21 +194,62 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Support method for getItems, used to apply filters.
+     *
+     * @param array  $item Item to check
+     * @param string $context The context in which items are being retrieved
+     * (used for context-sensitive filtering)
+     *
+     * @return bool
+     */
+    protected function itemIsExcluded($item, $context)
+    {
+        // Create a list of config sections to check, based on context:
+        $sections = ['ItemGlobalFilter'];
+        switch ($context) {
+        case 'result-list':
+            $sections[] = 'ItemResultListFilter';
+            break;
+        case 'core':
+            $sections[] = 'ItemCoreFilter';
+            break;
+        }
+        // Check to see if anything is filtered:
+        foreach ($sections as $section) {
+            $currentConfig = isset($this->recordConfig->$section)
+                ? $this->recordConfig->$section->toArray() : [];
+            $badLabels = (array)($currentConfig['excludeLabel'] ?? []);
+            $badGroups = (array)($currentConfig['excludeGroup'] ?? []);
+            if (in_array($item['Label'], $badLabels)
+                || in_array($item['Group'], $badGroups)
+            ) {
+                return true;
+            }
+        }
+        // If we got this far, no filter was applied:
+        return false;
+    }
+
+    /**
      * Get the items of the record.
+     *
+     * @param string $context The context in which items are being retrieved
+     * (used for context-sensitive filtering)
      *
      * @return array
      */
-    public function getItems()
+    public function getItems($context = null)
     {
         $items = [];
-        if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                $items[] = [
-                    'Label' => $item['Label'] ?? '',
-                    'Group' => $item['Group'] ?? '',
-                    'Data'  => isset($item['Data'])
-                        ? $this->toHTML($item['Data'], $item['Group']) : ''
-                ];
+        foreach ($this->fields['Items'] ?? [] as $item) {
+            $nextItem = [
+                'Label' => $item['Label'] ?? '',
+                'Group' => $item['Group'] ?? '',
+                'Data'  => isset($item['Data'])
+                    ? $this->toHTML($item['Data'], $item['Group']) : ''
+            ];
+            if (!$this->itemIsExcluded($nextItem, $context)) {
+                $items[] = $nextItem;
             }
         }
         return $items;
