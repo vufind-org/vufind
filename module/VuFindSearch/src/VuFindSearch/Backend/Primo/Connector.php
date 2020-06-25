@@ -87,13 +87,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     ];
 
     /**
-     * Debug status
-     *
-     * @var bool
-     */
-    public $debug = false;
-
-    /**
      * Regular expression to match highlighted terms
      *
      * @var string
@@ -342,10 +335,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // QUERYSTRING: loc
             // all primocentral queries need this
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
-
-            if ($this->debug) {
-                echo "URL: " . implode('&', $qs);
-            }
 
             // Send Request
             $result = $this->call(implode('&', $qs), $args);
