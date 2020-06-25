@@ -60,6 +60,20 @@ class Primo extends DefaultRecord
     }
 
     /**
+     * Get a highlighted title string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedTitle()
+    {
+        // Don't check for highlighted values if highlighting is disabled:
+        if (!$this->highlight) {
+            return '';
+        }
+        return $this->fields['highlightDetails']['title'][0] ?? '';
+    }
+
+    /**
      * Get the main authors of the record.
      *
      * @return array
