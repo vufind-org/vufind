@@ -6,4 +6,4 @@
   <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php else: ?>
   <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover" alt="" />
-<?php endif;
+<?php endif; ?>
