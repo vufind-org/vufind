@@ -18,7 +18,6 @@
     $basemap = $this->recommend->getBasemap();
     $geoField = $this->recommend->getGeoField();
     $height = $this->recommend->getHeight();
-    $showSelection = true;
     $baseUrl = $this->url('home');
     $urlpath = $this->url('search-results');
     $searchParams = $this->recommend->getSearchParams();
@@ -28,8 +27,8 @@
     $params = [
       json_encode($geoField), json_encode($coordinates),
       json_encode($urlpath), json_encode($baseUrl),
-      json_encode($searchParams), json_encode($showSelection),
-      json_encode($resultsCoords), json_encode($basemap)
+      json_encode($searchParams), json_encode($resultsCoords),
+      json_encode($basemap)
     ];
 
     $jsParams = implode(', ', $params);
