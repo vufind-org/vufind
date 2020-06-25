@@ -700,6 +700,8 @@ $config = [
                         'Finna\RecordDriver\SolrDefaultFactory',
                     'Finna\RecordDriver\SolrLido' =>
                         'Finna\RecordDriver\SolrDefaultFactory',
+                    'Finna\RecordDriver\SolrLrmi' =>
+                        'Finna\RecordDriver\SolrDefaultFactory',
                     'Finna\RecordDriver\SolrMarc' =>
                         'Finna\RecordDriver\SolrDefaultFactory',
                     'Finna\RecordDriver\SolrQdc' =>
@@ -715,6 +717,7 @@ $config = [
                     'SolrEad3' => 'Finna\RecordDriver\SolrEad3',
                     'SolrForward' => 'Finna\RecordDriver\SolrForward',
                     'SolrLido' => 'Finna\RecordDriver\SolrLido',
+                    'SolrLrmi' => 'Finna\RecordDriver\SolrLrmi',
                     'SolrQdc' => 'Finna\RecordDriver\SolrQdc',
 
                     'VuFind\RecordDriver\EDS' => 'Finna\RecordDriver\EDS',
