@@ -22,7 +22,7 @@
     $urlpath = $this->url('search-results');
     $searchParams = $this->recommend->getSearchParams();
     $coordinates = $this->recommend->getSelectedCoordinates()
-    	?? $this->recommend->getDefaultCoordinates();
+        ?? $this->recommend->getDefaultCoordinates();
 
     $resultsCoords = $this->recommend->getMapResultCoordinates();
     $params = [
