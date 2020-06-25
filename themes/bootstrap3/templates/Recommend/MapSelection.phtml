@@ -21,7 +21,8 @@
     $baseUrl = $this->url('home');
     $urlpath = $this->url('search-results');
     $searchParams = $this->recommend->getSearchParams();
-    $coordinates = $this->recommend->getSelectedCoordinates();
+    $coordinates = $this->recommend->getSelectedCoordinates()
+        ?? $this->recommend->getDefaultCoordinates();
 
     $resultsCoords = $this->recommend->getMapResultCoordinates();
     $params = [
