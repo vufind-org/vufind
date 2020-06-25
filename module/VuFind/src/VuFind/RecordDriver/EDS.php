@@ -196,7 +196,7 @@ class EDS extends DefaultRecord
     /**
      * Support method for getItems, used to apply filters.
      *
-     * @param array  $item Item to check
+     * @param array  $item    Item to check
      * @param string $context The context in which items are being retrieved
      * (used for context-sensitive filtering)
      *
