@@ -119,6 +119,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->host = $parts['scheme'] . '://' . $parts['host']
             . (!empty($parts['port']) ? ':' . $parts['port'] : '')
             . $parts['path'] . '?';
+        if (!empty($parts['query'])) {
+            $this->host .= $parts['query'] . '&';
+        }
 
         $this->inst = $inst;
         $this->client = $client;
