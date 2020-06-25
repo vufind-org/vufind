@@ -53,15 +53,22 @@ class TranslatableString implements TranslatableStringInterface
     protected $displayString;
 
     /**
+     * Whether translation is allowed
+     */
+    protected $translatable;
+
+    /**
      * Constructor
      *
      * @param string $string        Original string
      * @param string $displayString Translatable display string
+     * @param bool   $translatable  Whether translation is allowed
      */
-    public function __construct($string, $displayString)
+    public function __construct($string, $displayString, $translatable = true)
     {
         $this->string = (string)$string;
         $this->displayString = $displayString;
+        $this->translatable = $translatable;
     }
 
     /**
@@ -83,5 +90,15 @@ class TranslatableString implements TranslatableStringInterface
     public function getDisplayString()
     {
         return $this->displayString;
+    }
+
+    /**
+     * Checks if the string can be translated
+     *
+     * @return bool
+     */
+    public function isTranslatable()
+    {
+        return $this->translatable;
     }
 }

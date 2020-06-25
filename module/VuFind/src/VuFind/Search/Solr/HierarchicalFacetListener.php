@@ -180,20 +180,23 @@ class HierarchicalFacetListener
                     continue;
                 }
                 if (is_array($fields[$facetName])) {
-                    $allLevels = $this->displayStyles[$facetName] ?? '' == 'full';
+                    $allLevels = ($this->displayStyles[$facetName] ?? '') === 'full';
                     foreach ($fields[$facetName] as &$value) {
-                        // If we display all levels for a facet value, include a
-                        // translation only for the deepest level available
-                        if (!$allLevels
+                        // If we don't display all levels for a facet value, include
+                        // a translation only for the deepest level available
+                        if ($allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
                                 $fields[$facetName], $value
                             )
                         ) {
                             $value = $this->formatFacetField($facetName, $value);
                         } else {
-                            $value = new TranslatableString((string)$value, '');
+                            $value
+                                = new TranslatableString((string)$value, '', false);
                         }
                     }
+                    // Unset the reference:
+                    unset($value);
                     $fields[$facetName] = array_unique($fields[$facetName]);
                 } else {
                     $fields[$facetName]

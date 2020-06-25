@@ -106,6 +106,9 @@ trait TranslatorAwareTrait
 
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+            if (!$str->isTranslatable()) {
+                return $str->getDisplayString();
+            }
             // On this pass, don't use the $default, since we want to fail over
             // to getDisplayString before giving up:
             $translated = $this

@@ -200,6 +200,28 @@ class HierarchicalFacetHelper
     }
 
     /**
+     * Format a filter string in parts suitable for displaying or translation
+     *
+     * @param string $filter Filter value
+     *
+     * @return array
+     */
+    public function getFilterStringParts($filter)
+    {
+        $parts = explode('/', $filter);
+        if (count($parts) <= 1 || !is_numeric($parts[0])) {
+            return $filter;
+        }
+        $result = [];
+        for ($level = 0; $level <= $parts[0]; $level++) {
+            $str = $level . '/' . implode('/', array_slice($parts, 1, $level + 1))
+                . '/';
+            $result[] = new TranslatableString($str, $parts[$level + 1]);
+        }
+        return $result;
+    }
+
+    /**
      * Check if the given value is the deepest level in the facet list.
      *
      * Takes into account lists with multiple top levels.

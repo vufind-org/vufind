@@ -607,16 +607,22 @@ class Params extends \VuFind\Search\Base\Params
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = $hierarchicalFacetSeparators[$field] ?? '/';
-            $filter['displayText'] = $this->facetHelper->formatDisplayText(
-                $filter['displayText'], true, $separator
-            );
-            if ($translate) {
+            if (!$translate) {
+                $filter['displayText'] = $this->facetHelper->formatDisplayText(
+                    $filter['displayText'],
+                    true,
+                    $separator
+                );
+            } else {
                 $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
                     $field
                 );
-                $filter['displayText'] = $this->translate(
-                    [$domain, $filter['displayText']]
-                );
+                $parts = $this->facetHelper
+                    ->getFilterStringParts($filter['value']);
+                foreach ($parts as &$part) {
+                    $part = $this->translate([$domain, $part]);
+                }
+                $filter['displayText'] = implode($separator, $parts);
             }
         }
 
