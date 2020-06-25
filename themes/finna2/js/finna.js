@@ -18,6 +18,7 @@ var finna = (function finnaModule() {
         'imagePopup',
         'itemStatus',
         'layout',
+        'menu',
         'myList',
         'openUrl',
         'organisationList',

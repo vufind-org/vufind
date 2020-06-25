@@ -77,8 +77,26 @@ finna.menu = (function finnaMenu() {
     });
   }
 
-  function init() {
+  function initAccountChecks() {
+    VuFind.account.register("profile", {
+      selector: ".profile-status",
+      ajaxMethod: "getAccountNotifications",
+      render: function render($element, status, ICON_LEVELS) {
+        if (!status.notifications) {
+          $element.addClass("hidden");
+          return ICON_LEVELS.NONE;
+        }
+        $element.html('<i class="fa fa-exclamation-triangle" title="' + VuFind.translate('account_has_alerts') + '" aria-hidden="true"></i>');
+        return ICON_LEVELS.DANGER;
+      }
+    });
+  }
+
+  function initMenuLists() {
     listHolder = $('.mylist-bar');
+    if (listHolder.length === 0) {
+      return;
+    }
 
     if (listHolder.children().length === 0) {
       $('#open-list').addClass('collapsed');
@@ -107,8 +125,12 @@ finna.menu = (function finnaMenu() {
       $('#myLoans').toggleClass('in');
       $('#open-loans').toggleClass('collapsed');
     });
+  }
 
+  function init() {
+    initMenuLists();
     initStatusObserver();
+    initAccountChecks();
   }
 
   var my = {

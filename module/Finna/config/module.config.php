@@ -358,6 +358,8 @@ $config = [
                         'Finna\AjaxHandler\EditListFactory',
                     'Finna\AjaxHandler\EditListResource' =>
                         'Finna\AjaxHandler\EditListResourceFactory',
+                    'Finna\AjaxHandler\GetAccountNotifications' =>
+                        'VuFind\AjaxHandler\AbstractIlsAndUserActionFactory',
                     'Finna\AjaxHandler\GetAuthorityInfo' =>
                         'Finna\AjaxHandler\GetAuthorityInfoFactory',
                     'Finna\AjaxHandler\GetAuthorityFullInfo' =>
@@ -414,6 +416,7 @@ $config = [
                     'checkRequestsAreValid' => 'Finna\AjaxHandler\CheckRequestsAreValid',
                     'editList' => 'Finna\AjaxHandler\EditList',
                     'editListResource' => 'Finna\AjaxHandler\EditListResource',
+                    'getAccountNotifications' => 'Finna\AjaxHandler\GetAccountNotifications',
                     'getAuthorityInfo' => 'Finna\AjaxHandler\GetAuthorityInfo',
                     'getAuthorityFullInfo' => 'Finna\AjaxHandler\GetAuthorityFullInfo',
                     'getContentFeed' => 'Finna\AjaxHandler\GetContentFeed',
