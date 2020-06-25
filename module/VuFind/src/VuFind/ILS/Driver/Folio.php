@@ -560,6 +560,48 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Helper function to retrieve paged results from FOLIO API
+     *
+     * @param string $responseKey Key containing values to collect in response
+     * @param string $interface   FOLIO api interface to call
+     * @param array  $query       CQL query
+     *
+     * @return array
+     */
+    protected function getPagedResults($responseKey, $interface, $query = [])
+    {
+        $count = 0;
+        $limit = 1000;
+        $offset = 0;
+
+        do {
+            $combinedQuery = array_merge($query, compact('offset', 'limit'));
+            $response = $this->makeRequest(
+                'GET',
+                $interface,
+                $combinedQuery
+            );
+            $json = json_decode($response->getBody());
+            if (!$response->isSuccess() || !$json) {
+                $msg = $json->errors[0]->message ?? json_last_error_msg();
+                throw new ILSException($msg);
+            }
+            $total = $json->totalRecords ?? 0;
+            $previousCount = $count;
+            foreach ($json->$responseKey ?? [] as $item) {
+                $count++;
+                if ($count % $limit == 0) {
+                    $offset += $limit;
+                }
+                yield $item ?? '';
+            }
+            // Continue until the count reaches the total records
+            // found, if count does not increase, something has gone
+            // wrong. Stop so we don't loop forever.
+        } while ($count < $total && $previousCount != $count);
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -697,13 +739,10 @@ class Folio extends AbstractAPI implements
     public function getMyTransactions($patron)
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
-        $response = $this->makeRequest("GET", '/circulation/loans', $query);
-        $json = json_decode($response->getBody());
-        if (count($json->loans) == 0) {
-            return [];
-        }
         $transactions = [];
-        foreach ($json->loans as $trans) {
+        foreach ($this->getPagedResults(
+            'loans', '/circulation/loans', $query
+        ) as $trans) {
             $date = date_create($trans->dueDate);
             $transactions[] = [
                 'duedate' => date_format($date, "j M Y"),
@@ -797,10 +836,10 @@ class Folio extends AbstractAPI implements
     public function getPickupLocations($patron)
     {
         $query = ['query' => 'pickupLocation=true'];
-        $response = $this->makeRequest('GET', '/service-points', $query);
-        $json = json_decode($response->getBody());
         $locations = [];
-        foreach ($json->servicepoints as $servicepoint) {
+        foreach ($this->getPagedResults(
+            'servicepoints', '/service-points', $query
+        ) as $servicepoint) {
             $locations[] = [
                 'locationID' => $servicepoint->id,
                 'locationDisplay' => $servicepoint->discoveryDisplayName
@@ -855,10 +894,10 @@ class Folio extends AbstractAPI implements
             'query' => '(requesterId == "' . $patron['id'] . '"  ' .
             'and status == Open*)'
         ];
-        $response = $this->makeRequest('GET', '/request-storage/requests', $query);
-        $json = json_decode($response->getBody());
         $holds = [];
-        foreach ($json->requests as $hold) {
+        foreach ($this->getPagedResults(
+            'requests', '/request-storage/requests', $query
+        ) as $hold) {
             $requestDate = date_create($hold->requestDate);
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
@@ -1015,28 +1054,14 @@ class Folio extends AbstractAPI implements
         $valueKey = 'name'
     ) {
         $retVal = [];
-        $limit = 1000; // how many records to retrieve at once
-        $offset = 0;
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        do {
-            $response = $this->makeRequest(
-                'GET',
-                '/coursereserves/' . $type,
-                compact('offset', 'limit')
-            );
-            $json = json_decode($response->getBody());
-            $total = $json->totalRecords ?? 0;
-            $preCount = count($retVal);
-            foreach ($json->{$responseKey ?? $type} ?? [] as $item) {
-                $retVal[$item->id] = $item->$valueKey ?? '';
-            }
-            $postCount = count($retVal);
-            $offset += $limit;
-            // Loop has a safety valve: if the count of records doesn't change
-            // in a full iteration, something has gone wrong, and we should stop
-            // so we don't loop forever!
-        } while ($total && $postCount < $total && $preCount != $postCount);
+        foreach ($this->getPagedResults(
+            $responseKey ?? $type, '/coursereserves/' . $type
+        ) as $item) {
+            $retVal[$item->id] = $item->$valueKey ?? '';
+        }
+
         return $retVal;
     }
 
@@ -1139,51 +1164,36 @@ class Folio extends AbstractAPI implements
     public function findReserves($course, $inst, $dept)
     {
         $retVal = [];
-        $limit = 1000; // how many records to retrieve at once
-        $offset = 0;
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        do {
-            $response = $this->makeRequest(
-                'GET',
-                '/coursereserves/reserves',
-                compact('offset', 'limit')
-            );
-            $json = json_decode($response->getBody());
-            $total = $json->totalRecords ?? 0;
-            $preCount = count($retVal);
-            foreach ($json->reserves ?? [] as $item) {
-                try {
-                    $bibId = $this->getBibId(null, null, $item->itemId);
-                } catch (\Exception $e) {
-                    $bibId = null;
-                }
-                if ($bibId !== null) {
-                    $courseData = $this->getCourseDetails(
-                        $item->courseListingId ?? null
-                    );
-                    $instructorIds = $this->getInstructorIds(
-                        $item->courseListingId ?? null
-                    );
-                    foreach ($courseData as $courseId => $departmentId) {
-                        foreach ($instructorIds as $instructorId) {
-                            $retVal[] = [
-                                'BIB_ID' => $bibId,
-                                'COURSE_ID' => $courseId == '' ? null : $courseId,
-                                'DEPARTMENT_ID' => $departmentId == ''
-                                    ? null : $departmentId,
-                                'INSTRUCTOR_ID' => $instructorId,
-                            ];
-                        }
+        foreach ($this->getPagedResults(
+            'reserves', '/coursereserves/reserves'
+        ) as $item) {
+            try {
+                $bibId = $this->getBibId(null, null, $item->itemId);
+            } catch (\Exception $e) {
+                $bibId = null;
+            }
+            if ($bibId !== null) {
+                $courseData = $this->getCourseDetails(
+                    $item->courseListingId ?? null
+                );
+                $instructorIds = $this->getInstructorIds(
+                    $item->courseListingId ?? null
+                );
+                foreach ($courseData as $courseId => $departmentId) {
+                    foreach ($instructorIds as $instructorId) {
+                        $retVal[] = [
+                            'BIB_ID' => $bibId,
+                            'COURSE_ID' => $courseId == '' ? null : $courseId,
+                            'DEPARTMENT_ID' => $departmentId == ''
+                                ? null : $departmentId,
+                            'INSTRUCTOR_ID' => $instructorId,
+                        ];
                     }
                 }
             }
-            $postCount = count($retVal);
-            $offset += $limit;
-            // Loop has a safety valve: if the count of records doesn't change
-            // in a full iteration, something has gone wrong, and we should stop
-            // so we don't loop forever!
-        } while ($total && $postCount < $total && $preCount != $postCount);
+        }
 
         // If the user has requested a filter, apply it now:
         if (!empty($course) || !empty($inst) || !empty($dept)) {
@@ -1255,14 +1265,11 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name<>Closed'];
-        $response = $this->makeRequest("GET", '/accounts', $query);
-        $json = json_decode($response->getBody());
-        if (count($json->accounts) == 0) {
-            return [];
-        }
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Closed'];
         $fines = [];
-        foreach ($json->accounts as $fine) {
+        foreach ($this->getPagedResults(
+            'accounts', '/accounts', $query
+        ) as $fine) {
             $date = date_create($fine->metadata->createdDate);
             $title = (isset($fine->title) ? $fine->title : null);
             $fines[] = [
