@@ -188,7 +188,7 @@
             <?=$this->transEsc('Delete') ?>
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-            <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+            <li><a id="confirm_delete_item_<?=$this->escapeHtmlAttr($id);?>" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
             <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
@@ -201,3 +201,22 @@
     <?php endif; ?>
   </div>
 </div>
+<?php
+$escId = $this->escapeJs($id);
+$escSource = $this->escapeJs($source);
+$script = <<<JS
+$('#confirm_delete_item_${escId}').click(function(e) {
+    e.preventDefault();
+    $.post('${deleteUrl}', {
+                'delete':'${escId}',
+                'source':'${escSource}',
+                'confirm':true
+            },
+            function(){
+                location.reload()
+            }
+        );
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
