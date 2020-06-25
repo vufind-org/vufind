@@ -33,7 +33,10 @@
            --></a>
               <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
               <?php if ($allowExclude): ?>
-                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times" aria-hidden="true"></i></a>
+                <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                  <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+                </a>
               <?php endif; ?>
             <?php endif; ?>
           </span>

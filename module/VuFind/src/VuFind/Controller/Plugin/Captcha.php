@@ -1,10 +1,10 @@
 <?php
 /**
- * VuFind Action Helper - Recaptcha handler
+ * VuFind Action Helper - Captcha handler
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -30,23 +31,26 @@ namespace VuFind\Controller\Plugin;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
- * Action helper to manage Recaptcha fields
+ * Action helper to manage Captcha fields
  *
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Recaptcha extends AbstractPlugin
+class Captcha extends AbstractPlugin
 {
     /**
-     * \Laminas\ReCaptcha\ReCaptcha
+     * Captcha services
+     *
+     * @var array
      */
-    protected $recaptcha;
+    protected $captchas = [];
 
     /**
-     * String array of forms where ReCaptcha is active
+     * String array of forms where Captcha is active
      */
     protected $domains = [];
 
@@ -63,15 +67,15 @@ class Recaptcha extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param \Laminas\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
-     * @param \VuFind\Config               $config Config file
+     * @param \VuFind\Config $config   Config file
+     * @param array          $captchas CAPTCHA objects
      *
      * @return void
      */
-    public function __construct($r, $config)
+    public function __construct($config, array $captchas=[])
     {
-        $this->recaptcha = $r;
-        if (isset($config->Captcha->forms)) {
+        $this->captchas = $captchas;
+        if (count($captchas) > 0 && isset($config->Captcha->forms)) {
             $this->active = true;
             $this->domains = '*' == trim($config->Captcha->forms)
                 ? true
@@ -89,7 +93,7 @@ class Recaptcha extends AbstractPlugin
      *
      * @return bool
      */
-    public function setErrorMode($mode)
+    public function setErrorMode($mode): bool
     {
         if (in_array($mode, ['flash', 'throw', 'none'])) {
             $this->errorMode = $mode;
@@ -99,39 +103,36 @@ class Recaptcha extends AbstractPlugin
     }
 
     /**
-     * Return the raw service object
-     *
-     * @return VuFind\Service\Recaptcha
-     */
-    public function getObject()
-    {
-        return $this->recaptcha;
-    }
-
-    /**
-     * Pull the captcha field from POST and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy
      *
      * @return bool
      */
-    public function validate()
+    public function verify(): bool
     {
         if (!$this->active()) {
             return true;
         }
-        $responseField = $this->getController()->params()
-            ->fromPost('g-recaptcha-response');
-        try {
-            $response = $this->recaptcha->verify($responseField);
-        } catch (\Laminas\ReCaptcha\Exception $e) {
-            $response = false;
+        $captchaPassed = false;
+        foreach ($this->captchas as $captcha) {
+            try {
+                $captchaPassed = $captcha->verify(
+                    $this->getController()->params()
+                );
+            } catch (\Exception $e) {
+                $captchaPassed = false;
+            }
+
+            if ($captchaPassed) {
+                break;
+            }
         }
-        $captchaPassed = $response && $response->isValid();
+
         if (!$captchaPassed && $this->errorMode != 'none') {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()
-                    ->addMessage('recaptcha_not_passed', 'error');
+                    ->addMessage('captcha_not_passed', 'error');
             } else {
-                throw new \Exception('recaptcha_not_passed');
+                throw new \Exception('captcha_not_passed');
             }
         }
         return $captchaPassed;
@@ -144,7 +145,7 @@ class Recaptcha extends AbstractPlugin
      *
      * @return bool
      */
-    public function active($domain = false)
+    public function active($domain = false): bool
     {
         return $this->active
         && ($domain == false || $this->domains === true

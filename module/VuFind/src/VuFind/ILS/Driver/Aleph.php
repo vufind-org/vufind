@@ -155,7 +155,7 @@ class AlephTranslator
             echo "tab15 is null!<br>";
         }
         $findme = $tab15["tab15"] . "|" . $isc . "|" . $ipsc;
-        $result = $this->table15[$findme];
+        $result = $this->table15[$findme] ?? null;
         if ($result == null) {
             $findme = $tab15["tab15"] . "||" . $ipsc;
             $result = $this->table15[$findme];

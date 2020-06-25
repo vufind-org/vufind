@@ -27,6 +27,8 @@
  */
 namespace VuFind\Content\Reviews;
 
+use VuFind\Content\Deprecated;
+
 /**
  * Reviews content loader plugin manager
  *
@@ -44,8 +46,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'amazon' => Amazon::class,
-        'amazoneditorial' => AmazonEditorial::class,
+        Amazon::class => Deprecated::class,
+        AmazonEditorial::class => Deprecated::class,
+        'amazon' => Deprecated::class,
+        'amazoneditorial' => Deprecated::class,
         'booksite' => Booksite::class,
         'demo' => Demo::class,
         'guardian' => Guardian::class,
@@ -63,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         AmazonEditorial::class => \VuFind\Content\AbstractAmazonFactory::class,
         Booksite::class => BooksiteFactory::class,
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+        Deprecated::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Guardian::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
         SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
