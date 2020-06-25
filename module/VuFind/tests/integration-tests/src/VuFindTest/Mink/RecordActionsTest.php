@@ -124,7 +124,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Create new account
         $this->makeAccount($page, 'username1');
         // Make sure page updated for login
-        // $page = $this->gotoRecord();
         $this->clickCss($page, '.record-tabs .usercomments');
         $this->snooze();
         $this->assertEquals(// Can Comment?
@@ -137,6 +136,73 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->findCss($page, '.comment');
+        // Remove comment
+        $this->clickCss($page, '.comment .delete');
+        $this->snooze(); // wait for UI update
+        $this->assertNull($page->find('css', '.comment'));
+        // Logout
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test adding comments on records (with Captcha enabled).
+     *
+     * @return void
+     */
+    public function testAddCommentWithCaptcha()
+    {
+        // Set up configs:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Captcha' => ['types' => ['demo'], 'forms' => '*']
+                ]
+            ]
+        );
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Click add comment without logging in
+        // TODO Rewrite for comment and login coming
+        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->snooze();
+        $this->findCss($page, '.comment-form');
+        $this->assertEquals(// Can Comment?
+            'You must be logged in first',
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
+        );
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->findCss($page, '.modal.in'); // Lightbox open
+        $this->findCss($page, '.modal [name="username"]');
+        // Log in to existing account
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+        // Make sure page updated for login
+        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->snooze();
+        $this->assertEquals(// Can Comment?
+            'Add your comment',
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+        );
+        // "Add" empty comment
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->assertNull($page->find('css', '.comment'));
+        // Add comment without CAPTCHA
+        $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->assertEquals(
+            'CAPTCHA not passed',
+            $this->findCss($page, '.modal-body .alert-danger')->getText()
+        );
+        $this->clickCss($page, '.modal-body button');
+        // Now fix the CAPTCHA
+        $this->findCss($page, 'form.comment-form [name="demo_captcha"]')
+            ->setValue('demo');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->snooze();
         $this->findCss($page, '.comment');

@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for Recaptcha controller plugin.
+ * Factory for Captcha controller plugin.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -31,15 +32,16 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Recaptcha controller plugin.
+ * Factory for Captcha controller plugin.
  *
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class RecaptchaFactory implements FactoryInterface
+class CaptchaFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,9 +63,21 @@ class RecaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+
+        $captchaTypes = $config->Captcha->types ?? [];
+
+        $captchas = [];
+        foreach ($captchaTypes as $captchaType) {
+            $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)
+                ->get(trim($captchaType));
+        }
+
         return new $requestedName(
-            $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $config,
+            $captchas
         );
     }
 }
