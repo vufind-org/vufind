@@ -86,7 +86,7 @@ class ImageFactoryTest extends \VuFindTest\Unit\MockContainerTest
         $this->assertTrue(file_exists($expectedFont));
         $expected = [
             'font' => $expectedFont,
-            'imgDir' => '/tmp'
+            'imgDir' => $options->getCacheDir()
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
         $this->assertEquals('/cache/', $result->constructorArgs[1]);
