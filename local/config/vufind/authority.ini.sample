@@ -1,0 +1,10 @@
+[Parent_Config]
+relative_path = "../finna/authority.ini"
+override_full_sections = ""
+
+[General]
+;enabled = true
+
+[Records]
+;sources = melinda
+

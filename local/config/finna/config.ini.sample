@@ -1584,6 +1584,8 @@ url = "https://my.surveypal.com/Finnasurvey"
 
 ; Authority info
 [Authority]
+; enabled = false
+
 ; Whether to change author-search links to authority-links.
 ; The link type is one of:
 ;   - author  links to the authority page
