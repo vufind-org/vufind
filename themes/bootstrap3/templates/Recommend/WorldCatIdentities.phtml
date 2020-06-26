@@ -1,3 +1,6 @@
+<?php
+  $this->headScript()->appendFile('facets.js');
+?>
 <?php $worldCatIdentities = $this->recommend->getIdentities(); if (!empty($worldCatIdentities)): ?>
   <div>
     <h3><?=$this->transEsc('Authors Related to Your Search')?></h3>

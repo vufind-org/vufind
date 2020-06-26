@@ -1,5 +1,6 @@
 <?php
   // TODO: This file needs love
+  $this->headScript()->appendFile('facets.js');
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
   $results = $this->recommend->getResults();
