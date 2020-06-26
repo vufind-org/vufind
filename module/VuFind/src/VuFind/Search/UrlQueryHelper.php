@@ -388,7 +388,7 @@ class UrlQueryHelper
      * @param string $value    Facet value
      * @param string $operator Facet type to add (AND, OR, NOT)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function removeFacet($field, $value, $operator = 'AND')
     {
