@@ -349,6 +349,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 });
 
 function registerMoreLessFacetsEventHandlers() {
+  $('.more-facets, .less-facets').off('click');
   $('.more-facets').click(function moreFacets() {
     var id = 'narrowGroupHidden-' + $(this).data('title');
     $('.' + id).removeClass('hidden');
