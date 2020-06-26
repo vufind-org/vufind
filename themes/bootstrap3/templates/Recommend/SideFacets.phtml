@@ -69,3 +69,4 @@
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerMoreLessFacetsEventHandlers();", 'SET');?>

@@ -1,12 +1,13 @@
 <?php
   // TODO: This file needs love
+  $this->headScript()->appendFile('facets.js');
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
   $results = $this->recommend->getResults();
 ?>
 <?php if (isset($topFacetSet)): ?>
   <?php foreach($topFacetSet as $title => $cluster): ?>
-    <?php $moreClass = ' NarrowGroupHidden_' . $this->escapeHtml($title) . ' hidden'; ?>
+    <?php $moreClass = ' narrowGroupHidden-' . $this->escapeHtml($title) . ' hidden'; ?>
     <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
@@ -42,7 +43,7 @@
           </span>
           <?php /* More link */ ?>
           <?php if ($index == $limit): ?>
-            <span id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="narrow-toggle">
+            <span id="more-narrowGroupHidden-<?=$this->escapeHtml($title)?>" class="narrow-toggle">
               <a href="#" class="more-facets" data-title="<?=$this->escapeHtmlAttr($title)?>">
                 <?=$this->transEsc('more') ?> ...
               </a>
@@ -60,17 +61,8 @@
 <?php endif; ?>
 <?php
 $script = <<<JS
-$('.more-facets').click(function(e) {
-  title = $(this).data('title');
-  moreFacets('NarrowGroupHidden-' + title);
-  return false;
-});
-$('.less-facets').click(function(e) {
-  title = $(this).data('title');
-  lessFacets('NarrowGroupHidden-' + title);
-  return false;
-});
-collapseTopFacets()
+registerMoreLessFacetsEventHandlers();
+collapseTopFacets();
 JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
