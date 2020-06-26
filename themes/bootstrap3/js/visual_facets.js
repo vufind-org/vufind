@@ -1,15 +1,15 @@
-/* global VuFind */
-/* export showVisualFacets*/
+/* global VuFind, d3 */
+/* exported showVisualFacets*/
 
 function position() {
-  this.style("left", function(d) { return d.parentlevel ? d.x + 3 + "px" : d.x + "px"; })
-    .style("top", function(d) { return d.parentlevel ? d.y + 3 + "px" : d.y + "px"; })
-    .style("width", function(d) { return d.parentlevel ? Math.max(0, d.dx - 4) + "px" : Math.max(0, d.dx - 1) + "px"; })
-    .style("height", function(d) { return d.parentlevel ? Math.max(0, d.dy - 4) + "px" : Math.max(0, d.dy - 1) + "px"; });
+  this.style("left", function leftStyle(d) { return d.parentlevel ? d.x + 3 + "px" : d.x + "px"; })
+    .style("top", function topStyle(d) { return d.parentlevel ? d.y + 3 + "px" : d.y + "px"; })
+    .style("width", function widthStyle(d) { return d.parentlevel ? Math.max(0, d.dx - 4) + "px" : Math.max(0, d.dx - 1) + "px"; })
+    .style("height", function heightStyle(d) { return d.parentlevel ? Math.max(0, d.dy - 4) + "px" : Math.max(0, d.dy - 1) + "px"; });
 }
 
 function settext() {
-  this.text(function(d) {
+  this.text(function createText(d) {
     // Is this a top-level box?
     var onTop = (typeof d.parentfield === "undefined");
 
@@ -24,7 +24,7 @@ function settext() {
     }
 
     // Case 3: "More Topics" special-case collapsed block:
-    if (d.name == VuFind.translate('More Topics')) {
+    if (d.name === VuFind.translate('More Topics')) {
       var topics = VuFind.translate('more_topics');
       return topics.replace("%%count%%", d.count);
     }
@@ -36,7 +36,7 @@ function settext() {
 
 function setscreenreader() {
   this.attr("class", "sr-only")
-    .text(function(d) {
+    .text(function createTextForScreenReader(d) {
       if (typeof d.parentfield !== "undefined") {
         return VuFind.translate('visual_facet_parent') + " " + d.parentlevel;
       } else {
@@ -46,13 +46,13 @@ function setscreenreader() {
 }
 
 function settitle() {
-  this.attr("title", function(d) {
+  this.attr("title", function createTitle(d) {
     // Case 1: Top-level field
     if (typeof d.parentfield === "undefined") {
       return d.name + " (" + d.count + " " + VuFind.translate('items') + ")";
     }
     // Case 2: "More Topics" special-case collapsed block:
-    if (d.name == VuFind.translate('More Topics')) {
+    if (d.name === VuFind.translate('More Topics')) {
       return d.count + " " + VuFind.translate('More Topics');
     }
 
@@ -96,14 +96,14 @@ function showVisualFacets(pivotdata) {
       .sticky(true)
       .mode("squarify")
       .padding(0, 0, 0, 18)
-      .value(function(d) { return d.size; });
+      .value(function size(d) { return d.size; });
 
     // Total count of items matching the search;
     // will be used below to do math to size the boxes properly.
 
     var totalbooks = pivotdata.total;
 
-    $.each(pivotdata.children, function(facetindex, facetdata) {
+    $.each(pivotdata.children, function createFacet(facetindex, facetdata) {
       //Saving the original size in a "count" variable
       //that won't be resized.
 
@@ -114,21 +114,21 @@ function showVisualFacets(pivotdata) {
       // within that first-level container. You won't be able
       // to read them and they'll just clutter up the display.
 
-      if (facetdata.size < totalbooks * .1) {
-        var onechild = new Object();
+      var onechild = {};
+      if (facetdata.size < totalbooks * 0.1) {
         onechild.name = facetdata.name;
         onechild.size = facetdata.size;
         onechild.count = facetdata.count;
         onechild.field = facetdata.field;
         delete pivotdata.children[facetindex].children;
-        pivotdata.children[facetindex].children = new Array();
+        pivotdata.children[facetindex].children = [];
         pivotdata.children[facetindex].children.push(onechild);
       } else {
         // Used to keep count of the total number of child
         // facets under a first-level facet. Used for
         // properly sizing multi-valued data.
         var totalbyfirstpivot = 0;
-        $.each(facetdata.children, function(childindex, childdata) {
+        $.each(facetdata.children, function sumChildFacet(childindex, childdata) {
           totalbyfirstpivot += childdata.size;
         });
 
@@ -154,9 +154,9 @@ function showVisualFacets(pivotdata) {
         // entire results, don't roll up any child facets.
         var morefacet = 0;
         var morecount = 0;
-        var resizedData = new Array();
-        $.each(facetdata.children, function(childindex, childdata) {
-          if (childdata && (childdata.size < totalbyfirstpivot * .05 && facetdata.size < totalbooks * .15 || childdata.size < totalbyfirstpivot * .02 && facetdata.size < totalbooks * .3 || childdata.size < totalbyfirstpivot * .01 && facetdata.size != totalbooks)) {
+        var resizedData = [];
+        $.each(facetdata.children, function createChildFacet(childindex, childdata) {
+          if (childdata && (childdata.size < totalbyfirstpivot * 0.05 && facetdata.size < totalbooks * 0.15 || childdata.size < totalbyfirstpivot * 0.02 && facetdata.size < totalbooks * 0.3 || childdata.size < totalbyfirstpivot * 0.01 && facetdata.size !== totalbooks)) {
             morefacet += childdata.size;
             morecount++;
           } else if (childdata) {
@@ -177,18 +177,18 @@ function showVisualFacets(pivotdata) {
         // that happens, just display the top level, with no topic
         // boxes inside the main box.
 
-        if (morefacet == totalbyfirstpivot) {
-          var onechild = new Object();
+        onechild = {};
+        if (morefacet === totalbyfirstpivot) {
           onechild.name = facetdata.name;
           onechild.size = facetdata.size;
           onechild.count = facetdata.count;
           onechild.field = facetdata.field;
-          pivotdata.children[facetindex].children = new Array();
+          pivotdata.children[facetindex].children = [];
           pivotdata.children[facetindex].children.push(onechild);
         } else {
           //If we're keeping the "More" facet, let's size it properly
           pivotdata.children[facetindex].children = resizedData;
-          var more = new Object();
+          var more = {};
           more.name = VuFind.translate('More Topics');
           more.size = morefacet / totalbyfirstpivot * facetdata.size;
           more.field = ""; // this value doesn't matter, since parent field will be linked.
@@ -200,29 +200,29 @@ function showVisualFacets(pivotdata) {
       }
     });
 
-    var node = div.datum(pivotdata).selectAll(".node")
+    div.datum(pivotdata).selectAll(".node")
       .data(treemap.nodes)
       .enter().append("a")
-      .attr("href", function(d) {
-        if (d.parentlevel && d.name != VuFind.translate('More Topics')) {
+      .attr("href", function createHref(d) {
+        if (d.parentlevel && d.name !== VuFind.translate('More Topics')) {
           return window.location + "&filter[]=" + d.field + ":\"" + encodeURIComponent(d.name) + "\"&filter[]=" + d.parentfield + ":\"" + encodeURIComponent(d.parentlevel) + "\"&view=list";
-        } else if (d.name == VuFind.translate('More Topics')) {
+        } else if (d.name === VuFind.translate('More Topics')) {
           return window.location + "&filter[]=" + d.parentfield + ":\"" + encodeURIComponent(d.parentlevel) + "\"";
-        } else if (d.name != "theData") {
+        } else if (d.name !== "theData") {
           return window.location + "&filter[]=" + d.field + ":\"" + encodeURIComponent(d.name) + "\"";
         }
       })
       .append("div")
-      .attr("class", function(d) { return (typeof d.parentfield === "undefined") ? "node toplevel" : "node secondlevel" })
-      .attr("id", function(d) { return d.name.replace(/\s+/g, ''); })
+      .attr("class", function createClass(d) { return (typeof d.parentfield === "undefined") ? "node toplevel" : "node secondlevel"; })
+      .attr("id", function createId(d) { return d.name.replace(/\s+/g, ''); })
       .call(position)
-      .style("background", function(d) { return d.children ? color(d.name.substr(0, 1)) : null; })
+      .style("background", function styleBackground(d) { return d.children ? color(d.name.substr(0, 1)) : null; })
       .call(settitle)
-      .style("z-index", function(d) { return (typeof d.parentfield !== "undefined") ? "1" : "0" })
+      .style("z-index", function setZindex(d) { return (typeof d.parentfield !== "undefined") ? "1" : "0"; })
       .attr("tabindex", 0)
       .append("div")
       .call(settext)
-      .attr("class", function(d) { return d.children ? "label" : "notalabel"; } )
+      .attr("class", function createClass(d) { return d.children ? "label" : "notalabel"; } )
       .insert("div")
       .call(setscreenreader);
   }
