@@ -53,7 +53,7 @@ finna.menu = (function finnaMenu() {
       $.each(mutationsList, function checkMutation() {
         if (this.type === 'childList' && this.addedNodes) {
           $(this.addedNodes).each(function checkNode() {
-            if ($(this).hasClass('warn') || $(this).hasClass('overdue') || $(this).hasClass('fa-bell') || $(this).hasClass('fa-clock-o')) {
+            if ($(this).hasClass('warn') || $(this).hasClass('overdue') || $(this).hasClass('fa-bell')) {
               $('.loans-menu-status')
                 .attr("data-toggle", "tooltip")
                 .attr("data-placement", "bottom")
