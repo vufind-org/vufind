@@ -29,7 +29,6 @@
 namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Mvc\Exception;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
