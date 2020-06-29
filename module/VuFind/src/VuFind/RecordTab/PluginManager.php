@@ -107,7 +107,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
-        $this->addInitializer('LmcRbacMvc\Initializer\AuthorizationServiceInitializer');
+        $this->addInitializer(
+            \LmcRbacMvc\Initializer\AuthorizationServiceInitializer::class
+        );
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
