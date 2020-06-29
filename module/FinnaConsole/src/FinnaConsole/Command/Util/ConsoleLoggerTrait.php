@@ -28,6 +28,9 @@
  */
 namespace FinnaConsole\Command\Util;
 
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
 /**
  * Trait for logs in console services.
  *
@@ -41,6 +44,13 @@ namespace FinnaConsole\Command\Util;
  */
 trait ConsoleLoggerTrait
 {
+    /**
+     * Output interface
+     *
+     * @var OutputInterface
+     */
+    protected $output = null;
+
     /**
      * Log an exception triggered by ZF2 for administrative purposes.
      *
@@ -122,14 +132,20 @@ trait ConsoleLoggerTrait
     /**
      * Output a message with a timestamp
      *
-     * @param string $msg Message
+     * @param string $msg     Message
+     * @param int    $verbose Verbosity level (one of OutputInterface::VERBOSITY_*
+     * constants)
      *
      * @return void
      */
-    protected function msg($msg)
+    protected function msg($msg, $verbose = 0)
     {
-        $msg = '[' . getmypid() . "] $msg\n";
-        file_put_contents('php://stdout', $msg, FILE_APPEND);
+        $msg = '[' . getmypid() . "] $msg";
+        if (null === $this->output) {
+            file_put_contents('php://stdout', "$msg\n", FILE_APPEND);
+        } else {
+            $this->output->writeln($msg, $verbose);
+        }
     }
 
     /**
@@ -147,8 +163,13 @@ trait ConsoleLoggerTrait
             if ('=' === $publishedMsg) {
                 $publishedMsg = $msg;
             }
-            $publishedMsg = '[' . getmypid() . "] $publishedMsg\n";
-            file_put_contents('php://stderr', $publishedMsg, FILE_APPEND);
+            $publishedMsg = '[' . getmypid() . "] $publishedMsg";
+            if ($this->output instanceof ConsoleOutputInterface) {
+                $stderr = $this->output->getErrorOutput();
+                $stderr->writeln($publishedMsg);
+            } else {
+                file_put_contents('php://stderr', "$publishedMsg\n", FILE_APPEND);
+            }
         }
         $msg = "ERROR: $msg";
         $this->msg($msg);
