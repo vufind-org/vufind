@@ -27,7 +27,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use ZfcRbac\Service\AuthorizationService;
+use LmcRbacMvc\Service\AuthorizationService;
 
 /**
  * LDAP permission provider for VuFind.

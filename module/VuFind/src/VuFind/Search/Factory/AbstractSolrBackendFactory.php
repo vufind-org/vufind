@@ -514,7 +514,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(
-            $this->serviceLocator->get(\ZfcRbac\Service\AuthorizationService::class)
+            $this->serviceLocator->get(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $listener;
     }

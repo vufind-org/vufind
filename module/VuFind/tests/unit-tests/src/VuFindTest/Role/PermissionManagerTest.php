@@ -103,7 +103,7 @@ class PermissionManagerTest extends \VuFindTest\Unit\TestCase
     public function testGrantedPermission()
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -121,7 +121,7 @@ class PermissionManagerTest extends \VuFindTest\Unit\TestCase
     public function testDeniedPermission()
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')

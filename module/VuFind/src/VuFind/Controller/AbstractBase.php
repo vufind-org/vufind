@@ -35,7 +35,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
-use ZfcRbac\Service\AuthorizationServiceAwareInterface;
+use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -265,12 +265,12 @@ class AbstractBase extends AbstractActionController
      * rather than through injection with the AuthorizationServiceAwareInterface
      * to minimize expensive initialization when authorization is not needed.
      *
-     * @return \ZfcRbac\Service\AuthorizationService
+     * @return \LmcRbacMvc\Service\AuthorizationService
      */
     protected function getAuthorizationService()
     {
         return $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class);
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
     }
 
     /**

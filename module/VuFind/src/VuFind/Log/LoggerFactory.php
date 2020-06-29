@@ -190,7 +190,7 @@ class LoggerFactory implements FactoryInterface
         if (PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
-            return $container->get(\ZfcRbac\Service\AuthorizationService::class)
+            return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
                 ->isGranted('access.DebugMode');
         }
         return false;
