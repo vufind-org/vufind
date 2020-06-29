@@ -27,8 +27,8 @@
  */
 namespace VuFind\Role;
 
-use Rbac\Role\Role;
 use LmcRbacMvc\Role\RoleProviderInterface;
+use Rbac\Role\Role;
 
 /**
  * VuFind dynamic role provider.

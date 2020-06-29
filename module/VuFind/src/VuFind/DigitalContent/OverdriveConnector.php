@@ -34,10 +34,10 @@ use Laminas\Config\Config;
 use Laminas\Http\Client;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
-use VuFind\Auth\ILSAuthenticator;
-use VuFind\Cache\KeyGeneratorTrait;
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Cache\KeyGeneratorTrait;
 
 /**
  * OverdriveConnector
