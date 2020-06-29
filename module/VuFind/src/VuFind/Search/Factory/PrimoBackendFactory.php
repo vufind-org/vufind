@@ -40,7 +40,7 @@ use VuFindSearch\Backend\Primo\QueryBuilder;
 
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 
-use ZfcRbac\Service\AuthorizationService;
+use LmcRbacMvc\Service\AuthorizationService;
 
 /**
  * Factory for Primo Central backends.

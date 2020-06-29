@@ -588,7 +588,7 @@ $config = [
         ],
     ],
     // Authorization configuration:
-    'zfc_rbac' => [
+    'lmc_rbac' => [
         'identity_provider' => 'VuFind\Auth\Manager',
         'guest_role' => 'guest',
         'role_provider' => [

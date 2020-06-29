@@ -152,7 +152,7 @@ class SummonBackendFactory implements FactoryInterface
     protected function isAuthed()
     {
         return $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class)
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
     }
 
