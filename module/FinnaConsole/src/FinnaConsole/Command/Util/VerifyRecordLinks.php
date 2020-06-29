@@ -30,6 +30,7 @@ namespace FinnaConsole\Command\Util;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Db\Row\Resource;
 
 /**
  * Console service for verifying record links.
@@ -79,22 +80,43 @@ class VerifyRecordLinks extends AbstractUtilCommand
     protected $solr;
 
     /**
+     * Record loader
+     *
+     * @var \VuFind\Record\Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Search config
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $searchConfig;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Db\Table\Comments          $comments       Comments table
      * @param \Finna\Db\Table\CommentsRecord     $commentsRecord CommentsRecord table
      * @param \VuFind\Db\Table\Resource          $resource       Resource table
      * @param \VuFindSearch\Backend\Solr\Backend $solr           Search backend
+     * @param \VuFind\Record\Loader              $recordLoader   Record loader
+     * @param \Laminas\Config\Config             $searchConfig   Search config
      */
     public function __construct(\VuFind\Db\Table\Comments $comments,
         \Finna\Db\Table\CommentsRecord $commentsRecord,
         \VuFind\Db\Table\Resource $resource,
-        \VuFindSearch\Backend\Solr\Backend $solr
+        \VuFindSearch\Backend\Solr\Backend $solr,
+        \VuFind\Record\Loader $recordLoader,
+        \Laminas\Config\Config $searchConfig
     ) {
         $this->commentsTable = $comments;
         $this->commentsRecordTable = $commentsRecord;
         $this->resourceTable = $resource;
         $this->solr = $solr;
+        $this->recordLoader = $recordLoader;
+        $this->recordLoader->setCacheContext(\VuFind\Record\Cache::CONTEXT_DISABLED);
+        $this->searchConfig = $searchConfig;
 
         parent::__construct();
     }
@@ -119,14 +141,53 @@ class VerifyRecordLinks extends AbstractUtilCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->output = $output;
+
         $this->msg('Record link verification started');
-        $count = $fixed = 0;
-        $comments = $this->commentsTable->select();
-        if (!count($comments)) {
-            $this->msg('No comments available for checking');
-            return true;
+
+        // Check search config and warn about conflicting settings
+        if (!empty($this->searchConfig['Records']['sources'])) {
+            $this->warn(
+                'Records/sources set in searches.ini.'
+                . ' This may interfere with link verification.'
+            );
+        }
+        if (!empty($this->searchConfig['HiddenFilters'])) {
+            $this->warn(
+                'HiddenFilters set in searches.ini.'
+                . ' This may interfere with link verification.'
+            );
+        }
+        if (!empty($this->searchConfig['RawHiddenFilters'])) {
+            $this->warn(
+                'RawHiddenFilters set in searches.ini.'
+                . ' This may interfere with link verification.'
+            );
         }
 
+        $this->msg('Checking saved Solr resources for moved records');
+        $count = $fixed = 0;
+        $resources = $this->resourceTable->select(['source' => 'Solr']);
+        foreach ($resources as $resource) {
+            if ($this->verifyResourceId($resource)) {
+                ++$fixed;
+            }
+            ++$count;
+            $msg = "$count resources checked, $fixed id's updated";
+            if ($count % 1000 == 0) {
+                $this->msg($msg);
+            } else {
+                $this->msg($msg, OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
+        }
+        $this->msg(
+            "Resource checking completed with $count resources checked, $fixed"
+            . " id's fixed"
+        );
+
+        $this->msg('Checking comments');
+        $count = $fixed = 0;
+        $comments = $this->commentsTable->select();
         foreach ($comments as $comment) {
             $resource = $this->resourceTable
                 ->select(['id' => $comment->resource_id])->current();
@@ -138,15 +199,18 @@ class VerifyRecordLinks extends AbstractUtilCommand
                 ++$fixed;
             }
             ++$count;
+            $msg = "$count comments checked, $fixed links fixed";
             if ($count % 1000 == 0) {
-                $this->msg("$count comments checked, $fixed links fixed");
+                $this->msg($msg);
+            } else {
+                $this->msg($msg, OutputInterface::VERBOSITY_VERY_VERBOSE);
             }
         }
-
         $this->msg(
-            "Record link verification completed with $count comments checked, $fixed"
+            "Comment checking completed with $count comments checked, $fixed"
             . ' links fixed'
         );
+
         return true;
     }
 
@@ -181,6 +245,48 @@ class VerifyRecordLinks extends AbstractUtilCommand
             $ids = [$recordId];
         }
         if ($this->commentsRecordTable->verifyLinks($commentId, $ids)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Verify resource id
+     *
+     * @param Resource $resource Resource
+     *
+     * @return bool True if changes were made
+     */
+    protected function verifyResourceId(Resource $resource)
+    {
+        try {
+            $record = $this->recordLoader
+                ->load($resource->record_id, $resource->source, true);
+        } catch (\Exception $e) {
+            $this->warn(
+                "Exception loading record {$resource->source}:{$resource->record_id}"
+                    . ':' . $e->getMessage()
+            );
+            return false;
+        }
+
+        if ($record instanceof \VuFind\RecordDriver\Missing) {
+            $this->msg(
+                "Record missing for resource {$resource->id} record_id"
+                    . " {$resource->source}:{$resource->record_id}",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+            return false;
+        }
+
+        $id = $record->getUniqueId();
+        if ($id != $resource->record_id) {
+            $this->msg(
+                "Updating resource {$resource->id} record_id from"
+                . " {$resource->record_id} to $id"
+            );
+            $resource->record_id = $id;
+            $resource->save();
             return true;
         }
         return false;
