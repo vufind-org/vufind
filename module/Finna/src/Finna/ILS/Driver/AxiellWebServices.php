@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2018.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,8 +32,6 @@
 namespace Finna\ILS\Driver;
 
 use DOMDocument;
-use Laminas\Db\Sql\Ddl\Column\Boolean;
-use SoapClient;
 use VuFind\Config\Locator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
@@ -2696,7 +2694,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      */
     protected function doSOAPRequest($wsdl, $function, $functionResult, $id, $params)
     {
-        $client = new SoapClient($wsdl, $this->soapOptions);
+        $client = new ProxySoapClient($this->httpService, $wsdl, $this->soapOptions);
 
         $this->debug("$function Request for '$this->arenaMember'.'$id'");
 

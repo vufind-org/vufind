@@ -6,7 +6,8 @@
         "erusev/parsedown": "1.7.4",
         "erusev/parsedown-extra": "^0.8.1",
         "ezyang/htmlpurifier": "4.12.0",
-        "picqer/php-barcode-generator": "0.2.1"
+        "picqer/php-barcode-generator": "0.2.1",
+        "smartbox/besimple-soap": "^1.3.5"
     },
     "scripts": {
         "phing-install-dependencies": "phing installswaggerui",
