@@ -233,12 +233,13 @@ class EDS extends DefaultRecord
     /**
      * Get the items of the record.
      *
-     * @param string $context The context in which items are being retrieved
+     * @param string $context     The context in which items are being retrieved
      * (used for context-sensitive filtering)
+     * @param string $labelFilter A specific label to retrieve (filter out others)
      *
      * @return array
      */
-    public function getItems($context = null)
+    public function getItems($context = null, $labelFilter = null)
     {
         $items = [];
         foreach ($this->fields['Items'] ?? [] as $item) {
@@ -248,7 +249,9 @@ class EDS extends DefaultRecord
                 'Data'  => isset($item['Data'])
                     ? $this->toHTML($item['Data'], $item['Group']) : ''
             ];
-            if (!$this->itemIsExcluded($nextItem, $context)) {
+            if (!$this->itemIsExcluded($nextItem, $context)
+                && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
+            ) {
                 $items[] = $nextItem;
             }
         }
@@ -694,5 +697,103 @@ class EDS extends DefaultRecord
             }
         }
         return false;
+    }
+
+    /**
+     * Get record languages
+     *
+     * @return array
+     */
+    public function getLanguages()
+    {
+        return $this->extractEbscoData(
+            [
+                'RecordInfo:BibRecord/BibEntity/Languages/*/Text',
+                'Items:Languages',
+                'Items:Language',
+            ]
+        );
+    }
+
+    /**
+     * Extract data from EBSCO API response using a prioritized list of selectors.
+     * Selectors can be of the form Items:Label to invoke extractEbscoDataFromItems,
+     * or RecordInfo:Path/To/Data/Element to invoke extractEbscoDataFromRecordInfo.
+     *
+     * @param array $selectors Array of selector strings for extracting data.
+     *
+     * @return array
+     */
+    protected function extractEbscoData($selectors)
+    {
+        $result = [];
+        foreach ($selectors as $selector) {
+            list($method, $params) = explode(':', $selector, 2);
+            $fullMethod = 'extractEbscoDataFrom' . ucwords($method);
+            if (!is_callable([$this, $fullMethod])) {
+                throw new \Exception('Undefined method: ' . $fullMethod);
+            }
+            $result = $this->$fullMethod($params);
+            if (!empty($result)) {
+                break;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Extract data from the record's "Items" array, based on a label.
+     *
+     * @param string $label Label to filter on.
+     *
+     * @return array
+     */
+    protected function extractEbscoDataFromItems($label)
+    {
+        $items = $this->getItems(null, $label);
+        $output = [];
+        foreach ($items as $item) {
+            $output[] = $item['Data'];
+        }
+        return $output;
+    }
+
+    /**
+     * Extract data from the record's "RecordInfo" array, based on a path.
+     *
+     * @param string $path Path to select with (slash-separated element names,
+     * with special * selector to iterate through all children).
+     *
+     * @return array
+     */
+    protected function extractEbscoDataFromRecordInfo($path)
+    {
+        return (array)$this->recurseIntoRecordInfo(
+            $this->fields['RecordInfo'] ?? [],
+            explode('/', $path)
+        );
+    }
+
+    /**
+     * Recursive support method for extractEbscoDataFromRecordInfo().
+     *
+     * @param array $data Data to recurse into
+     * @param array $path Array representing path into data
+     *
+     * @return array
+     */
+    protected function recurseIntoRecordInfo($data, $path)
+    {
+        $nextField = array_shift($path);
+        $keys = $nextField === '*' ? array_keys($data) : [$nextField];
+        $values = [];
+        foreach ($keys as $key) {
+            if (isset($data[$key])) {
+                $values[] = empty($path)
+                    ? $data[$key]
+                    : $this->recurseIntoRecordInfo($data[$key], $path);
+            }
+        }
+        return count($values) > 1 ? $values : $values[0];
     }
 }
