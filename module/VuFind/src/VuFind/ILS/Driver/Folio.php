@@ -446,7 +446,7 @@ class Folio extends AbstractAPI implements
                 }
                 $items[] = [
                     'id' => $bibId,
-                    'item_id' => $itemBody->items[$j]->id,
+                    'item_id' => $item->id,
                     'holding_id' => $holding->id,
                     'number' => count($items) + 1,
                     'barcode' => $item->barcode ?? '',
