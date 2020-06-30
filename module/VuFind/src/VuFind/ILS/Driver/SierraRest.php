@@ -1459,74 +1459,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         $patronCode = false;
         if ($patron && !empty($this->config['Catalog']['redirect_uri'])) {
-            // Do a patron login and then perform an authorization grant request
-            $params = [
-                'client_id' => $this->config['Catalog']['client_key'],
-                'redirect_uri' => $this->config['Catalog']['redirect_uri'],
-                'state' => 'auth',
-                'response_type' => 'code'
-            ];
-            $apiUrl = $this->config['Catalog']['host'] . '/authorize'
-                . '?' . http_build_query($params);
-
-            // First request the login form to get the hidden fields and cookies
-            $client = $this->createHttpClient($apiUrl);
-            $response = $client->send();
-            $doc = new \DOMDocument();
-            if (!@$doc->loadHTML($response->getBody())) {
-                $this->error('Could not parse the III CAS login form');
-                throw new ILSException('Problem with Sierra login.');
-            }
-            $usernameField = $this->config['Authentication']['username_field']
-                ?? 'code';
-            $passwordField = $this->config['Authentication']['password_field']
-                ?? 'pin';
-            $postParams = [
-                $usernameField => $patron['cat_username'],
-                $passwordField => $patron['cat_password'],
-            ];
-            foreach ($doc->getElementsByTagName('input') as $input) {
-                if ($input->getAttribute('type') == 'hidden') {
-                    $postParams[$input->getAttribute('name')]
-                        = $input->getAttribute('value');
-                }
-            }
-
-            $postUrl = $client->getUri();
-            $cookies = $client->getCookies();
-
-            // Reset client
-            $client = $this->createHttpClient($postUrl);
-            $client->addCookie($cookies);
-
-            // Allow two redirects so that we get back from CAS token verification
-            // to the authorize API address.
-            $client->setOptions(['maxredirects' => 2]);
-            $client->setParameterPost($postParams);
-            $response = $client->setMethod('POST')->send();
-            if (!$response->isSuccess() && !$response->isRedirect()) {
-                $this->error(
-                    "POST request for '" . $client->getRequest()->getUriString()
-                    . "' did not return 302 redirect: "
-                    . $response->getStatusCode() . ': '
-                    . $response->getReasonPhrase()
-                    . ', response content: ' . $response->getBody()
-                );
-                throw new ILSException('Problem with Sierra login.');
-            }
-            if ($response->isRedirect()) {
-                $location = $response->getHeaders()->get('Location')->getUri();
-                // Don't try to parse the URI since Sierra creates it wrong if the
-                // redirect_uri sent to it already contains a question mark.
-                if (!preg_match('/code=([^&\?]+)/', $location, $matches)) {
-                    $this->error(
-                        "Could not parse patron authentication code from '$location'"
-                    );
-                    throw new ILSException('Problem with Sierra login.');
-                }
-                $patronCode = $matches[1];
-            } else {
-                // Did not get a redirect, assume the login failed
+            if (!($patronCode = $this->getPatronAuthorizationCode($patron))) {
                 return false;
             }
         }
@@ -1580,6 +1513,115 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $this->sessionCache->accessTokenPatron = $patronCode
             ? $patron['cat_username'] : null;
         return true;
+    }
+
+    /**
+     * Login and retrieve authorization code for the patron
+     *
+     * @param array $patron Patron information
+     *
+     * @return string|bool
+     * @throws ILSException
+     */
+    protected function getPatronAuthorizationCode($patron)
+    {
+        // Do a patron login and then perform an authorization grant request
+        $redirectUri = $this->config['Catalog']['redirect_uri'];
+        $params = [
+            'client_id' => $this->config['Catalog']['client_key'],
+            'redirect_uri' => $redirectUri,
+            'state' => 'auth',
+            'response_type' => 'code'
+        ];
+        $apiUrl = $this->config['Catalog']['host'] . '/authorize'
+            . '?' . http_build_query($params);
+
+        // First request the login form to get the hidden fields and cookies
+        $client = $this->createHttpClient($apiUrl);
+        $response = $client->send();
+        $doc = new \DOMDocument();
+        if (!@$doc->loadHTML($response->getBody())) {
+            $this->error('Could not parse the III CAS login form');
+            throw new ILSException('Problem with Sierra login.');
+        }
+        $usernameField = $this->config['Authentication']['username_field'] ?? 'code';
+        $passwordField = $this->config['Authentication']['password_field'] ?? 'pin';
+        $postParams = [
+            $usernameField => $patron['cat_username'],
+            $passwordField => $patron['cat_password'],
+        ];
+        foreach ($doc->getElementsByTagName('input') as $input) {
+            if ($input->getAttribute('type') == 'hidden') {
+                $postParams[$input->getAttribute('name')]
+                    = $input->getAttribute('value');
+            }
+        }
+        $postUrl = $client->getUri();
+        if ($form = $doc->getElementById('fm1')) {
+            if ($action = $form->getAttribute('action')) {
+                $actionUrl = new \Laminas\Uri\Http($action);
+                if ($actionUrl->getScheme()) {
+                    $postUrl = $actionUrl;
+                } else {
+                    $postUrl->setPath($actionUrl->getPath());
+                    $postUrl->setQuery($actionUrl->getQuery());
+                }
+            }
+        }
+
+        // Collect cookies for session etc.
+        $cookies = $client->getCookies();
+
+        // Reset client
+        $client->reset();
+        $client->addCookie($cookies);
+
+        // Disable automatic following of redirects
+        $client->setOptions(['maxredirects' => 0]);
+        $adapter = $client->getAdapter();
+        if ($adapter instanceof \Laminas\Http\Client\Adapter\Curl) {
+            $adapter->setCurlOption(CURLOPT_FOLLOWLOCATION, false);
+        }
+
+        // Send the login request
+        $client->setParameterPost($postParams);
+        $response = $client->setMethod('POST')->send();
+        if (!$response->isSuccess() && !$response->isRedirect()) {
+            $this->error(
+                "POST request for '" . $client->getRequest()->getUriString()
+                . "' did not return 302 redirect: "
+                . $response->getStatusCode() . ': '
+                . $response->getReasonPhrase()
+                . ', response content: ' . $response->getBody()
+            );
+            throw new ILSException('Problem with Sierra login.');
+        }
+
+        // Process redirects here until the configured redirect url is reached
+        $patronCode = false;
+        while ($response->isRedirect()) {
+            $location = $response->getHeaders()->get('Location')->getUri();
+            if (strncmp($location, $redirectUri, strlen($redirectUri)) === 0) {
+                // Don't try to parse the URI since Sierra creates it wrong if
+                // the redirect_uri sent to it already contains a question mark.
+                if (!preg_match('/code=([^&\?]+)/', $location, $matches)) {
+                    $this->error(
+                        "Could not parse authentication code from '$location'"
+                    );
+                    throw new ILSException('Problem with Sierra login.');
+                }
+                $patronCode = $matches[1];
+                break;
+            }
+            $cookies = array_merge($cookies, $client->getCookies());
+            $client->reset();
+            $client->addCookie($cookies);
+            $client->setUri($location);
+            $client->setMethod('GET');
+            $response = $client->send();
+        }
+
+        return $patronCode;
     }
 
     /**
