@@ -117,7 +117,12 @@ trait TranslatorAwareTrait
                 return $translated;
             }
             // Override $domain/$str using getDisplayString() before proceeding:
-            list($domain, $str) = $this->extractTextDomain($str->getDisplayString());
+            $str = $str->getDisplayString();
+            if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+                $str = $this->translate($str);
+            } else {
+                list($domain, $str) = $this->extractTextDomain($str);
+            }
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):

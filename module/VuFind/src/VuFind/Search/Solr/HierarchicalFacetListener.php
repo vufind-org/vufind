@@ -182,9 +182,10 @@ class HierarchicalFacetListener
                 if (is_array($fields[$facetName])) {
                     $allLevels = ($this->displayStyles[$facetName] ?? '') === 'full';
                     foreach ($fields[$facetName] as &$value) {
-                        // If we don't display all levels for a facet value, include
-                        // a translation only for the deepest level available
-                        if ($allLevels
+                        // Include a translation for each value only if we don't
+                        // display full hierarchy or this is the deepest hierarchy
+                        // level available
+                        if (!$allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
                                 $fields[$facetName], $value
                             )

@@ -614,15 +614,28 @@ class Params extends \VuFind\Search\Base\Params
                     $separator
                 );
             } else {
-                $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
-                    $field
-                );
+                $domain = $this->getOptions()
+                    ->getTextDomainForTranslatedFacet($field);
+
+                // Provide translation of each separate element as a default
+                // while allowing one to translate the full string too:
                 $parts = $this->facetHelper
                     ->getFilterStringParts($filter['value']);
-                foreach ($parts as &$part) {
-                    $part = $this->translate([$domain, $part]);
+                $translated = [];
+                foreach ($parts as $part) {
+                    $translated[] = $this->translate([$domain, $part]);
                 }
-                $filter['displayText'] = implode($separator, $parts);
+                $translatedParts = implode($separator, $translated);
+
+                $parts = array_map(
+                    function ($part) {
+                        return $part->getDisplayString();
+                    },
+                    $parts
+                );
+                $str = implode($separator, $parts);
+                $filter['displayText']
+                    = $this->translate([$domain, $str], [], $translatedParts);
             }
         }
 

@@ -28,6 +28,8 @@
 namespace VuFind\Search\Solr;
 
 use VuFind\I18n\TranslatableString;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\UrlQueryHelper;
 
 /**
@@ -39,8 +41,10 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HierarchicalFacetHelper
+class HierarchicalFacetHelper implements TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     /**
      * Helper method for building hierarchical facets:
      * Sort a facet list according to the given sort order
@@ -179,11 +183,13 @@ class HierarchicalFacetHelper
      * @param bool   $allLevels   Whether to display all levels or only
      * the current one
      * @param string $separator   Separator string displayed between levels
+     * @param string $domain      Translation domain for default translations
      *
      * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
-        $displayText, $allLevels = false, $separator = '/'
+        $displayText, $allLevels = false, $separator = '/',
+        $domain = 'default'
     ) {
         $originalText = $displayText;
         $parts = explode('/', $displayText);
@@ -193,7 +199,15 @@ class HierarchicalFacetHelper
             } else {
                 array_shift($parts);
                 array_pop($parts);
-                $displayText = implode($separator, $parts);
+
+                $translatedParts = [];
+                foreach ($parts as $part) {
+                    $translatedParts[] = $this->translate([$domain, $part]);
+                }
+                $displayText = new TranslatableString(
+                    implode($separator, $parts),
+                    implode($separator, $translatedParts)
+                );
             }
         }
         return new TranslatableString($originalText, $displayText);
