@@ -10,8 +10,8 @@
 @import "search";
 @import "forms";
 
-$brand-primary: #619144 !default; /* a11y overrides $brand-primary in sass */
-$active-orange: #E70 !default;
+$brand-primary: #619144; /* a11y overrides $brand-primary in sass */
+$active-orange: #E70;
 
 /* --- Bootstrap MODS ---*/
 @import "common";

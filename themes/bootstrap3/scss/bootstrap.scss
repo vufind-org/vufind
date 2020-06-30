@@ -3,14 +3,12 @@
 @import "vendor/font-awesome/font-awesome";
 <#LESS */
 /* #SCSS> */
-$fa-font-path: "../../bootstrap3/css/fonts" !default;
+$fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap";
 @import "vendor/font-awesome/font-awesome";
 /* <#SCSS */
 
-@import "vendor/bootstrap-accessibility/bootstrap-accessibility";
-@import "vendor/a11y";
-
+@import "components/accessibility";
 @import "components/variables";
 
 @import "components/advanced-search";
