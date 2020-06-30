@@ -441,6 +441,11 @@ class Folio extends AbstractAPI implements
             };
             for ($j = 0; $j < count($itemBody->items); $j++) {
                 $item = $itemBody->items[$j];
+                $supressed = isset($item->discoverySuppress) 
+                    ? $item->discoverySuppress : null;
+                if ($supressed == true) {
+                    continue;
+                }
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $itemBody->items[$j]->id,
