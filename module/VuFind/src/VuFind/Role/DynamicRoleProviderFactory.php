@@ -56,7 +56,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $config = $sm->get('config');
-        $rbacConfig = $config['zfc_rbac'];
+        $rbacConfig = $config['lmc_rbac'];
         return new DynamicRoleProvider(
             $this->getPermissionProviderPluginManager($sm, $rbacConfig),
             $this->getPermissionConfiguration($sm, $rbacConfig)
@@ -67,7 +67,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Create the supporting plugin manager.
      *
      * @param ContainerInterface $serviceLocator Service locator
-     * @param array              $rbacConfig     ZfcRbac configuration
+     * @param array              $rbacConfig     LmcRbacMvc configuration
      *
      * @return PermissionProviderPluginManager
      */
@@ -85,14 +85,14 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Get a configuration array.
      *
      * @param ContainerInterface $serviceLocator Service locator
-     * @param array              $rbacConfig     ZfcRbac configuration
+     * @param array              $rbacConfig     LmcRbacMvc configuration
      *
      * @return array
      */
     protected function getPermissionConfiguration(
         ContainerInterface $serviceLocator, array $rbacConfig
     ) {
-        // Get role provider settings from the ZfcRbac configuration:
+        // Get role provider settings from the LmcRbacMvc configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:

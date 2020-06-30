@@ -1,6 +1,6 @@
 <?php $this->headLink()->appendStylesheet('EDS.css'); ?>
 <?php
-    $items = $this->driver->getItems();
+    $items = $this->driver->getItems('core');
     $dbLabel = $this->driver->getDbLabel();
     $thumb = $this->driver->getThumbnail('medium');
     $pubType = $this->driver->getPubType();

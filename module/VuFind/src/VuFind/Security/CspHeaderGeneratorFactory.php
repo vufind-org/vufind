@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Permission manager factory.
+ * Class CspHeaderGeneratorFactory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authorization
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @package  VuFind\Security
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
  */
-namespace VuFind\Role;
+namespace VuFind\Security;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Permission manager factory.
+ * Factory for creating  Content Security Policy http headers generator class
  *
  * @category VuFind
- * @package  Authorization
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  VuFind\Security
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
-class PermissionManagerFactory implements FactoryInterface
+class CspHeaderGeneratorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,15 +62,10 @@ class PermissionManagerFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $permissions = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('permissions')->toArray();
-        $permManager = new $requestedName($permissions);
-        $permManager->setAuthorizationService(
-            $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
-        );
-        return $permManager;
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('contentsecuritypolicy');
+        $nonceGenerator = $container->get(NonceGenerator::class);
+
+        return new $requestedName($config, $nonceGenerator);
     }
 }
