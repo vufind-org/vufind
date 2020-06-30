@@ -92,6 +92,20 @@ class HierarchicalFacetListener
     protected $separators;
 
     /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $translatedFacets = [];
+
+    /**
+     * Text domains for translated facets
+     *
+     * @var array
+     */
+    protected $translatedFacetsTextDomains = [];
+
+    /**
      * Constructor.
      *
      * @param BackendInterface        $backend        Search backend
@@ -122,6 +136,15 @@ class HierarchicalFacetListener
             = isset($specialFacets->hierarchicalFacetSeparators)
             ? $specialFacets->hierarchicalFacetSeparators->toArray()
             : [];
+
+        $translatedFacets = $this->facetConfig->Advanced_Settings->translated_facets;
+        foreach ($translatedFacets as $current) {
+            $parts = explode(':', $current);
+            $this->translatedFacets[] = $parts[0];
+            if (isset($parts[1])) {
+                $this->translatedFacetsTextDomains[$parts[0]] = $parts[1];
+            }
+        }
     }
 
     /**
@@ -225,9 +248,11 @@ class HierarchicalFacetListener
         $separator = isset($this->separators[$facet])
             ? $this->separators[$facet]
             : '/';
-        $value = $this->facetHelper->formatDisplayText(
-            $value, $allLevels, $separator
-        );
+        $domain = in_array($facet, $this->translatedFacets)
+            ? ($this->translatedFacetsTextDomains[$facet] ?? 'default')
+            : '';
+        $value = $this->facetHelper
+            ->formatDisplayText($value, $allLevels, $separator, $domain);
 
         return $value;
     }

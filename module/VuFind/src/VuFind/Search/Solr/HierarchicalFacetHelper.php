@@ -184,12 +184,13 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
      * the current one
      * @param string $separator   Separator string displayed between levels
      * @param string $domain      Translation domain for default translations
+     * of a multilevel string or empty string to omit translation
      *
      * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
         $displayText, $allLevels = false, $separator = '/',
-        $domain = 'default'
+        $domain = ''
     ) {
         $originalText = $displayText;
         $parts = explode('/', $displayText);
@@ -200,14 +201,18 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
                 array_shift($parts);
                 array_pop($parts);
 
-                $translatedParts = [];
-                foreach ($parts as $part) {
-                    $translatedParts[] = $this->translate([$domain, $part]);
+                if ($domain) {
+                    $translatedParts = [];
+                    foreach ($parts as $part) {
+                        $translatedParts[] = $this->translate([$domain, $part]);
+                    }
+                    $displayText = new TranslatableString(
+                        implode($separator, $parts),
+                        implode($separator, $translatedParts)
+                    );
+                } else {
+                    $displayText = implode($separator, $parts);
                 }
-                $displayText = new TranslatableString(
-                    implode($separator, $parts),
-                    implode($separator, $translatedParts)
-                );
             }
         }
         return new TranslatableString($originalText, $displayText);
