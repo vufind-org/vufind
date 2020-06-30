@@ -612,7 +612,7 @@ class Params extends \VuFind\Search\Base\Params
                     $filter['displayText'],
                     true,
                     $separator
-                );
+                )->getDisplayString();
             } else {
                 $domain = $this->getOptions()
                     ->getTextDomainForTranslatedFacet($field);
