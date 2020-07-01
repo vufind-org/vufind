@@ -92,7 +92,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         if (is_array($thumb)) {
             $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
         } else {
-            $dynamicUrl = $thumb;
+            return $thumb;
         }
 
         $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
