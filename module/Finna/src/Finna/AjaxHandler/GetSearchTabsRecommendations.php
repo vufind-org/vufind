@@ -45,7 +45,10 @@ use VuFind\Session\Settings as SessionSettings;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
+    implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Config
      *
@@ -176,17 +179,25 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase
                 if ($tab['id'] == $recommendation) {
                     $uri = new \Laminas\Uri\Uri($tab['url']);
                     $count = $this->config->SearchTabsRecommendations->count ?? 2;
-                    $otherResults = $this->searchRunner->run(
-                        $uri->getQueryAsArray(),
-                        $tab['class'],
-                        function ($runner, $params, $searchId) use ($count) {
-                            $params->setLimit($count);
-                            $params->setPage(1);
-                            $params->resetFacetConfig();
-                            $options = $params->getOptions();
-                            $options->disableHighlighting();
-                        }
-                    );
+                    try {
+                        $otherResults = $this->searchRunner->run(
+                            $uri->getQueryAsArray(),
+                            $tab['class'],
+                            function ($runner, $params, $searchId) use ($count) {
+                                $params->setLimit($count);
+                                $params->setPage(1);
+                                $params->resetFacetConfig();
+                                $options = $params->getOptions();
+                                $options->disableHighlighting();
+                            }
+                        );
+                    } catch (\Exception $e) {
+                        $this->logError(
+                            "Recommendation search in {$tab['class']} failed: "
+                            . $e->getMessage()
+                        );
+                        continue;
+                    }
                     if ($otherResults instanceof \VuFind\Search\EmptySet\Results) {
                         continue;
                     }
