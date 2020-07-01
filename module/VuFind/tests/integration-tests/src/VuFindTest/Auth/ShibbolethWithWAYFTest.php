@@ -54,8 +54,16 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
     protected $user2 = [
         'Shib-Identity-Provider' => 'https://idp2.example.org/',
         'eppn' => 'testuser2',
-        'userLibraryId' => 'testuser2',
+        'alephId' => 'testuser2',
         'mail' => 'testuser2@example.org',
+        'eduPersonScopedAffiliation' => 'member@example.org',
+    ];
+
+    protected $user3 = [
+        'Shib-Identity-Provider' => 'https://idp2.example.org/',
+        'eppn' => 'testuser3',
+        'alephId' => 'testuser3',
+        'mail' => 'testuser3@example.org',
     ];
 
     protected $proxyUser = [
@@ -130,6 +138,7 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
                 'login' => 'http://localhost/Shibboleth.sso/Login',
                 'username' => 'username',
                 'email' => 'email',
+                'cat_username' => 'userLibraryId',
                 'proxy' => $proxy,
             ], true
         );
@@ -156,7 +165,9 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
                 'entityId' => 'https://idp2.example.org/',
                 'username' => 'eppn',
                 'email' => 'email',
-                'cat_username' => 'userLibraryId',
+                'cat_username' => 'alephId',
+                'userattribute_1' => 'eduPersonScopedAffiliation',
+                'userattribute_value_1' => 'member@example.org',
             ], true
         );
         $config = [
@@ -199,6 +210,12 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
         $user = $this->getAuthObject()->authenticate($this->getLoginRequest($this->user2, false));
         $this->assertEquals($user->cat_username, 'example2.testuser2');
         $this->assertEquals($user->username, 'testuser2');
+    }
+
+    public function testFailedLogin()
+    {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $user = $this->getAuthObject()->authenticate($this->getLoginRequest($this->user3, false));
     }
 
     public function testProxyLogin()
