@@ -429,9 +429,8 @@ class EDS extends DefaultRecord
      */
     public function getTitle()
     {
-        foreach ($this->fields['RecordInfo']['BibRecord']['BibEntity']['Titles'] ?? []
-            as $titleRecord
-        ) {
+        $list = $this->extractEbscoDataFromRecordInfo('BibRecord/BibEntity/Titles');
+        foreach ($list as $titleRecord) {
             if ('main' == ($titleRecord['Type'] ?? '')) {
                 return $titleRecord['TitleFull'];
             }
@@ -446,17 +445,10 @@ class EDS extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        $authors = [];
-        if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
-            $bibRels
-                = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
-        }
-        foreach ($bibRels['HasContributorRelationships'] ?? [] as $entry) {
-            if (isset($entry['PersonEntity']['Name']['NameFull'])) {
-                $authors[] = $entry['PersonEntity']['Name']['NameFull'];
-            }
-        }
-        return $authors;
+        return $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibRelationships/HasContributorRelationships/*/'
+            . 'PersonEntity/Name/NameFull'
+        );
     }
 
     /**
