@@ -716,6 +716,58 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Retrieve identifiers from the EBSCO record and retrieve values filtered by
+     * type.
+     *
+     * @param array $filter Type values to retrieve.
+     *
+     * @return array
+     */
+    protected function getFilteredIdentifiers($filter)
+    {
+        $raw = $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibRelationships/IsPartOfRelationships/*'
+            . '/BibEntity/Identifiers'
+        );
+        $ids = [];
+        foreach ($raw as $data) {
+            $type = strtolower($data['Type'] ?? '');
+            if (isset($data['Value']) && in_array($type, $filter)) {
+                $ids[] = $data['Value'];
+            }
+        }
+        return $ids;
+    }
+
+    /**
+     * Get ISSNs (of containing record)
+     *
+     * @return array
+     */
+    public function getISSNs()
+    {
+        $filter = ['issn-print', 'issn-electronic'];
+        return array_merge(
+            parent::getISSNs(),
+            $this->getFilteredIdentifiers($filter)
+        );
+    }
+
+    /**
+     * Get an array of ISBNs
+     *
+     * @return array
+     */
+    public function getISBNs()
+    {
+        $filter = ['isbn-print', 'isbn-electronic'];
+        return array_merge(
+            parent::getISBNs(),
+            $this->getFilteredIdentifiers($filter)
+        );
+    }
+
+    /**
      * Extract data from EBSCO API response using a prioritized list of selectors.
      * Selectors can be of the form Items:Label to invoke extractEbscoDataFromItems,
      * or RecordInfo:Path/To/Data/Element to invoke extractEbscoDataFromRecordInfo.
