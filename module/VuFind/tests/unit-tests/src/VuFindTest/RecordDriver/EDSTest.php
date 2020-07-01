@@ -43,16 +43,6 @@ use VuFind\RecordDriver\EDS;
 class EDSTest extends \VuFindTest\Unit\TestCase
 {
     /**
-     * Test exportDisabled for a record.
-     *
-     * @return void
-     */
-    public function testExportDisabled()
-    {
-        $this->assertEquals(true, $this->getDriver()->exportDisabled('endnote'));
-    }
-
-    /**
      * Test getUniqueID for a record.
      *
      * @return void
