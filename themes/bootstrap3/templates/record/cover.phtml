@@ -6,7 +6,7 @@
   <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php else: ?>
     <div class="ajaxcover">
-        <div><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Cover is loading')?></div>
+        <div><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Loading')?>...</div>
         <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="" />
     </div>
 <?php endif; ?>
