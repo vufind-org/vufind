@@ -447,7 +447,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         // Try field 700 if 979 is empty
         if (!$componentParts) {
             foreach ($this->getMarcRecord()->getFields('700') as $field) {
-                if (!$field->getSubfield('t')) {
+                if ($field->getIndicator(2) != 2 || !$field->getSubfield('t')) {
                     continue;
                 }
                 $partOrderCounter++;
@@ -1271,7 +1271,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
         // Alternatively, are there titles in 700 fields?
         foreach ($this->getMarcRecord()->getFields('700') as $field) {
-            if ($field->getSubfield('t')) {
+            if ($field->getIndicator(2) == 2 && $field->getSubfield('t')) {
                 return true;
             }
         }
