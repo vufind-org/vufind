@@ -93,7 +93,7 @@
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline' && $ilsLoginAvailable): ?>
     <?php if (!$user): ?>
       <div class="pull-right">
-        <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link" data-lightbox><?=$this->transEsc("title_hold_login")?></a>
+        <a href="?login=true&amp;catalogLogin=true&amp;target=<?=$this->escapeHtmlAttr($recordSource ?? '')?>" class="btn btn-primary login-link" data-lightbox><?=$this->transEsc("title_hold_login")?></a>
       </div>
       <div class="clearfix"></div>
     <?php elseif (!$user->cat_username): ?>

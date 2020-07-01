@@ -89,6 +89,22 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Login Action
+     *
+     * @return mixed
+     */
+    public function loginAction()
+    {
+        $view = parent::loginAction();
+        if ($view instanceof \Laminas\View\Model\ViewModel) {
+            if ($defaultTarget = $this->params()->fromQuery('target')) {
+                $view->defaultTarget = $defaultTarget;
+            }
+        }
+        return $view;
+    }
+
+    /**
      * Send list of checked out books to view.
      * Added profile to view, so borrow blocks can be shown.
      *

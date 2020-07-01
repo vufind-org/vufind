@@ -285,7 +285,7 @@ if (!$disableTitleHold
       $logged = $account->isLoggedIn();
       $link = null;
       if (!$logged) {
-        $link = $this->escapeHtmlAttr($holdingsLink . '?login=true&catalogLogin=true');
+        $link = $this->escapeHtmlAttr($holdingsLink . '?login=true&catalogLogin=true&target=' . $source);
       } elseif ($journal) {
         $link = $this->escapeHtmlAttr($holdingsLink);
       } else {
