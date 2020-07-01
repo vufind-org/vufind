@@ -768,6 +768,128 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get title of containing record
+     *
+     * @return string
+     */
+    public function getContainerTitle()
+    {
+        // If there is no source, we don't want to identify a container
+        // (in this situation, it is likely redundant data):
+        if (count($this->extractEbscoDataFromItems('Source')) === 0) {
+            return '';
+        }
+        $data = $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibRelationships/IsPartOfRelationships/0'
+            . '/BibEntity/Titles/0/TitleFull'
+        );
+        return $data[0] ?? '';
+    }
+
+    /**
+     * Extract numbering data of a particular type.
+     *
+     * @param string $type Numbering type to return, if present.
+     *
+     * @return string
+     */
+    protected function getFilteredNumbering($type)
+    {
+        $numbering = $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibRelationships/IsPartOfRelationships/*/BibEntity/Numbering'
+        );
+        foreach ($numbering as $key => $data) {
+            if (strtolower($data['Type'] ?? '') == $type
+                && !empty($data['Value'])
+            ) {
+                return $data['Value'];
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Get issue of containing record
+     *
+     * @return string
+     */
+    public function getContainerIssue()
+    {
+        return $this->getFilteredNumbering('issue');
+    }
+
+    /**
+     * Get volume of containing record
+     *
+     * @return string
+     */
+    public function getContainerVolume()
+    {
+        return $this->getFilteredNumbering('volume');
+    }
+
+    /**
+     * Get year of containing record
+     *
+     * @return string
+     */
+    public function getContainerYear()
+    {
+        // If there is no source, we don't want to identify a container
+        // (in this situation, it is likely redundant data):
+        if (count($this->extractEbscoDataFromItems('Source')) === 0) {
+            return '';
+        }
+        $data = $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibRelationships/IsPartOfRelationships/0/BibEntity/Dates/0/Y'
+        );
+        return $data[0] ?? '';
+    }
+
+    /**
+     * Get year of containing record
+     *
+     * @return string
+     */
+    public function getContainerStartPage()
+    {
+        $pagination = $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibEntity/PhysicalDescription/Pagination'
+        );
+        return $pagination['StartPage'] ?? '';
+    }
+
+    /**
+     * Returns an array of formats based on publication type.
+     *
+     * @return array
+     */
+    public function getFormats()
+    {
+        $formats = [];
+        $pubType = $this->getPubType();
+        switch (strtolower($pubType)) {
+        case 'academic journal':
+        case 'article':
+        case 'periodical':
+        case 'report':
+            $formats[] = 'Article';
+            break;
+        case 'ebook':
+            $formats[] = 'Book';
+            $formats[] = 'Electronic';
+            break;
+        case 'dissertation/thesis':
+            $formats[] = 'Thesis';
+            break;
+        default:
+            $formats[] = $pubType;
+        }
+
+        return $formats;
+    }
+
+    /**
      * Extract data from EBSCO API response using a prioritized list of selectors.
      * Selectors can be of the form Items:Label to invoke extractEbscoDataFromItems,
      * or RecordInfo:Path/To/Data/Element to invoke extractEbscoDataFromRecordInfo.
@@ -846,6 +968,6 @@ class EDS extends DefaultRecord
                     : $this->recurseIntoRecordInfo($data[$key], $path);
             }
         }
-        return count($values) > 1 ? $values : $values[0];
+        return count($values) == 1 ? $values[0] : $values;
     }
 }
