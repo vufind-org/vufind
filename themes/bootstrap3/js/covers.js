@@ -1,9 +1,13 @@
 /*global VuFind */
 function loadCoverByElement(data, element) {
   var url = VuFind.path + '/AJAX/JSON?method=' + 'getRecordCover';
+  var img = element.children('img');
+  var spinner = element.children('div');
   function coverCallback(response) {
     if (response.data.url !== false) {
-      element.attr("src", response.data.url);
+      img.attr("src", response.data.url);
+      img.show();
+      spinner.hide();
     }
   }
   $.ajax({
@@ -17,11 +21,12 @@ function loadCoverByElement(data, element) {
 }
 
 function loadCovers() {
-  $('.recordcover.ajax').each(function getDataAndLoadCovers() {
+  $('.ajaxcover').each(function getDataAndLoadCovers() {
+    var img = $(this).children('img');
     var data = {
-      source: $(this).data('recordsource'),
-      recordId: $(this).data('recordid'),
-      size: $(this).data('coversize')
+      source: img.data('recordsource'),
+      recordId: img.data('recordid'),
+      size: img.data('coversize')
     };
     loadCoverByElement(data, $(this));
   });
