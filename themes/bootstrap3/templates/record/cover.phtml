@@ -5,5 +5,5 @@
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$alt; ?>" />
   <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php else: ?>
-  <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover" alt="" />
+  <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="" />
 <?php endif; ?>

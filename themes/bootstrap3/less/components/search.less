@@ -151,7 +151,7 @@ header .container.navbar { margin-bottom: 0; }
       &.medium img,
       &.large img {
         width: auto;
-        max-width: initial;
+        max-width: 100%;
       }
       &.small  > a,
       &.small  > img { width: @thumbnail-width-small; }
@@ -162,6 +162,21 @@ header .container.navbar { margin-bottom: 0; }
     }
   }
 }
+
+.record,
+.result {
+  @media (min-width: 768px) {
+    .media-left,
+    .media-right {
+      &.small img.ajax,
+      &.medium img.ajax,
+      &.large img.ajax {
+        max-width: initial;
+      }
+    }
+  }
+}
+
 .record .media-left,
 .record .media-right {
   &.small img,
