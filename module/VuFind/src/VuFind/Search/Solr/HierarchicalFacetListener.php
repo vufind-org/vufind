@@ -137,7 +137,8 @@ class HierarchicalFacetListener
             ? $specialFacets->hierarchicalFacetSeparators->toArray()
             : [];
 
-        $translatedFacets = $this->facetConfig->Advanced_Settings->translated_facets;
+        $translatedFacets = $this->facetConfig->Advanced_Settings->translated_facets
+            ?? [];
         foreach ($translatedFacets as $current) {
             $parts = explode(':', $current);
             $this->translatedFacets[] = $parts[0];
