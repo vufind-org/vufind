@@ -118,6 +118,11 @@ trait TranslatorAwareTrait
             }
             // Override $domain/$str using getDisplayString() before proceeding:
             $str = $str->getDisplayString();
+            // Also the display string can be a TranslatableString. This makes it
+            // possible have multiple levels of translatable values while still
+            // providing a sane default string if translation is not found. Used at
+            // least with hierarchical facets where translation key can be the exact
+            // facet value (e.g. "0/Book/") or a displayable value (e.g. "Book").
             if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
                 $str = $this->translate($str);
             } else {
