@@ -1597,9 +1597,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             throw new ILSException('Problem with Sierra login.');
         }
 
-        // Process redirects here until the configured redirect url is reached
+        // Process redirects here until the configured redirect url is reached or
+        // the sanity check for redirect count fails.
         $patronCode = false;
-        while ($response->isRedirect()) {
+        $redirectCount = 0;
+        while ($response->isRedirect() && ++$redirectCount < 10) {
             $location = $response->getHeaders()->get('Location')->getUri();
             if (strncmp($location, $redirectUri, strlen($redirectUri)) === 0) {
                 // Don't try to parse the URI since Sierra creates it wrong if
