@@ -610,21 +610,6 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Indicate whether export is disabled for a particular format.
-     *
-     * @param string $format Export format
-     *
-     * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function exportDisabled($format)
-    {
-        // EDS is not export-friendly; disable all formats.
-        return true;
-    }
-
-    /**
      * Return the first valid DOI found in the record (false if none).
      *
      * @return mixed
