@@ -17,7 +17,7 @@ function loadCoverByElement(data, element) {
 }
 
 function loadCovers() {
-  $('.recordcover').each(function getDataAndLoadCovers() {
+  $('.recordcover.ajax').each(function getDataAndLoadCovers() {
     var data = {
       source: $(this).data('recordsource'),
       recordId: $(this).data('recordid'),
