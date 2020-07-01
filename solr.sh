@@ -17,7 +17,7 @@
 #   Home of the Solr indexes and configurations.
 #
 # SOLR_PORT
-#   Network port for Solr. Defaults to 8080.
+#   Network port for Solr. Defaults to 8983.
 #
 # JAVA_HOME
 #   Home of Java installation (not directly used by this script, but passed along to
@@ -74,7 +74,7 @@ fi
 
 if [ -z "$SOLR_PORT" ]
 then
-  SOLR_PORT="8080"
+  SOLR_PORT="8983"
 fi
 
 if [ -z "$SOLR_ADDITIONAL_START_OPTIONS" ]

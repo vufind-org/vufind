@@ -65,7 +65,7 @@ class PermissionManagerFactory implements FactoryInterface
             ->get('permissions')->toArray();
         $permManager = new $requestedName($permissions);
         $permManager->setAuthorizationService(
-            $container->get(\ZfcRbac\Service\AuthorizationService::class)
+            $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $permManager;
     }

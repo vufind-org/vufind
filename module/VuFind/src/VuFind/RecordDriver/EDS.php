@@ -39,6 +39,13 @@ namespace VuFind\RecordDriver;
 class EDS extends DefaultRecord
 {
     /**
+     * Document types that are treated as ePub links.
+     *
+     * @var array
+     */
+    protected $epubTypes = ['ebook-epub'];
+
+    /**
      * Document types that are treated as PDF links.
      *
      * @var array
@@ -70,10 +77,8 @@ class EDS extends DefaultRecord
         if (null == $title) {
             return '';
         }
-        if (mb_strlen($title, 'UTF-8') > 20) {
-            $title = mb_substr($title, 0, 17, 'UTF-8') . '...';
-        }
-        return $title;
+        $parts = explode(':', $title);
+        return trim(current($parts));
     }
 
     /**
@@ -189,21 +194,62 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Support method for getItems, used to apply filters.
+     *
+     * @param array  $item    Item to check
+     * @param string $context The context in which items are being retrieved
+     * (used for context-sensitive filtering)
+     *
+     * @return bool
+     */
+    protected function itemIsExcluded($item, $context)
+    {
+        // Create a list of config sections to check, based on context:
+        $sections = ['ItemGlobalFilter'];
+        switch ($context) {
+        case 'result-list':
+            $sections[] = 'ItemResultListFilter';
+            break;
+        case 'core':
+            $sections[] = 'ItemCoreFilter';
+            break;
+        }
+        // Check to see if anything is filtered:
+        foreach ($sections as $section) {
+            $currentConfig = isset($this->recordConfig->$section)
+                ? $this->recordConfig->$section->toArray() : [];
+            $badLabels = (array)($currentConfig['excludeLabel'] ?? []);
+            $badGroups = (array)($currentConfig['excludeGroup'] ?? []);
+            if (in_array($item['Label'], $badLabels)
+                || in_array($item['Group'], $badGroups)
+            ) {
+                return true;
+            }
+        }
+        // If we got this far, no filter was applied:
+        return false;
+    }
+
+    /**
      * Get the items of the record.
+     *
+     * @param string $context The context in which items are being retrieved
+     * (used for context-sensitive filtering)
      *
      * @return array
      */
-    public function getItems()
+    public function getItems($context = null)
     {
         $items = [];
-        if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                $items[] = [
-                    'Label' => $item['Label'] ?? '',
-                    'Group' => $item['Group'] ?? '',
-                    'Data'  => isset($item['Data'])
-                        ? $this->toHTML($item['Data'], $item['Group']) : ''
-                ];
+        foreach ($this->fields['Items'] ?? [] as $item) {
+            $nextItem = [
+                'Label' => $item['Label'] ?? '',
+                'Group' => $item['Group'] ?? '',
+                'Data'  => isset($item['Data'])
+                    ? $this->toHTML($item['Data'], $item['Group']) : ''
+            ];
+            if (!$this->itemIsExcluded($nextItem, $context)) {
+                $items[] = $nextItem;
             }
         }
         return $items;
@@ -242,19 +288,66 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the ebook availability of the record.
+     *
+     * @param array $types Types that we are interested in checking for
+     *
+     * @return bool
+     */
+    protected function hasEbookAvailable(array $types)
+    {
+        foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
+            if (isset($link['Type']) && in_array($link['Type'], $types)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get the PDF availability of the record.
      *
      * @return bool
      */
     public function hasPdfAvailable()
     {
-        if (isset($this->fields['FullText']['Links'])) {
-            foreach ($this->fields['FullText']['Links'] as $link) {
-                if (isset($link['Type'])
-                    && in_array($link['Type'], $this->pdfTypes)
-                ) {
-                    return true;
-                }
+        return $this->hasEbookAvailable($this->pdfTypes);
+    }
+
+    /**
+     * Get the ePub availability of the record.
+     *
+     * @return bool
+     */
+    public function hasEpubAvailable()
+    {
+        return $this->hasEbookAvailable($this->epubTypes);
+    }
+
+    /**
+     * Get the linked full text availability of the record.
+     *
+     * @return bool
+     */
+    public function hasLinkedFullTextAvailable()
+    {
+        return $this->hasEbookAvailable(['other']);
+    }
+
+    /**
+     * Get the ebook url of the record. If missing, return false
+     *
+     * @param array $types Types that we are interested in checking for
+     *
+     * @return string
+     */
+    public function getEbookLink(array $types)
+    {
+        foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
+            if (!empty($link['Type']) && !empty($link['Url'])
+                && in_array($link['Type'], $types)
+            ) {
+                return $link['Url'];
             }
         }
         return false;
@@ -267,16 +360,27 @@ class EDS extends DefaultRecord
      */
     public function getPdfLink()
     {
-        if (isset($this->fields['FullText']['Links'])) {
-            foreach ($this->fields['FullText']['Links'] as $link) {
-                if (!empty($link['Type']) && !empty($link['Url'])
-                    && in_array($link['Type'], $this->pdfTypes)
-                ) {
-                    return $link['Url']; // return PDF link
-                }
-            }
-        }
-        return false;
+        return $this->getEbookLink($this->pdfTypes);
+    }
+
+    /**
+     * Get the ePub url of the record. If missing, return false
+     *
+     * @return string
+     */
+    public function getEpubLink()
+    {
+        return $this->getEbookLink($this->epubTypes);
+    }
+
+    /**
+     * Get the linked full text url of the record. If missing, return false
+     *
+     * @return string
+     */
+    public function getLinkedFullTextLink()
+    {
+        return $this->getEbookLink(['other']);
     }
 
     /**
@@ -577,11 +681,16 @@ class EDS extends DefaultRecord
      */
     public function getCleanDOI()
     {
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('DOI' == $item['Name']) {
-                    return $item['Data'];
-                }
+        foreach ($this->fields['Items'] ?? [] as $item) {
+            if ('DOI' == $item['Name'] ?? '' && isset($item['Data'])) {
+                return $item['Data'];
+            }
+        }
+        $ids = $this->fields['RecordInfo']['BibRecord']['BibEntity']['Identifiers']
+            ?? [];
+        foreach ($ids as $item) {
+            if ('DOI' == strtoupper($item['Type'] ?? '') && isset($item['Value'])) {
+                return $item['Value'];
             }
         }
         return false;

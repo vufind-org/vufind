@@ -132,8 +132,9 @@ class Logger extends BaseLogger
             $prev = $prev->getPrevious();
         }
         $referer = $server->get('HTTP_REFERER', 'none');
+        $ip = $server->get('HTTP_X_FORWARDED_FOR') ?? $server->get('REMOTE_ADDR');
         $basicServer
-            = '(Server: IP = ' . $server->get('REMOTE_ADDR') . ', '
+            = '(Server: IP = ' . $ip . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '

@@ -2,7 +2,7 @@
 /*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
-function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, showSelection, resultsCoords, basemap) {
+function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, resultsCoords, basemap) {
   // Initialize variables
   var searchboxLayer = L.featureGroup();
   var drawnItemsLayer = L.featureGroup();

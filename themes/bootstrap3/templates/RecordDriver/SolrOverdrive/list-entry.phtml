@@ -22,7 +22,6 @@
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif; ?>
-<!--findme-->
 <div class="result<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource"/>
@@ -106,7 +105,7 @@
             <?php endforeach; ?>
           <?php endif; ?>
 
-          <?php if (count($this->lists) > 0): ?>
+          <?php if (count($this->lists ?? []) > 0): ?>
               <strong><?=$this->transEsc('Saved in')?>:</strong>
               <?php $i = 0;foreach($this->lists as $current): ?>
                   <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
@@ -138,15 +137,22 @@
               */
             $openUrl = $this->openUrl($this->driver, 'results');
             $openUrlActive = $openUrl->isActive();
+            $doi = $this->doi($this->driver, 'results');
+            $doiActive = $doi->isActive();
             // Account for replace_other_urls setting
             $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 
-            if ($openUrlActive || !empty($urls)):
+            if ($openUrlActive || $doiActive || !empty($urls)):
           ?>
             <?php if ($openUrlActive): ?>
               <br/>
               <?=$openUrl->renderTemplate()?>
             <?php endif;?>
+
+            <?php if ($doiActive): ?>
+              <br/>
+              <?=$doi->renderTemplate()?>
+            <?php endif; ?>
 
             <?php if (!is_array($urls)) { $urls = []; }
               if(!$this->driver->isCollection()):
@@ -182,7 +188,7 @@
             <?=$this->transEsc('Delete') ?>
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-            <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+            <li><a id="confirm_delete_item_<?=$this->escapeHtmlAttr($id);?>" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
             <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
@@ -195,3 +201,22 @@
     <?php endif; ?>
   </div>
 </div>
+<?php
+$escId = $this->escapeJs($id);
+$escSource = $this->escapeJs($source);
+$script = <<<JS
+$('#confirm_delete_item_${escId}').click(function(e) {
+    e.preventDefault();
+    $.post('${deleteUrl}', {
+                'delete':'${escId}',
+                'source':'${escSource}',
+                'confirm':true
+            },
+            function(){
+                location.reload()
+            }
+        );
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

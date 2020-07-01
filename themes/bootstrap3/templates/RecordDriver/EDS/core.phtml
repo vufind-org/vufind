@@ -1,6 +1,6 @@
 <?php $this->headLink()->appendStylesheet('EDS.css'); ?>
 <?php
-    $items = $this->driver->getItems();
+    $items = $this->driver->getItems('core');
     $dbLabel = $this->driver->getDbLabel();
     $thumb = $this->driver->getThumbnail('medium');
     $pubType = $this->driver->getPubType();
@@ -28,11 +28,27 @@
           </a>
         </span><br />
       <?php endif; ?>
+      <?php $ftLink = $this->driver->getLinkedFullTextLink();
+          if ($ftLink): ?>
+        <span>
+          <a href="<?=$ftLink?>" class="fulltext">
+            <?=$this->transEsc('Linked Full Text')?>
+          </a>
+        </span><br />
+      <?php endif; ?>
       <?php $pdfLink = $this->driver->getPdfLink();
           if ($pdfLink): ?>
         <span>
           <a href="<?=$pdfLink?>" class="icon pdf fulltext">
             <?=$this->transEsc('PDF Full Text')?>
+          </a>
+        </span><br />
+      <?php endif; ?>
+      <?php $epubLink = $this->driver->getEpubLink();
+          if ($epubLink): ?>
+        <span>
+          <a href="<?=$epubLink?>" class="icon epub fulltext">
+            <?=$this->transEsc('ePub Full Text')?>
           </a>
         </span><br />
       <?php endif; ?>
@@ -46,14 +62,14 @@
     </div>
   </div>
   <div class="media-body info-col">
-    <h3 property="name"><?=$this->driver->getTitle()?></h3>
+    <h1 property="name"><?=$this->driver->getTitle()?></h1>
 
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
       <?php foreach ($items as $key => $item): ?>
         <?php if (!empty($item['Data'])): ?>
         <tr>
-          <th><?=$this->transEsc($item['Label'])?>:</th>
+          <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
           <td><?=$this->driver->linkUrls($item['Data'])?></td>
         </tr>
         <?php endif; ?>

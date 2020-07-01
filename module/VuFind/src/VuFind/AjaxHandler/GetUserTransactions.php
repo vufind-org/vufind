@@ -64,15 +64,16 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             'overdue' => 0
         ];
         foreach ($items['records'] as $item) {
-            if (!isset($item['dueStatus'])) {
-                continue;
-            }
-            if ($item['dueStatus'] == 'overdue') {
-                $counts['overdue'] += 1;
-            } elseif ($item['dueStatus'] == 'due') {
-                $counts['warn'] += 1;
-            } else {
-                $counts['ok'] += 1;
+            switch ($item['dueStatus'] ?? '') {
+            case 'due':
+                $counts['warn']++;
+                break;
+            case 'overdue':
+                $counts['overdue']++;
+                break;
+            default:
+                $counts['ok']++;
+                break;
             }
         }
         return $this->formatResponse($counts);

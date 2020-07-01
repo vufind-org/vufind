@@ -56,6 +56,15 @@ class MockContainer implements ContainerInterface
     protected $services = [];
 
     /**
+     * Common service aliases.
+     *
+     * @var array
+     */
+    protected $aliases = [
+        'ViewHelperManager' => \Laminas\View\HelperPluginManager::class,
+    ];
+
+    /**
      * Test case (for building mock objects)
      *
      * @var TestCase
@@ -108,12 +117,13 @@ class MockContainer implements ContainerInterface
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
-     * @param string $id Identifier of the entry to look for.
+     * @param string $rawId Identifier of the entry to look for.
      *
      * @return mixed
      */
-    public function get($id)
+    public function get($rawId)
     {
+        $id = $this->aliases[$rawId] ?? $rawId;
         if (!isset($this->services[$id])) {
             $this->services[$id] = $this->createMock($id);
         }
@@ -124,12 +134,13 @@ class MockContainer implements ContainerInterface
      * Returns true if the container can return an entry for the given identifier.
      * Returns false otherwise.
      *
-     * @param string $id Identifier of the entry to look for.
+     * @param string $rawId Identifier of the entry to look for.
      *
      * @return bool
      */
-    public function has($id)
+    public function has($rawId)
     {
+        $id = $this->aliases[$rawId] ?? $rawId;
         // Assume every service exists unless explicitly disabled
         return !in_array($id, $this->disabled);
     }

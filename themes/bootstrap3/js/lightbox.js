@@ -3,11 +3,11 @@ VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
   var _currentUrl = false;
-  var _lightboxTitle = '';
+  var _lightboxTitle = false;
   var refreshOnClose = false;
   var _modalParams = {};
   // Elements
-  var _modal, _modalBody, _clickedButton = null;
+  var _modal, _modalBody, _modalTitle, _clickedButton = null;
   // Utilities
   function _storeClickedStatus() {
     _clickedButton = this;
@@ -15,13 +15,9 @@ VuFind.register('lightbox', function Lightbox() {
   function _html(content) {
     _modalBody.html(content);
     // Set or update title if we have one
-    if (_lightboxTitle !== '') {
-      var h2 = _modalBody.find('h2:first-child');
-      if (h2.length === 0) {
-        h2 = $('<h2/>').prependTo(_modalBody);
-      }
-      h2.text(_lightboxTitle);
-      _lightboxTitle = '';
+    if (_lightboxTitle) {
+      _modalTitle.text(_lightboxTitle);
+      _lightboxTitle = false;
     }
     _modal.modal('handleUpdate');
   }
@@ -254,12 +250,12 @@ VuFind.register('lightbox', function Lightbox() {
     }
     if (this.href.length > 1) {
       event.preventDefault();
-      var obj = {url: $(this).data('lightboxHref') || this.href};
-      if ("string" === typeof $(this).data('lightboxPost')) {
+      var obj = {url: $(this).data('lightbox-href') || this.href};
+      if ("string" === typeof $(this).data('lightbox-post')) {
         obj.type = 'POST';
-        obj.data = $(this).data('lightboxPost');
+        obj.data = $(this).data('lightbox-post');
       }
-      _lightboxTitle = $(this).data('lightboxTitle') || '';
+      _lightboxTitle = $(this).data('lightbox-title') || '';
       _modalParams = $(this).data();
       VuFind.modal('show');
       ajax(obj);
@@ -327,7 +323,7 @@ VuFind.register('lightbox', function Lightbox() {
       submit.attr('disabled', 'disabled');
     }
     // Store custom title
-    _lightboxTitle = submit.data('lightboxTitle') || $(form).data('lightboxTitle') || '';
+    _lightboxTitle = submit.data('lightbox-title') || $(form).data('lightbox-title') || '';
     // Get Lightbox content
     ajax({
       url: $(form).attr('action') || _currentUrl,
@@ -393,6 +389,7 @@ VuFind.register('lightbox', function Lightbox() {
   function init() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
+    _modalTitle = _modal.find('#modal-title');
     _modal.on('hide.bs.modal', function lightboxHide() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();

@@ -1,11 +1,9 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-  if (isset($this->overrideTitle)) {
-      $this->headTitle($this->overrideTitle);
-  } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
-  }
+  $headTitle = $this->slot('head-title')
+        ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  $this->headTitle($headTitle);
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -26,11 +24,7 @@
   );
 
   // Set up breadcrumbs:
-  if (isset($this->overrideTitle)) {
-    $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
-  } else {
-    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
-  }
+  $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
 
   // Enable cart if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
@@ -59,7 +53,7 @@
     <?php endforeach; ?>
   <?php endif; ?>
   <?=$this->flashmessages()?>
-  <nav class="search-header hidden-print">
+  <div class="search-header hidden-print">
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
@@ -78,17 +72,18 @@
         <?=$this->render('search/controls/view.phtml')?>
       </div>
     <?php endif; ?>
-  </nav>
+  </div>
   <?php /* End Listing Options */ ?>
 
   <?php if ($recordTotal < 1): ?>
     <p>
-      <?php if (isset($this->overrideEmptyMessage)): ?>
-        <?=$this->overrideEmptyMessage?>
-      <?php else: ?>
-        <?php $this->layout()->srmessage = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]); ?>
-        <?=$this->layout()->srmessage ?>
-      <?php endif; ?>
+      <?php
+        $emptyMessage = $this->slot('empty-message')->get(
+          $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])
+        );
+        $this->layout()->srmessage = $emptyMessage;
+        echo $emptyMessage;
+      ?>
     </p>
     <?php if (isset($this->parseError)): ?>
       <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>

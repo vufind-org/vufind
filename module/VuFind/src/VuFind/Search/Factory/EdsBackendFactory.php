@@ -109,7 +109,7 @@ class EdsBackendFactory implements FactoryInterface
     protected function createBackend(Connector $connector)
     {
         $auth = $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class);
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
@@ -136,16 +136,15 @@ class EdsBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
-        $options = [];
-        $id = 'EDS';
-        $key = 'EDS';
+        $options = [
+            'timeout' => $this->edsConfig->General->timeout ?? 120,
+            'search_http_method' => $this->edsConfig->General->search_http_method
+                ?? 'POST'
+        ];
         // Build HTTP client:
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $timeout = isset($this->edsConfig->General->timeout)
-            ? $this->edsConfig->General->timeout : 30;
-        $client->setOptions(['timeout' => $timeout]);
-        $connector = new Connector($id, $key, $options, $client);
+        $connector = new Connector($options, $client);
         $connector->setLogger($this->logger);
         return $connector;
     }
