@@ -250,7 +250,7 @@ class HierarchicalFacetListener
             : '/';
         $domain = in_array($facet, $this->translatedFacets)
             ? ($this->translatedFacetsTextDomains[$facet] ?? 'default')
-            : '';
+            : false;
         $value = $this->facetHelper
             ->formatDisplayText($value, $allLevels, $separator, $domain);
 

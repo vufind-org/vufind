@@ -179,18 +179,18 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
     /**
      * Format a facet display text for displaying
      *
-     * @param string $displayText Display text
-     * @param bool   $allLevels   Whether to display all levels or only
+     * @param string $displayText  Display text
+     * @param bool   $allLevels    Whether to display all levels or only
      * the current one
-     * @param string $separator   Separator string displayed between levels
-     * @param string $domain      Translation domain for default translations
-     * of a multilevel string or empty string to omit translation
+     * @param string $separator    Separator string displayed between levels
+     * @param string|false $domain Translation domain for default translations
+     * of a multilevel string or false to omit translation
      *
      * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
         $displayText, $allLevels = false, $separator = '/',
-        $domain = ''
+        $domain = false
     ) {
         $originalText = $displayText;
         $parts = explode('/', $displayText);
@@ -201,7 +201,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
                 array_shift($parts);
                 array_pop($parts);
 
-                if ($domain) {
+                if (false !== $domain) {
                     $translatedParts = [];
                     foreach ($parts as $part) {
                         $translatedParts[] = $this->translate([$domain, $part]);
