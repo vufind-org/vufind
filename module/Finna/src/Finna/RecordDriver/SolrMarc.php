@@ -259,7 +259,14 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
                     $subfields = $this->getSubfieldArray($field, ['a', 'b']);
                     if (!empty($subfields)) {
-                        $result[$classification][] = $subfields[0];
+                        $class = $subfields[0];
+                        if ($x = $this->getSubfieldArray($field, ['x'])) {
+                            if (preg_match('/^\w/', $x[0])) {
+                                $class .= '-';
+                            }
+                            $class .= $x[0];
+                        }
+                        $result[$classification][] = $class;
                     }
                 }
             }
