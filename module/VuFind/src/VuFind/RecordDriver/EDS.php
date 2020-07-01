@@ -610,19 +610,6 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
-     * see /application/themes/root/helpers/Citation.php, getCitation()
-     * method.
-     *
-     * @return array Strings representing citation formats.
-     */
-    protected function getSupportedCitationFormats()
-    {
-        return [];
-    }
-
-    /**
      * Indicate whether export is disabled for a particular format.
      *
      * @param string $format Export format
@@ -787,21 +774,15 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get year of containing record
+     * Get the publication dates of the record.  See also getDateSpan().
      *
-     * @return string
+     * @return array
      */
-    public function getContainerYear()
+    public function getPublicationDates()
     {
-        // If there is no source, we don't want to identify a container
-        // (in this situation, it is likely redundant data):
-        if (count($this->extractEbscoDataFromItems('Source')) === 0) {
-            return '';
-        }
-        $data = $this->extractEbscoDataFromRecordInfo(
+        return $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/0/BibEntity/Dates/0/Y'
         );
-        return $data[0] ?? '';
     }
 
     /**
