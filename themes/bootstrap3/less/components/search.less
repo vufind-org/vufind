@@ -153,12 +153,15 @@ header .container.navbar { margin-bottom: 0; }
         width: auto;
         max-width: 100%;
       }
-      &.small  > a,
-      &.small  > img { width: @thumbnail-width-small; }
-      &.medium > a,
-      &.medium > img { width: @thumbnail-width-medium; }
-      &.large  > a,
-      &.large  > img { width: @thumbnail-width-large; }
+      &.small  a,
+      &.small  .ajaxcover div,
+      &.small  img { width: @thumbnail-width-small; }
+      &.medium a,
+      &.medium .ajaxcover div,
+      &.medium img { width: @thumbnail-width-medium; }
+      &.large  a,
+      &.large .ajaxcover div,
+      &.large  img { width: @thumbnail-width-large; }
     }
   }
 }
