@@ -88,14 +88,8 @@ class EDS extends DefaultRecord
      */
     public function getItemsAbstract()
     {
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('Ab' == $item['Group']) {
-                    return $this->toHTML($item['Data'], $item['Group']);
-                }
-            }
-        }
-        return '';
+        $abstract = $this->getItems(null, null, 'Ab');
+        return $abstract[0]['Data'] ?? '';
     }
 
     /**
@@ -105,8 +99,7 @@ class EDS extends DefaultRecord
      */
     public function getAccessLevel()
     {
-        return isset($this->fields['Header']['AccessLevel'])
-            ? $this->fields['Header']['AccessLevel'] : '';
+        return $this->fields['Header']['AccessLevel'] ?? '';
     }
 
     /**
@@ -127,15 +120,11 @@ class EDS extends DefaultRecord
      */
     protected function getItemsAuthorsArray()
     {
-        $authors = [];
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('Au' == $item['Group']) {
-                    $authors[] = $this->toHTML($item['Data'], $item['Group']);
-                }
-            }
-        }
-        return $authors;
+        return array_map(
+            function ($data) {
+                return $data['Data'];
+            }, $this->getItems(null, null, 'Au')
+        );
     }
 
     /**
@@ -145,8 +134,7 @@ class EDS extends DefaultRecord
      */
     public function getCustomLinks()
     {
-        return isset($this->fields['CustomLinks'])
-            ? $this->fields['CustomLinks'] : [];
+        return $this->fields['CustomLinks'] ?? [];
     }
 
     /**
@@ -156,8 +144,7 @@ class EDS extends DefaultRecord
      */
     public function getFTCustomLinks()
     {
-        return isset($this->fields['FullText']['CustomLinks'])
-            ? $this->fields['FullText']['CustomLinks'] : [];
+        return $this->fields['FullText']['CustomLinks'] ?? [];
     }
 
     /**
@@ -167,8 +154,7 @@ class EDS extends DefaultRecord
      */
     public function getDbLabel()
     {
-        return isset($this->fields['Header']['DbLabel'])
-            ? $this->fields['Header']['DbLabel'] : '';
+        return $this->fields['Header']['DbLabel'] ?? '';
     }
 
     /**
@@ -178,8 +164,7 @@ class EDS extends DefaultRecord
      */
     public function getHTMLFullText()
     {
-        return isset($this->fields['FullText']['Text']['Value'])
-            ? $this->toHTML($this->fields['FullText']['Text']['Value']) : '';
+        return $this->toHTML($this->fields['FullText']['Text']['Value'] ?? '');
     }
 
     /**
@@ -189,8 +174,7 @@ class EDS extends DefaultRecord
      */
     public function hasHTMLFullTextAvailable()
     {
-        return isset($this->fields['FullText']['Text']['Availability'])
-            && ('1' == $this->fields['FullText']['Text']['Availability']);
+        return '1' == ($this->fields['FullText']['Text']['Availability'] ?? '0');
     }
 
     /**
@@ -235,12 +219,16 @@ class EDS extends DefaultRecord
      *
      * @param string $context     The context in which items are being retrieved
      * (used for context-sensitive filtering)
-     * @param string $labelFilter A specific label to retrieve (filter out others)
+     * @param string $labelFilter A specific label to retrieve (filter out others;
+     * null for no filter)
+     * @param string $groupFilter A specific group to retrieve (filter out others;
+     * null for no filter)
      *
      * @return array
      */
-    public function getItems($context = null, $labelFilter = null)
-    {
+    public function getItems($context = null, $labelFilter = null,
+        $groupFilter = null
+    ) {
         $items = [];
         foreach ($this->fields['Items'] ?? [] as $item) {
             $nextItem = [
@@ -251,6 +239,7 @@ class EDS extends DefaultRecord
             ];
             if (!$this->itemIsExcluded($nextItem, $context)
                 && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
+                && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
             ) {
                 $items[] = $nextItem;
             }
@@ -265,7 +254,7 @@ class EDS extends DefaultRecord
      */
     public function getPLink()
     {
-        return isset($this->fields['PLink']) ? $this->fields['PLink'] : '';
+        return $this->fields['PLink'] ?? '';
     }
 
     /**
@@ -275,8 +264,7 @@ class EDS extends DefaultRecord
      */
     public function getPubType()
     {
-        return isset($this->fields['Header']['PubType'])
-            ? $this->fields['Header']['PubType'] : '';
+        return $this->fields['Header']['PubType'] ?? '';
     }
 
     /**
@@ -286,8 +274,7 @@ class EDS extends DefaultRecord
      */
     public function getPubTypeId()
     {
-        return isset($this->fields['Header']['PubTypeId'])
-            ? $this->fields['Header']['PubTypeId'] : '';
+        return $this->fields['Header']['PubTypeId'] ?? '';
     }
 
     /**
@@ -300,7 +287,7 @@ class EDS extends DefaultRecord
     protected function hasEbookAvailable(array $types)
     {
         foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
-            if (isset($link['Type']) && in_array($link['Type'], $types)) {
+            if (in_array($link['Type'] ?? '', $types)) {
                 return true;
             }
         }
@@ -393,14 +380,11 @@ class EDS extends DefaultRecord
      */
     public function getItemsSubjects()
     {
-        $subjects = [];
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('Su' == $item['Group']) {
-                    $subjects[] = $this->toHTML($item['Data'], $item['Group']);
-                }
-            }
-        }
+        $subjects = array_map(
+            function ($data) {
+                return $data['Data'];
+            }, $this->getItems(null, null, 'Su')
+        );
         return empty($subjects) ? '' : implode(', ', $subjects);
     }
 
@@ -415,11 +399,9 @@ class EDS extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
-        if (!empty($this->fields['ImageInfo'])) {
-            foreach ($this->fields['ImageInfo'] as $image) {
-                if (isset($image['Size']) && $size == $image['Size']) {
-                    return (isset($image['Target'])) ? $image['Target'] : '';
-                }
+        foreach ($this->fields['ImageInfo'] ?? [] as $image) {
+            if ($size == ($image['Size'] ?? '')) {
+                return $image['Target'] ?? '';
             }
         }
         return false;
@@ -432,14 +414,8 @@ class EDS extends DefaultRecord
      */
     public function getItemsTitle()
     {
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('Ti' == $item['Group']) {
-                    return $this->toHTML($item['Data']);
-                }
-            }
-        }
-        return '';
+        $title = $this->getItems(null, null, 'Ti');
+        return $title[0]['Data'] ?? '';
     }
 
     /**
@@ -449,13 +425,11 @@ class EDS extends DefaultRecord
      */
     public function getTitle()
     {
-        if (isset($this->fields['RecordInfo']['BibRecord']['BibEntity']['Titles'])) {
-            foreach ($this->fields['RecordInfo']['BibRecord']['BibEntity']['Titles']
-                as $titleRecord
-            ) {
-                if (isset($titleRecord['Type']) && 'main' == $titleRecord['Type']) {
-                    return $titleRecord['TitleFull'];
-                }
+        foreach ($this->fields['RecordInfo']['BibRecord']['BibEntity']['Titles'] ?? []
+            as $titleRecord
+        ) {
+            if ('main' == ($titleRecord['Type'] ?? '')) {
+                return $titleRecord['TitleFull'];
             }
         }
         return '';
@@ -473,13 +447,9 @@ class EDS extends DefaultRecord
             $bibRels
                 = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
         }
-        if (isset($bibRels['HasContributorRelationships'])
-            && !empty($bibRels['HasContributorRelationships'])
-        ) {
-            foreach ($bibRels['HasContributorRelationships'] as $entry) {
-                if (isset($entry['PersonEntity']['Name']['NameFull'])) {
-                    $authors[] = $entry['PersonEntity']['Name']['NameFull'];
-                }
+        foreach ($bibRels['HasContributorRelationships'] ?? [] as $entry) {
+            if (isset($entry['PersonEntity']['Name']['NameFull'])) {
+                $authors[] = $entry['PersonEntity']['Name']['NameFull'];
             }
         }
         return $authors;
@@ -492,14 +462,8 @@ class EDS extends DefaultRecord
      */
     public function getItemsTitleSource()
     {
-        if (isset($this->fields['Items'])) {
-            foreach ($this->fields['Items'] as $item) {
-                if ('Src' == $item['Group']) {
-                    return $this->toHTML($item['Data']);
-                }
-            }
-        }
-        return '';
+        $title = $this->getItems(null, null, 'Src');
+        return $title[0]['Data'] ?? '';
     }
 
     /**
