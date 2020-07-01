@@ -1165,6 +1165,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $results = [];
         foreach (['130', '240'] as $fieldCode) {
             foreach ($this->getMarcRecord()->getFields($fieldCode) as $field) {
+                $subfields = [];
                 foreach ($field->getSubfields() as $subfield) {
                     $subfields[] = $subfield->getData();
                 }
