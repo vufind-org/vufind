@@ -223,23 +223,27 @@ class EDS extends DefaultRecord
      * null for no filter)
      * @param string $groupFilter A specific group to retrieve (filter out others;
      * null for no filter)
+     * @param string $nameFilter  A specific name to retrieve (filter out others;
+     * null for no filter)
      *
      * @return array
      */
     public function getItems($context = null, $labelFilter = null,
-        $groupFilter = null
+        $groupFilter = null, $nameFilter = null
     ) {
         $items = [];
         foreach ($this->fields['Items'] ?? [] as $item) {
             $nextItem = [
                 'Label' => $item['Label'] ?? '',
                 'Group' => $item['Group'] ?? '',
+                'Name' => $item['Name'] ?? '',
                 'Data'  => isset($item['Data'])
                     ? $this->toHTML($item['Data'], $item['Group']) : ''
             ];
             if (!$this->itemIsExcluded($nextItem, $context)
                 && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
                 && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
+                && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
             ) {
                 $items[] = $nextItem;
             }
@@ -648,19 +652,12 @@ class EDS extends DefaultRecord
      */
     public function getCleanDOI()
     {
-        foreach ($this->fields['Items'] ?? [] as $item) {
-            if ('DOI' == $item['Name'] ?? '' && isset($item['Data'])) {
-                return $item['Data'];
-            }
+        $doi = $this->getItems(null, null, null, 'DOI');
+        if (isset($doi[0]['Data'])) {
+            return $doi[0]['Data'];
         }
-        $ids = $this->fields['RecordInfo']['BibRecord']['BibEntity']['Identifiers']
-            ?? [];
-        foreach ($ids as $item) {
-            if ('DOI' == strtoupper($item['Type'] ?? '') && isset($item['Value'])) {
-                return $item['Value'];
-            }
-        }
-        return false;
+        $dois = $this->getFilteredIdentifiers(['doi']);
+        return $dois[0] ?? false;
     }
 
     /**
@@ -689,9 +686,14 @@ class EDS extends DefaultRecord
      */
     protected function getFilteredIdentifiers($filter)
     {
-        $raw = $this->extractEbscoDataFromRecordInfo(
-            'BibRecord/BibRelationships/IsPartOfRelationships/*'
-            . '/BibEntity/Identifiers'
+        $raw = array_merge(
+            $this->extractEbscoDataFromRecordInfo(
+                'BibRecord/BibRelationships/IsPartOfRelationships/*'
+                . '/BibEntity/Identifiers'
+            ),
+            $this->extractEbscoDataFromRecordInfo(
+                'BibRecord/BibEntity/Identifiers'
+            )
         );
         $ids = [];
         foreach ($raw as $data) {
