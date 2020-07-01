@@ -262,7 +262,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $this->apiVersion = $this->config['Catalog']['api_version'];
             // Default to API v5 unless a lower compatibility level is needed.
             if ($this->apiVersion < 5) {
-                $this->apiBase = 'v' . substr($this->apiVersion, 0, 1);
+                $this->apiBase = 'v' . floor($this->apiVersion);
             }
         }
 
