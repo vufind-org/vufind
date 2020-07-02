@@ -786,16 +786,19 @@ class EDS extends DefaultRecord
         $pubType = $this->getPubType();
         switch (strtolower($pubType)) {
         case 'academic journal':
-        case 'article':
         case 'periodical':
         case 'report':
+            // Add "article" format for better OpenURL generation
+            $formats[] = $pubType;
             $formats[] = 'Article';
             break;
         case 'ebook':
+            // Treat eBooks as both "Books" and "Electronic" items
             $formats[] = 'Book';
             $formats[] = 'Electronic';
             break;
         case 'dissertation/thesis':
+            // Simplify wording for consistency with other drivers
             $formats[] = 'Thesis';
             break;
         default:
