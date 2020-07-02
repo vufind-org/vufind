@@ -87,11 +87,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     ];
 
     /**
-     * Debug status
+     * Regular expression to match highlighted terms
      *
-     * @var bool
+     * @var string
      */
-    public $debug = false;
+    protected $highlightRegEx = '{<span[^>]*>([^<]*?)</span>}si';
 
     /**
      * Constructor
@@ -112,6 +112,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->host = $parts['scheme'] . '://' . $parts['host']
             . (!empty($parts['port']) ? ':' . $parts['port'] : '')
             . $parts['path'] . '?';
+        if (!empty($parts['query'])) {
+            $this->host .= $parts['query'] . '&';
+        }
 
         $this->inst = $inst;
         $this->client = $client;
@@ -133,11 +136,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *     pageNumber  string: index of first record (default 1)
      *     limit       string: number of records to return (default 20)
      *     sort        string: value to be used by for sorting (default null)
+     *     highlight   bool:   whether to highlight search term matches in records
+     *     highlightStart string: Prefix for a highlighted term
+     *     highlightEnd   string: Suffix for a Highlighted term
      *     Anything in $params not listed here will be ignored.
      *
      * Note: some input parameters accepted by Primo are not implemented here:
      *  - dym (did you mean)
-     *  - highlight
      *  - more (get more)
      *  - lang (specify input language so engine can do lang. recognition)
      *  - displayField (has to do with highlighting somehow)
@@ -158,7 +163,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             "pcAvailability" => false,
             "pageNumber" => 1,
             "limit" => 20,
-            "sort" => null
+            "sort" => null,
+            "highlight" => false,
+            "highlightStart" => '',
+            "highlightEnd" => '',
         ];
         if (isset($params)) {
             $args = array_merge($args, $params);
@@ -175,24 +183,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @param array  $terms       Associative array:
      *     index       string: primo index to search (default "any")
      *     lookfor     string: actual search terms
-     * @param array  $args        Associative array of optional arguments:
-     *     phrase      bool:   true if it's a quoted phrase (default false)
-     *     onCampus    bool:   (default true)
-     *     didyoumean  bool:   (default false)
-     *     filterList  array:  (field, value) pairs to filter results (def null)
-     *     pageNumber  string: index of first record (default 1)
-     *     limit       string: number of records to return (default 20)
-     *     sort        string: value to be used by for sorting (default null)
-     *     returnErr   bool:   false to fail on error; true to return empty
-     *                         empty result set with an error field (def true)
-     *     Anything in $args   not listed here will be ignored.
-     *
-     * Note: some input parameters accepted by Primo are not implemented here:
-     *  - dym (did you mean)
-     *  - highlight
-     *  - more (get more)
-     *  - lang (specify input language so engine can do lang. recognition)
-     *  - displayField (has to do with highlighting somehow)
+     * @param array  $args        Associative array of optional arguments (see query
+     * method for more information)
      *
      * @throws \Exception
      * @return array             An array of query results
@@ -337,16 +329,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 $qs[] = "sortField=" . $args["sort"];
             }
 
+            // Highlighting
+            $qs[] = 'highlight=' . (empty($args['highlight']) ? 'false' : 'true');
+
             // QUERYSTRING: loc
             // all primocentral queries need this
             $qs[] = "loc=adaptor,primo_central_multiple_fe";
 
-            if ($this->debug) {
-                echo "URL: " . implode('&', $qs);
-            }
-
             // Send Request
-            $result = $this->call(implode('&', $qs));
+            $result = $this->call(implode('&', $qs), $args);
         } else {
             return self::$emptyQueryResponse;
         }
@@ -358,12 +349,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
+     * @param array  $params Request parameters
      * @param string $method HTTP method
      *
      * @return object    The parsed primo data
      * @throws \Exception
      */
-    protected function call($qs, $method = 'GET')
+    protected function call($qs, $params = [], $method = 'GET')
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
@@ -379,17 +371,18 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if (!$result->isSuccess()) {
             throw new \Exception($result->getBody());
         }
-        return $this->process($result->getBody());
+        return $this->process($result->getBody(), $params);
     }
 
     /**
      * Translate Primo's XML into array of arrays.
      *
-     * @param array $data The raw xml from Primo
+     * @param array $data   The raw xml from Primo
+     * @param array $params Request parameters
      *
      * @return array      The processed response from Primo
      */
-    protected function process($data)
+    protected function process($data, $params = [])
     {
         // make sure data exists
         if (strlen($data) == 0) {
@@ -479,24 +472,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             }
             $item['ispartof']
                 = (string)$prefix->PrimoNMBib->record->display->ispartof;
-            // description is sort of complicated
-            // TODO: sometimes the entire article is in the description.
+            // description is sort of complicated and will be processed after
+            // highlighting tags are handled.
             $description = isset($prefix->PrimoNMBib->record->display->description)
                 ? (string)$prefix->PrimoNMBib->record->display->description
                 : (string)$prefix->PrimoNMBib->record->search->description;
-            $description = trim(mb_substr($description, 0, 2500, 'UTF-8'));
-            // these may contain all kinds of metadata, and just stripping
-            //   tags mushes it all together confusingly.
-            $description = str_replace("P>", "p>", $description);
-            $d_arr = explode("<p>", $description);
-            foreach ($d_arr as &$value) {
-                // strip tags, trim so array_filter can get rid of
-                // entries that would just have spaces
-                $value = trim(strip_tags($value));
-            }
-            $d_arr = array_filter($d_arr);
-            // now all paragraphs are converted to linebreaks
-            $description = implode("<br>", $d_arr);
             $item['description'] = $description;
             // and the rest!
             $item['language']
@@ -554,6 +534,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     );
             };
             $item['issn'] = array_values(array_filter($item['issn'], $callback));
+
+            // Always process highlighting data as it seems Primo sometimes returns
+            // it (e.g. for CDI search) even if highlight parameter is set to false.
+            $this->processHighlighting($item, $params);
+
+            // Fix description now that highlighting is done:
+            $item['description'] = $this->processDescription($item['description']);
 
             $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;
@@ -621,6 +608,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
+        $this->currentParams = [];
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
@@ -666,6 +654,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
+        $this->currentParams = [];
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
             return addcslashes($id, '":()');
@@ -706,5 +695,104 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public function getInstitutionCode()
     {
         return $this->inst;
+    }
+
+    /**
+     * Process highlighting tags of the record fields
+     *
+     * @param array $record Record data
+     * @param array $params Request params
+     *
+     * @return void
+     */
+    protected function processHighlighting(&$record, $params)
+    {
+        $highlight = !empty($params['highlight']);
+        $startTag = $params['highlightStart'] ?? '';
+        $endTag = $params['highlightEnd'] ?? '';
+
+        $highlightFields = [
+            'title' => 'title',
+            'creator' => 'author',
+            'description' => 'description'
+        ];
+
+        $hilightDetails = [];
+        foreach ($record as $field => $fieldData) {
+            $values = (array)$fieldData;
+
+            // Collect highlighting details:
+            if (isset($highlightFields[$field])) {
+                $highlightedValues = [];
+                foreach ($values as $value) {
+                    $count = 0;
+                    $value = preg_replace(
+                        $this->highlightRegEx,
+                        "$startTag$1$endTag",
+                        $value,
+                        -1,
+                        $count
+                    );
+                    if ($count) {
+                        // Account for double tags. Yes, it's possible.
+                        $value = preg_replace(
+                            $this->highlightRegEx,
+                            "$1",
+                            $value
+                        );
+                        $highlightedValues[] = $value;
+                    }
+                }
+                if ($highlightedValues) {
+                    $hilightDetails[$highlightFields[$field]] = $highlightedValues;
+                }
+            }
+
+            // Strip highlighting tags from all fields:
+            foreach ($values as &$value) {
+                $value = preg_replace(
+                    $this->highlightRegEx,
+                    "$1",
+                    $value
+                );
+                // Account for double tags. Yes, it's possible.
+                $value = preg_replace(
+                    $this->highlightRegEx,
+                    "$1",
+                    $value
+                );
+            }
+            $record[$field] = is_array($fieldData) ? $values : $values[0];
+
+            if ($highlight) {
+                $record['highlightDetails'] = $hilightDetails;
+            }
+        }
+    }
+
+    /**
+     * Fix the description field by removing tags etc.
+     *
+     * @param string $description Description
+     *
+     * @return string
+     */
+    protected function processDescription($description)
+    {
+        // Sometimes the entire article is in the description, so just take a chunk
+        // from the beginning.
+        $description = trim(mb_substr($description, 0, 2500, 'UTF-8'));
+        // These may contain all kinds of metadata, and just stripping
+        // tags mushes it all together confusingly.
+        $description = str_replace('<P>', '<p>', $description);
+        $paragraphs = explode('<p>', $description);
+        foreach ($paragraphs as &$value) {
+            // Strip tags, trim so array_filter can get rid of
+            // entries that would just have spaces
+            $value = trim(strip_tags($value));
+        }
+        $paragraphs = array_filter($paragraphs);
+        // Now join paragraphs using line breaks
+        return implode('<br>', $paragraphs);
     }
 }

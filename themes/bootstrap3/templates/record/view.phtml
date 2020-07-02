@@ -14,47 +14,12 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ') .
-    '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
+    '<li class="active" aria-current="page">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
   $this->layout()->title = $this->driver->getShortTitle();
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
-  <ul class="pager hidden-print">
-    <?php if ($this->scrollData['previousRecord']): ?>
-      <?php if ($this->scrollData['firstRecord']): ?>
-        <li>
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['firstRecord'])?>" title="<?=$this->transEsc('First Search Result')?>" rel="nofollow"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('First')?></a>
-        </li>
-      <?php endif; ?>
-      <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>" rel="nofollow"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a>
-      </li>
-    <?php else: ?>
-      <?php if ($this->scrollData['firstRecord']): ?>
-        <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('First')?></a></li>
-      <?php endif; ?>
-      <li class="disabled"><a href="#"><span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?></a></li>
-    <?php endif; ?>
-    <?=$this->transEsc('of_num_results', [
-      '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
-      '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
-    ]) ?>
-    <?php if ($this->scrollData['nextRecord']): ?>
-      <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>" rel="nofollow"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a>
-      </li>
-      <?php if ($this->scrollData['lastRecord']): ?>
-        <li>
-          <a href="<?=$this->recordLink()->getUrl($this->scrollData['lastRecord'])?>" title="<?=$this->transEsc('Last Search Result')?>" rel="nofollow"><?=$this->transEsc('Last')?> <span aria-hidden="true">&raquo;</span></a>
-        </li>
-      <?php endif; ?>
-     <?php else: ?>
-      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span></a></li>
-      <?php if ($this->scrollData['lastRecord']): ?>
-        <li class="disabled"><a href="#"><?=$this->transEsc('Last')?> <span aria-hidden="true">&raquo;</span></a></li>
-      <?php endif; ?>
-    <?php endif; ?>
-  </ul>
+  <?=$this->render('record/prev-next.phtml'); ?>
 <?php endif; ?>
 
 <?=$this->record($this->driver)->getToolbar()?>

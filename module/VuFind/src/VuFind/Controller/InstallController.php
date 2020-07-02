@@ -225,8 +225,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.0.8:
-        return PHP_VERSION_ID >= 70008;
+        // We need at least PHP v7.2.0:
+        return PHP_VERSION_ID >= 70200;
     }
 
     /**
@@ -259,7 +259,7 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version 7.0.8 or newer; you are running "
+            $msg = "VuFind requires PHP version 7.2 or newer; you are running "
                 . phpversion() . ".  Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;

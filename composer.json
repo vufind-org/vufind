@@ -33,7 +33,7 @@
         "laminas/laminas-feed": "2.12.0",
         "laminas/laminas-filter": "2.9.2",
         "laminas/laminas-form": "2.14.3",
-        "laminas/laminas-http": "2.11.2",
+        "laminas/laminas-http": "2.12.0",
         "laminas/laminas-i18n": "2.10.1",
         "laminas/laminas-loader": "2.6.0",
         "laminas/laminas-log": "2.10.0",
@@ -52,6 +52,7 @@
         "laminas/laminas-text": "2.7.1",
         "laminas/laminas-validator": "2.13.0",
         "laminas/laminas-view": "2.11.2",
+        "laminas-commons/lmc-rbac-mvc": "3.0.0",
         "league/commonmark": "1.4.3",
         "matthiasmullie/minify": "1.3.62",
         "misd/linkify": "1.1.4",
@@ -70,13 +71,11 @@
         "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.0.0",
         "vufind-org/vufindharvest": "4.0.1",
-        "vufind-org/vufindhttp": "3.0.0",
+        "vufind-org/vufindhttp": "3.1.0",
+        "webfontkit/open-sans": "^1.0",
         "wikimedia/composer-merge-plugin": "1.4.1",
         "wikimedia/less.php": "2.0.0",
-        "yajra/laravel-pdo-via-oci8": "2.1.1",
-        "zendframework/zendrest": "2.0.2",
-        "zendframework/zendservice-amazon": "2.3.1",
-        "zf-commons/zfc-rbac": "2.6.3"
+        "yajra/laravel-pdo-via-oci8": "2.1.1"
     },
     "require-dev": {
         "behat/mink": "1.7.1",

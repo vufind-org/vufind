@@ -128,6 +128,25 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test TranslatableString default values.
+     *
+     * @return void
+     */
+    public function testTranslateTranslatableStringDefaultValues()
+    {
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator(['default' => []])
+        );
+
+        $s = new TranslatableString('foo', 'bar');
+        $this->assertEquals('bar', $translate->__invoke($s));
+
+        $s = new TranslatableString('foo', new TranslatableString('bar', 'baz'));
+        $this->assertEquals('baz', $translate->__invoke($s));
+    }
+
+    /**
      * Test translation of a TranslatableString object with a loaded translator
      *
      * @return void
@@ -136,7 +155,12 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     {
         $translate = new Translate();
         $translate->setTranslator(
-            $this->getMockTranslator(['default' => ['foo' => '%%token%%']])
+            $this->getMockTranslator(
+                [
+                    'default' => ['foo' => '%%token%%'],
+                    'other' => ['foo' => 'Foo', 'bar' => 'Bar']
+                ]
+            )
         );
 
         // Test a TranslatableString with a translation.
@@ -165,6 +189,22 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 $str3, ['%%token%%' => 'baz'], 'failure'
             )
         );
+
+        // Test a TranslatableString with another TranslatableString as a fallback.
+        $str4 = new TranslatableString(
+            'xyzzy', new TranslatableString('bar', 'baz')
+        );
+        $this->assertEquals('baz', $translate->__invoke($str4));
+        $str5 = new TranslatableString(
+            'xyzzy', new TranslatableString('foo', 'baz')
+        );
+        $this->assertEquals('%%token%%', $translate->__invoke($str5));
+
+        // Test a TranslatableString with translation forbidden
+        $str6 = new TranslatableString('foo', 'bar', false);
+        $this->assertEquals('bar', $translate->__invoke($str6));
+        $str7 = new TranslatableString('foo', '', false);
+        $this->assertEquals('', $translate->__invoke($str7));
     }
 
     /**
@@ -194,6 +234,40 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         // No string translatable
         $str3 = new TranslatableString('d1::f2', 'd2::f1');
         $this->assertEquals('failure', $translate->__invoke($str3, [], 'failure'));
+
+        // Secondary string a translatable TranslatableString
+        $str4 = new TranslatableString(
+            'd1::f2', new TranslatableString('d2::f2', 'd3::f3')
+        );
+        $this->assertEquals('str2', $translate->__invoke($str4));
+        // Secondary string a TranslatableString with no translation
+        $str5 = new TranslatableString(
+            'd1::f2', new TranslatableString('d2::f1', 'failure')
+        );
+        $this->assertEquals('failure', $translate->__invoke($str5));
+        // Secondary string a non-translatable TranslatableString
+        $str6 = new TranslatableString(
+            'd1::f2', new TranslatableString('d2::f2', 'failure', false)
+        );
+        $this->assertEquals('failure', $translate->__invoke($str6));
+
+        // Three levels of TranslatableString with the last one translatable
+        $str7 = new TranslatableString(
+            'd1::f2',
+            new TranslatableString(
+                'd3::f3', new TranslatableString('d2::f2', 'failure')
+            )
+        );
+        $this->assertEquals('str2', $translate->__invoke($str7));
+
+        // Three levels of TranslatableString with no translation
+        $str8 = new TranslatableString(
+            'd1::f2',
+            new TranslatableString(
+                'd3::f3', new TranslatableString('d3::f2', 'failure')
+            )
+        );
+        $this->assertEquals('failure', $translate->__invoke($str8));
     }
 
     /**
@@ -221,6 +295,27 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
                 'undefined::foo', ['%%token%%' => 'baz'], 'failure'
             )
         );
+    }
+
+    /**
+     * Test nested translation with potential text domain conflict
+     *
+     * @return void
+     */
+    public function testTranslateNestedTextDomainWithConflict()
+    {
+        $translations = [
+            'd1' => ['foo' => 'bar', 'failure' => 'success'],
+            'd2' => ['baz' => 'xyzzy', 'failure' => 'mediocrity'],
+        ];
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator($translations)
+        );
+        $str = new TranslatableString(
+            'd1::baz', new TranslatableString('d2::foo', 'failure')
+        );
+        $this->assertEquals('failure', $translate->__invoke($str));
     }
 
     /**
