@@ -86,8 +86,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       var data = response.data;
       for (var j = 0; j < data.statuses.length; j++) {
         var status = data.statuses[j];
-        displayItemStatus(status, this.items[status.id].element);
+        this.items[status.id].result = status;
         this.items[status.id].state = 'done';
+        for (var e = 0; e < this.items[status.id].elements.length; e++) {
+          displayItemStatus(status, this.items[status.id].elements[e]);
+        }
       }
     },
     itemStatusFail: function itemStatusFail(response, textStatus) {
@@ -99,21 +102,27 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
     },
     itemQueueAjax: function itemQueueAjax(id, el) {
-      // Safeguard against multiple queueing
+      el.addClass('js-item-pending').removeClass('hidden');
+      el.find('.callnumAndLocation').removeClass('hidden');
+      el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
+      el.find('.status').removeClass('hidden');
+      // If this id has already been queued, just add it to the elements or display a
+      // cached result.
       if (typeof this.items[id] !== 'undefined') {
+        if ('done' === this.items[id].state) {
+          displayItemStatus(this.items[id].result, el);
+        } else {
+          this.items[id].elements.push(el);
+        }
         return;
       }
       clearTimeout(this.itemStatusTimer);
       this.items[id] = {
         id: id,
         state: 'queued',
-        element: el
+        elements: [el]
       };
       this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
-      el.addClass('js-item-pending').removeClass('hidden');
-      el.find('.callnumAndLocation').removeClass('hidden');
-      el.find('.callnumAndLocation .ajax-availability').removeClass('hidden');
-      el.find('.status').removeClass('hidden');
     },
 
     runItemAjaxForQueue: function runItemAjaxForQueue() {
@@ -141,7 +150,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         .always(function queueAjaxAlways() {
           this.itemStatusRunning = false;
         });
-    }//end runItemAjax
+    }//end runItemAjaxForQueue
   };
 
   //add you own overridden handler here
@@ -167,7 +176,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
     var id = $item.find('.hiddenId').val();
     var handlerName = 'ils';
-    if ($item.find('.handler-name').length > 0) {
+    if ($item.data("handler-name")) {
+      handlerName = $item.data("handler-name");
+    } else if ($item.find('.handler-name').length > 0) {
       handlerName = $item.find('.handler-name').val();
     }
 
@@ -182,15 +193,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
     var ajaxItems = $(container).find('.ajaxItem');
     for (var i = 0; i < ajaxItems.length; i++) {
-      var id = $(ajaxItems[i]).find('.hiddenId').val();
-      var handlerName = 'ils';
-      if ($(ajaxItems[i]).find('.handler-name').length > 0) {
-        handlerName = $(ajaxItems[i]).find('.handler-name').val();
-      }
-      if ($(ajaxItems[i]).data("handler-name")) {
-        handlerName = $(ajaxItems[i]).data("handler-name");
-      }
-      checkItemHandlers[handlerName].itemQueueAjax(id, $(ajaxItems[i]));
+      checkItemStatus($(ajaxItems[i]));
     }
   }
   function init(_container) {
