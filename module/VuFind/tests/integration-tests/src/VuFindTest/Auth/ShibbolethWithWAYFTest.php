@@ -54,7 +54,7 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
     protected $user2 = [
         'Shib-Identity-Provider' => 'https://idp2.example.org/',
         'eppn' => 'testuser2',
-        'alephId' => 'testuser2',
+        'alephId' => '12345',
         'mail' => 'testuser2@example.org',
         'eduPersonScopedAffiliation' => 'member@example.org',
     ];
@@ -208,7 +208,7 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
     public function testLogin2()
     {
         $user = $this->getAuthObject()->authenticate($this->getLoginRequest($this->user2, false));
-        $this->assertEquals($user->cat_username, 'example2.testuser2');
+        $this->assertEquals($user->cat_username, 'example2.12345');
         $this->assertEquals($user->username, 'testuser2');
     }
 
