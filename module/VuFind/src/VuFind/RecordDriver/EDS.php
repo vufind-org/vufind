@@ -871,7 +871,7 @@ class EDS extends DefaultRecord
                 list($place, $pub, $date)
                     = [trim($matches[1]), trim($matches[2]), ''];
             } else {
-                list ($place, $pub, $date) = ['', $pub['Data'], ''];
+                list($place, $pub, $date) = ['', $pub['Data'], ''];
             }
 
             // In some cases, the place may have noise on the front that needs
