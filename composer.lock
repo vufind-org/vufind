@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7c05e41d689747b855906365f7bcda3",
+    "content-hash": "71e38cfbbe2cb880ebdd71890a47607f",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -5495,16 +5495,16 @@
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "26558d9b830bf5cdd5e9a5fbab06df649a5525e7"
+                "reference": "69aff6bcb84139598bdb42d161b7483caf69b1c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/26558d9b830bf5cdd5e9a5fbab06df649a5525e7",
-                "reference": "26558d9b830bf5cdd5e9a5fbab06df649a5525e7",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/69aff6bcb84139598bdb42d161b7483caf69b1c2",
+                "reference": "69aff6bcb84139598bdb42d161b7483caf69b1c2",
                 "shasum": ""
             },
             "require": {
@@ -5546,7 +5546,7 @@
             ],
             "description": "VuFind HTTP service library",
             "homepage": "https://vufind.org/",
-            "time": "2020-01-27T20:45:14+00:00"
+            "time": "2020-07-01T10:47:57+00:00"
         },
         {
             "name": "webfontkit/open-sans",
