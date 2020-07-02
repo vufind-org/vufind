@@ -607,16 +607,35 @@ class Params extends \VuFind\Search\Base\Params
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = $hierarchicalFacetSeparators[$field] ?? '/';
-            $filter['displayText'] = $this->facetHelper->formatDisplayText(
-                $filter['displayText'], true, $separator
-            );
-            if ($translate) {
-                $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
-                    $field
+            if (!$translate) {
+                $filter['displayText'] = $this->facetHelper->formatDisplayText(
+                    $filter['displayText'],
+                    true,
+                    $separator
+                )->getDisplayString();
+            } else {
+                $domain = $this->getOptions()
+                    ->getTextDomainForTranslatedFacet($field);
+
+                // Provide translation of each separate element as a default
+                // while allowing one to translate the full string too:
+                $parts = $this->facetHelper
+                    ->getFilterStringParts($filter['value']);
+                $translated = [];
+                foreach ($parts as $part) {
+                    $translated[] = $this->translate([$domain, $part]);
+                }
+                $translatedParts = implode($separator, $translated);
+
+                $parts = array_map(
+                    function ($part) {
+                        return $part->getDisplayString();
+                    },
+                    $parts
                 );
-                $filter['displayText'] = $this->translate(
-                    [$domain, $filter['displayText']]
-                );
+                $str = implode($separator, $parts);
+                $filter['displayText']
+                    = $this->translate([$domain, $str], [], $translatedParts);
             }
         }
 
