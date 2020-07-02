@@ -1,0 +1,144 @@
+<!-- START of: finna - organisationinfo/map-information.phtml -->
+<div class="office-search navi-section map-ui" id="consortium-service-point-section">
+  <?php if (!empty($this->consortiumInfo)): ?>
+    <div>
+        <h2><?=$this->transEsc('organisation_info_navi_service')?></h2>
+    </div>
+    <div><p class="consortium-notification hide"></p></div>
+  <?php endif; ?>
+  <div class="map-control-bar">
+    <div class="flex-item">
+      <form class="form-inline searchbox-office office-search-notifications map-ui">
+        <div class="input-group">
+          <input id="office-search" class="form-control" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
+          </span>
+          <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
+        </div>
+      </form>
+      <div class="autocomplete-container"></div>
+    </div>
+    <div class="flex-item text-right">
+      <div class="map-ui map-control-buttons" aria-hidden="true">
+        <span class="show-all"><a href="#"><?=$this->translate('organisation_info_page_map_show_all')?></a></span>
+        <i class="fa fa-map-marker marker open"></i><?=$this->transEsc('organisation_info_is_open')?>
+        <i class="fa fa-map-marker marker closed"></i><?=$this->transEsc('organisation_info_is_closed')?>
+        <i class="fa fa-map-marker marker no-schedule"></i><?=$this->transEsc('organisation_info_no_schedule')?>
+        <span class="expand expand-map"><i class="fa fa-expand"></i> <?=$this->translate('organisation_info_map_expand')?></span>
+        <span class="collapse contract-map" style="display: none"> <i class="fa fa-condense"></i> <?=$this->translate('organisation_info_map_collapse')?></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="map-bubble-template hide">
+  <div class="map-bubble">
+    <h5 class="name">Template name</h5>
+    <p><span class="office-links address"></span></p>
+  </div>
+</div>
+
+<div class="office map-ui map <?=$this->escapeHtmlAttr($this->mapWidget)?>" aria-hidden="true">
+  <div>
+    <div id="openlayers-canvas" class="map-widget"></div>
+    <div id="marker-tooltip" class="hide"></div>
+  </div>
+</div>
+<div class="office-information-loader">
+  <p><i class="fa fa-spinner fa-spin" style="text-align: center;"></i> <?=$this->translate('Loading')?></p>
+</div>
+<div class="office-quick-information info-element hide">
+  <div class="office-title">
+    <h3 class="service-title">Template title</h3>
+    <p><span class="office-links address"></span> <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a> <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a> <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span></p>
+    <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span></p>
+  </div>
+  <div class="open-closed-info">
+    <h3 class="open-or-closed">
+      <span class="library-is-open info-element"><?=$this->translate('organisation_info_is_open')?></span>
+      <span class="library-is-closed info-element"><?=$this->translate('organisation_info_is_closed')?></span>
+    </h3>
+    <p class="time-open info-element">
+      <span class="opening-times"><i class="fa fa-clock-o"></i> <?=$this->translate('organisation_info_open_today')?> <span class="opens"></span> - <span class="closes"></span></span>
+      <span class="hide staff-times">(<?=$this->translate('organisation_info_schedule_staff')?> <span class="hide shift-template"><span class="opens"></span> - <span class="closes"></span></span>)</span>
+    </p>
+  </div>
+  <div class="social-button info-element"><a aria-label="Facebook" href="#" target="_blank"><i class="fa fa-facebook"></i></a></div>
+  <div class="clearfix"></div>
+  <div><p class="office-description slogan info-element"></p></div>
+</div>
+
+<div class="row office-information info-element">
+  <div class="office-row-general">
+    <div class="office-col">
+      <div class="finna-panel introduction">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1"><?=$this->translate('organisation_info_general')?></a>
+        </h4>
+        <div id="collapse1" class="panel-collapse collapse in">
+          <img class="building-image" src="#" alt=""/>
+          <img class="extra-image" src="#" alt=""/>
+          <img class="extra-image-2" src="#" alt=""/>
+          <p class="building-name info-element"></p>
+          <p class="building-year info-element"><?=$this->translate('organisation_info_building_year')?>: <span></span></p>
+          <p class="office-description description-long info-element"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="office-col opening-times-widget">
+      <div class="finna-panel opening-times-library-information">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse2"><?=$this->translate('organisation_info_schedules')?></a>
+        </h4>
+        <div id="collapse2" class="panel-collapse collapse in">
+          <?=$this->organisationInfo(['id' => $this->id, 'init' => false, 'target' => 'page'])?>
+        </div>
+      </div>
+    </div>
+
+    <div class="office-col">
+      <div class="finna-panel contact-details contact-details-rss info-element">
+        <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 4])?>
+      </div>
+      <div class="finna-panel contact-details contact-details-no-rss info-element">
+        <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 5])?>
+      </div>
+    </div>
+  </div>
+  <div class="organisation-feeds">
+    <div class="finna-panel news-feed-container rss-container info-element">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#collapse7"><?=$this->translate('organisation_info_rss_news')?></a>
+      </h4>
+      <div id="collapse7" class="panel-collapse collapse in">
+        <div class="feed-container news-feed info-element" data-init="0"></div>
+      </div>
+    </div>
+    <div class="finna-panel events-feed-container rss-container info-element">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#collapse8"><?=$this->translate('organisation_info_rss_events')?></a>
+      </h4>
+      <div id="collapse8" class="panel-collapse collapse in">
+        <div class="feed-container events-feed info-element" data-init="0"></div>
+      </div>
+    </div>
+  </div>
+  <div class="finna-panel services info-element">
+    <h4 class="panel-title">
+      <a data-toggle="collapse" href="#collapse6"><?=$this->translate('organisation_info_services')?></a>
+    </h4>
+    <div id="collapse6" class="panel-collapse collapse in">
+      <h5 class="service-header hardware hidden"><?= $this->transEsc('kirkanta_hardware') ?></h5>
+      <div class="service-list hardware"></div>
+      <h5 class="service-header room hidden"><?= $this->transEsc('kirkanta_rooms') ?></h5>
+      <div class="service-list room"></div>
+      <h5 class="service-header service hidden"><?= $this->transEsc('kirkanta_services') ?></h5>
+      <div class="service-list service"></div>
+      <h5 class="service-header collection hidden"><?= $this->transEsc('Collections') ?></h5>
+      <div class="service-list collection"></div>
+    </div>
+  </div>
+</div>
+<!-- END of: finna - organisationinfo/map-information.phtml -->

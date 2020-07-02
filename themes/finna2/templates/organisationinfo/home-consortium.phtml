@@ -1,0 +1,81 @@
+<!-- START of: finna - organisationinfo/home-consortium.phtml -->
+<div class="organisation-info-page loading organisation-page-information-wrapper">
+  <div class="loader">
+    <i class="fa fa-spinner fa-spin" style="text-align: center;"></i>
+  </div>
+
+  <?php $building = "0/{$this->id}/"; ?>
+  <div class="consortium-navigation hide">
+    <ul class="consortium-navigation-list" data-spy="affix" data-offset-top="310">
+      <li class="scroll building hide"></li>
+      <li class="scroll usage hide"><a href="#consortium-usage-rights-section" class="sr-only"><?=$this->transEsc('organisation_info_navi_usage')?></a><span aria-hidden="true"><?=$this->transEsc('organisation_info_navi_usage')?></span></li>
+      <li class="scroll service hide"><a href="#consortium-service-point-section" class="sr-only"><?=$this->transEsc('organisation_info_navi_service')?></a><span aria-hidden="true"><?=$this->transEsc('organisation_info_navi_service')?></span></li>
+    </ul>
+  </div>
+
+  <div class="consortium-info hide navi-section" id="consortium-info-section">
+    <div>
+      <h1 class="name">-</h1>
+      <div class="consortium-info-row">
+        <div class="consortium-logo hide"></div>
+        <div class="description"><?=$this->translate('organisation_no_consortium_info_html');?></div>
+      </div>
+    </div>
+    <div class="homepage hide"></div>
+    <div class="organisation-list" data-rows="1"><ul></ul></div>
+  </div>
+</div>
+<?php // close enclosing container div to make layout fluid again ?>
+</div>
+
+<?php // add fluid-odd wrapper to make background background-color ?>
+<div class="fluid-odd">
+  <div class="container organisation-info-page loading organisation-page-information-wrapper">
+    <div class="consortium-usage-rights hide navi-section" id="consortium-usage-rights-section">
+      <div>
+        <div class="usage-rights-heading"><h2><?=$this->transEsc('organisation_info_navi_usage')?></h2></div>
+        <div class="mainbody left">
+          <div class="usage-rights-text">
+            <i class="fa fa-spinner fa-spin" style="text-align: center;"></i>
+            <p class="hide no-info"><?=$this->translate('organisation_no_consortium_info_html');?></p>
+          </div>
+          <div>
+            <form class="searchbox-consortium searchForm" action="<?=$this->url('search-results')?>">
+              <input class="searchForm_lookfor form-control search-query" name="lookfor" placeholder="<?=$this->transEsc('organisation_info_search')?>" aria-label="<?=$this->transEsc('organisation_info_search')?>" />
+              <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr("{$this->buildingFacetOperator}building:\"{$building}\"")?>" />
+              <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> <span class="sr-only"><?=$this->translate('Search from collection')?></span></button>
+            </form>
+            <div class="gauge-meter hide">
+              <canvas width="75" height="60" class="finna-coverage-gauge"></canvas>
+              <span class="gauge-value"><span class="val"></span> %</span>
+              <span class="gauge-label"><?=$this->translate('organisation_info_coverage')?></span>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar right">
+          <div class="links hide">
+            <h4><?=$this->translate('organisation_info_page_finna_link')?></h4>
+            <ul class="list-group">
+              <li class="list-group-item template"><a href="#" target="_blank">Template text</a></li>
+            </ul>
+          </div>
+          <div class="finna-link hide">
+            <h4><?=$this->translate('organisation_info_page_links')?></h4>
+            <ul class="list-group finna-url">
+              <li class="list-group-item template"><a href="#" target="_blank">Template text</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="last-section">
+  <div class="container organisation-info-page loading organisation-page-information-wrapper">
+    <?=$this->render('organisationinfo/map-information.phtml', ['consortiumInfo' => true])?>
+  </div>
+</div>
+<?php // re-open the closed container div ?>
+<div class="container">
+<!-- END of: finna - organisationinfo/home-consortium.phtml -->
