@@ -70,11 +70,13 @@ class VuFindGeoTest extends \VuFindTest\Unit\TestCase
         $logger = new class {
             protected $messages = [];
 
-            public function log($msg) {
+            public function log($msg)
+            {
                 $this->messages[] = $msg;
             }
 
-            public function popMessage() {
+            public function popMessage()
+            {
                 return array_pop($this->messages);
             }
         };
