@@ -73,8 +73,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
   var ItemStatusHandler = {
     name: "default",
-    //array to hold IDs and elements
-    itemStatusIds: [], itemStatusEls: [],
+    // Object that holds item IDs, states and elements
+    items: {},
     url: '/AJAX/JSON?method=getItemStatuses',
     itemStatusRunning: false,
     dataType: 'json',
@@ -86,8 +86,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       var data = response.data;
       for (var j = 0; j < data.statuses.length; j++) {
         var status = data.statuses[j];
-        displayItemStatus(status, this.itemStatusEls[status.id]);
-        this.itemStatusIds.splice(this.itemStatusIds.indexOf(status.id), 1);
+        displayItemStatus(status, this.items[status.id].element);
+        this.items[status.id].state = 'done';
       }
     },
     itemStatusFail: function itemStatusFail(response, textStatus) {
@@ -99,9 +99,16 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         .append(typeof response.responseJSON.data === 'string' ? response.responseJSON.data : VuFind.translate('error_occurred'));
     },
     itemQueueAjax: function itemQueueAjax(id, el) {
+      // Safeguard against multiple queueing
+      if (typeof this.items[id] !== 'undefined') {
+        return;
+      }
       clearTimeout(this.itemStatusTimer);
-      this.itemStatusIds.push(id);
-      this.itemStatusEls[id] = el;
+      this.items[id] = {
+        id: id,
+        state: 'queued',
+        element: el
+      };
       this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
       el.addClass('js-item-pending').removeClass('hidden');
       el.find('.callnumAndLocation').removeClass('hidden');
@@ -114,12 +121,20 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         this.itemStatusTimer = setTimeout(this.runItemAjaxForQueue.bind(this), this.itemStatusDelay);
         return;
       }
+      var ids = [];
+      var self = this;
+      $.each(this.items, function selectQueued() {
+        if ('queued' === this.state) {
+          self.items[this.id].state = 'running';
+          ids.push(this.id);
+        }
+      });
       $.ajax({
         dataType: this.dataType,
         method: this.method,
         url: VuFind.path + this.url,
         context: this,
-        data: { 'id': this.itemStatusIds }
+        data: { 'id': ids }
       })
         .done(this.checkItemStatusDone)
         .fail( this.itemStatusFail)
@@ -134,8 +149,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   OdItemStatusHandler.url = '/Overdrive/getStatus';
   OdItemStatusHandler.itemStatusDelay = 200;
   OdItemStatusHandler.name = "overdrive";
-  OdItemStatusHandler.itemStatusIds = [];
-  OdItemStatusHandler.itemStatusEls = [];
+  OdItemStatusHandler.items = {};
 
   //store the handlers in a "hash" obj
   var checkItemHandlers = {
