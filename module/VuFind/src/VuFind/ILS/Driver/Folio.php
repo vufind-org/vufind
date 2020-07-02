@@ -438,8 +438,7 @@ class Folio extends AbstractAPI implements
         );
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
-        for ($i = 0; $i < count($holdingBody->holdingsRecords); $i++) {
-            $holding = $holdingBody->holdingsRecords[$i];
+        foreach ($holdingBody->holdingsRecords as $holding) {
             $locationName = '';
             if (!empty($holding->permanentLocationId)) {
                 $locationResponse = $this->makeRequest(
@@ -456,8 +455,7 @@ class Folio extends AbstractAPI implements
             $notesFormatter = function ($note) {
                 return $note->note ?? '';
             };
-            for ($j = 0; $j < count($itemBody->items); $j++) {
-                $item = $itemBody->items[$j];
+            foreach ($itemBody->items as $item) {
                 if ($item->discoverySuppress ?? false) {
                     continue;
                 }
