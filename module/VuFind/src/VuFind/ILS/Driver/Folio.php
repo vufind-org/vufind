@@ -835,6 +835,8 @@ class Folio extends AbstractAPI implements
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickupLocations($patron)
     {
