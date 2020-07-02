@@ -676,11 +676,7 @@ class EDS extends DefaultRecord
      */
     public function getISSNs()
     {
-        $filter = ['issn-print', 'issn-electronic'];
-        return array_merge(
-            parent::getISSNs(),
-            $this->getFilteredIdentifiers($filter)
-        );
+        return $this->getFilteredIdentifiers(['issn-print', 'issn-electronic']);
     }
 
     /**
@@ -690,11 +686,7 @@ class EDS extends DefaultRecord
      */
     public function getISBNs()
     {
-        $filter = ['isbn-print', 'isbn-electronic'];
-        return array_merge(
-            parent::getISBNs(),
-            $this->getFilteredIdentifiers($filter)
-        );
+        return $this->getFilteredIdentifiers(['isbn-print', 'isbn-electronic']);
     }
 
     /**
