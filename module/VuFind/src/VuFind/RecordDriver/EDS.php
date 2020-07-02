@@ -865,11 +865,11 @@ class EDS extends DefaultRecord
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
                 $placeParts = explode('.', $matches[1]);
-                list($place, $pub, $date) =
-                    [trim($matches[1]), trim($matches[2]), $matches[3]];
+                list($place, $pub, $date)
+                    = [trim($matches[1]), trim($matches[2]), $matches[3]];
             } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
-                list($place, $pub, $date) =
-                    [trim($matches[1]), trim($matches[2]), ''];
+                list($place, $pub, $date)
+                    = [trim($matches[1]), trim($matches[2]), ''];
             } else {
                 list ($place, $pub, $date) = ['', $pub['Data'], ''];
             }
