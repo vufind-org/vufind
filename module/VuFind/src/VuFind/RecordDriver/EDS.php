@@ -757,7 +757,12 @@ class EDS extends DefaultRecord
      */
     public function getPublicationDates()
     {
-        return $this->extractEbscoDataFromRecordInfo(
+        $pubDates = array_map(
+            function ($data) {
+                return $data->getDate();
+            }, $this->getRawEDSPublicationDetails()
+        );
+        return !empty($pubDates) ? $pubDates : $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/0/BibEntity/Dates/0/Y'
         );
     }
@@ -806,6 +811,78 @@ class EDS extends DefaultRecord
         }
 
         return $formats;
+    }
+
+    /**
+     * Get the publishers of the record.
+     *
+     * @return array
+     */
+    public function getPublishers()
+    {
+        return array_map(
+            function ($data) {
+                return $data->getName();
+            }, $this->getRawEDSPublicationDetails()
+        );
+    }
+
+    /**
+     * Get the item's place of publication.
+     *
+     * @return array
+     */
+    public function getPlacesOfPublication()
+    {
+        return array_map(
+            function ($data) {
+                return $data->getPlace();
+            }, $this->getRawEDSPublicationDetails()
+        );
+    }
+
+    /**
+     * Get an array of publication detail lines combining information from
+     * getPublicationDates(), getPublishers() and getPlacesOfPublication().
+     *
+     * @return array
+     */
+    public function getPublicationDetails()
+    {
+        $details = $this->getRawEDSPublicationDetails();
+        return !empty($details) ? $details : parent::getPublicationDetails();
+    }
+
+    /**
+     * Attempt to build up publication details from raw EDS data.
+     *
+     * @return array
+     */
+    protected function getRawEDSPublicationDetails()
+    {
+        $details = [];
+        foreach ($this->getItems(null, 'Publication Information') as $pub) {
+            // Try to extract place, publisher and date:
+            if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
+                $placeParts = explode('.', $matches[1]);
+                list($place, $pub, $date) =
+                    [trim($matches[1]), trim($matches[2]), $matches[3]];
+            } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
+                list($place, $pub, $date) =
+                    [trim($matches[1]), trim($matches[2]), ''];
+            } else {
+                list ($place, $pub, $date) = ['', $pub['Data'], ''];
+            }
+
+            // In some cases, the place may have noise on the front that needs
+            // to be removed...
+            $placeParts = explode('.', $place);
+            $shortPlace = array_pop($placeParts);
+            $details[] = new Response\PublicationDetails(
+                strlen($shortPlace) > 5 ? $shortPlace : $place, $pub, $date
+            );
+        }
+        return $details;
     }
 
     /**
