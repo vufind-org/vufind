@@ -1,7 +1,7 @@
 <!-- START of: finna - Helpers/holding-callnumber.phtml -->
 <div class="location-link-text">
 <?php if (isset($this->locationServiceUrl)): ?>
-  <a class="location-service <?=$this->locationServiceModal ? ' location-service-modal' : ''?>" href="<?=$this->locationServiceUrl?>"<?=$this->locationServiceModal ? ' data-lightbox-href="' . $this->url('locationservice-modal') . '?callnumber=' . urlencode(($this->callnumber instanceof \VuFind\I18n\TranslatableString) ? $this->callnumber->getDisplayString() : $this->callnumber) . '&amp;collection=' . urlencode($this->collection) . '&amp;location=' . urlencode($this->location) . '&amp;title=' . urlencode($this->title) . '&amp;source=' . urlencode($this->source) : '' ?>" target="location-service"><i class="fa fa-map-marker"></i> <?=$this->escapeHtml($this->callnumber)?></a>
+  <a class="location-service <?=$this->locationServiceModal ? ' location-service-modal' : ''?>" href="<?=$this->locationServiceUrl?>"<?=$this->locationServiceModal ? ' data-lightbox-href="' . $this->url('locationservice-modal') . '?callnumber=' . urlencode(($this->callnumber instanceof \VuFind\I18n\TranslatableString) ? $this->callnumber->getDisplayString() : $this->callnumber) . '&amp;collection=' . urlencode($this->collection) . '&amp;location=' . urlencode($this->location) . '&amp;title=' . urlencode($this->title) . '&amp;source=' . urlencode($this->source) : '' ?>" target="location-service"><i class="fa fa-map-marker"></i> <?=$this->transEsc($this->callnumber)?></a>
 <?php else: ?>
   <?php if ($this->page == 'results'): ?>
     (<span><?=$this->transEsc("shelf_location"); ?>: </span><?=$this->transEsc($this->callnumber)?>)
