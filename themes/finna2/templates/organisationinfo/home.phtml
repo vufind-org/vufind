@@ -69,7 +69,7 @@ JS;
   <?php if ($this->consortiumInfo): ?>
     <div class="consortium-info hide navi-section" id="consortium-info-section">
       <div>
-        <h1 class="name"></h1>
+        <h1 class="name">-</h1>
         <div class="consortium-info-row">
           <div class="consortium-logo hide"></div>
           <div class="description"><?=$this->translate('organisation_no_consortium_info_html');?></div>
@@ -139,7 +139,7 @@ JS;
           <div class="input-group">
             <input id="office-search" class="form-control" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
             <span class="input-group-btn">
-              <button class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
+              <button type="button" class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
             </span>
             <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
           </div>

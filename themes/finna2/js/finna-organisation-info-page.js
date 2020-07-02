@@ -63,11 +63,13 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     holder.find('.office-information-loader').toggle(mode);
   }
 
-  function updateSelectedOrganisation(id) {
+  function updateSelectedOrganisation(id, clearSearch) {
     setOfficeInformationLoader(true);
     holder.find('.error, .info-element').hide();
     infoWidget.showDetails(id, '', true);
-    $('#office-search').val('');
+    if (clearSearch) {
+      $('#office-search').val('');
+    }
 
     var notification = holder.find('.office-search-notifications .notification');
     if (id in organisationList) {
@@ -201,9 +203,10 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     officeSearch.find('li').on('touchstart', function onTouchStartSearch() {
       officeSearch.autocomplete('search', $(this).val());
     });
-    holder.find('.btn-office-search').on('click', function onClickSearchBtn() {
+    holder.find('.btn-office-search').on('click', function onClickSearchBtn(e) {
       officeSearch.autocomplete('search', '');
       officeSearch.focus();
+      e.preventDefault();
       return false;
     });
   }
@@ -240,7 +243,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
             .focus().blur();
 
           if (typeof id != 'undefined' && id) {
-            updateSelectedOrganisation(id);
+            updateSelectedOrganisation(id, true);
           }
         } else {
           holder.find('.map-ui').hide();
@@ -566,7 +569,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     window.onhashchange = function onHashChange() {
       var id = getOrganisationFromURL();
       if (id) {
-        updateSelectedOrganisation(id);
+        updateSelectedOrganisation(id, false);
       }
 
       // Blur so that mobile keyboard is closed

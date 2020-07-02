@@ -174,6 +174,7 @@ return [
         'keep_alive.js',
         'openurl.js',
         'record.js',
+        'finna-polyfill.js',
         'finna.js',
         'finna-popup.js',
         'finna-autocomplete.js',
@@ -214,6 +215,7 @@ return [
         'vendor/classList.js',
         'vendor/cookies.js',
         'vendor/html5shiv.js',
+        'vendor/hunt.min.js',
         'vendor/jquery.colorhelpers.min.js',
         'vendor/jquery.dataTables.min.js',
         'vendor/dataTables.bootstrap.min.js',
@@ -221,6 +223,10 @@ return [
         'vendor/jquery.flot.min.js',
         'vendor/jquery.flot.selection.min.js',
         'vendor/jquery.inview.min.js',
+        // jquery-migrate is required for jquery ui autocomplete until jquery ui is
+        // updated to at least version 1.12. jquery ui site is broken preventing
+        // upgrade as of 2.7.2020.
+        'vendor/jquery-migrate-3.3.1.min.js',
         'vendor/jquery.cookie-1.4.1.min.js',
         'vendor/jquery.unveil.min.js',
         'vendor/jquery-ui-custom.min.js',
