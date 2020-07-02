@@ -298,6 +298,27 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test nested translation with potential text domain conflict
+     *
+     * @return void
+     */
+    public function testTranslateNestedTextDomainWithConflict()
+    {
+        $translations = [
+            'd1' => ['foo' => 'bar', 'failure' => 'success'],
+            'd2' => ['baz' => 'xyzzy', 'failure' => 'mediocrity'],
+        ];
+        $translate = new Translate();
+        $translate->setTranslator(
+            $this->getMockTranslator($translations)
+        );
+        $str = new TranslatableString(
+            'd1::baz', new TranslatableString('d2::foo', 'failure')
+        );
+        $this->assertEquals('failure', $translate->__invoke($str));
+    }
+
+    /**
      * Test locale retrieval without a loaded translator
      *
      * @return void

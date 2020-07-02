@@ -124,7 +124,7 @@ trait TranslatorAwareTrait
             // least with hierarchical facets where translation key can be the exact
             // facet value (e.g. "0/Book/") or a displayable value (e.g. "Book").
             if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
-                $str = $this->translate($str);
+                return $this->translate($str, $tokens, $default);
             } else {
                 list($domain, $str) = $this->extractTextDomain($str);
             }
