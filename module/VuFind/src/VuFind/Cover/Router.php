@@ -106,9 +106,10 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 if ($handler['handler']->supports($ids)
                     && $handler['handler']->useDirectUrls()
                 ) {
-                    $directUrl = $handler['handler']
+                    $nextDirectUrl = $handler['handler']
                         ->getUrl($handler['key'], $size, $ids);
-                    if ($directUrl !== false) {
+                    if ($nextDirectUrl !== false) {
+                        $directUrl = $nextDirectUrl;
                         break;
                     }
                 }
