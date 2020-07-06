@@ -203,7 +203,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             'hostname' => $host ?? null,
             'username' => $username,
             'password' => $password,
-            'database' => $dbName
+            'database' => $dbName,
+            'use_ssl' => $this->config->Database->use_ssl ?? false,
         ];
         if (!empty($port)) {
             $options['port'] = $port;

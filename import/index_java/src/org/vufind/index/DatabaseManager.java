@@ -83,9 +83,10 @@ public class DatabaseManager
             if (dsn.substring(0, 8).equals("mysql://")) {
                 classname = "com.mysql.jdbc.Driver";
                 prefix = "mysql";
-                // For now, disable SSL to prevent warning messages.
-                // TODO: implement SSL support (VUFIND-1395):
-                extraParams = "?useSSL=false";
+                String useSsl = ConfigManager.instance().getConfigSetting("config.ini", "Database", "use_ssl");
+                if (useSsl != null) {
+                    extraParams = "?useSSL=" + useSsl;
+                }
             } else if (dsn.substring(0, 8).equals("pgsql://")) {
                 classname = "org.postgresql.Driver";
                 prefix = "postgresql";
