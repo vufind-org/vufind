@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -313,6 +313,35 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertEquals(
             (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
             '1/Sound/Noisy/'
+        );
+    }
+
+    /**
+     * Tests for isDeepestFacetLevel
+     *
+     * @return void
+     */
+    public function testIsDeepestFacetLevel()
+    {
+        $facetList = [
+            '0/Audio/',
+            '1/Audio/Music/',
+            '0/AV/',
+        ];
+        $this->assertFalse(
+            $this->helper->isDeepestFacetLevel($facetList, '0/Audio/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, '1/Audio/Music/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, '0/AV/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, '0/XYZZY/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, 'XYZ')
         );
     }
 

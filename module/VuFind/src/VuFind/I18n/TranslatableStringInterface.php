@@ -45,4 +45,11 @@ interface TranslatableStringInterface
      * @return string
      */
     public function getDisplayString();
+
+    /**
+     * Checks if the string can be translated
+     *
+     * @return bool
+     */
+    public function isTranslatable();
 }
