@@ -2,7 +2,7 @@
 <?php if ($cover): ?>
   <?php $alt = $this->link ? trim($this->driver->tryMethod('getTitle') ?? '') : ''; ?>
   <?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
-  <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$alt; ?>" />
+  <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
   <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php else: ?>
   <div class="ajaxcover">
