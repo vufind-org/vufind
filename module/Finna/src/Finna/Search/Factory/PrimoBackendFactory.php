@@ -47,7 +47,7 @@ class PrimoBackendFactory
     /**
      * Create the Primo Central connector.
      *
-     * Finna: Add hidden filters
+     * Finna: Add hidden filters and set cache manager
      *
      * @return Connector
      * @todo   Refactor so that the whole connector doesn't need to be duplicated

@@ -28,7 +28,7 @@
  */
 namespace Finna\View\Helper\Root;
 
-use ZfcRbac\Service\AuthorizationService;
+use LmcRbacMvc\Service\AuthorizationService;
 
 /**
  * Helper class for displaying a notification for unauthorized users
