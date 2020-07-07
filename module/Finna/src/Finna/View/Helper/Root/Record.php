@@ -469,7 +469,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     protected function getAuthorityLinkType($type = 'author')
     {
-        if (!$this->driver->isAuthorityEnabled()) {
+        if (!$this->driver->tryMethod('isAuthorityEnabled')) {
             return null;
         }
         return $this->authorityHelper->getAuthorityLinkType($type);
@@ -482,7 +482,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     protected function isAuthorityInlineInfoEnabled()
     {
-        return $this->driver->isAuthorityEnabled()
+        return $this->driver->tryMethod('isAuthorityEnabled')
             && ($this->config->Authority->authority_info ?? false);
     }
 
@@ -839,7 +839,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getAuthorityBirthDeath()
     {
-        if (!$this->driver->isAuthorityRecord()) {
+        if (!$this->driver->tryMethod('isAuthorityRecord')) {
             return '';
         }
         $birth = $this->driver->getBirthDateAndPlace();
@@ -861,7 +861,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getAuthorityBirthDeathWithPlace()
     {
-        if (!$this->driver->isAuthorityRecord()) {
+        if (!$this->driver->tryMethod('isAuthorityRecord')) {
             return '';
         }
         $birth = $this->driver->getBirthDateAndPlace();
