@@ -100,7 +100,7 @@
   </div>
 </form>
 
-<script>
+<?php $changeHandler = <<<'JS'
 $(document).ready(function() {
   $("input[type='radio']").change(function() {
     if ($('#storageRetrievalRequestItem').is(':checked')) {
@@ -111,4 +111,6 @@ $(document).ready(function() {
   });
   $('#storageRetrievalRequestItem').trigger('change');
 });
-</script>
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $changeHandler, 'SET');

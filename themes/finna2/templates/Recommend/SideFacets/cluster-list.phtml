@@ -1,5 +1,5 @@
 <?php if (!empty($cluster['list'])): ?>
-<?php $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . '" class="facet narrow-toggle more-narrow-toggle"'; ?>
+<?php $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . '" class="facet narrow-toggle more-narrow-toggle more-facets"'; ?>
 <?php $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . ' hidden'; ?>
 <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
   <?php if ($i == $this->facets_before_more): ?>
@@ -14,9 +14,9 @@
       </a>
       <?php break; ?>
     <?php endif; ?>
-    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow">
+    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" data-title="<?=$this->escapeHtmlAttr($this->title) ?>" rel="nofollow">
       <span class="text"><i class="fa fa-arrow-down" aria-hidden="true"></i> <?=$this->transEsc('more')?></span>
-    </a> 
+    </a>
   <?php endif; ?>
   <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
     'exclude' => $this->allowExclude,
@@ -41,7 +41,7 @@
       <span class="text"><i class="fa fa-list" aria-hidden="true"></i> <?=$this->transEsc('see all')?></span>
     </a>
   <?php endif; ?>
-  <a class="facet narrow-toggle <?=$moreClass ?> less-narrow-toggle" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')">
+  <a class="facet narrow-toggle <?=$moreClass ?> less-facets" href="#" data-title="<?=$this->escapeHtmlAttr($this->title) ?>">
     <span class="text"><i class="fa fa-arrow-up" aria-hidden="true"></i> <?=$this->transEsc('less')?></span>
   </a>
 <?php endif; ?>
