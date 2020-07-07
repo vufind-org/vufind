@@ -1,11 +1,10 @@
 <?php
 /**
- * Recaptcha view helper
+ * Recaptcha view helper for back-compatibility
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2017.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +21,6 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Chris Hallberg <crhallberg@gmail.com>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
@@ -30,28 +28,38 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * Recaptcha view helper
+ * Captcha view helper
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Chris Hallberg <crhallberg@gmail.com>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recaptcha extends \VuFind\View\Helper\Root\Recaptcha
+class Recaptcha extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Generate <div> with ReCaptcha from render.
+     * Generate HTML of a single CAPTCHA (redirect to template)
      *
-     * @param bool $useRecaptcha Boolean of active state, for compact templating
-     * @param bool $wrapHtml     Include prefix and suffix?
+     * @param \VuFind\Captcha\AbstractBase $captcha Captcha
      *
-     * @return string $html
+     * @return string
      */
-    public function html($useRecaptcha = true, $wrapHtml = true)
+    public function getHtmlForCaptcha(\VuFind\Captcha\AbstractBase $captcha): string
     {
-        // We can't support reCaptcha but have an alternative mechanism
-        return false;
+        return '';
+    }
+
+    /**
+     * Generate HTML depending on CAPTCHA type (empty if not active).
+     *
+     * @param bool $useCaptcha Boolean of active state, for compact templating
+     * @param bool $wrapHtml   Wrap in a form-group?
+     *
+     * @return string
+     */
+    public function html($useCaptcha = true, $wrapHtml = true): string
+    {
+        return '';
     }
 }

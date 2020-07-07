@@ -13,7 +13,7 @@
 <form method="post" name="accountForm" id="accountForm" class="form-user-create" data-toggle="validator">
   <?=$this->auth()->getCreateFields()?>
   <div class="form-group">
-    <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+    <?=$this->captcha()->html($this->useCaptcha) ?>
   </div>
   <div class="form-group">
     <a class="back-to-login btn btn-link" href="<?=$this->url('myresearch-userlogin') ?>"><i class="fa fa-arrow-left" aria-hidden="true"></i> <?=$this->transEsc('Back')?></a>

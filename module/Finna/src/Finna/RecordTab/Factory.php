@@ -90,12 +90,12 @@ class Factory
         $capabilities = $sm->get(\VuFind\Config\AccountCapabilities::class);
         $controllerPluginManager
             = $sm->get(\Laminas\Mvc\Controller\PluginManager::class);
-        $recaptcha = $controllerPluginManager
-            ->get(\VuFind\Controller\Plugin\Recaptcha::class);
-        $useRecaptcha = $recaptcha->active('userComments');
+        $captcha = $controllerPluginManager
+            ->get(\VuFind\Controller\Plugin\Captcha::class);
+        $useCaptcha = $captcha->active('userComments');
         return new UserComments(
             'enabled' === $capabilities->getCommentSetting(),
-            $useRecaptcha
+            $useCaptcha
         );
     }
 }

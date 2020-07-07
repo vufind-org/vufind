@@ -35,7 +35,7 @@
   </div>
 <?php endif ?>
 <div class="form-group">
-  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+  <?=$this->captcha()->html($this->useCaptcha) ?>
 </div>
 <div class="form-group">
   <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc('Send')?>"/>

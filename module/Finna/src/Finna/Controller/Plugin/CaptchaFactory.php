@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for Recaptcha controller plugin.
+ * Factory for Captcha controller plugin.
  *
  * PHP version 7
  *
@@ -33,7 +33,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Recaptcha controller plugin.
+ * Factory for Captcha controller plugin.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -42,7 +42,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class RecaptchaFactory implements FactoryInterface
+class CaptchaFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,9 +64,18 @@ class RecaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+
+        $config
+            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $captchas = [];
+        if (!empty($config->Captcha->forms)) {
+            $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)
+                ->get('Recaptcha');
+        }
+
         return new $requestedName(
-            $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $config,
+            $captchas,
             $container->get(\VuFind\Auth\Manager::class),
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\Laminas\Mvc\I18n\Translator::class)

@@ -38,7 +38,9 @@
           <?php endif; ?>
           <textarea name="comment" class="form-control" rows="4" cols="37" maxlength="8000" required></textarea><br/>
           </div>
-          <?=$this->recaptcha()->html($this->tab->isRecaptchaActive()) ?>
+          <?php if ($this->tab->isCaptchaActive()): ?>
+            <?=$this->captcha()->html(true, false) ?>
+          <?php endif; ?>
           <input class="btn btn-primary save" data-label-new="<?=$this->transEsc('Add your comment') ?>" data-label-edit="<?=$this->transEsc('Save') ?>" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc($ratings ? 'Add your rating' : 'Add your comment')?>"/>
           <input class="btn btn-primary cancel hide" type="submit" value="<?=$this->transEsc("Reset")?>"/>
         <?php else: ?>
