@@ -70,8 +70,8 @@ var TueFind = {
                  VuFind.translate('All Matches') + '</a></div><br/>';
     },
 
-    GetNoMatchesMessage() {
-        return VuFind.translate('No Matches');
+    GetNoMatchesMessage(doc_id) {
+        return '<div id="snippets_' + doc_id + '">' +  VuFind.translate('No Matches') + '</div>';
     },
 
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
@@ -90,7 +90,7 @@ var TueFind = {
                         if (snippets)
                             $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
                         else if (verbose)
-                            $(this).replaceWith(TueFind.GetNoMatchesMessage());
+                            $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
                     });
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
@@ -107,7 +107,9 @@ var TueFind = {
                             else {
                                 $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
                             }
-                        } else
+                        } else if (verbose)
+                            $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
+                        else
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
