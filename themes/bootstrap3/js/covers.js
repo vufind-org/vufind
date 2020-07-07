@@ -1,13 +1,15 @@
 /*global VuFind */
 function loadCoverByElement(data, element) {
   var url = VuFind.path + '/AJAX/JSON?method=' + 'getRecordCover';
-  var img = element.children('img');
-  var spinner = element.children('div');
+  var img = element.find('img');
+  var spinner = element.children('div.spinner');
+  var container = element.children('div.cover-container');
   function coverCallback(response) {
+    spinner.hide();
+    container.show();
     if (response.data.url !== false) {
       img.attr("src", response.data.url);
-      img.show();
-      spinner.hide();
+      container.children().not("img").hide();
     }
   }
   $.ajax({
@@ -22,7 +24,7 @@ function loadCoverByElement(data, element) {
 
 function loadCovers() {
   $('.ajaxcover').each(function getDataAndLoadCovers() {
-    var img = $(this).children('img');
+    var img = $(this).find('img');
     var data = {
       source: img.data('recordsource'),
       recordId: img.data('recordid'),

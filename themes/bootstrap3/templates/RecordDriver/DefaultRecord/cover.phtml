@@ -5,8 +5,10 @@
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$alt; ?>" />
   <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php else: ?>
-    <div class="ajaxcover">
-        <div><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Loading')?>...</div>
-        <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="" />
+  <div class="ajaxcover">
+    <div class="spinner"><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Loading')?>...</div>
+    <div class="cover-container">
+      <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="" />
     </div>
+  </div>
 <?php endif; ?>

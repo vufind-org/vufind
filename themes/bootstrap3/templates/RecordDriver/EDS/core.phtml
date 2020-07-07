@@ -14,11 +14,6 @@
   <div class="media-left medium img-col">
     <?php if ($cover): ?>
       <?=$cover?>
-    <?php else: //TODO an icon as default cover? ?>
-      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-    <?php endif; ?>
-    <?php if ($pubType): ?>
-      <p><?=$this->transEsc($pubType)?></p>
     <?php endif; ?>
 
     <div class="external-links">

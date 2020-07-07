@@ -466,9 +466,7 @@ class Record extends AbstractClassBasedTemplateRenderer
             if ($details['size'] === false) {
                 list($details['size']) = explode(':', $preferredSize);
             }
-            $details['html'] = $this->contextHelper->renderInContext(
-                'record/cover.phtml', $details
-            );
+            $details['html'] = $this->renderTemplate('cover.phtml', $details);
         }
         return $details;
     }
