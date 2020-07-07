@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2017.
+ * Copyright (C) The National Library of Finland 2016-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -101,7 +101,7 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
         }
 
         $result = $this->makeRequest(
-            ['v4', 'branches', 'pickupLocations'],
+            [$this->apiBase, 'branches', 'pickupLocations'],
             [
                 'limit' => 10000,
                 'offset' => 0,
@@ -213,7 +213,7 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
         ];
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', 'holds', $requestId],
+            [$this->apiBase, 'patrons', 'holds', $requestId],
             json_encode($request),
             'PUT',
             $patron
@@ -251,7 +251,7 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
         ];
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', 'holds', $requestId],
+            [$this->apiBase, 'patrons', 'holds', $requestId],
             json_encode($request),
             'PUT',
             $patron
