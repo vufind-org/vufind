@@ -70,6 +70,10 @@ var TueFind = {
                  VuFind.translate('All Matches') + '</a></div><br/>';
     },
 
+    GetNoMatchesMessage() {
+        return VuFind.translate('No Matches');
+    },
+
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
         var valid_synonym_terms = new RegExp('lang|all');
         synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
@@ -83,8 +87,10 @@ var TueFind = {
                 $(document).ready(function () {
                     var snippets = json['snippets'];
                     $("#snippet_place_holder_" + doc_id).each(function () {
-                        if(snippets)
-                          $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
+                        if (snippets)
+                            $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
+                        else if (verbose)
+                            $(this).replaceWith(TueFind.GetNoMatchesMessage());
                     });
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
