@@ -439,15 +439,6 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
-            $locationName = '';
-            if (!empty($holding->permanentLocationId)) {
-                $locationResponse = $this->makeRequest(
-                    'GET',
-                    '/locations/' . $holding->permanentLocationId
-                );
-                $location = json_decode($locationResponse->getBody());
-                $locationName = $location->name;
-            }
 
             $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
@@ -458,6 +449,15 @@ class Folio extends AbstractAPI implements
             foreach ($itemBody->items as $item) {
                 if ($item->discoverySuppress ?? false) {
                     continue;
+                }
+                $locationName = '';
+                if (!empty($item->effectiveLocationId)) {
+                    $locationResponse = $this->makeRequest(
+                        'GET',
+                        '/locations/' . $item->effectiveLocationId
+                    );
+                    $location = json_decode($locationResponse->getBody());
+                    $locationName = $location->name;
                 }
                 $items[] = [
                     'id' => $bibId,
