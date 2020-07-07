@@ -78,7 +78,10 @@ class CspHeaderGenerator
     public function getHeader()
     {
         $cspHeader = $this->createHeaderObject();
-        $directives = $this->config->Directives;
+        $directives = $this->config->Directives ?? [];
+        if (!$cspHeader || !$directives) {
+            return null;
+        }
         foreach ($directives as $name => $value) {
             $sources = $value->toArray();
             if ($name == "script-src" && $this->config->CSP->use_nonce) {
@@ -100,9 +103,13 @@ class CspHeaderGenerator
      */
     protected function createHeaderObject()
     {
-        $reportOnly = $this->config->CSP->report_only[APPLICATION_ENV] ?? false;
-        return $reportOnly
-            ? new ContentSecurityPolicyReportOnly()
-            : new ContentSecurityPolicy();
+        $mode = $this->config->CSP->enabled[APPLICATION_ENV] ?? 'report_only';
+        if (!$mode) {
+            return null;
+        }
+        if ('report_only' === $mode) {
+            return new ContentSecurityPolicyReportOnly();
+        }
+        return new ContentSecurityPolicy();
     }
 }
