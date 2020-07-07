@@ -272,10 +272,10 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'Finna\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\RecaptchaFactory',
+            'Finna\Controller\Plugin\Captcha' => 'Finna\Controller\Plugin\CaptchaFactory',
         ],
         'aliases' => [
-            'VuFind\Controller\Plugin\Recaptcha' => 'Finna\Controller\Plugin\Recaptcha'
+            'VuFind\Controller\Plugin\Captcha' => 'Finna\Controller\Plugin\Captcha'
         ],
     ],
     'service_manager' => [
@@ -774,7 +774,7 @@ $config = [
     ],
 
     // Authorization configuration:
-    'zfc_rbac' => [
+    'lmc_rbac' => [
         'vufind_permission_provider_manager' => [
             'factories' => [
                 'Finna\Role\PermissionProvider\AuthenticationStrategy' => 'Finna\Role\PermissionProvider\AuthenticationStrategyFactory',

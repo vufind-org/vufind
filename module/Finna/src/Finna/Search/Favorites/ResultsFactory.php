@@ -65,7 +65,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
             $container, $requestedName,
             [$tm->get('Resource'), $tm->get('UserList'), $tm->get('UserResource')]
         );
-        $init = new \ZfcRbac\Initializer\AuthorizationServiceInitializer();
+        $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
         $init($container, $obj);
         return $obj;
     }

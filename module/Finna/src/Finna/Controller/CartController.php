@@ -77,11 +77,11 @@ class CartController extends \VuFind\Controller\CartController
             null, $this->translate('bulk_email_title')
         );
         $view->records = $this->getRecordLoader()->loadBatch($ids);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:

@@ -155,7 +155,7 @@ JS;
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs">
+    <nav class="breadcrumbs" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
       <div class="container">
         <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
@@ -189,19 +189,21 @@ JS;
     </div>
     <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
+          <div class="modal-body">
+            <span id="modal-title"><?=$this->transEsc('Loading') ?>...</span>
+          </div>
         </div>
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <?php if ($this->recaptcha()->active()): ?>
-      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
-    <?php endif; ?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+    <?php endforeach; ?>
   </body>
 </html>

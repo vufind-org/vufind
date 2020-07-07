@@ -386,7 +386,7 @@ JS;
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
-          <nav class="breadcrumbs">
+          <nav class="breadcrumbs" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
             <div class="hidden-print">
               <ul class="breadcrumb">
                 <?php if(is_array($this->layout()->breadcrumbs)): ?>

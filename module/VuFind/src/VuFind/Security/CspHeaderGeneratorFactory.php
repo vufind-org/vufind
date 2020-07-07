@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Amazon cover loader factory
+ * Class CspHeaderGeneratorFactory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @package  VuFind\Security
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
  */
-namespace VuFind\Content\Covers;
+namespace VuFind\Security;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Amazon cover loader factory
+ * Factory for creating  Content Security Policy http headers generator class
  *
  * @category VuFind
- * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  VuFind\Security
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
-class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class CspHeaderGeneratorFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -53,8 +58,6 @@ class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -63,9 +66,9 @@ class AmazonFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $associate = $config->Content->amazonassociate ?? null;
-        $secret = $config->Content->amazonsecret ?? null;
-        return new $requestedName($associate, $secret);
+            ->get('contentsecuritypolicy');
+        $nonceGenerator = $container->get(NonceGenerator::class);
+
+        return new $requestedName($config, $nonceGenerator);
     }
 }

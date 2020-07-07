@@ -109,7 +109,7 @@
 
       <?php /* An empty div. This is the target for the javascript that builds this screen */ ?>
       <div id="groupPlaceHolder" class="hidden pull-left">
-        <button type="button" class="btn btn-primary" onClick="addGroup()"><i class="fa fa-plus-small" aria-hidden="true"></i> <?= $this->transEsc('add_search_group') ?></button>
+        <button type="button" class="btn btn-primary"><i class="fa fa-plus-small" aria-hidden="true"></i> <?= $this->transEsc('add_search_group') ?></button>
       </div>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
@@ -244,4 +244,13 @@
     <?=$this->render($template)?>
   <?php endif; ?>
 </form>
+<?php
+$script = <<<JS
+$('#groupPlaceHolder button').click(function(e) {
+  addGroup();
+  return false;
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
 <!-- END of: finna - search/advanced/layout.phtml -->

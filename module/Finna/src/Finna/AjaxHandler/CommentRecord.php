@@ -30,7 +30,7 @@ namespace Finna\AjaxHandler;
 
 use Finna\Db\Table\CommentsRecord;
 use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Controller\Plugin\Recaptcha;
+use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\Comments;
 use VuFind\Db\Table\Record;
@@ -74,19 +74,19 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
      * Constructor
      *
      * @param Resource        $table          Resource database table
-     * @param Recaptcha       $recaptcha      Recaptcha controller plugin
+     * @param Captcha         $captcha        Captcha controller plugin
      * @param User|bool       $user           Logged in user (or false)
      * @param bool            $enabled        Are comments enabled?
      * @param Comments        $comments       Comments table
      * @param CommmentsRecord $commentsRecord CommentsRecord table
      * @param SearchRunner    $searchRunner   Search runner
      */
-    public function __construct(Resource $table, Recaptcha $recaptcha, $user,
+    public function __construct(Resource $table, Captcha $captcha, $user,
         $enabled = true, Comments $comments = null,
         CommentsRecord $commentsRecord = null,
         SearchRunner $searchRunner = null
     ) {
-        parent::__construct($table, $recaptcha, $user, $enabled);
+        parent::__construct($table, $captcha, $user, $enabled);
         $this->commentsTable = $comments;
         $this->commentsRecordTable = $commentsRecord;
         $this->searchRunner = $searchRunner;

@@ -39,7 +39,7 @@ return [
             'Finna\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\PiwikFactory',
             'Finna\View\Helper\Root\Primo' => 'Finna\View\Helper\Root\PrimoFactory',
             'Finna\View\Helper\Root\ProxyUrl' => 'Finna\View\Helper\Root\ProxyUrlFactory',
-            'Finna\View\Helper\Root\Recaptcha' => 'VuFind\View\Helper\Root\RecaptchaFactory',
+            'Finna\View\Helper\Root\Recaptcha' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\Record' => 'Finna\View\Helper\Root\RecordFactory',
             'Finna\View\Helper\Root\RecordDataFormatter' => 'Finna\View\Helper\Root\RecordDataFormatterFactory',
             'Finna\View\Helper\Root\RecordImage' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -97,6 +97,8 @@ return [
             'organisationsList' => 'Finna\View\Helper\Root\OrganisationsList',
             'personaAuth' => 'Finna\View\Helper\Root\PersonaAuth',
             'primo' => 'Finna\View\Helper\Root\Primo',
+            // recaptcha only exists for back-compatibility
+            'recaptcha' => 'Finna\View\Helper\Root\Recaptcha',
             'recordImage' => 'Finna\View\Helper\Root\RecordImage',
             'scriptSrc' => 'Finna\View\Helper\Root\ScriptSrc',
             'stripTags' => 'Finna\View\Helper\Root\StripTags',
@@ -121,7 +123,6 @@ return [
             'VuFind\View\Helper\Root\Piwik' => 'Finna\View\Helper\Root\Piwik',
             'VuFind\View\Helper\Root\Linkify' => 'Finna\View\Helper\Root\Linkify',
             'VuFind\View\Helper\Root\ProxyUrl' => 'Finna\View\Helper\Root\ProxyUrl',
-            'VuFind\View\Helper\Root\Recaptcha' => 'Finna\View\Helper\Root\Recaptcha',
             'VuFind\View\Helper\Root\Record' => 'Finna\View\Helper\Root\Record',
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'Finna\View\Helper\Root\RecordDataFormatter',
             'VuFind\View\Helper\Root\RecordLink' => 'Finna\View\Helper\Root\RecordLink',
@@ -129,7 +130,6 @@ return [
             'VuFind\View\Helper\Root\SearchTabs' => 'Finna\View\Helper\Root\SearchTabs',
             'VuFind\View\Helper\Root\Summon' => 'Finna\View\Helper\Root\Summon',
             'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'Finna\View\Helper\Root\LayoutClass',
-            'VuFind\View\Helper\Bootstrap3\Recaptcha' => 'Finna\View\Helper\Root\Recaptcha',
 
             // Aliases for non-standard cases
             'Combined' => 'combined',
@@ -163,6 +163,7 @@ return [
     'js' => [
         'vendor/event-stub.js:lt IE 9',
         'common.js',
+        'account_ajax.js',
         'advanced_search.js',
         'cart.js',
         'check_item_statuses.js',
@@ -171,9 +172,11 @@ return [
         'combined-search.js',
         'embedded_record.js',
         'facets.js',
+        'lightbox.js',
         'keep_alive.js',
         'openurl.js',
         'record.js',
+        'requests.js',
         'finna-polyfill.js',
         'finna.js',
         'finna-popup.js',

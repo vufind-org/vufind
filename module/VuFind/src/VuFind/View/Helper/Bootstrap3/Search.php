@@ -58,7 +58,8 @@ class Search extends \VuFind\View\Helper\AbstractSearch
      */
     protected function renderExpandLink($url, $view)
     {
-        return '<a href="' . $url . '" title="' . $view->transEsc('spell_expand_alt')
-            . '"><i class="icon-circle-arrow-right"></i></a>';
+        return ' <a href="' . $url
+            . '" title="' . $view->transEsc('spell_expand_alt')
+            . '">(' . $view->transEsc('spell_expand_alt') . ')</a>';
     }
 }

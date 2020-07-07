@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for Recaptcha controller plugin.
+ * Factory for Figlet CAPTCHA module.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller_Plugins
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  CAPTCHA
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Captcha;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Factory for Recaptcha controller plugin.
+ * Figlet CAPTCHA factory.
  *
  * @category VuFind
- * @package  Controller_Plugins
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  CAPTCHA
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class RecaptchaFactory implements FactoryInterface
+class FigletFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -59,11 +59,22 @@ class RecaptchaFactory implements FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
+
+        $figletOptions = [
+            'name' => 'figlet_captcha',
+        ];
+
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+
+        if (isset($config->Captcha->figlet_length)) {
+            $figletOptions['wordLen'] = $config->Captcha->figlet_length;
+        }
+
         return new $requestedName(
-            $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            new \Laminas\Captcha\Figlet($figletOptions)
         );
     }
 }

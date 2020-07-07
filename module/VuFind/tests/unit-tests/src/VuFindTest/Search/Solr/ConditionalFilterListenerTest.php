@@ -154,7 +154,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener->setAuthorizationService($mockAuth);
@@ -180,7 +180,7 @@ class ConditionalFilterListenerTest extends TestCase
             ]
         );
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener->setAuthorizationService($mockAuth);
@@ -205,7 +205,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -233,7 +233,7 @@ class ConditionalFilterListenerTest extends TestCase
         $params   = new ParamBag([ ]);
 
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -262,7 +262,7 @@ class ConditionalFilterListenerTest extends TestCase
         );
 
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -296,7 +296,7 @@ class ConditionalFilterListenerTest extends TestCase
         );
 
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')

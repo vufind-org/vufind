@@ -39,7 +39,7 @@ JS;
     <?php $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
     <input type="hidden" name="provider" value="<?=$keys[0] ?? ''?>" />
   <?php endif; ?>
-  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+  <?=$this->captcha()->html($this->useCaptcha) ?>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>
   </div>

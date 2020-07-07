@@ -1,8 +1,9 @@
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>
-  <?php if ($this->link): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>" data-lightbox-image><?php endif; ?>
-  <img alt="<?=$this->transEsc('Cover Image')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" src="<?=$this->escapeHtmlAttr($cover); ?>"/>
-  <?php if ($this->link): ?></a><?php endif; ?>
+  <?php $alt = $this->link ? trim($this->driver->tryMethod('getTitle') ?? '') : ''; ?>
+  <?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
+  <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$alt; ?>" />
+  <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php else: ?>
-  <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+  <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="" />
 <?php endif; ?>

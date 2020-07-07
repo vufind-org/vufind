@@ -79,9 +79,13 @@ public class DatabaseManager
             String password = "";
             String classname = "invalid";
             String prefix = "invalid";
+            String extraParams = "";
             if (dsn.substring(0, 8).equals("mysql://")) {
                 classname = "com.mysql.jdbc.Driver";
                 prefix = "mysql";
+                // For now, disable SSL to prevent warning messages.
+                // TODO: implement SSL support (VUFIND-1395):
+                extraParams = "?useSSL=false";
             } else if (dsn.substring(0, 8).equals("pgsql://")) {
                 classname = "org.postgresql.Driver";
                 prefix = "postgresql";
@@ -102,9 +106,9 @@ public class DatabaseManager
             }
 
             // Connect to the database:
-            vufindDatabase = DriverManager.getConnection("jdbc:" + dsn, username, password);
+            vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
         } catch (Throwable e) {
-            dieWithError("Unable to connect to VuFind database");
+            dieWithError("Unable to connect to VuFind database; " + e.getMessage());
         }
 
         Runtime.getRuntime().addShutdownHook(new DatabaseManagerShutdownThread(this));

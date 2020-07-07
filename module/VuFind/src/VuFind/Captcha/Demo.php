@@ -1,10 +1,10 @@
 <?php
 /**
- * Recaptcha view helper
+ * Demo CAPTCHA (expect hard-coded value; used for test suite only).
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,34 +20,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @package  CAPTCHA
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
-namespace VuFind\View\Helper\Bootstrap3;
+namespace VuFind\Captcha;
+
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * Recaptcha view helper
+ * Demo CAPTCHA (expect hard-coded value; used for test suite only).
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @package  CAPTCHA
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recaptcha extends \VuFind\View\Helper\Root\Recaptcha
+class Demo extends AbstractBase
 {
     /**
-     * Constructor
+     * Pull the captcha field from controller params and check them for accuracy
      *
-     * @param \Laminas\Recaptcha\Recaptcha $rc     Custom formatted Recaptcha
-     * @param \VuFind\Config               $config Config object
+     * @param Params $params Controller params
+     *
+     * @return bool
      */
-    public function __construct($rc, $config)
+    public function verify(Params $params): bool
     {
-        $this->prefixHtml = '<div class="form-group">';
-        $this->suffixHtml = '</div>';
-        parent::__construct($rc, $config);
+        return $params->fromPost('demo_captcha') === 'demo';
     }
 }

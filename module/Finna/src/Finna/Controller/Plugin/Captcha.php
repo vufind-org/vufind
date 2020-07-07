@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind Recaptcha controller plugin
+ * VuFind Captcha controller plugin
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
 
 /**
- * Recaptcha controller plugin.
+ * Captcha controller plugin.
  *
  * @category VuFind
  * @package  Plugin
@@ -41,7 +41,7 @@ use Laminas\Session\SessionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/
  */
-class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
+class Captcha extends \VuFind\Controller\Plugin\Captcha
 {
     /**
      * Bypassed authentication methods
@@ -79,20 +79,21 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
     protected $translator;
 
     /**
-     * Recaptcha constructor.
+     * Constructor
      *
-     * @param \Laminas\ReCaptcha\ReCaptcha $r              ReCaptcha object
-     * @param \VuFind\Config               $config         Configuration
-     * @param \VuFind\Auth\Manager         $authManager    Authentication Manager
-     * @param SessionManager               $sessionManager Session Manager
-     * @param TranslatorInterface          $translator     Translator
+     * @param \VuFind\Config       $config         Config file
+     * @param array                $captchas       CAPTCHA objects
+     * @param \VuFind\Auth\Manager $authManager    Authentication Manager
+     * @param SessionManager       $sessionManager Session Manager
+     * @param TranslatorInterface  $translator     Translator
      *
-     * @return Recaptcha
+     * @return void
      */
-    public function __construct($r, $config, \VuFind\Auth\Manager $authManager,
-        SessionManager $sessionManager, TranslatorInterface $translator
+    public function __construct($config, array $captchas=[],
+        \VuFind\Auth\Manager $authManager = null,
+        SessionManager $sessionManager = null, TranslatorInterface $translator = null
     ) {
-        parent::__construct($r, $config);
+        parent::__construct($config, $captchas);
         $this->authManager = $authManager;
         $this->sessionManager = $sessionManager;
         $this->translator = $translator;
@@ -121,7 +122,7 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
      *
      * @return bool
      */
-    public function active($domain = false)
+    public function active($domain = false): bool
     {
         if (!$domain || empty($this->bypassCaptcha[$domain])) {
             return parent::active($domain);
@@ -143,7 +144,7 @@ class Recaptcha extends \VuFind\Controller\Plugin\Recaptcha
      *
      * @return bool
      */
-    public function validate()
+    public function verify(): bool
     {
         if (!$this->active()) {
             return true;

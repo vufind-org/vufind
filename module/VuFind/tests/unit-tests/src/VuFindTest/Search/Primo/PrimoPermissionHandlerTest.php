@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search\Primo;
 
+use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Search\Primo\PrimoPermissionHandler;
 use VuFindTest\Unit\TestCase;
-use ZfcRbac\Service\AuthorizationService;
 
 /**
  * Unit tests for Primo Permission Handler.

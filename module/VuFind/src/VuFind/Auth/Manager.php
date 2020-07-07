@@ -44,7 +44,7 @@ use VuFind\Validator\Csrf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
+class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
 {
     /**
      * Authentication modules
@@ -482,7 +482,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Get the identity
      *
-     * @return \ZfcRbac\Identity\IdentityInterface|null
+     * @return \LmcRbacMvc\Identity\IdentityInterface|null
      */
     public function getIdentity()
     {

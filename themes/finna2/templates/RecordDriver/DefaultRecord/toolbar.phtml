@@ -9,11 +9,11 @@
   $largeThumb = $this->record($this->driver)->getThumbnail('large');
 ?>
 <div class="hidden-xs">
-  <ul class="nav nav-pills hidden-print">
+  <ul class="nav nav-pills hidden-print" aria-label="<?=$this->transEsc('ajaxview_label_tools'); ?>">
   <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-    <li><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
+    <li role="none"><a class="save-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a></li>
   <?php endif; ?>
-    <li><a class="mail-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
+    <li role="none"><a class="mail-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
   <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
   <?php if(count($exportFormats) > 0): ?>
     <li class="dropdown">
@@ -26,12 +26,12 @@
     </li>
   <?php endif; ?>
   <?php if (count($this->driver->getCitationFormats()) > 0): ?>
-    <li><a class="cite-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite') ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
+    <li role="none"><a class="cite-record" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite') ?>" title="<?=$this->transEsc('Cite this')?>" rel="nofollow"><i class="fa fa-asterisk" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Cite this')?></span></a></li>
   <?php endif; ?>
-  <li class="hidden-xs hidden-sm"><span><a href="javascript:window.print()" rel="nofollow"><i class="fa fa-print" aria-hidden="true"></i> <?=$this->transEsc('Print')?></a></span></li>
+  <li role="none" class="hidden-xs hidden-sm"><span><a href="javascript:window.print()" rel="nofollow"><i class="fa fa-print" aria-hidden="true"></i> <?=$this->transEsc('Print')?></a></span></li>
   <?php $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
   <?php if($QRCode): ?>
-  <li class="dropdown">
+  <li role="none" class="dropdown">
     <a class="dropdown-toggle finnaQrcodeLinkRecord" data-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow"><i class="fa fa-qr-code" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
     <ul class="dropdown-menu" role="menu">
       <li class="text-center">
@@ -42,11 +42,11 @@
     </ul>
   </li>
   <?php endif; ?>
-  <li>
+  <li role="none">
       <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
   </li>
   <?php if ($this->permission()->allowDisplay('access.finna.StaffUiLink') && ($staffLink = $this->recordLink()->getStaffUiUrl($this->driver))): ?>
-    <li><a class="staff-ui-link" href="<?=$this->escapeHtmlAttr($staffLink) ?>" title="<?=$this->transEsc('Staff UI')?>" rel="nofollow" target="_blank"><i class="fa fa-user" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Staff UI')?></span></a></li>
+    <li role="none"><a class="staff-ui-link" href="<?=$this->escapeHtmlAttr($staffLink) ?>" title="<?=$this->transEsc('Staff UI')?>" rel="nofollow" target="_blank"><i class="fa fa-user" aria-hidden="true"></i><span class="hidden-xs"> <?=$this->transEsc('Staff UI')?></span></a></li>
   <?php endif; ?>
   <?php if (!empty($shareUrl)): ?>
     <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>

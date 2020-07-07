@@ -5,6 +5,8 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
+
+    $this->headScript()->appendFile('requests.js');
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
@@ -27,16 +29,16 @@
           <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
           <ul class="dropdown-menu">
             <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
-            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            <li><a href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
         <div class="btn-group">
           <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
           <ul class="dropdown-menu">
             <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
-            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
     <?php endif; ?>

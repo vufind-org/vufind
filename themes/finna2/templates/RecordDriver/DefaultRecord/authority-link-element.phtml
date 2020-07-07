@@ -9,15 +9,15 @@
     $linkClasses = implode(' ', array_map([$this, 'escapeHtmlAttr'], $linkClasses));
     $linkClassesAttr = $linkClasses ? " class=\"{$linkClasses}\"" : '';
     $titleAttr = $this->title ? (' title="' . $this->escapeHtmlAttr($this->title) . '"') : '';
-    $additionalDataEl = !empty($this->additionalData) ? "<span class=\"authority-additional-data\">{$this->additionalData}</span></span>" : '';
-    $ariaLabel = $authorityIcon = null;
+    $additionalDataEl = !empty($this->additionalData) ? "<span class=\"authority-additional-data\">{$this->additionalData}</span>" : '';
+    $srLabel = $authorityIcon = '';
     if ($isAuthorityLink = $this->authorityLink && $this->authorityType) {
-      $ariaLabel = $this->escapeHtmlAttr($this->translate($this->authorityType));
+      $srLabel = $this->escapeHtmlAttr($this->translate($this->authorityType));
       $authorityIcon = 'fa-authority-' . $this->escapeHtmlAttr($this->record($this->record)->getFormatClass($this->authorityType));
     }
   ?>
-  <a<?=$titleAttr?> href="<?=$this->escapeHtmlAttr($this->url)?>"<?=$linkClassesAttr?>><?php if ($isAuthorityLink): ?><i aria-label="<?=$ariaLabel?>" class="fa <?=$authorityIcon?>"></i> <?php endif; ?>
-    <span class="authority-label"><?=$this->escapeHtml($this->label)?>
+  <a<?=$titleAttr?> href="<?=$this->escapeHtmlAttr($this->url)?>"<?=$linkClassesAttr?>><?php if ($isAuthorityLink): ?><i class="fa <?=$authorityIcon?>"></i><span class="sr-only"><?=$srLabel?></span> <?php endif; ?>
+    <span class="authority-label"><?=$this->escapeHtml($this->label)?></span>
   </a><?= $additionalDataEl?><?php if ($this->showInlineInfo): ?> <a href="#" class="show-info"><?=$this->translate('authority_show_info')?></a>
   <div class="authority-info">
     <div class="content"><i class="fa fa-spin fa-spinner"></i></div>

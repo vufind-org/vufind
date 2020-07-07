@@ -150,9 +150,10 @@
         <?php if ($countNotes > 0 && !$list): ?>
           <strong><?=$this->transEsc('note_count', ['%%count%%' => $countNotes])?></strong>
         <?php endif; ?>
+
+        <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
       </div>
     </div>
   </div>
 </div>
-<?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
 <!-- END of: finna - RecordDriver/EDS/list-entry.phtml -->

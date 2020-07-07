@@ -30,7 +30,7 @@
       <input type="email" name="email" id="email" class="form-control"/>
     </div>
     <div class="form-group">
-      <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+      <?=$this->captcha()->html($this->useCaptcha) ?>
     </div>
     <div class="form-group">
       <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Recover Account') ?>"/>

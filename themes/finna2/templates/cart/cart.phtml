@@ -37,7 +37,7 @@
           <?=$this->transEsc('Delete')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-          <li><a id="cart-confirm-delete" onClick="submitFormWithButton(this, 'delete')" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-delete" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -47,8 +47,8 @@
           <?=$this->transEsc('Empty Book Bag')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-          <li><a id="cart-confirm-empty" onClick="submitFormWithButton(this, 'empty')" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-          <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          <li><a id="cart-confirm-empty" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-refuse-empty"><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
     </div>
@@ -65,11 +65,20 @@
 </form>
 
 <?php
-  $script = <<<JS
+  $script = <<<'JS'
   function submitFormWithButton(link, name) {
     $('#dropdown_value').attr('name', name).val(1);
     $(link).closest('form').submit();
   }
+  $("#cart-confirm-delete").click(function($e) {
+      submitFormWithButton(this, 'delete');
+  });
+  $("#cart-confirm-empty").click(function($e) {
+      submitFormWithButton(this, 'empty');
+  });
+  $("#cart-refuse-empty").click(function($e) {
+      $('.fa.fa-spinner').remove();
+  });
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

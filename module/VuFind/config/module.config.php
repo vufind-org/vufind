@@ -297,6 +297,7 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
+            'VuFind\Controller\Plugin\Captcha' => 'VuFind\Controller\Plugin\CaptchaFactory',
             'VuFind\Controller\Plugin\DbUpgrade' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Controller\Plugin\Favorites' => 'VuFind\Controller\Plugin\FavoritesFactory',
             'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\FollowupFactory',
@@ -304,7 +305,6 @@ $config = [
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
-            'VuFind\Controller\Plugin\Recaptcha' => 'VuFind\Controller\Plugin\RecaptchaFactory',
             'VuFind\Controller\Plugin\Renewals' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Controller\Plugin\Reserves' => 'VuFind\Controller\Plugin\ReservesFactory',
             'VuFind\Controller\Plugin\ResultScroller' => 'VuFind\Controller\Plugin\ResultScrollerFactory',
@@ -315,6 +315,7 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'captcha' => 'VuFind\Controller\Plugin\Captcha',
             'dbUpgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'flashMessenger' => 'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger',
@@ -323,7 +324,6 @@ $config = [
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
-            'recaptcha' => 'VuFind\Controller\Plugin\Recaptcha',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
             'reserves' => 'VuFind\Controller\Plugin\Reserves',
             'resultScroller' => 'VuFind\Controller\Plugin\ResultScroller',
@@ -343,6 +343,7 @@ $config = [
             'VuFind\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\Suggester' => 'VuFind\Autocomplete\SuggesterFactory',
             'VuFind\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
+            'VuFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Cart' => 'VuFind\CartFactory',
             'VuFind\ChannelProvider\ChannelLoader' => 'VuFind\ChannelProvider\ChannelLoaderFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -421,6 +422,8 @@ $config = [
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
+            'VuFind\Security\CspHeaderGenerator' => 'VuFind\Security\CspHeaderGeneratorFactory',
+            'VuFind\Security\NonceGenerator' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Session\Settings' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -549,6 +552,7 @@ $config = [
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
+            'captcha' => [ /* see VuFind\Captcha\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
             'content' => [ /* see VuFind\Content\PluginManager for defaults */ ],
             'content_authornotes' => [ /* see VuFind\Content\AuthorNotes\PluginManager for defaults */ ],
@@ -584,7 +588,7 @@ $config = [
         ],
     ],
     // Authorization configuration:
-    'zfc_rbac' => [
+    'lmc_rbac' => [
         'identity_provider' => 'VuFind\Auth\Manager',
         'guest_role' => 'guest',
         'role_provider' => [
