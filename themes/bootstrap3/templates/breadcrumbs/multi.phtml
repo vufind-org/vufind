@@ -17,4 +17,5 @@
 <?php else: ?>
   <li class="active" title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
 <?php endif; ?>
-<script>$('.dropdown-toggle').dropdown()</script>
+<?php $dropdownToggle = '$(\'.dropdown-toggle\').dropdown()'; ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $dropdownToggle, 'SET');

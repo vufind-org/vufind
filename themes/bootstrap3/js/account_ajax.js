@@ -33,7 +33,7 @@ VuFind.register('account', function Account() {
   var clearCache = function clearCache(name) {
     if (typeof name === "undefined" || name === '') {
       for (var sub in _submodules) {
-        if (_submodules.hasOwnProperty(sub)) {
+        if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
           clearCache(sub);
         }
       }
@@ -49,7 +49,7 @@ VuFind.register('account', function Account() {
   var _render = function _render() {
     var accountStatus = ICON_LEVELS.NONE;
     for (var sub in _submodules) {
-      if (_submodules.hasOwnProperty(sub)) {
+      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
         var $element = $(_submodules[sub].selector);
         if (!$element) {
           _statuses[sub] = INACTIVE;

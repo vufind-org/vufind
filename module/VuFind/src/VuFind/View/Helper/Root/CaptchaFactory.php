@@ -1,10 +1,10 @@
 <?php
 /**
- * Generic Amazon content plugin factory.
+ * Captcha helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Content
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Content;
+namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Generic Amazon content plugin factory.
+ * Captcha helper factory.
  *
  * @category VuFind
- * @package  Content
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractAmazonFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class CaptchaFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,18 +60,24 @@ class AbstractAmazonFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
+
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $associate = isset($config->Content->amazonassociate)
-            ? $config->Content->amazonassociate : null;
-        $secret = isset($config->Content->amazonsecret)
-            ? $config->Content->amazonsecret : null;
-        $label = $container->get(\Laminas\Mvc\I18n\Translator::class)->translate(
-            'Supplied by Amazon'
+
+        $captchaTypes = $config->Captcha->types ?? [];
+
+        $captchas = [];
+        foreach ($captchaTypes as $captchaType) {
+            $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)
+                ->get(trim($captchaType));
+        }
+
+        return new $requestedName(
+            $config,
+            $captchas
         );
-        return new $requestedName($associate, $secret, $label);
     }
 }

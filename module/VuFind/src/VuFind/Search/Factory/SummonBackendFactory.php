@@ -126,16 +126,13 @@ class SummonBackendFactory implements FactoryInterface
     protected function createConnector()
     {
         // Load credentials:
-        $id = isset($this->config->Summon->apiId)
-            ? $this->config->Summon->apiId : null;
-        $key = isset($this->config->Summon->apiKey)
-            ? $this->config->Summon->apiKey : null;
+        $id = $this->config->Summon->apiId ?? null;
+        $key = $this->config->Summon->apiKey ?? null;
 
         // Build HTTP client:
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $timeout = isset($this->summonConfig->General->timeout)
-            ? $this->summonConfig->General->timeout : 30;
+        $timeout = $this->summonConfig->General->timeout ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
         $options = ['authedUser' => $this->isAuthed()];
@@ -152,7 +149,7 @@ class SummonBackendFactory implements FactoryInterface
     protected function isAuthed()
     {
         return $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class)
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
     }
 
@@ -165,8 +162,7 @@ class SummonBackendFactory implements FactoryInterface
     {
         $builder = new QueryBuilder();
         $caseSensitiveBooleans
-            = isset($this->summonConfig->General->case_sensitive_bools)
-            ? $this->summonConfig->General->case_sensitive_bools : true;
+            = $this->summonConfig->General->case_sensitive_bools ?? true;
         $helper = new LuceneSyntaxHelper($caseSensitiveBooleans);
         $builder->setLuceneHelper($helper);
         return $builder;
@@ -181,8 +177,7 @@ class SummonBackendFactory implements FactoryInterface
     {
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
-        $stripSnippets = !isset($this->summonConfig->General->snippets)
-            || !$this->summonConfig->General->snippets;
+        $stripSnippets = !($this->summonConfig->General->snippets ?? false);
         $callback = function ($data) use ($manager, $stripSnippets) {
             $driver = $manager->get('Summon');
             if ($stripSnippets) {

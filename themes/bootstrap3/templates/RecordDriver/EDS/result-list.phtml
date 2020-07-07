@@ -28,7 +28,7 @@
   <?php endif; ?>
   <div class="media-body">
     <div class="result-body">
-      <?php $items = $this->driver->getItems();
+      <?php $items = $this->driver->getItems('result-list');
         if (isset($items) && !empty($items)):
           foreach ($items as $item):
             if (!empty($item)): ?>

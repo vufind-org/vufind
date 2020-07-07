@@ -43,16 +43,6 @@ use VuFind\RecordDriver\EDS;
 class EDSTest extends \VuFindTest\Unit\TestCase
 {
     /**
-     * Test exportDisabled for a record.
-     *
-     * @return void
-     */
-    public function testExportDisabled()
-    {
-        $this->assertEquals(true, $this->getDriver()->exportDisabled('endnote'));
-    }
-
-    /**
      * Test getUniqueID for a record.
      *
      * @return void
@@ -288,19 +278,89 @@ class EDSTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test getISSNs.
+     *
+     * @return void
+     */
+    public function testGetISSNs()
+    {
+        $driver = $this->getDriverWithIdentifierData();
+        $this->assertEquals(
+            ['1234-5678', '5678-1234'], $driver->getISSNs()
+        );
+    }
+
+    /**
+     * Test getISBNs.
+     *
+     * @return void
+     */
+    public function testGetISBNs()
+    {
+        $driver = $this->getDriverWithIdentifierData();
+        $this->assertEquals(
+            ['0123456789X', 'fakeisbnxxx'], $driver->getISBNs()
+        );
+    }
+
+    /**
+     * Get a record driver with fake identifier data.
+     *
+     * @return EDS
+     */
+    protected function getDriverWithIdentifierData()
+    {
+        return $this->getDriver(
+            [
+                'RecordInfo' => [
+                    'BibRecord' => [
+                        'BibRelationships' => [
+                            'IsPartOfRelationships' => [
+                                [
+                                    'BibEntity' => [
+                                        'Identifiers' => [
+                                            [
+                                                'Type' => 'issn-electronic',
+                                                'Value' => '1234-5678'
+                                            ],
+                                            [
+                                                'Type' => 'issn-print',
+                                                'Value' => '5678-1234'
+                                            ],
+                                            [
+                                                'Type' => 'isbn-electronic',
+                                                'Value' => '0123456789X'
+                                            ],
+                                            [
+                                                'Type' => 'isbn-print',
+                                                'Value' => 'fakeisbnxxx'
+                                            ],
+                                            [
+                                                'Type' => 'meaningless-noise',
+                                                'Value' => 'should never be seen'
+                                            ],
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
+    }
+
+    /**
      * Get a record driver with fake data.
      *
-     * @param array $overrides Fixture fields to override.
+     * @param array $overrides Raw data for testing
      *
-     * @return SolrDefault
+     * @return EDS
      */
     protected function getDriver($overrides = [])
     {
-        // Simulate empty response for now:
-        $fixture = ['response' => ['docs' => [[]]]];
-
         $record = new EDS();
-        $record->setRawData($overrides + $fixture['response']['docs'][0]);
+        $record->setRawData($overrides);
         return $record;
     }
 }
