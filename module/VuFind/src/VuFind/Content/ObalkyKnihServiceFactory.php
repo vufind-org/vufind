@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Cover router factory.
+ * Class ObalkyKnihCoversFactory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +21,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  Content
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Cover;
+namespace VuFind\Content;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cover router factory.
+ * Class ObalkyKnihCoversFactory
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  Content
+ * @author   Josef Moravec <moravec@mzk.cz>
+ * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RouterFactory implements FactoryInterface
+class ObalkyKnihServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -53,24 +56,33 @@ class RouterFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new ServiceNotCreatedException(
+                'Unexpected options passed to factory.'
+            );
         }
-        // Try to get the base URL from the controller plugin; fail over to
-        // the view helper if that doesn't work.
-        try {
-            $base = $container->get('ControllerPluginManager')->get('url')
-                ->fromRoute('cover-show');
-        } catch (\Exception $e) {
-            $base = $container->get('ViewRenderer')->plugin('url')
-                ->__invoke('cover-show');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('obalkyknih');
+        if (!isset($config->ObalkyKnih)) {
+            throw new ServiceNotCreatedException(
+                'ObalkyKnih service is not properly configured'
+            );
         }
-        $coverLoader = $container->get(\VuFind\Cover\Loader::class);
-        return new $requestedName($base, $coverLoader);
+
+        $service = new $requestedName($config->ObalkyKnih);
+
+        // Populate cache storage if a setCacheStorage method is present:
+        if (method_exists($service, 'setCacheStorage')) {
+            $service->setCacheStorage(
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
+            );
+        }
+        return $service;
     }
 }
