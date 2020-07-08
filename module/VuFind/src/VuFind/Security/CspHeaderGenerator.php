@@ -107,9 +107,8 @@ class CspHeaderGenerator
         if (!$mode) {
             return null;
         }
-        if ('report_only' === $mode) {
-            return new ContentSecurityPolicyReportOnly();
-        }
-        return new ContentSecurityPolicy();
+        return ('report_only' === $mode)
+            ? new ContentSecurityPolicyReportOnly()
+            : new ContentSecurityPolicy();
     }
 }
