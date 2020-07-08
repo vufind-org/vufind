@@ -70,7 +70,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Generate a thumbnail URL (return false if unsupported).
+     * Generate a thumbnail URL (return false if unsupported; return null to indicate
+     * that a subsequent AJAX check is needed).
      *
      * @param RecordDriver $driver         Record driver
      * @param string       $size           Size of thumbnail (small, medium or large;
@@ -94,7 +95,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         // Array? It's parameters to send to the cover generator:
         if (is_array($thumb)) {
             if (!$resolveDynamic) {
-                return false;
+                return null;
             }
             $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
         } else {

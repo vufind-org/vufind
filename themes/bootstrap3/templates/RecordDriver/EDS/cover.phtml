@@ -4,17 +4,14 @@
   <?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
   <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
+<?php elseif ($cover === false): ?>
+  <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+  <div><?=$this->driver->getPubType()?></div>
 <?php else: ?>
-  <?php if ($this->config()->ajaxCoversEnabled()): ?>
-    <div class="ajaxcover">
+  <div class="ajaxcover">
     <div class="spinner"><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Loading')?>...</div>
-  <?php endif; ?>
-  <div class="cover-container">
-    <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-    <div><?=$this->driver->getPubType()?></div>
-    <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="" />
-  </div>
-  <?php if ($this->config()->ajaxCoversEnabled()): ?>
+    <div class="cover-container">
+      <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$driver->getSourceIdentifier()?>" data-recordid="<?=$driver->getUniqueID()?>" data-coversize="<?=$size?>" class="recordcover ajax" alt="" />
     </div>
-  <?php endif; ?>
+  </div>
 <?php endif; ?>
