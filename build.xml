@@ -20,6 +20,7 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
+  <property name="composer_version" value="1.10.8" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="selenium_browser" value="firefox" />
@@ -247,7 +248,7 @@
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
-    <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
