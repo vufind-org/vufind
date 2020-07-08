@@ -24,7 +24,7 @@
   ]);
 
   if ($this->consortiumInfo) {
-     foreach (['0/arc/', '0/mus/', '1/lib/pub/', '1/lib/poly/', '1/lib/uni/'] as $sector) {
+     foreach (['0/arc/', '0/mus/', '1/lib/pub/', '1/lib/spl/', '1/lib/uni/'] as $sector) {
         $this->jsTranslations()->addStrings(["usageInfo-{$sector}" => "organisation_usage_rights_{$sector}_html"]);
      }
   }

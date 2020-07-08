@@ -78,8 +78,6 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
         usageRights = finna.common.getField(finnaData, 'usage_info');
         if (usageRights) {
           usageHolder.html(usageRights);
-        } else {
-          usageRights = null;
         }
 
         var usagePerc = finna.common.getField(finnaData, 'usage_perc');
