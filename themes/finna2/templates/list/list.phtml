@@ -13,6 +13,7 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
 
 $this->hideCartControls = true;
 
+$this->headScript()->appendFile("check_item_statuses.js");
 $this->headScript()->appendFile("finna-item-status.js");
 $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
 ?>

@@ -380,6 +380,8 @@ $config = [
                         'Finna\AjaxHandler\GetHoldingsDetailsFactory',
                     'Finna\AjaxHandler\GetImageInformation' =>
                         'Finna\AjaxHandler\GetImageInformationFactory',
+                    'Finna\AjaxHandler\GetItemStatuses' =>
+                        'VuFind\AjaxHandler\GetItemStatusesFactory',
                     'Finna\AjaxHandler\GetOrganisationInfo' =>
                         'Finna\AjaxHandler\GetOrganisationInfoFactory',
                     'Finna\AjaxHandler\GetOrganisationPageFeed' =>
@@ -443,6 +445,7 @@ $config = [
                     'VuFind\AjaxHandler\DeleteRecordComment' => 'Finna\AjaxHandler\DeleteRecordComment',
                     'VuFind\AjaxHandler\GetACSuggestions' => 'Finna\AjaxHandler\GetACSuggestions',
                     'VuFind\AjaxHandler\GetFacetData' => 'Finna\AjaxHandler\GetFacetData',
+                    'VuFind\AjaxHandler\GetItemStatuses' => 'Finna\AjaxHandler\GetItemStatuses',
                     'VuFind\AjaxHandler\GetSideFacets' => 'Finna\AjaxHandler\GetSideFacets',
                     'VuFind\AjaxHandler\SystemStatus' => 'Finna\AjaxHandler\SystemStatus',
                 ]

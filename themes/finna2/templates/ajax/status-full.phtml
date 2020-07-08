@@ -322,4 +322,12 @@ if (!$disableTitleHold
   <?=$this->record($driver)->renderTemplate('external-interface-link.phtml', ['driver' => $driver, 'source' => $source, 'link' => $externalInterfaceUrl ?? ''])?>
 <?php endif;?>
 
+<?php
+  $js = <<<JS
+finna.layout.initTruncate($('.holding-details'));
+VuFind.lightbox.bind($('.holding-details'));
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
+?>
+
 <!-- END of: finna - ajax/status-full.phtml -->

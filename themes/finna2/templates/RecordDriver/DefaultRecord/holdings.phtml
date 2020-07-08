@@ -23,23 +23,19 @@
     </div>
   <?php endif; ?>
 
-  <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
-    <div class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></div>
+  <div class="callnumAndLocation ajax-availability hidden">
     <?php if ($this->driver->supportsAjaxStatus()): ?>
-      <strong class="hideIfDetailed"></strong>
-      <span class="callnumber ajax-availability hidden">
-      </span>
+      <span class="callnumber ajax-availability hidden"></span>
       <span class="location ajax-availability hidden">
+        <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
       </span>
-      <div class="locationDetails clearfix"></div>
+      <div class="locationDetails"></div>
     <?php else: ?>
       <?php $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
         <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
       <?php endif; ?>
     <?php endif; ?>
-    <div class="no-holdings hidden">
-      <?=$this->transEsc('No Holdings Available')?>
-    </div>
   </div>
+
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/holdings.phtml -->

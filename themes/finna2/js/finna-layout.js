@@ -409,7 +409,7 @@ finna.layout = (function finnaLayout() {
         holder.toggleClass('open');
         if (holder.hasClass('open') && !holder.hasClass('opened')) {
           holder.addClass('opened');
-          finna.itemStatus.initItemStatuses(holder);
+          VuFind.itemStatuses.check(holder);
           finna.itemStatus.initDedupRecordSelection(holder);
         }
       }

@@ -33,7 +33,7 @@ finna.userListEmbed = (function userListEmbed() {
               indexStart: indexStart,
               view: view,
               sort: sort,
-              method: 'getUserList' 
+              method: 'getUserList'
             }
           )
             .done(function onListLoaded(response) {
@@ -41,14 +41,14 @@ finna.userListEmbed = (function userListEmbed() {
               $(response.data.html).find('.result').each(function appendResult(/*index*/) {
                 resultsContainer.append($(this));
               });
-              
+
               finna.myList.init();
               finna.layout.initCondensedList(resultsContainer);
               finna.layout.initTruncate();
               finna.openUrl.initLinks(resultsContainer);
               finna.videoPopup.initIframeEmbed(resultsContainer);
               finna.videoPopup.initVideoPopup(resultsContainer);
-              finna.itemStatus.initItemStatuses(resultsContainer);
+              VuFind.itemStatuses.check(resultsContainer);
               finna.itemStatus.initDedupRecordSelection(resultsContainer);
               finna.record.initRecordVersions(resultsContainer);
               VuFind.lightbox.bind(resultsContainer);
@@ -60,7 +60,7 @@ finna.userListEmbed = (function userListEmbed() {
               btn.show();
               spinner.hide();
             });
-          
+
           return false;
         });
       });
