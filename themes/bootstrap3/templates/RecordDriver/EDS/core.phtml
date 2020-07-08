@@ -2,12 +2,11 @@
 <?php
     $items = $this->driver->getItems('core');
     $dbLabel = $this->driver->getDbLabel();
-    $thumb = $this->driver->getThumbnail('medium');
     $pubType = $this->driver->getPubType();
     $customLinks = $this->driver->getCustomLinks();
     $accessLevel = $this->driver->getAccessLevel();
     $restrictedView = empty($accessLevel) ? false : true;
-    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $thumb);
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
     $cover = $coverDetails['html'];
 ?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
