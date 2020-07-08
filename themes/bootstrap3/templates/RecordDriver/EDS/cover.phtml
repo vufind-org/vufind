@@ -1,9 +1,11 @@
+<?php
+  // set $alt to empty when we have an icon ($cover === false), because we don't want to link the icons (it looks weird)
+  $alt = $this->link && $cover !== false ? trim($this->driver->tryMethod('getTitle') ?? '') : '';
+?>
+<?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>
-  <?php $alt = $this->link ? trim($this->driver->tryMethod('getTitle') ?? '') : ''; ?>
-  <?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
-  <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php elseif ($cover === false): ?>
   <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
   <div><?=$this->driver->getPubType()?></div>
@@ -15,3 +17,4 @@
     </div>
   </div>
 <?php endif; ?>
+<?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>

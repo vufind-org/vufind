@@ -1,9 +1,8 @@
+<?php $alt = $this->link ? trim($this->driver->tryMethod('getTitle') ?? '') : ''; ?>
+<?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>
-  <?php $alt = $this->link ? trim($this->driver->tryMethod('getTitle') ?? '') : ''; ?>
-  <?php if ($this->link && !empty($alt)): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><?php endif; ?>
   <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
-  <?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
 <?php elseif ($cover === false): ?>
   <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="" />
 <?php else: ?>
@@ -14,3 +13,4 @@
     </div>
   </div>
 <?php endif; ?>
+<?php if ($this->link && !empty($alt)): ?></a><?php endif; ?>
