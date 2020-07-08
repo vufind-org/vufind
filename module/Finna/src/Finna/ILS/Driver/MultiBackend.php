@@ -63,7 +63,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         // Remove old credentials from the cache regardless of whether the change
         // was successful
         $cacheKey = 'patron|' . $details['patron']['cat_username'];
-        $item = $this->putCachedData($cacheKey, null);
+        $this->putCachedData($cacheKey, null);
 
         return parent::changePassword($details);
     }

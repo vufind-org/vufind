@@ -1735,7 +1735,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $unit['name'] = "$parentName - $unitName";
         }
-        $this->putCachedData($cacheKey, $units);
+        $this->putCachedData($cacheKey, $units, 3600);
         return $units;
     }
 

@@ -1113,15 +1113,11 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     = explode(':', $config['titleHoldBibLevels']);
             }
             if (!empty($params['id']) && !empty($params['patron']['id'])) {
-                // Kludge to allow caching for two minutes
-                $cacheLifeTime = $this->cacheLifetime;
-                $this->cacheLifetime = 120;
                 $cacheKey = md5(
                     'request-options-' . $params['id'] . '-'
                     . $params['patron']['id']
                 );
                 $requestOptions = $this->getCachedData($cacheKey);
-                $this->cacheLifetime = $cacheLifeTime;
                 if (null === $requestOptions) {
                     // Check if we require the part_issue (description) field
                     $requestOptionsPath = '/bibs/' . urlencode($params['id'])
@@ -1129,7 +1125,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         . urlencode($params['patron']['id']);
                     // Make the API request
                     $requestOptions = $this->makeRequest($requestOptionsPath);
-                    $this->putCachedData($cacheKey, $requestOptions->asXML());
+                    $this->putCachedData($cacheKey, $requestOptions->asXML(), 120);
                 } else {
                     $requestOptions = simplexml_load_string($requestOptions);
                 }
@@ -2357,10 +2353,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     protected function getLocationExternalName($library, $location)
     {
         $cacheId = 'alma|locations|' . $library;
-        $saveLifetime = $this->cacheLifetime;
-        $this->cacheLifetime = 3600;
         $locations = $this->getCachedData($cacheId);
-        $this->cacheLifetime = $saveLifetime;
 
         if (null === $locations) {
             $xml = $this->makeRequest(
@@ -2373,7 +2366,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'externalName' => (string)$entry->external_name
                 ];
             }
-            $this->putCachedData($cacheId, $locations);
+            $this->putCachedData($cacheId, $locations, 3600);
         }
         return !empty($locations[$location]['externalName'])
             ? $locations[$location]['externalName']
@@ -2562,7 +2555,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             );
         }
 
-        $this->putCachedData($cacheId, $result);
+        $this->putCachedData($cacheId, $result, 3600);
 
         return $result;
     }
