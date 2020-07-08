@@ -570,9 +570,12 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
+        // Find out whether or not AJAX covers are enabled; this will control
+        // whether dynamic URLs are resolved immediately or deferred until later
+        // (see third parameter of getUrl() below).
         $ajaxcovers = $this->config->Content->ajaxcovers ?? false;
-        return ($this->coverRouter && !$ajaxcovers)
-            ? $this->coverRouter->getUrl($this->driver, $size)
+        return $this->coverRouter
+            ? $this->coverRouter->getUrl($this->driver, $size, !$ajaxcovers)
             : false;
     }
 

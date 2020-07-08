@@ -72,14 +72,17 @@ class Router implements \Laminas\Log\LoggerAwareInterface
     /**
      * Generate a thumbnail URL (return false if unsupported).
      *
-     * @param RecordDriver $driver Record driver
-     * @param string       $size   Size of thumbnail (small, medium or large --
+     * @param RecordDriver $driver         Record driver
+     * @param string       $size           Size of thumbnail (small, medium or large;
      * small is default).
+     * @param bool         $resolveDynamic Should we resolve dynamic cover data into
+     * a URL (true) or simply return false (false)?
      *
      * @return string|bool
      */
-    public function getUrl(RecordDriver $driver, $size = 'small')
-    {
+    public function getUrl(RecordDriver $driver, $size = 'small',
+        $resolveDynamic = true
+    ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
 
@@ -90,6 +93,9 @@ class Router implements \Laminas\Log\LoggerAwareInterface
 
         // Array? It's parameters to send to the cover generator:
         if (is_array($thumb)) {
+            if (!$resolveDynamic) {
+                return false;
+            }
             $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
         } else {
             return $thumb;
