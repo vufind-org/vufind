@@ -12,6 +12,13 @@ CREATE TABLE ixtheo_journal_subscriptions (
     PRIMARY KEY (user_id,journal_control_number)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE ixtheo_journal_bundles (
+    bundle_name VARCHAR(255) NOT NULL,
+    journal_control_number VARCHAR(255) NOT NULL,
+    max_last_modification_time DATETIME NOT NULL,
+    PRIMARY KEY (bundle_name, journal_control_number)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE ixtheo_pda_subscriptions (
     id INT(11) NOT NULL,
     book_title VARCHAR(255) NOT NULL,

@@ -69,7 +69,7 @@ class InjectFulltextMatchIdsListener
             return "";
         $selected_fulltext_types = [];
         foreach ($filter_queries as $filter_query) {
-            if (!preg_match('/{!tag=fulltext_types_filter}fulltext_types:\((.*)\)/', $filter_query))
+            if (!preg_match('/fulltext_types:(.*)/', $filter_query))
                 continue;
             $fulltext_type_facet_expression = $backend->getQueryBuilder()->getLuceneHelper()->extractSearchTerms($filter_query);
             $selected_fulltext_types = array_filter(explode('"', preg_replace('/(\s*(AND|OR)\s*)/', '', $fulltext_type_facet_expression)));

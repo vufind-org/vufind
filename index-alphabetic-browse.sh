@@ -95,7 +95,7 @@ function build_browse
     chown solr:solr "$index_dir/${browse}_browse.db-ready"
 }
 build_browse "hierarchy" "hierarchy_browse"
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
+build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_browse_sort -Dvaluefield=title_fullStr"
 build_browse "topic" "topic_browse"
 build_browse "author" "author_browse"
 build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"

@@ -27,3 +27,31 @@
 /* not possible to set "tf-"-prefix, else bootstrap3's "btn-type-*" directive won't work */
 .btn-type-subscribe::before { content: "\f0f3"; } // .fa-bell
 .btn-type-unsubscribe::before { content: "\f1f6"; } // .fa-bell-slash
+
+.snippet-separator {
+    border-top: 1px solid darkgrey;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+p + br { display : none; }
+
+.snippet-div {
+    border-top: 1px;
+    border-bottom: 1px;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    overflow: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.snippet-div::-webkit-scrollbar {
+  display: none;
+}
+
+.snippet-text-type {
+    z-index : 1;
+    position: relative;
+}

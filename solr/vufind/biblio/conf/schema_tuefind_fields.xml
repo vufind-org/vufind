@@ -27,8 +27,12 @@
     <field name="volume_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="local_notes_1" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="abr" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="title_alt_sort" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="title_browse_sort" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- COMMON copyFields -->
     <copyField source="id" dest="ids"/>
     <copyField source="record_selector" dest="rs"/>
+    <copyField source="title_sort" dest="title_browse_sort"/>
+    <copyField source="title_alt_sort" dest="title_browse_sort"/>
 </fields>

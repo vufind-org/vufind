@@ -53,6 +53,27 @@ var TueFind = {
         .replace(/'/g, "&#039;");
     },
 
+    FormatTextType: function(text_type, verbose, types) {
+        // Suppress type tagging in Item Search view if only one text type is active
+        if (verbose && !types.includes(','))
+            return '';
+        return '<span class="label label-primary pull-right snippet-text-type">' + text_type + '</span>';
+    },
+
+    FormatPageInformation: function(page) {
+        return '[' + page + ']';
+    },
+
+    ItemFulltextLink : function(doc_id, query, scope) {
+        return '<div class="text-right snippets-end-vspace"><a class="btn btn-warning btn-sm" href="' + VuFind.path + '/Record/' + doc_id + '?fulltextquery=' + encodeURIComponent(query)
+                                                                                 +'&fulltextscope=' + (scope ? encodeURIComponent(scope) : '')  + '#fulltextsearch">' +
+                 VuFind.translate('All Matches') + '</a></div><br/>';
+    },
+
+    GetNoMatchesMessage(doc_id) {
+        return '<div id="snippets_' + doc_id + '">' +  VuFind.translate('No Matches') + '</div>';
+    },
+
     GetFulltextSnippets: function(url, doc_id, query, verbose = false, synonyms = "", fulltext_types = "") {
         var valid_synonym_terms = new RegExp('lang|all');
         synonyms = synonyms.match(valid_synonym_terms) ? synonyms : false;
@@ -66,8 +87,10 @@ var TueFind = {
                 $(document).ready(function () {
                     var snippets = json['snippets'];
                     $("#snippet_place_holder_" + doc_id).each(function () {
-                        if(snippets)
-                          $(this).replaceWith('<div id="snippets_' + doc_id + '">' + snippets.join('<br/>') + '<br/>' +'</div>');
+                        if (snippets)
+                            $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
+                        else if (verbose)
+                            $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
                     });
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
@@ -77,15 +100,21 @@ var TueFind = {
                                 $(styles).appendTo("head");
                             }
                             if (snippets[0].hasOwnProperty('page')) {
-                               var snippets_and_pages = snippets.map(a => a.snippet + '</br>[' + a.page + ']');
-                               $(this).html(snippets_and_pages.join('<hr/>'));
+                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
+                                                                     TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
+                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                             }
-                            else
-                               $(this).html(snippets.map(a => a.snippet).join('<br/>'));
-                        } else
+                            else {
+                                $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
+                            }
+                        } else if (verbose)
+                            $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
+                        else
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
+                    if (!verbose)
+                        $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
             error: function (xhr, ajaxOptions, thrownError) {
@@ -205,6 +234,22 @@ var TueFind = {
            let input_field = $(input_selector);
            input_field[0].setSelectionRange(input_field.val().length, input_field.val().length);
         }
+    },
+
+    HandlePassedFulltextQuery : function() {
+        const url_query = window.location.search;
+        const url_params = new URLSearchParams(url_query);
+        const fulltextquery = url_params.get('fulltextquery');
+        const fulltextscope = url_params.get('fulltextscope');
+        if (!fulltextquery)
+            return;
+        $('html, body').animate({
+            scrollTop: $('#itemFTSearchScope').offset().top
+        }, 'fast');
+        let searchForm_fulltext = $('#searchForm_fulltext');
+        searchForm_fulltext.val(fulltextquery);
+        $('#itemFTSearchScope').val(fulltextscope);
+        searchForm_fulltext.submit();
     }
 };
 

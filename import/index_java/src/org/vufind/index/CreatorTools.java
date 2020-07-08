@@ -225,7 +225,8 @@ public class CreatorTools
                            if (resultOneField.isEmpty())
                                resultOneField = data;
                            else {
-                               resultOneField += (subfield.getCode() == 'b' || subfield.getCode() == 'c') ? ", " : " ";
+                               resultOneField += (subfield.getCode() == 'b' || subfield.getCode() == 'c' ||
+                                                  subfield.getCode() == 'g') ? ", " : " ";
                                resultOneField += data;
 
                            }
