@@ -134,6 +134,9 @@ VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
       $this->headScript()->appendScript($setupJS);
+      if ($this->config()->ajaxCoversEnabled()) {
+          $this->headScript()->appendFile("covers.js");
+      }
     ?>
     <?=$this->headScript()?>
   </head>
