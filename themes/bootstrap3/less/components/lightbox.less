@@ -5,13 +5,21 @@
   top: 0;
   right: 0;
   z-index: 2;
-  padding: .5rem 1rem;
+  padding: 0.5rem;
   opacity: 1;
 
   body.rtl & {
     left: 0;
     right: auto;
   }
+}
+#modal .close svg {
+  width: 1em;
+  vertical-align: bottom;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
 }
 @media (min-width: 768px) {
   #modal .modal-content > .close { // Fancy side X button
