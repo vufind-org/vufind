@@ -209,7 +209,7 @@ trait MarcReaderTrait
         // Start building a line of text for the current field
         $matches = [];
 
-        // Loop through all subfields, collecting results that match the whitelist;
+        // Loop through all subfields, collecting results that match the filter;
         // note that it is important to retain the original MARC order here!
         $allSubfields = $currentField->getSubfields();
         if (!empty($allSubfields)) {
