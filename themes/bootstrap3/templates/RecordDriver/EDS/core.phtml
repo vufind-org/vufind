@@ -2,7 +2,6 @@
 <?php
     $items = $this->driver->getItems('core');
     $dbLabel = $this->driver->getDbLabel();
-    $pubType = $this->driver->getPubType();
     $customLinks = $this->driver->getCustomLinks();
     $accessLevel = $this->driver->getAccessLevel();
     $restrictedView = empty($accessLevel) ? false : true;
