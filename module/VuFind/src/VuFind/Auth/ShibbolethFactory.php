@@ -25,9 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Auth\Shibboleth;
+namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
+use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
+use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
 /**
  * Factory for Shibboleth authentication module.
@@ -62,17 +64,30 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $loader = $this->getConfigurationLoader($container);
+        return new $requestedName(
+            $container->get(\Laminas\Session\SessionManager::class), $loader
+        );
+    }
+
+    /**
+     * Return configuration loader for shibboleth
+     *
+     * @param ContainerInterface $container     Service manager
+     *
+     * @return configuration loader
+     */
+    public function getConfigurationLoader(ContainerInterface $container)
+    {
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         $override = $config->Shibboleth->override;
         $loader = null;
         if (!empty($override)) {
             $shibConfig = $container->get('VuFind\Config')->get($override);
-            $loader = new MultiIdPConfigurationLoading($config, $override);
+            $loader = new MultiIdPConfigurationLoader($config, $override);
         } else {
-            $loader = new SingleIdPConfigurationLoading($config);
+            $loader = new SingleIdPConfigurationLoader($config);
         }
-        return new $requestedName(
-            $container->get(\Laminas\Session\SessionManager::class), $loader
-        );
+        return $loader;
     }
 }

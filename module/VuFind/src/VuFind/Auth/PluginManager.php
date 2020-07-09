@@ -28,8 +28,6 @@
 namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
-use VuFind\Auth\Shibboleth\Shibboleth;
-use VuFind\Auth\Shibboleth\ShibbolethFactory;
 
 /**
  * Auth handler plugin manager

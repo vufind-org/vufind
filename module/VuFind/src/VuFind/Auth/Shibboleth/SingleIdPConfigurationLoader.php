@@ -1,7 +1,7 @@
 <?php
 namespace VuFind\Auth\Shibboleth;
 
-class SingleIdPConfigurationLoading implements ConfigurationLoadingInterface
+class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
 {
     /**
      * Configured IdPs with entityId and overridden attribute mapping

@@ -19,7 +19,7 @@ namespace VuFind\Auth\Shibboleth;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-interface ConfigurationLoadingInterface
+interface ConfigurationLoaderInterface
 {
     /**
      * Return shibboleth configuration.

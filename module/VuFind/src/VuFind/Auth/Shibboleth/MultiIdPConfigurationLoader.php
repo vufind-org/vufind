@@ -1,7 +1,7 @@
 <?php
 namespace VuFind\Auth\Shibboleth;
 
-class MultiIdPConfigurationLoading implements ConfigurationLoadingInterface,
+class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

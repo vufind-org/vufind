@@ -1,6 +1,6 @@
 <?php
 /**
- * Shibboleth with WAYF authentication module.
+ * Shibboleth authentication module.
  *
  * PHP version 7
  *
@@ -31,14 +31,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\Auth\Shibboleth;
+namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Auth\AbstractBase;
+use Vufind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Abstract Shibboleth class
+ * Shibboleth class
  *
  * @category VuFind
  * @package  Authentication
@@ -87,9 +87,9 @@ class Shibboleth extends AbstractBase
     /**
      * Configuration loading implementation
      *
-     * @var ConfigurationLoadingInterface
+     * @var ConfigurationLoaderInterface
      */
-    protected $configurationLoading;
+    protected $configurationLoader;
 
     /**
      * Constructor
@@ -97,10 +97,10 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Session\ManagerInterface $sessionManager Session manager
      */
     public function __construct(\Laminas\Session\ManagerInterface $sessionManager,
-        ConfigurationLoadingInterface $configurationLoading)
+        ConfigurationLoaderInterface $configurationLoader)
     {
         $this->sessionManager = $sessionManager;
-        $this->configurationLoading = $configurationLoading;
+        $this->configurationLoader = $configurationLoader;
     }
 
     /**
@@ -207,7 +207,7 @@ class Shibboleth extends AbstractBase
     {
         // Check if username is set.
         $entityId = $this->getCurrentEntityId($request);
-        $shib = $this->configurationLoading->getConfiguration($entityId);
+        $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['username']);
         if (empty($username)) {
             $this->debug(
@@ -276,6 +276,17 @@ class Shibboleth extends AbstractBase
         // Save and return the user object:
         $user->save();
         return $user;
+    }
+
+    /**
+     * Return configuration loader
+     *
+     *
+     * @return ConfigurationLoaderInterface configuration loader
+     */
+    protected function getConfigurationLoader()
+    {
+        return $this->configurationLoader;
     }
 
     /**
