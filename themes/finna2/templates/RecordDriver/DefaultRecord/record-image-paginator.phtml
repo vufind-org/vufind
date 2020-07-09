@@ -67,8 +67,8 @@
     <button type="button" class="show-less-images"><?= $this->transEsc('less') ?> <i class="fa fa-arrow-up"></i></button>
   </div>
   <?php if (count($paginatedLinks) > 0): ?>
-    <script>
-      <?php $settings = [
+    <?php
+      $settings = [
         'recordId' => $this->driver->getUniqueId(),
         'recordType' => $this->driver->tryMethod('getRecordType'),
         'imagesPerPage' => 8,
@@ -79,12 +79,10 @@
         'maxRows' => 3,
         'iconlabelClass' => "format-" . $this->record($this->driver)->getFormatClass(end($formats)),
         'isList' => $type === 'list' || $type === 'list grid'
-      ]?>
-      finna.imagePaginator.initPaginator(
-        <?= json_encode($paginatedLinks) ?>,
-        <?= json_encode($settings) ?>
-      );
-    </script>
+      ];
+      $script = 'finna.imagePaginator.initPaginator(' . json_encode($paginatedLinks) . ', ' . json_encode($settings) . ');';
+      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    ?>
   <?php endif; ?>
 <?php endif;?>
 <!-- END of: finna - RecordDriver/DefaultRecord/record-image-paginator.phtml -->

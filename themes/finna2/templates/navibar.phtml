@@ -59,19 +59,22 @@
           <a role="menuitem" id="feedback-link" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc("Feedback")?></a>
         </li>
         <?php endif; ?>
+
         <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-        <li class="dropdown">
-          <form method="post" name="themeForm" id="themeForm">
-            <input type="hidden" name="ui"/>
-          </form>
-          <a role="menuitem" href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
-          <ul role="menu" class="dropdown-menu">
-            <?php foreach ($this->layout()->themeOptions as $current): ?>
-              <li <?=$current['selected'] ? 'class="active"' : ''?>><a role="menuitem" href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
+          <li class="theme dropdown">
+            <a role="menuitem" href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+            <ul role="menu" class="dropdown-menu">
+              <?php foreach ($this->layout()->themeOptions as $current): ?>
+                <li<?=$current['selected'] ? ' class="active"' : ''?>>
+                  <a role="menuitem" href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['ui' => $current['name']])) ?>" rel="nofollow">
+                    <?=$this->transEsc($current['desc']) ?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </li>
         <?php endif; ?>
+
         <?php if ($template = $this->content()->findTemplateForLng("content/Additions/header-navibar")): ?>
           <?=$this->render($template)?>
         <?php endif; ?>

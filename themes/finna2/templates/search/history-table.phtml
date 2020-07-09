@@ -2,6 +2,7 @@
 <?php
   $scheduleSupported = !empty($this->schedule);
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
+  $notificationDisplayed = false;
 ?>
 <div class="table-responsive">
 <table class="table table-striped useraccount-table">
@@ -68,11 +69,6 @@
               </select>
               <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
             </form>
-            <?php if ($schedule): ?>
-              <script>
-                $('.alert-email-notification').removeClass('hidden');
-              </script>
-            <?php endif; ?>
           <?php else: ?>
             <span class="disable"><?=$this->transEsc("cannot set")?></span>
           <?php endif; ?>

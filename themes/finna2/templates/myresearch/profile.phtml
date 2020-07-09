@@ -269,7 +269,7 @@
       <?php endif; ?>
     </div>
     <div class="myresearch-profile-header">
-      <span><?= $this->transEsc("Settings") ?></span>
+      <span id="profile-settings"><?= $this->transEsc("Settings") ?></span>
     </div>
     <div class="myresearch-profile-list library-profile">
       <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress]); ?>

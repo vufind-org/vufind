@@ -1,7 +1,7 @@
 <?php //Don't add start and end tags ?>
 <div class="record-rating text-left">
   <div class="rating-stars">
-    <div onclick="$('a.usercomments').click();">
+    <div class="rating-link">
         <?=$this->record($this->driver)->getRating()?>
     </div>
   </div>
@@ -13,3 +13,16 @@
     </div>
   </div>
 <?php endif; ?>
+<?php
+  $script = <<<JS
+$('.rating-link').click(function () {
+  $('a.usercomments').click();
+  $('html, body').animate(
+    {
+      scrollTop: $('.record-tabs').offset().top
+    }, 500
+  );
+});
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>

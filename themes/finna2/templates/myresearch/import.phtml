@@ -10,11 +10,17 @@
             </label>
         </div>
         <div class="form-group">
-            <button class="btn btn-primary" type="button" onclick="finna.favorites.upload()"><?=$this->transEsc('import_favorites_upload') ?></button>
+            <button class="btn btn-primary btn-upload" type="button"><?=$this->transEsc('import_favorites_upload') ?></button>
         </div>
     </form>
 </div>
 <?php
     echo $this->inlineScript()->appendFile('finna-favorites.js');
+    $script = <<<JS
+$('.btn-upload').click(function () {
+  finna.favorites.upload();
+});
+JS;
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
 ?>
 <!-- END of: finna - myresearch/import.phtml -->

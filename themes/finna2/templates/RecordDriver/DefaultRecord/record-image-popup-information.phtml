@@ -172,6 +172,10 @@ $this->piwik([
   'recordUrl' => $this->recordLink()->getUrl($this->driver)
 ]);
 ?>
-<script>
-    finna.layout.initOrganisationPageLinks();
-</script>
+
+<?php
+  $script = <<<JS
+finna.layout.initOrganisationPageLinks();
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>

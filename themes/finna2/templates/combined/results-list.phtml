@@ -41,8 +41,17 @@
   <?php endif; ?>
 
   <?php if (isset($currentSearch['sublabel'])): ?>
-    <p class="show-list-details pull-right" onclick="$(this).next().toggleClass('hidden');$('i', this).toggleClass('fa-arrow-up');"><?=$this->transEsc('More Information');?> <i class="fa fa-arrow-down"></i></p>
+    <p class="show-list-details pull-right"><?=$this->transEsc('More Information');?> <i class="fa fa-arrow-down"></i></p>
     <p class="sub-label hidden"><?=$this->translate($currentSearch['sublabel'])?></p>
+    <?php
+      $script = <<<JS
+        $('.show-list-details').click(function () {
+          $(this).next().toggleClass('hidden');
+          $('i', this).toggleClass('fa-arrow-up');
+        });
+JS;
+      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    ?>
   <?php endif; ?>
 </div>
 <div class="clearfix">

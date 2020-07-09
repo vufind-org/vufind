@@ -36,56 +36,60 @@
   </div>
 </form>
 
-<script>
-  // Try to guess the format
-  $('#data').change(function onDataChange() {
-    $format = $('#format');
-    if ($format.val() !== '') {
-      return;
-    }
-    var format = '';
-    var data = $(this).val();
-    if (data.match(/<\/([^>]+:)?lidoWrap>/)) {
-      format = 'lido';
-    } else if ((data.match(/<\/([^>]+:)?record>/) && data.match(/<\/([^>]+:)?leader>/)
-      || data.match(/^\d{5}/))
-    ) {
-      format = 'marc';
-    } else if (data.match(/<\/([^>]+:)?qualifieddc>/)) {
-      format = 'qdc';
-    } else if (data.match(/<\/([^>]+:)?dc>/)) {
-      format = 'dc';
-    } else if (data.match(/<\/([^>]+:)?ExchangeSet>/)) {
-      format = 'forward';
-    } else if (data.match(/<\/([^>]+:)?did>/)) {
-      format = 'ead';
-    }
-    if (format) {
-      $format.val(format);
-      $format.change();
+<?php
+  $sources = json_encode($this->sources);
+  $script = <<<JS
+// Try to guess the format
+$('#data').change(function onDataChange() {
+  var \$format = $('#format');
+  if (\$format.val() !== '') {
+    return;
+  }
+  var format = '';
+  var data = $(this).val();
+  if (data.match(/<\/([^>]+:)?lidoWrap>/)) {
+    format = 'lido';
+  } else if ((data.match(/<\/([^>]+:)?record>/) && data.match(/<\/([^>]+:)?leader>/)
+    || data.match(/^\d{5}/))
+  ) {
+    format = 'marc';
+  } else if (data.match(/<\/([^>]+:)?qualifieddc>/)) {
+    format = 'qdc';
+  } else if (data.match(/<\/([^>]+:)?dc>/)) {
+    format = 'dc';
+  } else if (data.match(/<\/([^>]+:)?ExchangeSet>/)) {
+    format = 'forward';
+  } else if (data.match(/<\/([^>]+:)?did>/)) {
+    format = 'ead';
+  }
+  if (format) {
+    \$format.val(format);
+    \$format.change();
+  }
+});
+
+var sources = $sources;
+var onFormatChange = function onFormatChange() {
+  var format = $(this).val();
+  var \$source = $('#source');
+  \$source.find('option').remove();
+  $(sources).each(function processSource(index, elem) {
+    if (elem.format === format) {
+      var desc = elem.institutionName;
+      if (elem.institutionName !== elem.institution) {
+        desc += ' (' + elem.institution + ')';
+      }
+      desc += ' - ' + elem.id
+      var \$elem = $('<option>')
+        .attr('value', elem.id)
+        .text(desc);
+      \$elem.appendTo(\$source);
     }
   });
-
-  var sources = <?=json_encode($this->sources);?>;
-  var onFormatChange = function onFormatChange() {
-    var format = $(this).val();
-    var $source = $('#source');
-    $source.find('option').remove();
-    $(sources).each(function processSource(index, elem) {
-      if (elem.format === format) {
-        var desc = elem.institutionName;
-        if (elem.institutionName !== elem.institution) {
-          desc += ' (' + elem.institution + ')';
-        }
-        desc += ' - ' + elem.id
-        var $elem = $('<option>')
-          .attr('value', elem.id)
-          .text(desc);
-        $elem.appendTo($source);
-      }
-    });
-  };
-  $('#format').change(onFormatChange);
-  $('#format').change();
-</script>
+};
+$('#format').change(onFormatChange);
+$('#format').change();
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
 <!-- END of: finna - record/previewform.phtml -->

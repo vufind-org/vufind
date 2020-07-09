@@ -36,16 +36,20 @@
   <i class="fa fa-info3"></i><div class="info"><?=$this->transEsc('geographic_facet_info')?></div>
 </div>
 
-<script>
+<?php
+  $options = [
+    'items' => []
+  ];
+  foreach ($geoFilters as $filter) {
+    foreach (preg_split('/\s+OR\s+/', $filter) as $item) {
+      $options['items'][] = $item;
+    }
+  }
+  $options = json_encode($options);
+  $script = <<<JS
   $(document).ready(function() {
-    var options = {
-      items: []
-    };
-    <?php foreach ($geoFilters as $filter): ?>
-      <?php foreach (preg_split('/\s+OR\s+/', $filter) as $item): ?>
-        options.items.push('<?=$this->escapeJs($item) ?>');
-      <?php endforeach; ?>
-    <?php endforeach; ?>
-    finna.MapFacet.initMapFacet(options);
+    finna.MapFacet.initMapFacet($options);
   });
-</script>
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>

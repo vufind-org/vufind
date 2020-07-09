@@ -2,11 +2,19 @@
   <div class="checkbox <?=($current['selected'] ? 'checked' : '')?><?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?> checkbox-filter" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=!$current['selected'] && isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
     <label>
       <span class="badge cb-facet avail-count"></span>
-      <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>
+      <input class="checkbox-filter" type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>
         id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
-        onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']) ?>'"
+        data-location="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']) ?>"
       />
       <?=$this->translate($current['desc']) // Intentionally left unescaped to allow HTML in the description ?>
     </label>
   </div>
 <?php endforeach; ?>
+<?php
+  $script = <<<JS
+$('input.checkbox-filter').click(function() {
+  document.location.href = $(this).data('location');
+});
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>

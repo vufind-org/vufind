@@ -97,7 +97,7 @@ $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
       $dataTarget = 'side-collapse-' . $escAttrTitle;
     ?>
     <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?> facet-group" id="side-panel-<?=$escAttrTitle?>">
-      <button class="list-group-item title<?= $isCollapsed ? ' collapsed' : '' ?>" data-toggle="collapse" data-target="#<?=$dataTarget?>" onclick="return false;" aria-owns="<?=$dataTarget?>" aria-expanded="<?= !$isCollapsed ? 'true' : 'false';?>"><?=$this->transEsc($facetName)?></button>
+      <button class="list-group-item title<?= $isCollapsed ? ' collapsed' : '' ?>" data-toggle="collapse" data-target="#<?=$dataTarget?>" aria-owns="<?=$dataTarget?>" aria-expanded="<?= !$isCollapsed ? 'true' : 'false';?>"><?=$this->transEsc($facetName)?></button>
       <div id="<?=$dataTarget?>" class="collapse<?= !$isCollapsed ? ' in' : '';?>" data-facet="<?=$escAttrTitle?>" role="tree" tabindex="0">
         <span class="facet-load-indicator"><i class="fa fa-spinner fa-spin"></i> <?=$msgLoading?>...</span>
         <span class="facet-load-failed hidden"><?=$msgFailed?></span>

@@ -10,6 +10,15 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('History') . '</li>';
+
+  // Check for scheduled searches
+  $scheduledSearches = false;
+  foreach ($this->saved ?? [] as $search) {
+    if (($this->schedule[$search->getSearchId()] ?? 0)) {
+      $scheduledSearches = true;
+      break;
+    }
+  }
 ?>
 
 <?php if ($layoutLoggedIn): ?>
@@ -19,14 +28,16 @@
 
 <div class="<?=$layoutLoggedIn ? $this->layoutClass('mainbody-myresearch') : $this->layoutClass('mainbody-myresearch-no-menu')?>">
   <div class="history-holder">
-    <?php if ($this->alertemail): ?>
-      <div class="alert alert-info alert-email-notification hidden">
-        <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail . ' (';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
-      </div>
-    <?php elseif ($this->auth()->isLoggedIn()): ?>
-      <div class="alert alert-danger alert-email-notification hidden">
-        <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
-      </div>
+    <?php if ($scheduledSearches): ?>
+      <?php if ($this->alertemail): ?>
+        <div class="alert alert-info alert-email-notification">
+          <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail . ' (';?><a href="<?=$this->url('myresearch-profile', [], ['fragment' => 'profile-settings']);?>"><?=$this->transEsc("edit");?></a>)
+        </div>
+      <?php elseif ($this->auth()->isLoggedIn()): ?>
+        <div class="alert alert-danger alert-email-notification">
+          <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile', [], ['fragment' => 'profile-settings']);?>"><?=$this->transEsc("check_profile");?></a>
+        </div>
+      <?php endif; ?>
     <?php endif; ?>
     <?=$this->flashmessages();?>
     <?php if ($saveSupported && !empty($this->saved)): ?>

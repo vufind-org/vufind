@@ -6,7 +6,9 @@
 
 <div class="map-canvas"></div>
 
-<script>
+<?php
+  $markers = $this->tab->getMapMarkers();
+  $script = <<<JS
 $(document).ready(function() {
   var tileLayer = L.tileLayer('//map-api.finna.fi/v1/rendered/{z}/{x}/{y}.png', {
     maxZoom: 18,
@@ -16,7 +18,7 @@ $(document).ready(function() {
 
   var drawnItems = new L.FeatureGroup();
 
-  var markersData = <?=$this->tab->getMapMarkers() ?>;
+  var markersData = $markers;
   var icon = L.divIcon({
     className: 'mapMarker',
     iconSize: null,
@@ -62,5 +64,7 @@ $(document).ready(function() {
   };
   tileLayer.on('load', onLoad);
 });
-</script>
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
 <!-- END of: finna - RecordTab/map.phtml -->

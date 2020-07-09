@@ -14,11 +14,14 @@
   <input type="submit" name="pay-confirm" class="btn btn-primary" value="<?=$this->transEsc('online_payment_accept_terms')?>" />
 </form>
 
-<script>
+<?php
+  $script = <<<JS
 $(document).ready(function() {
   $('.online-payment-form').on('submit', function() {
     $(this).find('input[type=submit]').prop('disabled', 'disabled');
   });
 });
-</script>
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
 <!-- END of: finna - Helpers/OnlinePayment/terms-Paytrail.phtml -->

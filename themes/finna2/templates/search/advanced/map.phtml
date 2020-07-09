@@ -30,13 +30,17 @@
     </fieldset>
   </div>
 </div>
-<script>
+
+<?php
+  $jsItems = json_encode($items);
+  $script = <<<JS
 $(document).ready(function() {
   var options = {
-      items: <?= json_encode($items) ?>
-    };
-    finna.advSearch.initMap(options);
-  });
-</script>
-
+    items: $jsItems
+  };
+  finna.advSearch.initMap(options);
+});
+JS;
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
 <!-- END of: finna - search/advanced/map.phtml -->
