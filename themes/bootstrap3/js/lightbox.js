@@ -16,7 +16,7 @@ VuFind.register('lightbox', function Lightbox() {
     _modalBody.html(content);
     // Set or update title if we have one
     if (_lightboxTitle) {
-      _modalTitle.html(_lightboxTitle);
+      _modalTitle.text(_lightboxTitle);
       _modalTitle.show();
       _lightboxTitle = false;
     } else {
