@@ -1,7 +1,7 @@
 // Thumbnail sizes for media items: search results, list entries, record views
-$thumbnail-width-small:   60px !default;
-$thumbnail-width-medium: 100px !default;
-$thumbnail-width-large:  160px !default;
+$thumbnail-width-small:   60px;
+$thumbnail-width-medium: 100px;
+$thumbnail-width-large:  160px;
 
 // Hide these on mobile
 @media (max-width: 767px) {
