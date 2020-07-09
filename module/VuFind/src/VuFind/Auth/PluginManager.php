@@ -28,6 +28,8 @@
 namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\Auth\Shibboleth\Shibboleth;
+use VuFind\Auth\Shibboleth\ShibbolethFactory;
 
 /**
  * Auth handler plugin manager
@@ -57,7 +59,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'multiauth' => MultiAuth::class,
         'multiils' => MultiILS::class,
         'shibboleth' => Shibboleth::class,
-        'shibbolethwithwayf' => ShibbolethWithWAYF::class,
         'sip2' => SIP2::class,
         // for legacy 1.x compatibility
         'db' => Database::class,
@@ -81,7 +82,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         MultiAuth::class => MultiAuthFactory::class,
         MultiILS::class => ILSFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
-        ShibbolethWithWAYF::class => ShibbolethWithWAYFFactory::class,
         SIP2::class => InvokableFactory::class,
     ];
 

@@ -31,9 +31,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFind\Auth;
+namespace VuFind\Auth\Shibboleth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Auth\AbstractBase;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -50,7 +51,7 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AbstractShibboleth extends AbstractBase
+class Shibboleth extends AbstractBase
 {
     /**
      * Header name for entityID of the IdP that authenticated the user.
@@ -84,13 +85,22 @@ abstract class AbstractShibboleth extends AbstractBase
     protected $sessionManager;
 
     /**
+     * Configuration loading implementation
+     *
+     * @var ConfigurationLoadingInterface
+     */
+    protected $configurationLoading;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Session\ManagerInterface $sessionManager Session manager
      */
-    public function __construct(\Laminas\Session\ManagerInterface $sessionManager)
+    public function __construct(\Laminas\Session\ManagerInterface $sessionManager,
+        ConfigurationLoadingInterface $configurationLoading)
     {
         $this->sessionManager = $sessionManager;
+        $this->configurationLoading = $configurationLoading;
     }
 
     /**
@@ -196,7 +206,8 @@ abstract class AbstractShibboleth extends AbstractBase
     public function authenticate($request)
     {
         // Check if username is set.
-        $shib = $this->getShibbolethConfiguration($request);
+        $entityId = $this->getCurrentEntityId($request);
+        $shib = $this->configurationLoading->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['username']);
         if (empty($username)) {
             $this->debug(
@@ -268,15 +279,6 @@ abstract class AbstractShibboleth extends AbstractBase
     }
 
     /**
-     * Return shibboleth configuration.
-     *
-     * @param Request $request Request object
-     *
-     * @return array
-     */
-    abstract protected function getShibbolethConfiguration($request);
-
-    /**
      * Extract required user attributes from the configuration.
      *
      * @param array $config shibboleth configuration
@@ -335,6 +337,18 @@ abstract class AbstractShibboleth extends AbstractBase
             "Cached Shibboleth session id '$shibSessionId' for local session"
             . " '$localSessionId'"
         );
+    }
+
+    /**
+     * Fetch entityId used for authentication
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
+     *
+     * @return string entityId of IdP
+     */
+    protected function getCurrentEntityId($request)
+    {
+        return $this->getAttribute($request, static::DEFAULT_IDPSERVERPARAM);
     }
 
     /**

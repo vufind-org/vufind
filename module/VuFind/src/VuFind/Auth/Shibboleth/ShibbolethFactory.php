@@ -1,11 +1,10 @@
 <?php
 /**
- * Shibboleth with WAYF authentication module.
+ * Factory for Shibboleth authentication module.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2014.
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) Villanova University 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,26 +21,26 @@
  *
  * @category VuFind
  * @package  Authentication
- * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Auth;
+namespace VuFind\Auth\Shibboleth;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for Shibboleth with WAYF authentication module.
+ * Factory for Shibboleth authentication module.
  *
  * @category VuFind
  * @package  Authentication
- * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShibbolethWithWAYFFactory
+class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-    const SHIBBOLETH_CONFIG_FILE_NAME = "ShibbolethWithWAYF";
+    const SHIBBOLETH_CONFIG_FILE_NAME = "config";
 
     /**
      * Create an object
@@ -63,9 +62,17 @@ class ShibbolethWithWAYFFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $shibbolethConfig = $container->get('VuFind\Config')
-            ->get(static::SHIBBOLETH_CONFIG_FILE_NAME);
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
-        return new ShibbolethWithWAYF($sessionManager, $shibbolethConfig);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $override = $config->Shibboleth->override;
+        $loader = null;
+        if (!empty($override)) {
+            $shibConfig = $container->get('VuFind\Config')->get($override);
+            $loader = new MultiIdPConfigurationLoading($config, $override);
+        } else {
+            $loader = new SingleIdPConfigurationLoading($config);
+        }
+        return new $requestedName(
+            $container->get(\Laminas\Session\SessionManager::class), $loader
+        );
     }
 }

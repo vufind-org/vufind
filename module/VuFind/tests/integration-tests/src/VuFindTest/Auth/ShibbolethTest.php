@@ -28,7 +28,9 @@
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
-use VuFind\Auth\Shibboleth;
+use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoading;
+use VuFind\Auth\Shibboleth\Shibboleth;
+use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoading;
 
 /**
  * Shibboleth authentication test class.
@@ -74,12 +76,18 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return LDAP
      */
-    public function getAuthObject($config = null)
+    public function getAuthObject($config = null, $shibConfig = null, $proxy = false)
     {
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class));
+        $loader = null;
+        if ($shibConfig == null) {
+            $loader = new SingleIdPConfigurationLoading($config);
+        } else {
+            $loader = new MultiIdPConfigurationLoading($config, $shibConfig);
+        }
+        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class), $loader);
         $initializer = new \VuFind\ServiceManager\ServiceInitializer();
         $initializer($this->getServiceManager(), $obj);
         $obj->setConfig($config);

@@ -29,7 +29,8 @@ namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
 use Laminas\Http\Headers;
-use VuFind\Auth\ShibbolethWithWAYF;
+use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoading;
+use VuFind\Auth\Shibboleth\Shibboleth;
 
 /**
  * ShibbolethWithWAYF authentication test class.
@@ -114,9 +115,10 @@ class ShibbolethWithWAYFTest extends \VuFindTest\Unit\DbTestCase
         if (null === $shibConfig) {
             $shibConfig = $this->getShibbolethConfig();
         }
-        $obj = new ShibbolethWithWAYF(
+        $loader = new MultiIdPConfigurationLoading($config, $shibConfig);
+        $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
-            $shibConfig
+            $loader
         );
         $initializer = new \VuFind\ServiceManager\ServiceInitializer();
         $initializer($this->getServiceManager(), $obj);
