@@ -68,7 +68,7 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/cookies.js");
+          $this->headScript()->appendFile("vendor/js.cookie.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
@@ -80,6 +80,12 @@
           if (!empty($cookiePath)) {
             $this->headScript()->appendScript(
               'VuFind.cart.setCookiePath("' . $cookiePath . '");'
+            );
+          }
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $this->headScript()->appendScript(
+              'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");'
             );
           }
           $this->jsTranslations()->addStrings(
