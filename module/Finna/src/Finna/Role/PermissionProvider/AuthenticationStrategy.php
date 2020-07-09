@@ -105,7 +105,8 @@ class AuthenticationStrategy implements PermissionProviderInterface
         $auth = $this->authManager->getActiveAuth();
 
         // Check if current authentication strategy is authorizable
-        $selected = $auth->getSelectedAuthOption();
+        $selected = is_callable([$auth, 'getSelectedAuthOption'])
+            ? $auth->getSelectedAuthOption() : $auth;
         if (in_array($selected, $options)) {
             return ['loggedin'];
         }
