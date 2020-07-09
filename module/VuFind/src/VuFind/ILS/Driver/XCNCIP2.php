@@ -691,7 +691,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
-
         foreach ($list as $current) {
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
             $tmp = $current->xpath('ns1:DateDue');
@@ -754,7 +753,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         $fines = [];
-        $balance = 0;
         foreach ($list as $current) {
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
 
@@ -776,10 +774,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $id = (string)$tmp[0];
              */
             $id = '';
-            $balance += $amount;
             $fines[] = [
                 'amount' => $amount,
-                'balance' => $balance,
+                'balance' => $amount,
                 'checkout' => '',
                 'fine' => $desc,
                 'duedate' => '',
@@ -826,8 +823,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $pickupLocation = $current->xpath('ns1:PickupLocation');
             $expireDate = $current->xpath('ns1:PickupExpiryDate');
-            $expireDate = strtotime((string)$expireDate[0]);
-            $expireDate = date("l, d-M-y", $expireDate);
+            if (!empty($expireDate)) {
+                $expireDate = strtotime((string)$expireDate[0]);
+                $expireDate = date("l, d-M-y", $expireDate);
+            } else {
+                $expireDate = null;
+            }
             $requestType = (string)$requestType[0];
             // Only return requests of type Hold or Recall. Callslips/Stack
             // Retrieval requests are fetched using getMyStorageRetrievalRequests
@@ -837,8 +838,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'create' => '',
                     'expire' => $expireDate,
                     'title' => (string)$title[0],
-                    'position' => (string)$pos[0],
-                    'requestId' => (string)$requestId[0],
+                    'position' => !empty($pos) ? (string)$pos[0] : null,
+                    'requestId' => !empty($requestId) ? (string)$requestId[0] : null,
                     'item_id' => (string)$itemId[0],
                     'location' => (string)$pickupLocation[0],
                 ];
@@ -1130,7 +1131,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
-            $cancelled = true;
+            $cancelled = false;
             $id = $current->xpath(
                 'ns1:Ext/ns1:BibliographicDescription/' .
                 'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
@@ -1146,10 +1147,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $requestId = $current->xpath('ns1:RequestId/ns1:RequestIdentifierValue');
             $requestType = $current->xpath('ns1:RequestType');
             $requestType = (string)$requestType[0];
-            $tmpStatus = $current->xpath('ns1:RequestStatusType');
-            list($status, $created) = explode(" ", (string)$tmpStatus[0], 2);
-            if ($status === "Accepted") {
-                $cancelled = false;
+            $created = $current->xpath('ns1:DatePlaced');
+            $created = !empty($created)
+                ? date("l, d-M-y h:i a", strtotime((string)$created[0])) : null;
+            $requestStatusType = $current->xpath('ns1:RequestStatusType');
+            $status = !empty($requestStatusType) ? (string)$requestStatusType[0]
+                : null;
+            if (!in_array($status, ['Available For Pickup', 'In Process'])) {
+                $cancelled = true;
+            }
+            $processed = false;
+            if ($status === 'Available For Pickup') {
+                $processed = true;
             }
             // Only return requests of type Stack Retrieval/Callslip. Hold
             // and Recall requests are fetched using getMyHolds
@@ -1157,15 +1166,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $retVal[] = [
                     'id' => (string)$id[0],
                     'create' => $created,
-                    'expire' => '',
+                    'expire' => null,
                     'title' => (string)$title[0],
-                    'position' => (string)$pos[0],
-                    'requestId' => (string)$requestId[0],
-                    'item_agency_id' => (string)$itemAgencyId[0],
-                    'location' => 'test',
+                    'position' => !empty($pos) ? (string)$pos[0] : null,
+                    'requestId' => !empty($requestId) ? (string)$requestId[0] : null,
+                    'item_agency_id' => !empty($itemAgencyId)
+                        ? (string)$itemAgencyId[0] : null,
                     'canceled' => $cancelled,
                     'location' => (string)$pickupLocation[0],
-                    'processed' => false,
+                    'processed' => $processed,
                 ];
             }
         }
