@@ -1,9 +1,9 @@
 /* https://github.com/vufind-org/autocomplete.js 1.0b */
-$autocomplete-item-bg   : #fff !default;
-$autocomplete-active-bg : $brand-primary !default;
-$autocomplete-hover-bg  : lighten($brand-primary, 40%) !default;
-$autocomplete-border    : lightgray !default;
-$autocomplete-secondary : darkgray !default; // item description
+$autocomplete-item-bg   : #fff;
+$autocomplete-active-bg : $brand-primary;
+$autocomplete-hover-bg  : lighten($brand-primary, 40%);
+$autocomplete-border    : lightgray;
+$autocomplete-secondary : darkgray; // item description
 
 .autocomplete-results {
   position: absolute;
