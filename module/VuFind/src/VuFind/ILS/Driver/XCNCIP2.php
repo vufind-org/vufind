@@ -636,6 +636,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $extras = [
             '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
             'schemes/userelementtype/userelementtype.scm">' .
+            'User Address Information' .
+            '</ns1:UserElementType>',
+            '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
+            'schemes/userelementtype/userelementtype.scm">' .
             'Name Information' .
             '</ns1:UserElementType>'
         ];
@@ -661,6 +665,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:PersonalNameInformation/ns1:StructuredPersonalUserName/' .
             'ns1:Surname'
         );
+        $email = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:UserAddressInformation/' .
+            'ns1:ElectronicAddress/ns1:ElectronicAddressData'
+        );
 
         $patron = null;
         if (!empty($id)) {
@@ -670,7 +678,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'patron_agency_id' => (string)$patron_agency_id[0],
                 'cat_username' => $username,
                 'cat_password' => $password,
-                'email' => null,
+                'email' => !empty($email) ? (string)$email[0] : null,
                 'major' => null,
                 'college' => null,
                 'firstname' => (string)$first[0],

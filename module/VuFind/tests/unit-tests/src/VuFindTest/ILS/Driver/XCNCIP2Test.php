@@ -91,7 +91,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         'patron_agency_id' => 'MZK',
         'cat_username' => 'my_login',
         'cat_password' => 'my_password',
-        'email' => null,
+        'email' => 'test@mzk.cz',
         'major' => null,
         'college' => null,
         'firstname' => 'John',
