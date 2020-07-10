@@ -258,7 +258,9 @@ class Database extends AbstractBase
     protected function emailAllowed($email)
     {
         // If no inclusion list is configured, all emails are allowed:
-        $config = $this->getConfig()->Authentication->toArray();
+        $fullConfig = $this->getConfig();
+        $config = isset($fullConfig->Authentication)
+            ? $fullConfig->Authentication->toArray() : [];
         $rawIncludeList = $config['legal_domains']
             ?? $config['domain_whitelist']  // deprecated configuration
             ?? null;
