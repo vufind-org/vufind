@@ -2202,8 +2202,8 @@ EOT;
             $sqlStmt = $this->executeSQL($sql, $bindParams);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Process inclusion/exclusion lists to skip illegal values:
-                if ((is_array($include) && in_array($row['NAME'], $include))
-                    || (is_array($exclude) && !in_array($row['NAME'], $exclude))
+                if ((is_array($exclude) && in_array($row['NAME'], $exclude))
+                    || (is_array($include) && !in_array($row['NAME'], $include))
                 ) {
                     continue;
                 }
