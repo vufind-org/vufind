@@ -632,7 +632,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         //$request = $this->getLookupUserRequest(
         //    $username, $password, 'patron_agency_id'
         //);
-        $request = $this->getLookupUserRequest($username, $password);
+
+        $extras = [
+            '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
+            'schemes/userelementtype/userelementtype.scm">' .
+            'Name Information' .
+            '</ns1:UserElementType>'
+        ];
+
+        $request = $this->getLookupUserRequest($username, $password, null, $extras);
 
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
@@ -643,6 +651,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patron_agency_id = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserId/ns1:AgencyId'
         );
+        $first = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:NameInformation/' .
+            'ns1:PersonalNameInformation/ns1:StructuredPersonalUserName/' .
+            'ns1:GivenName'
+        );
+        $last = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:NameInformation/' .
+            'ns1:PersonalNameInformation/ns1:StructuredPersonalUserName/' .
+            'ns1:Surname'
+        );
+
+        $patron = null;
         if (!empty($id)) {
             // Fill in basic patron details:
             $patron = [
@@ -652,19 +672,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'cat_password' => $password,
                 'email' => null,
                 'major' => null,
-                'college' => null
+                'college' => null,
+                'firstname' => (string)$first[0],
+                'lastname' => (string)$last[0],
             ];
-
-            // Look up additional details:
-            $details = $this->getMyProfile($patron);
-            if (!empty($details)) {
-                $patron['firstname'] = $details['firstname'];
-                $patron['lastname'] = $details['lastname'];
-                return $patron;
-            }
         }
-
-        return null;
+        return $patron;
     }
 
     /**
