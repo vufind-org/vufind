@@ -11,7 +11,7 @@
       <th><?=$this->transEsc($title);?></th>
       <td>
         <?php foreach ($links as $link): ?>
-          <a href="<?=$this->recordLink()->related($link['link'], true, $this->driver->getSourceIdentifier());?>"><?=$this->escapeHtml($link['value']);?></a>
+          <a href="<?=$this->recordLink()->related($link['link'], true, $this->driver->getSourceIdentifier());?>"><?=$this->escapeHtml($link['value'] ?: $this->translate($title));?></a>
           <br />
         <?php endforeach; ?>
       </td>
