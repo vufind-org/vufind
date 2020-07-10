@@ -15,7 +15,7 @@ VuFind.register('lightbox', function Lightbox() {
   function _html(content) {
     _modalBody.html(content);
     // Set or update title if we have one
-    let $h2 = _modalBody.find("h2:first-of-type");
+    var $h2 = _modalBody.find("h2:first-of-type");
     if (_lightboxTitle && $h2) {
       $h2.text(_lightboxTitle);
     }
