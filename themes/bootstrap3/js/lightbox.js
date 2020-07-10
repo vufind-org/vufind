@@ -17,7 +17,11 @@ VuFind.register('lightbox', function Lightbox() {
     // Set or update title if we have one
     if (_lightboxTitle) {
       _modalTitle.text(_lightboxTitle);
+      _modalBody.find('h2:first-child').hide();
+      _modalTitle.show();
       _lightboxTitle = false;
+    } else {
+      _modalTitle.hide();
     }
     _modal.modal('handleUpdate');
   }
