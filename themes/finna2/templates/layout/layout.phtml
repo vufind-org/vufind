@@ -53,11 +53,15 @@
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
     <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
       // Set global variables for Javascript code:
       $this->headScript()->prependScript(
-         "path = '" . rtrim($this->url('home'), '/') . "';"
-         . "module = '" . $this->layout()->templateDir . "';"
-         . "action = '" . $this->layout()->templateName . "';"
+         "var path = '" . rtrim($this->url('home'), '/') . "';"
+         . "var module = '" . $this->layout()->templateDir . "';"
+         . "var action = '" . $this->layout()->templateName . "';"
+         . 'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
       );
 
       if (!isset($this->renderingError)) {
@@ -151,9 +155,11 @@
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setDomain("' . $domain . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
+          }
+          $cookiePath = $cart->getCookiePath();
+          if (!empty($cookiePath)) {
+            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
           }
           $this->jsTranslations()->addStrings(
             [
@@ -200,16 +206,11 @@
              }
            }
         }
-
-        $this->headScript()->prependScript(
-          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
-        );
       }
 
       // Session keep-alive
       if ($this->keepAlive()) {
-          $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->keepAlive());
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
           $this->headScript()->appendFile("keep_alive.js");
       }
 
@@ -238,12 +239,12 @@
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = <<<JS
+      $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
-      $this->headScript()->appendScript($setupJS);
+      $this->headScript()->appendScript(implode("\n", $appendScripts));
     ?>
     <?=$this->headScript()?>
     <?php if ($template = $this->content()->findTemplateForLng("content/Additions/general-post-head")): ?>
