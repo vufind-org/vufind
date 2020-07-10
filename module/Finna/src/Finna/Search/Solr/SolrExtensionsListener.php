@@ -262,7 +262,11 @@ class SolrExtensionsListener
         ) {
             $params = $event->getParam('params');
             if ($params) {
-                $params->add('fq', '-hidden_component_boolean:true');
+                // Check that search is not for a known record id
+                $query = $event->getParam('query');
+                if (!$query || $query->getHandler() !== 'id') {
+                    $params->add('fq', '-hidden_component_boolean:true');
+                }
             }
         }
     }
