@@ -314,7 +314,7 @@ finna.imagePaginator = (function imagePaginator() {
         clearTimeout(timeOut);
         timeOut = null;
       }
-      if (_.leafletHolder.length === 0) {
+      if (_.leafletHolder.length === 0 || typeof _.canvasElements.leaflet === 'undefined') {
         return;
       }
 
