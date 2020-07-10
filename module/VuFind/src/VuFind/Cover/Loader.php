@@ -358,8 +358,8 @@ class Loader extends \VuFind\ImageLoader
      */
     public function loadUnavailable()
     {
-        parent::loadUnavailable();
         $this->hasLoadedUnavailable = true;
+        return parent::loadUnavailable();
     }
 
     /**
