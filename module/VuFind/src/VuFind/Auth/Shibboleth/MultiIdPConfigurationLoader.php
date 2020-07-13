@@ -1,6 +1,8 @@
 <?php
 namespace VuFind\Auth\Shibboleth;
 
+use VuFind\Exception\Auth as AuthException;
+
 class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
