@@ -187,13 +187,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $status = empty($status) ? '' : (string)$status[0];
 
-        /* unused variable -- can we remove?
-        $itemId = $current->xpath(
-            'ns1:ItemId/ns1:ItemIdentifierValue'
-        );
-        $item_id = (string)$itemId[0];
-         */
-
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
@@ -203,14 +196,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:ItemOptionalFields/ns1:Location/ns1:LocationName/' .
             'ns1:LocationNameInstance/ns1:LocationNameValue'
         );
-        $location = (string)$location[0];
+        $location = !empty($location) ? (string)$location[0] : null;
 
         return [
-            //'id' => ...
             'status' => $status,
             'location' => $location,
             'callnumber' => $itemCallNo,
-            'availability' => ($status == "Not Charged"),
+            'availability' => in_array(
+                $status, ["Not Charged", "Available On Shelf"]
+            ),
             'reserve' => 'N',       // not supported
         ];
     }
@@ -346,17 +340,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusRequest($idList, $resumption = null, $agency = null)
     {
-        $agencyList = [];
-
+        // FIXME: We are using the first defined agency, it will probably not work in
+        // consortium scenario
         if (null === $agency) {
             $keys = array_keys($this->agency);
-            $agencyList[] = $keys[0];
-        }
-
-        if (! is_array($agency)) {
-            $agencyList[] = $agency[0];
-        } else {
-            $agencyList = $agency;
+            $agency = $keys[0];
         }
 
         // Build a list of the types of information we want to retrieve:
@@ -376,14 +364,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/' .
             'ncip_v2_0.xsd"><ns1:Ext><ns1:LookupItemSet>';
 
-        for ($i = 0, $size = count($idList); $i < $size; $i++) {
+        foreach ($idList as $id) {
             $xml .= '<ns1:BibliographicId>' .
                     '<ns1:BibliographicRecordId>' .
                         '<ns1:BibliographicRecordIdentifier>' .
-                            htmlspecialchars($idList[$i]) .
+                            htmlspecialchars($id) .
                         '</ns1:BibliographicRecordIdentifier>' .
                         '<ns1:AgencyId>' .
-                            htmlspecialchars($agencyList[$i]) .
+                            htmlspecialchars($agency) .
                         '</ns1:AgencyId>' .
                     '</ns1:BibliographicRecordId>' .
                 '</ns1:BibliographicId>';
@@ -431,25 +419,26 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         do {
             $request = $this->getStatusRequest($idList, $resumption);
             $response = $this->sendRequest($request);
-            $avail = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
+            $bibInfo = $response->xpath(
+                'ns1:LookupItemSetResponse/ns1:BibInformation'
             );
 
             // Build the array of statuses:
-            foreach ($avail as $current) {
-                $bib_id = $current->xpath(
+            foreach ($bibInfo as $bib) {
+                $bib_id = $bib->xpath(
                     'ns1:BibliographicId/ns1:BibliographicRecordId/' .
                     'ns1:BibliographicRecordIdentifier'
                 );
                 $bib_id = (string)$bib_id[0];
 
-                $holdings = $current->xpath('ns1:HoldingsSet');
+                $holdings = $bib->xpath('ns1:HoldingsSet');
 
-                foreach ($holdings as $current) {
-                    $holdCallNo = $current->xpath('ns1:CallNumber');
-                    $holdCallNo = (string)$holdCallNo[0];
+                foreach ($holdings as $holding) {
+                    $holdCallNo = $holding->xpath('ns1:CallNumber');
+                    $holdCallNo = !empty($holdCallNo) ? (string)$holdCallNo[0]
+                        : null;
 
-                    $items = $current->xpath('ns1:ItemInformation');
+                    $items = $holding->xpath('ns1:ItemInformation');
 
                     foreach ($items as $item) {
                         // Get data on the current chunk of data:
@@ -462,8 +451,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         // array; make sure we initialize new arrays when necessary
                         // and then add the current chunk to the right place:
                         $chunk['id'] = $bib_id;
-                        if (!isset($status[$id])) {
-                            $status[$id] = [];
+                        if (!isset($status[$bib_id])) {
+                            $status[$bib_id] = [];
                         }
                         $status[$bib_id][] = $chunk;
                     }
@@ -472,7 +461,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // Check for resumption token:
             $resumption = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:NextItemToken'
+                'ns1:LookupItemSetResponse/ns1:NextItemToken'
             );
             $resumption = count($resumption) > 0 ? (string)$resumption[0] : null;
         } while (!empty($resumption));
@@ -666,8 +655,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:Surname'
         );
         $email = $response->xpath(
-            'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:UserAddressInformation/' .
-            'ns1:ElectronicAddress/ns1:ElectronicAddressData'
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+            'ns1:UserAddressInformation/ns1:ElectronicAddress/' .
+                'ns1:ElectronicAddressData'
         );
 
         $patron = null;
