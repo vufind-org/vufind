@@ -146,6 +146,47 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $getStatusesResult = [
+        "MZK01000000421" => [
+            [
+                "status" => "Available On Shelf",
+                "location" => null,
+                "callnumber" => "621.3 ANG",
+                "availability" => true,
+                "reserve" => "N",
+                "id" => "MZK01000000421",
+            ],
+        ],
+        "MZK01000062021" => [
+            [
+                "status" => "Available On Shelf",
+                "location" => null,
+                "callnumber" => "PK-0083.568",
+                "availability" => true,
+                "reserve" => "N",
+                "id" => "MZK01000062021",
+            ],
+        ],
+        "MZK01000000425" => [
+            [
+                "status" => "Available On Shelf",
+                "location" => null,
+                "callnumber" => "2-0997.767,2",
+                "availability" => true,
+                "reserve" => "N",
+                "id" => "MZK01000000425",
+            ],
+            [
+                "status" => "Available On Shelf",
+                "location" => null,
+                "callnumber" => "2-0997.767,2",
+                "availability" => true,
+                "reserve" => "N",
+                "id" => "MZK01000000425",
+            ],
+        ],
+    ];
+
     /**
      * Test getMyTransactions
      *
@@ -244,6 +285,14 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->assertEquals($this->storageRetrievalResult, $storageRetrievals);
     }
 
+    public function testGetStatuses()
+    {
+        $this->configureDriver();
+        $this->mockResponse('lookupItemSet.xml');
+        $status = $this->driver->getStatuses(['MZK01000000421']);
+        $this->assertEquals($this->getStatusesResult, $status);
+    }
+
     /**
      * Mock fixture as HTTP client response
      *
@@ -286,7 +335,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'Catalog' => [
                 'url' => 'https://test.ncip.example',
                 'consortium' => false,
-                'agency' => 'Test agency',
+                'agency' => ['Test agency'],
                 'pickupLocationsFile' => 'XCNCIP2_locations.txt',
             ],
             'NCIP' => [],
