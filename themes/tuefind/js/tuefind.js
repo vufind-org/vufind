@@ -92,21 +92,16 @@ var TueFind = {
                         else if (verbose)
                             $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
                     });
+                    if (snippets)
+                        $(this).removeAttr('style');
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
-                            $(this).removeAttr('style');
-                            if (snippets[0].hasOwnProperty('style')) {
-                                var styles = snippets.map(a => a.style).join();
-                                $(styles).appendTo("head");
-                            }
-                            if (snippets[0].hasOwnProperty('page')) {
-                                var snippets_and_pages = snippets.map(a => a.snippet + '<br/>' + TueFind.FormatPageInformation(a.page) +
-                                                                     TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
-                                $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
-                            }
-                            else {
-                                $(this).html(snippets.map(a => a.snippet + '<br/>' + TueFind.FormatTextType(a.text_type, verbose, fulltext_types)).join('<br/>'));
-                            }
+                            let styles = snippets.map(a => (a.hasOwnProperty('style') ? a.style : null )).filter(Boolean).join();
+                            $(styles).appendTo("head");
+                            let snippets_and_pages = snippets.map(a => a.snippet +
+                                                                 (a.hasOwnProperty('page') ? '<br/>' + TueFind.FormatPageInformation(a.page) : '') +
+                                                                 TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
+                            $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
                         } else if (verbose)
                             $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
                         else
