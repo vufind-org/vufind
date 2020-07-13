@@ -96,9 +96,9 @@ var TueFind = {
                         $(this).removeAttr('style');
                     $("#snippets_" + doc_id).each(function () {
                         if (snippets) {
-                            var styles = snippets.map(a => (a.hasOwnProperty('style') ? a.style : null )).filter(Boolean).join();
+                            let styles = snippets.map(a => (a.hasOwnProperty('style') ? a.style : null )).filter(Boolean).join();
                             $(styles).appendTo("head");
-                            var snippets_and_pages = snippets.map(a => a.snippet +
+                            let snippets_and_pages = snippets.map(a => a.snippet +
                                                                  (a.hasOwnProperty('page') ? '<br/>' + TueFind.FormatPageInformation(a.page) : '') +
                                                                  TueFind.FormatTextType(a.text_type, verbose, fulltext_types));
                             $(this).html(snippets_and_pages.join('<hr class="snippet-separator"/>'));
