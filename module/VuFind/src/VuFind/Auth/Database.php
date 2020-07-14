@@ -249,7 +249,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Check that an email address is legal based on whitelist (if configured).
+     * Check that an email address is legal based on inclusion list (if configured).
      *
      * @param string $email Email address to check (assumed to be valid/well-formed)
      *
@@ -257,28 +257,28 @@ class Database extends AbstractBase
      */
     protected function emailAllowed($email)
     {
-        // If no whitelist is configured, all emails are allowed:
-        $config = $this->getConfig();
-        if (!isset($config->Authentication->domain_whitelist)
-            || empty($config->Authentication->domain_whitelist)
-        ) {
+        // If no inclusion list is configured, all emails are allowed:
+        $fullConfig = $this->getConfig();
+        $config = isset($fullConfig->Authentication)
+            ? $fullConfig->Authentication->toArray() : [];
+        $rawIncludeList = $config['legal_domains']
+            ?? $config['domain_whitelist']  // deprecated configuration
+            ?? null;
+        if (empty($rawIncludeList)) {
             return true;
         }
 
-        // Normalize the whitelist:
-        $whitelist = array_map(
-            'trim',
-            array_map(
-                'strtolower', $config->Authentication->domain_whitelist->toArray()
-            )
+        // Normalize the allowed list:
+        $includeList = array_map(
+            'trim', array_map('strtolower', $rawIncludeList)
         );
 
         // Extract the domain from the email address:
         $parts = explode('@', $email);
         $domain = strtolower(trim(array_pop($parts)));
 
-        // Match domain against whitelist:
-        return in_array($domain, $whitelist);
+        // Match domain against allowed list:
+        return in_array($domain, $includeList);
     }
 
     /**
@@ -366,7 +366,7 @@ class Database extends AbstractBase
             throw new AuthException('Email address is invalid');
         }
 
-        // Check if Email is on whitelist (if applicable)
+        // Check if Email is on allowed list (if applicable)
         if (!$this->emailAllowed($params['email'])) {
             throw new AuthException('authentication_error_creation_blocked');
         }

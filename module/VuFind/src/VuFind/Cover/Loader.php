@@ -277,13 +277,13 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Support method for loadImage() -- sanitize and store some key values.
      *
-     * @param array $settings Settings from loadImage (with missing defaults
-     * already filled in).
+     * @param array $settings Settings from loadImage
      *
      * @return void
      */
     protected function storeSanitizedSettings($settings)
     {
+        $settings = array_merge($this->getDefaultSettings(), $settings);
         $this->isbn = new ISBN($settings['isbn']);
         $this->ismn = new ISMN($settings['ismn']);
         if (!empty($settings['issn'])) {
@@ -318,7 +318,7 @@ class Loader extends \VuFind\ImageLoader
         // Load settings from legacy function parameters if they are not passed
         // in as an array:
         $settings = is_array($settings)
-            ? array_merge($this->getDefaultSettings(), $settings)
+            ? $settings
             : $this->getImageSettingsFromLegacyArgs(func_get_args());
 
         // Store sanitized versions of some parameters for future reference:
@@ -435,31 +435,14 @@ class Loader extends \VuFind\ImageLoader
             $this->contentType = 'image/jpeg';
             $this->image = file_get_contents($this->localFile);
             return true;
-        } elseif (isset($this->config->Content->coverimages)) {
-            $providers = explode(',', $this->config->Content->coverimages);
-            foreach ($providers as $provider) {
-                $provider = explode(':', trim($provider));
-                $apiName = strtolower(trim($provider[0]));
-                $key = isset($provider[1]) ? trim($provider[1]) : null;
-                try {
-                    $handler = $this->apiManager->get($apiName);
-
-                    // Is the current provider appropriate for the available data?
-                    if ($handler->supports($ids)) {
-                        if ($url = $handler->getUrl($key, $this->size, $ids)) {
-                            $success = $this->processImageURLForSource(
-                                $url, $handler->isCacheAllowed(), $apiName
-                            );
-                            if ($success) {
-                                return true;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    $this->debug(
-                        get_class($e) . ' during processing of ' . $apiName
-                        . ': ' . $e->getMessage()
-                    );
+        } else {
+            $urls = $this->getCoverUrls();
+            foreach ($urls as $url) {
+                $success = $this->processImageURLForSource(
+                    $url['url'], $url['handler']->isCacheAllowed(), $url['apiName']
+                );
+                if ($success) {
+                    return true;
                 }
             }
         }
@@ -671,5 +654,74 @@ class Loader extends \VuFind\ImageLoader
             }
             return true;
         }
+    }
+
+    /**
+     * Get urls for defined provider, works as generator
+     *
+     * @return array
+     */
+    protected function getCoverUrls()
+    {
+        $ids = $this->getIdentifiers();
+        $handlers = $this->getHandlers();
+        foreach ($handlers as $handler) {
+            try {
+                // Is the current provider appropriate for the available data?
+                if ($handler['handler']->supports($ids)) {
+                    $url = $handler['handler']
+                        ->getUrl($handler['key'], $this->size, $ids);
+                    if ($url) {
+                        yield [
+                            'url' => $url,
+                            'apiName' => $handler['apiName'],
+                            'handler' => $handler['handler'],
+                        ];
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during processing of ' . $handler['apiName']
+                    . ': ' . $e->getMessage()
+                );
+            }
+        }
+    }
+
+    /**
+     * Return API handlers
+     *
+     * @return \Generator Array with keys: key - API key, apiName - api name from
+     * configuration, handler - handler object
+     */
+    public function getHandlers()
+    {
+        if (!isset($this->config->Content->coverimages)) {
+            return [];
+        }
+        $providers = explode(',', $this->config->Content->coverimages);
+        foreach ($providers as $provider) {
+            $provider = explode(':', trim($provider));
+            $apiName = strtolower(trim($provider[0]));
+            $key = isset($provider[1]) ? trim($provider[1]) : null;
+            yield [
+                'key' => $key,
+                'apiName' => $apiName,
+                'handler' => $this->apiManager->get($apiName),
+            ];
+        }
+    }
+
+    /**
+     * Get identifiers for given settings
+     *
+     * @param array $settings Settings from loadImage
+     *
+     * @return array
+     */
+    public function getIdentifiersForSettings($settings)
+    {
+        $this->storeSanitizedSettings($settings);
+        return $this->getIdentifiers();
     }
 }

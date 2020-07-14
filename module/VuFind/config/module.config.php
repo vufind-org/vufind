@@ -358,6 +358,7 @@ $config = [
             'VuFind\Content\AuthorNotes\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Covers\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Excerpts\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Content\ObalkyKnihService' => 'VuFind\Content\ObalkyKnihServiceFactory',
             'VuFind\Content\Reviews\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Summaries\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\TOC\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

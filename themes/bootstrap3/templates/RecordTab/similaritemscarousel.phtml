@@ -17,8 +17,7 @@
         <?php foreach ($similarRecords as $index => $data): ?>
           <div class="carousel-item">
             <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
-              <?php $thumb = $this->record($data)->getThumbnail('large'); ?>
-              <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+              <?=$this->record($data)->getCoverDetails('core', 'large')['html']?>
               <div class="content">
                 <?php $formats = $data->getFormats(); ?>
                 <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
@@ -52,7 +51,8 @@
   <p><?=$this->transEsc('Cannot find similar records')?></p>
 <?php endif; ?>
 <?php
-  $script = <<<JS
+  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : "";
+  $script .= <<<JS
 var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {
   if(--normalizeHeightCount > 0) return;

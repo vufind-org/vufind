@@ -1,6 +1,6 @@
 <?php
 /**
- * Cover caching proxy factory.
+ * Factory for GetRecordCover AJAX handler.
  *
  * PHP version 7
  *
@@ -20,26 +20,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  AJAX
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Cover;
+namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Cover caching proxy factory.
+ * Factory for GetRecordCover AJAX handler.
  *
  * @category VuFind
- * @package  Cover_Generator
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  AJAX
+ * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CachingProxyFactory implements FactoryInterface
+class GetRecordCoverFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,16 +61,9 @@ class CachingProxyFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('cover')->getOptions()->getCacheDir();
-        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
-            ->toArray();
-        $allowedHosts = isset($config['Content']['coverproxyCache'])
-            ? (array)$config['Content']['coverproxyCache'] : [];
-        return new $requestedName($client, $cacheDir . '/proxy', $allowedHosts);
+        return new $requestedName(
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Cover\Router::class)
+        );
     }
 }
