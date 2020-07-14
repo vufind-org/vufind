@@ -1,7 +1,7 @@
 /*exported addGroup, addSearch, deleteGroup, deleteSearch */
-/* jshint latedef: nofunc */
 var nextGroup = 0;
 var groupLength = [];
+var deleteGroup, deleteSearch;
 
 function addSearch(group, _fieldValues) {
   var fieldValues = _fieldValues || {};
@@ -56,7 +56,7 @@ function addSearch(group, _fieldValues) {
   return false;
 }
 
-function deleteSearch(group, sindex) {
+deleteSearch = function _deleteSearch(group, sindex) {
   for (var i = sindex; i < groupLength[group] - 1; i++) {
     var $search0 = $('#search' + group + '_' + i);
     var $search1 = $('#search' + group + '_' + (i + 1));
@@ -73,7 +73,7 @@ function deleteSearch(group, sindex) {
     }
   }
   return false;
-}
+};
 
 function addGroup(_firstTerm, _firstField, _join) {
   var firstTerm = _firstTerm || '';
@@ -121,7 +121,7 @@ function addGroup(_firstTerm, _firstField, _join) {
   return nextGroup++;
 }
 
-function deleteGroup(group) {
+deleteGroup = function _deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
   // If the last group was removed, add an empty group
@@ -132,7 +132,7 @@ function deleteGroup(group) {
     $('.adv-group .adv-group-close').addClass('hidden'); // Hide x
   }
   return false;
-}
+};
 
 $(document).ready(function advSearchReady() {
   $('.clear-btn').click(function clearBtnClick() {
