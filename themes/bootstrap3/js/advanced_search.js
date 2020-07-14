@@ -1,4 +1,5 @@
 /*exported addGroup, addSearch, deleteGroup, deleteSearch */
+/* jshint latedef: nofunc */
 var nextGroup = 0;
 var groupLength = [];
 
