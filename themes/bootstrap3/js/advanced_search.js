@@ -18,7 +18,11 @@ function addSearch(group, _fieldValues) {
     .attr('id', 'search_type' + inputID)
     .attr('name', 'type' + group + '[]');
   $newSearch.find('.adv-term-remove')
-    .attr('onClick', 'return deleteSearch(' + group + ',' + groupLength[group] + ')');
+    .data('group', group)
+    .data('groupLength', groupLength[group])
+    .click(function deleteSearchHandler() {
+      return deleteSearch($(this).data('group'),$(this).data('groupLength'));
+    });
   // Preset Values
   if (typeof fieldValues.term !== "undefined") {
     $newSearch.find('input.form-control').val(fieldValues.term);
@@ -84,10 +88,16 @@ function addGroup(_firstTerm, _firstField, _join) {
     .removeClass('hidden');
   $newGroup.find('.add_search_link')
     .attr('id', 'add_search_link_' + nextGroup)
-    .attr('onClick', 'return addSearch(' + nextGroup + ')')
+    .data('nextGroup', nextGroup)
+    .click(function addSearchHandler() {
+      return addSearch($(this).data('nextGroup'));
+    })
     .removeClass('hidden');
   $newGroup.find('.adv-group-close')
-    .attr('onClick', 'return deleteGroup(' + nextGroup + ')');
+    .data('nextGroup', nextGroup)
+    .click(function deleteGroupHandler() {
+      return deleteGroup($(this).data('nextGroup'));
+    });
   $newGroup.find('select.form-control')
     .attr('id', 'search_bool' + nextGroup)
     .attr('name', 'bool' + nextGroup + '[]');
