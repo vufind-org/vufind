@@ -50,6 +50,7 @@ class Folio extends AbstractAPI implements
         logWarning as warning;
         logError as error;
     }
+    use \VuFind\ILS\Driver\CacheTrait;
 
     /**
      * Authentication tenant (X-Okapi-Tenant)
@@ -417,6 +418,41 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get Inventory Locations from cache or API
+     *
+     * @return array $locationMap
+     */
+    protected function getLocations()
+    {
+        $cacheKey = 'locationMap';
+        $locationMap = $this->getCachedData($cacheKey);
+        if (null === $locationMap) {
+            $locationMap = [];
+            foreach ($this->getPagedResults(
+                'locations', '/locations'
+            ) as $location) {
+                $locationMap[$location->id] = $location->name;
+            }
+            $this->putCachedData($cacheKey, $locationMap, 3600);
+
+        }
+        return $locationMap;
+    }
+
+    /**
+     * Get Inventory Location Name
+     *
+     * @param string $locationId UUID of item location
+     *
+     * @return string $locationName display name of location
+     */
+    protected function getLocationName($locationId)
+    {
+        $locationMap = $this->getLocations();
+        return $locationMap[$locationId] ?? '';
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -450,15 +486,7 @@ class Folio extends AbstractAPI implements
                 if ($item->discoverySuppress ?? false) {
                     continue;
                 }
-                $locationName = '';
-                if (!empty($item->effectiveLocationId)) {
-                    $locationResponse = $this->makeRequest(
-                        'GET',
-                        '/locations/' . $item->effectiveLocationId
-                    );
-                    $location = json_decode($locationResponse->getBody());
-                    $locationName = $location->name;
-                }
+                $locationName = $this->getLocationName($item->effectiveLocationId);
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
