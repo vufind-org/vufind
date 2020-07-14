@@ -21,7 +21,7 @@ function addSearch(group, _fieldValues) {
     .data('group', group)
     .data('groupLength', groupLength[group])
     .click(function deleteSearchHandler() {
-      return deleteSearch($(this).data('group'),$(this).data('groupLength'));
+      return deleteSearch($(this).data('group'), $(this).data('groupLength'));
     });
   // Preset Values
   if (typeof fieldValues.term !== "undefined") {
