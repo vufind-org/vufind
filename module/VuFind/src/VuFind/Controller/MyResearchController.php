@@ -181,6 +181,7 @@ class MyResearchController extends AbstractBase
             try {
                 if (!$this->getAuthManager()->isLoggedIn()) {
                     $this->getAuthManager()->login($this->getRequest());
+                    $this->flashMessenger()->addMessage('logged_in', 'info');
                     // Return early to avoid unnecessary processing if we are being
                     // called from login lightbox and don't have a followup action.
                     if ($this->params()->fromPost('processLogin')
