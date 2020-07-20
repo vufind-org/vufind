@@ -24,6 +24,8 @@
   }
 ?>
 
+<?=$this->flashmessages()?>
+
 <?php if (empty($token)): ?>
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
