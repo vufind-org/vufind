@@ -68,7 +68,8 @@ class IpRegEx implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // Check if any regex matches....
-        $ip = $this->request->getServer()->get('REMOTE_ADDR');
+        $ip = $this->request->getServer()->get('HTTP_X_FORWARDED_FOR')
+            ?? $this->request->getServer()->get('REMOTE_ADDR');
         foreach ((array)$options as $current) {
             if (preg_match($current, $ip)) {
                 // Match? Grant to all users (guest or logged in).

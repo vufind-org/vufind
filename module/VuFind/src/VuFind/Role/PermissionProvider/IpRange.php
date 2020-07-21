@@ -86,7 +86,8 @@ class IpRange implements PermissionProviderInterface
             return [];
         }
         // Check if any regex matches....
-        $ip = $this->request->getServer()->get('REMOTE_ADDR');
+        $ip = $this->request->getServer()->get('HTTP_X_FORWARDED_FOR')
+            ?? $this->request->getServer()->get('REMOTE_ADDR');
         if ($this->ipAddressUtils->isInRange($ip, (array)$options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];
