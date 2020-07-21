@@ -137,6 +137,8 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      *
      * @return \stdClass|null
      * @throws \Exception
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     protected function getFromService(array $ids): ?\stdClass
     {
