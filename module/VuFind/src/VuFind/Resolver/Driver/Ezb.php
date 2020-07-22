@@ -69,8 +69,9 @@ class Ezb extends AbstractBase
     /**
      * Constructor
      *
-     * @param string               $baseUrl    Base URL for link resolver
-     * @param \Laminas\Http\Client $httpClient HTTP client
+     * @param string               $baseUrl      Base URL for link resolver
+     * @param \Laminas\Http\Client $httpClient   HTTP client
+     * @param UserIpReader         $userIpReader User IP address reader
      */
     public function __construct($baseUrl, \Laminas\Http\Client $httpClient,
         UserIpReader $userIpReader = null
