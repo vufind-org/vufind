@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Role\PermissionProvider;
+namespace VuFind\Net;
 
 use Interop\Container\ContainerInterface;
 
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IpRangeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

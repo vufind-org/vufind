@@ -381,11 +381,11 @@ class LoggerFactory implements FactoryInterface
             $proxy->setProxyInitializer(null);
 
             // Now build the actual service:
-            $options = [
+            $loggerOptions = [
                 'vufind_ip_reader' =>
                     $container->get(\VuFind\Net\UserIpReader::class)
             ];
-            $wrapped = new $requestedName($options);
+            $wrapped = new $requestedName($loggerOptions);
             $this->configureLogger($container, $wrapped);
         };
         $cfg = $container->get(\ProxyManager\Configuration::class);
