@@ -93,13 +93,14 @@ class IpRange implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
-        if (PHP_SAPI == 'cli') {
-            return [];
-        }
         // Check if any regex matches....
-        $ipAddr = $this->userIpReader !== null
-            ? $this->userIpReader->getUserIp()
-            : $this->request->getServer()->get('REMOTE_ADDR');
+        if ($this->userIpReader !== null) {
+            $ipAddr = $this->userIpReader->getUserIp();
+        } elseif (PHP_SAPI == 'cli') {
+            $ipAddr = null;
+        } else {
+            $ipAddr = $this->request->getServer()->get('REMOTE_ADDR');
+        }
         if ($this->ipAddressUtils->isInRange($ipAddr, (array)$options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];

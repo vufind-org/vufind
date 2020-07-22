@@ -78,9 +78,13 @@ class IpRegEx implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // Check if any regex matches....
-        $ipAddr = $this->userIpReader !== null
-            ? $this->userIpReader->getUserIp()
-            : $this->request->getServer()->get('REMOTE_ADDR');
+        if ($this->userIpReader !== null) {
+            $ipAddr = $this->userIpReader->getUserIp();
+        } elseif (PHP_SAPI == 'cli') {
+            $ipAddr = null;
+        } else {
+            $ipAddr = $this->request->getServer()->get('REMOTE_ADDR');
+        }
         foreach ((array)$options as $current) {
             if (preg_match($current, $ipAddr)) {
                 // Match? Grant to all users (guest or logged in).
