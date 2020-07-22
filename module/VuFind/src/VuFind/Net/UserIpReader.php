@@ -74,8 +74,21 @@ class UserIpReader
      */
     public function getUserIp()
     {
-        $forwardedIp = $this->allowForwardedIps
-            ? $this->server->get('HTTP_X_FORWARDED_FOR') : null;
-        return $forwardedIp ?? $this->server->get('REMOTE_ADDR');
+        if ($this->allowForwardedIps) {
+            // First check X-Real-IP; this is most accurate when set...
+            $realIp = $this->server->get('HTTP_X_REAL_IP');
+            if (!empty($realIp)) {
+                return $realIp;
+            }
+            // Next, try X-Forwarded-For; if it's a comma-separated list, use
+            // only the first part.
+            $forwarded = $this->server->get('HTTP_X_FORWARDED_FOR');
+            if (!empty($forwarded)) {
+                $parts = explode(',', $forwarded);
+                return trim($parts[0]);
+            }
+        }
+        // Default case: use REMOTE_ADDR directly.
+        return $this->server->get('REMOTE_ADDR');
     }
 }
