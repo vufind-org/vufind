@@ -27,6 +27,8 @@
  */
 namespace VuFind\Net;
 
+use Laminas\Stdlib\Parameters;
+
 /**
  * Service to retrieve user IP address.
  *
@@ -41,7 +43,7 @@ class UserIpReader
     /**
      * Server parameters
      *
-     * @var object
+     * @var Parameters
      */
     protected $server;
 
@@ -55,10 +57,11 @@ class UserIpReader
     /**
      * Constructor
      *
-     * @param object $server            Server parameters
-     * @param bool   $allowForwardedIps Should we respect the X-Forwarded-For header?
+     * @param Parameters $server            Server parameters
+     * @param bool       $allowForwardedIps Should we respect the X-Forwarded-For
+     * header?
      */
-    public function __construct($server, $allowForwardedIps = false)
+    public function __construct(Parameters $server, $allowForwardedIps = false)
     {
         $this->server = $server;
         $this->allowForwardedIps = $allowForwardedIps;
