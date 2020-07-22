@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Security
+ * @package  Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -35,7 +35,7 @@ use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
  * VuFind class for generating Content Security Policy http headers
  *
  * @category VuFind
- * @package  VuFind\Security
+ * @package  Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
