@@ -38,6 +38,7 @@ namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
 use DOMXpath;
+use VuFind\Net\UserIpReader;
 
 /**
  * EZB Link Resolver Driver
@@ -59,15 +60,24 @@ class Ezb extends AbstractBase
     protected $httpClient;
 
     /**
+     * User IP address reader
+     *
+     * @var UserIpReader
+     */
+    protected $userIpReader;
+
+    /**
      * Constructor
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
-    {
+    public function __construct($baseUrl, \Laminas\Http\Client $httpClient,
+        UserIpReader $userIpReader = null
+    ) {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
+        $this->userIpReader = $userIpReader;
     }
 
     /**
@@ -156,7 +166,10 @@ class Ezb extends AbstractBase
 
         // make the request IP-based to allow automatic
         // indication on institution level
-        $openURL .= '&pid=client_ip%3D' . $_SERVER['REMOTE_ADDR'];
+        $ipAddr = $this->userIpReader !== null
+            ? $this->userIpReader->getUserIp()
+            : $_SERVER['REMOTE_ADDR'];
+        $openURL .= '&pid=client_ip%3D' . urlencode($ipAddr);
 
         // Make the call to the EZB and load results
         $url = $this->baseUrl . '?' . $openURL;

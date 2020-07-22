@@ -28,6 +28,8 @@
 namespace VuFind\Log;
 
 use Laminas\Log\Logger as BaseLogger;
+use Traversable;
+use VuFind\Net\UserIpReader;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -46,6 +48,32 @@ class Logger extends BaseLogger
      * @var bool
      */
     protected $debugNeeded = false;
+
+    /**
+     * User IP address reader
+     *
+     * @var UserIpReader
+     */
+    protected $userIpReader;
+
+    /**
+     * Constructor
+     *
+     * Set options for a logger. Accepted options are:
+     * - writers: array of writers to add to this logger
+     * - exceptionhandler: if true register this logger as exceptionhandler
+     * - errorhandler: if true register this logger as errorhandler
+     * - vufind_ip_reader: UserIpReader object to use for IP lookups
+     *
+     * @param array|Traversable $options Configuration options
+     *
+     * @throws \Laminas\Log\Exception\InvalidArgumentException
+     */
+    public function __construct($options = null)
+    {
+        parent::__construct($options);
+        $this->userIpReader = $options['vufind_ip_reader'] ?? null;
+    }
 
     /**
      * Is one of the log writers listening for debug messages?  (This is useful to
@@ -132,9 +160,10 @@ class Logger extends BaseLogger
             $prev = $prev->getPrevious();
         }
         $referer = $server->get('HTTP_REFERER', 'none');
-        $ip = $server->get('HTTP_X_FORWARDED_FOR') ?? $server->get('REMOTE_ADDR');
+        $ipAddr = $this->userIpReader !== null
+            ? $this->userIpReader->getUserIp() : $server->get('REMOTE_ADDR');
         $basicServer
-            = '(Server: IP = ' . $ip . ', '
+            = '(Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '

@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for instantiating IpRange permission provider.
+ * Factory for instantiating IpRegEx permission provider.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@ namespace VuFind\Role\PermissionProvider;
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for instantiating IpRange permission provider.
+ * Factory for instantiating IpRegEx permission provider.
  *
  * @category VuFind
  * @package  Authorization
@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IpRangeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class IpRegExFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -64,8 +64,7 @@ class IpRangeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         }
         return new $requestedName(
             $container->get('Request'),
-            $container->get(\VuFind\Net\IpAddressUtils::class),
-            $container->get(\VuFind\Net\UserIpReader::class),
+            $container->get(\VuFind\Net\UserIpReader::class)
         );
     }
 }

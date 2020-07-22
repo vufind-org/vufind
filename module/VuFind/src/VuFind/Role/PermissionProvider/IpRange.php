@@ -32,6 +32,7 @@ namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Stdlib\RequestInterface;
 use VuFind\Net\IpAddressUtils;
+use VuFind\Net\UserIpReader;
 
 /**
  * IpRange permission provider for VuFind.
@@ -61,15 +62,25 @@ class IpRange implements PermissionProviderInterface
     protected $ipAddressUtils;
 
     /**
+     * User IP address reader
+     *
+     * @var UserIpReader
+     */
+    protected $userIpReader;
+
+    /**
      * Constructor
      *
-     * @param RequestInterface $request Request object
-     * @param IpAddressUtils   $ipUtils IpAddressUtils object
+     * @param RequestInterface $request      Request object
+     * @param IpAddressUtils   $ipUtils      IpAddressUtils object
+     * @param UserIpReader     $userIpReader User IP address reader
      */
-    public function __construct(RequestInterface $request, IpAddressUtils $ipUtils)
-    {
+    public function __construct(RequestInterface $request, IpAddressUtils $ipUtils,
+        UserIpReader $userIpReader = null
+    ) {
         $this->request = $request;
         $this->ipAddressUtils = $ipUtils;
+        $this->userIpReader = $userIpReader;
     }
 
     /**
@@ -86,9 +97,10 @@ class IpRange implements PermissionProviderInterface
             return [];
         }
         // Check if any regex matches....
-        $ip = $this->request->getServer()->get('HTTP_X_FORWARDED_FOR')
-            ?? $this->request->getServer()->get('REMOTE_ADDR');
-        if ($this->ipAddressUtils->isInRange($ip, (array)$options)) {
+        $ipAddr = $this->userIpReader !== null
+            ? $this->userIpReader->getUserIp()
+            : $this->request->getServer()->get('REMOTE_ADDR');
+        if ($this->ipAddressUtils->isInRange($ipAddr, (array)$options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];
         }
