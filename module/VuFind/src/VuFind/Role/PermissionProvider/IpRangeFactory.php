@@ -65,7 +65,7 @@ class IpRangeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         return new $requestedName(
             $container->get('Request'),
             $container->get(\VuFind\Net\IpAddressUtils::class),
-            $container->get(\VuFind\Net\UserIpReader::class),
+            $container->get(\VuFind\Net\UserIpReader::class)
         );
     }
 }
