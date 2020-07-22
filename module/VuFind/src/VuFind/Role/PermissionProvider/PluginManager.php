@@ -60,7 +60,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         IpRange::class => IpRangeFactory::class,
-        IpRegEx::class => InjectRequestFactory::class,
+        IpRegEx::class => IpRegExFactory::class,
         Role::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         ServerParam::class => InjectRequestFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
