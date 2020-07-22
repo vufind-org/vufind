@@ -157,11 +157,11 @@ class Ezb extends AbstractBase
 
         foreach ($tmp as $current) {
             $tmp2 = explode('=', $current, 2);
-            $parsed[$tmp2[0]] = $tmp2[1];
+            $parsed[$tmp2[0]] = $tmp2[1] ?? null;
         }
 
         // Downgrade 1.0 to 0.1
-        if ($parsed['ctx_ver'] == 'Z39.88-2004') {
+        if ($parsed['ctx_ver'] ?? null == 'Z39.88-2004') {
             $openURL = $this->downgradeOpenUrl($parsed);
         }
 
