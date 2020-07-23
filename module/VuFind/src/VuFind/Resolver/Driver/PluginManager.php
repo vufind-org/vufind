@@ -66,7 +66,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Alma::class => DriverWithHttpClientFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
         Demo::class => InvokableFactory::class,
-        Ezb::class => DriverWithHttpClientFactory::class,
+        Ezb::class => EzbFactory::class,
         Sfx::class => DriverWithHttpClientFactory::class,
         Redi::class => DriverWithHttpClientFactory::class,
         Generic::class => AbstractBaseFactory::class,

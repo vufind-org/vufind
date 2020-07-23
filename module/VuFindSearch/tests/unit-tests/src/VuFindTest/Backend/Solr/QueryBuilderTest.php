@@ -392,19 +392,19 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 
         $q = new Query('my friend', 'test');
 
-        // Map of field whitelist to expected hl.fl output.
+        // Map of field list to expected hl.fl output.
         $tests = [
             // No hl.fl if highlight field list is empty:
             '' => null,
-            // hl.fl set when whitelist is wildcard:
+            // hl.fl set when field list is wildcard:
             '*' => 'test1,test2,test3',
-            // No hl.fl if whitelist doesn't match handler list:
+            // No hl.fl if field list doesn't match handler list:
             'test4,test5' => null,
-            // hl.fl contains intersection of whitelist and handler list
-            // (testing with a comma-separated whitelist)
+            // hl.fl contains intersection of field list and handler list
+            // (testing with a comma-separated field list)
             'test1,test2,test6' => 'test1,test2',
-            // hl.fl contains intersection of whitelist and handler list
-            // (testing with a space-separated whitelist)
+            // hl.fl contains intersection of field list and handler list
+            // (testing with a space-separated field list)
             'test1 test3 test5' => 'test1,test3',
         ];
         foreach ($tests as $input => $output) {

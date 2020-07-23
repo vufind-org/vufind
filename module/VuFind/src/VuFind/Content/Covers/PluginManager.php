@@ -28,6 +28,7 @@
 namespace VuFind\Content\Covers;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\Content\ObalkyKnihContentFactory;
 
 /**
  * Covers content loader plugin manager
@@ -55,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'google' => Google::class,
         'librarything' => LibraryThing::class,
         'localfile' => LocalFile::class,
+        'obalkyknih' => ObalkyKnih::class,
         'openlibrary' => OpenLibrary::class,
         'summon' => Summon::class,
         'syndetics' => Syndetics::class,
@@ -75,6 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Google::class => InvokableFactory::class,
         LibraryThing::class => InvokableFactory::class,
         LocalFile::class => InvokableFactory::class,
+        ObalkyKnih::class => ObalkyKnihContentFactory::class,
         OpenLibrary::class => InvokableFactory::class,
         Summon::class => InvokableFactory::class,
         Syndetics::class => SyndeticsFactory::class,

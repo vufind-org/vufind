@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Security
+ * @package  Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -35,7 +35,7 @@ use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
  * VuFind class for generating Content Security Policy http headers
  *
  * @category VuFind
- * @package  VuFind\Security
+ * @package  Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
@@ -78,7 +78,10 @@ class CspHeaderGenerator
     public function getHeader()
     {
         $cspHeader = $this->createHeaderObject();
-        $directives = $this->config->Directives;
+        $directives = $this->config->Directives ?? [];
+        if (!$cspHeader || !$directives) {
+            return null;
+        }
         foreach ($directives as $name => $value) {
             $sources = $value->toArray();
             if ($name == "script-src" && $this->config->CSP->use_nonce) {
@@ -100,8 +103,11 @@ class CspHeaderGenerator
      */
     protected function createHeaderObject()
     {
-        $reportOnly = $this->config->CSP->report_only[APPLICATION_ENV] ?? false;
-        return $reportOnly
+        $mode = $this->config->CSP->enabled[APPLICATION_ENV] ?? 'report_only';
+        if (!$mode) {
+            return null;
+        }
+        return ('report_only' === $mode)
             ? new ContentSecurityPolicyReportOnly()
             : new ContentSecurityPolicy();
     }

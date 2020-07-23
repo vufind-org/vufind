@@ -1,6 +1,6 @@
 /* publication type css */
 
-.pt-icon { width: 70px; display: block; background-image: url('../images/EDS/PT_Sprite.png'); background-repeat: no-repeat; }
+.pt-icon { margin: auto; width: 70px; display: block; background-image: url('../images/EDS/PT_Sprite.png'); background-repeat: no-repeat; }
 .pt-serialPeriodical { background-position: -30px -30px; height: 59px; }
 .pt-newspaperArticle { background-position: -140px -30px; height: 51px; }
 .pt-image { background-position: -245px -30px; height: 47px; }

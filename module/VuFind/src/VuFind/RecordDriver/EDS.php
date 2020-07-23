@@ -720,7 +720,7 @@ class EDS extends DefaultRecord
         $numbering = $this->extractEbscoDataFromRecordInfo(
             'BibRecord/BibRelationships/IsPartOfRelationships/*/BibEntity/Numbering'
         );
-        foreach ($numbering as $key => $data) {
+        foreach ($numbering as $data) {
             if (strtolower($data['Type'] ?? '') == $type
                 && !empty($data['Value'])
             ) {
