@@ -1,6 +1,26 @@
 <?php
+/**
+ * Configuration loader for single IdP
+ *
+ * PHP version 7
+ *
+ * @category VuFind
+ * @package  Authentication
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
 namespace VuFind\Auth\Shibboleth;
 
+/**
+ * Configuration loader for single IdP
+ *
+ * @category VuFind
+ * @package  Authentication
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
 class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
 {
     /**
@@ -13,7 +33,7 @@ class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
     /**
      * Constructor
      *
-     * @param \Laminas\Session\ManagerInterface $sessionManager Session manager
+     * @param \Laminas\Config\Config $config Configuration
      */
     public function __construct(\Laminas\Config\Config $config)
     {

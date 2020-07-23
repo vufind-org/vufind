@@ -1,6 +1,8 @@
 <?php
 /**
- * Abstract Shibboleth class
+ * Configuration loader interface
+ *
+ * PHP version 7
  *
  * @category VuFind
  * @package  Authentication
@@ -11,7 +13,7 @@
 namespace VuFind\Auth\Shibboleth;
 
 /**
- * Abstract authentication base class
+ * Configuration loader interface
  *
  * @category VuFind
  * @package  Authentication

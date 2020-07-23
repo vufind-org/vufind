@@ -94,11 +94,13 @@ class Shibboleth extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Session\ManagerInterface $sessionManager Session manager
+     * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
+     * @param ConfigurationLoaderInterface      $configurationLoader Configuration
+     * loader
      */
     public function __construct(\Laminas\Session\ManagerInterface $sessionManager,
-        ConfigurationLoaderInterface $configurationLoader)
-    {
+        ConfigurationLoaderInterface $configurationLoader
+    ) {
         $this->sessionManager = $sessionManager;
         $this->configurationLoader = $configurationLoader;
     }
@@ -280,7 +282,6 @@ class Shibboleth extends AbstractBase
 
     /**
      * Return configuration loader
-     *
      *
      * @return ConfigurationLoaderInterface configuration loader
      */

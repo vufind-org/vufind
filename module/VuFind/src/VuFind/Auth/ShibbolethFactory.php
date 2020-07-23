@@ -73,13 +73,14 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     /**
      * Return configuration loader for shibboleth
      *
-     * @param ContainerInterface $container     Service manager
+     * @param ContainerInterface $container Service manager
      *
      * @return configuration loader
      */
     public function getConfigurationLoader(ContainerInterface $container)
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $override = $config->Shibboleth->override;
         $loader = null;
         if (!empty($override)) {

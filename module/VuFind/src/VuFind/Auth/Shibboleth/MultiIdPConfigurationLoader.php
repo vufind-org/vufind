@@ -1,8 +1,28 @@
 <?php
+/**
+ * Configuration loader for Multiple IdPs
+ *
+ * PHP version 7
+ *
+ * @category VuFind
+ * @package  Authentication
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
 namespace VuFind\Auth\Shibboleth;
 
 use VuFind\Exception\Auth as AuthException;
 
+/**
+ * Configuration loader for Multiple IdPs
+ *
+ * @category VuFind
+ * @package  Authentication
+ * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
 class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
@@ -25,11 +45,12 @@ class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
     /**
      * Constructor
      *
-     * @param \Laminas\Session\ManagerInterface $sessionManager Session manager
+     * @param \Laminas\Config\Config $config     Configuration
+     * @param \Laminas\Config\Config $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(\Laminas\Config\Config $config,
-        \Laminas\Config\Config $shibConfig)
-    {
+        \Laminas\Config\Config $shibConfig
+    ) {
         $this->config = $config;
         $this->shibConfig = $shibConfig;
     }
