@@ -106,71 +106,6 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
-     *
-     * @param string $target Full URL where external authentication method should
-     * send user after login (some drivers may override this).
-     *
-     * @return bool|string
-     */
-    public function getSessionInitiator($target)
-    {
-        $config = $this->getConfig();
-        $shibTarget = $config->Shibboleth->target ?? $target;
-        $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
-        // Adding the auth_method parameter makes it possible to handle logins when
-        // using an auth method that proxies others.
-        $sessionInitiator = $config->Shibboleth->login
-            . '?target=' . urlencode($shibTarget)
-            . urlencode($append . 'auth_method=Shibboleth');
-
-        if (isset($config->Shibboleth->provider_id)) {
-            $sessionInitiator = $sessionInitiator . '&entityID=' .
-                urlencode($config->Shibboleth->provider_id);
-        }
-
-        return $sessionInitiator;
-    }
-
-    /**
-     * Has the user's login expired?
-     *
-     * @return bool
-     */
-    public function isExpired()
-    {
-        $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
-        return ($proxy) ? isset($_SERVER[$this->normalize(self::SHIB_SESSION_ID)])
-            : isset($_ENV[self::SHIB_SESSION_ID]);
-    }
-
-    /**
-     * Perform cleanup at logout time.
-     *
-     * @param string $url URL to redirect user to after logging out.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     */
-    public function logout($url)
-    {
-        // If single log-out is enabled, use a special URL:
-        $config = $this->getConfig();
-        if (isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
-                : '?';
-            $url = $config->Shibboleth->logout . $append . 'return='
-                . urlencode($url);
-        }
-
-        // Send back the redirect URL (possibly modified):
-        return $url;
-    }
-
-    /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
@@ -278,6 +213,71 @@ class Shibboleth extends AbstractBase
         // Save and return the user object:
         $user->save();
         return $user;
+    }
+
+    /**
+     * Get the URL to establish a session (needed when the internal VuFind login
+     * form is inadequate).  Returns false when no session initiator is needed.
+     *
+     * @param string $target Full URL where external authentication method should
+     * send user after login (some drivers may override this).
+     *
+     * @return bool|string
+     */
+    public function getSessionInitiator($target)
+    {
+        $config = $this->getConfig();
+        $shibTarget = $config->Shibboleth->target ?? $target;
+        $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
+        // Adding the auth_method parameter makes it possible to handle logins when
+        // using an auth method that proxies others.
+        $sessionInitiator = $config->Shibboleth->login
+            . '?target=' . urlencode($shibTarget)
+            . urlencode($append . 'auth_method=Shibboleth');
+
+        if (isset($config->Shibboleth->provider_id)) {
+            $sessionInitiator = $sessionInitiator . '&entityID=' .
+                urlencode($config->Shibboleth->provider_id);
+        }
+
+        return $sessionInitiator;
+    }
+
+    /**
+     * Has the user's login expired?
+     *
+     * @return bool
+     */
+    public function isExpired()
+    {
+        $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
+        return ($proxy) ? isset($_SERVER[$this->normalize(self::SHIB_SESSION_ID)])
+            : isset($_ENV[self::SHIB_SESSION_ID]);
+    }
+
+    /**
+     * Perform cleanup at logout time.
+     *
+     * @param string $url URL to redirect user to after logging out.
+     *
+     * @return string     Redirect URL (usually same as $url, but modified in
+     * some authentication modules).
+     */
+    public function logout($url)
+    {
+        // If single log-out is enabled, use a special URL:
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->logout)
+            && !empty($config->Shibboleth->logout)
+        ) {
+            $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
+                : '?';
+            $url = $config->Shibboleth->logout . $append . 'return='
+                . urlencode($url);
+        }
+
+        // Send back the redirect URL (possibly modified):
+        return $url;
     }
 
     /**
