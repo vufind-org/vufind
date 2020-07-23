@@ -48,7 +48,8 @@ class UserIpReader
     protected $server;
 
     /**
-     * Should we respect the X-Forwarded-For header?
+     * Configuration specifying allowed HTTP headers containing IPs (false for none).
+     * See [Proxy] allow_forwarded_ips setting in config.ini for more details.
      *
      * @var string|bool
      */
@@ -58,8 +59,8 @@ class UserIpReader
      * Constructor
      *
      * @param Parameters $server            Server parameters
-     * @param bool       $allowForwardedIps Should we respect the X-Forwarded-For
-     * header?
+     * @param bool       $allowForwardedIps Forwarded header configuration string
+     * (false to disable checking IP-related X- headers)
      */
     public function __construct(Parameters $server, $allowForwardedIps = false)
     {
