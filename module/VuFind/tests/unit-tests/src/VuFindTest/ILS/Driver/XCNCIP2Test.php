@@ -53,25 +53,54 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver = new XCNCIP2();
     }
 
-    protected $transactionsResult = [
+    protected $transactionsTests = [
         [
-            'id' => 'MZK01000847602-MZK50000847602000090',
-            'item_agency_id' => 'My Agency',
-            'patron_agency_id' => 'Test agency',
-            'duedate' => 'Thursday, 20-Nov-14 01:00 am',
-            'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
-            'item_id' => '104',
-            'renewable' => true,
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                [
+                    'id' => 'MZK01000847602-MZK50000847602000090',
+                    'item_agency_id' => 'My Agency',
+                    'patron_agency_id' => 'Test agency',
+                    'duedate' => 'Thursday, 20-Nov-14 01:00 am',
+                    'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
+                    'item_id' => '104',
+                    'renewable' => true,
+                ],
+                [
+                    'id' => 'MZK01000000456-MZK50000000456000440',
+                    'item_agency_id' => 'My Agency',
+                    'patron_agency_id' => 'Test agency',
+                    'duedate' => 'Thursday, 27-Nov-14 01:00 am',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                    'item_id' => '105',
+                    'renewable' => true,
+                ],
+            ],
         ],
         [
-            'id' => 'MZK01000000456-MZK50000000456000440',
-            'item_agency_id' => 'My Agency',
-            'patron_agency_id' => 'Test agency',
-            'duedate' => 'Thursday, 27-Nov-14 01:00 am',
-            'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
-            'item_id' => '105',
-            'renewable' => true,
-        ]
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                [
+                    'id' => 'MZK01000847602-MZK50000847602000090',
+                    'item_agency_id' => 'My Agency',
+                    'patron_agency_id' => 'Test agency',
+                    'duedate' => 'Thursday, 20-Nov-14 01:00 am',
+                    'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
+                    'item_id' => '104',
+                    'renewable' => true,
+                ],
+                [
+                    'id' => 'MZK01000000456-MZK50000000456000440',
+                    'item_agency_id' => 'My Agency',
+                    'patron_agency_id' => 'Test agency',
+                    'duedate' => 'Thursday, 27-Nov-14 01:00 am',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                    'item_id' => '105',
+                    'renewable' => true,
+                ],
+            ],
+        ],
+
     ];
 
     protected $finesResult = [
@@ -146,43 +175,92 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
-    protected $getStatusesResult = [
-        "MZK01000000421" => [
-            [
-                "status" => "Available On Shelf",
-                "location" => null,
-                "callnumber" => "621.3 ANG",
-                "availability" => true,
-                "reserve" => "N",
-                "id" => "MZK01000000421",
+    protected $statusesTests = [
+        [
+            'file' => 'lookupItemSet.xml',
+            'result' => [
+                'MZK01000000421' => [
+                    [
+                        'status' => 'Available on shelf',
+                        'location' => null,
+                        'callnumber' => '621.3 ANG',
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000000421',
+                    ],
+                ],
+                'MZK01000062021' => [
+                    [
+                        'status' => 'Available On Shelf',
+                        'location' => null,
+                        'callnumber' => 'PK-0083.568',
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000062021',
+                    ],
+                ],
+                'MZK01000000425' => [
+                    [
+                        'status' => 'Available On Shelf',
+                        'location' => 'Some holding location',
+                        'callnumber' => '2-0997.767,2',
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000000425',
+                    ],
+                    [
+                        'status' => 'Circulation Status Undefined',
+                        'location' => 'Some holding location',
+                        'callnumber' => null,
+                        'availability' => false,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000000425',
+                        'use_unknown_message' => true,
+                    ],
+                ],
             ],
         ],
-        "MZK01000062021" => [
-            [
-                "status" => "Available On Shelf",
-                "location" => null,
-                "callnumber" => "PK-0083.568",
-                "availability" => true,
-                "reserve" => "N",
-                "id" => "MZK01000062021",
-            ],
-        ],
-        "MZK01000000425" => [
-            [
-                "status" => "Available On Shelf",
-                "location" => null,
-                "callnumber" => "2-0997.767,2",
-                "availability" => true,
-                "reserve" => "N",
-                "id" => "MZK01000000425",
-            ],
-            [
-                "status" => "Available On Shelf",
-                "location" => null,
-                "callnumber" => "2-0997.767,2",
-                "availability" => true,
-                "reserve" => "N",
-                "id" => "MZK01000000425",
+        [
+            'file' => 'lookupItemSetWithoutNamespacePrefix.xml',
+            'result' => [
+                'MZK01000000421' => [
+                    [
+                        'status' => 'Available on shelf',
+                        'location' => null,
+                        'callnumber' => '621.3 ANG',
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000000421',
+                    ],
+                ],
+                'MZK01000062021' => [
+                    [
+                        'status' => 'Available On Shelf',
+                        'location' => null,
+                        'callnumber' => 'PK-0083.568',
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000062021',
+                    ],
+                ],
+                'MZK01000000425' => [
+                    [
+                        'status' => 'Available On Shelf',
+                        'location' => 'Some holding location',
+                        'callnumber' => '2-0997.767,2',
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000000425',
+                    ],
+                    [
+                        'status' => 'Available On Shelf',
+                        'location' => 'Some holding location',
+                        'callnumber' => null,
+                        'availability' => true,
+                        'reserve' => 'N',
+                        'id' => 'MZK01000000425',
+                    ],
+                ],
             ],
         ],
     ];
@@ -195,13 +273,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetMyTransactions()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupUserResponse.xml');
-        $transactions = $this->driver->getMyTransactions([
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'patron_agency_id' => 'Test agency',
-        ]);
-        $this->assertEquals($this->transactionsResult, $transactions);
+        foreach ($this->transactionsTests as $test) {
+            $this->mockResponse($test['file']);
+            $transactions = $this->driver->getMyTransactions([
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'patron_agency_id' => 'Test agency',
+            ]);
+            $this->assertEquals($test['result'], $transactions);
+        }
     }
 
     /**
@@ -288,9 +368,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetStatuses()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupItemSet.xml');
-        $status = $this->driver->getStatuses(['MZK01000000421']);
-        $this->assertEquals($this->getStatusesResult, $status);
+        foreach ($this->statusesTests as $test) {
+            $this->mockResponse($test['file']);
+            $status = $this->driver->getStatuses(['Some Id']);
+            $this->assertEquals($test['result'], $status);
+        }
     }
 
     /**

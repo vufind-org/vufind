@@ -148,7 +148,7 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                      </ns1:BibliographicItemId>
                   </ns1:BibliographicDescription>
                   <ns1:ItemUseRestrictionType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">Limited Circulation, Normal Loan Period</ns1:ItemUseRestrictionType>
-                  <ns1:CirculationStatus ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Circulation Status Undefined</ns1:CirculationStatus>
+                  <ns1:CirculationStatus ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available On Shelf</ns1:CirculationStatus>
                   <ns1:HoldQueueLength>0</ns1:HoldQueueLength>
                   <ns1:ItemDescription>
                      <ns1:NumberOfPieces>2</ns1:NumberOfPieces>
