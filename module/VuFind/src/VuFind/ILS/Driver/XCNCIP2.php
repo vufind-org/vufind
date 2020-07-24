@@ -182,6 +182,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusForChunk($current)
     {
+        $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
         $status = $current->xpath(
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
@@ -190,7 +191,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
-        $itemCallNo = (string)$itemCallNo[0];
+        $itemCallNo = !empty($itemCallNo) ? (string)$itemCallNo[0] : null;
 
         $location = $current->xpath(
             'ns1:ItemOptionalFields/ns1:Location/ns1:LocationName/' .
@@ -198,15 +199,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $location = !empty($location) ? (string)$location[0] : null;
 
-        return [
+        $return = [
             'status' => $status,
             'location' => $location,
             'callnumber' => $itemCallNo,
             'availability' => in_array(
-                $status, ["Not Charged", "Available On Shelf"]
+                strtolower($status), ["not charged", "available on shelf"]
             ),
             'reserve' => 'N',       // not supported
         ];
+        if (strtolower($status) === 'circulation status undefined') {
+            $return['use_unknown_message'] = true;
+        }
+        return $return;
     }
 
     /**
@@ -414,7 +419,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if ($this->consortium) {
             return $status; // (empty) TODO: add support for consortial statuses.
         }
-
         $resumption = null;
         do {
             $request = $this->getStatusRequest($idList, $resumption);
@@ -425,20 +429,40 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // Build the array of statuses:
             foreach ($bibInfo as $bib) {
+                $bib->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
                 $bib_id = $bib->xpath(
                     'ns1:BibliographicId/ns1:BibliographicRecordId/' .
-                    'ns1:BibliographicRecordIdentifier'
+                    'ns1:BibliographicRecordIdentifier' .
+                    ' | ' .
+                    'ns1:BibliographicId/ns1:BibliographicItemId/' .
+                    'ns1:BibliographicItemIdentifier'
                 );
+                if (empty($bib_id)) {
+                    throw new ILSException(
+                        'Bibliographic record/item identifier missing in lookup " .
+                        "item set response'
+                    );
+                }
                 $bib_id = (string)$bib_id[0];
 
                 $holdings = $bib->xpath('ns1:HoldingsSet');
 
                 foreach ($holdings as $holding) {
+                    $holding->registerXPathNamespace(
+                        'ns1', 'http://www.niso.org/2008/ncip'
+                    );
                     $holdCallNo = $holding->xpath('ns1:CallNumber');
                     $holdCallNo = !empty($holdCallNo) ? (string)$holdCallNo[0]
                         : null;
 
                     $items = $holding->xpath('ns1:ItemInformation');
+
+                    $holdingLocation = $holding->xpath(
+                        'ns1:Location/ns1:LocationName/ns1:LocationNameInstance/' .
+                        'ns1:LocationNameValue'
+                    );
+                    $holdingLocation = !empty($holdingLocation)
+                        ? (string)$holdingLocation[0] : null;
 
                     foreach ($items as $item) {
                         // Get data on the current chunk of data:
@@ -454,6 +478,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         if (!isset($status[$bib_id])) {
                             $status[$bib_id] = [];
                         }
+                        $chunk['location'] = $chunk['location']
+                            ?? $holdingLocation ?? null;
                         $status[$bib_id][] = $chunk;
                     }
                 }
