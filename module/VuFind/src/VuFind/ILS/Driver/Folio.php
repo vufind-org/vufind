@@ -431,7 +431,8 @@ class Folio extends AbstractAPI implements
     {
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
-            'query' => '(instanceId=="' . $instance->id . '" and discoverySuppress==false)'
+            'query' => '(instanceId=="' . $instance->id
+                . '" and discoverySuppress==false)'
         ];
         $holdingResponse = $this->makeRequest(
             'GET',
