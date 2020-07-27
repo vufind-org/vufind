@@ -430,7 +430,7 @@ class Folio extends AbstractAPI implements
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
         $instance = $this->getInstanceByBibId($bibId);
-        $query = ['query' => '(instanceId=="' . $instance->id . '")'];
+        $query = ['query' => '(instanceId=="' . $instance->id . '" and discoverySuppress==false)'];
         $holdingResponse = $this->makeRequest(
             'GET',
             '/holdings-storage/holdings',
@@ -449,7 +449,7 @@ class Folio extends AbstractAPI implements
                 $locationName = $location->name;
             }
 
-            $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
+            $query = ['query' => '(holdingsRecordId=="' . $holding->id . '" and discoverySuppress==false)'];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
