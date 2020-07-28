@@ -164,7 +164,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $request = $this->getLookupAgencyRequest();
         $response = $this->sendRequest($request);
-        $this->registerNamespaceFor($response);
 
         $return = [];
 
@@ -776,7 +775,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
-        $this->registerNamespaceFor($response);
         $this->checkResponseForError($response);
 
         $retVal = [];
@@ -896,7 +894,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
-        $this->registerNamespaceFor($response);
         $this->checkResponseForError($response);
 
         $retVal = [];
@@ -1219,6 +1216,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
             $cancelled = false;
+            $this->registerNamespaceFor($current);
             $id = $current->xpath(
                 'ns1:Ext/ns1:BibliographicDescription/' .
                 'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
