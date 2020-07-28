@@ -78,7 +78,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ],
         ],
         [
-            'file' => 'lookupUserResponse.xml',
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
             'result' => [
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
@@ -103,76 +103,184 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 
     ];
 
-    protected $finesResult = [
+    protected $finesTests = [
         [
-            'id' => '',
-            'duedate' => '',
-            'amount' => 25,
-            'balance' => 25,
-            'checkout' => '',
-            'fine' => 'Service Charge',
-            'createdate' => '2014-11-14T16:22:46.016Z',
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                [
+                    'id' => '',
+                    'duedate' => '',
+                    'amount' => 25,
+                    'balance' => 25,
+                    'checkout' => '',
+                    'fine' => 'Service Charge',
+                    'createdate' => '2014-11-14T16:22:46.016Z',
+                ],
+            ],
+        ],
+        [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                [
+                    'id' => '',
+                    'duedate' => '',
+                    'amount' => 25,
+                    'balance' => 25,
+                    'checkout' => '',
+                    'fine' => 'Service Charge',
+                    'createdate' => '2014-11-14T16:22:46.016Z',
+                ],
+            ],
         ],
     ];
 
-    protected $loginResult = [
-        'id' => '700',
-        'patron_agency_id' => 'MZK',
-        'cat_username' => 'my_login',
-        'cat_password' => 'my_password',
-        'email' => 'test@mzk.cz',
-        'major' => null,
-        'college' => null,
-        'firstname' => 'John',
-        'lastname' => 'Smith',
-    ];
-
-    protected $holdsResult = [
+    protected $loginTests = [
         [
-            'id' => '111',
-            'title' => 'Ahoj, Blanko! : dívčí román / Eva Bernardinová',
-            'item_id' => 'MZK01000353880-MZK50000353880000040',
-            'create' => '',
-            'expire' => null,
-            'position' => null,
-            'requestId' => null,
-            'location' => 'Loan Department - Ground floor',
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                'id' => '700',
+                'patron_agency_id' => 'MZK',
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'email' => 'test@mzk.cz',
+                'major' => null,
+                'college' => null,
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+            ],
         ],
         [
-            'id' => '112',
-            'title' => 'Aktiv revizních techniků elektrických zařízení',
-            'item_id' => 'MZK01000065021-MZK50000065021000010',
-            'create' => '',
-            'expire' => null,
-            'position' => null,
-            'requestId' => null,
-            'location' => 'Loan Department - Ground floor',
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                'id' => '700',
+                'patron_agency_id' => 'MZK',
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'email' => 'test@mzk.cz',
+                'major' => null,
+                'college' => null,
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+            ],
         ],
     ];
 
-    protected $profileResult = [
-        'firstname' => 'John',
-        'lastname' => 'Smith',
-        'address1' => 'Trvalá ulice 123, Big City, 12345',
-        'address2' => '',
-        'zip' => '',
-        'phone' => '',
-        'group' => ''
+    protected $holdsTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                [
+                    'id' => '111',
+                    'title' => 'Ahoj, Blanko! : dívčí román / Eva Bernardinová',
+                    'item_id' => 'MZK01000353880-MZK50000353880000040',
+                    'create' => '',
+                    'expire' => null,
+                    'position' => null,
+                    'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                ],
+                [
+                    'id' => '112',
+                    'title' => 'Aktiv revizních techniků elektrických zařízení',
+                    'item_id' => 'MZK01000065021-MZK50000065021000010',
+                    'create' => '',
+                    'expire' => null,
+                    'position' => null,
+                    'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                ],
+            ],
+        ],
+        [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                [
+                    'id' => '111',
+                    'title' => 'Ahoj, Blanko! : dívčí román / Eva Bernardinová',
+                    'item_id' => 'MZK01000353880-MZK50000353880000040',
+                    'create' => '',
+                    'expire' => null,
+                    'position' => null,
+                    'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                ],
+                [
+                    'id' => '112',
+                    'title' => 'Aktiv revizních techniků elektrických zařízení',
+                    'item_id' => 'MZK01000065021-MZK50000065021000010',
+                    'create' => '',
+                    'expire' => null,
+                    'position' => null,
+                    'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                ],
+            ],
+        ],
     ];
 
-    protected $storageRetrievalResult = [
+    protected $profileTests = [
         [
-            'id' => '155',
-            'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]',
-            'create' => 'Sunday, 09-Nov-14 07:29 pm',
-            'expire' => null,
-            'position' => null,
-            'requestId' => null,
-            'location' => 'Loan Department - Ground floor',
-            'item_agency_id' => null,
-            'canceled' => false,
-            'processed' => false,
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+                'address1' => 'Trvalá ulice 123, Big City, 12345',
+                'address2' => '',
+                'zip' => '',
+                'phone' => '',
+                'group' => '',
+            ],
         ],
+        [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+                'address1' => 'Trvalá ulice 123, Big City, 12345',
+                'address2' => '',
+                'zip' => '',
+                'phone' => '',
+                'group' => '',
+            ],
+        ],
+    ];
+
+    protected $storageRetrievalTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
+                [
+                    'id' => '155',
+                    'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]',
+                    'create' => 'Sunday, 09-Nov-14 07:29 pm',
+                    'expire' => null,
+                    'position' => null,
+                    'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                    'item_agency_id' => null,
+                    'canceled' => false,
+                    'processed' => false,
+                ],
+            ],
+        ],
+        [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                [
+                    'id' => '155',
+                    'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]',
+                    'create' => 'Sunday, 09-Nov-14 07:29 pm',
+                    'expire' => null,
+                    'position' => null,
+                    'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                    'item_agency_id' => null,
+                    'canceled' => false,
+                    'processed' => false,
+                ],
+            ],
+        ],
+
     ];
 
     protected $statusesTests = [
@@ -292,13 +400,16 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetMyFines()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupUserResponse.xml');
-        $fines = $this->driver->getMyFines([
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'patron_agency_id' => 'Test agency',
-        ]);
-        $this->assertEquals($this->finesResult, $fines);
+        foreach ($this->finesTests as $test) {
+            $this->mockResponse($test['file']);
+            $fines = $this->driver->getMyFines(
+                [
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patron_agency_id' => 'Test agency',
+                ]
+            );
+            $this->assertEquals($test['result'], $fines);
+        }
     }
 
     /**
@@ -309,9 +420,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testPatronLogin()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupUserResponse.xml');
-        $patron = $this->driver->patronLogin('my_login', 'my_password');
-        $this->assertEquals($this->loginResult, $patron);
+        foreach ($this->loginTests as $test) {
+            $this->mockResponse($test['file']);
+            $patron = $this->driver->patronLogin('my_login', 'my_password');
+            $this->assertEquals($test['result'], $patron);
+        }
     }
 
     /**
@@ -322,13 +435,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetMyHolds()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupUserResponse.xml');
-        $holds = $this->driver->getMyHolds([
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'patron_agency_id' => 'Test agency',
-        ]);
-        $this->assertEquals($this->holdsResult, $holds);
+        foreach ($this->holdsTests as $test) {
+            $this->mockResponse($test['file']);
+            $holds = $this->driver->getMyHolds([
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'patron_agency_id' => 'Test agency',
+             ]);
+            $this->assertEquals($test['result'], $holds);
+        }
     }
 
     /**
@@ -339,13 +454,17 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetMyProfile()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupUserResponse.xml');
-        $profile = $this->driver->getMyProfile([
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'patron_agency_id' => 'Test agency',
-        ]);
-        $this->assertEquals($this->profileResult, $profile);
+        foreach ($this->profileTests as $test) {
+            $this->mockResponse($test['file']);
+            $profile = $this->driver->getMyProfile(
+                [
+                    'cat_username' => 'my_login',
+                    'cat_password' => 'my_password',
+                    'patron_agency_id' => 'Test agency',
+                ]
+            );
+            $this->assertEquals($test['result'], $profile);
+        }
     }
 
     /**
@@ -356,13 +475,15 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetMyStorageRetrievalRequests()
     {
         $this->configureDriver();
-        $this->mockResponse('lookupUserResponse.xml');
-        $storageRetrievals = $this->driver->getMyStorageRetrievalRequests([
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'patron_agency_id' => 'Test agency',
-        ]);
-        $this->assertEquals($this->storageRetrievalResult, $storageRetrievals);
+        foreach ($this->storageRetrievalTests as $test) {
+            $this->mockResponse($test['file']);
+            $storageRetrievals = $this->driver->getMyStorageRetrievalRequests([
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'patron_agency_id' => 'Test agency',
+            ]);
+            $this->assertEquals($test['result'], $storageRetrievals);
+        }
     }
 
     public function testGetStatuses()
