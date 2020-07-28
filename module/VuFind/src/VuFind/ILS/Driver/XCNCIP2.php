@@ -69,7 +69,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @var array
      */
-    protected $pickupLocations = [];
+    protected $pickupLocations;
 
     /**
      * Initialize the driver.
@@ -100,8 +100,29 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->agency[$this->config['Catalog']['agency']] = 1;
             }
         }
+    }
 
-        $this->loadPickupLocations($this->config['Catalog']['pickupLocationsFile']);
+    /**
+     * Load pickup locations from file or from NCIP responder - it depends on
+     * configuration
+     *
+     * @throws ILSException
+     * @return void
+     */
+    public function loadPickUpLocations()
+    {
+        $filename = $this->config['Catalog']['pickupLocationsFile'] ?? null;
+        if ($filename) {
+            $this->loadPickUpLocationsFromFile($filename);
+        } elseif ($this->config['Catalog']['pickupLocationsFromNCIP'] ?? false) {
+            $this->loadPickUpLocationsFromNcip();
+        } else {
+            throw new ILSException(
+                'XCNCIP2 ILS driver bad configuration. You should set up ' .
+                 'one of these options: "pickupLocationsFile" or ' .
+                 '"pickupLocationsFromNCIP"'
+            );
+        }
     }
 
     /**
@@ -112,7 +133,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return void
      */
-    protected function loadPickupLocations($filename)
+    protected function loadPickUpLocationsFromFile($filename)
     {
         // Load pickup locations file:
         $pickupLocationsFile
@@ -132,6 +153,39 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             fclose($handle);
         }
+    }
+
+    /**
+     * Loads pickup location information from LookupAgency NCIP service.
+     *
+     * @return void
+     */
+    public function loadPickUpLocationsFromNcip()
+    {
+        $request = $this->getLookupAgencyRequest();
+        $response = $this->sendRequest($request);
+        $response->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+
+        $return = [];
+
+        $locations = $response->xpath(
+            'ns1:LookupAgencyResponse/ns1:Ext/ns1:LocationName/' .
+            'ns1:LocationNameInstance'
+        );
+        foreach ($locations as $loc) {
+            $loc->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $id = $loc->xpath('ns1:LocationNameLevel');
+            $name = $loc->xpath('ns1:LocationNameValue');
+            if (empty($id) || empty($name)) {
+                continue;
+            }
+            $location = [
+                'locationID' => (string)$id[0],
+                'locationDisplay' => (string)$name[0],
+            ];
+            $return[] = $location;
+        }
+        $this->pickupLocations = $return;
     }
 
     /**
@@ -1135,15 +1189,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPickUpLocations($patron, $holdDetails = null)
     {
-        $locations = [];
-        foreach ($this->pickupLocations as $thisAgency) {
-            $locations[]
-                = [
-                    'locationID' => $thisAgency['locationID'],
-                    'locationDisplay' => $thisAgency['locationDisplay'],
-                ];
+        if (!isset($this->pickupLocations)) {
+            $this->loadPickUpLocations();
         }
-        return $locations;
+        return array_values($this->pickupLocations);
     }
 
     /**
@@ -1842,6 +1891,58 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '</ns1:LookupUser>' .
             '</ns1:NCIPMessage>';
 
+        return $ret;
+    }
+
+    /**
+     * Get LookupAgency Request XML message
+     *
+     * @param string|null $agency Agency Id
+     *
+     * @return string
+     */
+    public function getLookupAgencyRequest($agency = null)
+    {
+        // FIXME: We are using the first defined agency, it will probably not work in
+        // consortium scenario
+        if (null === $agency) {
+            $keys = array_keys($this->agency);
+            $agency = $keys[0];
+        }
+
+        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
+            'xsd/ncip_v2_0.xsd">' .
+            '<ns1:LookupAgency>';
+
+        if (null !== $agency) {
+            $ret .=
+                '<ns1:InitiationHeader>' .
+                    '<ns1:FromAgencyId>' .
+                        '<ns1:AgencyId>' .
+                            htmlspecialchars($agency) .
+                        '</ns1:AgencyId>' .
+                    '</ns1:FromAgencyId>' .
+                    '<ns1:ToAgencyId>' .
+                        '<ns1:AgencyId>' .
+                            htmlspecialchars($agency) .
+                        '</ns1:AgencyId>' .
+                    '</ns1:ToAgencyId>' .
+                '</ns1:InitiationHeader>';
+        }
+        $ret .= '<ns1:AgencyId>My University 1</ns1:AgencyId>';
+        $desiredElementTypes = [
+            'Agency Address Information', 'Agency User Privilege Type',
+            'Application Profile Supported Type', 'Authentication Prompt',
+            'Consortium Agreement', 'Organization Name Information'
+        ];
+        foreach ($desiredElementTypes as $elementType) {
+            $ret .= '<ns1:AgencyElementType>' .
+                    $elementType .
+                '</ns1:AgencyElementType>';
+        }
+        $ret .= '</ns1:LookupAgency></ns1:NCIPMessage>';
         return $ret;
     }
 
