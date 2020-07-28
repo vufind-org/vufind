@@ -375,6 +375,60 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         }
     }
 
+    public function testGetPickupLocations()
+    {
+        // Test reading pickup locations from file
+        $this->configureDriver();
+        $locations = $this->driver->getPickUpLocations([]);
+        $this->assertEquals([
+            [
+                'locationID' => 'My University|1',
+                'locationDisplay' => 'Main Circulation Desk',
+            ],
+            [
+                'locationID' => 'My University|2',
+                'locationDisplay' => 'Stacks',
+            ]
+        ], $locations);
+
+        // Test reading pickup locations from NCIP responder
+        $this->configureDriver([
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => ['Test agency'],
+                    'pickupLocationsFromNCIP' => true,
+                ],
+                'NCIP' => [],
+            ]);
+        $this->mockResponse('LookupAgencyResponse.xml');
+        $locations = $this->driver->getPickUpLocations([]);
+        $this->assertEquals([
+            [
+                'locationID' => '1',
+                'locationDisplay' => 'Main library',
+            ],
+            [
+                'locationID' => '2',
+                'locationDisplay' => 'Stacks',
+            ]
+        ], $locations);
+
+        // Test reading pickup locations from NCIP, but response is without locations
+        $this->configureDriver([
+            'Catalog' => [
+                'url' => 'https://test.ncip.example',
+                'consortium' => false,
+                'agency' => ['Test agency'],
+                'pickupLocationsFromNCIP' => true,
+            ],
+            'NCIP' => [],
+        ]);
+        $this->mockResponse('LookupAgencyResponseWithoutLocations.xml');
+        $locations = $this->driver->getPickUpLocations([]);
+        $this->assertEquals([], $locations);
+    }
+
     /**
      * Mock fixture as HTTP client response
      *
@@ -413,6 +467,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function configureDriver($config = null)
     {
+        $this->driver = new XCNCIP2();
         $this->driver->setConfig($config ?? [
             'Catalog' => [
                 'url' => 'https://test.ncip.example',

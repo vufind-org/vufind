@@ -1,0 +1,55 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/ncip_v2_0.xsd">
+    <ns1:LookupAgencyResponse>
+        <ns1:AgencyId ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/agencyelementtype/agencyelementtype.scm">My library</ns1:AgencyId>
+        <ns1:OrganizationNameInformation>
+            <ns1:OrganizationNameType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/organizationnametype/organizationnametype.scm">Translated Name</ns1:OrganizationNameType>
+            <ns1:OrganizationName>My personal library</ns1:OrganizationName>
+        </ns1:OrganizationNameInformation>
+        <ns1:AgencyAddressInformation>
+            <ns1:AgencyAddressRoleType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/agencyaddressroletype/agencyaddressroletype.scm">Official</ns1:AgencyAddressRoleType>
+            <ns1:PhysicalAddress>
+                <ns1:UnstructuredAddress>
+                    <ns1:UnstructuredAddressType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/unstructuredaddresstype/unstructuredaddresstype.scm">Newline-Delimited Text</ns1:UnstructuredAddressType>
+                    <ns1:UnstructuredAddressData>Some street 123, City 1</ns1:UnstructuredAddressData>
+                </ns1:UnstructuredAddress>
+                <ns1:PhysicalAddressType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/physicaladdresstype/physicaladdresstype.scm">Street Address</ns1:PhysicalAddressType>
+            </ns1:PhysicalAddress>
+        </ns1:AgencyAddressInformation>
+        <ns1:Ext>
+            <ns1:LocationName>
+                <ns1:LocationNameInstance>
+                    <ns1:LocationNameLevel>1</ns1:LocationNameLevel>
+                    <ns1:LocationNameValue>Main library</ns1:LocationNameValue>
+                    <ns1:Ext>
+                        <ns1:PhysicalAddress>
+                            <ns1:UnstructuredAddress>
+                                <ns1:UnstructuredAddressType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/unstructuredaddresstype/unstructuredaddresstype.scm">Newline-Delimited Text</ns1:UnstructuredAddressType>
+                                <ns1:UnstructuredAddressData>Some street 123, City 1</ns1:UnstructuredAddressData>
+                            </ns1:UnstructuredAddress>
+                            <ns1:PhysicalAddressType>Street Address</ns1:PhysicalAddressType>
+                        </ns1:PhysicalAddress>
+                    </ns1:Ext>
+                </ns1:LocationNameInstance>
+                <ns1:LocationNameInstance>
+                    <ns1:LocationNameLevel>2</ns1:LocationNameLevel>
+                    <ns1:LocationNameValue>Stacks</ns1:LocationNameValue>
+                    <ns1:Ext>
+                        <ns1:PhysicalAddress>
+                            <ns1:UnstructuredAddress>
+                                <ns1:UnstructuredAddressType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/unstructuredaddresstype/unstructuredaddresstype.scm">Newline-Delimited Text</ns1:UnstructuredAddressType>
+                                <ns1:UnstructuredAddressData>Some street 123, City 1</ns1:UnstructuredAddressData>
+                            </ns1:UnstructuredAddress>
+                            <ns1:PhysicalAddressType>Street Address</ns1:PhysicalAddressType>
+                        </ns1:PhysicalAddress>
+                    </ns1:Ext>
+                </ns1:LocationNameInstance>
+            </ns1:LocationName>
+        </ns1:Ext>
+    </ns1:LookupAgencyResponse>
+</ns1:NCIPMessage>
+
