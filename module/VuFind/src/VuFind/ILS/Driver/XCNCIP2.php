@@ -164,7 +164,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $request = $this->getLookupAgencyRequest();
         $response = $this->sendRequest($request);
-        $response->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+        $this->registerNamespaceFor($response);
 
         $return = [];
 
@@ -173,7 +173,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:LocationNameInstance'
         );
         foreach ($locations as $loc) {
-            $loc->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $this->registerNamespaceFor($loc);
             $id = $loc->xpath('ns1:LocationNameLevel');
             $name = $loc->xpath('ns1:LocationNameValue');
             if (empty($id) || empty($name)) {
@@ -219,7 +219,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = $result->getBody();
         $result = @simplexml_load_string($response);
         if (is_a($result, 'SimpleXMLElement')) {
-            $result->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $this->registerNamespaceFor($result);
             return $result;
         } else {
             throw new ILSException("Problem parsing XML");
@@ -236,7 +236,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusForChunk($current)
     {
-        $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+        $this->registerNamespaceFor($current);
         $status = $current->xpath(
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
@@ -285,7 +285,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Maintain an internal static count of line numbers:
         static $number = 1;
 
-        $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+        $this->registerNamespaceFor($current);
 
         // Extract details from the XML:
         $status = $current->xpath(
@@ -483,7 +483,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // Build the array of statuses:
             foreach ($bibInfo as $bib) {
-                $bib->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+                $this->registerNamespaceFor($bib);
                 $bib_id = $bib->xpath(
                     'ns1:BibliographicId/ns1:BibliographicRecordId/' .
                     'ns1:BibliographicRecordIdentifier' .
@@ -502,9 +502,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $holdings = $bib->xpath('ns1:HoldingsSet');
 
                 foreach ($holdings as $holding) {
-                    $holding->registerXPathNamespace(
-                        'ns1', 'http://www.niso.org/2008/ncip'
-                    );
+                    $this->registerNamespaceFor($holding);
                     $holdCallNo = $holding->xpath('ns1:CallNumber');
                     $holdCallNo = !empty($holdCallNo) ? (string)$holdCallNo[0]
                         : null;
@@ -778,12 +776,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
+        $this->registerNamespaceFor($response);
         $this->checkResponseForError($response);
 
         $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
         foreach ($list as $current) {
-            $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $this->registerNamespaceFor($current);
             $tmp = $current->xpath('ns1:DateDue');
             $due = strtotime((string)$tmp[0]);
             $due = date("l, d-M-y h:i a", $due);
@@ -845,7 +844,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $fines = [];
         foreach ($list as $current) {
-            $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $this->registerNamespaceFor($current);
 
             $tmp = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:Amount/ns1:MonetaryValue'
@@ -897,11 +896,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
+        $this->registerNamespaceFor($response);
         $this->checkResponseForError($response);
 
         $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
+            $this->registerNamespaceFor($current);
             $id = $current->xpath(
                 'ns1:Ext/ns1:BibliographicDescription/' .
                 'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
@@ -1962,5 +1963,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!empty($error)) {
             throw new ILSException($error[0]);
         }
+    }
+
+    /**
+     * Register namespace(s) for an XML element/tree
+     *
+     * @param \SimpleXMLElement $element Element to register namespace for
+     *
+     * @return void
+     */
+    protected function registerNamespaceFor(\SimpleXMLElement $element)
+    {
+        $element->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
     }
 }
