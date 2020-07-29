@@ -218,6 +218,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = $result->getBody();
         $result = @simplexml_load_string($response);
         if (is_a($result, 'SimpleXMLElement')) {
+            // If no namespaces are used, add default one and reload the document
+            if (empty($result->getNamespaces())) {
+                $result->addAttribute('xmlns', 'http://www.niso.org/2008/ncip');
+                $result = @simplexml_load_string($result->asXML());
+            }
             $this->registerNamespaceFor($result);
             return $result;
         } else {
@@ -782,33 +787,75 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($list as $current) {
             $this->registerNamespaceFor($current);
             $tmp = $current->xpath('ns1:DateDue');
-            $due = strtotime((string)$tmp[0]);
-            $due = date("l, d-M-y h:i a", $due);
+            // DateDue could be ommitted in response
+            $due = '';
+            if (!empty($tmp)) {
+                $due = strtotime((string)$tmp[0]);
+                $due = date("l, d-M-y h:i a", $due);
+            }
             $title = $current->xpath('ns1:Title');
             $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
+            $itemId = (string)$item_id[0];
             $bib_id = $current->xpath(
                 'ns1:Ext/ns1:BibliographicDescription/' .
-                'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
+                'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier' .
+                ' | ' .
+                'ns1:Ext/ns1:BibliographicDescription/' .
+                'ns1:BibliographicItemId/ns1:BibliographicItemIdentifier'
             );
             $itemAgencyId = $current->xpath(
                 'ns1:Ext/ns1:BibliographicDescription/' .
-                'ns1:BibliographicRecordId/ns1:AgencyId'
+                'ns1:BibliographicRecordId/ns1:AgencyId' .
+                ' | ' .
+                'ns1:ItemId/ns1:AgencyId'
             );
-            // Hack to account for bibs from other non-local institutions
-            // temporarily until consortial functionality is enabled.
-            if ((string)$bib_id[0]) {
-                $tmp = (string)$bib_id[0];
-            } else {
-                $tmp = "1";
+
+            $notRenewable = $current->xpath(
+                'ns1:Ext/ns1:RenewalNotPermitted'
+            );
+
+            $itemAgencyId = !empty($itemAgencyId) ? (string)$itemAgencyId[0] : null;
+            $bibId = !empty($bib_id) ? (string)$bib_id[0] : null;
+            if ($bibId === null || $itemAgencyId === null) {
+                $itemType = $current->xpath('ns1:ItemId/ns1:ItemIdentifierType');
+                $itemType = !empty($itemType) ? (string)$itemType[0] : null;
+                $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
+                $itemResponse = $this->sendRequest($itemRequest);
             }
+            if ($bibId === null) {
+                $bibId = $itemResponse->xpath(
+                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                    'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
+                    'ns1:BibliographicItemIdentifier' .
+                    ' | ' .
+                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                    'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                    'ns1:BibliographicRecordIdentifier'
+                );
+                // Hack to account for bibs from other non-local institutions
+                // temporarily until consortial functionality is enabled.
+                $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
+            }
+            if ($itemAgencyId === null) {
+                $itemAgencyId = $itemResponse->xpath(
+                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                    'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                    'ns1:AgencyId' .
+                    ' | ' .
+                    'ns1:LookupItemResponse/ns1:ItemId/ns1:AgencyId'
+                );
+                $itemAgencyId = !empty($itemAgencyId)
+                    ? (string)$itemAgencyId[0] : null;
+            }
+
             $retVal[] = [
-                'id' => $tmp,
-                'item_agency_id' => (string)$itemAgencyId[0],
+                'id' => $bibId,
+                'item_agency_id' => $itemAgencyId,
                 'patron_agency_id' => $patron['patron_agency_id'],
                 'duedate' => $due,
                 'title' => (string)$title[0],
-                'item_id' => (string)$item_id[0],
-                'renewable' => true,
+                'item_id' => $itemId,
+                'renewable' => empty($notRenewable),
             ];
         }
 
@@ -1898,7 +1945,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param string|null $agency Agency Id
      *
-     * @return string
+     * @return string XML Document
      */
     public function getLookupAgencyRequest($agency = null)
     {
@@ -1942,6 +1989,42 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '</ns1:AgencyElementType>';
         }
         $ret .= '</ns1:LookupAgency></ns1:NCIPMessage>';
+        return $ret;
+    }
+
+    /**
+     * Create Lookup Item Request
+     *
+     * @param string $itemId Item identifier
+     * @param string $idType Item identifier type
+     *
+     * @return string XML document
+     */
+    protected function getLookupItemRequest($itemId, $idType = null)
+    {
+        $keys = array_keys($this->agency);
+        $agency = $keys[0];
+
+        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
+            'xsd/ncip_v2_0.xsd">' .
+            '<ns1:LookupItem>';
+        $ret .= '<ns1:ItemId>' .
+                '<ns1:AgencyId>' . $agency . '</ns1:AgencyId>';
+        if ($idType !== null) {
+            $ret .=
+                '<ns1:ItemIdentifierType>' .
+                    $idType .
+                '</ns1:ItemIdentifierType>';
+        }
+        $ret .=
+                '<ns1:ItemIdentifierValue>' .
+                    $itemId .
+                '</ns1:ItemIdentifierValue>' .
+            '</ns1:ItemId>' .
+            '<ns1:ItemElementType>Bibliographic Description</ns1:ItemElementType>' .
+        '</ns1:LookupItem></ns1:NCIPMessage>';
         return $ret;
     }
 
