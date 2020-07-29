@@ -72,6 +72,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $pickupLocations;
 
     /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -2056,5 +2073,22 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function registerNamespaceFor(\SimpleXMLElement $element)
     {
         $element->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+    }
+
+    /**
+     * Convert a date to display format
+     *
+     * @param string $date     Date
+     * @param bool   $withTime Whether the date includes time
+     *
+     * @return string
+     */
+    protected function convertDate($date, $withTime = false)
+    {
+        if (!$date) {
+            return '';
+        }
+        $createFormat = $withTime ? 'Y-m-d\TH:i:sP' : 'Y-m-d';
+        return $this->dateConverter->convertToDisplayDate($createFormat, $date);
     }
 }

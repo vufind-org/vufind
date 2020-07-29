@@ -50,7 +50,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function setUp(): void
     {
-        $this->driver = new XCNCIP2();
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
     }
 
     protected $transactionsTests = [
@@ -634,7 +634,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function configureDriver($config = null)
     {
-        $this->driver = new XCNCIP2();
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
         $this->driver->setConfig($config ?? [
             'Catalog' => [
                 'url' => 'https://test.ncip.example',
