@@ -4,7 +4,7 @@ namespace IxTheo\Db\Row;
 
 use VuFind\Db\Row\RowGatewayFactory;
 
-class PluginManager extends \VuFind\Db\Row\PluginManager {
+class PluginManager extends \TueFind\Db\Row\PluginManager {
     /**
      * Constructor
      *
