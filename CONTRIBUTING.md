@@ -2,6 +2,7 @@
 
 ## Prerequisites
 
+ - [Community Code of Conduct](https://github.com/vufind-org/vufind/CODE_OF_CONDUCT.md)
  - [Coding Standards](https://vufind.org/wiki/development:coding_standards) - How to conform to VuFind's style.
  - [Recommended Tools](https://vufind.org/wiki/development:recommended_tools) - Suggestions for successful VuFind development.
  - [Making Pull Requests](https://vufind.org/wiki/development:making_pull_requests)
