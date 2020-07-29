@@ -1,4 +1,12 @@
 <div class="flash-message alert alert-info">
-    <?=$this->transEsc('shortlink_redirect', ['%%delay%%' => $this->redirectDelay])?>
+    <?=$this->translate('shortlink_redirect', ['%%delay%%' => '<div id="redirectDelay" style="display: inline;">' . $this->redirectDelay . '</div>'])?>
 </div>
 <?php $this->headMeta()->prependHttpEquiv('refresh', $this->redirectDelay . '; URL=' . $this->redirectTarget); ?>
+
+<script>
+    setInterval(function() {
+        let field = document.getElementById("redirectDelay");
+        if (field.innerHTML > 0)
+            --field.innerHTML;
+    }, 1000);
+</script>
