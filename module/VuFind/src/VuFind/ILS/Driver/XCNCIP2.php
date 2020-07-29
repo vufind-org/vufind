@@ -28,6 +28,7 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -805,11 +806,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->registerNamespaceFor($current);
             $tmp = $current->xpath('ns1:DateDue');
             // DateDue could be ommitted in response
-            $due = '';
-            if (!empty($tmp)) {
-                $due = strtotime((string)$tmp[0]);
-                $due = date("l, d-M-y h:i a", $due);
-            }
+            $due = $this->convertDate(!empty($tmp) ? (string)$tmp[0] : null);
             $title = $current->xpath('ns1:Title');
             $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $itemId = (string)$item_id[0];
@@ -913,7 +910,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
             $amount = (string)$tmp[0];
             $tmp = $current->xpath('ns1:AccrualDate');
-            $date = (string)$tmp[0];
+            $date = $this->convertDate(!empty($tmp) ? (string)$tmp[0] : null);
             $tmp = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
@@ -976,12 +973,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $pickupLocation = $current->xpath('ns1:PickupLocation');
             $expireDate = $current->xpath('ns1:PickupExpiryDate');
-            if (!empty($expireDate)) {
-                $expireDate = strtotime((string)$expireDate[0]);
-                $expireDate = date("l, d-M-y", $expireDate);
-            } else {
-                $expireDate = null;
-            }
+            $expireDate = $this->convertDate(
+                !empty($expireDate) ? (string)$expireDate[0] : null
+            );
             $requestType = (string)$requestType[0];
             // Only return requests of type Hold or Recall. Callslips/Stack
             // Retrieval requests are fetched using getMyStorageRetrievalRequests
@@ -1297,8 +1291,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $requestType = $current->xpath('ns1:RequestType');
             $requestType = (string)$requestType[0];
             $created = $current->xpath('ns1:DatePlaced');
-            $created = !empty($created)
-                ? date("l, d-M-y h:i a", strtotime((string)$created[0])) : null;
+            $created = $this->convertDate(
+                !empty($created) ? (string)$created[0] : null
+            );
             $requestStatusType = $current->xpath('ns1:RequestStatusType');
             $status = !empty($requestStatusType) ? (string)$requestStatusType[0]
                 : null;
@@ -1642,17 +1637,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $renewDetails['patron']['patron_agency_id']
             );
             $response = $this->sendRequest($request);
-            $dueDate = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
-            if ($dueDate) {
-                $tmp = $dueDate;
-                $newDueDate = (string)$tmp[0];
-                $tmp = explode('T', $newDueDate);
-                $splitDate = $tmp[0];
-                $splitTime = $tmp[1];
+            $dueDateXml = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
+            $dueDateString = !empty($dateDueXml) ? (string)$dateDueXml[0] : null;
+            $dueDate = $this->convertDate($dueDateString);
+            $dueTime = $this->dateConverter->convertToDisplayTime(
+                'Y-m-d\TH:i:sP', $dueDateString
+            );
+            if ($dueDate !== '') {
                 $details[$renewId] = [
                     "success" => true,
-                    "new_date" => $splitDate,
-                    "new_time" => rtrim($splitTime, "Z"),
+                    "new_date" => $dueDate,
+                    "new_time" => $dueTime,
                     "item_id" => $renewId,
                 ];
             } else {
@@ -2081,14 +2076,25 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $date     Date
      * @param bool   $withTime Whether the date includes time
      *
+     * @throws DateException
      * @return string
      */
-    protected function convertDate($date, $withTime = false)
+    protected function convertDate($date, $withTime = true)
     {
         if (!$date) {
             return '';
         }
-        $createFormat = $withTime ? 'Y-m-d\TH:i:sP' : 'Y-m-d';
-        return $this->dateConverter->convertToDisplayDate($createFormat, $date);
+        $createFormat = $withTime ? 'Y-m-d\TH:i:s.vP' : 'Y-m-d';
+        try {
+            $dateFormatted = $this->dateConverter->convertToDisplayDate(
+                $createFormat, $date
+            );
+        } catch (DateException $e) {
+            $createFormat = $withTime ? 'Y-m-d\TH:i:sP' : 'Y-m-d';
+            $dateFormatted = $this->dateConverter->convertToDisplayDate(
+                $createFormat, $date
+            );
+        }
+        return $dateFormatted;
     }
 }
