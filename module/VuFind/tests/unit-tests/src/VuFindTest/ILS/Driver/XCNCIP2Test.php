@@ -55,7 +55,35 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 
     protected $transactionsTests = [
         [
-            'file' => 'lookupUserResponse.xml',
+            'file' => [
+                'lookupUserResponse.xml',
+                'LookupItem.xml',
+            ],
+            'result' => [
+                [
+                    'id' => 'MZK01000847602-MZK50000847602000090',
+                    'item_agency_id' => 'My Agency',
+                    'patron_agency_id' => 'Test agency',
+                    'duedate' => 'Thursday, 20-Nov-14 01:00 am',
+                    'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
+                    'item_id' => '104',
+                    'renewable' => false,
+                ],
+                [
+                    'id' => 'KN3183000000046386',
+                    'item_agency_id' => 'Agency from lookup item',
+                    'patron_agency_id' => 'Test agency',
+                    'duedate' => 'Thursday, 27-Nov-14 01:00 am',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                    'item_id' => '105',
+                    'renewable' => true,
+                ],
+            ],
+        ],
+        [
+            'file' => [
+                'LookupUserResponseWithoutNamespacePrefix.xml',
+            ],
             'result' => [
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
@@ -78,7 +106,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ],
         ],
         [
-            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'file' => [
+                'LookupUserResponseWithoutNamespaceDefinition.xml',
+            ],
             'result' => [
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
@@ -100,7 +130,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 ],
             ],
         ],
-
     ];
 
     protected $finesTests = [
@@ -388,7 +417,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_password' => 'my_password',
                 'patron_agency_id' => 'Test agency',
             ]);
-            $this->assertEquals($test['result'], $transactions);
+            $this->assertEquals(
+                $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
+            );
         }
     }
 
@@ -553,30 +584,45 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Mock fixture as HTTP client response
      *
-     * @param string $fixture Fixture file
+     * @param string|array|null $fixture Fixture file
      **
      * @throws InvalidArgumentException Fixture file does not exist
      */
     protected function mockResponse($fixture = null)
     {
         $adapter = new TestAdapter();
-        if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/xcncip2/response/' . $fixture
-            );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
+        if (is_string($fixture)) {
+            $responseObj = $this->loadResponse($fixture);
             $adapter->setResponse($responseObj);
         }
+        if (is_array($fixture)) {
+            $responseObj = $this->loadResponse($fixture[0]);
+            $adapter->setResponse($responseObj);
+            array_shift($fixture);
+            foreach ($fixture as $f) {
+                $responseObj = $this->loadResponse($f);
+                $adapter->addResponse($responseObj);
+            }
+        }
+
         $service = new \VuFindHttp\HttpService();
         $service->setDefaultAdapter($adapter);
         $this->driver->setHttpService($service);
+    }
+
+    protected function loadResponse($filename)
+    {
+        $file = realpath(
+            __DIR__ .
+            '/../../../../../../tests/fixtures/xcncip2/response/' . $filename
+        );
+        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+            throw new InvalidArgumentException(
+                sprintf('Unable to load fixture file: %s ', $file)
+            );
+        }
+        $response = file_get_contents($file);
+        return HttpResponse::fromString($response);
     }
 
     /**
