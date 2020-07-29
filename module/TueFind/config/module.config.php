@@ -57,6 +57,21 @@ $config = [
                     ]
                 ],
             ],
+            'redirect' => [
+                'type'    => 'Zend\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/redirect/:url[/:group]',
+                    'constraints' => [
+                        // URL needs to be base64, see controller for details
+                        'url'     => '[^/]+',
+                        'group'   => '[^/]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Redirect',
+                        'action'     => 'redirect',
+                    ]
+                ],
+            ],
             'static-page' => [
                 'type'    => 'Zend\Router\Http\Segment',
                 'options' => [
@@ -83,6 +98,7 @@ $config = [
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\QuickLinkController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
+            'TueFind\Controller\RedirectController' => 'TueFind\Controller\AbstractBaseWithDbTableFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\ShortlinkController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -103,6 +119,8 @@ $config = [
             'QuickLink' => 'TueFind\Controller\QuickLinkController',
             'Record' => 'TueFind\Controller\RecordController',
             'record' => 'TueFind\Controller\RecordController',
+            'Redirect' => 'TueFind\Controller\RedirectController',
+            'redirect' => 'TueFind\Controller\RedirectController',
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
             'Shortlink' => 'TueFind\Controller\ShortlinkController',
@@ -127,6 +145,8 @@ $config = [
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
+            'TueFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
