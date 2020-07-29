@@ -60,7 +60,7 @@ class ResourceTags extends Gateway
      * @param string        $table         Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $caseSensitive = false, $table = 'resource_tags'
+        ?RowGateway $rowObj = null, $caseSensitive = false, $table = 'resource_tags'
     ) {
         $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);

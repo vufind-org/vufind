@@ -60,7 +60,7 @@ class Gateway extends AbstractTableGateway
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, $table
+        ?RowGateway $rowObj, $table
     ) {
         $this->adapter = $adapter;
         $this->tableManager = $tm;
