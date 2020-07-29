@@ -222,6 +222,19 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get URL to redirect page which also saves the redirect with timestamp for later analysis
+     *
+     * @param string $targetUrl
+     * @param string $group
+     *
+     * @return string
+     */
+    public function getRedirectUrl(string $targetUrl, string $group=null): string {
+        $urlHelper = $this->container->get('ViewHelperManager')->get('url');
+        return $urlHelper('redirect', ['url' => base64_encode($targetUrl), 'group' => $group]);
+    }
+
+    /**
      * Parse the RSS feed and return a short overview of the first few entries
      *
      * @param int $max_item_count           Max items to read from file

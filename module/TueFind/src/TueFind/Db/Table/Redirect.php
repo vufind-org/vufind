@@ -6,7 +6,7 @@ use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
 use Zend\Db\Adapter\Adapter;
 
-class Redirect extends \VuFind\Db\Table\Gateway
+class Redirect extends \TueFind\Db\Table\Gateway
 {
     /**
      * Constructor

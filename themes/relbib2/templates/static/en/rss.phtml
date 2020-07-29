@@ -1,9 +1,8 @@
 <h1>RelBib Newsfeed Aggregator</h1>
-
 <p>With the RelBib newsfeed aggregator we offer you a convenient way to find out about new articles from various blogs relevant to the study of religion and to subscribe to them en bloc. We are currently aggregating the following blogs:</p>
 <ul>
   <?php foreach ($this->tuefind()->getRssFeeds() as $rssFeedName => $rssFeedDetails): ?>
-    <li><a href="<?=$rssFeedDetails['blog_url']?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeedName)?>" width="16"> <?=htmlspecialchars($rssFeedName)?></a></li>
+    <li><a href="<?=$this->tuefind()->getRedirectUrl($rssFeedDetails['blog_url'], 'relbib-rss-full')?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeedName)?>" width="16"> <?=htmlspecialchars($rssFeedName)?></a></li>
   <?php endforeach; ?>
 </ul>
 <p>Do you know other interesting and relevant blogs that you miss here? You are welcome to report them to us at: relbib(at)ub.uni-tuebingen.de!</p>
