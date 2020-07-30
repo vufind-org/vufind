@@ -18,10 +18,7 @@
  - [APIs](https://vufind.org/wiki/development:apis) - APIs that VuFind provides for searching and other functionality.
  
 ## VuFind Planning
- - [Bi-weekly developers call](https://vufind.org/wiki/developers_call)
+ - [Monthly developers call](https://vufind.org/wiki/developers_call)
  - [GitHub pull requests](https://github.com/vufind-org/vufind/pulls) - A place to view and discuss work in progress on new features.
  - [JIRA](http://vufind.org/jira) - VuFind's issue tracker.
  - [Slack](http://vufind.slack.com/) - Email crhallberg@gmail.com for an invitation to the Slack if you cannot sign up directly.
-
-## Other Notes
- - [Working with MARC](http://wiki.code4lib.org/index.php/Working_with_MaRC) - This Code4Lib page offers useful resources for dealing with MARC records.
