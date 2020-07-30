@@ -2084,7 +2084,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!$date) {
             return '';
         }
-        $createFormat = $withTime ? 'Y-m-d\TH:i:s.vP' : 'Y-m-d';
+        $createFormat = $withTime ? 'Y-m-d\TH:i:s.uP' : 'Y-m-d';
         try {
             $dateFormatted = $this->dateConverter->convertToDisplayDate(
                 $createFormat, $date
