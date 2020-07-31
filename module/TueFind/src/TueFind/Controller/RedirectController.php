@@ -27,7 +27,7 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
             $this->getDbTable('redirect')->insertUrl($url, $group);
             $view = $this->createViewModel();
             $view->redirectTarget = $url;
-            $view->redirectDelay = 3;
+            $view->redirectDelay = 0;
             return $view;
         }
 
