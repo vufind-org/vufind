@@ -38,7 +38,7 @@ namespace VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class ImageLoader implements \Zend\Log\LoggerAwareInterface
+class ImageLoader implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -145,7 +145,7 @@ class ImageLoader implements \Zend\Log\LoggerAwareInterface
         // Check all supported image formats:
         $filenames = [];
         foreach ($formats as $format) {
-            $filenames[] =  $path . $format;
+            $filenames[] = $path . $format;
         }
         if (null === $this->themeTools) {
             throw new \Exception('\VuFindTheme\ThemeInfo object missing');

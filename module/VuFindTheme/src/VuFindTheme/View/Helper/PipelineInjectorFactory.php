@@ -28,8 +28,8 @@
 namespace VuFindTheme\View\Helper;
 
 use Interop\Container\ContainerInterface;
-use Zend\Config\Config;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for helpers relying on asset pipeline configuration.
@@ -92,9 +92,12 @@ class PipelineInjectorFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
+        $nonce = $nonceGenerator->getNonce();
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
-            $this->getPipelineConfig($configManager->get('config'))
+            $this->getPipelineConfig($configManager->get('config')),
+            $nonce
         );
     }
 }

@@ -117,7 +117,8 @@ trait HoldsTrait
                 $gatheredDetails, $extraHoldFields, $requestGroups
             );
             $validPickup = $validGroup && $this->holds()->validatePickUpInput(
-                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
+                $gatheredDetails['pickUpLocation'] ?? null,
+                $extraHoldFields, $pickup
             );
             if (!$validGroup) {
                 $this->flashMessenger()
@@ -181,12 +182,15 @@ trait HoldsTrait
             $defaultRequestGroup = false;
         }
 
+        $config = $this->getConfig();
+        $allowHomeLibrary = $config->Account->set_home_library ?? true;
         $view = $this->createViewModel(
             [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
-                'homeLibrary' => $this->getUser()->home_library,
+                'homeLibrary' => $allowHomeLibrary
+                    ? $this->getUser()->home_library : '',
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => $defaultRequired,
                 'requestGroups' => $requestGroups,

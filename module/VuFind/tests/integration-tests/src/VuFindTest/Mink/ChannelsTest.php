@@ -37,9 +37,12 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Get a reference to a standard search results page.
      *
@@ -82,7 +85,7 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertEquals(6, count($page->findAll('css', 'div.channel-wrapper')));
         $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
         // Click first add button
-        $this->findCss($channel, '.add-btn')->click();
+        $this->clickCss($channel, '.add-btn');
         $this->snooze();
         // Post count
         $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
@@ -97,10 +100,10 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         $page = $this->getChannelsPage();
         $channel = $this->findCss($page, 'div.channel-wrapper');
         // Click dropdown to display links
-        $this->findCss($channel, '.dropdown')->click();
+        $this->clickCss($channel, '.dropdown');
         $this->snooze();
         // Click link to go to search results
-        $this->findCss($channel, '.channel_search')->click();
+        $this->clickCss($channel, '.channel_search');
         $this->snooze();
         // Make sure the search translated
         $this->assertEquals(
@@ -109,8 +112,12 @@ class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Check facet
         $this->assertEquals(
-            'Clear Filter Suggested Topics: Adult children of aging parents',
-            $this->findCss($page, '.active-filters .facet')->getText()
+            'Suggested Topics:',
+            $this->findCss($page, '.filters .filters-title')->getText()
+        );
+        $this->assertEquals(
+            'Adult children of aging parents',
+            $this->findCss($page, '.filters .filter-value')->getText()
         );
     }
 }

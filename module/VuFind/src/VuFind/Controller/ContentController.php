@@ -29,6 +29,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\View\Model\ViewModel;
+
 /**
  * Controller for mostly static pages that doesn't fall under any particular
  * function.
@@ -43,54 +45,75 @@ namespace VuFind\Controller;
 class ContentController extends AbstractBase
 {
     /**
+     * Types/formats of content
+     *
+     * @var array $types
+     */
+    protected $types = [
+        'phtml',
+        'md',
+    ];
+
+    /**
      * Default action if none provided
      *
-     * @return Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $themeInfo = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class);
-        $language = $this->serviceLocator->get(\Zend\Mvc\I18n\Translator::class)
-            ->getLocale();
-        $defaultLanguage = $this->getConfig()->Site->language;
+        $pathPrefix = "templates/content/";
+        $pageLocator = $this->serviceLocator
+            ->get(\VuFind\Content\PageLocator::class);
+        $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
 
-        // Try to find a template using
-        // 1.) Current language suffix
-        // 2.) Default language suffix
-        // 3.) No language suffix
-        $currentTpl = "templates/content/{$page}_$language.phtml";
-        $defaultTpl = "templates/content/{$page}_$defaultLanguage.phtml";
-        if (null !== $themeInfo->findContainingTheme($currentTpl)) {
-            $page = "{$page}_$language";
-        } elseif (null !== $themeInfo->findContainingTheme($defaultTpl)) {
-            $page = "{$page}_$defaultLanguage";
-        }
+        $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 
-        if (empty($page) || 'content' === $page
-            || null === $themeInfo->findContainingTheme(
-                "templates/content/$page.phtml"
-            )
-        ) {
-            return $this->notFoundAction($this->getResponse());
-        }
-
-        $view = $this->createViewModel(['page' => $page]);
-        return $view;
+        return $method && is_callable([$this, $method])
+            ? $this->$method($data['page'], $data['path'])
+            : $this->notFoundAction($this->getResponse());
     }
 
     /**
      * Action called if matched action does not exist
      *
-     * @return array
+     * @return ViewModel
      */
-    public function notFoundAction()
+    public function notFoundAction(): ViewModel
     {
         $response   = $this->response;
 
-        if ($response instanceof \Zend\Http\Response) {
+        if ($response instanceof \Laminas\Http\Response) {
             return $this->createHttpNotFoundModel($response);
         }
         return $this->createConsoleNotFoundModel($response);
+    }
+
+    /**
+     * Get ViewModel for markdown based page
+     *
+     * @param string $page Page name/route (if applicable)
+     * @param string $path Full path to file with content (if applicable)
+     *
+     * @return ViewModel
+     */
+    protected function getViewForMd(string $page, string $path): ViewModel
+    {
+        $view = $this->createViewModel(['data' => file_get_contents($path)]);
+        $view->setTemplate('content/markdown');
+        return $view;
+    }
+
+    /**
+     * Get ViewModel for phtml base page
+     *
+     * @param string $page Page name/route (if applicable)
+     * @param string $path Full path to file with content (if applicable)
+     *
+     * @return ViewModel
+     */
+    protected function getViewForPhtml(string $page, string $path): ViewModel
+    {
+        return $this->createViewModel(['page' => $page]);
     }
 }

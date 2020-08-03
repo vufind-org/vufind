@@ -141,12 +141,15 @@ trait StorageRetrievalRequestsTrait
             $defaultPickup = false;
         }
 
+        $config = $this->getConfig();
+        $allowHomeLibrary = $config->Account->set_home_library ?? true;
         $view = $this->createViewModel(
             [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
-                'homeLibrary' => $this->getUser()->home_library,
+                'homeLibrary' => $allowHomeLibrary
+                    ? $this->getUser()->home_library : '',
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => $checkRequests['helpText'] ?? null

@@ -29,9 +29,9 @@
  */
 namespace VuFind\Session;
 
+use Laminas\Crypt\BlockCipher;
+use Laminas\Math\Rand;
 use VuFind\Cookie\CookieManager;
-use Zend\Crypt\BlockCipher;
-use Zend\Math\Rand;
 
 /**
  * Secure session delegator
@@ -69,8 +69,8 @@ class SecureDelegator
     /**
      * SecureDelegator constructor.
      *
-     * @param CookieManager    $cookieManager {@see $cookieHandler}
-     * @param HandlerInterface $handler       {@see $handler}
+     * @param CookieManager    $cookieManager VuFind cookie manager service.
+     * @param HandlerInterface $handler       The wrapped session handler.
      */
     public function __construct(
         CookieManager $cookieManager, HandlerInterface $handler

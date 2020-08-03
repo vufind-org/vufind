@@ -39,6 +39,13 @@ namespace VuFind\Search\Primo;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'Primo';
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -51,11 +58,12 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()->search(
-            'Primo', $query, $offset, $limit, $params
+            $this->backendId, $query, $offset, $limit, $params
         );
 
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
+        $this->errors = $collection->getErrors();
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -100,7 +108,9 @@ class Results extends \VuFind\Search\Base\Results
                             'displayText' => $displayText,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
-                            'operator' => 'AND', 'count' => $count
+                            'operator' =>
+                                $this->getParams()->getFacetOperator($field),
+                            'count' => $count
                         ];
                     }
 

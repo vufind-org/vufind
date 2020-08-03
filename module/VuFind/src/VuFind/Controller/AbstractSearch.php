@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Session\SessionManager;
+use Laminas\Stdlib\Parameters;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
-use Zend\Session\SessionManager;
-use Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -81,7 +81,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Handle an advanced search
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function advancedAction()
     {
@@ -107,7 +107,7 @@ class AbstractSearch extends AbstractBase
                 ->get(\VuFind\Search\Results\PluginManager::class)
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
-                new \Zend\StdLib\Parameters([])
+                new \Laminas\Stdlib\Parameters([])
             );
         }
 
@@ -258,9 +258,33 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * If the search backend has thrown a "deep paging" exception, we should show a
+     * flash message and redirect the user to a legal page.
+     *
+     * @param array $request Incoming request parameters
+     * @param int   $page    Legal page number
+     *
+     * @return mixed
+     */
+    protected function redirectToLegalSearchPage(array $request, int $page)
+    {
+        if (($request['page'] ?? 0) <= $page) {
+            throw new \Exception('Unrecoverable deep paging error.');
+        }
+        $request['page'] = $page;
+        $this->flashMessenger()->addErrorMessage(
+            [
+                'msg' => 'deep_paging_failure',
+                'tokens' => ['%%page%%' => $page],
+            ]
+        );
+        return $this->redirect()->toUrl('?' . http_build_query($request));
+    }
+
+    /**
      * Send search results to results view
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function resultsAction()
     {
@@ -280,10 +304,14 @@ class AbstractSearch extends AbstractBase
 
         $lastView = $this->getSearchMemory()
             ->retrieveLastSetting($this->searchClassId, 'view');
-        $view->results = $results = $runner->run(
-            $request, $this->searchClassId, $this->getSearchSetupCallback(),
-            $lastView
-        );
+        try {
+            $view->results = $results = $runner->run(
+                $request, $this->searchClassId, $this->getSearchSetupCallback(),
+                $lastView
+            );
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
+        }
         $view->params = $results->getParams();
 
         // If we received an EmptySet back, that indicates that the real search
@@ -309,6 +337,10 @@ class AbstractSearch extends AbstractBase
             // Set up results scroller:
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
+            }
+
+            foreach ($results->getErrors() as $error) {
+                $this->flashMessenger()->addErrorMessage($error);
             }
         }
 
@@ -336,7 +368,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
      *
-     * @return bool|\Zend\View\Model\ViewModel
+     * @return bool|\Laminas\View\Model\ViewModel
      */
     protected function processJumpTo($results)
     {
@@ -470,7 +502,7 @@ class AbstractSearch extends AbstractBase
 
             // Check to see if there is an existing range in the search object:
             if ($savedSearch) {
-                $filters = $savedSearch->getParams()->getFilters();
+                $filters = $savedSearch->getParams()->getRawFilters();
                 if (isset($filters[$field])) {
                     foreach ($filters[$field] as $current) {
                         if ($range = SolrUtils::parseRange($current)) {
@@ -501,7 +533,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param string $config  Name of config file
      * @param string $section Configuration section to check
-     * @param array  $filter  Whitelist of fields to include (if empty, all
+     * @param array  $filter  List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -525,7 +557,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -542,7 +574,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -559,7 +591,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -576,7 +608,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -714,7 +746,7 @@ class AbstractSearch extends AbstractBase
         $facet = $this->params()->fromQuery('facet');
         $page = (int)$this->params()->fromQuery('facetpage', 1);
         $options = $results->getOptions();
-        $facetSortOptions = $options->getFacetSortOptions();
+        $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
         if ($sort === null || !in_array($sort, array_keys($facetSortOptions))) {
             $sort = empty($facetSortOptions)

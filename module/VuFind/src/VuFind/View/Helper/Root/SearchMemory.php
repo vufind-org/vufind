@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\Search\Memory;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * View helper for remembering recent user searches/parameters.
@@ -113,5 +113,47 @@ class SearchMemory extends AbstractHelper
     public function getLastSort($context)
     {
         return $this->memory->retrieveLastSetting($context, 'sort');
+    }
+
+    /**
+     * Get the URL to edit the last search.
+     *
+     * @param string $searchClassId Search class
+     * @param string $action        Action to take
+     * @param mixed  $value         Value for action
+     *
+     * @return string
+     */
+    public function getEditLink($searchClassId, $action, $value)
+    {
+        $query = compact('searchClassId') + [$action => $value];
+        $url = $this->getView()->plugin('url');
+        return $url('search-editmemory', [], compact('query'));
+    }
+
+    /**
+     * Retrieve the parameters of the last search by the search class
+     *
+     * @param string $searchClassId Search class
+     *
+     * @return \VuFind\Search\Base\Params
+     */
+    public function getLastSearchParams($searchClassId)
+    {
+        $lastUrl = $this->memory->retrieveSearch();
+        $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
+        $request = new \Laminas\Stdlib\Parameters();
+        $request->fromString($queryParams);
+        $paramsPlugin = $this->getView()->plugin('searchParams');
+        $params = $paramsPlugin($searchClassId);
+        // Make sure the saved URL represents search results from $searchClassId;
+        // if the user jumps from search results of one backend to a record of a
+        // different backend, we don't want to display irrelevant filters. If there
+        // is a backend mismatch, don't initialize the parameter object!
+        $expectedPath = $this->view->url($params->getOptions()->getSearchAction());
+        if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
+            $params->initFromRequest($request);
+        }
+        return $params;
     }
 }

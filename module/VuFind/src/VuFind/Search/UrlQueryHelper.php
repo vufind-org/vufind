@@ -144,6 +144,17 @@ class UrlQueryHelper
                         $this->urlParams['lookfor' . $i][] = $inner->getString();
                         $this->urlParams['type' . $i][] = $inner->getHandler();
                         if (null !== ($op = $inner->getOperator())) {
+                            // We want the op and lookfor parameters to align
+                            // with each other; let's backfill empty op values
+                            // if there aren't enough in place already.
+                            $expectedOps
+                                = count($this->urlParams['lookfor' . $i]) - 1;
+                            while (
+                                count($this->urlParams['op' . $i] ?? [])
+                                < $expectedOps
+                            ) {
+                                $this->urlParams['op' . $i][] = '';
+                            }
                             $this->urlParams['op' . $i][] = $op;
                         }
                     }
@@ -237,15 +248,16 @@ class UrlQueryHelper
     /**
      * Replace a term in the search query (used for spelling replacement)
      *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return UrlQueryHelper
      */
-    public function replaceTerm($from, $to)
+    public function replaceTerm($from, $to, $normalize = false)
     {
         $query = clone $this->queryObject;
-        $query->replaceTerm($from, $to);
+        $query->replaceTerm($from, $to, $normalize);
         return new static($this->urlParams, $query, $this->config);
     }
 
@@ -298,6 +310,20 @@ class UrlQueryHelper
         $params = $this->urlParams;
         // Clear page:
         unset($params['filter']);
+
+        return new static($params, $this->queryObject, $this->config, false);
+    }
+
+    /**
+     * Reset default filter state.
+     *
+     * @return string
+     */
+    public function resetDefaultFilters()
+    {
+        $params = $this->urlParams;
+        // Clear page:
+        unset($params['dfApplied']);
 
         return new static($params, $this->queryObject, $this->config, false);
     }
@@ -362,7 +388,7 @@ class UrlQueryHelper
      * @param string $value    Facet value
      * @param string $operator Facet type to add (AND, OR, NOT)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function removeFacet($field, $value, $operator = 'AND')
     {
@@ -466,7 +492,7 @@ class UrlQueryHelper
      * parameter.
      *
      * Note: This is called setViewParam rather than setView to avoid confusion
-     * with the \Zend\View\Helper\AbstractHelper interface.
+     * with the \Laminas\View\Helper\AbstractHelper interface.
      *
      * @param string $v New sort parameter (null for NO view parameter)
      *

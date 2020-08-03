@@ -45,12 +45,12 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
      * Test bad callback.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Record factory must be callable.
      */
     public function testBadCallback()
     {
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Record factory must be callable.');
+
         $x = new RecordCollectionFactory('bad');
     }
 
@@ -58,12 +58,12 @@ class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
      * Test bad factory input.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      */
     public function testBadFactoryInput()
     {
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
+
         $x = new RecordCollectionFactory();
         $x->factory('bad');
     }

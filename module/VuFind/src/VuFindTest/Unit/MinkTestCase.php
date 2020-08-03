@@ -31,6 +31,7 @@ namespace VuFindTest\Unit;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
+use DMore\ChromeDriver\ChromeDriver;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -128,11 +129,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
-        if ($snoozeMultiplier < 1) {
+        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
-        sleep($secs * $snoozeMultiplier);
+        usleep(1000000 * $secs * $snoozeMultiplier);
     }
 
     /**
@@ -154,8 +155,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function getMinkDriver()
     {
-        $env = getenv('VUFIND_SELENIUM_BROWSER');
-        $browser = $env ? $env : 'firefox';
+        $driver = getenv('VUFIND_MINK_DRIVER') ?? 'selenium';
+        if ($driver === 'chrome') {
+            return new ChromeDriver('http://localhost:9222', null, 'data:;');
+        }
+        $browser = getenv('VUFIND_SELENIUM_BROWSER') ?? 'firefox';
         return new Selenium2Driver($browser);
     }
 
@@ -239,8 +243,32 @@ abstract class MinkTestCase extends DbTestCase
         $session = $this->getMinkSession();
         $session->wait($timeout, "$('$selector').length > 0");
         $result = $page->find('css', $selector);
-        $this->assertTrue(is_object($result));
+        $this->assertTrue(is_object($result), "Selector not found: $selector");
         return $result;
+    }
+
+    /**
+     * Click on a CSS element.
+     *
+     * @param Element $page     Page element
+     * @param string  $selector CSS selector
+     * @param int     $timeout  Wait timeout (in ms)
+     *
+     * @return mixed
+     */
+    protected function clickCss(Element $page, $selector, $timeout = 1000)
+    {
+        $result = $this->findCss($page, $selector, $timeout);
+        for ($tries = 0; $tries < 3; $tries++) {
+            try {
+                $result->click();
+                return $result;
+            } catch (\Exception $e) {
+                // Expected click didn't work... snooze and retry
+                $this->snooze();
+            }
+        }
+        throw $e ?? new \Exception('Unexpected state reached.');
     }
 
     /**
@@ -334,11 +362,12 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
 
         // Reset the modified configs list.
@@ -350,7 +379,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->stopMinkSession();
         $this->restoreConfigs();
@@ -361,7 +390,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // No teardown actions at this time.
     }

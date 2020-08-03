@@ -28,8 +28,8 @@
  */
 namespace VuFind\Recommend;
 
+use Laminas\Stdlib\Parameters;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-use Zend\StdLib\Parameters;
 
 /**
  * AuthorityRecommend Module
@@ -149,7 +149,7 @@ class AuthorityRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param Parameters                 $request Parameter object representing user
      * request.
      *
      * @return void
@@ -280,6 +280,11 @@ class AuthorityRecommend implements RecommendInterface
     public function process($results)
     {
         $this->results = $results;
+
+        // empty searches such as New Items will return blank
+        if ($this->lookfor == null) {
+            return;
+        }
 
         // function will return blank on Advanced Search
         if ($results->getParams()->getSearchType() == 'advanced') {

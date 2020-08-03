@@ -27,7 +27,7 @@
  */
 namespace VuFind\Resolver\Driver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Resolver driver plugin manager
@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         '360link' => Threesixtylink::class,
+        'alma' => Alma::class,
         'demo' => Demo::class,
         'ezb' => Ezb::class,
         'sfx' => Sfx::class,
@@ -62,9 +63,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        Alma::class => DriverWithHttpClientFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
         Demo::class => InvokableFactory::class,
-        Ezb::class => DriverWithHttpClientFactory::class,
+        Ezb::class => EzbFactory::class,
         Sfx::class => DriverWithHttpClientFactory::class,
         Redi::class => DriverWithHttpClientFactory::class,
         Generic::class => AbstractBaseFactory::class,

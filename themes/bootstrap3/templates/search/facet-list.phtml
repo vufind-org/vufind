@@ -5,7 +5,7 @@
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . $this->exclude . '&amp;facetop=' . $this->operator;
+  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . urlencode($this->facet) . '&amp;facetexclude=' . urlencode($this->exclude) . '&amp;facetop=' . urlencode($this->operator);
   $searchAction = $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
@@ -51,4 +51,4 @@
   <?php endforeach; ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '(typeof VuFind.lightbox_facets !== "undefined") && VuFind.lightbox_facets.setup();', 'SET'); ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '(typeof VuFind.lightbox_facets !== "undefined") && VuFind.lightbox_facets.setup();', 'SET'); ?>

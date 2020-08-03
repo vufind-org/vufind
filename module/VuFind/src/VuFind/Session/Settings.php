@@ -30,7 +30,7 @@
  */
 namespace VuFind\Session;
 
-use Zend\Session\SessionManager;
+use Laminas\Session\SessionManager;
 
 /**
  * Container for session settings, allowing those settings to be configured

@@ -50,6 +50,14 @@ class Params extends \VuFind\Search\Base\Params
         = ['Advanced_Facets', 'FacetsTop', 'Facets'];
 
     /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @return ParamBag
@@ -63,11 +71,12 @@ class Params extends \VuFind\Search\Base\Params
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
-        $filterList = array_merge(
-            $this->getHiddenFilters(),
-            $this->filterList
-        );
-        $backendParams->set('filterList', $filterList);
+        $backendParams->set('filterList', $this->getFilterSettings());
+        if ($this->getOptions()->highlightEnabled()) {
+            $backendParams->set('highlight', true);
+            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
+            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
+        }
 
         return $backendParams;
     }
@@ -107,5 +116,32 @@ class Params extends \VuFind\Search\Base\Params
             return 'Reference Entries';
         }
         return ucwords(str_replace('_', ' ', $str));
+    }
+
+    /**
+     * Return the current filters as an array
+     *
+     * @return array
+     */
+    public function getFilterSettings()
+    {
+        $result = [];
+        $filterList = array_merge(
+            $this->getHiddenFilters(),
+            $this->filterList
+        );
+        foreach ($filterList as $field => $filter) {
+            $facetOp = 'AND';
+            $prefix = substr($field, 0, 1);
+            if ('~' === $prefix || '-' === $prefix) {
+                $facetOp = '~' === $prefix ? 'OR' : 'NOT';
+                $field = substr($field, 1);
+            }
+            $result[$field] = [
+                'facetOp' => $facetOp,
+                'values' => $filter
+            ];
+        }
+        return $result;
     }
 }

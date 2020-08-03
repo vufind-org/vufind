@@ -38,8 +38,8 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadScript extends \Zend\View\Helper\HeadScript
-    implements \Zend\Log\LoggerAwareInterface
+class HeadScript extends \Laminas\View\Helper\HeadScript
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;
@@ -54,16 +54,26 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     protected $themeInfo;
 
     /**
+     * CSP nonce
+     *
+     * @var string
+     */
+    protected $cspNonce;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo   $themeInfo Theme information service
      * @param string|bool $plconfig  Config for current application environment
+     * @param string      $nonce     Nonce from nonce generator
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig = false)
+    public function __construct(ThemeInfo $themeInfo, $plconfig = false, $nonce = '')
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
         $this->usePipeline = $this->enabledInConfig($plconfig);
+        $this->cspNonce = $nonce;
+        $this->optionalAttributes[] = 'nonce';
     }
 
     /**
@@ -103,6 +113,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
             }
         }
 
+        $item->attributes['nonce'] = $this->cspNonce;
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 

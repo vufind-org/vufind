@@ -33,9 +33,9 @@
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
+use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -383,14 +383,17 @@ class DAIA extends AbstractBase implements
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
@@ -493,7 +496,7 @@ class DAIA extends AbstractBase implements
                 list($responseMediaType) = array_pad(
                     explode(
                         ';',
-                        $result->getHeaders()->get('ContentType')->getFieldValue(),
+                        $result->getHeaders()->get('Content-type')->getFieldValue(),
                         2
                     ),
                     2,

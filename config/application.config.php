@@ -2,15 +2,14 @@
 
 // Set up modules:
 $modules = [
-    'Zend\Form', 'Zend\Router', 'ZfcRbac',
+    'Laminas\Form', 'Laminas\Router', 'LmcRbacMvc',
     'VuFindTheme', 'VuFindSearch', 'VuFind', 'VuFindAdmin', 'VuFindApi'
 ];
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
-    $modules[] = 'Zend\Mvc\Console';
     $modules[] = 'VuFindConsole';
 }
 if (APPLICATION_ENV == 'development') {
-    array_push($modules, 'Zf2Whoops');
+    array_push($modules, 'WhoopsErrorHandler');
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {

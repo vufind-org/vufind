@@ -1,0 +1,7 @@
+<?php
+$found = preg_match('/#+(.*)/', $this->data, $matches);
+if ($found) {
+    $this->headTitle($matches[1]);
+}
+?>
+<?=$this->markdown($this->data);

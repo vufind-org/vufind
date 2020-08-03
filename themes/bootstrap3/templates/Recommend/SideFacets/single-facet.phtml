@@ -12,6 +12,12 @@
   if ($this->facet['isApplied']) {
     $classList[] = 'active';
   }
+  if ($this->facet['operator'] == 'OR') {
+    $classList[] = 'facetOR';
+  }
+  if ($this->facet['operator'] == 'AND') {
+    $classList[] = 'facetAND';
+  }
 
   $displayText = '-';
   if (!empty($this->facet['displayText'])) {
@@ -19,6 +25,7 @@
   } elseif (!empty($this->facet['value'])) {
     $displayText = $this->escapeHtml($this->facet['value']);
   }
+  $displayText = '<span class="facet-value">' . $displayText . '</span>';
 
   if ($this->facet['operator'] == 'OR') {
     $displayText =
@@ -27,7 +34,7 @@
   }
 ?>
 <?php if ($hasSubLinks): ?>
-  <li class="<?=implode(' ', $classList) ?>">
+  <div class="<?=implode(' ', $classList) ?>">
 <?php else: ?>
   <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if($this->facet['isApplied']): ?> title="<?=$this->transEsc('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
 <?php endif; ?>
@@ -50,7 +57,10 @@
 
   <?php if ($this->exclude && !$this->facet['isApplied']): ?>
     <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
-    <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
+    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
+      <i class="fa fa-times" aria-hidden="true"></i>
+      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+    </a>
   <?php endif; ?>
 
-<?=$hasSubLinks ? '</li>' : '</a>'; ?>
+<?=$hasSubLinks ? '</div>' : '</a>'; ?>

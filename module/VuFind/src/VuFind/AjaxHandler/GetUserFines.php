@@ -27,12 +27,12 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Row\User;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
-use Zend\Mvc\Controller\Plugin\Params;
 
 /**
  * "Get User Fines" AJAX handler
@@ -73,10 +73,10 @@ class GetUserFines extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
         }
         if (!$this->ils->checkCapability('getMyFines')) {
-            return $this->formatResponse('', self::STATUS_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
         }
         $sum = 0;
         foreach ($this->ils->getMyFines($patron) as $fine) {

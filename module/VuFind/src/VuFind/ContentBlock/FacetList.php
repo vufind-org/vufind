@@ -27,9 +27,9 @@
  */
 namespace VuFind\ContentBlock;
 
+use Laminas\Config\Config;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
-use Zend\Config\Config;
 
 /**
  * FacetList content block.
@@ -105,9 +105,17 @@ class FacetList implements ContentBlockInterface
      */
     protected function getHierarchicalFacetSortSettings($facetConfig)
     {
-        return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
+        $baseConfig
+            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : [];
+        $homepageConfig
+            = isset($facetConfig->HomePage_Settings->hierarchicalFacetSortOptions)
+            ? $facetConfig->HomePage_Settings->hierarchicalFacetSortOptions
+                ->toArray()
+            : [];
+
+        return array_merge($baseConfig, $homepageConfig);
     }
 
     /**

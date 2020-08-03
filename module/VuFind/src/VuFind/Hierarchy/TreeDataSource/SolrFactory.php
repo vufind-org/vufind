@@ -38,8 +38,15 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'Solr';
+
     /**
      * Create an object
      *
@@ -72,7 +79,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         $batchSize = isset($config->Index->cursor_batch_size)
             ? $config->Index->cursor_batch_size : 1000;
         $solr = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('Solr')->getConnector();
+            ->get($this->backendId)->getConnector();
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(

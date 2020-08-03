@@ -53,11 +53,12 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * for built-in defaults)
+     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * file (omit to use $mainConfig as $recordConfig)
+     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * file
      */
     public function __construct($mainConfig = null, $recordConfig = null,
         $searchSettings = null
@@ -319,6 +320,27 @@ class DefaultRecord extends AbstractBase
     {
         $nums = $this->getUPC();
         return empty($nums) ? false : $nums[0];
+    }
+
+    /**
+     * Get just the first listed national bibliography number (or false if none
+     * available).
+     *
+     * @return mixed
+     */
+    public function getCleanNBN()
+    {
+        return false;
+    }
+
+    /**
+     * Get just the base portion of the first listed ISMN (or false if no ISSMs).
+     *
+     * @return mixed
+     */
+    public function getCleanISMN()
+    {
+        return false;
     }
 
     /**
@@ -829,13 +851,14 @@ class DefaultRecord extends AbstractBase
         // of databases if they do not cover the exact date provided!
         unset($params['rft.date']);
 
-        // If we're working with the SFX resolver, we should add a
+        // If we're working with the SFX or Alma resolver, we should add a
         // special parameter to ensure that electronic holdings links
         // are shown even though no specific date or issue is specified:
-        if (isset($this->mainConfig->OpenURL->resolver)
-            && strtolower($this->mainConfig->OpenURL->resolver) == 'sfx'
-        ) {
+        $resolver = strtolower($this->mainConfig->OpenURL->resolver ?? '');
+        if ('sfx' === $resolver) {
             $params['sfx.ignore_date_threshold'] = 1;
+        } elseif ('alma' === $resolver) {
+            $params['u.ignore_date_coverage'] = 'true';
         }
         return $params;
     }
@@ -1229,10 +1252,17 @@ class DefaultRecord extends AbstractBase
         if ($upc = $this->getCleanUPC()) {
             $arr['upc'] = $upc;
         }
+        if ($nbn = $this->getCleanNBN()) {
+            $arr['nbn'] = $nbn['nbn'];
+        }
+        if ($ismn = $this->getCleanISMN()) {
+            $arr['ismn'] = $ismn;
+        }
+
         // If an ILS driver has injected extra details, check for IDs in there
         // to fill gaps:
         if ($ilsDetails = $this->getExtraDetail('ils_details')) {
-            foreach (['isbn', 'issn', 'oclc', 'upc'] as $key) {
+            foreach (['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn'] as $key) {
                 if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
                     $arr[$key] = $ilsDetails[$key];
                 }

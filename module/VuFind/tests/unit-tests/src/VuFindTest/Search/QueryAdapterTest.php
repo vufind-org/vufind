@@ -115,7 +115,7 @@ class QueryAdapterTest extends TestCase
      */
     public function testEmptyRequest()
     {
-        $req = new \Zend\Stdlib\Parameters([]);
+        $req = new \Laminas\Stdlib\Parameters([]);
         $this->assertEquals(new Query(), QueryAdapter::fromRequest($req, 'AllFields'));
     }
 

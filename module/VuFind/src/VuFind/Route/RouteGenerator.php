@@ -46,7 +46,11 @@ class RouteGenerator
      *
      * @var array
      */
-    protected $nonTabRecordActions;
+    protected $nonTabRecordActions = [
+        'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
+        'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
+        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText',
+    ];
 
     /**
      * Constructor
@@ -56,13 +60,7 @@ class RouteGenerator
      */
     public function __construct(array $nonTabRecordActions = null)
     {
-        if (null === $nonTabRecordActions) {
-            $this->nonTabRecordActions = [
-                'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save',
-                'Email', 'SMS', 'Cite', 'Export', 'RDF', 'Hold', 'Home',
-                'StorageRetrievalRequest', 'AjaxTab', 'ILLRequest', 'PDF',
-            ];
-        } else {
+        if (null !== $nonTabRecordActions) {
             $this->nonTabRecordActions = $nonTabRecordActions;
         }
     }
@@ -81,7 +79,7 @@ class RouteGenerator
     {
         list($actionName) = explode('/', $action, 2);
         $config['router']['routes'][$routeName] = [
-            'type'    => 'Zend\Router\Http\Segment',
+            'type'    => 'Laminas\Router\Http\Segment',
             'options' => [
                 'route'    => "/$controller/$action",
                 'constraints' => [
@@ -128,7 +126,7 @@ class RouteGenerator
     {
         // catch-all "tab" route:
         $config['router']['routes'][$routeBase] = [
-            'type'    => 'Zend\Router\Http\Segment',
+            'type'    => 'Laminas\Router\Http\Segment',
             'options' => [
                 'route'    => '/' . $controller . '/[:id[/[:tab]]]',
                 'constraints' => [
@@ -144,7 +142,7 @@ class RouteGenerator
         // special non-tab actions that each need their own route:
         foreach ($this->nonTabRecordActions as $action) {
             $config['router']['routes'][$routeBase . '-' . strtolower($action)] = [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/' . $controller . '/[:id]/' . $action,
                     'constraints' => [
@@ -189,7 +187,7 @@ class RouteGenerator
         list($controller, $action) = explode('/', $route);
         $routeName = str_replace('/', '-', strtolower($route));
         $config['router']['routes'][$routeName] = [
-            'type' => 'Zend\Router\Http\Literal',
+            'type' => 'Laminas\Router\Http\Literal',
             'options' => [
                 'route'    => '/' . $route,
                 'defaults' => [

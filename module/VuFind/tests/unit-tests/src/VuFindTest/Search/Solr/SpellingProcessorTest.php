@@ -28,9 +28,9 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\Config\Config;
 use VuFind\Search\Solr\SpellingProcessor;
 use VuFindTest\Unit\TestCase;
-use Zend\Config\Config;
 
 /**
  * Unit tests for spelling processor.
@@ -179,6 +179,68 @@ class SpellingProcessorTest extends TestCase
             ],
             $sp->processSuggestions(
                 $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+            )
+        );
+    }
+
+    /**
+     * Test basic suggestions for an uppercase query.
+     *
+     * @return void
+     */
+    public function testBasicSuggestionsForUppercaseQuery()
+    {
+        $spelling = $this->getFixture('spell6');
+        $query = $this->getFixture('query6');
+        $params = $this->getServiceManager()
+            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $sp = new SpellingProcessor();
+        $this->assertEquals(
+            [
+                'Grumble' => [
+                    'freq' => 2,
+                    'suggestions' => [
+                        'grumbler' => [
+                            'freq' => 4,
+                            'new_term' => 'grumbler',
+                            'expand_term' => '(Grumble OR grumbler)',
+                        ],
+                        'rumble' => [
+                            'freq' => 40,
+                            'new_term' => 'rumble',
+                            'expand_term' => '(Grumble OR rumble)',
+                        ],
+                        'crumble' => [
+                            'freq' => 15,
+                            'new_term' => 'crumble',
+                            'expand_term' => '(Grumble OR crumble)',
+                        ],
+                    ],
+                ],
+                'grimble' => [
+                    'freq' => 7,
+                    'suggestions' => [
+                        'trimble' => [
+                            'freq' => 110,
+                            'new_term' => 'trimble',
+                            'expand_term' => '(grimble OR trimble)',
+                        ],
+                        'gribble' => [
+                            'freq' => 21,
+                            'new_term' => 'gribble',
+                            'expand_term' => '(grimble OR gribble)',
+                        ],
+                        'grimsley' => [
+                            'freq' => 24,
+                            'new_term' => 'grimsley',
+                            'expand_term' => '(grimble OR grimsley)',
+                        ],
+                    ],
+                ],
+            ],
+            $sp->processSuggestions(
+                $this->getExpectedQuery6Suggestions(), $spelling->getQuery(), $params
             )
         );
     }
@@ -403,12 +465,12 @@ class SpellingProcessorTest extends TestCase
      * Test detection of bad Solr response format.
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage Unexpected suggestion format; spellcheck.extendedResults must be set to true.
      */
     public function testDetectionOfMissingExtendedResultsSetting()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
+
         $sp = new SpellingProcessor(new Config([]));
         $spelling = $this->getFixture('spell5');
         $query = $this->getFixture('query5');
@@ -450,6 +512,33 @@ class SpellingProcessorTest extends TestCase
     {
         return [
             'grumble' => [
+                'freq' => 2,
+                'suggestions' => [
+                    'grumbler' => 4,
+                    'rumble' => 40,
+                    'crumble' => 15,
+                ],
+            ],
+            'grimble' => [
+                'freq' => 7,
+                'suggestions' => [
+                    'trimble' => 110,
+                    'gribble' => 21,
+                    'grimsley' => 24
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Get expected suggestions for the "query6" example.
+     *
+     * @return array
+     */
+    protected function getExpectedQuery6Suggestions()
+    {
+        return [
+            'Grumble' => [
                 'freq' => 2,
                 'suggestions' => [
                     'grumbler' => 4,

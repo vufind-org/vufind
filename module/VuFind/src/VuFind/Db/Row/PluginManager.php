@@ -53,6 +53,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'resourcetags' => ResourceTags::class,
         'search' => Search::class,
         'session' => Session::class,
+        'shortlinks' => Shortlinks::class,
         'tags' => Tags::class,
         'user' => User::class,
         'usercard' => UserCard::class,
@@ -66,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        AuthHash::class => RowGatewayFactory::class,
         ChangeTracker::class => RowGatewayFactory::class,
         Comments::class => RowGatewayFactory::class,
         ExternalSession::class => RowGatewayFactory::class,
@@ -75,6 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ResourceTags::class => RowGatewayFactory::class,
         Search::class => RowGatewayFactory::class,
         Session::class => RowGatewayFactory::class,
+        Shortlinks::class => RowGatewayFactory::class,
         Tags::class => RowGatewayFactory::class,
         User::class => UserFactory::class,
         UserCard::class => RowGatewayFactory::class,

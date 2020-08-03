@@ -1,5 +1,5 @@
-/*global Event, grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
+/*global grecaptcha, isPhoneNumberValid */
+/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -49,7 +49,7 @@ var VuFind = (function VuFind() {
 
   var addTranslations = function addTranslations(s) {
     for (var i in s) {
-      if (s.hasOwnProperty(i)) {
+      if (Object.prototype.hasOwnProperty.call(s, i)) {
         _translations[i] = s[i];
       }
     }
@@ -59,7 +59,7 @@ var VuFind = (function VuFind() {
     var translation = _translations[op] || op;
     if (replacements) {
       for (var key in replacements) {
-        if (replacements.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(replacements, key)) {
           translation = translation.replace(key, replacements[key]);
         }
       }
@@ -73,7 +73,7 @@ var VuFind = (function VuFind() {
   var refreshPage = function refreshPage() {
     var parts = window.location.href.split('#');
     if (typeof parts[1] === 'undefined') {
-      window.location.href = window.location.href;
+      window.location.reload();
     } else {
       var href = parts[0];
       // Force reload with a timestamp
@@ -147,29 +147,21 @@ function deparam(url) {
   return request;
 }
 
-// Sidebar
-function moreFacets(id) {
-  $('.' + id).removeClass('hidden');
-  $('#more-' + id).addClass('hidden');
-  return false;
-}
-function lessFacets(id) {
-  $('.' + id).addClass('hidden');
-  $('#more-' + id).removeClass('hidden');
-  return false;
-}
 function getUrlRoot(url) {
   // Parse out the base URL for the current record:
   var urlroot = null;
   var urlParts = url.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
-  if (VuFind.path === '') {
+  var slashSlash = urlWithoutFragment.indexOf('//');
+  if (VuFind.path === '' || VuFind.path === '/') {
     // special case -- VuFind installed at site root:
     var chunks = urlWithoutFragment.split('/');
-    urlroot = '/' + chunks[3] + '/' + chunks[4];
+    // We need to extract different offsets if this is a full vs. relative URL:
+    urlroot = slashSlash > -1
+      ? ('/' + chunks[3] + '/' + chunks[4])
+      : ('/' + chunks[1] + '/' + chunks[2]);
   } else {
     // standard case -- VuFind has its own path under site:
-    var slashSlash = urlWithoutFragment.indexOf('//');
     var pathInUrl = slashSlash > -1
       ? urlWithoutFragment.indexOf(VuFind.path, slashSlash + 2)
       : urlWithoutFragment.indexOf(VuFind.path);
@@ -355,6 +347,26 @@ function setupJumpMenus(_container) {
   container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
 }
 
+function setupMultiILSLoginFields(loginMethods, idPrefix) {
+  var searchPrefix = idPrefix ? '#' + idPrefix : '#';
+  $(searchPrefix + 'target').change(function onChangeLoginTarget() {
+    var target = $(this).val();
+    var $usernameGroup = $(searchPrefix + 'username').closest('.form-group');
+    var $password = $(searchPrefix + 'password');
+    if (loginMethods[target] === 'email') {
+      $usernameGroup.find('label.password-login').addClass('hidden');
+      $usernameGroup.find('label.email-login').removeClass('hidden');
+      $password.closest('.form-group').addClass('hidden');
+      // Set password to a dummy value so that any checks for username+password work
+      $password.val('****');
+    } else {
+      $usernameGroup.find('label.password-login').removeClass('hidden');
+      $usernameGroup.find('label.email-login').addClass('hidden');
+      $password.closest('.form-group').removeClass('hidden');
+    }
+  }).change();
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -408,20 +420,17 @@ $(document).ready(function commonDocReady() {
   if (url.indexOf('?' + 'print' + '=') !== -1 || url.indexOf('&' + 'print' + '=') !== -1) {
     $("link[media='print']").attr("media", "all");
     $(document).ajaxStop(function triggerPrint() {
-      window.print();
+      // Print dialogs cause problems during testing, so disable them
+      // when the "test mode" cookie is set. This should never happen
+      // under normal usage outside of the Phing startup process.
+      if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
+        window.print();
+      } else {
+        console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
+      }
     });
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(VuFind.path + '/AJAX/JSON', {method: 'keepAlive'});
-  }
-
-  // retain filter sessionStorage
-  $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
-    sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
-    $('.applied-filter').prop('checked', this.checked);
-  });
-  if (sessionStorage.getItem('vufind_retain_filters')) {
-    var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
-    $('.searchFormKeepFilters,.applied-filter').prop('checked', state);
   }
 
   setupIeSupport();

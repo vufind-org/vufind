@@ -1,0 +1,34 @@
+<h3><?=$this->transEsc('Electronic')?></h3>
+<table class="table table-striped">
+  <?php foreach ($this->holdings as $item): ?>
+    <tr>
+      <td class="fullLocation">
+        <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
+        <?php if ($item['locationhref'] ?? false): ?>
+          <a href="<?=$item['locationhref']?>" target="_blank"><?=$locationText?></a>
+        <?php else: ?>
+          <?=$locationText?>
+        <?php endif; ?>
+      </td>
+      <td class="fullAvailability">
+        <?php if ($item['use_unknown_message'] ?? false): ?>
+          <span><?=$this->transEsc('status_unknown_message')?></span>
+        <?php elseif ($item['availability']): ?>
+          <span class="text-success"><?=!empty($item['status']) ? $this->transEsc($item['status']) : $this->transEsc('Available')?></span>
+        <?php else: ?>
+          <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
+        <?php endif; ?>
+        <?php if (isset($item['item_notes'])): ?>
+          <div class="item-notes">
+            <b><?=$this->transEsc("Item Notes")?>:</b>
+            <ul>
+              <?php foreach ($item['item_notes'] as $item_note): ?>
+                <li><?=$this->escapeHtml($item_note) ?></li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+</table>

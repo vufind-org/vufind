@@ -27,10 +27,10 @@
  */
 namespace VuFindSearch\Backend;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-use VuFindSearch\Response\RecordCollectionInterface;
 
-use Zend\Log\LoggerAwareInterface;
+use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Abstract backend.
@@ -110,14 +110,11 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      *
      * @param ResponseInterface $response Response
      *
-     * @return void
+     * @return ResponseInterface
      */
     protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {
         $response->setSourceIdentifier($this->identifier);
-        foreach ($response as $record) {
-            $record->setSourceIdentifier($this->identifier);
-        }
         return $response;
     }
 }

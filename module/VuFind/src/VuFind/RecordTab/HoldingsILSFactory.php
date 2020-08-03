@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HoldingsILSFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -67,11 +67,11 @@ class HoldingsILSFactory implements \Zend\ServiceManager\Factory\FactoryInterfac
         // object:
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $catalog = ($config->Site->hideHoldingsTabWhenEmpty ?? false)
-            ? $container->get(\VuFind\ILS\Connection::class) : null;
+        $catalog = $container->get(\VuFind\ILS\Connection::class);
         return new $requestedName(
             $catalog,
-            (string)($config->Site->holdingsTemplate ?? 'standard')
+            (string)($config->Site->holdingsTemplate ?? 'standard'),
+            (string)($config->Site->hideHoldingsTabWhenEmpty ?? false)
         );
     }
 }

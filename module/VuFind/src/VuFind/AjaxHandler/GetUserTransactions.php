@@ -27,7 +27,7 @@
  */
 namespace VuFind\AjaxHandler;
 
-use Zend\Mvc\Controller\Plugin\Params;
+use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
  * "Get User Transactions" AJAX handler
@@ -52,10 +52,10 @@ class GetUserTransactions extends AbstractIlsAndUserAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_NEED_AUTH, 401);
+            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH, 401);
         }
         if (!$this->ils->checkCapability('getMyTransactions')) {
-            return $this->formatResponse('', self::STATUS_ERROR, 405);
+            return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
         }
         $items = $this->ils->getMyTransactions($patron);
         $counts = [
@@ -64,15 +64,16 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             'overdue' => 0
         ];
         foreach ($items['records'] as $item) {
-            if (!isset($item['dueStatus'])) {
-                continue;
-            }
-            if ($item['dueStatus'] == 'overdue') {
-                $counts['overdue'] += 1;
-            } elseif ($item['dueStatus'] == 'due') {
-                $counts['warn'] += 1;
-            } else {
-                $counts['ok'] += 1;
+            switch ($item['dueStatus'] ?? '') {
+            case 'due':
+                $counts['warn']++;
+                break;
+            case 'overdue':
+                $counts['overdue']++;
+                break;
+            default:
+                $counts['ok']++;
+                break;
             }
         }
         return $this->formatResponse($counts);

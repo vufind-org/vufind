@@ -155,7 +155,7 @@ class AlephTranslator
             echo "tab15 is null!<br>";
         }
         $findme = $tab15["tab15"] . "|" . $isc . "|" . $ipsc;
-        $result = $this->table15[$findme];
+        $result = $this->table15[$findme] ?? null;
         if ($result == null) {
             $findme = $tab15["tab15"] . "||" . $ipsc;
             $result = $this->table15[$findme];
@@ -300,7 +300,7 @@ class AlephRestfulException extends ILSException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
+class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -567,7 +567,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $this->debug("url: $url response: $answer");
         }
         $answer = str_replace('xmlns=', 'ns=', $answer);
-        $result = simplexml_load_string($answer);
+        $result = @simplexml_load_string($answer);
         if (!$result) {
             if ($this->debug_enabled) {
                 $this->debug("XML is not valid, URL: $url");
@@ -734,16 +734,19 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         $holding = [];
         list($bib, $sys_no) = $this->parseId($id);
@@ -994,7 +997,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
-            //$renew = $item->xpath('@renew');
+            $renew = $item->xpath('@renew');
             //$docno = (string) $z36->{'z36-doc-number'};
             //$itemseq = (string) $z36->{'z36-item-sequence'};
             //$seq = (string) $z36->{'z36-sequence'};
@@ -1025,7 +1028,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'duedate' => $this->parseDate($due),
                 //'holddate' => $holddate,
                 //'delete' => $delete,
-                'renewable' => true,
+                'renewable' => $renew[0] == "Y",
                 //'create' => $this->parseDate($create)
             ];
         }
@@ -1067,13 +1070,16 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $result = [];
         foreach ($details['details'] as $id) {
             try {
-                $this->doRestDLFRequest(
+                $xml = $this->doRestDLFRequest(
                     [
                         'patron', $patron['id'], 'circulationActions', 'loans', $id
                     ],
                     null, 'POST', null
                 );
-                $result[$id] = ['success' => true];
+                $due = (string)current($xml->xpath('//new-due-date'));
+                $result[$id] = [
+                    'success' => true, 'new_date' => $this->parseDate($due)
+                ];
             } catch (AlephRestfulException $ex) {
                 $result[$id] = [
                     'success' => false, 'sysMessage' => $ex->getMessage()

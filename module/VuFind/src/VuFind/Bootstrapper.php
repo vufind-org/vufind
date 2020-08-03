@@ -27,9 +27,8 @@
  */
 namespace VuFind;
 
-use Zend\Console\Console;
-use Zend\Mvc\MvcEvent;
-use Zend\Router\Http\RouteMatch;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -42,10 +41,12 @@ use Zend\Router\Http\RouteMatch;
  */
 class Bootstrapper
 {
+    use \VuFind\I18n\Translator\LanguageInitializerTrait;
+
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
@@ -59,14 +60,14 @@ class Bootstrapper
     /**
      * Event manager
      *
-     * @var \Zend\EventManager\EventManagerInterface
+     * @var \Laminas\EventManager\EventManagerInterface
      */
     protected $events;
 
     /**
      * Constructor
      *
-     * @param MvcEvent $event Zend MVC Event object
+     * @param MvcEvent $event Laminas MVC Event object
      */
     public function __construct(MvcEvent $event)
     {
@@ -104,26 +105,21 @@ class Bootstrapper
     }
 
     /**
-     * Initialize dynamic debug mode (debug initiated by a ?debug=true parameter).
+     * Set up cookie to flag test mode.
      *
      * @return void
      */
-    protected function initDynamicDebug()
+    protected function initTestMode()
     {
-        // Query parameters do not apply in console mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
-        $app = $this->event->getApplication();
-        $sm = $app->getServiceManager();
-        $debugOverride = $sm->get('Request')->getQuery()->get('debug');
-        if ($debugOverride) {
-            $auth = $sm->get(\ZfcRbac\Service\AuthorizationService::class);
-            if ($auth->isGranted('access.DebugMode')) {
-                $logger = $sm->get(\VuFind\Log\Logger::class);
-                $logger->addDebugWriter($debugOverride);
-            }
+        // If we're in test mode (as determined by the config.ini property installed
+        // by the build.xml startup process), set a cookie so the front-end code can
+        // act accordingly. (This is needed to work around a problem where opening
+        // print dialogs during testing stalls the automated test process).
+        if ($this->config->System->runningTestSuite ?? false) {
+            $app = $this->event->getApplication();
+            $sm = $app->getServiceManager();
+            $cm = $sm->get(\VuFind\Cookie\CookieManager::class);
+            $cm->set('VuFindTestSuiteRunning', '1', 0, false);
         }
     }
 
@@ -134,10 +130,9 @@ class Bootstrapper
      */
     protected function initSystemStatus()
     {
-        // If the system is unavailable, forward to a different place:
-        if (isset($this->config->System->available)
-            && !$this->config->System->available
-        ) {
+        // If the system is unavailable and we're not in the console, forward to the
+        // unavailable page.
+        if (PHP_SAPI !== 'cli' && !($this->config->System->available ?? true)) {
             $callback = function ($e) {
                 $routeMatch = new RouteMatch(
                     ['controller' => 'Error', 'action' => 'Unavailable'], 1
@@ -179,7 +174,7 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            if (!Console::isConsole()) {
+            if (PHP_SAPI !== 'cli') {
                 $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
                 // Grab the template name from the first child -- we can use this to
@@ -210,7 +205,7 @@ class Bootstrapper
             $helperManager = $serviceManager->get('ViewHelperManager');
             $headTitle = $helperManager->get('headtitle');
             $headTitle->setDefaultAttachOrder(
-                \Zend\View\Helper\Placeholder\Container\AbstractContainer::SET
+                \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET
             );
         };
         $this->events->attach('dispatch', $callback);
@@ -275,30 +270,6 @@ class Bootstrapper
     }
 
     /**
-     * Support method for initLanguage() -- look up all text domains.
-     *
-     * @return array
-     */
-    protected function getTextDomains()
-    {
-        $base = APPLICATION_PATH;
-        $local = LOCAL_OVERRIDE_DIR;
-        $languagePathParts = ["$base/languages"];
-        if (!empty($local)) {
-            $languagePathParts[] = "$local/languages";
-        }
-        $languagePathParts[] = "$base/themes/*/languages";
-
-        $domains = [];
-        foreach ($languagePathParts as $current) {
-            $places = glob($current . '/*', GLOB_ONLYDIR | GLOB_NOSORT);
-            $domains = array_merge($domains, array_map('basename', $places));
-        }
-
-        return array_unique($domains);
-    }
-
-    /**
      * Set up language handling.
      *
      * @return void
@@ -306,7 +277,7 @@ class Bootstrapper
     protected function initLanguage()
     {
         // Language not supported in CLI mode:
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return;
         }
 
@@ -335,18 +306,10 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
-                $translator->setLocale($language)
-                    ->addTranslationFile('ExtendedIni', null, 'default', $language);
-                foreach ($this->getTextDomains() as $domain) {
-                    // Set up text domains using the domain name as the filename;
-                    // this will help the ExtendedIni loader dynamically locate
-                    // the appropriate files.
-                    $translator->addTranslationFile(
-                        'ExtendedIni', $domain, $domain, $language
-                    );
-                }
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
+                $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
+                $translator->setLocale($language);
+                $this->addLanguageToTranslator($translator, $language);
+            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'
@@ -354,6 +317,14 @@ class Bootstrapper
                     );
                 }
             }
+
+            // Store last selected language in user account, if applicable:
+            if (($user = $sm->get(\VuFind\Auth\Manager::class)->isLoggedIn())
+                && $user->last_language != $language
+            ) {
+                $user->updateLastLanguage($language);
+            }
+
             // Send key values to view:
             $viewModel = $sm->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
@@ -375,16 +346,6 @@ class Bootstrapper
      */
     protected function initTheme()
     {
-        // Themes not needed in console mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
-        // Attach template injection configuration to the route event:
-        $this->events->attach(
-            'route', ['VuFindTheme\Initializer', 'configureTemplateInjection']
-        );
-
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
         $config = $this->config->Site;
@@ -404,7 +365,7 @@ class Bootstrapper
     protected function initExceptionBasedHttpStatuses()
     {
         // HTTP statuses not needed in console mode:
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return;
         }
 
@@ -450,8 +411,8 @@ class Bootstrapper
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.
-                    $server = Console::isConsole()
-                        ? new \Zend\Stdlib\Parameters(['env' => 'console'])
+                    $server = (PHP_SAPI == 'cli')
+                        ? new \Laminas\Stdlib\Parameters(['env' => 'console'])
                         : $event->getRequest()->getServer();
                     if (!empty($exception)) {
                         $log->logException($exception, $server);
@@ -480,5 +441,23 @@ class Bootstrapper
             $viewModel->renderingError = true;
         };
         $this->events->attach('render.error', $callback, 10000);
+    }
+
+    /**
+     * Set up content security policy
+     *
+     * @return void
+     */
+    protected function initContentSecurityPolicy()
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        $sm = $this->event->getApplication()->getServiceManager();
+        $headers = $this->event->getResponse()->getHeaders();
+        $cspHeaderGenerator = $sm->get(\VuFind\Security\CspHeaderGenerator::class);
+        if ($cspHeader = $cspHeaderGenerator->getHeader()) {
+            $headers->addHeader($cspHeader);
+        }
     }
 }

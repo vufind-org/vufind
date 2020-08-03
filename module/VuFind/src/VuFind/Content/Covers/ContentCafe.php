@@ -55,13 +55,12 @@ class ContentCafe extends \VuFind\Content\AbstractCover
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param \Laminas\Config\Config $config Configuration
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->password = $config->pw;
-        $this->baseURL = isset($config->url)
-            ? $config->url : 'http://contentcafe2.btol.com';
+        $this->baseURL = $config->url ?? 'http://contentcafe2.btol.com';
         $this->supportsUpc = $this->supportsIsbn = $this->cacheAllowed = true;
     }
 

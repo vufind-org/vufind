@@ -27,7 +27,7 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Recommendation module plugin manager
@@ -55,9 +55,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'collectionsidefacets' => CollectionSideFacets::class,
         'doi' => DOI::class,
         'dplaterms' => DPLATerms::class,
+        'edsresults' => EDSResults::class,
+        'edsresultsdeferred' => EDSResultsDeferred::class,
         'europeanaresults' => EuropeanaResults::class,
         'europeanaresultsdeferred' => EuropeanaResultsDeferred::class,
         'expandfacets' => ExpandFacets::class,
+        'externalsearch' => ExternalSearch::class,
         'facetcloud' => FacetCloud::class,
         'favoritefacets' => FavoriteFacets::class,
         'libraryh3lp' => Libraryh3lp::class,
@@ -68,6 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'openlibrarysubjectsdeferred' => OpenLibrarySubjectsDeferred::class,
         'pubdatevisajax' => PubDateVisAjax::class,
         'randomrecommend' => RandomRecommend::class,
+        'recommendlinks' => RecommendLinks::class,
         'removefilters' => RemoveFilters::class,
         'resultgooglemapajax' => Deprecated::class,
         'spellingsuggestions' => SpellingSuggestions::class,
@@ -103,9 +107,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Deprecated::class => InvokableFactory::class,
         DOI::class => InvokableFactory::class,
         DPLATerms::class => DPLATermsFactory::class,
+        EDSResults::class => InjectSearchRunnerFactory::class,
+        EDSResultsDeferred::class => InvokableFactory::class,
         EuropeanaResults::class => EuropeanaResultsFactory::class,
         EuropeanaResultsDeferred::class => InvokableFactory::class,
         ExpandFacets::class => ExpandFacetsFactory::class,
+        ExternalSearch::class => InvokableFactory::class,
         FacetCloud::class => InvokableFactory::class,
         FavoriteFacets::class => FavoriteFacetsFactory::class,
         Libraryh3lp::class => InvokableFactory::class,
@@ -114,6 +121,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         OpenLibrarySubjectsDeferred::class => InvokableFactory::class,
         PubDateVisAjax::class => InvokableFactory::class,
         RandomRecommend::class => RandomRecommendFactory::class,
+        RecommendLinks::class => InjectConfigManagerFactory::class,
         RemoveFilters::class => InvokableFactory::class,
         SideFacets::class => SideFacetsFactory::class,
         SideFacetsDeferred::class => InjectConfigManagerFactory::class,

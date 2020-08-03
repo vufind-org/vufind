@@ -29,14 +29,14 @@
 namespace VuFindTest\Backend\LibGuides;
 
 use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for LibGuides backend.
@@ -53,12 +53,12 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieving a record (not supported).
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage retrieve() not supported by LibGuides.
      */
     public function testRetrieve()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('retrieve() not supported by LibGuides.');
+
         $conn = $this->getConnector();
         $back = new Backend($conn, $this->getRCFactory());
         $back->retrieve('foo');
@@ -143,11 +143,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
-     *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsLibGuidesException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -243,7 +243,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\LibGuides\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs(['fakeid', $client])

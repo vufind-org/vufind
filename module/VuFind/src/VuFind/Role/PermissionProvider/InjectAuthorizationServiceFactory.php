@@ -28,7 +28,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Interop\Container\ContainerInterface;
-use ZfcRbac\Service\AuthorizationService;
+use LmcRbacMvc\Service\AuthorizationService;
 
 /**
  * Factory for instantiating permission providers with authorization service.
@@ -40,7 +40,7 @@ use ZfcRbac\Service\AuthorizationService;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class InjectAuthorizationServiceFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

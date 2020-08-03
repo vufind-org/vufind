@@ -50,11 +50,11 @@ abstract class ILSDriverTestCase extends TestCase
      * Test that driver complains about missing configuration.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\ILS
      */
     public function testMissingConfiguration()
     {
+        $this->expectException(\VuFind\Exception\ILS::class);
+
         $this->driver->init();
     }
 }

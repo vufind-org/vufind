@@ -27,11 +27,11 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Record\Loader;
-use VuFind\RecordTab\PluginManager as TabManager;
-use Zend\Http\PhpEnvironment\Request;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
+use VuFind\RecordTab\TabManager;
 
 /**
  * "Get Record Details" AJAX handler
@@ -47,7 +47,7 @@ use Zend\View\Renderer\RendererInterface;
 class GetRecordDetails extends AbstractBase
 {
     /**
-     * ZF configuration
+     * Framework configuration
      *
      * @var array
      */
@@ -72,7 +72,7 @@ class GetRecordDetails extends AbstractBase
      *
      * @var TabManager
      */
-    protected $pluginManager;
+    protected $tabManager;
 
     /**
      * View renderer
@@ -84,19 +84,19 @@ class GetRecordDetails extends AbstractBase
     /**
      * Constructor
      *
-     * @param array             $config   ZF configuration
+     * @param array             $config   Framework configuration
      * @param Request           $request  HTTP request
      * @param Loader            $loader   Record loader
-     * @param TabManager        $pm       RecordTab plugin manager
+     * @param TabManager        $tm       Record Tab manager
      * @param RendererInterface $renderer Renderer
      */
     public function __construct(array $config, Request $request, Loader $loader,
-        TabManager $pm, RendererInterface $renderer
+        TabManager $tm, RendererInterface $renderer
     ) {
         $this->config = $config;
         $this->request = $request;
         $this->recordLoader = $loader;
-        $this->pluginManager = $pm;
+        $this->tabManager = $tm;
         $this->renderer = $renderer;
     }
 
@@ -115,11 +115,8 @@ class GetRecordDetails extends AbstractBase
             '/\W/', '', trim(strtolower($params->fromQuery('type')))
         );
 
-        $details = $this->pluginManager->getTabDetailsForRecord(
-            $driver,
-            $this->config['vufind']['recorddriver_tabs'],
-            $this->request,
-            'Information'
+        $details = $this->tabManager->getTabDetailsForRecord(
+            $driver, $this->request, 'Information'
         );
 
         $html = $this->renderer->render(
@@ -128,9 +125,8 @@ class GetRecordDetails extends AbstractBase
                 'defaultTab' => $details['default'],
                 'driver' => $driver,
                 'tabs' => $details['tabs'],
-                'backgroundTabs' => $this->pluginManager->getBackgroundTabNames(
-                    $driver, $this->config['vufind']['recorddriver_tabs']
-                )
+                'backgroundTabs' => $this->tabManager
+                    ->getBackgroundTabNames($driver),
             ]
         );
         return $this->formatResponse(compact('html'));

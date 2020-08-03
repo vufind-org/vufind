@@ -29,9 +29,9 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
-use Zend\Db\Adapter\Adapter;
 
 /**
  * Table Definition for session
@@ -52,12 +52,12 @@ class Session extends Gateway
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'session'
+        ?RowGateway $rowObj = null, $table = 'session'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

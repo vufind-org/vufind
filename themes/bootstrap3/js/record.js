@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
 
 /**
@@ -82,24 +82,19 @@ function refreshCommentList($target, recordId, recordSource) {
     });
 }
 
-function registerAjaxCommentRecord() {
+function registerAjaxCommentRecord(_context) {
+  var context = typeof _context === "undefined" ? document : _context;
   // Form submission
-  $('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
+  $(context).find('form.comment-form').unbind('submit').submit(function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
     var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      var recaptcha = $(form).find('.g-recaptcha');
-      if (recaptcha.length > 0) {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
-      }
-    }
+    var data = {};
+    $(form).find("input,textarea").each(function appendCaptchaData() {
+      var input = $(this);
+      data[input.attr('name')] = input.val();
+    });
     $.ajax({
       type: 'POST',
       url: url,
@@ -133,6 +128,28 @@ function registerAjaxCommentRecord() {
   return false;
 }
 
+// Forward declaration
+var ajaxLoadTab = function ajaxLoadTabForward() {
+};
+
+function handleAjaxTabLinks(_context) {
+  var context = typeof _context === "undefined" ? document : _context;
+  // Form submission
+  $(context).find('a').each(function handleLink() {
+    var $a = $(this);
+    var href = $a.attr('href');
+    if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
+      $a.unbind('click').click(function linkClick() {
+        var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
+        var $tab = $('.' + tabid + '-tab');
+        $tab.html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' + VuFind.translate('loading') + '...</div>');
+        ajaxLoadTab($tab, '', false, href);
+        return false;
+      });
+    }
+  });
+}
+
 function registerTabEvents() {
   // Logged in AJAX
   registerAjaxCommentRecord();
@@ -140,6 +157,8 @@ function registerTabEvents() {
   recaptchaOnLoad();
 
   setUpCheckRequest();
+
+  handleAjaxTabLinks();
 
   VuFind.lightbox.bind('.tab-pane.active');
 }
@@ -153,12 +172,21 @@ function removeHashFromLocation() {
   }
 }
 
-function ajaxLoadTab($newTab, tabid, setHash) {
+ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   // Request the tab via AJAX:
+  var url = '';
+  var postData = {};
+  // If tabUrl is defined, it overrides base URL and tabid
+  if (typeof tabUrl !== 'undefined') {
+    url = tabUrl;
+  } else {
+    url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
+    postData.tab = tabid;
+  }
   $.ajax({
-    url: VuFind.path + getUrlRoot(document.URL) + '/AjaxTab',
+    url: url,
     type: 'POST',
-    data: {tab: tabid}
+    data: postData
   })
     .always(function ajaxLoadTabDone(data) {
       if (typeof data === 'object') {
@@ -178,7 +206,7 @@ function ajaxLoadTab($newTab, tabid, setHash) {
       setupJumpMenus($newTab);
     });
   return false;
-}
+};
 
 function refreshTagList(_target, _loggedin) {
   var loggedin = !!_loggedin || userIsLoggedIn;
@@ -241,7 +269,7 @@ function backgroundLoadTab(tabid) {
     return;
   }
   var newTab = getNewRecordTab(tabid);
-  $('.nav-tabs a.' + tabid).closest('.result,.record').find('.tab-content').append(newTab);
+  $('[data-tab="' + tabid + '"]').closest('.result,.record').find('.tab-content').append(newTab);
   return ajaxLoadTab(newTab, tabid, false);
 }
 
@@ -302,7 +330,7 @@ function recordDocReady() {
   });
 
   $('[data-background]').each(function setupBackgroundTabs(index, el) {
-    backgroundLoadTab(el.className);
+    backgroundLoadTab(el.dataset.tab);
   });
 
   registerTabEvents();

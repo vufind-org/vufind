@@ -139,6 +139,14 @@ class Params
     protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
 
     /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = [];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -219,7 +227,8 @@ class Params
         }
 
         // Activate all relevant checkboxes, also important for labeling:
-        $checkboxSections = $config->FacetLabels->checkboxSections ?? [];
+        $checkboxSections = $config->FacetLabels->checkboxSections
+            ?? $this->defaultFacetLabelCheckboxSections;
         foreach ($checkboxSections as $checkboxSection) {
             $this->initCheckboxFacets($checkboxSection);
         }
@@ -275,7 +284,7 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -299,7 +308,7 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -330,7 +339,7 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -367,7 +376,7 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -383,7 +392,7 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -400,7 +409,7 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
@@ -479,7 +488,7 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -510,7 +519,7 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -539,7 +548,7 @@ class Params
     /**
      * Get the value for which results view to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -1004,7 +1013,7 @@ class Params
      *
      * @return array
      */
-    public function getFilters()
+    public function getRawFilters()
     {
         return $this->filterList;
     }
@@ -1132,20 +1141,20 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     * @param array $include List of checkbox filters to return (null for all)
      *
      * @return array
      */
-    public function getCheckboxFacets(array $whitelist = null)
+    public function getCheckboxFacets(array $include = null)
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
-                // If the current filter is not on the whitelist, skip it (but
-                // accept everything if the whitelist is empty).
-                if (!empty($whitelist) && !in_array($facet['filter'], $whitelist)) {
+                // If the current filter is not on the include list, skip it (but
+                // accept everything if the include list is empty).
+                if (!empty($include) && !in_array($facet['filter'], $include)) {
                     continue;
                 }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
@@ -1162,7 +1171,7 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1266,13 +1275,13 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request         Parameter object representing
-     * user request.
-     * @param string                  $requestParam    Name of parameter containing
-     * names of range filter fields.
-     * @param Callable                $valueFilter     Optional callback to process
-     * values in the range.
-     * @param Callable                $filterGenerator Optional callback to create
+     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * representing user request.
+     * @param string                     $requestParam    Name of parameter
+     * containing names of range filter fields.
+     * @param Callable                   $valueFilter     Optional callback to
+     * process values in the range.
+     * @param Callable                   $filterGenerator Optional callback to create
      * a filter query from the range values.
      *
      * @return void
@@ -1370,7 +1379,7 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1388,7 +1397,7 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1406,7 +1415,7 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1422,7 +1431,7 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1462,7 +1471,7 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1711,7 +1720,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return VuFindSearch\Query\AbstractQuery
+     * @return \VuFindSearch\Query\AbstractQuery
      */
     public function getQuery()
     {
@@ -1777,11 +1786,19 @@ class Params
     ) {
         $config = $this->configLoader
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (empty($config->$facetList)) {
-            return false;
+        $retVal = false;
+        // If the section is in reverse order, the tilde will flag this:
+        if (substr($facetList, 0, 1) == '~') {
+            foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
+        } else {
+            foreach ($config->$facetList ?? [] as $key => $value) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
         }
-        foreach ($config->$facetList as $key => $value) {
-            $this->addCheckboxFacet($key, $value);
-        }
+        return $retVal;
     }
 }

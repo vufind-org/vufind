@@ -8,6 +8,7 @@
   <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="seleniumjar" value="false" /><!-- set to Selenium jar path to spin up Selenium instance -->
   <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
+  <property name="extra_startup_command" value="false" />
   <property name="extra_shutdown_cleanup" value="false" />
   <property name="vufindurl" value="http://localhost/vufind" />
   <property name="vufinddb" value="vufind_test" />
@@ -20,15 +21,17 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
+  <property name="composer_version" value="1.10.8" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_version" value="7.3.1" />
-  <property name="phpdoc_version" value="2.9.0" />
+  <property name="skip_phpdoc" value="false" />
+  <property name="phpdoc_version" value="3.0.0-alpha.4" />
 
-  <property name="version" value="5.1" />
+  <property name="version" value="7.0" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -130,32 +133,45 @@
     <exec command="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
+  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <target name="checkLessToSass">
+    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
+  </target>
+
   <!-- PHP API Documentation -->
   <target name="phpdoc">
-    <!-- GET phpDocumentor.phar -->
+    <!-- Skip the whole phpdoc task when disabled -->
     <if>
-      <not><available file="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar" /></not>
+      <not><istrue value="${skip_phpdoc}" /></not>
       <then>
-        <httpget followRedirects="true" url="https://github.com/phpDocumentor/phpDocumentor2/releases/download/v${phpdoc_version}/phpDocumentor.phar" dir="${srcdir}/vendor/bin" filename="phpDocumentor-${phpdoc_version}.phar" />
-        <chmod mode="0755">
-          <fileset dir="${srcdir}/vendor/bin">
-            <include name="phpDocumentor-${phpdoc_version}.phar" />
+        <!-- GET phpDocumentor.phar -->
+        <if>
+          <not><available file="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar" /></not>
+          <then>
+            <httpget followRedirects="true" url="https://github.com/phpDocumentor/phpDocumentor2/releases/download/v${phpdoc_version}/phpDocumentor.phar" dir="${srcdir}/vendor/bin" filename="phpDocumentor-${phpdoc_version}.phar" />
+            <chmod mode="0755">
+              <fileset dir="${srcdir}/vendor/bin">
+                <include name="phpDocumentor-${phpdoc_version}.phar" />
+              </fileset>
+            </chmod>
+          </then>
+        </if>
+        <!-- Run phpdoc -->
+        <mkdir dir="${builddir}/apidocs" />
+        <mkdir dir="${builddir}/docs_cache" />
+        <!-- Old embedded version; no longer works correctly...
+        <phpdoc2 title="VuFind API Documentation"
+          pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
+          destdir="${builddir}/apidocs">
+          <fileset dir=".">
+            <include name="module/*/src/**/*.php" />
           </fileset>
-        </chmod>
+        </phpdoc2>
+        -->
+        <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --cache-folder=${builddir}/docs_cache --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
       </then>
     </if>
-    <!-- Run phpdoc -->
-    <mkdir dir="${builddir}/apidocs" />
-    <!-- Old embedded version; no longer works correctly...
-    <phpdoc2 title="VuFind API Documentation"
-      pharlocation="${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar"
-      destdir="${builddir}/apidocs">
-      <fileset dir=".">
-        <include name="module/*/src/**/*.php" />
-      </fileset>
-    </phpdoc2>
-    -->
-    <exec command="php ${srcdir}/vendor/bin/phpDocumentor-${phpdoc_version}.phar --title=&quot;VuFind API Documentation&quot; -t ${builddir}/apidocs -d ${srcdir}/module" passthru="true" />
   </target>
 
   <!-- PHPUnit -->
@@ -166,6 +182,11 @@
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
     <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+  </target>
+
+  <!-- PHPUnit without logging output, stopping at first error or failure -->
+  <target name="phpunitfaster" description="Run tests until first failure">
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -221,22 +242,27 @@
       <filterchain>
         <replaceregexp>
           <regexp pattern="defaultModelRendering: 'schema'" replace="defaultModelRendering: 'model'" />
-          <regexp pattern="url = &quot;.*&quot;" replace="url = &quot;../api/v1?swagger&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?swagger&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
-    <httpget url="https://getcomposer.org/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
     <echo message="Installing dependencies..." />
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <!-- get dependencies -->
-    <phingcall target="composer" />
+    <!-- run extra cleanup action, if any -->
+    <if>
+      <istrue value="${extra_startup_command}" />
+      <then>
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${extra_startup_command}" />
+      </then>
+    </if>
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
@@ -283,7 +309,9 @@
         <!-- build database -->
         <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
         <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
         <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
@@ -292,12 +320,13 @@
       </else>
     </if>
 
-    <!-- Update config.ini to activate DB connection and exception logging -->
+    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <copy file="${srcdir}/config/vufind/config.ini" tofile="${srcdir}/local/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
           <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
+          <regexp pattern="(\[System\]\s+)" replace="\1runningTestSuite=1" />
         </replaceregexp>
       </filterchain>
     </copy>
@@ -351,6 +380,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
         <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>

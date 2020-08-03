@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -46,7 +46,7 @@ class CartController extends AbstractBase
     /**
      * Session container
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
@@ -255,11 +255,11 @@ class CartController extends AbstractBase
             null, $this->translate('bulk_email_title')
         );
         $view->records = $this->getRecordLoader()->loadBatch($ids);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
