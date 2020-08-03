@@ -124,11 +124,13 @@
                             <button type="submit" class="btn btn-primary search-button"><i class="fa fa-search" aria-hidden="true"></i><!-- IxTheo2: No text <?= $this->transEsc("Find") ?>--></button>
 
                             <!-- IxTheo 2: Advanced search -->
-                            <div class="ix-searchbox-adv-search">
-                                <a href="<?=$this->url($advSearch) .  ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $this->hiddenFilterParams)?>"
-                                   class="btn btn-link" role="button"
-                                   rel="nofollow"><?= $this->transEsc("Advanced Search") ?></a>
-                            </div>
+                            <?php if ($advSearch != ''):?>
+                                <div class="ix-searchbox-adv-search">
+                                    <a href="<?=$this->url($advSearch) .  ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $this->hiddenFilterParams)?>"
+                                       class="btn btn-link" role="button"
+                                       rel="nofollow"><?= $this->transEsc("Advanced Search") ?></a>
+                                </div>
+                            <?php endif;?>
 
                             <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
                                 <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
