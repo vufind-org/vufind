@@ -87,8 +87,8 @@
                         </div>
                     <?php else: ?>
                         <!-- ixtheo2: custom form with included dropdown inspired by finna.fi -->
+                        <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
                         <form id="searchForm" class="searchForm ix2-searchForm" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off" style="display: flex;">
-                            <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
                             <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
 
 
