@@ -137,7 +137,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'lookupUserResponse.xml',
             'result' => [
                 [
-                    'id' => '',
+                    'id' => '8071750247',
                     'duedate' => '',
                     'amount' => 25,
                     'balance' => 25,
@@ -439,7 +439,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron_agency_id' => 'Test agency',
                 ]
             );
-            $this->assertEquals($test['result'], $fines);
+            $this->assertEquals($test['result'], $fines, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 

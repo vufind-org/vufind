@@ -25,6 +25,28 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                         <ns1:MonetaryValue>25</ns1:MonetaryValue>
                     </ns1:Amount>
                     <ns1:FiscalTransactionDescription>Please note that there is an additional accrued overdue items fine of: 0.00.</ns1:FiscalTransactionDescription>
+                    <ns1:ItemDetails>
+                        <ns1:ItemId>
+                            <ns1:ItemIdentifierType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">BARCODE</ns1:ItemIdentifierType>
+                            <ns1:ItemIdentifierValue>2681016402</ns1:ItemIdentifierValue>
+                        </ns1:ItemId>
+                        <ns1:BibliographicDescription>
+                            <ns1:Author>Běhan, Petr</ns1:Author>
+                            <ns1:BibliographicItemId>
+                                <ns1:BibliographicItemIdentifier>8071750247</ns1:BibliographicItemIdentifier>
+                                <ns1:BibliographicItemIdentifierCode ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">ISBN</ns1:BibliographicItemIdentifierCode>
+                            </ns1:BibliographicItemId>
+                            <ns1:ComponentId>
+                                <ns1:ComponentIdentifierType ns1:Scheme="https://www.library.sk/ncip/v2_02/schemes.scm">ACCESSION_NUMBER</ns1:ComponentIdentifierType>
+                                <ns1:ComponentIdentifier>2681016402</ns1:ComponentIdentifier>
+                            </ns1:ComponentId>
+                            <ns1:Edition />
+                            <ns1:PlaceOfPublication>Praha :</ns1:PlaceOfPublication>
+                            <ns1:PublicationDate>1995</ns1:PublicationDate>
+                            <ns1:Publisher>Prospektrum,</ns1:Publisher>
+                            <ns1:Title>Daňová soustava. Díl 3a, Daně z příjmů fyzické osoby, právnické osoby</ns1:Title>
+                        </ns1:BibliographicDescription>
+                    </ns1:ItemDetails>
                 </ns1:FiscalTransactionInformation>
             </ns1:AccountDetails>
         </ns1:UserFiscalAccount>

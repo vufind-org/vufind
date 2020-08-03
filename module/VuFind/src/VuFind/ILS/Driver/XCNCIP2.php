@@ -915,14 +915,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
             $desc = (string)$tmp[0];
-            /* This is an item ID, not a bib ID, so it's not actually useful:
-            $tmp = $current->xpath(
+
+            $bibId = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
-                'ns1:ItemId/ns1:ItemIdentifierValue'
+                'ns1:BibliographicDescription/ns1:BibliographicRecordId/' .
+                'ns1:BibliographicRecordIdentifier' .
+                ' | ' .
+                'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
+                'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
+                'ns1:BibliographicItemIdentifier'
             );
-            $id = (string)$tmp[0];
-             */
-            $id = '';
+            $id = !empty($bibId) ? (string)$bibId[0] : '';
             $fines[] = [
                 'amount' => $amount,
                 'balance' => $amount,
