@@ -1523,7 +1523,7 @@ class DefaultRecord extends AbstractBase
      */
     protected function getSupportedCitationFormats()
     {
-        return ['APA', 'Chicago', 'MLA'];
+        return ['APA', 'Chicago', 'MLA', 'Vancouver'];
     }
 
     /**
