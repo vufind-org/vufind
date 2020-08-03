@@ -58,8 +58,8 @@ class UserIpReader
     /**
      * Constructor
      *
-     * @param Parameters $server            Server parameters
-     * @param bool       $allowForwardedIps Forwarded header configuration string
+     * @param Parameters  $server            Server parameters
+     * @param string|bool $allowForwardedIps Forwarded header configuration string
      * (false to disable checking IP-related X- headers)
      */
     public function __construct(Parameters $server, $allowForwardedIps = false)
