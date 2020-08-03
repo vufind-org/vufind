@@ -59,7 +59,7 @@
         "ocramius/proxy-manager": "2.2.3",
         "pear/archive_tar": "^1.4",
         "pear/file_marc": "1.4.1",
-        "pear/http_request2": "2.3.0",
+        "pear/http_request2": "2.4.1",
         "pear/validate_ispn": "dev-master",
         "phing/phing": "2.16.3",
         "ppito/laminas-whoops": "2.0.0",
