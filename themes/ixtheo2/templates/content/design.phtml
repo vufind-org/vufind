@@ -49,6 +49,65 @@
 </div>
 
 <!--
+    NAVS:
+-->
+<div id="navs" class="cw-docs-item">
+    <h5 class="cw-h5 cw-text-uppercase cw-mb-4">Navs</h5>
+    <div class="cw-docs-desc"><p class="cw-lead">Documentation and examples for how to use Bootstrap’s included navigation components. </p></div>
+    <div class="cw-mt-5">
+        <!-- HORIZONTAL & VERTICAL examples not implemented yet -->
+        <!--
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="title-decorative">Horizontal</h6>
+                <ul class="nav">
+                    <li class="nav-item"><a href="#" class="nav-link active">Active</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link disabled">Disabled</a></li>
+                </ul>
+            </div>
+        </div>
+        -->
+        <!--
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="title-decorative">Vertical</h6>
+                <nav class="nav flex-md-column"><a href="#" class="nav-link active">Active</a><a href="#" class="nav-link">Link</a><a href="#" class="nav-link">Link</a><a href="#" class="nav-link disabled">Disabled</a></nav>
+            </div>
+        </div>
+        -->
+
+        <!--
+            TABS:
+            When copying this, please change ids like "myTab", "tab1...tab3", "tab1...3-content".
+            After some problems with the theme's CSS+JS, example has been implemented using mainly VuFind's bootstrap3.
+        -->
+        <div class="cw-card cw-mb-3">
+            <div class="cw-card-body">
+                <h6 class="cw-h6 cw-mb-4">Tabs</h6>
+                <ul id="myTab" role="tablist" class="nav nav-tabs">
+                    <li class="nav-item active"><a id="tab1" data-toggle="tab" href="#tab1-content" role="tab" aria-controls="tab1-content" aria-selected="true" class="nav-link active">Tab One</a></li>
+                    <li class="nav-item"><a id="tab2" data-toggle="tab" href="#tab2-content" role="tab" aria-controls="tab2-content" aria-selected="false" class="nav-link">Tab Two</a></li>
+                    <li class="nav-item"><a id="tab3" data-toggle="tab" href="#tab3-content" role="tab" aria-controls="tab3-content" aria-selected="false" class="nav-link">Tab Three</a></li>
+                </ul>
+                <div class="tab-content cw-py-5 cw-px-3">
+                    <div id="tab1-content" role="tabpanel" aria-labelledby="tab1-content" class="tab-pane fade active in">
+                        <p class="cw-text-muted">One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections</p>
+                    </div>
+                    <div id="tab2-content" role="tabpanel" aria-labelledby="tab2-content" class="tab-pane fade">
+                        <p class="cw-text-muted">The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. "What's happened to me?" he thought. It wasn't a dream.</p>
+                    </div>
+                    <div id="tab3-content" role="tabpanel" aria-labelledby="tab3-content" class="tab-pane fade">
+                        <p class="cw-text-muted">His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
     RIBBONS:
     If you copy this, please change all IDs like "headingOne", "#headingTwo"
     as well as "collapseOne", "#collapseTwo" etc.
