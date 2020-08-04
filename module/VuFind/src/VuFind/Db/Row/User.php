@@ -308,7 +308,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Same as getTagString(), but operates on a list of tags.
      *
-     * @param array $tags Tags (output from getTags)
+     * @param array $tags Tags
      *
      * @return string
      */
