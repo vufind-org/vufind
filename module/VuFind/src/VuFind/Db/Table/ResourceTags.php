@@ -239,7 +239,9 @@ class ResourceTags extends Gateway
             if (null !== $resource) {
                 if ($resource === 'listTag') {
                     // special case -- if $resource is set to the string "listTag",
-                    // we want to retrieve tags assigned to a user list.
+                    // we want to retrieve tags assigned to a user list
+                    // and filter out user resource tags
+                    // (resource_id is NULL for list tags).
                     $select->where->isNull('resource_id');
                 } else {
                     if (!is_array($resource)) {
