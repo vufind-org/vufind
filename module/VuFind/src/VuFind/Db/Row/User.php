@@ -290,11 +290,28 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Returns a string for use in edit mode.
      *
+     * @param string $resourceId Filter for tags tied to a specific resource (null
+     * for no filter).
+     * @param int    $listId     Filter for tags tied to a specific list (null for no
+     * filter).
+     * @param string $source     Filter for tags tied to a specific record source
+     * (null for no filter).
+     *
+     * @return string
+     */
+    public function getTagString($resourceId = null, $listId = null, $source = null)
+    {
+        return $this->formatTagString($this->getTags($resourceId, $listId, $source));
+    }
+
+    /**
+     * Returns a string for use in edit mode.
+     *
      * @param array $tags Tags (output from getTags)
      *
      * @return string
      */
-    public function getTagString($tags)
+    public function formatTagString($tags)
     {
         $tagStr = '';
         if (count($tags) > 0) {
