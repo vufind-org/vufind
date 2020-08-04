@@ -318,7 +318,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
                 if (strstr($tag->tag, ' ')) {
-                    $tagStr  .= "\"$tag->tag\" ";
+                    $tagStr .= "\"$tag->tag\" ";
                 } else {
                     $tagStr .= "$tag->tag ";
                 }
