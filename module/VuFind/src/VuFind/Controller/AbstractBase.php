@@ -639,18 +639,6 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
-     * Are list tags enabled?
-     *
-     * @return bool
-     */
-    protected function listTagsEnabled()
-    {
-        $check = $this->serviceLocator
-            ->get(\VuFind\Config\AccountCapabilities::class);
-        return $check->getListTagSetting() === 'enabled';
-    }
-
-    /**
      * Store a referer (if appropriate) to keep post-login redirect pointing
      * to an appropriate location. This is used when the user clicks the
      * log in link from an arbitrary page or when a password is mistyped;

@@ -2153,4 +2153,16 @@ class MyResearchController extends AbstractBase
         }
         return $this->paginationHelper;
     }
+
+    /**
+     * Are list tags enabled?
+     *
+     * @return bool
+     */
+    protected function listTagsEnabled()
+    {
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
+        return $check->getListTagSetting() === 'enabled';
+    }
 }
