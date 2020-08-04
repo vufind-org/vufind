@@ -88,7 +88,7 @@ CREATE TABLE `resource` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resource_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `resource_id` int(11) NOT NULL DEFAULT '0',
+  `resource_id` int(11) DEFAULT NULL,
   `tag_id` int(11) NOT NULL DEFAULT '0',
   `list_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE `user_list` (
 CREATE TABLE `user_resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `resource_id` int(11) DEFAULT NULL,
+  `resource_id` int(11) NOT NULL,
   `list_id` int(11) DEFAULT NULL,
   `notes` text,
   `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

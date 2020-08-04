@@ -47,7 +47,7 @@ DROP TABLE IF EXISTS "resource_tags";
 
 CREATE TABLE resource_tags (
 id SERIAL,
-resource_id int NOT NULL DEFAULT '0',
+resource_id int DEFAULT NULL,
 tag_id int NOT NULL DEFAULT '0',
 list_id int DEFAULT NULL,
 user_id int DEFAULT NULL,
@@ -188,7 +188,7 @@ DROP TABLE IF EXISTS "user_resource";
 CREATE TABLE user_resource (
 id SERIAL,
 user_id int NOT NULL,
-resource_id int DEFAULT NULL,
+resource_id int NOT NULL,
 list_id int DEFAULT NULL,
 notes text,
 saved timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
