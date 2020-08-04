@@ -190,8 +190,7 @@ finna.multiSelect = (function multiSelect(){
       } else {
         _.ul.children().each(function setVisible() {
           var hierarchyLine = $(this).has('.hierarchy-line');
-
-          if ($(this).data('formatted').indexOf(curVal) !== -1) {
+          if (String($(this).data('formatted')).indexOf(curVal) !== -1) {
             $(this).show();
           } else {
             $(this).hide();
