@@ -288,7 +288,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Returns a string for use in edit mode.
+     * Same as getTags(), but returns a string for use in edit mode rather than an
+     * array of tag objects.
      *
      * @param string $resourceId Filter for tags tied to a specific resource (null
      * for no filter).
@@ -305,7 +306,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Returns a string for use in edit mode.
+     * Same as getTagString(), but operates on a list of tags.
      *
      * @param array $tags Tags (output from getTags)
      *
