@@ -2,6 +2,16 @@
 * many classes taken + prefixes from bootstrap 4
 * so they do not collide with current vufind bootstrap3
 */
+
+.cw-a {
+    text-decoration: none;
+    background-color: transparent;
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
 .cw-align-items-center {
     align-items: center !important;
 }
@@ -361,13 +371,16 @@
 
 .cw-card {
     position: relative;
+    display: -ms-flexbox;
     display: flex;
+    -ms-flex-direction: column;
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
     background-color: #fff;
     background-clip: border-box;
-    border-radius: .4rem;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.4rem;
 }
 
 .cw-card-header {
@@ -664,7 +677,22 @@
 }
 
 .cw-breadcrumb-item {
-    color: #fff;
+    /*color: #fff;*/
+}
+
+.cw-breadcrumb-item + .cw-breadcrumb-item {
+    padding-left: 0.5rem;
+}
+
+.cw-breadcrumb-item + .cw-breadcrumb-item::before {
+    display: inline-block;
+    padding-right: 0.5rem;
+    color: #868e96;
+    content: "—";
+}
+
+.cw-breadcrumb-item.active {
+    color: #868e96;
 }
 
 .cw-lead {
