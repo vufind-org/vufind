@@ -1033,13 +1033,16 @@ class MyResearchController extends AbstractBase
             }
         }
 
+        $listTags = null;
+        if ($this->listTagsEnabled() && !$newList) {
+            $listTags = $user->getTagString($list->getListTags());
+        }
         // Send the list to the view:
         return $this->createViewModel(
             [
                 'list' => $list,
                 'newList' => $newList,
-                'listTags' => $this->listTagsEnabled()
-                    ? $user->getTagString($list->getListTags()) : null
+                'listTags' => $listTags
             ]
         );
     }
