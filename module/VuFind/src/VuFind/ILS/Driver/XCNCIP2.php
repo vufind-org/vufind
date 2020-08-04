@@ -185,6 +185,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $return = [];
 
+        $agencyId = $response->xpath('ns1:LookupAgencyResponse/ns1:AgencyId');
+        $agencyId = !empty($agencyId) ? (string)$agencyId[0] : '';
         $locations = $response->xpath(
             'ns1:LookupAgencyResponse/ns1:Ext/ns1:LocationName/' .
             'ns1:LocationNameInstance'
@@ -197,7 +199,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 continue;
             }
             $location = [
-                'locationID' => (string)$id[0],
+                'locationID' => $agencyId . '|' . (string)$id[0],
                 'locationDisplay' => (string)$name[0],
             ];
             $return[] = $location;

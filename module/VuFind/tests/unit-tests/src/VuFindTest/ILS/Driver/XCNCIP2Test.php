@@ -309,7 +309,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 ],
             ],
         ],
-
     ];
 
     protected $statusesTests = [
@@ -557,11 +556,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([
             [
-                'locationID' => '1',
+                'locationID' => 'My library|1',
                 'locationDisplay' => 'Main library',
             ],
             [
-                'locationID' => '2',
+                'locationID' => 'My library|2',
                 'locationDisplay' => 'Stacks',
             ]
         ], $locations);
