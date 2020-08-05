@@ -912,10 +912,8 @@ class MyResearchController extends AbstractBase
             $listTags = [];
 
             if ($this->listTagsEnabled()) {
-                $list = $results->getListObject();
-                $user = $this->getUser();
-                if ($list && $user) {
-                    foreach ($user->getListTags($list->id, $user->id) as $tag) {
+                if ($list = $results->getListObject()) {
+                    foreach ($list->getListTags() as $tag) {
                         $listTags[$tag->id] = $tag->tag;
                     }
                 }
