@@ -93,7 +93,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      *
      * @return array
      */
-    public function getTags()
+    public function getResourceTags()
     {
         $table = $this->getDbTable('User');
         $user = $table->select(['id' => $this->user_id])->current();
@@ -101,6 +101,17 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             return [];
         }
         return $user->getTags(null, $this->id);
+    }
+
+    /**
+     * Get an array of resource tags associated with this list
+     * (deprecated, use getResourceTags).
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->getResourceTags();
     }
 
     /**
