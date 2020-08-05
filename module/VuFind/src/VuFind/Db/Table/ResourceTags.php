@@ -223,7 +223,7 @@ class ResourceTags extends Gateway
      * Unlink rows for the specified resource.
      *
      * @param string|array $resource ID (or array of IDs) of resource(s) to
-     * unlink (null for ALL matching resources, 'listTag' for user list tags)
+     * unlink (null for ALL matching resources)
      * @param string       $user     ID of user removing links
      * @param string       $list     ID of list to unlink (null for ALL matching
      * tags, 'none' for tags not in a list, true for tags only found in a list)
