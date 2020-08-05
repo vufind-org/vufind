@@ -1,10 +1,10 @@
 <?php
 
-namespace IxTheo\Db\Table;
+namespace TueFind\Db\Table;
 
 use VuFind\Db\Table\GatewayFactory;
 
-class PluginManager extends \TueFind\Db\Table\PluginManager {
+class PluginManager extends \VuFind\Db\Table\PluginManager {
     /**
      * Constructor
      *
@@ -17,13 +17,8 @@ class PluginManager extends \TueFind\Db\Table\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['IxTheoUser']                        = IxTheoUser::class;
-        $this->aliases['pdasubscription']                   = PDASubscription::class;
-        $this->aliases['subscription']                      = Subscription::class;
-
-        $this->factories['IxTheo\Db\Table\IxTheoUser']      = GatewayFactory::class;
-        $this->factories['IxTheo\Db\Table\PDASubscription'] = GatewayFactory::class;
-        $this->factories['IxTheo\Db\Table\Subscription']    = GatewayFactory::class;
+        $this->aliases['redirect']        = Redirect::class;
+        $this->factories[Redirect::class] = GatewayFactory::class;
 
         $this->addAbstractFactory(PluginFactory::class);
         return parent::__construct($configOrContainerInstance, $v3config);

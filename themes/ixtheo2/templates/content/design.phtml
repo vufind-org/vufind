@@ -1,4 +1,9 @@
 <!--
+    This file contains theme examples.
+    If you want to use any of then, please remove cw-docs-item and cw-docs-desc.
+-->
+
+<!--
     ACCORDION:
     If you copy this, please change all IDs like "headingOne", "#headingTwo"
     as well as "collapseOne", "#collapseTwo" etc.
@@ -6,7 +11,7 @@
 -->
 <div id="accordion" class="cw-docs-item">
     <h5 class="cw-h5 cw-mb-4 cw-text-uppercase ">Accordion</h5>
-    <div class="docs-desc"><p class="cw-lead">Block components used to create an Accordion using Bootstrap' collapse plugin.</p></div>
+    <div class="cw-docs-desc"><p class="cw-lead">Block components used to create an Accordion using Bootstrap' collapse plugin.</p></div>
     <div class="cw-mt-5">
         <div id="accordion" role="tablist">
             <!-- Example Element 1 -->
@@ -38,6 +43,127 @@
                         <p class="cw-text-muted">Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    BREADCRUMBS:
+    These should be used by development only, because they need to be generated dynamically
+-->
+<div id="breadcrumb" class="cw-docs-item" tabindex="-1" style="outline: currentcolor none medium;">
+    <h5 class="cw-h5 cw-text-uppercase cw-mb-4">Breadcrumb</h5>
+    <div class="cw-docs-desc"><p class="cw-lead">Indicate the current page’s location within a navigational hierarchy that automatically adds separators via CSS.</p></div>
+    <div class="cw-mt-5">
+        <div class="cw-card cw-mb-3">
+            <div class="cw-card-body">
+                <nav aria-label="breadcrumb" role="navigation">
+                    <ol class="cw-breadcrumb">
+                        <li class="cw-breadcrumb-item"><a href="#" class="cw-a">Home</a></li>
+                        <li class="cw-breadcrumb-item"><a href="#" class="cw-a">Library</a></li>
+                        <li aria-current="page" class="cw-breadcrumb-item cw-a active">Data</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    NAVS:
+-->
+<div id="navs" class="cw-docs-item">
+    <h5 class="cw-h5 cw-text-uppercase cw-mb-4">Navs</h5>
+    <div class="cw-docs-desc"><p class="cw-lead">Documentation and examples for how to use Bootstrap’s included navigation components. </p></div>
+    <div class="cw-mt-5">
+        <!-- HORIZONTAL & VERTICAL examples not implemented yet -->
+        <!--
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="title-decorative">Horizontal</h6>
+                <ul class="nav">
+                    <li class="nav-item"><a href="#" class="nav-link active">Active</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Link</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link disabled">Disabled</a></li>
+                </ul>
+            </div>
+        </div>
+        -->
+        <!--
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="title-decorative">Vertical</h6>
+                <nav class="nav flex-md-column"><a href="#" class="nav-link active">Active</a><a href="#" class="nav-link">Link</a><a href="#" class="nav-link">Link</a><a href="#" class="nav-link disabled">Disabled</a></nav>
+            </div>
+        </div>
+        -->
+
+        <!--
+            TABS:
+            When copying this, please change ids like "myTab", "tab1...tab3", "tab1...3-content".
+            After some problems with the theme's CSS+JS, example has been implemented using mainly VuFind's bootstrap3.
+        -->
+        <div class="cw-card cw-mb-3">
+            <div class="cw-card-body">
+                <h6 class="cw-h6 cw-mb-4">Tabs</h6>
+                <ul id="myTab" role="tablist" class="nav nav-tabs">
+                    <li class="nav-item active"><a id="tab1" data-toggle="tab" href="#tab1-content" role="tab" aria-controls="tab1-content" aria-selected="true" class="nav-link active">Tab One</a></li>
+                    <li class="nav-item"><a id="tab2" data-toggle="tab" href="#tab2-content" role="tab" aria-controls="tab2-content" aria-selected="false" class="nav-link">Tab Two</a></li>
+                    <li class="nav-item"><a id="tab3" data-toggle="tab" href="#tab3-content" role="tab" aria-controls="tab3-content" aria-selected="false" class="nav-link">Tab Three</a></li>
+                </ul>
+                <div class="tab-content cw-py-5 cw-px-3">
+                    <div id="tab1-content" role="tabpanel" aria-labelledby="tab1-content" class="tab-pane fade active in">
+                        <p class="cw-text-muted">One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections</p>
+                    </div>
+                    <div id="tab2-content" role="tabpanel" aria-labelledby="tab2-content" class="tab-pane fade">
+                        <p class="cw-text-muted">The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. "What's happened to me?" he thought. It wasn't a dream.</p>
+                    </div>
+                    <div id="tab3-content" role="tabpanel" aria-labelledby="tab3-content" class="tab-pane fade">
+                        <p class="cw-text-muted">His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    RIBBONS:
+    If you copy this, please change all IDs like "headingOne", "#headingTwo"
+    as well as "collapseOne", "#collapseTwo" etc.
+    to something that represents the content of the element.
+-->
+<div id="ribbon" class="cw-docs-item">
+    <h5 class="cw-h5 cw-mb-4 cw-text-uppercase ">Ribbons</h5>
+    <div class="cw-docs-desc"><p class="cw-lead">Ribbons can be used in the venue component, venue carousels but also separately. Its parent needs a <code>position: relative;</code> and you can use theme colours for ribbon backgrounds.</p></div>
+    <div class="cw-mt-5">
+        <div class="cw-card cw-bg-gray-100 cw-w-50 cw-position-relative cw-py-6 cw-border-0 cw-shadow">
+            <div class="cw-ribbon cw-ribbon-primary">Primary</div>
+            <div class="cw-ribbon cw-ribbon-secondary">Secondary</div>
+            <div class="cw-ribbon cw-ribbon-info">Info</div>
+        </div>
+    </div>
+</div>
+
+<!--
+    TOOLTIPS:
+    Taken from bootstrap3 instead of theme due to lots of compatibility problems.
+    You do not need the whole HTML stuff, just add all the "data-..." attributes
+    to any other element where you would like to have a tooltip enabled,
+    and change "data-placement" and "data-content" as you like.
+-->
+<div id="tooltips" class="cw-docs-item" tabindex="-1" style="outline: currentcolor none medium;">
+    <h5 class="cw-h5 cw-text-uppercase cw-mb-4">Tooltips</h5>
+    <div class="cw-docs-desc"><p class="cw-lead">Custom Bootstrap tooltips with CSS and JavaScript using CSS3 for animations and data-attributes for local title storage.</p></div>
+    <div class="cw-mt-5">
+        <div class="cw-card">
+            <div class="cw-card-body">
+                <button type="button" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Tooltip on top" class="cw-btn cw-btn-outline-primary cw-mb-1">Tooltip on top</button>
+                <button type="button" data-toggle="popover" data-trigger="hover" data-placement="right" data-content="Tooltip on right" class="cw-btn cw-btn-outline-primary cw-mb-1">Tooltip on right</button>
+                <button type="button" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Tooltip on bottom" class="cw-btn cw-btn-outline-primary cw-mb-1">Tooltip on bottom</button>
+                <button type="button" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="Tooltip on left" class="cw-btn cw-btn-outline-primary cw-mb-1">Tooltip on left</button>
             </div>
         </div>
     </div>

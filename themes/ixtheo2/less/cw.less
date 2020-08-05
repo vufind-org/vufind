@@ -2,6 +2,16 @@
 * many classes taken + prefixes from bootstrap 4
 * so they do not collide with current vufind bootstrap3
 */
+
+.cw-a {
+    text-decoration: none;
+    background-color: transparent;
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
 .cw-align-items-center {
     align-items: center !important;
 }
@@ -260,6 +270,10 @@
     height: 2rem !important;
 }
 
+.cw-w-50 {
+    width: 50% !important;
+}
+
 .cw-w-100 {
     width: 100% !important;
 }
@@ -357,13 +371,16 @@
 
 .cw-card {
     position: relative;
+    display: -ms-flexbox;
     display: flex;
+    -ms-flex-direction: column;
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
     background-color: #fff;
     background-clip: border-box;
-    border-radius: .4rem;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.4rem;
 }
 
 .cw-card-header {
@@ -612,6 +629,11 @@
     border-color: #f8f9fa;
 }
 
+.cw-btn-outline-primary {
+    color: #4E66F8;
+    border-color: #4E66F8;
+}
+
 .cw-testimonial {
     position: relative;
     margin-left: 3rem;
@@ -655,7 +677,22 @@
 }
 
 .cw-breadcrumb-item {
-    color: #fff;
+    /*color: #fff;*/
+}
+
+.cw-breadcrumb-item + .cw-breadcrumb-item {
+    padding-left: 0.5rem;
+}
+
+.cw-breadcrumb-item + .cw-breadcrumb-item::before {
+    display: inline-block;
+    padding-right: 0.5rem;
+    color: #868e96;
+    content: "—";
+}
+
+.cw-breadcrumb-item.active {
+    color: #868e96;
 }
 
 .cw-lead {
@@ -809,4 +846,61 @@
     padding: 2.5rem 0;
     border-bottom: 1px solid #dee2e6;
     margin-bottom: .5rem;
+}
+
+.cw-docs-item .cw-docs-desc {
+    color: #868e96;
+}
+
+.cw-ribbon {
+    position: absolute;
+    top: 10px;
+    left: -11px;
+    z-index: 999;
+    display: inline-block;
+    font-family: "Poppins", sans-serif;
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .3em;
+    padding: 3px 15px 5px;
+    color: #fff;
+    text-align: center;
+}
+
+.cw-ribbon + .cw-ribbon {
+    top: 60px;
+}
+
+.cw-ribbon + .cw-ribbon + .cw-ribbon {
+    top: 110px;
+}
+
+.cw-ribbon::before {
+    content: '';
+    border-left: 12px solid transparent;
+    border-right: 0 solid transparent;
+    border-top: 14px solid #0926d7;
+    position: absolute;
+    bottom: -14px;
+    left: 0;
+}
+
+.cw-ribbon-primary {
+    background-color: #4E66F8 !important;
+}
+
+.cw-ribbon-secondary {
+    background-color: #e83e8c !important;
+}
+
+.cw-ribbon-secondary::before {
+    border-top-color: #ac145a;
+}
+
+.cw-ribbon-info {
+    background-color: #17a2b8 !important;
+}
+
+.cw-ribbon-info::before {
+	border-top-color: #0c525d;
 }
