@@ -1454,23 +1454,24 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $holdType, "Item", $lastInterestDate, $pickUpLocation
         );
         $response = $this->sendRequest($request);
-        $this->checkResponseForError($response);
 
         $success = $response->xpath(
-            'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue'
+            'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue' .
+            ' | ' .
+            'ns1:RequestItemResponse/ns1:RequestId/ns1:RequestIdentifierValue'
         );
 
-        if ($success) {
-            return [
-                    'success' => true,
-                    "sysMessage" => 'Request Successful.'
-            ];
-        } else {
-            return [
-                    'success' => false,
-                    "sysMessage" => 'Request Not Successful.'
+        if (!empty($success)) {
+            return  [
+                'success' => true,
+                "sysMessage" => 'Request Successful.'
             ];
         }
+
+        return [
+            'success' => false,
+            "sysMessage" => 'Request Not Successful.'
+        ];
     }
 
     /**
