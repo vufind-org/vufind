@@ -232,23 +232,12 @@ class ResourceTags extends Gateway
      *
      * @return void
      */
-    public function destroyLinks($resource, $user, $list = null, $tag = null)
+    public function destroyResourceLinks($resource, $user, $list = null, $tag = null)
     {
         $callback = function ($select) use ($resource, $user, $list, $tag) {
             $select->where->equalTo('user_id', $user);
             if (null !== $resource) {
-                if ($resource === 'listTag') {
-                    // special case -- if $resource is set to the string "listTag",
-                    // we want to retrieve tags assigned to a user list
-                    // and filter out user resource tags
-                    // (resource_id is NULL for list tags).
-                    $select->where->isNull('resource_id');
-                } else {
-                    if (!is_array($resource)) {
-                        $resource = [$resource];
-                    }
-                    $select->where->in('resource_id', $resource);
-                }
+                $select->where->in('resource_id', (array)$resource);
             }
             if (null !== $list) {
                 if (true === $list) {
@@ -271,7 +260,49 @@ class ResourceTags extends Gateway
                 }
             }
         };
+        $this->processDestroyLinks($callback);
+    }
 
+    /**
+     * Unlink rows for the specified user list.
+     *
+     * @param string       $list ID of list to unlink
+     * @param string       $user ID of user removing links
+     * @param string|array $tag  ID or array of IDs of tag(s) to unlink (null
+     * for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyListLinks($list, $user, $tag = null)
+    {
+        $callback = function ($select) use ($user, $list, $tag) {
+            $select->where->equalTo('user_id', $user);
+            // retrieve tags assigned to a user list
+            // and filter out user resource tags
+            // (resource_id is NULL for list tags).
+            $select->where->isNull('resource_id');
+            $select->where->equalTo('list_id', $list);
+
+            if (null !== $tag) {
+                if (is_array($tag)) {
+                    $select->where->in('tag_id', $tag);
+                } else {
+                    $select->where->equalTo('tag_id', $tag);
+                }
+            }
+        };
+        $this->processDestroyLinks($callback);
+    }
+
+    /**
+     * Process link rows marked to be destroyed.
+     *
+     * @param Object $callback Callback function for selecting deleted rows.
+     *
+     * @return void
+     */
+    protected function processDestroyLinks($callback)
+    {
         // Get a list of all tag IDs being deleted; we'll use these for
         // orphan-checking:
         $potentialOrphans = $this->select($callback);

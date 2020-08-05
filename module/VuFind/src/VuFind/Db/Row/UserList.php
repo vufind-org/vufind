@@ -137,7 +137,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $this->save($user);
 
         $linker = $this->getDbTable('resourcetags');
-        $linker->destroyLinks('listTag', $user->id, $this->id);
+        $linker->destroyListLinks($this->id, $user->id);
         if ($tags = $request->get('tags')) {
             foreach ($this->tagParser->parse($tags) as $tag) {
                 $this->addListTag($tag, $user);
@@ -247,7 +247,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
         // Remove Resource (related tags are also removed implicitly)
         $userResourceTable = $this->getDbTable('UserResource');
-        $userResourceTable->destroyLinks($resourceIDs, $this->user_id, $this->id);
+        $userResourceTable->destroyResourceLinks(
+            $resourceIDs, $this->user_id, $this->id
+        );
     }
 
     /**
@@ -278,6 +280,10 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         // Remove user_resource and resource_tags rows:
         $userResource = $this->getDbTable('UserResource');
         $userResource->destroyLinks(null, $this->user_id, $this->id);
+
+        // Remove resource_tags rows for list tags:
+        $linker = $this->getDbTable('resourcetags');
+        $linker->destroyListLinks($this->id, $user->id);
 
         // Remove the list itself:
         return parent::delete();
