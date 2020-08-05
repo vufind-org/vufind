@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">
+    <ns1:RequestItemResponse>
+        <ns1:Problem>
+            <ns1:ProblemType ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/processingerrortype/generalprocessingerror.scm">Temporary Processing Failure</ns1:ProblemType>
+            <ns1:ProblemDetail>Error ARL WS RequestItem request retcode = ERRNCIP188, retmsg = Error ARL WS NCIP RequestItem, Čtenář již má dokument tohoto titulu na kontě, další transakce na stejný titul není povolena. code:ERRU003|</ns1:ProblemDetail>
+            <ns1:ProblemElement>RequestItem</ns1:ProblemElement>
+        </ns1:Problem>
+    </ns1:RequestItemResponse>
+</ns1:NCIPMessage>

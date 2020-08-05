@@ -401,6 +401,30 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $placeHoldTests = [
+        [
+            'file' => 'RequestItemResponseAccepted.xml',
+            'result' => [
+                'success' => true,
+                'sysMessage' => 'Request Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseDenied.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Request Not Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
+            'result' => [
+                'success' => true,
+                'sysMessage' => 'Request Successful.'
+            ],
+        ],
+    ];
+
     /**
      * Test getMyTransactions
      *
@@ -578,6 +602,35 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->mockResponse('LookupAgencyResponseWithoutLocations.xml');
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([], $locations);
+    }
+
+    /**
+     * Test placeHold
+     *
+     * @return void
+     */
+    public function testPlaceHold()
+    {
+        $this->configureDriver();
+        foreach ($this->placeHoldTests as $test) {
+            $this->mockResponse($test['file']);
+            $hold = $this->driver->placeHold(
+                [
+                    'patron' => [
+                        'cat_username' => 'my_login',
+                        'cat_password' => 'my_password',
+                        'patron_agency_id' => 'Test agency',
+                    ],
+                    'bib_id' => '1',
+                    'item_id' => '1',
+                    'pickUpLocation' => 'My University|1',
+                    'holdtype' => 'title',
+                    'requiredBy' => '2020-12-30',
+                    'item_agency_id' => 'My University',
+                ]
+            );
+            $this->assertEquals($test['result'], $hold, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
     }
 
     /**
