@@ -1497,30 +1497,39 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patronAgency = $cancelDetails['patron']['patron_agency_id'];
         $details = $cancelDetails['details'];
         $response = [];
+        $failureReturn = [
+            'success' => false,
+            'status' => 'hold_cancel_fail',
+        ];
+        $successReturn = [
+            'success' => true,
+            'status' => 'hold_cancel_success',
+        ];
 
-        foreach ($details as $cancelDetails) {
-            list($itemAgencyId, $requestId) = explode("|", $cancelDetails);
+        foreach ($details as $detail) {
+            list($itemAgencyId, $requestId, $itemId) = explode("|", $detail);
             $request = $this->getCancelRequest(
                 $username, $password, $patronAgency,
-                $itemAgencyId, $requestId, "Hold"
+                $itemAgencyId, $requestId, "Hold",
+                $itemId
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
                 'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
-            $itemId = (string)$itemId;
+            $itemId = $itemId ?? $requestId;
+            try {
+                $this->checkResponseForError($cancelRequestResponse);
+            } catch (ILSException $exception) {
+                $response[$itemId] = $failureReturn;
+                continue;
+            }
             if ($userId) {
                 $count++;
-                $response[$itemId] = [
-                        'success' => true,
-                        'status' => 'hold_cancel_success',
-                ];
+                $response[$itemId] = $successReturn;
             } else {
-                $response[$itemId] = [
-                        'success' => false,
-                        'status' => 'hold_cancel_fail',
-                ];
+                $response[$itemId] = $failureReturn;
             }
         }
         $result = ['count' => $count, 'items' => $response];
@@ -1545,7 +1554,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                          "|" .
                          $holdDetails['requestId'] .
                          "|" .
-                         $holdDetails['id'];
+                         $holdDetails['item_id'];
         return $cancelDetails;
     }
 
@@ -1680,6 +1689,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $itemAgencyId Agency ID for item
      * @param string $requestId    Id of the request to cancel
      * @param string $type         The type of request to cancel (Hold, etc)
+     * @param string $itemId       Item identifier
      *
      * @return string           NCIP request XML
      */
@@ -1688,9 +1698,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patronAgency,
         $itemAgencyId,
         $requestId,
-        $type
+        $type,
+        $itemId
     ) {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+        if ($requestId === null && $itemId === null) {
+            throw new ILSException('No identifiers for CancelRequest');
+        }
+        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
             'xsd/ncip_v2_0.xsd">' .
@@ -1723,7 +1737,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         '<ns1:AuthenticationInputType>' .
                             'Password' .
                         '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
+                    '</ns1:AuthenticationInput>';
+        if ($requestId !== null) {
+            $ret .=
                     '<ns1:RequestId>' .
                         '<ns1:AgencyId>' .
                             htmlspecialchars($itemAgencyId) .
@@ -1731,12 +1747,26 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         '<ns1:RequestIdentifierValue>' .
                             htmlspecialchars($requestId) .
                         '</ns1:RequestIdentifierValue>' .
-                    '</ns1:RequestId>' .
+                    '</ns1:RequestId>';
+        }
+        if ($itemId !== null) {
+            $ret .=
+                '<ns1:ItemId>' .
+                    '<ns1:AgencyId>' .
+                        htmlspecialchars($itemAgencyId) .
+                    '</ns1:AgencyId>' .
+                    '<ns1:ItemIdentifierValue>' .
+                        htmlspecialchars($itemId) .
+                    '</ns1:ItemIdentifierValue>' .
+                '</ns1:ItemId>';
+        }
+        $ret .=
                     '<ns1:RequestType>' .
                         htmlspecialchars($type) .
                     '</ns1:RequestType>' .
                 '</ns1:CancelRequestItem>' .
             '</ns1:NCIPMessage>';
+        return $ret;
     }
 
     /**
