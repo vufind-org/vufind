@@ -444,7 +444,45 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'sysMessage' => 'Request Not Successful.'
             ],
         ],
+    ];
 
+    protected $cancelHoldsTests = [
+        [
+            'file' => 'CancelRequestItemResponseAccepted.xml',
+            'result' => [
+                'count' => 1,
+                'items' => [
+                    'Item1' => [
+                        'success' => true,
+                        'status' => 'hold_cancel_success',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'CancelRequestItemResponseDenied.xml',
+            'result' => [
+                'count' => 0,
+                'items' => [
+                    'Item1' => [
+                        'success' => false,
+                        'status' => 'hold_cancel_fail',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'CancelRequestItemResponseDeniedWithUserId.xml',
+            'result' => [
+                'count' => 0,
+                'items' => [
+                    'Item1' => [
+                        'success' => false,
+                        'status' => 'hold_cancel_fail',
+                    ],
+                ],
+            ],
+        ],
     ];
 
     /**
@@ -652,6 +690,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 ]
             );
             $this->assertEquals($test['result'], $hold, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
+    }
+
+    /**
+     * Test cancelHolds
+     *
+     * @return void
+     */
+    public function testCancelHolds()
+    {
+        $this->configureDriver();
+        foreach ($this->cancelHoldsTests as $test) {
+            $this->mockResponse($test['file']);
+            $result = $this->driver->cancelHolds(
+                [
+                    'patron' => [
+                        'cat_username' => 'my_login',
+                        'cat_password' => 'my_password',
+                        'patron_agency_id' => 'Test agency',
+                    ],
+                    'details' => [
+                        'My University|Request1|Item1',
+                    ],
+                ]
+            );
+            $this->assertEquals($test['result'], $result, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 

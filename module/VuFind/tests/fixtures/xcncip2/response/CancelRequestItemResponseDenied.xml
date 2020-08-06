@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">
+    <ns1:CancelRequestItemResponse>
+        <ns1:Problem>
+            <ns1:ProblemType ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/processingerrortype/cancelrequestitemprocessingerror.scm">Element Rule Violated</ns1:ProblemType>
+            <ns1:ProblemDetail>Error ARL WS CancelRequestItem request retcode = ERRNCIP215, retmsg = Error ARL WS NCIP CancelRequestItem, CHYBA - TRX záznam cbvk_trx*13502448 není možno smazat s modulu IPAC. code:ERRX003I#cbvk_trx*13502448</ns1:ProblemDetail>
+            <ns1:ProblemElement>CancelRequestItem</ns1:ProblemElement>
+        </ns1:Problem>
+    </ns1:CancelRequestItemResponse>
+</ns1:NCIPMessage>
