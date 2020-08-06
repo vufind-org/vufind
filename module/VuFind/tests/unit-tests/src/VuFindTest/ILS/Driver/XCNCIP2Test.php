@@ -403,7 +403,14 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 
     protected $placeHoldTests = [
         [
-            'file' => 'RequestItemResponseAccepted.xml',
+            'file' => 'RequestItemResponseAcceptedWithItemId.xml',
+            'result' => [
+                'success' => true,
+                'sysMessage' => 'Request Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
             'result' => [
                 'success' => true,
                 'sysMessage' => 'Request Successful.'
@@ -417,12 +424,27 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ],
         ],
         [
-            'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
+            'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
             'result' => [
-                'success' => true,
-                'sysMessage' => 'Request Successful.'
+                'success' => false,
+                'sysMessage' => 'Request Not Successful.'
             ],
         ],
+        [
+            'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Request Not Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseDeniedEmpty.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Request Not Successful.'
+            ],
+        ],
+
     ];
 
     /**

@@ -1445,6 +1445,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
             . substr($lastInterestDate, 0, 5);
         $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
+        $successReturn = [
+            'success' => true,
+            'sysMessage' => 'Request Successful.'
+        ];
+        $failureReturn = [
+            'success' => false,
+            'sysMessage' => 'Request Not Successful.'
+        ];
 
         $request = $this->getRequest(
             $username, $password, $bibId, $itemId,
@@ -1461,17 +1469,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:RequestItemResponse/ns1:RequestId/ns1:RequestIdentifierValue'
         );
 
-        if (!empty($success)) {
-            return  [
-                'success' => true,
-                "sysMessage" => 'Request Successful.'
-            ];
+        try {
+            $this->checkResponseForError($response);
+        } catch (ILSException $exception) {
+            return $failureReturn;
         }
 
-        return [
-            'success' => false,
-            "sysMessage" => 'Request Not Successful.'
-        ];
+        return !empty($success) ? $successReturn : $failureReturn;
     }
 
     /**
