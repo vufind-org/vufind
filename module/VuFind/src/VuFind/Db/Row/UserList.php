@@ -147,7 +147,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $this->public = $request->get('public');
         $this->save($user);
 
-        if ($tags = $request->get('tags')) {
+        if (null !== ($tags = $request->get('tags'))) {
             $linker = $this->getDbTable('resourcetags');
             $linker->destroyListLinks($this->id, $user->id);
             foreach ($this->tagParser->parse($tags) as $tag) {
