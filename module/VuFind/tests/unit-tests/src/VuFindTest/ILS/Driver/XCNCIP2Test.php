@@ -630,7 +630,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->loginTests as $test) {
             $this->mockResponse($test['file']);
             $patron = $this->driver->patronLogin('my_login', 'my_password');
-            $this->assertEquals($test['result'], $patron);
+            $this->assertEquals($test['result'], $patron, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 
@@ -649,7 +649,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_password' => 'my_password',
                 'patron_agency_id' => 'Test agency',
              ]);
-            $this->assertEquals($test['result'], $holds);
+            $this->assertEquals($test['result'], $holds, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 
@@ -670,7 +670,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron_agency_id' => 'Test agency',
                 ]
             );
-            $this->assertEquals($test['result'], $profile);
+            $this->assertEquals($test['result'], $profile, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 
@@ -689,7 +689,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_password' => 'my_password',
                 'patron_agency_id' => 'Test agency',
             ]);
-            $this->assertEquals($test['result'], $storageRetrievals);
+            $this->assertEquals($test['result'], $storageRetrievals, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 
@@ -699,7 +699,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->statusesTests as $test) {
             $this->mockResponse($test['file']);
             $status = $this->driver->getStatuses(['Some Id']);
-            $this->assertEquals($test['result'], $status);
+            $this->assertEquals($test['result'], $status, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 
