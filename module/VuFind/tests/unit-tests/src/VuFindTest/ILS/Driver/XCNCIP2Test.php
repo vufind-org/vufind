@@ -446,6 +446,51 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $placeStorageRetrievalRequestTests = [
+        [
+            'file' => 'RequestItemResponseAcceptedWithItemId.xml',
+            'result' => [
+                'success' => true,
+                'sysMessage' => 'Storage Retrieval Request Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
+            'result' => [
+                'success' => true,
+                'sysMessage' => 'Storage Retrieval Request Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseDenied.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Storage Retrieval Request Not Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Storage Retrieval Request Not Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Storage Retrieval Request Not Successful.'
+            ],
+        ],
+        [
+            'file' => 'RequestItemResponseDeniedEmpty.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Storage Retrieval Request Not Successful.'
+            ],
+        ],
+    ];
+
     protected $cancelHoldsTests = [
         [
             'file' => 'CancelRequestItemResponseAccepted.xml',
@@ -783,6 +828,35 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 ]
             );
             $this->assertEquals($test['result'], $hold, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
+    }
+
+    /**
+     * Test placeStorageRetrievalRequest
+     *
+     * @return void
+     */
+    public function testPlaceStorageRetrievalRequest()
+    {
+        $this->configureDriver();
+        foreach ($this->placeStorageRetrievalRequestTests as $test) {
+            $this->mockResponse($test['file']);
+            $result = $this->driver->placeStorageRetrievalRequest(
+                [
+                    'patron' => [
+                        'cat_username' => 'my_login',
+                        'cat_password' => 'my_password',
+                        'patron_agency_id' => 'Test agency',
+                    ],
+                    'bib_id' => '1',
+                    'item_id' => '1',
+                    'pickUpLocation' => 'My University|1',
+                    'holdtype' => 'title',
+                    'requiredBy' => '2020-12-30',
+                    'item_agency_id' => 'My University',
+                ]
+            );
+            $this->assertEquals($test['result'], $result, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 
