@@ -485,6 +485,61 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $renewMyItemsTests = [
+        [
+            'file' => 'RenewItemResponseAccepted.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => true,
+                        'new_date' => '09-08-2020',
+                        'new_time' => '20:00',
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => true,
+                        'new_date' => '08-31-2020',
+                        'new_time' => '17:59',
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'RenewItemResponseDenied.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => false,
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'RenewItemResponseDeniedInvalidMessage.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => false,
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+    ];
+
     /**
      * Test getMyTransactions
      *
@@ -712,6 +767,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ],
                     'details' => [
                         'My University|Request1|Item1',
+                    ],
+                ]
+            );
+            $this->assertEquals($test['result'], $result, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
+    }
+
+    /**
+     * Test renewMyItems
+     *
+     * @return void
+     */
+    public function testRenewMyItems()
+    {
+        $this->configureDriver();
+        foreach ($this->renewMyItemsTests as $test) {
+            $this->mockResponse($test['file']);
+            $result = $this->driver->renewMyItems(
+                [
+                    'patron' => [
+                        'cat_username' => 'my_login',
+                        'cat_password' => 'my_password',
+                        'patron_agency_id' => 'Test agency',
+                    ],
+                    'details' => [
+                        'My University|Item1',
                     ],
                 ]
             );
