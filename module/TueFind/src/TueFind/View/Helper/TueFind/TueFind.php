@@ -242,7 +242,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getRssNewsEntries($max_item_count=null, $only_newest_item_per_feed=false) {
+    public function getRssNewsEntries(int $max_item_count=null, bool $only_newest_item_per_feed=false) {
         $rss_feed_path = $this->getConfig()->General->rss_feed_path;
         $rss_items = [];
 
