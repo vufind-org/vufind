@@ -280,7 +280,7 @@ class ResourceTags extends Gateway
      */
     public function destroyLinks($resource, $user, $list = null, $tag = null)
     {
-        return $this->destroyResourceLinks($resource, $user, $list, $tag);
+        $this->destroyResourceLinks($resource, $user, $list, $tag);
     }
 
     /**
