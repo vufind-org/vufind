@@ -158,6 +158,7 @@ class Tags extends Gateway
             } else {
                 $select->where->equalTo('tags.tag', $q);
             }
+            // Discard tags assigned to a user list.
             $select->where->isNotNull('rt.resource_id');
 
             if (!empty($source)) {
