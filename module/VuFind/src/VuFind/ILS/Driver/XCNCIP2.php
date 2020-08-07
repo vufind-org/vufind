@@ -357,9 +357,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $volume = (string)$volume[0];
 
         if ($status === "Not Charged") {
-            $holdType = "hold";
+            $holdType = "Hold";
         } else {
-            $holdType = "recall";
+            $holdType = "Recall";
         }
 
         // Build return array:
@@ -1357,41 +1357,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeStorageRetrievalRequest($details)
     {
-        $username = $details['patron']['cat_username'];
-        $password = $details['patron']['cat_password'];
-        $bibId = $details['bib_id'];
-        $itemId = $details['item_id'];
-        $pickUpLocation = $details['pickUpLocation'];
-        list($pickUpAgency, $pickUpLocation) = explode("|", $pickUpLocation);
-        $lastInterestDate = $details['requiredBy'];
-        $lastInterestDate = substr($lastInterestDate, 6, 10) . '-' .
-                substr($lastInterestDate, 0, 5);
-        $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
-
-        $request = $this->getRequest(
-            $username, $password, $bibId, $itemId,
-            $details['patron']['patron_agency_id'],
-            $pickUpAgency,
-            $details['item_agency_id'],
-            "Stack Retrieval", "Item", $lastInterestDate, $pickUpLocation
-        );
-
-        $response = $this->sendRequest($request);
-        $success = $response->xpath(
-            'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue'
-        );
-
-        if ($success) {
-            return [
-                'success' => true,
-                "sysMessage" => 'Storage Retrieval Request Successful.'
-            ];
-        } else {
-            return [
-                'success' => false,
-                "sysMessage" => 'Storage Retrieval Request Not Successful.'
-            ];
-        }
+        return $this->placeRequest($details, 'Stack Retrieval');
     }
 
     /**
@@ -1426,24 +1392,43 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeHold($details)
     {
+        return $this->placeRequest($details, $details['holdtype']);
+    }
+
+    /**
+     * Place a general request
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details or throws an exception on failure of support
+     * classes
+     *
+     * @param array  $details An array of item and patron data
+     * @param string $type    Type of request, could be 'Hold' or 'Stack Retrieval'
+     *
+     * @throws ILSException
+     * @return mixed An array of data on the request including
+     * whether or not it was successful
+     */
+    public function placeRequest($details, $type = 'Hold')
+    {
+        $msgPrefix = ($type == 'Stack Retrieval') ? 'Storage Retrieval ' : '';
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
         list($pickUpAgency, $pickUpLocation) = explode("|", $pickUpLocation);
-        $holdType = $details['holdtype'];
         $lastInterestDate = $details['requiredBy'];
         $lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
             . substr($lastInterestDate, 0, 5);
         $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
         $successReturn = [
             'success' => true,
-            'sysMessage' => 'Request Successful.'
+            'sysMessage' => $msgPrefix . 'Request Successful.'
         ];
         $failureReturn = [
             'success' => false,
-            'sysMessage' => 'Request Not Successful.'
+            'sysMessage' => $msgPrefix . 'Request Not Successful.'
         ];
 
         $request = $this->getRequest(
@@ -1451,7 +1436,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $details['patron']['patron_agency_id'],
             $pickUpAgency,
             $details['item_agency_id'],
-            $holdType, "Item", $lastInterestDate, $pickUpLocation
+            $type, "Item", $lastInterestDate, $pickUpLocation
         );
         $response = $this->sendRequest($request);
 
