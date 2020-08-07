@@ -1476,18 +1476,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Cancel Holds
+     * General cancel request method
      *
-     * Attempts to Cancel a hold or recall on a particular item. The
-     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     * Attempts to Cancel a request on a particular item. The data in
+     * $cancelDetails['details'] is determined by getCancel*Details().
      *
-     * @param array $cancelDetails An array of item and patron data
+     * @param array  $cancelDetails An array of item and patron data
+     * @param string $type          Type of request, could be: 'Hold',
+     * 'Stack Retrieval'
      *
      * @return array               An array of data on each request including
      * whether or not it was successful.
      */
-    public function cancelHolds($cancelDetails)
+    public function handleCancelRequest($cancelDetails, $type = 'Hold')
     {
+        $msgPrefix = ($type === 'Stack Retrieval')
+            ? 'storage_retrieval_request_cancel_'
+            : 'hold_cancel_';
         $count = 0;
         $username = $cancelDetails['patron']['cat_username'];
         $password = $cancelDetails['patron']['cat_password'];
@@ -1496,18 +1501,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = [];
         $failureReturn = [
             'success' => false,
-            'status' => 'hold_cancel_fail',
+            'status' => $msgPrefix . 'fail',
         ];
         $successReturn = [
             'success' => true,
-            'status' => 'hold_cancel_success',
+            'status' => $msgPrefix . 'success',
         ];
 
         foreach ($details as $detail) {
             list($itemAgencyId, $requestId, $itemId) = explode("|", $detail);
             $request = $this->getCancelRequest(
                 $username, $password, $patronAgency,
-                $itemAgencyId, $requestId, "Hold",
+                $itemAgencyId, $requestId, $type,
                 $itemId
             );
             $cancelRequestResponse = $this->sendRequest($request);
@@ -1534,6 +1539,38 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful.
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        return $this->handleCancelRequest($cancelDetails, 'Hold');
+    }
+
+    /**
+     * Get Cancel Request Details
+     *
+     * General method for getting details for cancel requests
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelRequestDetails($details)
+    {
+        return $details['item_agency_id'] .
+            "|" . $details['requestId'] .
+            "|" . $details['item_id'];
+    }
+
+    /**
      * Get Cancel Hold Details
      *
      * This function returns the item id and recall id as a string
@@ -1547,12 +1584,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['item_agency_id'] .
-                         "|" .
-                         $holdDetails['requestId'] .
-                         "|" .
-                         $holdDetails['item_id'];
-        return $cancelDetails;
+        return $this->getCancelRequestDetails($holdDetails);
     }
 
     /**
@@ -1569,46 +1601,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
-        //TODO: generalize all cancel request methods
-        $count = 0;
-        $username = $cancelDetails['patron']['cat_username'];
-        $password = $cancelDetails['patron']['cat_password'];
-        $patronAgency = $cancelDetails['patron']['patron_agency_id'];
-        $details = $cancelDetails['details'];
-        $response = [];
-
-        foreach ($details as $cancelDetails) {
-            list($itemAgencyId, $requestId, $itemId) = explode("|", $cancelDetails);
-            $request = $this->getCancelRequest(
-                $username,
-                $password,
-                $patronAgency,
-                $itemAgencyId,
-                $requestId,
-                "Stack Retrieval",
-                $itemId
-            );
-            $cancelRequestResponse = $this->sendRequest($request);
-            $userId = $cancelRequestResponse->xpath(
-                'ns1:CancelRequestItemResponse/' .
-                'ns1:UserId/ns1:UserIdentifierValue'
-            );
-            $itemId = (string)$itemId;
-            if ($userId) {
-                $count++;
-                $response[$itemId] = [
-                    'success' => true,
-                    'status' => 'storage_retrieval_request_cancel_success',
-                ];
-            } else {
-                $response[$itemId] = [
-                    'success' => false,
-                    'status' => 'storage_retrieval_request_cancel_fail',
-                ];
-            }
-        }
-        $result = ['count' => $count, 'items' => $response];
-        return $result;
+        return $this->handleCancelRequest($cancelDetails, 'Stack Retrieval');
     }
 
     /**
@@ -1619,17 +1612,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * value is then extracted by the CancelStorageRetrievalRequests function.
      * The item id is used as the key in the return value.
      *
-     * @param array $callslipDetails An array of item data
+     * @param array $details An array of item data
      *
      * @return string Data for use in a form field
      */
-    public function getCancelStorageRetrievalRequestDetails($callslipDetails)
+    public function getCancelStorageRetrievalRequestDetails($details)
     {
-        return $callslipDetails['item_agency_id'] .
-                                "|" .
-                                $callslipDetails['requestId'] .
-                                "|" .
-                                $callslipDetails['id'];
+        return $this->getCancelRequestDetails($details);
     }
 
     /**
@@ -1659,12 +1648,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $renewDetails['patron']['patron_agency_id']
             );
             $response = $this->sendRequest($request);
-            /*try {
-                $this->checkResponseForError($response);
-            } catch (ILSException $exception) {
-                $details[$itemId] = $failureReturn;
-                continue;
-            }*/
             $dueDateXml = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
             $dueDate = '';
             $dueTime = '';
