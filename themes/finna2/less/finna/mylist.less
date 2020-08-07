@@ -448,14 +448,11 @@ span.caret {
       display: inline-block;
       @media (max-width: @screen-sm) {
         text-align: left;
-        width: 35%;
+        max-width: 50%;
         .sort-button {
           span {
-            width: 95%;
-            text-overflow: ellipsis;
-            white-space: nowrap;
             display: inline-block;
-            overflow: hidden;
+            max-width: 100%;
             padding-right: 20px;
             margin-bottom: -6px;
           }
@@ -463,13 +460,19 @@ span.caret {
         div, a {
           width: 100%;
         }
+        a.dropdown-toggle {
+          white-space: initial;
+          i.fa-arrow-down {
+            position: absolute;
+            top: 30%;
+            right: 0.7em;
+            margin-left: 0;
+          }
+        }
       }
       @media (max-width: @screen-xxs-max) {
         float: left;
         margin-right: 5px;
-        .dropdown-menu {
-          left: -90px;
-        }
       }
     }
     .limit-option-container {
