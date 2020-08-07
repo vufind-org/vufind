@@ -485,6 +485,44 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $cancelStorageRetrievalTests = [
+        [
+            'file' => 'CancelRequestItemResponseAccepted.xml',
+            'result' => [
+                'count' => 1,
+                'items' => [
+                    'Item1' => [
+                        'success' => true,
+                        'status' => 'storage_retrieval_request_cancel_success',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'CancelRequestItemResponseDenied.xml',
+            'result' => [
+                'count' => 0,
+                'items' => [
+                    'Item1' => [
+                        'success' => false,
+                        'status' => 'storage_retrieval_request_cancel_fail',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'CancelRequestItemResponseDeniedWithUserId.xml',
+            'result' => [
+                'count' => 0,
+                'items' => [
+                    'Item1' => [
+                        'success' => false,
+                        'status' => 'storage_retrieval_request_cancel_fail',
+                    ],
+                ],
+            ],
+        ],
+    ];
     protected $renewMyItemsTests = [
         [
             'file' => 'RenewItemResponseAccepted.xml',
@@ -759,6 +797,32 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->cancelHoldsTests as $test) {
             $this->mockResponse($test['file']);
             $result = $this->driver->cancelHolds(
+                [
+                    'patron' => [
+                        'cat_username' => 'my_login',
+                        'cat_password' => 'my_password',
+                        'patron_agency_id' => 'Test agency',
+                    ],
+                    'details' => [
+                        'My University|Request1|Item1',
+                    ],
+                ]
+            );
+            $this->assertEquals($test['result'], $result, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
+    }
+
+    /**
+     * Test cancelHolds
+     *
+     * @return void
+     */
+    public function testCancelStorageRetrievalRequests()
+    {
+        $this->configureDriver();
+        foreach ($this->cancelStorageRetrievalTests as $test) {
+            $this->mockResponse($test['file']);
+            $result = $this->driver->cancelStorageRetrievalRequests(
                 [
                     'patron' => [
                         'cat_username' => 'my_login',
