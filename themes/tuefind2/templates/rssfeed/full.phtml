@@ -7,7 +7,7 @@
         <?php foreach ($rssItems as $rssItem):?>
             <div class="tf-rss-full-item">
                 <h1>
-                    <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['link'], $redirectGroup)?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssItem['tuefind:rss_title'])?>">&nbsp;<?=$rssItem['title']?></a>
+                    <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['link'], $redirectGroup)?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssItem['tuefind:rss_title'])?>" height="20">&nbsp;<?=$rssItem['title']?></a>
                 </h1>
                 <p>
                     <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['tuefind:rss_url'], $redirectGroup)?>" target="_blank"><?=$rssItem['tuefind:rss_title']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssItem['pubDate']))?>
