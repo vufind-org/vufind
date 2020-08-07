@@ -8,7 +8,7 @@
 
 .mylist-controls {
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   flex-wrap: wrap;
 }
 
@@ -25,7 +25,7 @@
     @media (min-width: @screen-sm-min) {
       padding-right: 0;
     }
-    @media ( max-width: @grid-float-breakpoint) {
+    @media (max-width: @grid-float-breakpoint) {
       top: @navbar-height;
     }
     &:not(.fixed) .mylist-functions {
@@ -50,7 +50,7 @@
         }
       }
     }
-  }    
+  }
 }
 
 .template-name-mylist .bulk-action-buttons-col {
@@ -123,7 +123,7 @@
     .favorite-list-holder {
       height: 25px;
 
-      .favorite-list-title { 
+      .favorite-list-title {
         max-width: 60%;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -136,7 +136,7 @@
       }
     }
   }
-  
+
   .add-new-list-holder {
     padding: 0 20px;
     margin: 5px 0 10px 0px;
@@ -147,7 +147,7 @@
       border-radius: 2px;
       @media (max-width: @screen-sm-max) {
         margin-bottom: 25px;
-      } 
+      }
       input {
         width: 90%;
         border-radius: 4px;
@@ -173,7 +173,7 @@
 .bulk-action-buttons-row {
   margin: 0;
   border-bottom: 1px solid @gray-lighter;
-  @media (max-width:@screen-xs-max) {
+  @media (max-width: @screen-xs-max) {
     .row();
   }
 }
@@ -214,7 +214,7 @@
   margin-bottom: 3px;
   line-height: @line-height-computed;
   .checkbox {
-    margin:0;
+    margin: 0;
   }
 }
 
@@ -255,6 +255,27 @@
     list-style-type: decimal;
   }
 }
+
+.editable .editor-toolbar {
+  position: relative;
+  padding-right: 3.2rem;
+
+  .editor-toolbar-close {
+    position: absolute;
+    right: 0;
+    top: 0.8rem;
+    border: none;
+    color: @gray !important;
+    font-size: 1.6rem;
+
+    &:hover,
+    &:active {
+      background: white;
+      color: @gray !important;
+    }
+  }
+}
+
 .resource-note i.fa-pen {
   margin-bottom: -18px;
 }
@@ -298,7 +319,7 @@
 .list-description.markdown, .resource-note.markdown {
   padding: 0;
   .fa {
-    margin-top: 7px;
+    margin-top: 0.25rem;
     margin-right: 5px;
   }
 }
@@ -473,7 +494,7 @@ span.caret {
         font-size: 14px;
       }
     }
-  } 
+  }
 }
 .public-list-embed {
   .show-more {
@@ -486,8 +507,8 @@ span.caret {
     display: none;
   }
   .controls {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
   }
 }

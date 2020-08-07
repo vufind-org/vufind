@@ -74,6 +74,14 @@ finna.myList = (function finnaMyList() {
       },
       className: 'fa fa-pagebreak',
       title: 'Truncate'
+    },
+    {
+      name: 'close',
+      action: function closeToolbar() {
+        $(document).trigger('click');
+      },
+      className: 'fa fa-times editor-toolbar-close',
+      title: 'Close'
     }
   ];
 
@@ -101,7 +109,7 @@ finna.myList = (function finnaMyList() {
     $msg.addClass('alert alert-danger');
     $msg.toggleClass('hidden', !mode);
     if (mode) {
-      $('html, body').animate({ scrollTop: 0 }, 'fast');
+      $('html, body').animate({scrollTop: 0}, 'fast');
     }
   }
 
@@ -154,7 +162,7 @@ finna.myList = (function finnaMyList() {
         summaryText = '';
       }
       truncateEl.prepend($('<summary>' + summaryText + '</summary>'));
-      truncateEl.wrap("<truncate>");
+      truncateEl.wrap('<truncate>');
       tempDom.find('.truncate-field details').unwrap();
       tempDom.find('.truncate-field').children().unwrap();
       desc = tempDom[0].innerHTML;
@@ -173,7 +181,7 @@ finna.myList = (function finnaMyList() {
     };
 
     if (type !== 'add-list') {
-      var description = $('.list-description .editable').data('markdown');
+      var description = $('.list-description .editable [data-markdown]').data('markdown');
       description = handleTruncateField(description);
       if (description === VuFind.translate('add_list_description')) {
         listParams.desc = '';
@@ -198,7 +206,7 @@ finna.myList = (function finnaMyList() {
     }
 
     toggleErrorMessage(false);
-    if (typeof(params) !== 'undefined') {
+    if (typeof params !== 'undefined') {
       $.each(params, function setListParam(key, val) {
         listParams[key] = val;
       });
@@ -210,7 +218,7 @@ finna.myList = (function finnaMyList() {
       url: VuFind.path + '/AJAX/JSON?method=editList',
       data: {'params': listParams}
     })
-      .done(function onEditListDone(data/*, status, jqXHR*/) {
+      .done(function onEditListDone(data /*, status, jqXHR*/) {
         if (spinner) {
           toggleSpinner(spinner, false);
         }
@@ -277,7 +285,7 @@ finna.myList = (function finnaMyList() {
           currentTitle = target.find('input').val();
         },
         finish: function titleEditFinish(e) {
-          if (typeof(e) === 'undefined' || !e.cancel) {
+          if (typeof e === 'undefined' || !e.cancel) {
             if (e.value === '') {
               target.text(currentTitle);
               return false;
@@ -295,7 +303,7 @@ finna.myList = (function finnaMyList() {
   }
 
   function listDescriptionChanged() {
-    var description = $('.list-description .editable');
+    var description = $('.list-description .editable [data-markdown]');
     if (description.html() === '') {
       description.data('empty', '1');
       description.html(VuFind.translate('add_list_description'));
@@ -309,7 +317,7 @@ finna.myList = (function finnaMyList() {
 
   function newListAdded(data) {
     var title = data.title;
-    var newTitle = (title.length > 20) ? title.substring(0, 20) + '...' : title;
+    var newTitle = title.length > 20 ? title.substring(0, 20) + '...' : title;
 
     // update add-to-list select
     $('#add-to-list')
@@ -329,7 +337,7 @@ finna.myList = (function finnaMyList() {
     }
   }
 
-  function updateListResource(params, input/*, row*/) {
+  function updateListResource(params, input /*, row*/) {
     save = true;
     toggleErrorMessage(false);
 
@@ -352,7 +360,7 @@ finna.myList = (function finnaMyList() {
         parent.find('.note-info').toggleClass('hide', !hasNotes);
         input.data('empty', hasNotes === '' ? '1' : '0');
         if (!hasNotes) {
-          input.text(VuFind.translate('add_note'));
+          input.find('[data-markdown]').text(VuFind.translate('add_note'));
         }
         toggleTitleEditable(true);
         save = false;
@@ -365,7 +373,7 @@ finna.myList = (function finnaMyList() {
   }
 
   function initEditableMarkdownField(element, callback) {
-    element.find('.editable').unbind('click').click(function onClickEditable(e) {
+    element.find('[data-markdown], .js-edit').unbind('click').click(function onClickEditable(e) {
       if (save) {
         // Do not open the editor when save is in progress.
         return;
@@ -386,7 +394,7 @@ finna.myList = (function finnaMyList() {
       toggleTitleEditable(false);
 
       element.toggleClass('edit', true);
-      var container = element.find('.editable');
+      var container = element.find('[data-markdown]');
 
       var textArea = $('<textarea/>');
       var currentVal = null;
@@ -451,7 +459,7 @@ finna.myList = (function finnaMyList() {
 
         container.show();
         container.data('markdown', markdown);
-        container.data('empty', (markdown.length === 0 ? '1' : '0'));
+        container.data('empty', markdown.length === 0 ? '1' : '0');
         resultHtml = handleTruncateField(resultHtml);
         container.html(resultHtml);
         finna.layout.initTruncate(container);
@@ -468,7 +476,7 @@ finna.myList = (function finnaMyList() {
   }
 
   function initEditComponents() {
-    var isDefaultList = typeof(getActiveListId()) == 'undefined';
+    var isDefaultList = typeof getActiveListId() == 'undefined';
 
     // bulk actions
     var buttons = $('.bulk-action-buttons-col');
@@ -508,7 +516,7 @@ finna.myList = (function finnaMyList() {
 
         function repositionPrompt() {
           var pos = target.offset();
-          var left = ($(window).width() / 2) - (prompt.width() / 2);
+          var left = $(window).width() / 2 - prompt.width() / 2;
 
           prompt.css({
             'left': left,
@@ -551,7 +559,7 @@ finna.myList = (function finnaMyList() {
     });
 
     //Add new list, listen for keyup enter
-    $(".new-list-input").on('keyup', function invokeCreateNewList(e) {
+    $('.new-list-input').on('keyup', function invokeCreateNewList(e) {
       if (e.keyCode === 13) {
         $('.add-new-list .icon').click();
       }

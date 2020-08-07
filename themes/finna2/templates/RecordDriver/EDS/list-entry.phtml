@@ -125,13 +125,15 @@
           <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Note')?>:</strong></div>
           <?php if ($list_id): ?>
             <div class="resource-note markdown">
-              <i class="fa fa-pen icon"></i>
-              <div class="editable" data-empty="<?= $hasNote ? '0' : '1' ?>" data-markdown="<?= $hasNote && $notes ? $this->escapeHtmlAttr($notes) : ''?>">
-                <?php if ($notes): ?>
-                  <?= $this->markdown()->toHtml($notes); ?>
-                <?php else: ?>
-                  <?=$this->transEsc('Add note')?>
-                <?php endif; ?>
+              <div class="editable">
+              <i class="fa fa-pen icon js-edit"></i>
+                <div data-empty="<?= $hasNote ? '0' : '1' ?>" data-markdown="<?= $hasNote && $notes ? $this->escapeHtmlAttr($notes) : ''?>">
+                  <?php if ($notes): ?>
+                    <?= $this->markdown()->toHtml($notes); ?>
+                  <?php else: ?>
+                    <?=$this->transEsc('Add note')?>
+                  <?php endif; ?>
+                </div>
               </div>
             </div>
           <?php endif; ?>

@@ -51,8 +51,10 @@
       <?php if ($list): ?>
         <h2 class="list-title"><i class="list-title-edit fa fa-pen"></i><span><?=$this->escapeHtml($list->title)?></span></h2>
         <div class="list-description markdown">
-          <i class="list-description-edit fa fa-pen" aria-hidden="true"></i><div class="editable" data-markdown="<?=$this->escapeHtmlAttr($list ? $list->description : '')?>"><?=(!empty($list->description) ? $this->markdown()->toHtml($list->description) : $this->translate('Add list description'))?></div>
+          <div class="editable">
+            <i class="list-description-edit fa fa-pen js-edit" aria-hidden="true"></i><div data-markdown="<?=$this->escapeHtmlAttr($list ? $list->description : '')?>"><?=(!empty($list->description) ? $this->markdown()->toHtml($list->description) : $this->translate('Add list description'))?></div>
         </div>
+      </div>
       <?php else: ?>
         <h2 class="list-title no-edit"><span><?=$this->transEsc("All Favourites")?></span></h2>
       <?php endif; ?>
