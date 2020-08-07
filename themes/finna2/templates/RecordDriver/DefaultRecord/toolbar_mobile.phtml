@@ -27,6 +27,27 @@
           <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
           <li><a class="save-record-mobile" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><i class="fa fa-plus"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a></li>
           <?php endif; ?>
+          
+          <li class="dropdown dropup nav-pills mobile-sharing">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow"><i class="fa fa-bookmark"></i><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <?php if (!empty($shareUrl)): ?>
+                <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
+                <?php // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
+                <!--
+                <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
+                <?php if ($summary): ?><meta property="og:description" content="<?=$this->truncate($this->stripTags($summary[0]), 100)?>" /><?php endif; ?>
+                <?php if ($author): /* TODO */ ?><meta property="article:author" content="" /><?php endif; ?>
+                <?php if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><?php endif; ?>
+                <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
+                -->
+              <li class="whatsapp">
+                <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLink()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i><span class="sr-only">Whatsapp</span></a></span>
+              </li>
+              <?php endif; ?>
+              <li class="mail-record"><a class="mail-record-mobile" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
+            </ul>
+          </li>
 
           <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
 
@@ -46,28 +67,6 @@
           <?php endif; ?>
 
           <li class="hidden-xs hidden-sm"><a href="javascript:window.print()"><i class="fa fa-print" rel="nofollow"></i> <?=$this->transEsc('Print')?></a></li>
-    </ul>
-    <ul class="nav nav-pills hidden-print mobile-sharing">
-      <li class="dropdown dropup">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow"><i class="fa fa-bookmark"></i><span class="hidden-xs"> <?=$this->transEsc('Share') ?></span></a>
-        <ul class="dropdown-menu" role="menu">
-          <?php if (!empty($shareUrl)): ?>
-            <?=$this->partial('record/share-buttons.phtml', ['shareUrl' => $shareUrl, 'title' => $this->driver->tryMethod('getTitle', [], '')]);?>
-            <?php // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
-            <!--
-            <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
-            <?php if ($summary): ?><meta property="og:description" content="<?=$this->truncate($this->stripTags($summary[0]), 100)?>" /><?php endif; ?>
-            <?php if ($author): /* TODO */ ?><meta property="article:author" content="" /><?php endif; ?>
-            <?php if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><?php endif; ?>
-            <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
-            -->
-          <li class="whatsapp">
-            <span class="visible-xs"><a class="whatsapp-record" href="whatsapp://send?text=<?=urlencode($this->serverUrl() . $this->recordLink()->getUrl($this->driver)) ?>" data-action="share/whatsapp/share" rel="nofollow"><i class="fa fa-phone"></i><span class="sr-only">Whatsapp</span></a></span>
-          </li>
-          <?php endif; ?>
-          <li class="mail-record"><a class="mail-record-mobile" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email') ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><i class="fa fa-envelope"></i> <span class="sr-only"><?=$this->transEsc('Email this')?></span></a></li>
-        </ul>
-      </li>
     </ul>
     <ul class="nav nav-pills library-link">
       <li class="hidden">
