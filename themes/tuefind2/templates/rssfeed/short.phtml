@@ -1,4 +1,4 @@
-<?php $rssItems = $this->tuefind()->getRssNewsEntries($this->rssMaxItems);?>
+<?php $rssItems = $this->tuefind()->getRssNewsEntries($this->rssMaxItems, /* $only_newest_item_per_feed = */true);?>
 <?php if (count($rssItems) == 0):?>
     <?=$this->translate('rss_news_missing')?>
 <?php else:?>
