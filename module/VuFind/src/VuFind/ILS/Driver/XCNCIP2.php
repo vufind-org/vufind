@@ -808,7 +808,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->registerNamespaceFor($current);
             $tmp = $current->xpath('ns1:DateDue');
             // DateDue could be ommitted in response
-            $due = $this->convertDate(!empty($tmp) ? (string)$tmp[0] : null);
+            $due = $this->displayDate(!empty($tmp) ? (string)$tmp[0] : null);
             $title = $current->xpath('ns1:Title');
             $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $itemId = (string)$item_id[0];
@@ -912,7 +912,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
             $amount = (string)$tmp[0];
             $tmp = $current->xpath('ns1:AccrualDate');
-            $date = $this->convertDate(!empty($tmp) ? (string)$tmp[0] : null);
+            $date = $this->displayDate(!empty($tmp) ? (string)$tmp[0] : null);
             $tmp = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
@@ -978,7 +978,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $pickupLocation = $current->xpath('ns1:PickupLocation');
             $expireDate = $current->xpath('ns1:PickupExpiryDate');
-            $expireDate = $this->convertDate(
+            $expireDate = $this->displayDate(
                 !empty($expireDate) ? (string)$expireDate[0] : null
             );
             $requestType = (string)$requestType[0];
@@ -1296,7 +1296,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $requestType = $current->xpath('ns1:RequestType');
             $requestType = (string)$requestType[0];
             $created = $current->xpath('ns1:DatePlaced');
-            $created = $this->convertDate(
+            $created = $this->displayDate(
                 !empty($created) ? (string)$created[0] : null
             );
             $requestStatusType = $current->xpath('ns1:RequestStatusType');
@@ -1670,8 +1670,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $dueTime = '';
             if (!empty($dueDateXml)) {
                 $dueDateString = (string)$dueDateXml[0];
-                $dueDate = $this->convertDate($dueDateString);
-                $dueTime = $this->convertTime($dueDateString);
+                $dueDate = $this->displayDate($dueDateString);
+                $dueTime = $this->displayTime($dueDateString);
             }
 
             if ($dueDate !== '') {
@@ -2122,56 +2122,55 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Convert a date to display format
      *
-     * @param string $date     Date
-     * @param bool   $withTime Whether the date includes time
+     * @param string $date Date and time string
      *
-     * @throws DateException
      * @return string
      */
-    protected function convertDate($date, $withTime = true)
+    protected function displayDate($date)
     {
-        if (!$date) {
-            return '';
-        }
-        $createFormat = $withTime ? 'Y-m-d\TH:i:s.uP' : 'Y-m-d';
-        try {
-            $dateFormatted = $this->dateConverter->convertToDisplayDate(
-                $createFormat, $date
-            );
-        } catch (DateException $e) {
-            $createFormat = $withTime ? 'Y-m-d\TH:i:sP' : 'Y-m-d';
-            $dateFormatted = $this->dateConverter->convertToDisplayDate(
-                $createFormat, $date
-            );
-        }
-        return $dateFormatted;
+        return $this->convertDateOrTime($date);
     }
 
     /**
      * Convert a time to display format
      *
-     * @param string $date Date
+     * @param string $date Date and time string
      *
-     * @throws DateException
      * @return string
      */
-    protected function convertTime($date)
+    protected function displayTime($date)
     {
-        //TODO generalize time and date converting
-        if (!$date) {
+        return $this->convertDateOrTime($date, 'time');
+    }
+
+    /**
+     * Convert datetime to display format
+     *
+     * @param string $dateString Datetime string
+     * @param string $dateOrTime Desired datetime part, could be 'date' or 'time'
+     *
+     * @return string
+     */
+    protected function convertDateOrTime($dateString, $dateOrTime = 'date')
+    {
+        if (!$dateString) {
             return '';
         }
-        $createFormat = 'Y-m-d\TH:i:s.uP';
-        try {
-            $dateFormatted = $this->dateConverter->convertToDisplayTime(
-                $createFormat, $date
-            );
-        } catch (DateException $e) {
-            $createFormat = 'Y-m-d\TH:i:sP';
-            $dateFormatted = $this->dateConverter->convertToDisplayTime(
-                $createFormat, $date
-            );
+        $createFormats = ['Y-m-d\TH:i:s.uP', 'Y-m-d\TH:i:sP'];
+        $formatted = '';
+        foreach ($createFormats as $format) {
+            try {
+                $formatted = ($dateOrTime === 'time')
+                    ? $this->dateConverter->convertToDisplayTime(
+                        $format, $dateString
+                    )
+                    : $this->dateConverter->convertToDisplayDate(
+                        $format, $dateString
+                    );
+            } catch (DateException $exception) {
+                continue;
+            }
         }
-        return $dateFormatted;
+        return $formatted;
     }
 }
