@@ -1413,10 +1413,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getRenewDetails($checkOutDetails)
     {
         return $checkOutDetails['item_agency_id'] .
-                                "|" .
-                                $checkOutDetails['item_id'] .
-                                "|" .
-                                $checkOutDetails['id'];
+            "|" . $checkOutDetails['item_id'];
     }
 
     /**
@@ -1572,6 +1569,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
+        //TODO: generalize all cancel request methods
         $count = 0;
         $username = $cancelDetails['patron']['cat_username'];
         $password = $cancelDetails['patron']['cat_password'];
@@ -1580,14 +1578,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($itemAgencyId, $requestId) = explode("|", $cancelDetails);
+            list($itemAgencyId, $requestId, $itemId) = explode("|", $cancelDetails);
             $request = $this->getCancelRequest(
                 $username,
                 $password,
                 $patronAgency,
                 $itemAgencyId,
                 $requestId,
-                "Stack Retrieval"
+                "Stack Retrieval",
+                $itemId
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
@@ -1647,37 +1646,47 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function renewMyItems($renewDetails)
     {
         $details = [];
-        foreach ($renewDetails['details'] as $agencyId_renewId) {
-            list($agencyId, $renewId) = explode("|", $agencyId_renewId);
+        foreach ($renewDetails['details'] as $detail) {
+            list($agencyId, $itemId) = explode("|", $detail);
+            $failureReturn = [
+                "success" => false,
+                "item_id" => $itemId,
+            ];
             $request = $this->getRenewRequest(
                 $renewDetails['patron']['cat_username'],
-                $renewDetails['patron']['cat_password'], $renewId,
+                $renewDetails['patron']['cat_password'], $itemId,
                 $agencyId,
                 $renewDetails['patron']['patron_agency_id']
             );
             $response = $this->sendRequest($request);
+            /*try {
+                $this->checkResponseForError($response);
+            } catch (ILSException $exception) {
+                $details[$itemId] = $failureReturn;
+                continue;
+            }*/
             $dueDateXml = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
-            $dueDateString = !empty($dateDueXml) ? (string)$dateDueXml[0] : null;
-            $dueDate = $this->convertDate($dueDateString);
-            $dueTime = $this->dateConverter->convertToDisplayTime(
-                'Y-m-d\TH:i:sP', $dueDateString
-            );
+            $dueDate = '';
+            $dueTime = '';
+            if (!empty($dueDateXml)) {
+                $dueDateString = (string)$dueDateXml[0];
+                $dueDate = $this->convertDate($dueDateString);
+                $dueTime = $this->convertTime($dueDateString);
+            }
+
             if ($dueDate !== '') {
-                $details[$renewId] = [
+                $details[$itemId] = [
                     "success" => true,
                     "new_date" => $dueDate,
                     "new_time" => $dueTime,
-                    "item_id" => $renewId,
+                    "item_id" => $itemId,
                 ];
             } else {
-                $details[$renewId] = [
-                    "success" => false,
-                    "item_id" => $renewId,
-                ];
+                $details[$itemId] = $failureReturn;
             }
         }
 
-        return [null, "details" => $details];
+        return [ 'blocks' => false, 'details' => $details];
     }
 
     /**
@@ -2132,6 +2141,34 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         } catch (DateException $e) {
             $createFormat = $withTime ? 'Y-m-d\TH:i:sP' : 'Y-m-d';
             $dateFormatted = $this->dateConverter->convertToDisplayDate(
+                $createFormat, $date
+            );
+        }
+        return $dateFormatted;
+    }
+
+    /**
+     * Convert a time to display format
+     *
+     * @param string $date Date
+     *
+     * @throws DateException
+     * @return string
+     */
+    protected function convertTime($date)
+    {
+        //TODO generalize time and date converting
+        if (!$date) {
+            return '';
+        }
+        $createFormat = 'Y-m-d\TH:i:s.uP';
+        try {
+            $dateFormatted = $this->dateConverter->convertToDisplayTime(
+                $createFormat, $date
+            );
+        } catch (DateException $e) {
+            $createFormat = 'Y-m-d\TH:i:sP';
+            $dateFormatted = $this->dateConverter->convertToDisplayTime(
                 $createFormat, $date
             );
         }
