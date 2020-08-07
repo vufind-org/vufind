@@ -137,8 +137,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         } else {
             throw new ILSException(
                 'XCNCIP2 ILS driver bad configuration. You should set up ' .
-                 'one of these options: "pickupLocationsFile" or ' .
-                 '"pickupLocationsFromNCIP"'
+                'one of these options: "pickupLocationsFile" or ' .
+                '"pickupLocationsFromNCIP"'
             );
         }
     }
@@ -221,7 +221,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $client = $this->httpService->createClient($this->url);
             // Set timeout value
             $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+                ? $this->config['Catalog']['http_timeout'] : 30;
             $client->setOptions(['timeout' => $timeout]);
             $client->setRawBody($xml);
             $client->setEncType('application/xml; "charset=utf-8"');
@@ -306,9 +306,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getHoldingsForChunk($current, $aggregate_id = null,
         $bib_id = null
     ) {
-        // Maintain an internal static count of line numbers:
-        static $number = 1;
-
         $this->registerNamespaceFor($current);
 
         // Extract details from the XML:
@@ -379,11 +376,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'reserve' => 'N',       // not supported
             'callnumber' => $itemCallNo,
             'duedate' => '',        // not supported
-            //'number' => $number++,
             'volume' => $volume,
             'number' => $number,
             // XC NCIP does not support barcode, but we need a placeholder here
             // to display anything on the record screen:
+            // TODO: NCIP could return barcode as ItemIdentifierValue where
+            // ItemIdentifierType == Barcode
             'barcode' => 'placeholder' . $number,
             'is_holdable'  => true,
             'addLink' => true,
@@ -517,8 +515,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 );
                 if (empty($bib_id)) {
                     throw new ILSException(
-                        'Bibliographic record/item identifier missing in lookup " .
-                        "item set response'
+                        'Bibliographic record/item identifier missing in lookup ' .
+                        'item set response'
                     );
                 }
                 $bib_id = (string)$bib_id[0];
@@ -700,7 +698,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPurchaseHistory($id)
     {
-        // TODO
+        // NCIP is not able to send acquisition data
         return [];
     }
 
@@ -1083,7 +1081,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        // TODO
+        // NCIP is not able to send acquisition data
         return [];
     }
 
@@ -1097,7 +1095,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getFunds()
     {
-        // TODO
+        // NCIP is not able to send acquisition data, so we don't need getFunds
         return [];
     }
 
@@ -1125,7 +1123,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getInstructors()
     {
-        // TODO
+        // NCIP does not supports course reserves
         return [];
     }
 
@@ -1139,7 +1137,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCourses()
     {
-        // TODO
+        // NCIP does not supports course reserves
         return [];
     }
 
@@ -1159,7 +1157,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function findReserves($course, $inst, $dept)
     {
-        // TODO
+        // NCIP does not supports course reserves
         return [];
     }
 
@@ -1200,8 +1198,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return [
                 'HMACKeys' => 'id:item_id:item_agency_id:aggregate_id:bib_id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
-                'helpText' => 'This is a storage retrieval request help text' .
-                    ' with some <span style="color: red">styling</span>.',
                 'defaultRequiredDate' => '0:2:0',
             ];
         }
@@ -1288,7 +1284,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:Ext/ns1:BibliographicDescription/' .
                 'ns1:BibliographicRecordId/ns1:AgencyId'
             );
-            //$created = $current->xpath('ns1:DatePlaced');
             $title = $current->xpath('ns1:Title');
             $pos = $current->xpath('ns1:HoldQueuePosition');
             $pickupLocation = $current->xpath('ns1:PickupLocation');
