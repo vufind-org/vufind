@@ -16,6 +16,8 @@ class RssFeedController extends \VuFind\Controller\AbstractBase {
      */
     public function fullAction()
     {
-        return new ViewModel();
+        $view = new ViewModel();
+        $view->page = $this->params()->fromQuery('page') ?? 1;
+        return $view;
     }
 }
