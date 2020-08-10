@@ -222,13 +222,27 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Get URL to redirect page which also saves the redirect with timestamp for later analysis
+     *
+     * @param string $targetUrl
+     * @param string $group
+     *
+     * @return string
+     */
+    public function getRedirectUrl(string $targetUrl, string $group=null): string {
+        $urlHelper = $this->container->get('ViewHelperManager')->get('url');
+        return $urlHelper('redirect', ['url' => base64_encode($targetUrl), 'group' => $group]);
+    }
+
+    /**
      * Parse the RSS feed and return a short overview of the first few entries
      *
-     * @param int $max_item_count           Max items to read from file
+     * @param int  $max_item_count            Max items to read from file
+     * @param bool $only_newest_item_per_feed Only the newest item per feed will be returned.
      *
      * @return array
      */
-    public function getRssNewsEntries($max_item_count=null) {
+    public function getRssNewsEntries(int $max_item_count=null, bool $only_newest_item_per_feed=false) {
         $rss_feed_path = $this->getConfig()->General->rss_feed_path;
         $rss_items = [];
 
@@ -236,6 +250,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         if (@$dom->load($rss_feed_path)) {
             $items = $dom->getElementsByTagName('item');
             $i = 0;
+            $processed_feeds = [];
             foreach ($items as $item) {
                 if ($max_item_count !== null && $i >= $max_item_count)
                     break;
@@ -252,8 +267,11 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                     $child = $child->nextSibling;
                 }
 
-                $rss_items[] = $rss_item;
-                ++$i;
+                if ($only_newest_item_per_feed === false || !in_array($rss_item['tuefind:rss_title'], $processed_feeds)) {
+                    $rss_items[] = $rss_item;
+                    ++$i;
+                }
+                $processed_feeds[] = $rss_item['tuefind:rss_title'];
             }
         }
 

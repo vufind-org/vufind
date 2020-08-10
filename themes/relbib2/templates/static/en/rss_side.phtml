@@ -1,0 +1,6 @@
+<h3>List of aggregated blogs:</h3>
+<ul>
+  <?php foreach ($this->tuefind()->getRssFeeds() as $rssFeedName => $rssFeedDetails): ?>
+    <li><a href="<?=$this->tuefind()->getRedirectUrl($rssFeedDetails['blog_url'], 'relbib-rss-full')?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeedName)?>" width="16"> <?=htmlspecialchars($rssFeedName)?></a></li>
+  <?php endforeach; ?>
+</ul>
