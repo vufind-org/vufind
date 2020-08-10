@@ -54,6 +54,20 @@ class ListItems extends AbstractChannelProvider
     protected $ids;
 
     /**
+     * Tags of lists to display
+     *
+     * @var array
+     */
+    protected $tags;
+
+    /**
+     * Tags of lists to display
+     *
+     * @var array
+     */
+    protected $userIds;
+
+    /**
      * Should we pull in public list results in addition to the whitelist in $ids?
      *
      * @var bool
@@ -68,11 +82,25 @@ class ListItems extends AbstractChannelProvider
     protected $initialListsToDisplay;
 
     /**
+     * List field for sorting results.
+     *
+     * @var string
+     */
+    protected $sort;
+
+    /**
      * UserList table
      *
      * @var \VuFind\Db\Table\UserList
      */
     protected $userList;
+
+    /**
+     * UserList table
+     *
+     * @var \VuFind\Db\Table\UserList
+     */
+    protected $resourceTags;
 
     /**
      * Results manager
@@ -92,15 +120,19 @@ class ListItems extends AbstractChannelProvider
      * Constructor
      *
      * @param \VuFind\Db\Table\UserList            $userList       UserList table
+     * @param \VuFind\Db\Table\ResourceTags        $resourceTags   ResourceTags table
      * @param Url                                  $url            URL helper
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
      * @param array                                $options        Settings
      * (optional)
      */
-    public function __construct(\VuFind\Db\Table\UserList $userList, Url $url,
+    public function __construct(
+        \VuFind\Db\Table\UserList $userList,
+        \VuFind\Db\Table\ResourceTags $resourceTags, Url $url,
         \VuFind\Search\Results\PluginManager $resultsManager, array $options = []
     ) {
         $this->userList = $userList;
+        $this->resourceTags = $resourceTags;
         $this->url = $url;
         $this->resultsManager = $resultsManager;
         $this->setOptions($options);
@@ -116,9 +148,13 @@ class ListItems extends AbstractChannelProvider
     public function setOptions(array $options)
     {
         $this->ids = $options['ids'] ?? [];
+        $this->tags = $options['tags'] ?? [];
+        $this->userIds = $options['userIds'] ?? [];
+
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
         $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
+        $this->sort = $options['sort'] ?? 'id';
     }
 
     /**
@@ -163,9 +199,19 @@ class ListItems extends AbstractChannelProvider
      */
     protected function buildListChannels($channelToken)
     {
+        if ($this->tags || $this->userIds) {
+            $lists = $this->getListsByCriteria(
+                $this->tags,
+                $channelToken ? [$channelToken] : $this->ids,
+                $this->userIds,
+                $this->sort,
+                $this->initialListsToDisplay
+            );
+        } else {
+            $lists = $channelToken
+                ? $this->getListsById([$channelToken]) : $this->getLists();
+        }
         $channels = [];
-        $lists = $channelToken
-            ? $this->getListsById([$channelToken]) : $this->getLists();
         foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
             $channel = $this->getChannelFromList($list, $tokenOnly);
@@ -220,6 +266,41 @@ class ListItems extends AbstractChannelProvider
         }
 
         return $lists;
+    }
+
+    /**
+     * Get a list of public lists to display.
+     *
+     * @param string|array $tag    Tag to match
+     * @param string|array $listId ID of list to retrieve (null for all favorites)
+     * @param string|array $userId ID of user owning favorite list
+     * @param sting        $sort   Sort criteria
+     *
+     * @return array
+     */
+    protected function getListsByCriteria(
+        $tag = null, $listId = null, $userId = null,
+        $sort = 'id'
+    ) {
+        $lists = $this->resourceTags->getListsForTag(
+            (array)$tag, (array)$listId, (array)$userId, $sort
+        );
+
+        if (!$lists->count()) {
+            return [];
+        }
+
+        $listIds = [];
+        foreach ($lists as $list) {
+            $listIds[] = $list->list_id;
+        }
+
+        $lists = [];
+        $callback = function ($select) use ($listIds) {
+            $select->where->in('id', $listIds);
+        };
+
+        return $this->userList->select($callback);
     }
 
     /**

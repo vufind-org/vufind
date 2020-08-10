@@ -187,6 +187,54 @@ class ResourceTags extends Gateway
     }
 
     /**
+     * Get lists associated with a particular tag.
+     *
+     * @param string|array $tag    Tag to match
+     * @param string|array $userId ID of user owning favorite list
+     * @param string|array $listId ID of list to retrieve (null for all favorites)
+     *
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     */
+    public function getListsForTag($tag, $listId = null, $userId = null,
+        $sort = 'id'
+    ) {
+        $callback = function ($select) use ($tag, $userId, $listId, $sort) {
+            // // Discard tags assigned to a user resource.
+            $select->where->isNull('resource_id');
+            $select->join(
+                ['t' => 'tags'],
+                'resource_tags.tag_id = t.id',
+                [
+                    'tag' =>
+                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                ]
+            );
+
+            if ($tag) {
+                // TODO: lowercase tag
+                $select->where->in('t.tag', (array)$tag);
+            }
+            if ($listId) {
+                $select->where->and->in('resource_tags.list_id', (array)$listId);
+            }
+            if ($userId) {
+                $select->where->and->in('resource_tags.user_id', $userId);
+            }
+            $select->where->equalTo('public', 1);
+            $select->join(
+                ['l' => 'user_list'],
+                'resource_tags.list_id = l.id',
+                []
+            );
+            $select->group('resource_tags.list_id');
+            $select->order($sort);
+        };
+
+        return $this->select($callback);
+    }
+
+
+    /**
      * Get statistics on use of tags.
      *
      * @param bool $extended Include extended (unique/anonymous) stats.
