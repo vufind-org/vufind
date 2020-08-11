@@ -191,8 +191,8 @@ class ResourceTags extends Gateway
      *
      * @param null|string|array $tag        Tag to match
      * @param null|string|array $userId     ID of user owning favorite list
-     * @param null|string|array $listId     ID of list to retrieve (null for all favorites)
-     * @param bool              $onlyPublic Whether to return only public lists
+     * @param null|string|array $listId     ID of list to retrieve
+     * @param bool              $publicOnly Whether to return only public lists
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
