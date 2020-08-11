@@ -85,7 +85,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $loader = null;
         if (!empty($override)) {
             $shibConfig = $container->get('VuFind\Config')->get($override);
-            $loader = new MultiIdPConfigurationLoader($config, $override);
+            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
         } else {
             $loader = new SingleIdPConfigurationLoader($config);
         }
