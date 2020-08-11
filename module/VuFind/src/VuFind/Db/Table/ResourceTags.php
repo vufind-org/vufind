@@ -189,22 +189,24 @@ class ResourceTags extends Gateway
     /**
      * Get lists associated with a particular tag.
      *
-     * @param string|array $tag        Tag to match
-     * @param string|array $userId     ID of user owning favorite list
-     * @param string|array $listId     ID of list to retrieve (null for all favorites)
-     * @param bool         $onlyPublic Whether to return only public lists
-     * @param string       $sort       Field for sorting results.
+     * @param null|string|array $tag        Tag to match
+     * @param null|string|array $userId     ID of user owning favorite list
+     * @param null|string|array $listId     ID of list to retrieve (null for all favorites)
+     * @param bool              $onlyPublic Whether to return only public lists
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getListsForTag($tag, $listId = null, $userId = null,
-        $publicOnly = true, $sort = 'id'
+    public function getListsForTag(
+        $tag, $listId = null, $userId = null, $publicOnly = true
     ) {
+        $tag = $tag ? (array)$tag : null;
+        $listid = $listId ? (array)$listId : null;
+        $userId = $userId ? (array)$userId : null;
+
         $callback = function ($select) use (
-            $tag, $userId, $listId, $publicOnly, $sort
+            $tag, $userId, $listId, $publicOnly
         ) {
-            // // Discard tags assigned to a user resource.
-            $select->where->isNull('resource_id');
+            $select->columns(['list_id' => 'list_id', '*']);
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
@@ -213,13 +215,17 @@ class ResourceTags extends Gateway
                         $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
                 ]
             );
+            $select->join(
+                ['l' => 'user_list'],
+                'resource_tags.list_id = l.id',
+                []
+            );
 
-            if ($tag) {
-                // TODO: lowercase tag
-                $select->where->in('t.tag', (array)$tag);
-            }
+            // Discard tags assigned to a user resource.
+            $select->where->isNull('resource_id');
+
             if ($listId) {
-                $select->where->and->in('resource_tags.list_id', (array)$listId);
+                $select->where->and->in('resource_tags.list_id', $listId);
             }
             if ($userId) {
                 $select->where->and->in('resource_tags.user_id', $userId);
@@ -227,18 +233,36 @@ class ResourceTags extends Gateway
             if ($publicOnly) {
                 $select->where->equalTo('public', 1);
             }
-            $select->join(
-                ['l' => 'user_list'],
-                'resource_tags.list_id = l.id',
-                []
-            );
+            if ($tag) {
+                if ($this->caseSensitive) {
+                    $select->where->and->in('t.tag', $tag);
+                } else {
+                    $lowerTags = array_map(
+                        function ($t) {
+                            return new Expression(
+                                'lower(?)', [$t], [Expression::TYPE_VALUE]
+                            );
+                        }, $tag
+                    );
+                    $select->where->and->in(
+                        new Expression('lower(t.tag)'), $lowerTags
+                    );
+                }
+            }
             $select->group('resource_tags.list_id');
-            $select->order($sort);
+
+            if ($tag) {
+                // Use AND operator for tags
+                $select->having->literal(
+                    'COUNT(resource_tags.list_id) = ?',
+                    count(array_unique($tag))
+                );
+            }
+            $select->order('list_id');
         };
 
         return $this->select($callback);
     }
-
 
     /**
      * Get statistics on use of tags.

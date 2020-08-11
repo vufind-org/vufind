@@ -83,13 +83,6 @@ class ListItems extends AbstractChannelProvider
     protected $initialListsToDisplay;
 
     /**
-     * List field for sorting results.
-     *
-     * @var string
-     */
-    protected $sort;
-
-    /**
      * UserList table
      *
      * @var \VuFind\Db\Table\UserList
@@ -155,7 +148,6 @@ class ListItems extends AbstractChannelProvider
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
         $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
-        $this->sort = $options['sort'] ?? 'id';
     }
 
     /**
@@ -200,18 +192,12 @@ class ListItems extends AbstractChannelProvider
      */
     protected function buildListChannels($channelToken)
     {
-        if ($this->tags || $this->userIds) {
-            $lists = $this->getListsByCriteria(
-                $this->tags,
-                $channelToken ? [$channelToken] : $this->ids,
-                $this->userIds,
-                $this->sort,
-                $this->initialListsToDisplay
-            );
-        } else {
-            $lists = $channelToken
-                ? $this->getListsById([$channelToken]) : $this->getLists();
-        }
+        $lists = $this->getLists(
+            $this->tags,
+            $channelToken ? [$channelToken] : $this->ids,
+            $this->userIds,
+            $this->initialListsToDisplay
+        );
         $channels = [];
         foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
@@ -224,84 +210,63 @@ class ListItems extends AbstractChannelProvider
     }
 
     /**
-     * Get a list of lists, identified by ID; filter to public lists only.
-     *
-     * @param array $ids IDs to retrieve
-     *
-     * @return array
-     */
-    protected function getListsById($ids)
-    {
-        $lists = [];
-        foreach ($ids as $id) {
-            $list = $this->userList->getExisting($id);
-            if ($list->public) {
-                $lists[] = $list;
-            }
-        }
-        return $lists;
-    }
-
-    /**
-     * Get a list of public lists to display:
-     *
-     * @return array
-     */
-    protected function getLists()
-    {
-        // First fetch hard-coded IDs:
-        $lists = $this->getListsById($this->ids);
-
-        // Next add public lists if necessary:
-        if ($this->displayPublicLists) {
-            $ids = $this->ids;
-            $callback = function ($select) use ($ids) {
-                $select->where->equalTo('public', 1);
-                foreach ($ids as $id) {
-                    $select->where->notEqualTo('id', $id);
-                }
-            };
-            foreach ($this->userList->select($callback) as $list) {
-                $lists[] = $list;
-            }
-        }
-
-        return $lists;
-    }
-
-    /**
      * Get a list of public lists to display.
      *
      * @param string|array $tag    Tag to match
      * @param string|array $listId ID of list to retrieve (null for all favorites)
      * @param string|array $userId ID of user owning favorite list
-     * @param sting        $sort   Sort criteria
      *
      * @return array
      */
-    protected function getListsByCriteria(
-        $tag = null, $listId = null, $userId = null,
-        $sort = 'id'
+    protected function getLists(
+        $tag = null, $listId = null, $userId = null
     ) {
+        $resultIds = $result = [];
+
+        // Get public lists by search criteria
         $lists = $this->resourceTags->getListsForTag(
-            (array)$tag, (array)$listId, (array)$userId, true, $sort
+            (array)$tag, (array)$listId, (array)$userId, true
         );
 
-        if (!$lists->count()) {
-            return [];
+        if ($lists->count()) {
+            foreach ($lists as $list) {
+                $resultIds[] = $list->list_id;
+            }
+
+            $callback = function ($select) use ($resultIds) {
+                $select->where->in('id', $resultIds);
+            };
+
+            foreach ($this->userList->select($callback) as $list) {
+                $result[] = $list;
+            }
+
+            if ($listId) {
+                // Sort lists by ID list
+                $orderIds = (array)$listId;
+                $sortFn = function ($a, $b) use ($orderIds) {
+                    return
+                        array_search($a->id, $orderIds)
+                        > array_search($b->id, $orderIds);
+                };
+                usort($result, $sortFn);
+            }
         }
 
-        $listIds = [];
-        foreach ($lists as $list) {
-            $listIds[] = $list->list_id;
+        // Next add public lists if necessary:
+        if ($this->displayPublicLists) {
+            $callback = function ($select) use ($resultIds) {
+                $select->where->equalTo('public', 1);
+                foreach ($resultIds as $id) {
+                    $select->where->notEqualTo('id', $id);
+                }
+            };
+            foreach ($this->userList->select($callback) as $list) {
+                $result[] = $list;
+            }
         }
 
-        $lists = [];
-        $callback = function ($select) use ($listIds) {
-            $select->where->in('id', $listIds);
-        };
-
-        return $this->userList->select($callback);
+        return $result;
     }
 
     /**
