@@ -80,6 +80,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $dateConverter;
 
     /**
+     * From agency id
+     *
+     * @var string
+     */
+    protected $fromAgency;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -105,6 +112,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         $this->url = $this->config['Catalog']['url'];
+        $this->fromAgency = $this->config['Catalog']['fromAgency'] ?? null;
         if ($this->config['Catalog']['consortium']) {
             $this->consortium = true;
             foreach ($this->config['Catalog']['agency'] as $agency) {
@@ -436,32 +444,33 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'Hold Queue Length',
             'Item Description',
             'Item Use Restriction Type',
-            'Location'
+            'Location',
         ];
 
         // Start the XML:
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/' .
-            'ncip_v2_0.xsd"><ns1:Ext><ns1:LookupItemSet>';
+        $xml = $this->getNCIPMessageStart() . '<ns1:LookupItemSet>';
+        $xml .= $this->getInitiationHeaderXml($agency);
 
         foreach ($idList as $id) {
             $xml .= '<ns1:BibliographicId>' .
-                    '<ns1:BibliographicRecordId>' .
-                        '<ns1:BibliographicRecordIdentifier>' .
+                    '<ns1:BibliographicItemId>' .
+                        '<ns1:BibliographicItemIdentifier>' .
                             htmlspecialchars($id) .
-                        '</ns1:BibliographicRecordIdentifier>' .
-                        '<ns1:AgencyId>' .
-                            htmlspecialchars($agency) .
-                        '</ns1:AgencyId>' .
-                    '</ns1:BibliographicRecordId>' .
+                        '</ns1:BibliographicItemIdentifier>' .
+                        '<ns1:BibliographicItemIdentifierCode ' .
+                            'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/' .
+                            'schemes/bibliographicitemidentifiercode/' .
+                            'bibliographicitemidentifiercode.scm">' .
+                                'Legal Deposit Number' .
+                        '</ns1:BibliographicItemIdentifierCode>' .
+                    '</ns1:BibliographicItemId>' .
                 '</ns1:BibliographicId>';
         }
 
         // Add the desired data list:
         foreach ($desiredParts as $current) {
             $xml .= '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 htmlspecialchars($current) . '</ns1:ItemElementType>';
         }
@@ -473,7 +482,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         // Close the XML and send it to the caller:
-        $xml .= '</ns1:LookupItemSet></ns1:Ext></ns1:NCIPMessage>';
+        $xml .= '</ns1:LookupItemSet></ns1:NCIPMessage>';
         return $xml;
     }
 
@@ -2050,6 +2059,44 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '<ns1:ItemElementType>Bibliographic Description</ns1:ItemElementType>' .
         '</ns1:LookupItem></ns1:NCIPMessage>';
         return $ret;
+    }
+
+    /**
+     * Get InitiationHeader element XML string
+     *
+     * @param string $agency Agency of NCIP responder
+     *
+     * @return string
+     */
+    protected function getInitiationHeaderXml($agency = '')
+    {
+        if (empty($agency) || empty($this->fromAgency)) {
+            return '';
+        }
+        return '<ns1:InitiationHeader>' .
+                '<ns1:FromAgencyId>' .
+                    '<ns1:AgencyId>' .
+                        htmlspecialchars($this->fromAgency) .
+                    '</ns1:AgencyId>' .
+                '</ns1:FromAgencyId>' .
+                '<ns1:ToAgencyId>' .
+                    '<ns1:AgencyId>' .
+                        htmlspecialchars($agency) .
+                    '</ns1:AgencyId>' .
+                '</ns1:ToAgencyId>' .
+            '</ns1:InitiationHeader>';
+    }
+
+    /**
+     * Helper method for creating XML header and main element start
+     *
+     * @return string
+     */
+    protected function getNCIPMessageStart()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">';
     }
 
     /**
