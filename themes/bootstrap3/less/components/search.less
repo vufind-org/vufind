@@ -111,6 +111,7 @@ header .container.navbar { margin-bottom: 0; }
 .record,
 .result {
   .media {
+    display: flex;
     flex: 1;
     margin: 0;
     padding-right: 10px;
@@ -118,56 +119,49 @@ header .container.navbar { margin-bottom: 0; }
   }
   .media-left,
   .media-right {
+    flex: none;
+    max-width: 25%;
     text-align: center;
+
+    a {
+      display: inline-block;
+      max-width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      text-decoration: underline;
+    }
+
     img {
+      display: inline-block;
+      width: auto;
       max-width: 100%;
       max-height: 300px;
+      object-fit: contain;
     }
-    &.small img,
-    &.medium img,
-    &.large img {
-      display: inline-block;
-      width: @thumbnail-width-small;
-      max-width: none;
+
+    @media (min-width: 768px) {
+      &.small  { width: @thumbnail-width-small; }
+      &.medium { width: @thumbnail-width-medium; }
+      &.large  { width: @thumbnail-width-large; }
+      & > a { width: 100%; }
     }
   }
   .media-left { margin-right: 10px; }
   .media-right { margin-left: 10px; }
-
-  @media (min-width: 768px) {
-    .media-left,
-    .media-right {
-      max-width: 25%;
-
-      a {
-        display: inline-block;
-        max-width: 100%;
-        text-align: center;
-        white-space: nowrap;
-        text-decoration: underline;
-      }
-
-      &.small img,
-      &.medium img,
-      &.large img {
-        width: auto;
-        max-width: 100%;
-      }
-      &.small  > a,
-      &.small  > img { width: @thumbnail-width-small; }
-      &.medium > a,
-      &.medium > img { width: @thumbnail-width-medium; }
-      &.large  > a,
-      &.large  > img { width: @thumbnail-width-large; }
-    }
+  .media-body {
+    flex: 1;
+    width: unset;
   }
 }
-.record .media-left,
-.record .media-right {
-  &.small img,
-  &.medium img,
-  &.large img { width: auto; }
+
+.ajaxcover .cover-container {
+  display: none;
 }
+.recordcover {
+  white-space: normal;
+  line-height: 1.15;
+}
+
 .result-body {
   padding: 0;
   padding-bottom: .25rem;
@@ -294,9 +288,16 @@ body.rtl {
   padding: 0;
 }
 
+.combined-column {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 0;
+}
+
 @media (min-width: 768px) {
   .combined-search-container {
     display: flex;
+    padding-left: 1rem;
 
     .result { margin-left: 0; }
     .result-body {
@@ -307,9 +308,8 @@ body.rtl {
   }
   .combined-column {
     flex: 0 1 100%;
-    padding-left: 1rem;
+    margin-left: 0;
   }
-  .combined-column:last-child { padding-right: 1rem; }
 }
 
 .wikipedia img { margin-right: 1rem; }

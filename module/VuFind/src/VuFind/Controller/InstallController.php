@@ -225,8 +225,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.0.8:
-        return PHP_VERSION_ID >= 70008;
+        // We need at least PHP v7.2.0:
+        return PHP_VERSION_ID >= 70200;
     }
 
     /**
@@ -259,7 +259,7 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version 7.0.8 or newer; you are running "
+            $msg = "VuFind requires PHP version 7.2 or newer; you are running "
                 . phpversion() . ".  Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
@@ -557,11 +557,11 @@ class InstallController extends AbstractBase
             $dir
                 = opendir(APPLICATION_PATH . '/module/VuFind/src/VuFind/ILS/Driver');
             $drivers = [];
-            $blacklist = [
+            $excludeList = [
                 'Sample.php', 'Demo.php', 'DriverInterface.php', 'PluginManager.php',
             ];
             while ($line = readdir($dir)) {
-                if (stristr($line, '.php') && !in_array($line, $blacklist)
+                if (stristr($line, '.php') && !in_array($line, $excludeList)
                     && substr($line, 0, 8) !== 'Abstract'
                     && substr($line, -11) !== 'Factory.php'
                     && substr($line, -9) !== 'Trait.php'

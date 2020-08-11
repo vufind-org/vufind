@@ -533,7 +533,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param string $config  Name of config file
      * @param string $section Configuration section to check
-     * @param array  $filter  Whitelist of fields to include (if empty, all
+     * @param array  $filter  List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -557,7 +557,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -574,7 +574,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -591,7 +591,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -608,7 +608,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array

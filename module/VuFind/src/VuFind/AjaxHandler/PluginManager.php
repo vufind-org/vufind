@@ -54,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getItemStatuses' => GetItemStatuses::class,
         'getLibraryPickupLocations' => GetLibraryPickupLocations::class,
         'getRecordCommentsAsHTML' => GetRecordCommentsAsHTML::class,
+        'getRecordCover' => GetRecordCover::class,
         'getRecordDetails' => GetRecordDetails::class,
         'getRecordTags' => GetRecordTags::class,
         'getRequestGroupPickupLocations' => GetRequestGroupPickupLocations::class,
@@ -91,6 +92,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetItemStatuses::class => GetItemStatusesFactory::class,
         GetLibraryPickupLocations::class => AbstractIlsAndUserActionFactory::class,
         GetRecordCommentsAsHTML::class => GetRecordCommentsAsHTMLFactory::class,
+        GetRecordCover::class => GetRecordCoverFactory::class,
         GetRecordDetails::class => GetRecordDetailsFactory::class,
         GetRecordTags::class => GetRecordTagsFactory::class,
         GetRequestGroupPickupLocations::class =>

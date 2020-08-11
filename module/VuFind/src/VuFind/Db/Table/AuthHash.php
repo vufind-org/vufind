@@ -58,7 +58,7 @@ class AuthHash extends Gateway
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'auth_hash'
+        ?RowGateway $rowObj = null, $table = 'auth_hash'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

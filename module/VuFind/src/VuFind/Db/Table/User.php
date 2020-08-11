@@ -70,7 +70,7 @@ class User extends Gateway
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, Config $config, Container $session = null,
+        ?RowGateway $rowObj, Config $config, Container $session = null,
         $table = 'user'
     ) {
         $this->config = $config;

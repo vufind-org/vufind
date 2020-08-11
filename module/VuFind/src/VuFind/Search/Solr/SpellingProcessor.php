@@ -118,7 +118,7 @@ class SpellingProcessor
      */
     public function tokenize($input)
     {
-        // Blacklist of useless tokens:
+        // Exclusion list of useless tokens:
         $joins = ["AND", "OR", "NOT"];
 
         // Strip out parentheses -- irrelevant for tokenization:

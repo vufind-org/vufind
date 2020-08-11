@@ -41,7 +41,7 @@ use Laminas\Db\Sql\Expression;
  * @link     https://vufind.org Main Site
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
-    \ZfcRbac\Identity\IdentityInterface
+    \LmcRbacMvc\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 

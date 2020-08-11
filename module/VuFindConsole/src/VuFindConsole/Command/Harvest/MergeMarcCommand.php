@@ -89,17 +89,22 @@ class MergeMarcCommand extends RelativeFileAwareCommand
         }
 
         $output->writeln('<collection>');
+        $fileList = [];
         while (false !== ($file = readdir($handle))) {
             // Only operate on XML files:
             if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
                 // get file content
-                $filePath = $dir . '/' . $file;
-                $fileContent = file_get_contents($filePath);
-
-                // output content:
-                $output->writeln("<!-- $filePath -->");
-                $output->write($fileContent);
+                $fileList[] = $dir . '/' . $file;
             }
+        }
+        // Sort filenames so that we have consistent results:
+        sort($fileList);
+        foreach ($fileList as $filePath) {
+            $fileContent = file_get_contents($filePath);
+
+            // output content:
+            $output->writeln("<!-- $filePath -->");
+            $output->write($fileContent);
         }
         $output->writeln('</collection>');
         return 0;

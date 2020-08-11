@@ -114,12 +114,12 @@ class Evergreen extends AbstractBase
 
         // Build SQL Statement
         $sql = <<<HERE
-SELECT ccs.name AS status, acn.label AS callnumber, acpl.name AS location
+SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location
 FROM config.copy_status ccs
-    INNER JOIN asset.copy ac ON ccs.id = ac.status
-    INNER JOIN asset.call_number acn ON ac.call_number = acn.id
-    INNER JOIN asset.copy_location acpl ON ac.copy_location = acpl.id
-WHERE ac.id = ?
+    INNER JOIN asset.copy ac ON ac.status = ccs.id
+    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+WHERE acn.record = ?
 HERE;
 
         // Execute SQL

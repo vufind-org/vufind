@@ -70,7 +70,7 @@ class Resource extends Gateway
      * @param string        $table     Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, DateConverter $converter, Loader $loader,
+        ?RowGateway $rowObj, DateConverter $converter, Loader $loader,
         $table = 'resource'
     ) {
         $this->dateConverter = $converter;

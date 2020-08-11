@@ -68,7 +68,8 @@ class ListItems extends AbstractChannelProvider
     protected $userIds;
 
     /**
-     * Should we pull in public list results in addition to the whitelist in $ids?
+     * Should we pull in public list results in addition to the inclusion list in
+     * $ids?
      *
      * @var bool
      */

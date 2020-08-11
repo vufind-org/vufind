@@ -99,8 +99,8 @@ class AccountCapabilities
         if (!$setting) {
             $setting = 'disabled';
         }
-        $whitelist = ['enabled', 'disabled', 'public_only', 'private_only'];
-        if (!in_array($setting, $whitelist)) {
+        $legal = ['enabled', 'disabled', 'public_only', 'private_only'];
+        if (!in_array($setting, $legal)) {
             $setting = 'enabled';
         }
         return $setting;

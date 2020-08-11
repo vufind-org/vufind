@@ -130,7 +130,7 @@ class Results extends BaseResults
             return ['id' => $row['record_id'], 'source' => $row['source']];
         };
         $this->results = $this->recordLoader
-            ->loadBatch(array_map($callback, $results));
+            ->loadBatch(array_map($callback, $results), true);
     }
 
     /**

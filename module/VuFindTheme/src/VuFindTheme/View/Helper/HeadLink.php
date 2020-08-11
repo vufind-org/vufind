@@ -52,16 +52,26 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
     protected $themeInfo;
 
     /**
+     * CSP nonce
+     *
+     * @var string
+     */
+    protected $cspNonce;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo   $themeInfo Theme information service
      * @param string|bool $plconfig  Config for current application environment
+     * @param string      $nonce     Nonce from nonce generator
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig = false)
+    public function __construct(ThemeInfo $themeInfo, $plconfig = false, $nonce = '')
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
         $this->usePipeline = $this->enabledInConfig($plconfig);
+        $this->cspNonce = $nonce;
+        $this->itemKeys[] = 'nonce';
     }
 
     /**
@@ -95,7 +105,7 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
             $url .= filemtime($details['path']);
             $item->href = $url;
         }
-
+        $item->attributes['nonce'] = $this->cspNonce;
         return parent::itemToString($item);
     }
 

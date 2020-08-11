@@ -1,10 +1,10 @@
 <?php
 /**
- * Recaptcha helper factory.
+ * Factory for instantiating UserIpReader.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,26 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Net
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Net;
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Recaptcha helper factory.
+ * Factory for instantiating UserIpReader.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Net
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecaptchaFactory implements FactoryInterface
+class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -54,16 +53,21 @@ class RecaptchaFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $allowForwardedIps = $config->Proxy->allow_forwarded_ips ?? false;
         return new $requestedName(
-            $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get('Request')->getServer(),
+            $allowForwardedIps
         );
     }
 }
