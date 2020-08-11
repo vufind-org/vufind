@@ -938,6 +938,51 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         }
     }
 
+    protected $requestTests = [
+        '1' => [
+            'method' => 'getStatusRequest',
+            'config' => [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => ['Test agency'],
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'fromAgency' => 'My portal',
+                ],
+                'NCIP' => [],
+            ],
+            'params' => [['1'], null, 'Test agency'],
+            'result' => 'LookupItemSetRequest.xml',
+        ],
+        '2' => [
+            'method' => 'getStatusRequest',
+            'params' => [['1'], null, 'Test agency'],
+            'result' => 'LookupItemSetRequestWithoutHeader.xml',
+        ],
+    ];
+
+    /**
+     * Test getStatusRequest
+     *
+     * @return void
+     */
+    public function testGetStatusRequest()
+    {
+        foreach ($this->requestTests as $id => $test) {
+            $this->configureDriver($test['config'] ?? null);
+            $method = new \ReflectionMethod('\VuFind\ILS\Driver\XCNCIP2', $test['method']);
+            $method->setAccessible(true);
+            $request = $method->invokeArgs($this->driver, $test['params'] ?? []);
+            $file = realpath(
+                __DIR__ .
+                '/../../../../../../tests/fixtures/xcncip2/request/' .
+                $test['result']
+            );
+            $expected = file_get_contents($file);
+            $this->assertEquals($expected, $request, 'Test identifier: ' . $id);
+        }
+    }
+
     /**
      * Mock fixture as HTTP client response
      *
