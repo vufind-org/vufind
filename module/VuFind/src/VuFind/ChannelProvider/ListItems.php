@@ -224,9 +224,7 @@ class ListItems extends AbstractChannelProvider
         $resultIds = $result = [];
 
         // Get public lists by search criteria
-        $lists = $this->resourceTags->getListsForTag(
-            (array)$tag, (array)$listId, (array)$userId, true
-        );
+        $lists = $this->resourceTags->getListsForTag($tag, $listId, $userId, true);
 
         if ($lists->count()) {
             foreach ($lists as $list) {
