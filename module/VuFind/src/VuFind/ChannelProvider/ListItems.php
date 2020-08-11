@@ -284,7 +284,7 @@ class ListItems extends AbstractChannelProvider
         $sort = 'id'
     ) {
         $lists = $this->resourceTags->getListsForTag(
-            (array)$tag, (array)$listId, (array)$userId, $sort
+            (array)$tag, (array)$listId, (array)$userId, true, $sort
         );
 
         if (!$lists->count()) {
