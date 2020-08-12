@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
 /**
@@ -206,7 +207,7 @@ class ResourceTags extends Gateway
         $callback = function ($select) use (
             $tag, $userId, $listId, $publicOnly
         ) {
-            $select->columns(['*']);
+            $select->columns([Select::SQL_STAR]);
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
