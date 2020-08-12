@@ -978,7 +978,6 @@ class RecordDataFormatterFactory
         $spec->setLine('Awards', 'getAwards');
         $spec->setLine('Occupation', 'getOccupations');
         $spec->setLine('Field of Activity', 'getFieldsOfActivity');
-        $spec->setLine('Place of Residence', 'getPlaceOfResidence');
         $spec->setTemplateLine(
             'Other Forms of Name', 'getAlternativeTitles',
             'data-lines-with-detail.phtml'

@@ -112,21 +112,6 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc
     }
 
     /**
-     * Return place of residence.
-     *
-     * @return string
-     */
-    public function getPlaceOfResidence()
-    {
-        foreach ($this->getMarcRecord()->getFields('370') as $field) {
-            if ($res = $field->getSubfield('e')) {
-                return $res->getData();
-            }
-        }
-        return '';
-    }
-
-    /**
      * Return birth date.
      *
      * @param boolean $force Return established date for corporations?

@@ -276,16 +276,6 @@ trait SolrAuthFinnaTrait
     }
 
     /**
-     * Return place of residence.
-     *
-     * @return string
-     */
-    public function getPlaceOfResidence()
-    {
-        return '';
-    }
-
-    /**
      * Return relations to other authority records.
      *
      * @return array
