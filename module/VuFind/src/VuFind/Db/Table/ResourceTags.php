@@ -200,7 +200,7 @@ class ResourceTags extends Gateway
         $tag, $listId = null, $userId = null, $publicOnly = true
     ) {
         $tag = $tag ? (array)$tag : null;
-        $listid = $listId ? (array)$listId : null;
+        $listId = $listId ? (array)$listId : null;
         $userId = $userId ? (array)$userId : null;
 
         $callback = function ($select) use (
