@@ -255,9 +255,7 @@ class ListItems extends AbstractChannelProvider
         if ($this->displayPublicLists) {
             $callback = function ($select) use ($resultIds) {
                 $select->where->equalTo('public', 1);
-                foreach ($resultIds as $id) {
-                    $select->where->notEqualTo('id', $id);
-                }
+                $select->where->notIn('id', $resultIds);
             };
             foreach ($this->userList->select($callback) as $list) {
                 $result[] = $list;
