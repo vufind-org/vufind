@@ -206,7 +206,7 @@ class ResourceTags extends Gateway
         $callback = function ($select) use (
             $tag, $userId, $listId, $publicOnly
         ) {
-            $select->columns(['list_id' => 'list_id', '*']);
+            $select->columns(['*']);
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
@@ -258,7 +258,7 @@ class ResourceTags extends Gateway
                     count(array_unique($tag))
                 );
             }
-            $select->order('list_id');
+            $select->order('resource_tags.list_id');
         };
 
         return $this->select($callback);
