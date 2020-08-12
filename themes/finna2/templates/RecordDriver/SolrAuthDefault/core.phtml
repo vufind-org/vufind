@@ -45,9 +45,8 @@
       </div>
       <?php if ($occupations = $this->driver->getOccupations()): ?>
         <div class="occupation"><?=implode(', ', $occupations)?></div>
-      <?php endif; ?>
-      <?php if ($this->driver->isPerson()): ?>
-        <?= $this->record($this->driver)->getAuthorityBirthDeathWithPlace()?>
+      <?php elseif ($corporateType = $this->driver->getCorporateType()): ?>
+        <div class="corporate-type"><?=$corporateType?></div>
       <?php endif; ?>
       <?/* Display anchor links to authority records tabs */?>
       <?php if ($authSummary = $this->record($this->driver)->getAuthoritySummary(true)): ?>

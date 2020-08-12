@@ -51,6 +51,16 @@ trait SolrAuthFinnaTrait
     }
 
     /**
+     * Return corporate record type.
+     *
+     * @return string
+     */
+    public function getCorporateType()
+    {
+        return '';
+    }
+
+    /**
      * Return the unique identifier of this record within the index;
      * useful for retrieving additional information (like tags and user
      * comments) from the external MySQL database.
@@ -211,6 +221,16 @@ trait SolrAuthFinnaTrait
      * @return array|null
      */
     public function getSummary()
+    {
+        return null;
+    }
+
+    /**
+     * Return historical information.
+     *
+     * @return array|null
+     */
+    public function getHistory()
     {
         return null;
     }

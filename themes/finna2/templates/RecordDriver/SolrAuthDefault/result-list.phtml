@@ -20,6 +20,7 @@
     <?php endif; ?>
     <div class="media-body">
       <div class="result-body">
+        <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
         <div class="title-container">
             <h2 class="search-title">
             <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
@@ -33,7 +34,6 @@
           </div>
         <?php endif; ?>
         <div class="dateyeartype">
-          <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
 
           <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
             <div class="resultOtherLinks">
@@ -55,6 +55,11 @@
                 <?php endif; ?>
               <?php endforeach; ?>
             </div>
+          <?php endif; ?>
+          <?php if ($occupations = $this->driver->getOccupations()): ?>
+            <div class="occupation iconlabel"><?=$this->escapeHtml(implode(', ', $occupations))?></div>
+          <?php elseif ($corporateType = $this->driver->getCorporateType()): ?>
+            <div class="corporate-type iconlabel"><?=$corporateType?></div>
           <?php endif; ?>
           <?= $this->record($this->driver)->getAuthorityBirthDeath()?>
           <div class="summary truncate-field">

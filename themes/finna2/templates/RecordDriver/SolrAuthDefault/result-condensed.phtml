@@ -28,6 +28,8 @@
       </div>
       <?php if ($occupations = $this->driver->getOccupations()): ?>
         <div class="occupation"><?=$this->escapeHtml(implode(', ', $occupations))?></div>
+      <?php elseif ($corporateType = $this->driver->getCorporateType()): ?>
+        <div class="corporate-type"><?=$corporateType?></div>
       <?php endif; ?>
       <div class="authority-record-info"></div>
     </div>
