@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
@@ -163,7 +164,7 @@ class Resource extends Gateway
                         new Expression(
                             'DISTINCT(?)', ['resource.id'],
                             [Expression::TYPE_IDENTIFIER]
-                        ), '*'
+                        ), Select::SQL_STAR
                     ]
                 );
                 $s->join(

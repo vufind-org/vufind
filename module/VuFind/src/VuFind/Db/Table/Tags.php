@@ -147,7 +147,7 @@ class Tags extends Gateway
             $select->join(
                 ['resource' => 'resource'],
                 'rt.resource_id = resource.id',
-                '*'
+                Select::SQL_STAR
             );
             if ($fuzzy) {
                 $select->where->literal('lower(tags.tag) like lower(?)', [$q]);
