@@ -1847,25 +1847,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $keys = array_keys($this->agency);
         $agency = $keys[0];
 
-        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-            '<ns1:LookupItem>';
-        $ret .= '<ns1:ItemId>' .
-                '<ns1:AgencyId>' . $agency . '</ns1:AgencyId>';
-        if ($idType !== null) {
-            $ret .=
-                '<ns1:ItemIdentifierType>' .
-                    $idType .
-                '</ns1:ItemIdentifierType>';
-        }
-        $ret .=
-                '<ns1:ItemIdentifierValue>' .
-                    $itemId .
-                '</ns1:ItemIdentifierValue>' .
-            '</ns1:ItemId>' .
-            '<ns1:ItemElementType>Bibliographic Description</ns1:ItemElementType>' .
+        $ret = $this->getNCIPMessageStart() .
+            '<ns1:LookupItem>' .
+            $this->getInitiationHeaderXml($agency) .
+            $this->getItemIdXml($agency, $itemId, $idType) .
+            '<ns1:ItemElementType ' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'itemelementtype/itemelementtype.scm">' .
+                'Bibliographic Description</ns1:ItemElementType>' .
         '</ns1:LookupItem></ns1:NCIPMessage>';
         return $ret;
     }
