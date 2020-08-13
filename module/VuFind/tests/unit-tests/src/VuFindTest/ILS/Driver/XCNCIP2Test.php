@@ -959,6 +959,16 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'params' => [['1'], null, 'Test agency'],
             'result' => 'LookupItemSetRequestWithoutHeader.xml',
         ],
+        '3' => [
+            'method' => 'getCancelRequest',
+            'params' => ['', '', 'patron agency', 'item agency', 'rq1', 'Hold', 'item1', '12345'],
+            'result' => 'CancelRequestItemRequest.xml'
+        ],
+        '4' => [
+            'method' => 'getCancelRequest',
+            'params' => ['username', 'password', 'patron agency', 'item agency', 'rq1', 'Hold', 'item1', '12345'],
+            'result' => 'CancelRequestItemRequestAuthInput.xml'
+        ],
     ];
 
     /**
@@ -966,7 +976,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function testGetStatusRequest()
+    public function testGetRequestMethods()
     {
         foreach ($this->requestTests as $id => $test) {
             $this->configureDriver($test['config'] ?? null);
