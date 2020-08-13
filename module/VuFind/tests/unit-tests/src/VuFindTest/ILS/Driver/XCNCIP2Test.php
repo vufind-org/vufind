@@ -969,6 +969,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'params' => ['username', 'password', 'patron agency', 'item agency', 'rq1', 'Hold', 'item1', '12345'],
             'result' => 'CancelRequestItemRequestAuthInput.xml'
         ],
+        '5' => [
+            'method' => 'getRenewRequest',
+            'params' => ['username', 'password', 'item1', 'item agency', 'patron agency'],
+            'result' => 'RenewItemRequest.xml'
+        ],
+
     ];
 
     /**
