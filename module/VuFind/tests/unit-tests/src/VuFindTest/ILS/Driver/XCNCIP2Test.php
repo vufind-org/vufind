@@ -994,6 +994,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'params' => [null, 'password', 'patron agency', ['<ns1:LoanedItemsDesired />'], 'patron1'],
             'result' => 'LookupUserRequest.xml'
         ],
+        '8' => [
+            'method' => 'getLookupAgencyRequest',
+            'params' => [null],
+            'result' => 'LookupAgencyRequest.xml'
+        ],
     ];
 
     /**
