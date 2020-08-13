@@ -1671,6 +1671,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $requestId    Id of the request to cancel
      * @param string $type         The type of request to cancel (Hold, etc)
      * @param string $itemId       Item identifier
+     * @param string $patronId     Patron identifier
      *
      * @return string           NCIP request XML
      */
@@ -1680,45 +1681,34 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemAgencyId,
         $requestId,
         $type,
-        $itemId
+        $itemId,
+        $patronId = null
     ) {
         if ($requestId === null && $itemId === null) {
             throw new ILSException('No identifiers for CancelRequest');
         }
-        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-                '<ns1:CancelRequestItem>' .
-                   '<ns1:InitiationHeader>' .
-                        '<ns1:ToAgencyId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($patronAgency) .
-                            '</ns1:AgencyId>' .
-                        '</ns1:ToAgencyId>' .
-                    '</ns1:InitiationHeader>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($username) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Username' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($password) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Password' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>';
+
+        $ret = $this->getNCIPMessageStart() .
+            '<ns1:CancelRequestItem>' .
+            $this->getInitiationHeaderXml($patronAgency);
+
+        if (!empty($username) && !empty($password)) {
+            $ret .= $this->getAuthenticationInputXml($username, $password);
+        }
+
+        if ($patronId !== null) {
+            $ret .= '<ns1:UserId>' .
+                '<ns1:AgencyId>' .
+                    htmlspecialchars($patronAgency) .
+                '</ns1:AgencyId>' .
+                '<ns1:UserIdentifierType>Institution Id Number' .
+                '</ns1:UserIdentifierType>' .
+                '<ns1:UserIdentifierValue>' .
+                    htmlspecialchars($patronId) .
+                '</ns1:UserIdentifierValue>' .
+             '</ns1:UserId>';
+        }
+
         if ($requestId !== null) {
             $ret .=
                     '<ns1:RequestId>' .
@@ -1741,12 +1731,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     '</ns1:ItemIdentifierValue>' .
                 '</ns1:ItemId>';
         }
-        $ret .=
-                    '<ns1:RequestType>' .
-                        htmlspecialchars($type) .
-                    '</ns1:RequestType>' .
-                '</ns1:CancelRequestItem>' .
-            '</ns1:NCIPMessage>';
+        $ret .= '<ns1:RequestType ' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'requesttype/requesttype.scm">' .
+                htmlspecialchars($type) .
+            '</ns1:RequestType>' .
+            '<ns1:RequestScopeType ' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'requestscopetype/requestscopetype.scm">' .
+                'Bibliographic Item' .
+            '</ns1:RequestScopeType></ns1:CancelRequestItem></ns1:NCIPMessage>';
         return $ret;
     }
 
@@ -2097,6 +2091,41 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_02/ncip_v2_02.xsd">';
+    }
+
+    /**
+     * Get XML string for AuthenticationInput element
+     *
+     * @param string $username User login
+     * @param string $password User password
+     *
+     * @return string XML string for AuthenticationInput element
+     */
+    protected function getAuthenticationInputXml($username, $password)
+    {
+        return
+            '<ns1:AuthenticationInput>' .
+                '<ns1:AuthenticationInputData>' .
+                    htmlspecialchars($username) .
+                '</ns1:AuthenticationInputData>' .
+                '<ns1:AuthenticationDataFormatType>' .
+                    'text' .
+                '</ns1:AuthenticationDataFormatType>' .
+                '<ns1:AuthenticationInputType>' .
+                    'Username' .
+                '</ns1:AuthenticationInputType>' .
+            '</ns1:AuthenticationInput>' .
+            '<ns1:AuthenticationInput>' .
+                '<ns1:AuthenticationInputData>' .
+                    htmlspecialchars($password) .
+                '</ns1:AuthenticationInputData>' .
+                '<ns1:AuthenticationDataFormatType>' .
+                    'text' .
+                '</ns1:AuthenticationDataFormatType>' .
+                '<ns1:AuthenticationInputType>' .
+                    'Password' .
+                '</ns1:AuthenticationInputType>' .
+            '</ns1:AuthenticationInput>';
     }
 
     /**
