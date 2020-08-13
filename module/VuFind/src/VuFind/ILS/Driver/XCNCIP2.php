@@ -1813,35 +1813,20 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $agency = $keys[0];
         }
 
-        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-            '<ns1:LookupAgency>';
+        $ret = $this->getNCIPMessageStart() .
+            '<ns1:LookupAgency>' .
+             $this->getInitiationHeaderXml($agency) .
+            '<ns1:AgencyId>' . htmlspecialchars($agency) . '</ns1:AgencyId>';
 
-        if (null !== $agency) {
-            $ret .=
-                '<ns1:InitiationHeader>' .
-                    '<ns1:FromAgencyId>' .
-                        '<ns1:AgencyId>' .
-                            htmlspecialchars($agency) .
-                        '</ns1:AgencyId>' .
-                    '</ns1:FromAgencyId>' .
-                    '<ns1:ToAgencyId>' .
-                        '<ns1:AgencyId>' .
-                            htmlspecialchars($agency) .
-                        '</ns1:AgencyId>' .
-                    '</ns1:ToAgencyId>' .
-                '</ns1:InitiationHeader>';
-        }
-        $ret .= '<ns1:AgencyId>My University 1</ns1:AgencyId>';
         $desiredElementTypes = [
             'Agency Address Information', 'Agency User Privilege Type',
             'Application Profile Supported Type', 'Authentication Prompt',
             'Consortium Agreement', 'Organization Name Information'
         ];
         foreach ($desiredElementTypes as $elementType) {
-            $ret .= '<ns1:AgencyElementType>' .
+            $ret .= '<ns1:AgencyElementType ' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'agencyelementtype/agencyelementtype.scm">' .
                     $elementType .
                 '</ns1:AgencyElementType>';
         }
