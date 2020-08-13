@@ -1696,18 +1696,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $ret .= $this->getAuthenticationInputXml($username, $password);
         }
 
-        if ($patronId !== null) {
-            $ret .= '<ns1:UserId>' .
-                '<ns1:AgencyId>' .
-                    htmlspecialchars($patronAgency) .
-                '</ns1:AgencyId>' .
-                '<ns1:UserIdentifierType>Institution Id Number' .
-                '</ns1:UserIdentifierType>' .
-                '<ns1:UserIdentifierValue>' .
-                    htmlspecialchars($patronId) .
-                '</ns1:UserIdentifierValue>' .
-             '</ns1:UserId>';
-        }
+        $ret .= $this->getUserIdXml($patronAgency, $patronId);
 
         if ($requestId !== null) {
             $ret .=
@@ -1721,15 +1710,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     '</ns1:RequestId>';
         }
         if ($itemId !== null) {
-            $ret .=
-                '<ns1:ItemId>' .
-                    '<ns1:AgencyId>' .
-                        htmlspecialchars($itemAgencyId) .
-                    '</ns1:AgencyId>' .
-                    '<ns1:ItemIdentifierValue>' .
-                        htmlspecialchars($itemId) .
-                    '</ns1:ItemIdentifierValue>' .
-                '</ns1:ItemId>';
+            $ret .= $this->getItemIdXml($itemAgencyId, $itemId);
         }
         $ret .= '<ns1:RequestType ' .
                 'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
@@ -1846,6 +1827,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $itemId         Id of item to renew
      * @param string $itemAgencyId   Agency of Item Id to renew
      * @param string $patronAgencyId Agency of patron
+     * @param string $patronId       Internal patron id
      *
      * @return string          NCIP request XML
      */
@@ -1853,52 +1835,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $password,
         $itemId,
         $itemAgencyId,
-        $patronAgencyId
+        $patronAgencyId,
+        $patronId = null
     ) {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-                '<ns1:RenewItem>' .
-                   '<ns1:InitiationHeader>' .
-                        '<ns1:ToAgencyId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($patronAgencyId) .
-                            '</ns1:AgencyId>' .
-                        '</ns1:ToAgencyId>' .
-                    '</ns1:InitiationHeader>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($username) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Username' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($password) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Password' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:ItemId>' .
-                        '<ns1:AgencyId>' .
-                            htmlspecialchars($itemAgencyId) .
-                        '</ns1:AgencyId>' .
-                        '<ns1:ItemIdentifierValue>' .
-                            htmlspecialchars($itemId) .
-                        '</ns1:ItemIdentifierValue>' .
-                    '</ns1:ItemId>' .
-                '</ns1:RenewItem>' .
-            '</ns1:NCIPMessage>';
+        return $this->getNCIPMessageStart() .
+            '<ns1:RenewItem>' .
+            $this->getInitiationHeaderXml($patronAgencyId) .
+            $this->getAuthenticationInputXml($username, $password) .
+            $this->getUserIdXml($patronAgencyId, $patronId) .
+            $this->getItemIdXml($itemAgencyId, $itemId) .
+            '</ns1:RenewItem></ns1:NCIPMessage>';
     }
 
     /**
@@ -2126,6 +2072,54 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'Password' .
                 '</ns1:AuthenticationInputType>' .
             '</ns1:AuthenticationInput>';
+    }
+
+    /**
+     * Get ItemId element XML
+     *
+     * @param string      $agency Agency id
+     * @param string      $itemId Item id
+     * @param null|string $idType Item id type
+     *
+     * @return string ItemId element XML string
+     */
+    protected function getItemIdXml($agency, $itemId, $idType = null)
+    {
+        $ret = '<ns1:ItemId><ns1:AgencyId>' .
+            htmlspecialchars($agency) . '</ns1:AgencyId>';
+        if ($idType !== null) {
+            $ret .= '<ns1:ItemIdentifierType>' .
+                htmlspecialchars($idType) . '</ns1:ItemIdentifierType>';
+        }
+        $ret .= '<ns1:ItemIdentifierValue>' .
+            htmlspecialchars($itemId) . '</ns1:ItemIdentifierValue>' .
+            '</ns1:ItemId>';
+        return $ret;
+    }
+
+    /**
+     * Get UserId element XML
+     *
+     * @param string $patronAgency Patron agency id
+     * @param string $patronId     Internal patron identifier
+     *
+     * @return string Get UserId element XML string
+     */
+    protected function getUserIdXml($patronAgency, $patronId = null)
+    {
+        if ($patronId !== null) {
+            return '<ns1:UserId>' .
+                '<ns1:AgencyId>' .
+                    htmlspecialchars($patronAgency) .
+                '</ns1:AgencyId>' .
+                '<ns1:UserIdentifierType>Institution Id Number' .
+                '</ns1:UserIdentifierType>' .
+                '<ns1:UserIdentifierValue>' .
+                    htmlspecialchars($patronId) .
+                '</ns1:UserIdentifierValue>' .
+            '</ns1:UserId>';
+        }
+        return '';
     }
 
     /**
