@@ -1781,62 +1781,20 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $password         Password for login
      * @param string $patron_agency_id Patron agency ID (optional)
      * @param string $extras           Extra elements to include in the request
+     * @param string $patronId         Patron internal identifier
      *
      * @return string          NCIP request XML
      */
     protected function getLookupUserRequest($username, $password,
-        $patron_agency_id = null, $extras = []
+        $patron_agency_id = null, $extras = [], $patronId = null
     ) {
-        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-                '<ns1:LookupUser>';
-
-        if (null !== $patron_agency_id) {
-            $ret .=
-                   '<ns1:InitiationHeader>' .
-                        '<ns1:FromAgencyId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($patron_agency_id) .
-                            '</ns1:AgencyId>' .
-                        '</ns1:FromAgencyId>' .
-                        '<ns1:ToAgencyId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($patron_agency_id) .
-                            '</ns1:AgencyId>' .
-                        '</ns1:ToAgencyId>' .
-                    '</ns1:InitiationHeader>';
-        }
-
-        $ret .=
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($username) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Username' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($password) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Password' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    implode('', $extras) .
-                '</ns1:LookupUser>' .
-            '</ns1:NCIPMessage>';
-
-        return $ret;
+        return $this->getNCIPMessageStart() .
+            '<ns1:LookupUser>' .
+            $this->getInitiationHeaderXml($patron_agency_id) .
+            $this->getAuthenticationInputXml($username, $password) .
+            $this->getUserIdXml($patron_agency_id, $patronId) .
+            implode('', $extras) .
+            '</ns1:LookupUser></ns1:NCIPMessage>';
     }
 
     /**
