@@ -999,6 +999,21 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'params' => [null],
             'result' => 'LookupAgencyRequest.xml'
         ],
+        '9' => [
+            'method' => 'getLookupItemRequest',
+            'config' => [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => ['Test agency'],
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'fromAgency' => 'My portal',
+                ],
+                'NCIP' => [],
+            ],
+            'params' => ['item1', 'Accession Number'],
+            'result' => 'LookupItemRequest.xml'
+        ],
     ];
 
     /**
