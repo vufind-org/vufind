@@ -452,19 +452,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $xml .= $this->getInitiationHeaderXml($agency);
 
         foreach ($idList as $id) {
-            $xml .= '<ns1:BibliographicId>' .
-                    '<ns1:BibliographicItemId>' .
-                        '<ns1:BibliographicItemIdentifier>' .
-                            htmlspecialchars($id) .
-                        '</ns1:BibliographicItemIdentifier>' .
-                        '<ns1:BibliographicItemIdentifierCode ' .
-                            'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/' .
-                            'schemes/bibliographicitemidentifiercode/' .
-                            'bibliographicitemidentifiercode.scm">' .
-                                'Legal Deposit Number' .
-                        '</ns1:BibliographicItemIdentifierCode>' .
-                    '</ns1:BibliographicItemId>' .
-                '</ns1:BibliographicId>';
+            $xml .= $this->getBibliographicId($id);
         }
 
         // Add the desired data list:
@@ -1442,9 +1430,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $request = $this->getRequest(
             $username, $password, $bibId, $itemId,
-            $details['patron']['patron_agency_id'],
-            $pickUpAgency,
-            $details['item_agency_id'],
+            $details['patron']['patron_agency_id'], $details['item_agency_id'],
             $type, "Item", $lastInterestDate, $pickUpLocation
         );
         $response = $this->sendRequest($request);
@@ -1690,11 +1676,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $ret = $this->getNCIPMessageStart() .
             '<ns1:CancelRequestItem>' .
-            $this->getInitiationHeaderXml($patronAgency);
-
-        if (!empty($username) && !empty($password)) {
-            $ret .= $this->getAuthenticationInputXml($username, $password);
-        }
+            $this->getInitiationHeaderXml($patronAgency) .
+            $this->getAuthenticationInputXml($username, $password);
 
         $ret .= $this->getUserIdXml($patronAgency, $patronId);
 
@@ -1712,16 +1695,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if ($itemId !== null) {
             $ret .= $this->getItemIdXml($itemAgencyId, $itemId);
         }
-        $ret .= '<ns1:RequestType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
-                'requesttype/requesttype.scm">' .
-                htmlspecialchars($type) .
-            '</ns1:RequestType>' .
-            '<ns1:RequestScopeType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
-                'requestscopetype/requestscopetype.scm">' .
-                'Bibliographic Item' .
-            '</ns1:RequestScopeType></ns1:CancelRequestItem></ns1:NCIPMessage>';
+        $ret .= $this->getRequestTypeXml($type) .
+            '</ns1:CancelRequestItem></ns1:NCIPMessage>';
         return $ret;
     }
 
@@ -1734,89 +1709,40 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $bibId            Bib Id of item to request
      * @param string $itemId           Id of item to request
      * @param string $patron_agency_id Patron agency ID
-     * @param string $pickup_agency_id Pickup agency ID
      * @param string $item_agency_id   Item agency ID
      * @param string $requestType      Type of the request (Hold, Callslip, etc)
      * @param string $requestScope     Level of request (title, item, etc)
      * @param string $lastInterestDate Last date interested in item
      * @param string $pickupLocation   Code of location to pickup request
+     * @param string $patronId         Patron internal identifier
      *
      * @return string          NCIP request XML
      */
     protected function getRequest($username, $password, $bibId, $itemId,
-        $patron_agency_id, $pickup_agency_id, $item_agency_id,
-        $requestType, $requestScope, $lastInterestDate, $pickupLocation = null
+        $patron_agency_id, $item_agency_id, $requestType, $requestScope,
+        $lastInterestDate, $pickupLocation = null, $patronId = null
     ) {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-                '<ns1:RequestItem>' .
-                   '<ns1:InitiationHeader>' .
-                        '<ns1:FromAgencyId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($pickup_agency_id) .
-                            '</ns1:AgencyId>' .
-                        '</ns1:FromAgencyId>' .
-                        '<ns1:ToAgencyId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($patron_agency_id) .
-                            '</ns1:AgencyId>' .
-                        '</ns1:ToAgencyId>' .
-                    '</ns1:InitiationHeader>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($username) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Username' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($password) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Password' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:BibliographicId>' .
-                        '<ns1:BibliographicRecordId>' .
-                            '<ns1:AgencyId>' .
-                                htmlspecialchars($item_agency_id) .
-                            '</ns1:AgencyId>' .
-                            '<ns1:BibliographicRecordIdentifier>' .
-                                htmlspecialchars($bibId) .
-                            '</ns1:BibliographicRecordIdentifier>' .
-                        '</ns1:BibliographicRecordId>' .
-                    '</ns1:BibliographicId>' .
-                    '<ns1:ItemId>' .
-                        '<ns1:ItemIdentifierValue>' .
-                            htmlspecialchars($itemId) .
-                        '</ns1:ItemIdentifierValue>' .
-                    '</ns1:ItemId>' .
-                    '<ns1:RequestType>' .
-                            htmlspecialchars($requestType) .
-                    '</ns1:RequestType>' .
-                    '<ns1:RequestScopeType ' .
-                        'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes' .
-                        '/requestscopetype/requestscopetype.scm">' .
-                            htmlspecialchars($requestScope) .
-                    '</ns1:RequestScopeType>' .
-                    '<ns1:PickupLocation>' .
-                        htmlspecialchars($pickupLocation) .
-                    '</ns1:PickupLocation>' .
-                    '<ns1:PickupExpiryDate>' .
-                        htmlspecialchars($lastInterestDate) .
-                    '</ns1:PickupExpiryDate>' .
-                '</ns1:RequestItem>' .
-            '</ns1:NCIPMessage>';
+        $ret = $this->getNCIPMessageStart() .
+            '<ns1:RequestItem>' .
+            $this->getInitiationHeaderXml($patron_agency_id) .
+            $this->getAuthenticationInputXml($username, $password) .
+            $this->getUserIdXml($patron_agency_id, $patronId) .
+            $this->getBibliographicId($bibId) .
+            $this->getItemIdXml($item_agency_id, $itemId) .
+            $this->getRequestTypeXml($requestType, $requestScope);
+
+        if (!empty($pickupLocation)) {
+            $ret .= '<ns1:PickupLocation>' .
+                htmlspecialchars($pickupLocation) .
+            '</ns1:PickupLocation>';
+        }
+        if (!empty($lastInterestDate)) {
+            $ret .= '<ns1:NeedBeforeDate>' .
+                htmlspecialchars($lastInterestDate) .
+            '</ns1:NeedBeforeDate>';
+        }
+        $ret .= '</ns1:RequestItem></ns1:NCIPMessage>';
+        return $ret;
     }
 
     /**
@@ -2049,8 +1975,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getAuthenticationInputXml($username, $password)
     {
-        return
-            '<ns1:AuthenticationInput>' .
+        return (!empty($username) && !empty($password))
+            ? '<ns1:AuthenticationInput>' .
                 '<ns1:AuthenticationInputData>' .
                     htmlspecialchars($username) .
                 '</ns1:AuthenticationInputData>' .
@@ -2071,7 +1997,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '<ns1:AuthenticationInputType>' .
                     'Password' .
                 '</ns1:AuthenticationInputType>' .
-            '</ns1:AuthenticationInput>';
+            '</ns1:AuthenticationInput>'
+            : '';
     }
 
     /**
@@ -2120,6 +2047,52 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '</ns1:UserId>';
         }
         return '';
+    }
+
+    /**
+     * Get request type elements XML
+     *
+     * @param string $type  Request type
+     * @param string $scope Request type scope (defaults to 'Bibliographic Item')
+     *
+     * @return string RequestType and RequestScopeType element XML string
+     */
+    protected function getRequestTypeXml($type, $scope = 'Bibliographic Item')
+    {
+        return '<ns1:RequestType ' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'requesttype/requesttype.scm">' .
+                htmlspecialchars($type) .
+            '</ns1:RequestType>' .
+            '<ns1:RequestScopeType ' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'requestscopetype/requestscopetype.scm">' .
+                htmlspecialchars($scope) .
+            '</ns1:RequestScopeType>';
+    }
+
+    /**
+     * Get BibliographicId element
+     *
+     * @param string $id Bibliographic item id
+     *
+     * @return string Get BibiographicId XML element string
+     */
+    protected function getBibliographicId($id)
+    {
+        return '<ns1:BibliographicId>' .
+            '<ns1:BibliographicItemId>' .
+                '<ns1:BibliographicItemIdentifier>' .
+                    htmlspecialchars($id) .
+                '</ns1:BibliographicItemIdentifier>' .
+                '<ns1:BibliographicItemIdentifierCode ' .
+                    'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/' .
+                    'schemes/bibliographicitemidentifiercode/' .
+                    'bibliographicitemidentifiercode.scm">' .
+                    'Legal Deposit Number' .
+                '</ns1:BibliographicItemIdentifierCode>' .
+            '</ns1:BibliographicItemId>' .
+        '</ns1:BibliographicId>';
     }
 
     /**
