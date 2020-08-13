@@ -974,7 +974,21 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'params' => ['username', 'password', 'item1', 'item agency', 'patron agency'],
             'result' => 'RenewItemRequest.xml'
         ],
-
+        '6' => [
+            'method' => 'getRequest',
+            'config' => [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example',
+                    'consortium' => false,
+                    'agency' => ['Test agency'],
+                    'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                    'fromAgency' => 'My portal',
+                ],
+                'NCIP' => [],
+            ],
+            'params' => ['username', '', 'bib1', 'item1', 'patron agency', 'item agency', 'Hold', 'Item', '2020-12-20T00:00:00.000Z', null, 'patron1'],
+            'result' => 'RequestItemRequest.xml'
+        ],
     ];
 
     /**
