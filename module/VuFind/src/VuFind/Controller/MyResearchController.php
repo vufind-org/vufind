@@ -909,8 +909,20 @@ class MyResearchController extends AbstractBase
             };
 
             $results = $runner->run($request, 'Favorites', $setupCallback);
+            $listTags = [];
+
+            if ($this->listTagsEnabled()) {
+                if ($list = $results->getListObject()) {
+                    foreach ($list->getListTags() as $tag) {
+                        $listTags[$tag->id] = $tag->tag;
+                    }
+                }
+            }
             return $this->createViewModel(
-                ['params' => $results->getParams(), 'results' => $results]
+                [
+                    'params' => $results->getParams(), 'results' => $results,
+                    'listTags' => $listTags
+                ]
             );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
@@ -1019,8 +1031,18 @@ class MyResearchController extends AbstractBase
             }
         }
 
+        $listTags = null;
+        if ($this->listTagsEnabled() && !$newList) {
+            $listTags = $user->formatTagString($list->getListTags());
+        }
         // Send the list to the view:
-        return $this->createViewModel(['list' => $list, 'newList' => $newList]);
+        return $this->createViewModel(
+            [
+                'list' => $list,
+                'newList' => $newList,
+                'listTags' => $listTags
+            ]
+        );
     }
 
     /**
@@ -2128,5 +2150,17 @@ class MyResearchController extends AbstractBase
             $this->paginationHelper = new PaginationHelper();
         }
         return $this->paginationHelper;
+    }
+
+    /**
+     * Are list tags enabled?
+     *
+     * @return bool
+     */
+    protected function listTagsEnabled()
+    {
+        $check = $this->serviceLocator
+            ->get(\VuFind\Config\AccountCapabilities::class);
+        return $check->getListTagSetting() === 'enabled';
     }
 }
