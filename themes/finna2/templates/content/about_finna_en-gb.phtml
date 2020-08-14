@@ -1,9 +1,7 @@
 <!-- START of: finna - content/about_finna_en-gb.phtml -->
 <?php $this->headTitle($this->translate('What is Finna?')); $this->content()->setHeading($this->translate('What is Finna?'));  ?>
-<div>
-  <h2>Finna.fi</h2>
-</div>
-<div>
+<h2>Finna.fi</h2>
+<div class="container-fluid">
   <div class="finna-info-left">
     <a href="https://www.finna.fi?lng=en-gb"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'finna.fi'])); ?>" /></a>
     <p>&nbsp;</p>
@@ -30,8 +28,6 @@
       <h2>Other Finna search services</h2>
       <p>Finna is a collection of search services that include several sites in addition to the nationwide finna.fi site. The content included in any organisation-specific site is usually limited to the material of the organisation in question.
       </p>
-      <p>Finna is continuously evolving, and it is gradually replacing the user interfaces of all Finnish libraries, archives and museums. At the moment, <a href="https://www.finna.fi/Content/organisations?lng=en-gb">more than 300 organisations</a> are involved in Finna, the following of which have opened their own Finna search functions:
-      </p>
       <ul class="list-bullets">
         <li><a href="#publiclib"><?=$this->translate('Public Libraries') ?></a></li>
         <li><a href="#archives"><?=$this->translate('Archives') ?></a></li>
@@ -44,62 +40,26 @@
       </ul>
     </div>
     <?=$this->render('content/about_finna_sites.phtml') ?>
-    <div class="page-content">
-      <p>At the moment, some Finnish libraries, archives and museums are yet to join Finna, but new ones keep enlisting. Our goal is that most national memory organisations, including all public libraries, will adopt Finna by 2020. If your library, archive or museum is not yet a Finna organisation, please contact their customer service.
-      </p>
-      <p>&nbsp;</p>
     </div>
-  </div> <!-- close container -->
-</div>  <!-- close container-fluid -->
-<div class="container-fluid">
-  <div class="container">
-    <div class="page-content">
-      <p>&nbsp;</p>
-      <a id="e-materials"></a>
-      <h2>Digital resources</h2>
-      <h4>International, scientific e-materials</h4>
-      <p>The university of applied sciences and university library Finna sites contain international, scientific and electronic library material compiled and provided by an outsourced party for a fee. Most of this material is limited to students and staff of the institutions of higher education in question. Access the digital resources by logging in to <a href="#organisation-views">your library's Finna website</a> using the username provided by your institution of higher education.
-      </p>
-      <p>&nbsp;</p>
-    </div>
-  </div>
-</div>
-<div class="container-fluid odd-fluid">
-  <div class="container">
-    <div class="page-content">
-      <p>&nbsp;</p>
-      <h2>Finna is much more than a search service</h2>
-      <p>Through Finna, you can not only search for material, but also gain access to it. Currently, the following <strong>libraries</strong> provide functions for reserving material, renewing loans and other activities in Finna:
-      </p>
-      <?=$this->partial('about_finna-login.phtml') ?>
-      <p>After <a href="https://www.finna.fi/MyResearch/Home?lng=en-gb">logging in to Finna</a> these functions are available to you with a library card for the library in question.
-      </p>
-      <p>An application for browsing <strong>archive</strong> material, that requires permission to use, can be made through links found in Finna content data.
-      </p>
-      <p>In the future, digital <strong>museum</strong> services will also be available in Finna.
-      </p>
-      <p>&nbsp;</p>
-    </div>
-  </div>
 </div>
 <div class="container-fluid">
   <div class="container">
     <div class="page-content">
       <p>&nbsp;</p>
       <h2>About Finna</h2>
-      <h4>User rights</h4>
+      <h3>User rights</h3>
       <p>Finna’s catalogue data are freely available, but statutory or contractual restrictions may apply to the digital images and back cover texts displayed in Finna, as well as to the digital content and metadata linked to in Finna. <a href="https://www.finna.fi/Content/terms?lng=en-gb#terms">Read more about user rights.</a>
       </p>
-      <h4>The Finna API</h4>
+      <h3>The Finna API</h3>
       <p>The open interface of the finna.fi service at <a href="https://api.finna.fi/">api.finna.fi</a> brings the metadata produced by participating libraries, archives and museums to the public. This interface also includes links to images and other material that is provided through the <a href="https://www.finna.fi/">finna.fi service</a>, but may be under use restrictions.
       </p>
-      <h4>Development of Finna</h4>
+      <h3>Development of Finna</h3>
       <p>Finna will be developed gradually as new organisations join the service. The beta version of the service was launched in December 2012 and the first official version in October 2013. If you cannot find the information that you are searching for in Finna, check back later to see if it has been added.
       </p>
-      <h4>Organisations responsible for Finna</h4>
+      <h3>Organisations responsible for Finna</h3>
       <p>The National Library of Finland bears the main responsibility for developing and maintaining Finna, but the actual development work is carried out together with Finna partners. The <a href="https://www.finna.fi/Content/organisations?lng=en-gb">archives, libraries and museums </a> involved in Finna are responsible for its content. Finna was created as a part of the National Digital Library project (2008-2017) of the Ministry of Education and Culture.
       </p>
-      <h4>Finna software</h4>
+      <h3>Finna software</h3>
       <p>Finna has been constructed using VuFind and other open-source software, and its source code is freely available to all.
       </p>
       <p>&nbsp;</p>

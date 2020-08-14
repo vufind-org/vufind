@@ -1,9 +1,7 @@
 <!-- START of: finna - content/about_finna_sv.phtml -->
 <?php $this->headTitle($this->translate('Vad är Finna?')); $this->content()->setHeading($this->translate('Vad är Finna?'));  ?>
-<div>
-    <h2>Finna.fi</h2>
-</div>
-<div>
+<h2>Finna.fi</h2>
+<div class="container-fluid">
   <div class="finna-info-left">
     <a href="https://www.finna.fi?lng=sv"><img src="<?=$this->imageLink('finnafi.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'finna.fi'])); ?>" /></a>
     <p>&nbsp;</p>
@@ -30,8 +28,6 @@
       <h2>Andra Finna-söktjänster</h2>
       <p>Finna är en helhet av söktjänster, med många organisationsspecifika webbsidor utöver den nationella webbplatsen finna.fi. Sökningen på de olika organisationernas vyer begränsar sig i regel till den aktuella organisationens material.
       </p>
-      <p>Finna utvecklas kontinuerligt och kommer stegvis att ersätta de finländska bibliotekens, arkivens och museernas kundgränssnitt. För närvarande är <a href="https://www.finna.fi/Content/organisations?lng=sv">mer än 300 organisationer</a> med i Finna. Följande av dem har en egen Finnavy:
-      </p>
       <ul class="list-bullets">
         <li><a href="#publiclib"><?=$this->translate('Public Libraries') ?></a></li>
         <li><a href="#archives"><?=$this->translate('Archives') ?></a></li>
@@ -44,43 +40,6 @@
       </ul>
     </div>
     <?=$this->render('content/about_finna_sites.phtml') ?>
-    <div class="page-content">
-      <p>Alla bibliotek, arkiv och museer är ännu inte med i Finna, men nya ansluter sig hela tiden. Vårt mål är att huvudparten av alla organisationer, inklusive alla allmänna bibliotek, ska vara med i Finna före 2020.  Om ditt bibliotek, arkiv eller museum inte ännu är med, kontakta deras kundtjänst.
-      </p>
-      <p>&nbsp;</p>
-    </div>
-  </div>
-</div> <!-- close container -->
-</div>  <!-- close container-fluid -->
-<div class="container-fluid">
-  <div class="container">
-    <div class="page-content">
-      <p>&nbsp;</p>
-      <a id="e-materials"></a>
-      <h2>Elektroniska resurser</h2>
-      <h4>Internationella, vetenskapliga e-resurser</h4>
-      <p>Yrkeshögskole- och universitetsbibliotekens Finnavyer innehåller internationella, vetenskapliga och elektroniska resurser som en utomstående aktör sammanställer och erbjuder biblioteken mot en avgift. Merparten av resurserna får endast användas av högskolans studenter och anställda. Man får tillgång till de elektroniska resurserna genom att logga in på <a href="#organisation-views">sitt biblioteks Finnavy</a> med sitt användarnamn.
-      </p>
-      <p>&nbsp;</p>
-    </div>
-  </div>
-</div>
-<div class="container-fluid odd-fluid">
-  <div class="container">
-    <div class="page-content">
-      <p>&nbsp;</p>
-      <h2>Finna är mer än en söktjänst</h2>
-      <p>Med Finna kan du inte bara hitta, utan också använda material. I Finna kan man bl.a. reservera material och förnya lån från följande <strong>bibliotek:</strong>
-      </p>
-      <?= $this->partial('about_finna-login.phtml') ?>
-      <p>Om du har det aktuella bibliotekets lånekort kan du använda tjänsterna genom att <a href="https://www.finna.fi/MyResearch/Home?lng=sv">logga in på Finna.</a>
-      </p>
-      <p>Man kan ansöka om behörighet till vissa <strong>arkivmaterial</strong> via länkarna i posten.
-      </p>
-      <p>I framtiden kommer man också att kunna använda <strong>museernas</strong> digitala tjänster i Finna.
-      </p>
-      <p>&nbsp;</p>
-    </div>
   </div>
 </div>
 <div class="container-fluid">
@@ -88,19 +47,19 @@
     <div class="page-content">
       <p>&nbsp;</p>
       <h2>Om Finna</h2>
-      <h4>Rätt att använda materialet</h4>
+      <h3>Rätt att använda materialet</h3>
       <p>Finnas katalogiseringsinformation är fritt tillgänglig för alla, men användningen av digitala bilder, baksidestexter, digitalt innehåll som Finna länkar till och beskrivningar kan vara begränsad genom lag eller avtal. <a href="https://www.finna.fi/Content/terms?lng=sv#terms">Läs mer om rätten att använda materialet.</a>
       </p>
-      <h4>Finnas API</h4>
+      <h3>Finnas API</h3>
       <p>I Finna.fi-tjänstens öppna gränssnitt <a href="https://api.finna.fi/">api.finna.fi</a> kan vem som helst använda metadata som har producerats av biblioteken, arkiven och museerna. Gränssnittet innehåller också länkar till bilder och annat material som erbjuds via <a href="https://www.finna.fi/">finna.fi</a>, men som kan omfattas av begränsad användningsrätt.
       </p>
-      <h4>Utvecklingen av Finna</h4>
+      <h3>Utvecklingen av Finna</h3>
       <p>Finna är en tjänst som utvecklas stegvis allt eftersom nya organisationer ansluter sig. Betaversionen lanserades i december 2012 och den första egentliga versionen i oktober 2013. Om du inte hittar den information du söker i Finna i dag, kommer den kanske att finnas där i framtiden.
       </p>
-      <h4>Finnas ansvariga parter</h4>
+      <h3>Finnas ansvariga parter</h3>
       <p>Nationalbiblioteket ansvarar för utvecklingen och administrationen av Finna, men tjänsten utvecklas tillsammans med Finnas samarbetspartner. De <a href="https://www.finna.fi/Content/organisations?lng=sv">arkiv, bibliotek och museer</a> som medverkar i Finna ansvarar för innehållet. Finna är född som en del av undervisnings- och kulturministeriets projekt Det nationella digitala biblioteket (2008–2017). 
       </p>
-      <h4>Finnas program</h4>
+      <h3>Finnas program</h3>
       <p>Finna har skapats med hjälp av VuFind och andra program med öppen källkod, och Finnas källkod får användas fritt.
       </p>
       <p>&nbsp;</p>
