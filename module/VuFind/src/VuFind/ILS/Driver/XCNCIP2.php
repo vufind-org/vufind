@@ -43,6 +43,7 @@ use VuFind\Exception\ILS as ILSException;
 class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -224,6 +225,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function sendRequest($xml)
     {
+        $this->debug('Sendig NCIP request: ' . $xml);
         // Make the NCIP request:
         try {
             $client = $this->httpService->createClient($this->url);
@@ -244,6 +246,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // Process the NCIP response:
         $response = $result->getBody();
+        $this->debug('Got NCIP response: ' . $response);
         $result = @simplexml_load_string($response);
         if (is_a($result, 'SimpleXMLElement')) {
             // If no namespaces are used, add default one and reload the document
