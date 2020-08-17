@@ -326,6 +326,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $status = empty($status) ? '' : (string)$status[0];
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
+        $itemType = $current->xpath('ns1:ItemId/ns1:ItemIdentifierType');
+        $itemType = !empty($itemType) ? (string)$itemType[0] : '';
 
         $itemAgencyId = $current->xpath('ns1:ItemId/ns1:AgencyId');
 
@@ -348,58 +350,58 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:ItemOptionalFields/ns1:Location/' .
             'ns1:LocationName/ns1:LocationNameInstance/ns1:LocationNameValue'
         );
-        $location = (string)$tmp[0];
+        $location = !empty($tmp) ? (string)$tmp[0] : null;
 
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
-        $itemCallNo = (string)$itemCallNo[0];
+        $itemCallNo = !empty($itemCallNo) ? (string)$itemCallNo[0] : '';
 
         $number = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/' .
             'ns1:CopyNumber'
         );
-        $number = (string)$number[0];
+        $number = !empty($number) ? (string)$number[0] : '';
 
         $volume = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/' .
             'ns1:HoldingsInformation/ns1:UnstructuredHoldingsData'
         );
-        $volume = (string)$volume[0];
+        $volume = !empty($volume) ? (string)$volume[0] : '';
 
-        if ($status === "Not Charged") {
-            $holdType = "Hold";
-        } else {
-            $holdType = "Recall";
-        }
+        $holdType = in_array(
+            strtolower($status), ["not charged", "available on shelf"]
+        ) ? 'Hold' : 'Recall';
 
         // Build return array:
-        return [
-            'id' => empty($aggregate_id) ?
-                (empty($bib_id) ? '' : $bib_id) : $aggregate_id,
-            'availability' => ($status == 'Not Charged'),
+        $return = [
+            'id' => $aggregate_id,
+            'availability' =>  in_array(
+                strtolower($status), ["not charged", "available on shelf"]
+            ),
             'status' => $status,
             'item_id' => (string)$itemId[0],
             'bib_id' => $bib_id,
-            'item_agency_id' => (string)$itemAgencyId[0],
-            'aggregate_id' => $aggregate_id,
+            'item_agency_id' => !empty($itemAgencyId)
+                ? (string)$itemAgencyId[0] : '',
             'location' => $location,
             'reserve' => 'N',       // not supported
             'callnumber' => $itemCallNo,
             'duedate' => '',        // not supported
             'volume' => $volume,
             'number' => $number,
-            // XC NCIP does not support barcode, but we need a placeholder here
-            // to display anything on the record screen:
-            // TODO: NCIP could return barcode as ItemIdentifierValue where
-            // ItemIdentifierType == Barcode
-            'barcode' => 'placeholder' . $number,
+            'barcode' => ($itemType === 'Barcode')
+                ? (string)$itemId[0] : 'Unknown barcode',
             'is_holdable'  => true,
             'addLink' => true,
             'holdtype' => $holdType,
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => 'true',
         ];
+        if (strtolower($status) === 'circulation status undefined') {
+            $return['use_unknown_message'] = true;
+        }
+        return $return;
     }
 
     /**
@@ -612,25 +614,34 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = $this->sendRequest($request);
 
         $bibs = $response->xpath(
-            'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
+            'ns1:LookupItemSetResponse/ns1:BibInformation'
         );
 
         foreach ($bibs as $bib) {
             $bib_ids = $bib->xpath(
                 'ns1:BibliographicId/ns1:BibliographicRecordId/' .
-                'ns1:BibliographicRecordIdentifier'
+                'ns1:BibliographicRecordIdentifier' .
+                ' | ' .
+                'ns1:BibliographicId/ns1:BibliographicItemId/' .
+                'ns1:BibliographicItemIdentifier'
             );
             $bib_id = (string)$bib_ids[0];
 
             $holdingSets = $bib->xpath('ns1:HoldingsSet');
             foreach ($holdingSets as $holding) {
                 $holdCallNo = $holding->xpath('ns1:CallNumber');
-                $holdCallNo = (string)$holdCallNo[0];
+                $holdCallNo = !empty($holdCallNo) ? (string)$holdCallNo[0] : '';
                 $avail = $holding->xpath('ns1:ItemInformation');
                 $eResource = $holding->xpath(
                     'ns1:ElectronicResource/ns1:ReferenceToResource'
                 );
-                $eResource = (string)$eResource[0];
+                $eResource = !empty($eResource) ? (string)$eResource[0] : '';
+                $holdingLocation = $holding->xpath(
+                    'ns1:Location/ns1:LocationName/ns1:LocationNameInstance/' .
+                    'ns1:LocationNameValue'
+                );
+                $holdingLocation = !empty($holdingLocation)
+                    ? (string)$holdingLocation[0] : null;
 
                 // Build the array of holdings:
                 foreach ($avail as $current) {
@@ -640,6 +651,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
                     $chunk['eresource'] = $eResource;
+                    $chunk['location'] = $chunk['location']
+                        ?? $holdingLocation ?? null;
                     $holdings[] = $chunk;
                 }
             }
@@ -1188,7 +1201,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if ($function == 'Holds') {
             return [
-                'HMACKeys' => 'item_id:holdtype:item_agency_id:aggregate_id:bib_id',
+                'HMACKeys' => 'item_id:holdtype:item_agency_id:id:bib_id',
                 'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => '0:2:0',
                 'consortium' => $this->consortium,
@@ -1196,7 +1209,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         if ($function == 'StorageRetrievalRequests') {
             return [
-                'HMACKeys' => 'id:item_id:item_agency_id:aggregate_id:bib_id',
+                'HMACKeys' => 'id:item_id:item_agency_id:id:bib_id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
                 'defaultRequiredDate' => '0:2:0',
             ];
