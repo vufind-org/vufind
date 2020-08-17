@@ -546,6 +546,24 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
+     * Check if title lists are enabled
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return mixed array|false
+     */
+    protected function checkMethodgetTitleList($functionConfig, $params)
+    {
+        if (!empty($functionConfig['enabled'])
+            && isset($params['id'])
+        ) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
      * Check if self-registration.
      *
      * @param array $functionConfig Function configuration values

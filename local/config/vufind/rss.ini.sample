@@ -1,12 +1,18 @@
 ;; Mandatory settings:
 
 ; active = [0|1]
+; type = "[list|carousel|carousel-vertical|grid]"
+
 ; url[language code|*] = "<url>" Feed URL, for example:
 ;    Absolute URL: http://blogs.helsinki.fi/scriptaselecta/feed/
 ;    Relative URL: Search/Results?lookfor=finna&type=AllFields&view=rss&lng=fi
 ;    Local file:   themes/custom/templates/rss/feed.xml
+;
+; ...OR when an ILS list is used:
+;
+; ilsList = "[new|mostrequested|mostborrowed|lastreturned]" -- ILS list type, overrides 'url'
+; ilsId = "<ILS driver>"
 
-; type = "[list|carousel|carousel-vertical|grid]"
 
 ;; Optional settings:
 

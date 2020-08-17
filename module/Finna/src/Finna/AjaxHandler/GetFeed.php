@@ -31,9 +31,13 @@ namespace Finna\AjaxHandler;
 
 use Finna\Feed\Feed as FeedService;
 use Laminas\Config\Config;
+use Laminas\Escaper\Escaper;
+use Laminas\Feed\Writer\Feed;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\View\Renderer\RendererInterface;
+use Vufind\ILS\Connection;
+use VuFind\Record\Loader;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -66,6 +70,20 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
     protected $feedService;
 
     /**
+     * ILS connection
+     *
+     * @var Connection
+     */
+    protected $ils;
+
+    /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
      * View renderer
      *
      * @var RendererInterface
@@ -82,18 +100,23 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Constructor
      *
-     * @param SessionSettings   $ss       Session settings
-     * @param Config            $config   RSS configuration
-     * @param FeedService       $fs       Feed service
-     * @param RendererInterface $renderer View renderer
-     * @param Url               $url      URL helper
+     * @param SessionSettings   $ss           Session settings
+     * @param Config            $config       RSS configuration
+     * @param FeedService       $fs           Feed service
+     * @param Loader            $recordLoader Record Loader
+     * @param Connection        $ils          ILS connection
+     * @param RendererInterface $renderer     View renderer
+     * @param Url               $url          URL helper
      */
     public function __construct(SessionSettings $ss, Config $config,
-        FeedService $fs, RendererInterface $renderer, Url $url
+        FeedService $fs, Loader $recordLoader, Connection $ils,
+        RendererInterface $renderer, Url $url
     ) {
         $this->sessionSettings = $ss;
         $this->config = $config;
         $this->feedService = $fs;
+        $this->recordLoader = $recordLoader;
+        $this->ils = $ils;
         $this->renderer = $renderer;
         $this->url = $url;
     }
@@ -120,7 +143,111 @@ class GetFeed extends \VuFind\AjaxHandler\AbstractBase
             $serverHelper = $this->renderer->plugin('serverurl');
             $homeUrl = $serverHelper($this->url->fromRoute('home'));
 
-            $feed = $this->feedService->readFeed($id, $homeUrl);
+            if ($config = $this->feedService->getFeedConfig($id)) {
+                $config = $config['result'];
+            }
+
+            if (!isset($config['ilsList'])) {
+                // Normal feed
+                $feed = $this->feedService->readFeed($id, $homeUrl);
+            } else {
+                // ILS list to be converted to a feed
+                $query = $config['ilsList'];
+                $amount = $config['amount'] ?? 20;
+                $type = $config['type'] ?? 'carousel';
+                $source = $config['source'] ?? 'Solr';
+                $ilsId = $config['ilsId'];
+
+                $patronId = !empty($ilsId) ? $ilsId . '.123' : '';
+                $amount = $amount > 20 ? 20 : $amount;
+
+                $result = $this->ils->checkFunction(
+                    'getTitleList', ['id' => $patronId]
+                );
+                if (!$result) {
+                    return $this->formatResponse('Missing configurations', 501);
+                }
+
+                $records = [];
+                $data = $this->ils->getTitleList(
+                    ['query' => $query, 'pageSize' => $amount, 'id' => $ilsId]
+                );
+
+                foreach ($data['records'] ?? [] as $key => $obj) {
+                    $loadedRecord = $this->recordLoader->load(
+                        $ilsId . '.' . $obj['id'], $source, true
+                    );
+                    $loadedRecord->setExtraDetail('ils_details', $obj);
+                    $records[] = $loadedRecord;
+                }
+
+                $serverUrl = $this->renderer->plugin('serverUrl');
+                $recordHelper = $this->renderer->plugin('record');
+                $recordImage = $this->renderer->plugin('recordImage');
+                $recordUrl = $this->renderer->plugin('recordLink');
+                $escaper = new Escaper('utf-8');
+
+                $feed = new Feed();
+                $feed->setTitle($query);
+                $feed->setLink($serverUrl());
+                $feed->setDateModified(time());
+                $feed->setId(' ');
+                $feed->setDescription(' ');
+                foreach ($records as $rec) {
+                    $isRecord = !$rec instanceof \VuFind\RecordDriver\Missing;
+                    $entry = $feed->createEntry();
+                    $entry->setTitle($rec->getTitle());
+                    $entry->setDateModified(time());
+                    $entry->setDateCreated(time());
+                    $entry->setId($rec->getUniqueID());
+                    if ($isRecord) {
+                        $entry->setLink($recordUrl->getUrl($rec));
+                    }
+                    $ilsDetails = $rec->getExtraDetail('ils_details');
+                    $author = $isRecord
+                        ? $rec->getPrimaryAuthorForSearch()
+                        : $ilsDetails['author'];
+                    $year = $isRecord ?
+                        ($rec->getPublicationDates()[0] ?? '')
+                        : $ilsDetails['year'];
+
+                    $content = [];
+                    if ($isRecord) {
+                        $content[] = trim(
+                            $recordHelper($rec)->getFormatList() . ' ' .
+                            $recordHelper($rec)->getSourceIdElement()
+                        );
+                    }
+                    if (!empty($author)) {
+                        $content[] = trim($escaper->escapeHtml($author));
+                    }
+                    if (!empty($year)) {
+                        $content[] = trim($escaper->escapeHtml($year));
+                    }
+
+                    if (!empty($content)) {
+                        $contentString = implode('; ', $content);
+                        $entry->setContent($contentString);
+                    }
+
+                    $imageUrl = $recordImage($recordHelper($rec))->getLargeImage()
+                        . '&w=1024&h=1024&imgext=.jpeg';
+                    $entry->setEnclosure(
+                        [
+                            'uri' => $serverUrl($imageUrl),
+                            'type' => 'image/jpeg',
+                            'length' => 0
+                        ]
+                    );
+
+                    $feed->addEntry($entry);
+                }
+
+                $feed = $feed->export('rss', false);
+                $feed = \Laminas\Feed\Reader\Reader::importString($feed);
+
+                $feed = $this->feedService->parseFeed($feed, $config);
+            }
         } catch (\Exception $e) {
             return $this->formatResponse($e->getMessage(), self::STATUS_HTTP_ERROR);
         }

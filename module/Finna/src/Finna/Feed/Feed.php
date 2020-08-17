@@ -118,7 +118,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
      *
      * @return boolean|array
      */
-    protected function getFeedConfig($id)
+    public function getFeedConfig($id)
     {
         if (!isset($this->feedConfig[$id])) {
             $this->logError("Missing configuration (id $id)");
@@ -131,7 +131,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
             return false;
         }
 
-        if (empty($result->url)) {
+        if (empty($result->url) && !isset($result->ilsList)) {
             $this->logError("Missing feed URL (id $id)");
             return false;
         }
@@ -143,7 +143,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
             $url = trim($url[$language]);
         } elseif (isset($url['*'])) {
             $url = trim($url['*']);
-        } else {
+        } elseif (!isset($result->ilsList)) {
             $this->logError("Missing feed URL (id $id)");
             return false;
         }
@@ -259,23 +259,6 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
         $cacheKey = (array)$feedConfig;
         $cacheKey['language'] = $this->translator->getLocale();
 
-        $modal = false;
-        $showFullContentOnSite = isset($config->linkTo)
-            && in_array($config->linkTo, ['modal', 'content-page']);
-
-        $modal = $config->linkTo == 'modal';
-        $contentPage = $config->linkTo == 'content-page';
-        $dateFormat = isset($config->dateFormat) ? $config->dateFormat : 'j.n.';
-        $contentDateFormat = isset($config->contentDateFormat)
-            ? $config->contentDateFormat : 'j.n.Y';
-        $fullDateFormat = isset($config->fullDateFormat)
-            ? $config->fullDateFormat : 'j.n.Y';
-
-        $itemsCnt = isset($config->items) ? $config->items : null;
-        $elements = isset($config->content) ? $config->content : [];
-        $allowXcal = $elements['xcal'] ?? true;
-        $timeRegex = '/^(.*?)([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/';
-
         $channel = null;
 
         // Check for cached version
@@ -370,6 +353,36 @@ EOT;
         if (!$channel) {
             return false;
         }
+
+        return $this->parseFeed($channel, $config);
+    }
+
+    /**
+     * Function to parse feed with config
+     *
+     * @param string $channel feed
+     * @param array  $config  of feed
+     *
+     * @return array
+     */
+    public function parseFeed($channel, $config)
+    {
+        $modal = false;
+        $showFullContentOnSite = isset($config->linkTo)
+            && in_array($config->linkTo, ['modal', 'content-page']);
+
+        $modal = $config->linkTo == 'modal';
+        $contentPage = $config->linkTo == 'content-page';
+        $dateFormat = isset($config->dateFormat) ? $config->dateFormat : 'j.n.';
+        $contentDateFormat = isset($config->contentDateFormat)
+            ? $config->contentDateFormat : 'j.n.Y';
+        $fullDateFormat = isset($config->fullDateFormat)
+            ? $config->fullDateFormat : 'j.n.Y';
+
+        $itemsCnt = isset($config->items) ? $config->items : null;
+        $elements = isset($config->content) ? $config->content : [];
+        $allowXcal = $elements['xcal'] ?? true;
+        $timeRegex = '/^(.*?)([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/';
 
         $content = [
             'id' => 'getId',

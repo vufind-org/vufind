@@ -14,6 +14,7 @@ payments_wsdl = arena_2.7.1_payments.wsdl
 reservations_wsdl = arena_2.7.1_reservations.wsdl
 patron_wsdl = arena_2.7.1_patron.wsdl
 ;patronaurora_wsdl = XXXXXXXXXXX
+;catalogueaurora_wsdl = XXXXXXXXXXX
 
 [Loans]
 ; The renewal limit in order to display the remaining amount of renewals

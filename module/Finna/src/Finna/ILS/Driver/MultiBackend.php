@@ -178,6 +178,28 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Get title lists from ILS
+     *
+     * @param array $params Query specific params
+     *
+     * @throws ILSException
+     *
+     * @return array Associative array of the results
+     */
+    public function getTitleList($params)
+    {
+        $source = $this->getSource($params['id']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'getTitleList', [$params])
+        ) {
+            $results = $driver->getTitleList($params);
+            return $this->addIdPrefixes($results, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Update patron's email address
      *
      * @param array  $patron Patron array
