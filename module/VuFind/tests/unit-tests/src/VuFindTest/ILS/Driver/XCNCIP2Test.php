@@ -401,6 +401,99 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $holdingTests = [
+        [
+            'file' => 'lookupItemSet.xml',
+            'result' => [
+                [
+                    'status' => 'Available on shelf',
+                    'location' => null,
+                    'callnumber' => '621.3 ANG',
+                    'availability' => true,
+                    'reserve' => 'N',
+                    'id' => '123456',
+                    'item_id' => 'MZK01000000421-MZK50000000421000010',
+                    'bib_id' => 'MZK01000000421',
+                    'duedate' => '',
+                    'volume' => '',
+                    'number' => '',
+                    'is_holdable' => true,
+                    'addLink' => true,
+                    'storageRetrievalRequest' => 'auto',
+                    'addStorageRetrievalRequestLink' => 'true',
+                    'eresource' => '',
+                    'item_agency_id' => 'My university',
+                    'holdtype' => 'Hold',
+                    'barcode' => 'MZK01000000421-MZK50000000421000010',
+                ],
+                [
+                    'status' => 'Available On Shelf',
+                    'location' => null,
+                    'callnumber' => 'PK-0083.568',
+                    'availability' => true,
+                    'reserve' => 'N',
+                    'id' => '123456',
+                    'bib_id' => 'MZK01000062021',
+                    'item_id' => 'MZK01000062021-MZK50000062021000010',
+                    'item_agency_id' => '',
+                    'duedate' => '',
+                    'volume' => '',
+                    'number' => '',
+                    'barcode' => 'Unknown barcode',
+                    'is_holdable' => true,
+                    'addLink' => true,
+                    'holdtype' => 'Hold',
+                    'storageRetrievalRequest' => 'auto',
+                    'addStorageRetrievalRequestLink' => 'true',
+                    'eresource' => '',
+                ],
+                [
+                    'status' => 'Available On Shelf',
+                    'location' => 'Some holding location',
+                    'callnumber' => '2-0997.767,2',
+                    'availability' => true,
+                    'reserve' => 'N',
+                    'id' => '123456',
+                    'item_id' => 'MZK01000000425-MZK50000000425000020',
+                    'bib_id' => 'MZK01000000425',
+                    'item_agency_id' => '',
+                    'duedate' => '',
+                    'volume' => '',
+                    'number' => '',
+                    'barcode' => 'Unknown barcode',
+                    'is_holdable' => true,
+                    'addLink' => true,
+                    'holdtype' => 'Hold',
+                    'storageRetrievalRequest' => 'auto',
+                    'addStorageRetrievalRequestLink' => 'true',
+                    'eresource' => '',
+                ],
+                [
+                    'status' => 'Circulation Status Undefined',
+                    'location' => 'Some holding location',
+                    'callnumber' => '',
+                    'availability' => false,
+                    'reserve' => 'N',
+                    'id' => '123456',
+                    'use_unknown_message' => true,
+                    'item_id' => 'MZK01000000425-MZK50000000425000030',
+                    'bib_id' => 'MZK01000000425',
+                    'item_agency_id' => '',
+                    'duedate' => '',
+                    'volume' => '',
+                    'number' => '',
+                    'barcode' => 'Unknown barcode',
+                    'is_holdable' => true,
+                    'addLink' => true,
+                    'holdtype' => 'Recall',
+                    'storageRetrievalRequest' => 'auto',
+                    'addStorageRetrievalRequestLink' => 'true',
+                    'eresource' => '',
+                ],
+            ],
+        ],
+    ];
+
     protected $placeHoldTests = [
         [
             'file' => 'RequestItemResponseAcceptedWithItemId.xml',
@@ -745,6 +838,16 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->mockResponse($test['file']);
             $status = $this->driver->getStatuses(['Some Id']);
             $this->assertEquals($test['result'], $status, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
+    }
+
+    public function testGetHolding()
+    {
+        $this->configureDriver();
+        foreach ($this->holdingTests as $test) {
+            $this->mockResponse($test['file']);
+            $holdings = $this->driver->getHolding('123456');
+            $this->assertEquals($test['result'], $holdings, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
 

@@ -25,7 +25,8 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
             </ns1:BibliographicDescription>
             <ns1:ItemInformation>
                <ns1:ItemId>
-                  <ns1:ItemIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ns1:ItemIdentifierType>
+                  <ns1:AgencyId>My university</ns1:AgencyId>
+                  <ns1:ItemIdentifierType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Barcode</ns1:ItemIdentifierType>
                   <ns1:ItemIdentifierValue>MZK01000000421-MZK50000000421000010</ns1:ItemIdentifierValue>
                </ns1:ItemId>
                <ns1:ItemOptionalFields>
