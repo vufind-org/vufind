@@ -124,7 +124,7 @@ class GetOrganisationPageFeed extends \VuFind\AjaxHandler\AbstractBase
             } else {
                 $feedConfig['result'] = ['items' => 5];
             }
-            $feedConfig['result']['type'] = 'list';
+            $feedConfig['result']['type'] = 'grid';
             $feedConfig['result']['active'] = 1;
 
             $serverHelper = $this->renderer->plugin('serverurl');

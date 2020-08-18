@@ -12,21 +12,20 @@
         <div class="input-group">
           <input id="office-search" class="form-control" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
           <span class="input-group-btn">
-            <button type="button" class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-arrow-down"></i></button>
+            <button type="button" class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-search"></i></button>
           </span>
           <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
         </div>
       </form>
       <div class="autocomplete-container"></div>
     </div>
-    <div class="flex-item text-right">
+    <div class="flex-item map-buttons">
       <div class="map-ui map-control-buttons" aria-hidden="true">
-        <span class="show-all"><a href="#"><?=$this->translate('organisation_info_page_map_show_all')?></a></span>
-        <i class="fa fa-map-marker marker open"></i><?=$this->transEsc('organisation_info_is_open')?>
-        <i class="fa fa-map-marker marker closed"></i><?=$this->transEsc('organisation_info_is_closed')?>
-        <i class="fa fa-map-marker marker no-schedule"></i><?=$this->transEsc('organisation_info_no_schedule')?>
-        <span class="expand expand-map"><i class="fa fa-expand"></i> <?=$this->translate('organisation_info_map_expand')?></span>
-        <span class="collapse contract-map" style="display: none"> <i class="fa fa-condense"></i> <?=$this->translate('organisation_info_map_collapse')?></span>
+        <span class="show-map"><a href="#"><?=$this->translate('organisation_info_page_map_show')?></a></span>
+        <span class="map-controls hidden">
+          <span class="show-service-point"><a href="#"><?= $this->translate('zoom_center') ?></a>
+          <span class="show-all"><a href="#"><?=$this->translate('organisation_info_page_map_show_all')?></a></span>
+        </span>
       </div>
     </div>
   </div>
@@ -39,7 +38,7 @@
   </div>
 </div>
 
-<div class="office map-ui map <?=$this->escapeHtmlAttr($this->mapWidget)?>" aria-hidden="true">
+<div class="office map-ui map hidden <?=$this->escapeHtmlAttr($this->mapWidget)?>" aria-hidden="true">
   <div>
     <div id="openlayers-canvas" class="map-widget"></div>
     <div id="marker-tooltip" class="hide"></div>
@@ -51,8 +50,6 @@
 <div class="office-quick-information info-element hide">
   <div class="office-title">
     <h3 class="service-title">Template title</h3>
-    <p><span class="office-links address"></span> <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a> <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a> <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span></p>
-    <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span></p>
   </div>
   <div class="open-closed-info">
     <h3 class="open-or-closed">
@@ -66,7 +63,6 @@
   </div>
   <div class="social-button info-element"><a aria-label="Facebook" href="#" target="_blank"><i class="fa fa-facebook"></i></a></div>
   <div class="clearfix"></div>
-  <div><p class="office-description slogan info-element"></p></div>
 </div>
 
 <div class="row office-information info-element">
@@ -77,6 +73,12 @@
           <a data-toggle="collapse" href="#collapse1"><?=$this->translate('organisation_info_general')?></a>
         </h4>
         <div id="collapse1" class="panel-collapse collapse in">
+          <div>
+            <p><span class="office-links address"></span></p>
+            <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a> <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a> <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span></p>
+            <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span>
+          </div>
+          <div><p class="office-description slogan info-element"></p></div>
           <img class="building-image" src="#" alt=""/>
           <img class="extra-image" src="#" alt=""/>
           <img class="extra-image-2" src="#" alt=""/>
@@ -107,24 +109,6 @@
       </div>
     </div>
   </div>
-  <div class="organisation-feeds">
-    <div class="finna-panel news-feed-container rss-container info-element">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse7"><?=$this->translate('organisation_info_rss_news')?></a>
-      </h4>
-      <div id="collapse7" class="panel-collapse collapse in">
-        <div class="feed-container news-feed info-element" data-init="0"></div>
-      </div>
-    </div>
-    <div class="finna-panel events-feed-container rss-container info-element">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse8"><?=$this->translate('organisation_info_rss_events')?></a>
-      </h4>
-      <div id="collapse8" class="panel-collapse collapse in">
-        <div class="feed-container events-feed info-element" data-init="0"></div>
-      </div>
-    </div>
-  </div>
   <div class="finna-panel services info-element">
     <h4 class="panel-title">
       <a data-toggle="collapse" href="#collapse6"><?=$this->translate('organisation_info_services')?></a>
@@ -138,6 +122,24 @@
       <div class="service-list service"></div>
       <h5 class="service-header collection hidden"><?= $this->transEsc('Collections') ?></h5>
       <div class="service-list collection"></div>
+    </div>
+  </div>
+  <div class="organisation-feeds">
+    <div class="finna-panel news-feed-container rss-container info-element">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#collapse7" class="collapsed"><?=$this->translate('organisation_info_rss_news')?></a>
+      </h4>
+      <div id="collapse7" class="panel-collapse collapse">
+        <div class="feed-container news-feed info-element" data-init="0"></div>
+      </div>
+    </div>
+    <div class="finna-panel events-feed-container rss-container info-element">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#collapse8" class="collapsed"><?=$this->translate('organisation_info_rss_events')?></a>
+      </h4>
+      <div id="collapse8" class="panel-collapse collapse">
+        <div class="feed-container events-feed info-element" data-init="0"></div>
+      </div>
     </div>
   </div>
 </div>

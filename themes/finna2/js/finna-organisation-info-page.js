@@ -230,7 +230,7 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
 
           // if theres only one service point, hide searchbox and ignore initSearch
           if (cnt === 1) {
-            holder.find('.office-search .searchbox-office,.show-all').hide();
+            holder.find('.office-search .searchbox-office,.show-all').hide().parent('.flex-item').hide();
             id = Object.keys(organisationList)[0];
           } else {
             // IE opens Delay initing autocomplete menu to prevent IE from opening it automatically at
@@ -512,7 +512,12 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
     consortiumInfo = finna.common.getField(options, 'consortiumInfo') === 1;
     var buildings = finna.common.getField(options, 'buildings');
     var mapTileUrl = '//map-api.finna.fi/v1/rendered/{z}/{x}/{y}.png';
-    var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
+    var attribution = 
+      '<i class="fa fa-map-marker marker open"></i><span class="map-marker-text">' + VuFind.translate('organisation_info_is_open') + '</span>' +
+      '<i class="fa fa-map-marker marker closed"></i><span class="map-marker-text">' + VuFind.translate('organisation_info_is_closed') + '</span>' +
+      '<i class="fa fa-map-marker marker no-schedule"></i><span class="map-marker-text">' + VuFind.translate('organisation_info_no_schedule') + '</span>' +
+      '<span class="expand expand-map map-marker-text marker"><i class="fa fa-expand"></i>' + VuFind.translate('organisation_info_map_expand') + '</span>' +
+      '<span class="collapse contract-map map-marker-text marker" style="display: none"> <i class="fa fa-condense"></i>' + VuFind.translate('organisation_info_map_collapse') + '</span>';
 
     if (typeof parent == 'undefined') {
       return;
@@ -543,7 +548,48 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
       tooltip.css({'margin-left': -(tooltip.outerWidth()) / 2 + 20}).show();
     });
 
+    holder.find('.map-control-buttons .show-map').click(function onClickShowMap() {
+      mapHolder = $('.office.map-ui.map');
+      if (mapHolder.hasClass('hidden')) {
+        mapHolder.removeClass('hidden');
+        holder.find('.map-controls').removeClass('hidden');
+        $(this).addClass('toggled');
+        map.resize();
+        map.reset();
+        var id = getOrganisationFromURL();
+        if (id in organisationList) {
+          var data = organisationList[id];
+          if ('address' in data && 'coordinates' in data.address) {
+            map.selectMarker(id);
+          }
+        }
+      } else {
+        mapHolder.addClass('hidden');
+        holder.find('.map-controls').addClass('hidden');
+        $(this).removeClass('toggled');
+      }
+      return false;
+    });
+
+    holder.find('.map-control-buttons .show-service-point').click(function onClickShowServicePoint() {
+      var id = getOrganisationFromURL();
+      if (id in organisationList) {
+        var data = organisationList[id];
+        if ('address' in data && 'coordinates' in data.address) {
+          map.reset();
+          map.selectMarker(id);
+        }
+      }
+      return false;
+    });
+
     holder.find('.map-control-buttons .show-all').click(function onClickShowAll() {
+      mapHolder = $('.office.map-ui.map');
+      if (mapHolder.hasClass('hidden')) {
+        mapHolder.removeClass('hidden');
+        $('.map-control-buttons .show-map').addClass('toggled');
+      }
+      map.resize();
       map.reset();
       return false;
     });
