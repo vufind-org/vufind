@@ -1,0 +1,21 @@
+<!-- START of: finna - Recommend/FinnaSuggestions.phtml -->
+<?php
+  $recommendations = $this->recommend->getRecommendations();
+  $resultCount = $recommendations['resultCount'] ?? null;
+?>
+<?php if ($resultCount): ?>
+  <div class="finna-suggestions col-xs">
+    <h4><?=$this->transEsc('finna_suggestions_title')?></h4>
+    <div class="container result">
+      <div class="text"><?= $this->translate($resultCount > 1 ? 'finna_suggestions_results_plural_html' : 'finna_suggestions_results_html', ['%%resultCount%%' => $this->localizedNumber($resultCount), '%%lookfor%%' => $recommendations['lookfor']])?></div>
+      <a class="btn btn-primary" href="<?=$this->escapeHtmlAttr($recommendations['searchLink'])?>">
+        <?=$this->transEsc('finna_suggestions_link')?> <i class="fa fa-arrow-alt-right fa-lg" aria-hidden="true"></i>
+      </a>
+    </div>
+    <div class="container info">
+      <div class="logo-container"><img class="logo" src="<?=$this->imageLink('finnafi-logo.png')?>" alt="Finna"></div>
+      <div class="slogan"><?= $this->transEsc('finna_suggestions_slogan')?></div>
+    </div>
+  </div>
+<?php endif ?>
+<!-- END of: finna - Recommend/FinnaSuggestions.phtml -->

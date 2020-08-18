@@ -1,0 +1,13 @@
+<!-- START of: finna - Recommend/FinnaSuggestionsDeferred.phtml -->
+<?php if ($urlParams = $this->recommend->getUrlParams()): ?>
+  <?php
+    // Set up Javascript for use below:
+    $loadJs = 'var url = VuFind.path + "/AJAX/Recommend?' . $urlParams . '";'
+      . "\$('#finna-suggestions-deferred').load(url);";
+  ?>
+  <div id="finna-suggestions-deferred">
+    <p><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <?=$this->transEsc("Loading")?>...</p>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+  </div>
+<?php endif ?>
+<!-- END of: finna - Recommend/FinnaSuggestionsDeferred.phtml -->

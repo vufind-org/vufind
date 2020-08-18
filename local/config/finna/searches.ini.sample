@@ -56,6 +56,7 @@ default_side_recommend[] = SideFacetsDeferred:Results:CheckboxFacets
 default_noresults_recommend[] = SwitchType
 default_noresults_recommend[] = SwitchQuery
 default_noresults_recommend[] = SpellingSuggestions
+;default_noresults_recommend[] = "FinnaSuggestionsDeferred:api.finna.fi/api/v1/search?lookfor=%%lookfor%%:finna.fi/Search/Results?lookfor=%%lookfor%%&lng=%%lng%%"
 
 ; Set this to true in order to highlight keywords from the search query when they
 ; appear in fields displayed in search results.
@@ -318,6 +319,12 @@ author = sort_author
 ;       suggesting that the user try switching to [field].  [field description]
 ;       is the human-readable description of [field].  Default values are
 ;       'AllFields' and 'All Fields' respectively.
+; FinnaSuggestions:[apiUrl]:[siteUrl]
+;       Performs the same search to another Finna site via API [apiUrl].
+;       When results are found, displays a link to the search results [siteUrl].
+;       Recommendations are presented only for basic searches using AllFields handler
+;       and no filters. URLs are configured without protocol, for example:
+;       api.finna.fi/Search/Results?querystring
 ;
 ; You can build your own recommendations modules if you wish.  See the developer's
 ; guide here:
