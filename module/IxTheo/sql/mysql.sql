@@ -26,7 +26,6 @@ CREATE TABLE ixtheo_pda_subscriptions (
     book_year VARCHAR(32) NOT NULL,
     book_ppn VARCHAR(10) NOT NULL,
     book_isbn VARCHAR(13) NOT NULL,
-    FOREIGN KEY (id) REFERENCES user(id),
     CONSTRAINT `ixtheo_pda_subscriptions_ibfk_1` FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE,
     PRIMARY KEY (id, book_ppn)
 ) DEFAULT CHARSET=utf8;
