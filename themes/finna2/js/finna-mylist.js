@@ -196,8 +196,15 @@ finna.myList = (function finnaMyList() {
           listTags.push($(tag).data('tag'));
         });
       }
-      var newTag = $('.list-tags .new-tag');
-      listTags.push(newTag.val());
+
+      if (type === 'add-tag') {
+        var newTag = $('.list-tags .new-tag');
+        listTags.push(newTag.val());
+      } else if (type === 'delete-tag') {
+        if (!listTags.length) {
+          listTags = [''];
+        }
+      }
       listParams.tags = listTags;
     }
 
@@ -205,7 +212,7 @@ finna.myList = (function finnaMyList() {
       spinner = $('.list-title .fa');
     } else if (type === 'desc') {
       spinner = $('.list-description .fa:not(.fa-arrow-down)');
-    } else if (type === 'tags') {
+    } else if (type === 'add-tag' || type === 'delete-tag') {
       $('.list-tags form fieldset').attr('disabled', 'disabled');
       $('.list-tags .fa-spinner').toggleClass('hide', false).show();
     } else if (type === 'add-list') {
@@ -342,13 +349,13 @@ finna.myList = (function finnaMyList() {
 
   initListTagComponent = function _initListTagComponent() {
     $('.list-tags form').unbind('submit').submit(function onSubmitAddListTagForm(/*event*/) {
-      updateList({}, listTagsChanged, 'tags');
+      updateList({}, listTagsChanged, 'add-tag');
       return false;
     });
     $('.list-tags .tags .tag .delete-tag').unbind('click').on('click', function onDeleteTag(/*event*/) {
       $('.list-tags form fieldset').attr('disabled', 'disabled');
       $(this).closest('.tag').remove();
-      updateList({}, listTagsChanged, 'tags');
+      updateList({}, listTagsChanged, 'delete-tag');
     });
     $('.list-tags .toggle').unbind('click').on('click', function onToggleTags(/*event*/) {
       $('.list-tags').toggleClass('collapsed');

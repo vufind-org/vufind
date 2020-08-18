@@ -149,6 +149,9 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
                 }, $listParams['tags']
             );
             $listParams['tags'] = implode(' ', $tags);
+        } elseif (!$this->listTagsEnabled) {
+            // Make sure that saved tags are preserved when tagging is disabled.
+            unset($listParams['tags']);
         }
 
         $finalId = $list->updateFromRequest(
