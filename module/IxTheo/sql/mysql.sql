@@ -9,7 +9,7 @@ CREATE TABLE ixtheo_journal_subscriptions (
     journal_control_number_or_bundle_name VARCHAR(255) NOT NULL,
     max_last_modification_time DATETIME NOT NULL,
     CONSTRAINT `ixtheo_journal_subscriptions_ibfk_1` FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id,journal_control_number)
+    PRIMARY KEY (user_id,journal_control_number_or_bundle_name)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE ixtheo_journal_bundles (
