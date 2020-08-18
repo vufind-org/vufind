@@ -3,6 +3,13 @@
     <div class="public-list-row">
       <?php if ($this->title): ?><h<?=$this->headingLevel?>><?= $this->title ?></h<?=$this->headingLevel?>><?php endif ?>
       <?php if ($this->description): ?><div class="public-list-desc"><?= $this->markdown()->toHtml($this->description) ?></div><?php endif ?>
+      <?php if ($this->listTags): ?>
+        <div class="public-list-tags">
+          <?php foreach ($this->listTags as $tag): ?>
+            <div class="tag"><?= $this->escapeHtml($tag->tag) ?></div>
+          <?php endforeach ?>
+        </div>
+      <?php endif ?>
       <?php if ($this->date): ?>
         <div class="public-list-info">
           <div><?= $this->transEsc("modified"); ?>: <?=$this->dateTime()->convertToDisplayDate('Y-m-d H:i:s', $this->date); ?></div>
