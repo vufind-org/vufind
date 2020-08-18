@@ -67,7 +67,9 @@ class EditListFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         return new $requestedName(
             $tablePluginManager->get(\VuFind\Db\Table\UserList::class),
             $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
-            $capabilities->getListSetting() !== 'disabled'
+            $container->get('ViewRenderer'),
+            $capabilities->getListSetting() !== 'disabled',
+            $capabilities->getListTagSetting() !== 'disabled'
         );
     }
 }

@@ -53,8 +53,31 @@
         <div class="list-description markdown">
           <div class="editable">
             <i class="list-description-edit fa fa-pen js-edit" aria-hidden="true"></i><div data-markdown="<?=$this->escapeHtmlAttr($list ? $list->description : '')?>"><?=(!empty($list->description) ? $this->markdown()->toHtml($list->description) : $this->translate('Add list description'))?></div>
+          </div>
         </div>
-      </div>
+        <?php if ($this->usertags()->getListMode() === 'enabled'): ?>
+          <div class="list-tags collapsed">
+            <div class="toggle" title="<?=$this->transEsc('edit-list-tags')?>">
+              <span><?=$this->transEsc('edit-list-tags')?> </span><i class="fa fa-tag"></i>
+            </div>
+            <div class="ui">
+              <p class="info"><i class="fa fa-info"></i> <?=$this->transEsc('add-list-tag-note')?></p>
+              <form>
+                <fieldset>
+                  <legend></legend>
+                  <div class="add-new">
+                    <input type="text" class="new-tag" name="new-tag" value="" aria-required="true" required aria-label="<?= $this->transEsc('list-tags-info')?>" placeholder="<?= $this->transEsc('list-tags-info')?>"/>
+                    <button type="submit" class="btn btn-primary "><?=$this->transEsc('Save')?></button>
+                    <div><i class="fa fa-spin fa-spinner hide"></i></div>
+                  </div>
+                  <div class="tags">
+                    <?= $this->partial('mylist-tags.phtml', ['tags' => $list->getListTags()])?>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        <?php endif ?>
       <?php else: ?>
         <h2 class="list-title no-edit"><span><?=$this->transEsc("All Favourites")?></span></h2>
       <?php endif; ?>

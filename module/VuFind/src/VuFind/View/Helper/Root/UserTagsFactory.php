@@ -62,6 +62,9 @@ class UserTagsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        return new $requestedName($capabilities->getTagSetting());
+        return new $requestedName(
+            $capabilities->getTagSetting(),
+            $capabilities->getListTagSetting()
+        );
     }
 }

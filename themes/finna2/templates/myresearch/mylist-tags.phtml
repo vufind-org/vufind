@@ -1,0 +1,6 @@
+<p><?=$this->transEsc('list-tags-count', ['%%count%%' => count($this->tags)])?></p>
+<ul>
+  <?php foreach ($this->tags as $tag): ?>
+    <li class="tag"><span class="text" data-tag="<?=$this->escapeHtmlAttr(urlencode($tag->tag))?>"><?= $this->escapeHtmlAttr($tag->tag) ?></span> <button class="delete-tag" aria-label="<?=$this->transEsc('Delete')?>"><i class="fa fa-button fa-times"></i></button></li>
+  <?php endforeach ?>
+</ul>

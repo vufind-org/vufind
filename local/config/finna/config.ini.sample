@@ -1489,6 +1489,8 @@ sender_name       = "Finna-palaute"
 ; Tags may be "enabled" or "disabled" (default = "enabled")
 ; When disabling tags, don't forget to also turn off tag search in searches.ini.
 tags = disabled
+; User list tags may be "enabled" or "disabled" (default = "disabled")
+listTags = disabled
 ; This controls the maximum length of a single tag; it should correspond with the
 ; field size in the tags database table.
 max_tag_length = 64

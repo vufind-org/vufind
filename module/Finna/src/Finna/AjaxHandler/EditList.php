@@ -28,6 +28,7 @@
 namespace Finna\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\UserList;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -61,6 +62,13 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
     protected $user;
 
     /**
+     * View renderer
+     *
+     * @var RendererInterface
+     */
+    protected $renderer;
+
+    /**
      * Are lists enabled?
      *
      * @var bool
@@ -68,17 +76,30 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
     protected $enabled;
 
     /**
+     * Are list tags enabled?
+     *
+     * @var bool
+     */
+    protected $listTagsEnabled;
+
+    /**
      * Constructor
      *
-     * @param UserList  $userList UserList database table
-     * @param User|bool $user     Logged in user (or false)
-     * @param bool      $enabled  Are lists enabled?
+     * @param UserList          $userList        UserList database table
+     * @param User|bool         $user            Logged in user (or false)
+     * @param RendererInterface $renderer        View renderer
+     * @param bool              $enabled         Are lists enabled?
+     * @param bool              $listTagsEnabled Are list tags enabled?
      */
-    public function __construct(UserList $userList, $user, $enabled = true)
-    {
+    public function __construct(
+        UserList $userList, $user, RendererInterface $renderer,
+        $enabled = true, $listTagsEnabled = false
+    ) {
         $this->userList = $userList;
         $this->user = $user;
+        $this->renderer = $renderer;
         $this->enabled = $enabled;
+        $this->listTagsEnabled = $listTagsEnabled;
     }
 
     /**
@@ -118,11 +139,32 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
         $list = 'NEW' === $listParams['id'] ? $this->userList->getNew($this->user)
             : $this->userList->getExisting($listParams['id']);
 
+        if ($this->listTagsEnabled && isset($listParams['tags'])) {
+            $tags = array_map(
+                function ($tag) {
+                    $tag = urldecode($tag);
+                    // Quote tag with whitespace to prevent VuFind
+                    // from creating multiple tags.
+                    return false !== strpos($tag, ' ') ? "\"{$tag}\"" : $tag;
+                }, $listParams['tags']
+            );
+            $listParams['tags'] = implode(' ', $tags);
+        }
+
         $finalId = $list->updateFromRequest(
             $this->user, new \Laminas\Stdlib\Parameters($listParams)
         );
 
         $listParams['id'] = $finalId;
+
+        if ($this->listTagsEnabled) {
+            $listParams['tags'] = $this->renderer->partial(
+                'myresearch/mylist-tags.phtml',
+                ['tags' => $list->getListTags()]
+            );
+        } else {
+            unset($listParams['tags']);
+        }
 
         return $this->formatResponse($listParams);
     }
