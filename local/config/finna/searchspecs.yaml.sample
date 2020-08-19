@@ -455,3 +455,8 @@ WorkKeys:
     work_keys_str_mv:
       - [and, 100]
       - [or, ~]
+
+description:
+  QueryFields:
+    description:
+      - [or, ~]
