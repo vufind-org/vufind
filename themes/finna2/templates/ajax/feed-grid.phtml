@@ -19,8 +19,12 @@
     <div class="grid-item <?= isset($this->visualItems) ? ($itemCount++ >= $this->visualItems ? 'hidden truncate' : '') : ''; ?> ">
       <a class="grid-link" <?= $this->htmlElement()->getAttributes($linkElement);?>>
         <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
-          <span class="grid-image">
-            <img src="<?= $item['image']['url']; ?>" alt="" />
+          <span class="grid-image <?= empty($item['image']['url']) ? 'no-image' : ''; ?>">
+            <?php if (!empty($item['image']['url'])): ?>
+              <img src="<?= $item['image']['url']; ?>" alt="" />
+            <?php else: ?>
+              <i class="fa fa-calendar-o image-placeholder"></i>
+            <?php endif; ?>
           </span>
         <?php endif; ?>
         <span class="grid-info">
@@ -31,10 +35,10 @@
           <?php if (isset($item['xcal']['startDate'])): ?>
             <div class="xcal"><i class="fa fa-calendar" aria-label="<?= $this->transEsc('xcal_date') ?>"></i><?= $item['xcal']['startDate']; ?><?php if (isset($item['xcal']['endDate']) && $item['xcal']['endDate'] !== $item['xcal']['startDate']): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endDate']; endif; ?></div>
           <?php endif; ?>
-          <?php if (isset($item['xcal']['startTime'])): ?>
-            <div class="xcal"><i class="fa fa-clock-o" aria-label="<?= $this->transEsc('xcal_time') ?>"></i><?= $item['xcal']['startTime'] ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endTime'] ?></div>
+          <?php if (isset($item['xcal']['startTime']) && ((isset($item['xcal']['startDate']) && isset($item['xcal']['endDate']) && $item['xcal']['startDate'] === $item['xcal']['endDate']) || empty($item['xcal']['endDate']))): ?>
+            <div class="xcal"><i class="fa fa-clock-o" aria-label="<?= $this->transEsc('xcal_time') ?>"></i><?= $item['xcal']['startTime'] ?><?php if (isset($item['xcal']['endTime'])): ?>&nbsp;&ndash;&nbsp;<?= $item['xcal']['endTime'] ?><?php endif; ?></div>
           <?php endif; ?>
-          <?php if (isset($item['xcal']['location'])): ?>
+          <?php if (isset($item['xcal']['location']) && !empty($item['xcal']['location'])): ?>
             <div class="xcal"><i class="fa fa-map-marker" aria-label="<?= $this->transEsc('Location') ?>"></i><?= $item['xcal']['location'] ?></div>
           <?php endif; ?>
           <?php if (isset($item['text'])): ?>

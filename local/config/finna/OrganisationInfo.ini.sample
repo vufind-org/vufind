@@ -57,3 +57,7 @@ services[print] = "55355,55752,55856,55848,55628,55805,55375,55549,55342,55327,5
 [MuseumAPI]
 ; Museoliiton API URL
 url = "https://museot.fi/xml"
+
+[LinkedEvents]
+;api_url = ""
+;publisher_id = ""

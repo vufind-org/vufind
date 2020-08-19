@@ -1,0 +1,38 @@
+<!-- START of: finna - feedcontent/linked-events.phtml -->
+<div class="linked-event-content" data-lang="<?= $this->layout()->userLang; ?>">
+   <div><i class="fa fa-spinner fa-spin"></i></div>
+   <div class="linked-events-left-col">
+      <h2 class="linked-event-title"></h2>
+      <span class="linked-event-info">
+         <span class="linked-event-field hidden"><i class="fa fa-calendar"></i> <span class="linked-event-startDate"></span><span class="linked-event-endDate hidden">&nbsp;&ndash;&nbsp;</span></span>
+         <span class="linked-event-field hidden"><i class="fa fa-clock-o"></i> <span class="linked-event-startTime"></span><span class="linked-event-endTime hidden">&nbsp;&ndash;&nbsp;</span></span>
+         <span class="linked-event-field hidden"> <span class="linked-event-price"></span></span>
+         <span class="linked-event-field hidden"><i class="fa fa-users"></i> <span class="linked-event-audience"></span></span>
+      </span>
+      <img class="linked-event-image" alt=""/>
+      <b><div class="linked-event-short_description"></div></b>
+      <div class="linked-event-description"></div>
+      <div class="linked-event-keywords"></div>
+   </div>
+   <div class="linked-events-right-col">
+      <div id="openlayers-canvas" class="linked-events-map"></div>
+      <div class="linked-event-map-info">
+         <div class="linked-event-field hidden"><i class="fa fa-map-marker"></i> <span class="linked-event-location-info"></span></div>
+         <div class="linked-event-field hidden"><span class="linked-event-address"></span></div>
+         <div class="linked-event-field hidden"><a class="linked-event-providerLink"><i class="fa fa-home"></i> <?= $this->transEsc('linked_event_homepage');?></a></div>
+         <div class="linked-event-field hidden"><i class="fa fa-phone"></i> <span class="linked-event-telephone"></span></div>
+         <div class="linked-event-field hidden"><?= $this->transEsc('Organizer'); ?>: <span class="linked-event-provider"></span></div>
+      </div>
+      <div class="related-events hidden"><h3><?= $this->transEsc('linked_event_related_events'); ?></h3></div>
+   </div>
+</div>
+<?php
+  $id = $this->event['id'];
+  $setupJS = <<<JS
+$(document).ready(function() {
+   finna.linkedEvents.getEventContent("$id");
+});
+JS;
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET');
+?>
+<!-- END of: finna - feedcontent/linked-events.phtml -->

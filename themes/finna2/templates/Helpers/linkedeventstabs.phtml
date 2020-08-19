@@ -1,0 +1,80 @@
+<!-- START of: finna - Helpers/linkedeventstabs.phtml -->
+<div class="linked-events-tabs-container" id="<?= $this->escapeHtmlAttr($this->id) ?>" data-limit="<?= $this->escapeHtmlAttr($this->limit) ?>" data-lang="<?= $this->layout()->userLang; ?>">
+  <div class="events-tabs feed-tabs-container feed-tabs">
+    <h2><?= $this->transEsc('Events'); ?></h2>
+    <ul class="nav nav-tabs" role="tablist">
+      <?php $i = 0; foreach ($this->tabs as $id => $tab): ?>
+        <?php
+          $tabId = $this->id . '-' . $i++;
+          $isActive = $this->active === $tab['title'];
+        ?>
+        <li class="nav-item event-tab feed-tab <?= $isActive ? 'active' : ''; ?>" id="<?=$this->escapeHtmlAttr($tabId)?>"
+          tabindex="0"
+          aria-selected="<?= $isActive ? 'true' : 'false'; ?>"
+          data-params="<?= isset($tab['params']) ? $this->escapeHtmlAttr(json_encode($tab['params'])) : ''?>"
+          aria-label="<?= $this->escapeHtmlAttr($tab['title']); ?>"
+          ><?= $this->escapeHtml($tab['title']) ?></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+
+  <div class="feed-accordions event-accordions" role="tablist">
+    <h2 class="feed-accordions-title event-accordions-title"><?= $this->transEsc('Events'); ?></h2>
+    <?php $i = 0; foreach ($this->tabs as $id => $tab): ?>
+      <?php
+        $tabId = $this->id . '-' . $i++;
+        $isActive = 0 === strcasecmp($this->active, $tab['title']);
+      ?>
+      <div class="accordion <?= $isActive ? 'active initial-active' : '' ?>"
+           data-params="<?= isset($tab['params']) ? $this->escapeHtmlAttr(json_encode($tab['params'])) : ''?>"
+           data-id="<?=$this->escapeHtmlAttr($tabId)?>"
+           role="tab"
+           tabindex="0"
+           aria-selected="<?= $isActive ? 'true' : 'false' ?>">
+          <span class="title"><?=$this->transEsc($tab['title'])?></span>
+          <i class="icon"></i>
+      </div>
+    <?php endforeach; ?>
+  </div>
+  <?php if ($this->searchTools !== 'hide'): ?>
+    <div class="events-searchtools-toggle"><?= $this->transEsc('show_filters') ?> <i class="fa fa-arrow-down"></i></div>
+    <div class="events-searchtools-container <?= $this->searchTools === 'show' ? '' : 'hidden'; ?>">
+      <span class="event-search-container">
+        <label for="event-search" class="sr-only"><?= $this->transEsc('event_name_or_place') ?></label>
+        <input id="event-search" class="event-text-search" type="text" placeholder="<?= $this->transEsc('event_name_or_place') ?>" size="26">
+      </span>
+      <span class="event-date-container">
+        <span class="event-date-title"><?= $this->transEsc('Time Period'); ?>:</span>
+        <label for="event-date-start" class="sr-only"><?=$this->transEsc('Date');?></label>
+        <input id="event-date-start" class="event-date-start event-datepicker"> &ndash; <label for="event-date-end" class="sr-only"><?=$this->transEsc('Date');?></label><input id="event-date-end" class="event-date-end event-datepicker">
+      </span>
+      <button class="btn btn-primary linked-event-search"><?= $this->transEsc('Find') ?></button>
+      <span class="event-geolocation-container hidden">
+        <span class="event-geolocation"><?= $this->transEsc('use_my_location'); ?></span>
+      </span>
+    </div>
+  <?php endif; ?>
+  <div class="tab-content">
+    <div class="linked-events-content"></div>
+  </div>
+  <div class="linked-events-buttons">
+    <button class="btn btn-outline-primary linked-events-next"><?= ucfirst($this->transEsc('more')) ?></button>
+    <a class="btn btn-outline-primary events-more-link <?= $this->allEventsLink ? '' : 'hidden' ?>" href="<?= $this->escapeHtmlAttr($this->allEventsLink); ?>"><?= ucfirst($this->transEsc('see all')) ?></a>
+  </div>
+</div>
+<?php
+$this->jsTranslations()->addStrings(
+  [
+    'nohit_heading' => 'nohit_heading',
+  ]
+);
+$translations = $this->jsTranslations()->getJSON();
+$js = <<<JS
+$(document).ready(function(){
+  finna.linkedEvents.initEventsTabs("{$this->id}");
+  VuFind.addTranslations({$translations});
+});
+JS;
+$this->headScript()->appendScript($js);
+?>
+<!-- END of: finna - Helpers/linkedeventstabs.phtml -->
