@@ -62,6 +62,8 @@ finna.organisationInfoPageConsortium = (function organisationInfoPageConsortium(
         $('<img/>').attr('src', logo).attr('alt', '').prependTo(infoField.find('.consortium-logo').removeClass('hide'));
       } else {
         infoField.addClass('no-logo');
+        var homePage = infoField.find('.homepage').detach();
+        homePage.appendTo(infoField);
       }
 
       var consortiumName = finna.common.getField(consortiumData, 'name');

@@ -354,18 +354,20 @@ EOT;
             return false;
         }
 
-        return $this->parseFeed($channel, $config);
+        return $this->parseFeed($channel, $config, $id);
     }
 
     /**
      * Function to parse feed with config
      *
-     * @param string $channel feed
-     * @param array  $config  of feed
+     * @param string      $channel Feed channel
+     * @param array       $config  Feed config
+     * @param string|null $id      Feed ID (required when feed content is
+     *                             displayed on content-page or modal)
      *
      * @return array
      */
-    public function parseFeed($channel, $config)
+    public function parseFeed($channel, $config, $id = null)
     {
         $modal = false;
         $showFullContentOnSite = isset($config->linkTo)

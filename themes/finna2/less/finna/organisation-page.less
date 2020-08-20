@@ -265,8 +265,19 @@
             .consotrium-logo img {
                 width: 100%;
             }
-            &.no-logo .description {
-                padding-left: 0;
+            &.no-logo {
+                .description {
+                    padding-left: 0;
+                    width: 100%;
+                    float: none;
+                }
+                .consortium-search-usage, #collapse-usage, #collapse-links {
+                    float: none;
+                }
+                .organisation-info-panel {
+                    float: none;
+                }
+
             }
             .organisation-list {
                 margin-top: 10px;
@@ -285,7 +296,7 @@
                 }
             }
             .homepage {
-                margin-top: 10px;
+                margin-top: 15px;
             }
             .consortium-info-row {
                 display: table;
@@ -402,9 +413,6 @@
         .office-search {
             h2 {
                 margin-bottom: 0.5em;
-                @media(min-width: @screen-sm) {
-                    margin-bottom: 0;
-                }
             }
             .searchbox-office {
                 margin: 10px 0px;
@@ -501,10 +509,16 @@
                 }
                 img {
                     margin-bottom: 5px;
+                    margin-top: 1em;
                 }
                 .office-description {
                     font-weight: normal;
                     font-size: 1em;
+                    margin-bottom: 1em;
+                    margin-top: 1em;
+                }
+                .building-year, .building-name {
+                    font-size: 0.9em;
                 }
                 &:not(.opening-times-library-information) .panel-collapse {
                     padding: 0px 6px 0px 10px;
@@ -558,7 +572,6 @@
                     }
                 }
                 .feed-container {
-                    margin-top: 10px;
                     margin-bottom: 10px;
                     .list-feed.with-image {
                         img {
