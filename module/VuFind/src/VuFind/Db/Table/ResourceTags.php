@@ -190,7 +190,7 @@ class ResourceTags extends Gateway
     /**
      * Get lists associated with a particular tag.
      *
-     * @param null|string|array $tag        Tag to match
+     * @param string|array      $tag        Tag to match
      * @param null|string|array $listId     List ID to retrieve (null for all)
      * @param bool              $publicOnly Whether to return only public lists
      *
@@ -199,13 +199,21 @@ class ResourceTags extends Gateway
     public function getListsForTag(
         $tag, $listId = null, $publicOnly = true
     ) {
-        $tag = $tag ? (array)$tag : null;
+        $tag = (array)$tag;
         $listId = $listId ? (array)$listId : null;
 
         $callback = function ($select) use (
             $tag, $listId, $publicOnly
         ) {
-            $select->columns([Select::SQL_STAR]);
+            $select->columns(
+                [
+                    'tag_cnt' => new Expression(
+                        'COUNT(DISTINCT(?))', ['resource_tags.tag_id'],
+                        [Expression::TYPE_IDENTIFIER]
+                    ),
+                    Select::SQL_STAR
+                ]
+            );
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
@@ -223,11 +231,16 @@ class ResourceTags extends Gateway
             // Discard tags assigned to a user resource.
             $select->where->isNull('resource_id');
 
+            // Restrict to tags by list owner
+            $select->where->and->equalTo(
+                'resource_tags.user_id', new Expression('l.user_id')
+            );
+
             if ($listId) {
                 $select->where->and->in('resource_tags.list_id', $listId);
             }
             if ($publicOnly) {
-                $select->where->equalTo('public', 1);
+                $select->where->and->equalTo('public', 1);
             }
             if ($tag) {
                 if ($this->caseSensitive) {
@@ -250,8 +263,7 @@ class ResourceTags extends Gateway
             if ($tag) {
                 // Use AND operator for tags
                 $select->having->literal(
-                    'COUNT(resource_tags.list_id) = ?',
-                    count(array_unique($tag))
+                    'tag_cnt = ?', count(array_unique($tag))
                 );
             }
             $select->order('resource_tags.list_id');
