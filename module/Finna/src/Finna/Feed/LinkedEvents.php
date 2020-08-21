@@ -232,7 +232,7 @@ class LinkedEvents implements \VuFindHttp\HttpServiceAwareInterface,
 
                     $events[] = $event;
                     if (($eventData['super_event'] !== null
-                        || $eventData['sub_events'] !== null)
+                        || !empty($eventData['sub_events']))
                         && !empty($paramArray['id'])
                     ) {
                         $superEventId
