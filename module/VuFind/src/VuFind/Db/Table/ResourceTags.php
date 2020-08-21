@@ -191,21 +191,19 @@ class ResourceTags extends Gateway
      * Get lists associated with a particular tag.
      *
      * @param null|string|array $tag        Tag to match
-     * @param null|string|array $listId     ID of list to retrieve
-     * @param null|string|array $userId     ID of user owning favorite list
+     * @param null|string|array $listId     List ID to retrieve (null for all)
      * @param bool              $publicOnly Whether to return only public lists
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getListsForTag(
-        $tag, $listId = null, $userId = null, $publicOnly = true
+        $tag, $listId = null, $publicOnly = true
     ) {
         $tag = $tag ? (array)$tag : null;
         $listId = $listId ? (array)$listId : null;
-        $userId = $userId ? (array)$userId : null;
 
         $callback = function ($select) use (
-            $tag, $userId, $listId, $publicOnly
+            $tag, $listId, $publicOnly
         ) {
             $select->columns([Select::SQL_STAR]);
             $select->join(
@@ -227,9 +225,6 @@ class ResourceTags extends Gateway
 
             if ($listId) {
                 $select->where->and->in('resource_tags.list_id', $listId);
-            }
-            if ($userId) {
-                $select->where->and->in('l.user_id', $userId);
             }
             if ($publicOnly) {
                 $select->where->equalTo('public', 1);

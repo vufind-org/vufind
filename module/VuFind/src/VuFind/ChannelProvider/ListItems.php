@@ -61,13 +61,6 @@ class ListItems extends AbstractChannelProvider
     protected $tags;
 
     /**
-     * Tags of lists to display
-     *
-     * @var array
-     */
-    protected $userIds;
-
-    /**
      * Should we pull in public list results in addition to the inclusion list in
      * $ids?
      *
@@ -143,7 +136,6 @@ class ListItems extends AbstractChannelProvider
     {
         $this->ids = $options['ids'] ?? [];
         $this->tags = $options['tags'] ?? [];
-        $this->userIds = $options['userIds'] ?? [];
 
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
@@ -192,12 +184,20 @@ class ListItems extends AbstractChannelProvider
      */
     protected function buildListChannels($channelToken)
     {
-        $lists = $this->getLists(
-            $this->tags,
-            $channelToken ? [$channelToken] : $this->ids,
-            $this->userIds,
-            $this->initialListsToDisplay
-        );
+        $lists = [];
+
+        if ($channelToken) {
+            $lists = $this->getListsById([$channelToken]);
+        } else if ($this->tags) {
+            $lists = $this->getLists(
+                $this->tags,
+                $this->ids,
+                $this->initialListsToDisplay
+            );
+        } else {
+            $lists = $this->getListsById($this->ids);
+        }
+
         $channels = [];
         foreach ($lists as $list) {
             $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
@@ -210,21 +210,38 @@ class ListItems extends AbstractChannelProvider
     }
 
     /**
-     * Get a list of public lists to display.
+     * Get a list of lists, identified by ID; filter to public lists only.
      *
-     * @param string|array $tag    Tag to match
-     * @param string|array $listId ID of list to retrieve (null for all favorites)
-     * @param string|array $userId ID of user owning favorite list
+     * @param array $ids IDs to retrieve
      *
      * @return array
      */
-    protected function getLists(
-        $tag = null, $listId = null, $userId = null
-    ) {
+    protected function getListsById($ids)
+    {
+        $lists = [];
+        foreach ($ids as $id) {
+            $list = $this->userList->getExisting($id);
+            if ($list->public) {
+                $lists[] = $list;
+            }
+        }
+        return $lists;
+    }
+
+    /**
+     * Get a list of public lists to display.
+     *
+     * @param string|array $tag    Tag to match
+     * @param string|array $listId Optional list of list IDs to return.
+     *
+     * @return array
+     */
+    protected function getLists($tag = null, $listId = null)
+    {
         $resultIds = $result = [];
 
         // Get public lists by search criteria
-        $lists = $this->resourceTags->getListsForTag($tag, $listId, $userId, true);
+        $lists = $this->resourceTags->getListsForTag($tag, $listId, true);
 
         if ($lists->count()) {
             foreach ($lists as $list) {
