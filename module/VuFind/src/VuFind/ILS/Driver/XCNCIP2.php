@@ -818,7 +818,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($list as $current) {
             $this->registerNamespaceFor($current);
             $tmp = $current->xpath('ns1:DateDue');
-            // DateDue could be ommitted in response
+            // DateDue could be omitted in response
             $due = $this->displayDate(!empty($tmp) ? (string)$tmp[0] : null);
             $title = $current->xpath('ns1:Title');
             $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
