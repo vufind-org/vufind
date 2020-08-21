@@ -6,7 +6,7 @@
   <?php foreach($items as $item): ?>
     <?php
       $linkElement = [
-      'href' => $item['link'],
+      'href' => $item['link'] . ($this->feedUrl ? '?feedUrl=' . urlencode($this->feedUrl) : '')
       ];
       if ($this->linkTarget) {
         $linkElement['target'] = $this->linkTarget;
