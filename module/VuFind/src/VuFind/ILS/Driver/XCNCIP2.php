@@ -1136,7 +1136,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getInstructors()
     {
-        // NCIP does not supports course reserves
+        // NCIP does not support course reserves
         return [];
     }
 
@@ -1150,7 +1150,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCourses()
     {
-        // NCIP does not supports course reserves
+        // NCIP does not support course reserves
         return [];
     }
 
@@ -1170,7 +1170,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function findReserves($course, $inst, $dept)
     {
-        // NCIP does not supports course reserves
+        // NCIP does not support course reserves
         return [];
     }
 
