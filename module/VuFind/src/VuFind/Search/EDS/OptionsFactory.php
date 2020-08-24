@@ -28,7 +28,6 @@
 namespace VuFind\Search\EDS;
 
 use Interop\Container\ContainerInterface;
-use VuFindSearch\Backend\EDS\ApiException;
 
 /**
  * Factory for EDS search options objects.
