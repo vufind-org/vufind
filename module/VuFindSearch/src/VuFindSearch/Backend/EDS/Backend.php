@@ -635,7 +635,7 @@ class Backend extends AbstractBackend
     {
         // Use a different cache key for guests, just in case info differs:
         $cacheKey = $this->isGuest ? 'edsGuestInfo' : 'edsLoggedInInfo';
-        if ($data = $cache->getItem($cacheKey)) {
+        if ($data = $this->cache->getItem($cacheKey)) {
             return $data;
         }
         $authenticationToken = $this->getAuthenticationToken();
@@ -677,7 +677,7 @@ class Backend extends AbstractBackend
             }
         }
         if (!empty($response)) {
-            $cache->setItem($cacheKey, $response);
+            $this->cache->setItem($cacheKey, $response);
         }
         return $response;
     }
