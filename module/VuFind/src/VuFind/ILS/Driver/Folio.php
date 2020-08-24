@@ -417,22 +417,22 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Gets location from the /locations endpoint and sets the
-     * display name to discoveryDisplayName,  name, or code based
-     * on whichever is available first in that order.
+     * Gets the location name from the /locations endpoint and sets
+     * the display name to discoveryDisplayName,  name, or code
+     * based on whichever is available first in that order.
      *
-     * @param object $holding object from the /holdings-storage/holdings
-     * endpoint
+     * @param string $locationId ID of a location from the
+     * /holdings-storage/holdings endpoint
      *
      * @return string
      */
-    protected function getLocation($holding)
+    protected function getLocationName($locationId)
     {
         $locationName = '';
-        if (!empty($holding->permanentLocationId)) {
+        if (!empty($locationId)) {
             $locationResponse = $this->makeRequest(
                 'GET',
-                '/locations/' . $holding->permanentLocationId
+                '/locations/' . $locationId
             );
             $location = json_decode($locationResponse->getBody());
             if (!empty($location->discoveryDisplayName)) {
@@ -472,7 +472,8 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
-            $locationName = $this->getLocation($holding);
+            $locationId = $holding->permanentLocationId;
+            $locationName = $this->getLocationName($locationId);
 
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
