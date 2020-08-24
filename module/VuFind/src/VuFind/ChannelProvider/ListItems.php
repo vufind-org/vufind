@@ -188,14 +188,14 @@ class ListItems extends AbstractChannelProvider
 
         if ($channelToken) {
             $lists = $this->getListsById([$channelToken]);
-        } else if ($this->tags) {
-            $lists = $this->getLists(
+        } elseif ($this->tags) {
+            $lists = $this->getListsByTagAndId(
                 $this->tags,
                 $this->ids,
                 $this->initialListsToDisplay
             );
         } else {
-            $lists = $this->getListsById($this->ids);
+            $lists = $this->getLists();
         }
 
         $channels = [];
@@ -229,14 +229,41 @@ class ListItems extends AbstractChannelProvider
     }
 
     /**
-     * Get a list of public lists to display.
-     *
-     * @param string|array $tag    Tag to match
-     * @param string|array $listId Optional list of list IDs to return.
+     * Get a list of public lists to display:
      *
      * @return array
      */
-    protected function getLists($tag = null, $listId = null)
+    protected function getLists()
+    {
+        // First fetch hard-coded IDs:
+        $lists = $this->getListsById($this->ids);
+
+        // Next add public lists if necessary:
+        if ($this->displayPublicLists) {
+            $ids = $this->ids;
+            $callback = function ($select) use ($ids) {
+                $select->where->equalTo('public', 1);
+                foreach ($ids as $id) {
+                    $select->where->notEqualTo('id', $id);
+                }
+            };
+            foreach ($this->userList->select($callback) as $list) {
+                $lists[] = $list;
+            }
+        }
+
+        return $lists;
+    }
+
+    /**
+     * Get a list of public lists, identified by ID and tag.
+     *
+     * @param string|array $tag    Tags to match
+     * @param string|array $listId List IDs
+     *
+     * @return array
+     */
+    protected function getListsByTagAndId($tag = null, $listId = null)
     {
         $resultIds = $result = [];
 
