@@ -417,6 +417,36 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Gets location from the /locations endpoint and sets the
+     * display name to discoveryDisplayName,  name, or code based
+     * on whichever is available first in that order.
+     *
+     * @param object $holding object from the /holdings-storage/holdings
+     * endpoint
+     *
+     * @return string
+     */
+    protected function getLocation($holding)
+    {
+        $locationName = '';
+        if (!empty($holding->permanentLocationId)) {
+            $locationResponse = $this->makeRequest(
+                'GET',
+                '/locations/' . $holding->permanentLocationId
+            );
+            $location = json_decode($locationResponse->getBody());
+            if (!empty($location->discoveryDisplayName)) {
+                $locationName = $location->discoveryDisplayName;
+            } else if (!empty($location->name)) {
+                $locationName = $location->name;
+            } else if (!empty($location->code)) {
+                $locationName = $location->code;
+            }
+        }
+        return $locationName;
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -442,15 +472,7 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
-            $locationName = '';
-            if (!empty($holding->permanentLocationId)) {
-                $locationResponse = $this->makeRequest(
-                    'GET',
-                    '/locations/' . $holding->permanentLocationId
-                );
-                $location = json_decode($locationResponse->getBody());
-                $locationName = $location->name;
-            }
+            $locationName = $this->getLocation($holding);
 
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
