@@ -42,41 +42,6 @@ use VuFindSearch\Backend\EDS\ApiException;
 class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
 {
     /**
-     * Get the EDS API information required by the Options object.
-     *
-     * @param ContainerInterface $container Service manager
-     *
-     * @return array
-     */
-    protected function getEDSInfo(ContainerInterface $container)
-    {
-        // First check to see if the cache contains the information we need, since
-        // API calls are expensive...
-        $cache = $container->get(\VuFind\Cache\Manager::class)->getCache('object');
-        if ($data = $cache->getItem('edsBasicInfo')) {
-            return $data;
-        }
-        // If the cache failed, we next should check the session...
-        $session = new \Laminas\Session\Container(
-            'EBSCO', $container->get(\Laminas\Session\SessionManager::class)
-        );
-        // No API info in session? Re-establish connection:
-        if (!isset($session->info)) {
-            $backend = $container->get(\VuFind\Search\BackendManager::class)
-                ->get('EDS');
-            try {
-                $backend->getSessionToken();
-            } catch (ApiException $e) {
-                // Retry once to work around occasional 106 errors:
-                $backend->getSessionToken();
-            }
-        }
-        // Update the cache for next time!
-        $cache->setItem('edsBasicInfo', $session->info);
-        return $session->info;
-    }
-
-    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -96,7 +61,9 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $extra = [$this->getEDSInfo($container)];
+        $backend = $container->get(\VuFind\Search\BackendManager::class)
+            ->get('EDS');
+        $extra = [$backend->getInfo()];
         return parent::__invoke($container, $requestedName, $extra);
     }
 }
