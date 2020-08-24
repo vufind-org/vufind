@@ -437,9 +437,9 @@ class Folio extends AbstractAPI implements
             $location = json_decode($locationResponse->getBody());
             if (!empty($location->discoveryDisplayName)) {
                 $locationName = $location->discoveryDisplayName;
-            } else if (!empty($location->name)) {
+            } elseif (!empty($location->name)) {
                 $locationName = $location->name;
-            } else if (!empty($location->code)) {
+            } elseif (!empty($location->code)) {
                 $locationName = $location->code;
             }
         }
