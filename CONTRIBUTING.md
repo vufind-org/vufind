@@ -10,6 +10,7 @@
 ## About VuFind
 
  - [VuFind Developer Manual](https://vufind.org/wiki/development) - A hub of information on VuFind's design and dependencies.
+ - [Videos](https://vufind.org/wiki/videos) - Tutorials and other videos about VuFind.
  - [Profiling](https://vufind.org/wiki/development:profiling) - Information on profiling VuFind's code to improve performance.
  - [Testing](https://vufind.org/wiki/development:testing) - Notes on testing VuFind.
  - [Troubleshooting](https://vufind.org/wiki/development:troubleshooting) - Notes on troubleshooting and debugging VuFind.
