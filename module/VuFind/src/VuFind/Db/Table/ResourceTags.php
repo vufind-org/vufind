@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
 /**
@@ -166,7 +167,7 @@ class ResourceTags extends Gateway
                     'resource_id' => new Expression(
                         'DISTINCT(?)', ['resource_tags.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(
