@@ -143,7 +143,8 @@ class ListItems extends AbstractChannelProvider
     {
         $this->ids = $options['ids'] ?? [];
         $this->tags = $options['tags'] ?? [];
-        $this->andTags = (bool)($options['andTags'] ?? true);
+        $this->andTags
+            = 'or' !== trim(strtolower($options['tagsOperator'] ?? 'AND'));
 
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
