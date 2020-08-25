@@ -61,6 +61,13 @@ class ListItems extends AbstractChannelProvider
     protected $tags;
 
     /**
+     * Whether to use AND operator when filtering by tag.
+     *
+     * @var bool
+     */
+    protected $andTags;
+
+    /**
      * Should we pull in public list results in addition to the inclusion list in
      * $ids?
      *
@@ -136,6 +143,7 @@ class ListItems extends AbstractChannelProvider
     {
         $this->ids = $options['ids'] ?? [];
         $this->tags = $options['tags'] ?? [];
+        $this->andTags = (bool)($options['andTags'] ?? true);
 
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
@@ -268,7 +276,9 @@ class ListItems extends AbstractChannelProvider
         $resultIds = $result = [];
 
         // Get public lists by search criteria
-        $lists = $this->resourceTags->getListsForTag($tag, $listId, true);
+        $lists = $this->resourceTags->getListsForTag(
+            $tag, $listId, true, $this->andTags
+        );
 
         if ($lists->count()) {
             foreach ($lists as $list) {

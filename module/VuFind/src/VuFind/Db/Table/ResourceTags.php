@@ -193,27 +193,28 @@ class ResourceTags extends Gateway
      * @param string|array      $tag        Tag to match
      * @param null|string|array $listId     List ID to retrieve (null for all)
      * @param bool              $publicOnly Whether to return only public lists
+     * @param bool              $andTags    Use AND operator when filtering by tag.
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getListsForTag(
-        $tag, $listId = null, $publicOnly = true
+        $tag, $listId = null, $publicOnly = true, $andTags = true
     ) {
         $tag = (array)$tag;
         $listId = $listId ? (array)$listId : null;
 
         $callback = function ($select) use (
-            $tag, $listId, $publicOnly
+            $tag, $listId, $publicOnly, $andTags
         ) {
-            $select->columns(
-                [
-                    'tag_cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', ['resource_tags.tag_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                    Select::SQL_STAR
-                ]
-            );
+            $columns = [Select::SQL_STAR];
+            if ($andTags) {
+                $columns['tag_cnt'] = new Expression(
+                    'COUNT(DISTINCT(?))', ['resource_tags.tag_id'],
+                    [Expression::TYPE_IDENTIFIER]
+                );
+            }
+            $select->columns($columns);
+
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
@@ -260,7 +261,7 @@ class ResourceTags extends Gateway
             }
             $select->group('resource_tags.list_id');
 
-            if ($tag) {
+            if ($tag && $andTags) {
                 // Use AND operator for tags
                 $select->having->literal(
                     'tag_cnt = ?', count(array_unique($tag))
