@@ -282,7 +282,10 @@ class SearchController extends \VuFind\Controller\SearchController
 
         $view = $this->forwardTo('Search', 'Results');
 
-        $view->plugin('slot')->set('head-title', "browse_extended_$type");
+        $this->getViewRenderer()->plugin('headTitle')->append(
+            $this->translate("browse_extended_$type") . ' '
+        );
+
         $type = strtolower($type);
         $view->browse = $type;
         $view->defaultBrowseHandler = $config['type'];
