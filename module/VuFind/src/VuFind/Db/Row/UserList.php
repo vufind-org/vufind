@@ -259,7 +259,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
         // Remove Resource (related tags are also removed implicitly)
         $userResourceTable = $this->getDbTable('UserResource');
-        $userResourceTable->destroyResourceLinks(
+        $userResourceTable->destroyLinks(
             $resourceIDs, $this->user_id, $this->id
         );
     }
