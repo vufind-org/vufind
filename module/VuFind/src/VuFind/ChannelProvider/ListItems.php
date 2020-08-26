@@ -193,19 +193,9 @@ class ListItems extends AbstractChannelProvider
      */
     protected function buildListChannels($channelToken)
     {
-        $lists = [];
-
-        if ($channelToken) {
-            $lists = $this->getListsById([$channelToken]);
-        } elseif ($this->tags) {
-            $lists = $this->getListsByTagAndId(
-                $this->tags,
-                $this->ids,
-                $this->initialListsToDisplay
-            );
-        } else {
-            $lists = $this->getLists();
-        }
+        $lists = $channelToken
+            ? $this->getListsById([$channelToken])
+            : $lists = $this->getLists();
 
         $channels = [];
         foreach ($lists as $list) {
@@ -238,49 +228,63 @@ class ListItems extends AbstractChannelProvider
     }
 
     /**
-     * Get a list of public lists to display:
+     * Given an array of lists, add public lists if configured to do so.
+     *
+     * @param array $lists List to expand.
      *
      * @return array
      */
-    protected function getLists()
+    protected function addPublicLists($lists)
     {
-        // First fetch hard-coded IDs:
-        $lists = $this->getListsById($this->ids);
-
-        // Next add public lists if necessary:
         if ($this->displayPublicLists) {
-            $ids = $this->ids;
-            $callback = function ($select) use ($ids) {
+            $resultIds = [];
+            foreach ($lists as $list) {
+                $resultIds[] = $list->id;
+            }
+            $callback = function ($select) use ($resultIds) {
                 $select->where->equalTo('public', 1);
-                foreach ($ids as $id) {
-                    $select->where->notEqualTo('id', $id);
+                if (!empty($resultIds)) {
+                    $select->where->notIn('id', $resultIds);
                 }
             };
             foreach ($this->userList->select($callback) as $list) {
                 $lists[] = $list;
             }
         }
-
         return $lists;
+    }
+
+    /**
+     * Get a list of public lists to display:
+     *
+     * @return array
+     */
+    protected function getLists()
+    {
+        // Depending on whether tags are configured, we use different methods to
+        // fetch the base list of lists...
+        $baseLists = $this->tags
+            ? $this->getListsByTagAndId()
+            : $this->getListsById($this->ids);
+
+        // Next, we add other public lists if necessary:
+        return $this->addPublicLists($baseLists);
     }
 
     /**
      * Get a list of public lists, identified by ID and tag.
      *
-     * @param string|array $tag    Tags to match
-     * @param string|array $listId List IDs
-     *
      * @return array
      */
-    protected function getListsByTagAndId($tag = null, $listId = null)
+    protected function getListsByTagAndId()
     {
-        $resultIds = $result = [];
-
         // Get public lists by search criteria
         $lists = $this->resourceTags->getListsForTag(
-            $tag, $listId, true, $this->andTags
+            $this->tags, $this->ids, true, $this->andTags
         );
 
+        // Format result set into an array:
+        $result = $resultIds = [];
         if ($lists->count()) {
             foreach ($lists as $list) {
                 $resultIds[] = $list->list_id;
@@ -293,28 +297,17 @@ class ListItems extends AbstractChannelProvider
             foreach ($this->userList->select($callback) as $list) {
                 $result[] = $list;
             }
-
-            if ($listId) {
-                // Sort lists by ID list
-                $orderIds = (array)$listId;
-                $sortFn = function ($a, $b) use ($orderIds) {
-                    return
-                        array_search($a->id, $orderIds)
-                        > array_search($b->id, $orderIds);
-                };
-                usort($result, $sortFn);
-            }
         }
 
-        // Next add public lists if necessary:
-        if ($this->displayPublicLists) {
-            $callback = function ($select) use ($resultIds) {
-                $select->where->equalTo('public', 1);
-                $select->where->notIn('id', $resultIds);
+        // Sort lists by ID list, if necessary:
+        if (!empty($result) && $this->ids) {
+            $orderIds = (array)$this->ids;
+            $sortFn = function ($left, $right) use ($orderIds) {
+                return
+                    array_search($left->id, $orderIds)
+                    <=> array_search($right->id, $orderIds);
             };
-            foreach ($this->userList->select($callback) as $list) {
-                $result[] = $list;
-            }
+            usort($result, $sortFn);
         }
 
         return $result;
