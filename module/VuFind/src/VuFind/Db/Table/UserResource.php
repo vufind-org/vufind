@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
 /**
@@ -78,7 +79,7 @@ class UserResource extends Gateway
                     new Expression(
                         'DISTINCT(?)', ['user_resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(

@@ -167,7 +167,7 @@ class ResourceTags extends Gateway
                     'resource_id' => new Expression(
                         'DISTINCT(?)', ['resource_tags.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(
