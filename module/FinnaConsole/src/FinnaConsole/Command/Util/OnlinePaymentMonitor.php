@@ -454,10 +454,8 @@ class OnlinePaymentMonitor extends AbstractUtilCommand
                     ->render('Email/online-payment-alert.phtml', $params);
 
                 try {
-                    $mailer = $this->serviceManager
-                        ->build(\VuFind\Mailer\Mailer::class);
-                    $mailer->setMaxRecipients(0);
-                    $mailer->send(
+                    $this->mailer->setMaxRecipients(0);
+                    $this->mailer->send(
                         $email, $this->fromEmail, $messageSubject, $message
                     );
                 } catch (\Exception $e) {
