@@ -194,8 +194,7 @@ class ListItems extends AbstractChannelProvider
     protected function buildListChannels($channelToken)
     {
         $lists = $channelToken
-            ? $this->getListsById([$channelToken])
-            : $lists = $this->getLists();
+            ? $this->getListsById([$channelToken]) : $this->getLists();
 
         $channels = [];
         foreach ($lists as $list) {
