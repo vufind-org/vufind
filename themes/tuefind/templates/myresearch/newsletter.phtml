@@ -7,14 +7,14 @@
   ?>
 <?php endif;?>
 <p>
-    <form method="post" action="<?=$this->url('myresearch-newsletter')?>">
-      <div class="form-group">
-        <label class="control-label">Möchten Sie regelmäßig einen Newsletter per E-Mail erhalten?</label>
-        <input type="checkbox" name="subscribed" <?=$this->subscribed ? 'checked' : ''?>>
-      </div>
+  <form method="post" action="<?=$this->url('myresearch-newsletter')?>">
+    <div class="form-group">
+      <label class="control-label">Möchten Sie regelmäßig einen Newsletter per E-Mail erhalten?</label>
+      <input type="checkbox" name="subscribed" <?=$this->subscribed ? 'checked' : ''?>>
+    </div>
 
-      <div class="form-group">
-        <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>">
-      </div>
-    </form>
+    <div class="form-group">
+      <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>">
+    </div>
+  </form>
 </p>
