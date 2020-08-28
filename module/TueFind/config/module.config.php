@@ -94,6 +94,7 @@ $config = [
             'TueFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'TueFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\FulltextSnippetProxyController' => '\TueFind\Controller\FulltextSnippetProxyControllerFactory',
+            'TueFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\PDAProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\ProxyController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\QuickLinkController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -114,6 +115,8 @@ $config = [
             'Feedback' => 'TueFind\Controller\FeedbackController',
             'feedback' => 'TueFind\Controller\FeedbackController',
             'fulltextsnippetproxy' => 'TueFind\Controller\FulltextSnippetProxyController',
+            'MyResearch' => 'TueFind\Controller\MyResearchController',
+            'myresearch' => 'TueFind\Controller\MyResearchController',
             'pdaproxy' => 'TueFind\Controller\PDAProxyController',
             'proxy' => 'TueFind\Controller\ProxyController',
             'QuickLink' => 'TueFind\Controller\QuickLinkController',
@@ -218,7 +221,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['RssFeed/Full'];
+$staticRoutes = ['MyResearch/Newsletter', 'RssFeed/Full'];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
