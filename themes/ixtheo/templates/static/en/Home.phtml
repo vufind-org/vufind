@@ -1,8 +1,3 @@
-<div id="breaking_news">
-   <h4 class="text-center" style="color: #343deb ; margin-top: 12px; margin-bottom: 2px">
-      +++ <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1" style="color : #343deb">New Feature: Full Text Search  - leave your feedback below</a> +++ <a href="/docs/Fulltext_Description.pdf" class="text-warning" style="color : #343deb" target="_blank">Description</a> +++
-   </h4>
-</div>
 <style>
     .read-more-state ~ .read-more-trigger:before {
         content: 'Show more';
@@ -18,6 +13,47 @@
     $panelWidth = "col-md-6";
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-bell-o"></i> Welcome!
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>The new IxTheo is a comprehensive bibliography for theology and religious studies. It is now possible to search not only for articles,
+                        but also for monographs, databases and relevant Internet links.</p>
+                    <div class="read-more-target">
+                        <p>A selection of review journals is now also included. When the relevant licenses permit it, it is possible to access directly the complete text of the articles, reviews and books.</p>
+                        <p>The new IxTheo remains a free and open access service to the worldwide scholarly community. The editors of the IxTheo are the Universitätsbibliothek Tübingen
+                        (library of the university of Tübingen) as well as the Evangelisch-Theologische Fakultät Tübingen (the protestant faculty of theology of the university of Tübingen)
+                        and the Katholisch-Theologische Fakultät Tübingen (the catholic faculty of theology of the same university).</p>
+                        <p>We wish you an enjoyable experience as you explore the new IxTheo and we would be glad to get your feedback!</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-search-plus"></i> Full Text Search<div class="new">new</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body flex-col">
+                    The new <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1">Full Text Search</a> provides searching in commercial and free full texts, TOCs and Abstracts.<br/>Comprehensive information is given in the <a href="/docs/Fulltext_Description.pdf" target="_blank">description</a>.
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12"></div>
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -83,33 +119,6 @@
                     <div class="read-more-target">
                         <p>The metadata of <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> were completely migrated to IxTheo. More than 200,000 records with high-quality indexing now enrich the bibliography of scientific literature on biblical studies in IxTheo/BILDI. An independent access for this literature, jointly managed by BILDI and IxTheo, will be available at the end of 2019.</p>
                         <p><a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/">KALDI</a>'s metadata has also been completely migrated to IxTheo. More than 34,000 carefully indexed records now enrich the bibliography of church law in IxTheo/KALDI. An independent access for literature on canon law, jointly managed by KALDI, DaKaR (Münster) and IxTheo, will be available at the end of 2019.</p>
-                    </div>
-                </div>
-                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-md-12"><hr></div>
-<div class="col-md-6 ix-panel-news">
-    <div class="panel <?= $panelClass; ?>">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <i class="fa fa-bell-o"></i> Welcome!
-            </h4>
-        </div>
-        <div id="<?= $panelId++; ?>" class="panel-collapse">
-            <div class="panel-body">
-                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
-                <div class="read-more-wrap">
-                    <p>The new IxTheo is a comprehensive bibliography for theology and religious studies. It is now possible to search not only for articles,
-                        but also for monographs, databases and relevant Internet links.</p>
-                    <div class="read-more-target">
-                        <p>A selection of review journals is now also included. When the relevant licenses permit it, it is possible to access directly the complete text of the articles, reviews and books.</p>
-                        <p>The new IxTheo remains a free and open access service to the worldwide scholarly community. The editors of the IxTheo are the Universitätsbibliothek Tübingen
-                        (library of the university of Tübingen) as well as the Evangelisch-Theologische Fakultät Tübingen (the protestant faculty of theology of the university of Tübingen)
-                        and the Katholisch-Theologische Fakultät Tübingen (the catholic faculty of theology of the same university).</p>
-                        <p>We wish you an enjoyable experience as you explore the new IxTheo and we would be glad to get your feedback!</p>
                     </div>
                 </div>
                 <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
