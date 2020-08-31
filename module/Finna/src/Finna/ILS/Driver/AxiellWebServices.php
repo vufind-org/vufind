@@ -2150,12 +2150,28 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             } else {
                 $amount = str_replace(',', '.', $debt->debtAmountFormatted) * 100;
             }
-            $payable = !in_array($debt->debtType, $blockedTypes);
+            $description = $debt->debtType . ' - ' . $debt->debtNote;
+            $payable = true;
+            foreach ($blockedTypes as $blockedType) {
+                if (strncmp($blockedType, '/', 1) === 0
+                    && substr_compare($blockedType, '/', -1) === 0
+                ) {
+                    if (preg_match($blockedType, $description)) {
+                        $payable = false;
+                        break;
+                    }
+                } else {
+                    if ($blockedType === $description) {
+                        $payable = false;
+                        break;
+                    }
+                }
+            }
             $fine = [
                 'debt_id' => $debt->id,
                 'amount' => $amount,
                 'checkout' => '',
-                'fine' => $debt->debtType . ' - ' . $debt->debtNote,
+                'fine' => $description,
                 'balance' => $amount,
                 'createdate' => $debt->debtDate,
                 'payableOnline' => $payable,

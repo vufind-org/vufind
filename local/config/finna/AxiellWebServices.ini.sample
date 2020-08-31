@@ -190,9 +190,10 @@ minimumFee = 65
 transactionMaxDuration = 15
 ; Currency
 currency = 'EUR'
-; Fee types listed are not payable online.
-nonPayable[] = 'Lasku'
-nonPayable[] = 'Muu maksu'
+; Fee types listed are not payable online. May be a complete string or a regular
+; expression enclosed in slashes (e.g. '/^Lasku - Lasku\b/')
+nonPayable[] = '/^Lasku - Lasku\b/'
+nonPayable[] = '/^Muu maksu/'
 
 ; valid value is 'driver'.
 [updateTransactionHistoryState]
