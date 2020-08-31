@@ -81,7 +81,7 @@ defaultPickUpLocation = 1.001
 ;acceptTermsText[en-gb] = "I accept the terms in English."
 
 [Feedback]
-; domain = The starting subdomain of url without www., 
+; domain = The starting subdomain of url without www.,
 ; for saving updateMessagingSettings / updateAddress to database for correct institution.
 
 [cancelHolds]
@@ -156,7 +156,7 @@ method = driver
 ; A colon-separated list used to remove certain method types from a service
 ; Meanings: snailMail = letter, ilsDefined = none
 ; Allowed options:
-; pickUpNotice = "email:snailMail:sms" 
+; pickUpNotice = "email:snailMail:sms"
 ; overDueNotice = "email:snailMail:sms"
 ; dueDateAlert = "email:sms:ilsDefined"
 
@@ -190,6 +190,9 @@ minimumFee = 65
 transactionMaxDuration = 15
 ; Currency
 currency = 'EUR'
+; Fee types listed are not payable online.
+nonPayable[] = 'Lasku'
+nonPayable[] = 'Muu maksu'
 
 ; valid value is 'driver'.
 [updateTransactionHistoryState]

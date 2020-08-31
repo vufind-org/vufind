@@ -2107,6 +2107,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         $username = $user['cat_username'];
         $password = $user['cat_password'];
 
+        $paymentConfig = $this->config['onlinePayment'] ?? [];
+        $blockedTypes = $paymentConfig['nonPayable'] ?? [];
+
         $function = 'GetDebts';
         $functionResult = 'debtsResponse';
         $conf = [
@@ -2147,6 +2150,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             } else {
                 $amount = str_replace(',', '.', $debt->debtAmountFormatted) * 100;
             }
+            $payable = !in_array($debt->debtType, $blockedTypes);
             $fine = [
                 'debt_id' => $debt->id,
                 'amount' => $amount,
@@ -2154,7 +2158,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'fine' => $debt->debtType . ' - ' . $debt->debtNote,
                 'balance' => $amount,
                 'createdate' => $debt->debtDate,
-                'payableOnline' => true,
+                'payableOnline' => $payable,
                 'organization' => $debt->organisation ?? ''
             ];
             if (!empty($debt->organisation)) {
