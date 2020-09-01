@@ -91,6 +91,8 @@ var TueFind = {
                             $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
                         else if (verbose)
                             $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
+                        else
+                            $(this).replaceWith();
                     });
                     if (snippets)
                         $(this).removeAttr('style');
@@ -108,7 +110,7 @@ var TueFind = {
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
-                    if (!verbose)
+                    if (!verbose && snippets)
                         $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
