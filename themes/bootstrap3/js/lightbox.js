@@ -340,8 +340,8 @@ VuFind.register('lightbox', function Lightbox() {
    */
   var FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
   function getFocusableNodes () {
-    var nodes = _modal[0].querySelectorAll(FOCUSABLE_ELEMENTS)
-    return Array(...nodes)
+    var nodes = _modal[0].querySelectorAll(FOCUSABLE_ELEMENTS);
+    return [].slice.apply(nodes);
   }
   /**
    * Tries to set focus on a node which is not a close trigger
@@ -354,19 +354,23 @@ VuFind.register('lightbox', function Lightbox() {
     if (focusableNodes.length === 0) return
 
     // remove nodes on whose click, the modal closes
-    var nodesWhichAreNotCloseTargets = focusableNodes.filter(node => {
+    var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
       return !node.hasAttribute("data-lightbox-close") && (
         !node.hasAttribute("data-dismiss") ||
-        node.getAttribute("data-dismiss") != "modal"
+        node.getAttribute("data-dismiss") !== "modal"
       );
     })
 
-    if (nodesWhichAreNotCloseTargets.length > 0) nodesWhichAreNotCloseTargets[0].focus()
-    if (nodesWhichAreNotCloseTargets.length === 0) focusableNodes[0].focus()
+    if (nodesWhichAreNotCloseTargets.length > 0) {
+      nodesWhichAreNotCloseTargets[0].focus();
+    }
+    if (nodesWhichAreNotCloseTargets.length === 0) {
+      focusableNodes[0].focus();
+    }
   }
 
   function retainFocus(event) {
-    var focusableNodes = getFocusableNodes()
+    var focusableNodes = getFocusableNodes();
 
     // no focusable nodes
     if (focusableNodes.length === 0) return;
@@ -375,28 +379,32 @@ VuFind.register('lightbox', function Lightbox() {
      * Filters nodes which are hidden to prevent
      * focus leak outside modal
      */
-    focusableNodes = focusableNodes.filter(node => {
-      return (node.offsetParent !== null)
+    focusableNodes = focusableNodes.filter(function nodeHiddenFilter(node) {
+      return (node.offsetParent !== null);
     })
 
     // if disableFocus is true
     if (!_modal[0].contains(document.activeElement)) {
-      focusableNodes[0].focus()
+      focusableNodes[0].focus();
     } else {
-      const focusedItemIndex = focusableNodes.indexOf(document.activeElement)
+      var focusedItemIndex = focusableNodes.indexOf(document.activeElement);
 
       if (event.shiftKey && focusedItemIndex === 0) {
-        focusableNodes[focusableNodes.length - 1].focus()
-        event.preventDefault()
+        focusableNodes[focusableNodes.length - 1].focus();
+        event.preventDefault();
       }
 
-      if (!event.shiftKey && focusableNodes.length > 0 && focusedItemIndex === focusableNodes.length - 1) {
-        focusableNodes[0].focus()
-        event.preventDefault()
+      if (
+        !event.shiftKey &&
+        focusableNodes.length > 0 &&
+        focusedItemIndex === focusableNodes.length - 1
+      ) {
+        focusableNodes[0].focus();
+        event.preventDefault();
       }
     }
   }
-  function onKeydown(e) {
+  function onKeydown(event) {
     if (event.keyCode === 27) { // esc
       close();
     }
