@@ -462,7 +462,7 @@ class Folio extends AbstractAPI implements
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
-                . '" and discoverySuppress==false)'
+                . '" NOT discoverySuppress==true)'
         ];
         $holdingResponse = $this->makeRequest(
             'GET',
@@ -477,7 +477,7 @@ class Folio extends AbstractAPI implements
 
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
-                    . '" and discoverySuppress==false)'
+                    . '" NOT discoverySuppress==true)'
             ];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
@@ -485,9 +485,6 @@ class Folio extends AbstractAPI implements
                 return $note->note ?? '';
             };
             foreach ($itemBody->items as $item) {
-                if ($item->discoverySuppress ?? false) {
-                    continue;
-                }
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
