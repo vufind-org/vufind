@@ -48,23 +48,35 @@ class UserIpReader
     protected $server;
 
     /**
-     * Should we respect the X-Forwarded-For header?
+     * Configuration specifying allowed HTTP headers containing IPs (false for none).
+     * See [Proxy] allow_forwarded_ips setting in config.ini for more details.
      *
-     * @var bool
+     * @var string|bool
      */
     protected $allowForwardedIps;
 
     /**
+     * IP addresses to exclude from consideration
+     *
+     * @var array
+     */
+    protected $ipFilter;
+
+    /**
      * Constructor
      *
-     * @param Parameters $server            Server parameters
-     * @param bool       $allowForwardedIps Should we respect the X-Forwarded-For
-     * header?
+     * @param Parameters  $server            Server parameters
+     * @param string|bool $allowForwardedIps Forwarded header configuration string
+     * (false to disable checking IP-related X- headers)
+     * @param array       $ipFilter          IP addresses to exclude from
+     * consideration
      */
-    public function __construct(Parameters $server, $allowForwardedIps = false)
-    {
+    public function __construct(Parameters $server, $allowForwardedIps = false,
+        array $ipFilter = []
+    ) {
         $this->server = $server;
         $this->allowForwardedIps = $allowForwardedIps;
+        $this->ipFilter = array_map('trim', $ipFilter);
     }
 
     /**
@@ -75,17 +87,43 @@ class UserIpReader
     public function getUserIp()
     {
         if ($this->allowForwardedIps) {
-            // First check X-Real-IP; this is most accurate when set...
-            $realIp = $this->server->get('HTTP_X_REAL_IP');
-            if (!empty($realIp)) {
-                return $realIp;
-            }
-            // Next, try X-Forwarded-For; if it's a comma-separated list, use
-            // only the first part.
-            $forwarded = $this->server->get('HTTP_X_FORWARDED_FOR');
-            if (!empty($forwarded)) {
-                $parts = explode(',', $forwarded);
-                return trim($parts[0]);
+            foreach (explode(',', $this->allowForwardedIps) as $chunk) {
+                // Extract field and behavior from chunk:
+                list($field, $behavior) = explode(':', $chunk . ':', 2);
+
+                // Look up field value; skip if empty:
+                $fieldValue = $this->server->get($field);
+                if (empty($fieldValue)) {
+                    continue;
+                }
+
+                // Split up the field value, if it is delimited, then filter it:
+                $parts = array_diff(
+                    array_map('trim', explode(',', $fieldValue)),
+                    $this->ipFilter
+                );
+
+                // Apply the appropriate behavior (note that we trim any trailing
+                // colon off the behavior, since we may have added one above to
+                // prevent warnings in the explode operation):
+                //
+                // Also note that we need to use array_shift/array_pop/current here
+                // in place of specific indexes, because the filtering above may have
+                // left non-consecutive keys in place.
+                switch (strtolower(rtrim($behavior, ':'))) {
+                case 'first':
+                    if (!empty($parts)) {
+                        return array_shift($parts);
+                    }
+                case 'last':
+                    if (!empty($parts)) {
+                        return array_pop($parts);
+                    }
+                default:
+                    if (count($parts) === 1) {
+                        return current($parts);
+                    }
+                }
             }
         }
         // Default case: use REMOTE_ADDR directly.

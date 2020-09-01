@@ -47,7 +47,7 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testXRealIp()
+    public function testMultipleHeaders()
     {
         $params = new Parameters(
             [
@@ -56,34 +56,102 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
                 'REMOTE_ADDR' => '127.0.0.1',
             ]
         );
-        // Test appropriate behavior with forwarding enabled:
-        $reader1 = new UserIpReader($params, true);
+        // Test appropriate behavior with forwarding configured to prefer Real-IP:
+        $reader1 = new UserIpReader(
+            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+        );
         $this->assertEquals('1.2.3.4', $reader1->getUserIp());
+        // Test appropriate behavior with forwarding configured to ignore Real-IP:
+        $reader2 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:last');
+        $this->assertEquals('5.6.7.8', $reader2->getUserIp());
         // Test appropriate behavior with forwarding disabled:
-        $reader2 = new UserIpReader($params, false);
-        $this->assertEquals('127.0.0.1', $reader2->getUserIp());
+        $reader3 = new UserIpReader($params, false);
+        $this->assertEquals('127.0.0.1', $reader3->getUserIp());
     }
 
     /**
-     * Test X-Forwarded-For (single value); it should take priority over REMOTE_ADDR
-     * when forwarding is allowed.
+     * Support method for testMultipleHeadersWithFilter().
+     *
+     * @params Parameters $params Parameters
+     * @param string      $rules  Rules to apply to UserIpReader
      *
      * @return void
      */
-    public function testXForwardedForSingle()
+    protected function runFilterTests(Parameters $params, $rules)
     {
-        $params = new Parameters(
+        // Test appropriate behavior with one filtered address:
+        $reader1 = new UserIpReader(
+            $params,
+            $rules,
+            ['1.2.3.4']
+        );
+        $this->assertEquals('9.10.11.12', $reader1->getUserIp());
+        // Test appropriate behavior with two filtered addresses:
+        $reader2 = new UserIpReader(
+            $params,
+            $rules,
+            ['1.2.3.4', '9.10.11.12']
+        );
+        $this->assertEquals('5.6.7.8', $reader2->getUserIp());
+        // Test appropriate behavior with three filtered addresses:
+        $reader3 = new UserIpReader(
+            $params,
+            $rules,
+            ['1.2.3.4', '5.6.7.8', '9.10.11.12']
+        );
+        $this->assertEquals('127.0.0.1', $reader3->getUserIp());
+    }
+
+    /**
+     * Test that filters are applied correctly.
+     *
+     * @return void
+     */
+    public function testMultipleHeadersWithFilter()
+    {
+        // Run the same tests twice, once in "first" mode and once in "last" mode,
+        // to make sure both cases are covered correctly (we use different parameters
+        // in each situation to allow the support method's assertions to work right)
+        $params1 = new Parameters(
             [
-                'HTTP_X_FORWARDED_FOR' => '5.6.7.8',
+                'HTTP_X_REAL_IP' => '1.2.3.4',
+                'HTTP_X_FORWARDED_FOR' => '9.10.11.12,5.6.7.8',
                 'REMOTE_ADDR' => '127.0.0.1',
             ]
         );
-        // Test appropriate behavior with forwarding enabled:
-        $reader1 = new UserIpReader($params, true);
-        $this->assertEquals('5.6.7.8', $reader1->getUserIp());
-        // Test appropriate behavior with forwarding disabled:
-        $reader2 = new UserIpReader($params, false);
-        $this->assertEquals('127.0.0.1', $reader2->getUserIp());
+        $this->runFilterTests($params1, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:first');
+        $params2 = new Parameters(
+            [
+                'HTTP_X_REAL_IP' => '1.2.3.4',
+                'HTTP_X_FORWARDED_FOR' => '5.6.7.8,9.10.11.12',
+                'REMOTE_ADDR' => '127.0.0.1',
+            ]
+        );
+        $this->runFilterTests($params2, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last');
+    }
+
+    /**
+     * Test that a single value is extracted correctly after a filter is applied.
+     *
+     * @return void
+     */
+    public function testFilteredSingle()
+    {
+        // This is a contrived test because it is unlikely that you would really
+        // want to extract the middle value of a list, but just making sure edge
+        // cases function correctly....
+        $params = new Parameters(
+            [
+                'HTTP_X_FORWARDED_FOR' => '1.2.3.4,5.6.7.8,9.10.11.12',
+                'REMOTE_ADDR' => '127.0.0.1',
+            ]
+        );
+        $reader = new UserIpReader(
+            $params,
+            'HTTP_X_FORWARDED_FOR:single',
+            ['1.2.3.4', '9.10.11.12']
+        );
+        $this->assertEquals('5.6.7.8', $reader->getUserIp());
     }
 
     /**
@@ -100,12 +168,18 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
                 'REMOTE_ADDR' => '127.0.0.1',
             ]
         );
-        // Test appropriate behavior with forwarding enabled:
-        $reader1 = new UserIpReader($params, true);
+        // Test appropriate behavior with "first" selector:
+        $reader1 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:first');
         $this->assertEquals('5.6.7.8', $reader1->getUserIp());
-        // Test appropriate behavior with forwarding disabled:
-        $reader2 = new UserIpReader($params, false);
-        $this->assertEquals('127.0.0.1', $reader2->getUserIp());
+        // Test appropriate behavior with "last" selector:
+        $reader2 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:last');
+        $this->assertEquals('9.10.11.12', $reader2->getUserIp());
+        // Test appropriate behavior with "single" selector:
+        $reader3 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR:single');
+        $this->assertEquals('127.0.0.1', $reader3->getUserIp());
+        // Test that "single" selector is default behavior:
+        $reader4 = new UserIpReader($params, 'HTTP_X_FORWARDED_FOR');
+        $this->assertEquals('127.0.0.1', $reader4->getUserIp());
     }
 
     /**
@@ -113,7 +187,7 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testXForwardedForSimple()
+    public function testXForwardedForWithoutHeaders()
     {
         $params = new Parameters(
             [
@@ -121,7 +195,9 @@ class UserIpReaderTest extends \VuFindTest\Unit\TestCase
             ]
         );
         // Test appropriate behavior with forwarding enabled:
-        $reader1 = new UserIpReader($params, true);
+        $reader1 = new UserIpReader(
+            $params, 'HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR:last'
+        );
         $this->assertEquals('127.0.0.1', $reader1->getUserIp());
         // Test appropriate behavior with forwarding disabled:
         $reader2 = new UserIpReader($params, false);
