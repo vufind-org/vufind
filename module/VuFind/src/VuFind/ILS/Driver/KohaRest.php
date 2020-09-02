@@ -613,7 +613,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $holds[] = [
                 'id' => $entry['biblio_id'],
-                'item_id' => $entry['item_id'] ?? null,
+                'item_id' => $entry['hold_id'],
                 'requestId' => $entry['hold_id'],
                 'location' => $this->getLibraryName(
                     $entry['pickup_library_id'] ?? null
@@ -649,7 +649,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     public function getCancelHoldDetails($holdDetails)
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['requestId'] . '|' . $holdDetails['item_id'];
+            : $holdDetails['item_id'];
     }
 
     /**
@@ -669,8 +669,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $count = 0;
         $response = [];
 
-        foreach ($details as $detail) {
-            list($holdId, $itemId) = explode('|', $detail, 2);
+        foreach ($details as $holdId) {
             $result = $this->makeRequest(
                 [
                     'path' => ['v1', 'holds', $holdId],
@@ -679,14 +678,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ]
             );
 
-            if (200 === $result['code']) {
-                $response[$itemId] = [
+            if (200 === $result['code'] || 204 === $result['code']) {
+                $response[$holdId] = [
                     'success' => true,
                     'status' => 'hold_cancel_success'
                 ];
                 ++$count;
             } else {
-                $response[$itemId] = [
+                $response[$holdId] = [
                     'success' => false,
                     'status' => 'hold_cancel_fail',
                     'sysMessage' => false
@@ -718,19 +717,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $bibId = $holdDetails['id'];
+        $bibId = $holdDetails['id'] ?? null;
         $itemId = $holdDetails['item_id'] ?? false;
-        $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
-            ? $holdDetails['level'] : 'copy';
-        if ('copy' === $level && false === $itemId) {
-            return [];
-        }
         $requestType
             = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
                 ? 'StorageRetrievalRequests' : 'Holds';
         $included = null;
-        if ('Holds' === $requestType) {
+        if ($bibId && 'Holds' === $requestType) {
             // Collect library codes that are to be included
+            $level = !empty($holdDetails['level']) ? $holdDetails['level'] : 'title';
+            if ('copy' === $level && false === $itemId) {
+                return [];
+            }
             if ('copy' === $level) {
                 $result = $this->makeRequest(
                     [
