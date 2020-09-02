@@ -259,7 +259,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     protected $soapOptions = [
         'soap_version' => SOAP_1_1,
         'exceptions' => true,
-        'trace' => 1,
+        'trace' => false,
         'connection_timeout' => 60,
         'typemap' => [
             [
@@ -276,49 +276,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateFormat = $dateConverter;
-    }
-
-    /**
-     * Check if request is valid
-     *
-     * This is responsible for determining if an item is requestable
-     *
-     * @param string $id     The Bib ID
-     * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
-     *
-     * @return bool True if request is valid, false if not
-     */
-    public function checkRequestIsValid($id, $data, $patron)
-    {
-        return true;
-    }
-
-    /**
-     * Get Patron Profile
-     *
-     * This is responsible for retrieving the profile for a specific patron.
-     *
-     * @param array $patron The patron array
-     *
-     * @throws ILSException
-     * @return array        Array of the patron's profile data on success.
-     */
-    public function getMyProfile($patron)
-    {
-        $username = $patron['cat_username'];
-        $cacheKey = $this->getPatronCacheKey($username);
-        $profile = $this->getCachedData($cacheKey);
-
-        if (null === $profile) {
-            $this->patronLogin($username, $patron['cat_password']);
-            $profile = $this->getCachedData($cacheKey);
-        }
-
-        return $profile;
     }
 
     /**
@@ -433,6 +393,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
 
         if (isset($this->config['Debug']['verbose'])) {
             $this->verbose = $this->config['Debug']['verbose'];
+            $this->soapOptions['trace'] = true;
         }
 
         if (isset($this->config['Debug']['log'])) {
@@ -464,6 +425,46 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             = isset($this->config['messagingBlackLists']['dueDateAlert'])
             ? explode(':', $this->config['messagingBlackLists']['dueDateAlert'])
             : [];
+    }
+
+    /**
+     * Check if request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        return true;
+    }
+
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $patron The patron array
+     *
+     * @throws ILSException
+     * @return array        Array of the patron's profile data on success.
+     */
+    public function getMyProfile($patron)
+    {
+        $username = $patron['cat_username'];
+        $cacheKey = $this->getPatronCacheKey($username);
+        $profile = $this->getCachedData($cacheKey);
+
+        if (null === $profile) {
+            $this->patronLogin($username, $patron['cat_password']);
+            $profile = $this->getCachedData($cacheKey);
+        }
+
+        return $profile;
     }
 
     /**
