@@ -252,7 +252,7 @@ var TueFind = {
     WildcardHandler : function(query_text) {
         const forbidden_chars = /[*?]/i;
         if (forbidden_chars.test(query_text)) {
-            alert("Wildcard characters (?*) are not supported in Fulltext Search");
+            alert(VuFind.translate("fulltext_wildcard_error"));
             return false;
         }
         return true;
