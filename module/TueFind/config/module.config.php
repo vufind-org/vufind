@@ -145,6 +145,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
+            'TueFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
@@ -167,6 +168,8 @@ $config = [
             'TueFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'VuFind\AuthPluginManager' => 'TueFind\Auth\PluginManager',
+            'VuFind\Auth\PluginManager' => 'TueFind\Auth\PluginManager',
             'VuFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoader',
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
             'VuFind\Cookie\CookieManager' => 'TueFind\Cookie\CookieManager',
