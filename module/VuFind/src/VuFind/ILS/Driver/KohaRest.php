@@ -717,19 +717,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $bibId = $holdDetails['id'];
+        $bibId = $holdDetails['id'] ?? null;
         $itemId = $holdDetails['item_id'] ?? false;
-        $level = isset($holdDetails['level']) && !empty($holdDetails['level'])
-            ? $holdDetails['level'] : 'copy';
-        if ('copy' === $level && false === $itemId) {
-            return [];
-        }
         $requestType
             = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
                 ? 'StorageRetrievalRequests' : 'Holds';
         $included = null;
-        if ('Holds' === $requestType) {
+        if ($bibId && 'Holds' === $requestType) {
             // Collect library codes that are to be included
+            $level = !empty($holdDetails['level']) ? $holdDetails['level'] : 'title';
+            if ('copy' === $level && false === $itemId) {
+                return [];
+            }
             if ('copy' === $level) {
                 $result = $this->makeRequest(
                     [
