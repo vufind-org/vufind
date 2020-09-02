@@ -1264,6 +1264,35 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
+     * Return a location for a Koha item
+     *
+     * @param array $item Item
+     *
+     * @return string
+     */
+    protected function getItemLocationName($item)
+    {
+        $result = parent::getItemLocationName($item);
+
+        if ($this->groupHoldingsByLocation) {
+            $location = $this->translateLocation(
+                $item['location'],
+                !empty($item['location_description'])
+                    ? $item['location_description'] : $item['location']
+            );
+            if ($location) {
+                // Empty translation will result in &#x200C
+                $emptyChar = html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');
+                if ($result && $result !== $emptyChar) {
+                    $result .= ', ';
+                }
+                $result .= $location;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Create a holdings entry
      *
      * @param string $id       Bib ID
