@@ -214,11 +214,6 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             throw new AuthException('authentication_error_expired');
         }
         $linkData = json_decode($row['data'], true);
-        $row->delete();
-
-        if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
-            throw new AuthException('authentication_error_expired');
-        }
 
         // Require same session id or IP address:
         $sessionId = $this->sessionManager->getId();
@@ -226,6 +221,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
         ) {
             throw new AuthException('authentication_error_session_ip_mismatch');
+        }
+
+        // Only delete the token now that we know the requester is correct. Otherwise
+        // it may end up deleted due to e.g. safe link check by the email server.
+        $row->delete();
+
+        if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
+            throw new AuthException('authentication_error_expired');
         }
 
         return $linkData['data'];
