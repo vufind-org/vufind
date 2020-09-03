@@ -502,7 +502,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         $result = $this->makeRequest(
             [
                 'path' => ['v1', 'patrons', $patron['id']],
-                'json' >= $request,
+                'json' => $request,
                 'method' => 'PUT',
                 'errors' => true
             ]
