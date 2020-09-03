@@ -247,6 +247,28 @@ var TueFind = {
         searchForm_fulltext.val(fulltextquery);
         $('#itemFTSearchScope').val(fulltextscope);
         searchForm_fulltext.submit();
+    },
+
+    WildcardHandler : function(query_text) {
+        const forbidden_chars = /[*?]/i;
+        if (forbidden_chars.test(query_text)) {
+            alert(VuFind.translate("fulltext_wildcard_error"));
+            return false;
+        }
+        return true;
+    },
+
+    CheckWildcards : function(event) {
+        // Case 1: ItemFulltextSearch
+        if (event.type == 'submit' && event.target.id == 'ItemFulltextSearchForm')
+            return this.WildcardHandler($("#searchForm_fulltext").val());
+        // Case 2: The submit button was pressed
+        // Case 3: The tab nav was chosen
+        else if ((event.type == 'submit' && this.GetSearchboxSearchContext() == 'search2') ||
+                 (event.type == 'click' && event.explicitOriginalTarget.href.match('/Search2/')) ) {
+                 return this.WildcardHandler($("#searchForm_lookfor").val());
+        }
+        return true;
     }
 };
 
