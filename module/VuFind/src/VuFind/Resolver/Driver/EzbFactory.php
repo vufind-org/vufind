@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for instantiating IpRange permission provider.
+ * Factory for EZB resolver driver.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authorization
+ * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Role\PermissionProvider;
+namespace VuFind\Resolver\Driver;
 
 use Interop\Container\ContainerInterface;
 
 /**
- * Factory for instantiating IpRange permission provider.
+ * Factory for EZB resolver driver.
  *
  * @category VuFind
- * @package  Authorization
+ * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class IpRangeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class EzbFactory extends DriverWithHttpClientFactory
 {
     /**
      * Create an object
@@ -53,19 +53,11 @@ class IpRangeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        return new $requestedName(
-            $container->get('Request'),
-            $container->get(\VuFind\Net\IpAddressUtils::class),
-            $container->get(\VuFind\Net\UserIpReader::class)
-        );
+        $options = [$container->get(\VuFind\Net\UserIpReader::class)];
+        return parent::__invoke($container, $requestedName, $options);
     }
 }

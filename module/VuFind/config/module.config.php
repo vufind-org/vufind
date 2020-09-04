@@ -397,6 +397,7 @@ $config = [
             'VuFind\Mailer\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Net\IpAddressUtils' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Net\UserIpReader' => 'VuFind\Net\UserIpReaderFactory',
             'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
             'VuFind\OAI\Server\Auth' => 'VuFind\OAI\ServerFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
