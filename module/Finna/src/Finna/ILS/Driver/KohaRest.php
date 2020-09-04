@@ -579,7 +579,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             return  [
                 'success' => false,
                 'status' => 'Updating of patron information failed',
-                'sys_message' => $result['error'] ?? $code
+                'sys_message' => $result['error'] ?? $result['code']
             ];
         }
 
@@ -737,7 +737,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         if ($result['code'] >= 300) {
             $error = "Failed to mark payment of $amount paid for patron"
                 . " {$patron['id']}: {$result['code']}: " . print_r($result, true);
-            $this->error($error);
+            $this->logError($error);
             throw new ILSException($error);
         }
         // Clear patron's block cache
