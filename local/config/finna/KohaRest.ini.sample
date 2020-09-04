@@ -151,7 +151,7 @@ enabled = true
 ; The field to display as the phone number. Default is mobile.
 ; Set to empty string for "none".
 ;phoneNumberField = ""
-; The field to display as the SMS number. Default is smsalertnumber.
+; The field to display as the SMS number. Default is sms_number.
 ; Set to empty string for "none".
 ;smsNumberField = ""
 
@@ -160,5 +160,5 @@ enabled = true
 [updateSmsNumber]
 ;method = driver
 ; Link the SMS number to the following Koha fields. Default for Finna is
-; "smsalertnumber,phone".
-;fields = "smsalertnumber,phone"
+; "sms_number,phone".
+;fields = "sms_number,phone"
