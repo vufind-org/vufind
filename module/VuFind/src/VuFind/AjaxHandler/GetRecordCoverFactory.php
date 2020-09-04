@@ -65,7 +65,9 @@ class GetRecordCoverFactory implements FactoryInterface
     ) {
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Cover\Router::class)
+            $container->get(\VuFind\Cover\Router::class),
+            $container->get('ViewRenderer'),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

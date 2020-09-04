@@ -82,7 +82,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      * @return string|bool
      */
     public function getUrl(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true
+        $resolveDynamic = true, $testLoadImage = false
     ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
@@ -106,6 +106,12 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             : ['size' => $size];
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
+        if ($testLoadImage) {
+            $this->coverLoader->loadImage($settings);
+            if ($this->coverLoader->hasLoadedUnavailable()) {
+                return false;
+            }
+        }
 
         foreach ($handlers as $handler) {
             try {

@@ -7,9 +7,12 @@ function loadCoverByElement(data, element) {
   function coverCallback(response) {
     spinner.hide();
     container.show();
-    if (response.data.url !== false) {
+    if (response.data.url ?? false !== false) {
       img.attr("src", response.data.url);
       container.children().not("img").hide();
+    } else {
+      img.remove();
+      container.html(response.data.html);
     }
   }
   $.ajax({

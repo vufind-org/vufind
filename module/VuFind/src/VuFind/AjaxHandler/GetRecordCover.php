@@ -27,7 +27,10 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Cover\Loader;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\ILS\Driver\CacheTrait;
@@ -61,16 +64,28 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     protected $coverRouter;
 
     /**
+     * @var PhpRenderer
+     */
+    protected $renderer;
+
+    /**
+     * @var bool
+     */
+    protected $useCoverFallbacksOnFail = false;
+
+    /**
      * GetRecordCover constructor.
      *
      * @param RecordLoader $recordLoader Record loader
      * @param CoverRouter  $coverRouter  Cover router
      */
     public function __construct(RecordLoader $recordLoader,
-        CoverRouter $coverRouter
+        CoverRouter $coverRouter, PhpRenderer $renderer, Config $config
     ) {
         $this->recordLoader = $recordLoader;
         $this->coverRouter = $coverRouter;
+        $this->renderer = $renderer;
+        $this->useCoverFallbacksOnFail = $config->Content->useCoverFallbacksOnFail ?? false;
     }
 
     /**
@@ -102,11 +117,24 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        return $this->formatResponse(
-            [
-                'url' => $this->coverRouter->getUrl($record, $size ?? 'small'),
-                'size' => $size,
-            ]
-        );
+        $url = $this->coverRouter->getUrl($record, $size ?? 'small',true,$this->useCoverFallbacksOnFail);
+
+        if ($url || !$this->useCoverFallbacksOnFail) {
+            return $this->formatResponse(
+                [
+                    'url' => $url,
+                    'size' => $size,
+                ]
+            );
+        } else {
+            return $this->formatResponse(
+                [
+                    'html' => $this->renderer->render(
+                        'record/coverReplacement',
+                        ['driver' => $record]
+                    )
+                ]
+            );
+        }
     }
 }
