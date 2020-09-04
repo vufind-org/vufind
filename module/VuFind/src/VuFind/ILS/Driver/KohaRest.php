@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
  * VuFind Driver for Koha, using REST API
@@ -79,6 +80,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var Callable
      */
     protected $sessionFactory;
+
+    /**
+     * Money formatting view helper
+     *
+     * @var SafeMoneyFormat
+     */
+    protected $safeMoneyFormat;
 
     /**
      * Session cache
@@ -180,15 +188,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param Callable               $sessionFactory Factory function returning
+     * @param \VuFind\Date\Converter $dateConverter   Date converter object
+     * @param Callable               $sessionFactory  Factory function returning
      * SessionContainer object
+     * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory, SafeMoneyFormat $safeMoneyFormat
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
+        $this->safeMoneyFormat = $safeMoneyFormat;
     }
 
     /**
@@ -2345,9 +2355,15 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             break;
         case 'Patron::Debt':
         case 'Patron::DebtGuarantees':
+            $count = isset($details['current_outstanding'])
+                ? $this->safeMoneyFormat->__invoke($details['current_outstanding'])
+                : '-';
+            $limit = isset($details['max_outstanding'])
+                ? $this->safeMoneyFormat->__invoke($details['max_outstanding'])
+                : '-';
             $params = [
-                '%%blockCount%%' => $details['current_outstanding'] ?? '-',
-                '%%blockLimit%%' => $details['max_outstanding'] ?? '-'
+                '%%blockCount%%' => $count,
+                '%%blockLimit%%' => $limit,
             ];
             break;
         }
