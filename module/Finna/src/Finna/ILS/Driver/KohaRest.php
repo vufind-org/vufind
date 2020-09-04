@@ -1222,11 +1222,20 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     protected function updatePatron($patron, $fields)
     {
+        $result = $this->makeRequest(['v1', 'patrons', $patron['id']]);
+
+        $request = $result['data'];
+        // Unset read-only fields
+        unset($request['anonymized']);
+        unset($request['restricted']);
+
+        $request = array_merge($request, $fields);
+
         $result = $this->makeRequest(
             [
-                'path' => ['v1', 'contrib', 'kohasuomi', 'patrons', $patron['id']],
-                'json' => $fields,
-                'method' => 'PATCH',
+                'path' => ['v1', 'patrons', $patron['id']],
+                'json' => $request,
+                'method' => 'PUT',
                 'errors' => true
             ]
         );
