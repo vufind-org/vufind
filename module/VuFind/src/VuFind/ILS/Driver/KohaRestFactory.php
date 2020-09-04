@@ -64,6 +64,9 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
         };
-        return parent::__invoke($container, $requestedName, [$sessionFactory]);
+        $helper = $container->get('ViewHelperManager')->get('safeMoneyFormat');
+        return parent::__invoke(
+            $container, $requestedName, [$sessionFactory, $helper]
+        );
     }
 }
