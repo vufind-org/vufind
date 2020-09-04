@@ -1,8 +1,3 @@
-<div id="breaking_news">
-   <h4 class="text-center" style="color: #343deb ; margin-top: 12px; margin-bottom: 2px">
-      +++ <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1" style="color : #343deb">Nouveau service: recherche en texte intégral - donnez-nous votre avis en bas à droite</a> +++ <a href="/docs/Recherche_en_texte_Description.pdf" class="text-warning" style="color : #343deb" target="_blank">Description</a> +++
-   </h4>
-</div>
 <style>
     .read-more-state ~ .read-more-trigger:before {
         content: 'Plus';
@@ -18,6 +13,44 @@
     $panelWidth = "col-md-6";
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-bell-o"></i> Bienvenue!
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Le nouvel IxTheo est une bibliographie exhaustive de théologie et de science des religions. On peut maintenant y faire des recherches non seulement sur des articles, mais également sur des monographies, des banques de données et des liens Internet. </p>
+                    <div class="read-more-target">
+                        <p>Il inclut aussi les données de certaines revues de critique choisies. Lorsque les licences le permettent, il est possible d’accéder directement au texte complet des articles, des critiques et des livres concernés.</p>
+                        <p>Le nouvel IxTheo demeure un service à libre accès et gratuit offert à la communauté mondiale de recherche. Les éditeurs de l’IxTheo sont la bibliothèque de l’Université de Tübingen (Universitätsbibliothek Tübingen) de même que les facultés catholique et protestante de théologie de l’Université de Tübingen (Katholisch-Theologische / Evangelisch-Theologische Fakultät Tübingen).</p>
+                        <p>Nous vous souhaitons une expérience agréable d’utilisation de l’IxTheo et serions reconnaissants pour tout commentaire nous aidant à l’améliorer.</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-search-plus"></i> Recherche en texte intégral<div class="new">nouveau</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body flex-col">
+                    La nouvelle <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1">recherche en texte intégral</a> permet de chercher dans des textes intégrals autant commercials que libres, des des sommaires et des résumés.<br/> Trouvez des informations detaillés dans la <a href="/docs/Recherche_en_texte_Description.pdf" target="_blank">description</a>.
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12"></div>
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -91,35 +124,11 @@
         </div>
     </div>
 </div>
-<div class="col-md-12"><hr></div>
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-bell-o"></i> Bienvenue!
-            </h4>
-        </div>
-        <div id="<?= $panelId++; ?>" class="panel-collapse">
-            <div class="panel-body">
-                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
-                <div class="read-more-wrap">
-                    <p>Le nouvel IxTheo est une bibliographie exhaustive de théologie et de science des religions. On peut maintenant y faire des recherches non seulement sur des articles, mais également sur des monographies, des banques de données et des liens Internet. </p>
-                    <div class="read-more-target">
-                        <p>Il inclut aussi les données de certaines revues de critique choisies. Lorsque les licences le permettent, il est possible d’accéder directement au texte complet des articles, des critiques et des livres concernés.</p>
-                        <p>Le nouvel IxTheo demeure un service à libre accès et gratuit offert à la communauté mondiale de recherche. Les éditeurs de l’IxTheo sont la bibliothèque de l’Université de Tübingen (Universitätsbibliothek Tübingen) de même que les facultés catholique et protestante de théologie de l’Université de Tübingen (Katholisch-Theologische / Evangelisch-Theologische Fakultät Tübingen).</p>
-                        <p>Nous vous souhaitons une expérience agréable d’utilisation de l’IxTheo et serions reconnaissants pour tout commentaire nous aidant à l’améliorer.</p>
-                    </div>
-                </div>
-                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-md-6 ix-panel-news">
-    <div class="panel <?= $panelClass; ?>">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA) <div class="new">nouveau</div>
+                <i class="fa fa-book"></i> Patron-Driven-Acquisition (PDA)
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse">
@@ -173,7 +182,7 @@
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <i class="fa fa-list"></i> La NAVIGATION
+                <i class="fa fa-list"></i> La Navigation
             </h4>
         </div>
         <div id="<?= $panelId++; ?>" class="panel-collapse ">
@@ -205,6 +214,7 @@
         </div>
     </div>
 </div>
+<div class="col-md-12"></div>
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">

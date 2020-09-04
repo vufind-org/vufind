@@ -91,6 +91,8 @@ var TueFind = {
                             $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
                         else if (verbose)
                             $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
+                        else
+                            $(this).replaceWith();
                     });
                     if (snippets)
                         $(this).removeAttr('style');
@@ -108,7 +110,7 @@ var TueFind = {
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
-                    if (!verbose)
+                    if (!verbose && snippets)
                         $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
@@ -245,6 +247,28 @@ var TueFind = {
         searchForm_fulltext.val(fulltextquery);
         $('#itemFTSearchScope').val(fulltextscope);
         searchForm_fulltext.submit();
+    },
+
+    WildcardHandler : function(query_text) {
+        const forbidden_chars = /[*?]/i;
+        if (forbidden_chars.test(query_text)) {
+            alert(VuFind.translate("fulltext_wildcard_error"));
+            return false;
+        }
+        return true;
+    },
+
+    CheckWildcards : function(event) {
+        // Case 1: ItemFulltextSearch
+        if (event.type == 'submit' && event.target.id == 'ItemFulltextSearchForm')
+            return this.WildcardHandler($("#searchForm_fulltext").val());
+        // Case 2: The submit button was pressed
+        // Case 3: The tab nav was chosen
+        else if ((event.type == 'submit' && this.GetSearchboxSearchContext() == 'search2') ||
+                 (event.type == 'click' && event.explicitOriginalTarget.href.match('/Search2/')) ) {
+                 return this.WildcardHandler($("#searchForm_lookfor").val());
+        }
+        return true;
     }
 };
 
