@@ -64,7 +64,8 @@ finna.changeHolds = (function finnaChangeHolds() {
           method: 'getRequestGroupPickupLocations',
           id: recordId,
           itemId: itemId,
-          requestGroupId: '0'
+          requestGroupId: '0',
+          requestId: requestId
         };
         $.ajax({
           data: params,
