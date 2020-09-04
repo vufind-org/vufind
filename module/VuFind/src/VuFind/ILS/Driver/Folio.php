@@ -482,9 +482,25 @@ class Folio extends AbstractAPI implements
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
-                return $note->note ?? '';
+                return !$note->staffOnly && $note->note ? $note->note : '';
             };
+            $textFormatter = function ($supplement) {
+                $format = '%s %s';
+                $supStat = $supplement->statement;
+                $supNote = $supplement->note;
+                $statement = sprintf($format, $supStat, $supNote);
+                return $statement ?? '';
+            };
+            $holdingNotes = array_map($notesFormatter, $holding->notes ?? []);
+            $hasHoldingNotes = !empty(implode($holdingNotes));
+            $holdingsStatements = $holding->holdingsStatements;
+            $holdingsSupplements = $holding->holdingsStatementsForSupplements;
+            $holdingsIndexes = $holding->holdingsStatementsForIndexes;
+            $issues = array_map($textFormatter, $holdingsStatements ?? []);
+            $supplements = array_map($textFormatter, $holdingsSupplements ?? []);
+            $indexes = array_map($textFormatter, $holdingsIndexes ?? []);
             foreach ($itemBody->items as $item) {
+                $itemNotes = array_map($notesFormatter, $item->notes ?? []);
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -494,7 +510,11 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'is_holdable' => $this->isHoldable($locationName),
-                    'notes' => array_map($notesFormatter, $item->notes ?? []),
+                    'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
+                    'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
+                    'issues' => $issues,
+                    'supplements' => $supplements,
+                    'indexes' => $indexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
