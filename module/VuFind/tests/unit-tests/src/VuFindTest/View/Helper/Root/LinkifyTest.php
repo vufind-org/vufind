@@ -90,6 +90,9 @@ class LinkifyTest extends ViewHelperTestCase
         self::assertSame($expected, $actual);
     }
 
+    /**
+     * @return array[]
+     */
     public function linkifyDataProvider(): array
     {
         return [
