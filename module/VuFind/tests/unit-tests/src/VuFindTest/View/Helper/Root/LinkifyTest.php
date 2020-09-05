@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,15 +22,16 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Volodymyr Stelmakh
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Helper\EscapeHtml;
-use Laminas\View\Helper\EscapeHtmlAttr;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\View\Helper\Root\Linkify;
 use VuFind\View\Helper\Root\ProxyUrl;
+use VuFindTest\Unit\ViewHelperTestCase;
 
 /**
  * Linkify Test Class
@@ -38,103 +39,108 @@ use VuFind\View\Helper\Root\ProxyUrl;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Volodymyr Stelmakh
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LinkifyTest extends \VuFindTest\Unit\ViewHelperTestCase
+class LinkifyTest extends ViewHelperTestCase
 {
     /**
-     * Get view helper to test.
-     *
-     * @return Linkify
+     * @var ProxyUrl&MockObject
      */
-    protected function getHelper()
+    private $proxyUrl;
+
+    /**
+     * @var Linkify
+     */
+    private $linkify;
+
+    public function setUp(): void
     {
-        $view = $this->getPhpRenderer(
-            [
-                'proxyUrl' => new ProxyUrl(),
-                'escapeHtmlAttr' => new EscapeHtmlAttr(),
-            ]
-        );
-        $linkify = new Linkify();
-        $linkify->setView($view);
-        return $linkify;
+        $this->proxyUrl = $this->createMock(ProxyUrl::class);
+
+        $view = $this->getPhpRenderer([
+            'proxyUrl' => $this->proxyUrl,
+        ]);
+
+        $this->linkify = new Linkify();
+        $this->linkify->setView($view);
+    }
+
+    public function tearDown(): void
+    {
+        unset($this->proxyUrl, $this->linkify);
     }
 
     /**
-     * Run a simple test.
+     * @dataProvider linkifyDataProvider
      *
-     * @param string $text     Raw input text
-     * @param string $expected Expected output HTML
-     *
-     * @return void
+     * @param string $input
+     * @param array $urls
+     * @param string $expected
      */
-    protected function linkify($text, $expected)
+    public function testLinkify(string $input, array $urls, string $expected): void
     {
-        $escaper = new EscapeHtml();
-        // The linkify helper expects HTML-escaped input, because after linkify
-        // has been applied, we can no longer escape unlinked portions of the text
-        // without messing up the link HTML:
-        $html = $escaper->__invoke($text);
-        $this->assertEquals($expected, $this->getHelper()->__invoke($html));
+        $this->proxyUrl
+            ->expects(self::atLeastOnce())
+            ->method('__invoke')
+            ->willReturnOnConsecutiveCalls(...$urls);
+
+        $actual = $this->linkify->__invoke($input);
+        self::assertSame($expected, $actual);
     }
 
-    /**
-     * Test linkification of HTTP URL.
-     *
-     * @return void
-     */
-    public function testHttpLink()
+    public function linkifyDataProvider(): array
     {
-        $text = 'This has http://vufind.org in the middle of it';
-        $expected = 'This has '
-            . '<a href="http&#x3A;&#x2F;&#x2F;vufind.org">http://vufind.org</a>'
-            . ' in the middle of it';
-        $this->linkify($text, $expected);
-    }
-
-    /**
-     * Test linkification of HTTPS URL.
-     *
-     * @return void
-     */
-    public function testHttpsLink()
-    {
-        $text = "This has https://vufind.org in the middle of it";
-        $expected = 'This has '
-            . '<a href="https&#x3A;&#x2F;&#x2F;vufind.org">https://vufind.org</a>'
-            . ' in the middle of it';
-        $this->linkify($text, $expected);
-    }
-
-    /**
-     * Test linkification of complex URL with parameters and hash.
-     *
-     * @return void
-     */
-    public function testComplexLink()
-    {
-        $text = "This has https://vufind.org?foo=1&bar=2#xyzzy in the middle of it";
-        $expected = 'This has '
-            . '<a href="https&#x3A;&#x2F;&#x2F;vufind.org'
-            . '&#x3F;foo&#x3D;1&amp;bar&#x3D;2&#x23;xyzzy">'
-            . 'https://vufind.org?foo=1&amp;bar=2#xyzzy</a> in the middle of it';
-        $this->linkify($text, $expected);
-    }
-
-    /**
-     * Test linkification of multiple URLs.
-     *
-     * @return void
-     */
-    public function testMultipleLinks()
-    {
-        $text = "This has https://vufind.org and http://vufind.org in it";
-        $expected = 'This has '
-            . '<a href="https&#x3A;&#x2F;&#x2F;vufind.org">https://vufind.org</a>'
-            . ' and '
-            . '<a href="http&#x3A;&#x2F;&#x2F;vufind.org">http://vufind.org</a>'
-            . ' in it';
-        $this->linkify($text, $expected);
+        return [
+            'http' => [
+                'This has http://vufind.org in the middle of it',
+                ['http://vufind.org'],
+                'This has <a href="http://vufind.org">http://vufind.org</a> in the middle of it',
+            ],
+            'https' => [
+                'This has https://vufind.org in the middle of it',
+                ['https://vufind.org'],
+                'This has <a href="https://vufind.org">https://vufind.org</a> in the middle of it',
+            ],
+            'complex link' => [
+                'This has https://vufind.org?foo=1&bar=2#xyzzy in the middle of it',
+                ['https://vufind.org?foo=1&bar=2#xyzzy'],
+                'This has <a href="https://vufind.org?foo=1&bar=2#xyzzy">https://vufind.org?foo=1&bar=2#xyzzy</a>'
+                . ' in the middle of it',
+            ],
+            'two urls' => [
+                'This has https://vufind.org and http://vufind.org in it',
+                ['https://vufind.org', 'http://vufind.org'],
+                'This has <a href="https://vufind.org">https://vufind.org</a> and '
+                . '<a href="http://vufind.org">http://vufind.org</a> in it',
+            ],
+            'html specialchars encoded' => [
+                'This has &lt;b&gt;http://vufind.org&lt;/b&gt; in the middle of it',
+                ['http://vufind.org'],
+                'This has &lt;b&gt;<a href="http://vufind.org">http://vufind.org</a>&lt;/b&gt; in the middle of it',
+            ],
+            'quotes' => [
+                'This has http://vufind.org/path/with"quotes"/?q=search in the middle of it',
+                ['http://vufind.org/path/with"quotes"/?q=search'],
+                'This has <a href="http://vufind.org/path/with%22quotes%22/?q=search">'
+                . 'http://vufind.org/path/with"quotes"/?q=search</a> in the middle of it',
+            ],
+            'no scheme' => [
+                'This has vufind.org in the middle of it',
+                ['http://vufind.org'],
+                'This has <a href="http://vufind.org">vufind.org</a> in the middle of it',
+            ],
+            'already highlighted' => [
+                'This has <a href="http://vufind.org">http://vufind.org</a> in the middle of it',
+                ['http://vufind.org'],
+                'This has <a href="http://vufind.org">http://vufind.org</a> in the middle of it',
+            ],
+            'email' => [
+                'This has user@vufind.org in the middle of it',
+                ['mailto:user@vufind.org'],
+                'This has <a href="mailto:user@vufind.org">user@vufind.org</a> in the middle of it',
+            ],
+        ];
     }
 }
