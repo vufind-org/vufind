@@ -68,6 +68,7 @@
         "symfony/console": "4.4.11",
         "symfony/yaml": "4.4.12",
         "swagger-api/swagger-ui": "3.31.1",
+        "vstelmakh/url-highlight": "^2.2",
         "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.0.0",
         "vufind-org/vufindharvest": "4.0.1",
