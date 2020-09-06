@@ -22,7 +22,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
- * @author   Volodymyr Stelmakh
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -38,16 +38,17 @@ use VStelmakh\UrlHighlight\UrlHighlight;
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
- * @author   Volodymyr Stelmakh
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Linkify extends AbstractHelper
 {
     /**
-     * Linkify a string
+     * Replace urls and emails by html tags
      *
      * @param string $string String to linkify (must be HTML-escaped)
+     *
      * @return string
      */
     public function __invoke(string $string): string

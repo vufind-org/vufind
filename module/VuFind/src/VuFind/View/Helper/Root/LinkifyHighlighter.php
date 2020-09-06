@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Volodymyr Stelmakh
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -37,7 +37,7 @@ use VStelmakh\UrlHighlight\Util\LinkHelper;
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Volodymyr Stelmakh
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -46,40 +46,54 @@ class LinkifyHighlighter implements HighlighterInterface
     private const DEFAULT_SCHEME = 'http';
 
     /**
+     * Url highlight html highlighter
+     *
      * @var HtmlHighlighter
      */
-    private $htmlHighlighter;
+    private $_htmlHighlighter;
 
     /**
+     * Proxy url helper
+     *
      * @var ProxyUrl
      */
-    private $proxyUrl;
+    private $_proxyUrl;
 
     /**
-     * @param ProxyUrl|null $proxyUrl
+     * Constructor
+     *
+     * @param ProxyUrl|null $proxyUrl proxy url helper
      */
     public function __construct(?ProxyUrl $proxyUrl)
     {
-        $this->htmlHighlighter = new HtmlHighlighter(self::DEFAULT_SCHEME, []);
-        $this->proxyUrl = $proxyUrl;
+        $this->_htmlHighlighter = new HtmlHighlighter(self::DEFAULT_SCHEME, []);
+        $this->_proxyUrl = $proxyUrl;
     }
 
     /**
-     * @inheritdoc
+     * Return html highlighted url with proxy
+     *
+     * @param Match $match url highlight match
+     *
+     * @return string
      */
     public function getHighlight(Match $match): string
     {
         $link = LinkHelper::getLink($match, self::DEFAULT_SCHEME);
-        $linkProxy = $this->proxyUrl->__invoke($link);
-        $linkSafeQuotes = str_replace('"', '%22', $linkProxy);
-        return sprintf('<a href="%s">%s</a>', $linkSafeQuotes, $match->getFullMatch());
+        $linkProxy = $this->_proxyUrl->__invoke($link);
+        $linkSafeQuot = str_replace('"', '%22', $linkProxy);
+        return sprintf('<a href="%s">%s</a>', $linkSafeQuot, $match->getFullMatch());
     }
 
     /**
-     * @inheritdoc
+     * Filter already highlighted urls
+     *
+     * @param string $string string after highlighter applied
+     *
+     * @return string
      */
     public function filterOverhighlight(string $string): string
     {
-        return $this->htmlHighlighter->filterOverhighlight($string);
+        return $this->_htmlHighlighter->filterOverhighlight($string);
     }
 }

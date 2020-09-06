@@ -22,7 +22,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Volodymyr Stelmakh
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -39,7 +39,7 @@ use VuFindTest\Unit\ViewHelperTestCase;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Volodymyr Stelmakh
+ * @author   Volodymyr Stelmakh <2980619+vstelmakh@users.noreply.github.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
