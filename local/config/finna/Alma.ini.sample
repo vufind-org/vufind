@@ -230,10 +230,12 @@ method = driver
 ; emailAddress is required for the email method
 ;emailAddress =
 ; Uncomment the following lines to change which fields are included in the form.
-; Format for the fields is label:profile_field[:type]
+; Format for the fields is label:profile_field[:type][:required][:options]
 ; Default is address, zip, city, country and pin. Email and phone are included unless
 ; they have their own sections [updateEmail] or [updatePhone] defined. Also custom
 ; fields can be defined.
+; options to override defaults e.g. for preferred language may be given in the
+; format val1=label1;val2=label2...
 fields[] = "address_type:addresses[0][types]:multiselect"
 fields[] = "address_preferred:addresses[0][preferred]:boolean"
 fields[] = "Address:addresses[0][address1]"
@@ -251,6 +253,7 @@ fields[] = "Country:addresses[1][country]"
 fields[] = "Email:email"
 fields[] = "Phone:phone"
 fields[] = "self_service_pin:self_service_pin:pin4"
+fields[] = "Preferred Language:language:radio"
 ; A colon-separated list of disabled fields that can be used to remove one or more of
 ; the fields configured above (for easier centralized configuration management):
 ;disabledFields = "self_service_pin"

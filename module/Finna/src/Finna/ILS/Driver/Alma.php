@@ -440,7 +440,10 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             'group_code' => isset($xml->user_group)
                                 ? (string)$xml->user_group
                                 : null,
-            'account_type' => strtolower((string)$xml->account_type)
+            'account_type' => strtolower((string)$xml->account_type),
+            'language'   => isset($xml->preferred_language)
+                                ? (string)$xml->preferred_language
+                                : null,
         ];
         $contact = $xml->contact_info;
         if ($contact) {
@@ -632,7 +635,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             'address5' => 'line5',
             'zip' => 'postal_code',
             'city' => 'city',
-            'country' => 'country'
+            'country' => 'country',
         ];
         $phoneMapping = [
             'phone' => 'phone_number'
@@ -641,7 +644,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             'email' => 'email_address'
         ];
         $otherMapping = [
-            'self_service_pin' => 'pin_number'
+            'self_service_pin' => 'pin_number',
+            'language' => 'preferred_language',
         ];
         // We need to process address fields, phone number fields and email fields
         // as separate sets, so divide them now to gategories
@@ -1065,25 +1069,27 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             if (!empty($config['fields'])) {
                 foreach ($config['fields'] as &$field) {
                     $parts = explode(':', $field);
+                    $fieldLabel = $parts[0];
                     $fieldId = $parts[1] ?? '';
+                    $fieldRequired = ($parts[3] ?? '') === 'required';
                     if ('country' === $fieldId
                         || preg_match('/^addresses\[[0-9]\]\[country\]$/', $fieldId)
                     ) {
                         $field = [
                             'field' => $fieldId,
-                            'label' => $parts[0],
+                            'label' => $fieldLabel,
                             'type' => 'select',
                             'options' => $this->getCodeTableOptions(
                                 'CountryCodes', 'description'
                             ),
-                            'required' => ($parts[3] ?? '') === 'required',
+                            'required' => $fieldRequired,
                         ];
                     } elseif (preg_match('/^addresses\[[0-9]\]\[types\]$/', $fieldId)
                     ) {
                         // Add address types
                         $field = [
                             'field' => $fieldId,
-                            'label' => $parts[0],
+                            'label' => $fieldLabel,
                             'type' => 'multiselect',
                             'options' => [
                                 'home' => [
@@ -1099,8 +1105,31 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                                     'name' => 'address_type_alternative',
                                 ],
                             ],
-                            'required' => ($parts[3] ?? '') === 'required',
+                            'required' => $fieldRequired,
                         ];
+                    } elseif ('language' === $fieldId) {
+                        $field = [
+                            'field' => $fieldId,
+                            'label' => $fieldLabel,
+                            'type' => 'radio',
+                            'options' => [
+                                'fi' => ['name' => 'Suomi'],
+                                'sv' => ['name' => 'Svenska'],
+                                'en' => ['name' => 'English'],
+                            ],
+                            'required' => $fieldRequired,
+                        ];
+                        if ($options = ($parts[4] ?? '')) {
+                            $field['options'] = [];
+                            foreach (explode(';', $options) as $option) {
+                                $keyVal = explode('=', $option, 2);
+                                if (isset($keyVal[1])) {
+                                    $field['options'][$keyVal[0]] = [
+                                        'name' => $keyVal[1]
+                                    ];
+                                }
+                            }
+                        }
                     }
                 }
             }

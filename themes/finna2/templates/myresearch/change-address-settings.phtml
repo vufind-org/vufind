@@ -16,7 +16,7 @@
 <h2><?=$this->escapeHtml($title) ?></h2>
 <?=$this->flashmessages()?>
 <?php if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
-  <form  name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="address-form profile-form" data-toggle="validator">
+  <form name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="address-form profile-form" data-toggle="validator">
     <?php $currentGroup = ''; ?>
     <?php foreach ($this->fields as $field => $data): ?>
       <?php
@@ -43,7 +43,7 @@
           $currentGroup = $group;
         }
       ?>
-      <div class="form-group">
+      <div class="form-group<?='radio' === $data['type'] ? ' form-inline' : ''?>">
         <?php
           if ($groupKey) {
             $value = $this->profile[$groupKey][$groupIndex][$groupField] ?? $this->profile['full_data'][$groupKey][$groupIndex][$field] ?? '';
@@ -71,6 +71,15 @@
               <label>
                 <input type="checkbox" name="<?=$this->escapeHtmlAttr($field)?>[]" value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if (in_array($optionId, (array)$value)): ?> checked<?php endif; ?><?=$data['required'] ? ' required' : ''?>> <?=$this->translate($name)?>
               </label>
+              <br>
+            <?php endforeach; ?>
+          </fieldset>
+        <?php elseif ('radio' === $data['type']): ?>
+          <fieldset id="<?=$this->escapeHtmlAttr($field)?>">
+            <legend class="control-label radio-label"><?=$this->transEsc($data['label']) ?>:</legend>
+            <?php foreach($data['options'] as $optionId => $option): ?>
+              <input type="radio" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>" class="form-control" value="<?=$this->escapeHtmlAttr($optionId)?>"<?=$optionId == $value ? ' checked' : ''?><?=$data['required'] ?? false ? ' required aria-required="true"': ''?><?=$data['readonly'] ?? false ? ' readonly': ''?>>
+              <label class="control-label" for="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>"><?=$this->transEsc($option['name'] ?? $optionId) ?></label>
               <br>
             <?php endforeach; ?>
           </fieldset>
