@@ -14,7 +14,7 @@ class Database extends \VuFind\Auth\Database
     protected function createUserFromParams($params, $table)
     {
         $user = parent::createUserFromParams($params, $table);
-        $user->tuefind_subscribed_to_newsletter = $params['newsletter'];
+        $user->setSubscribedToNewsletter($params['newsletter']);
         return $user;
     }
 }
