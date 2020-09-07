@@ -71,7 +71,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @var array
      */
-    protected $pickupLocations;
+    protected $pickupLocations = null;
 
     /**
      * Date converter object
@@ -85,7 +85,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @var string
      */
-    protected $fromAgency;
+    protected $fromAgency = null;
 
     /**
      * Constructor
@@ -252,7 +252,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             // If no namespaces are used, add default one and reload the document
             if (empty($result->getNamespaces())) {
                 $result->addAttribute('xmlns', 'http://www.niso.org/2008/ncip');
-                $result = @simplexml_load_string($result->asXML());
+                $xml = $result->asXML();
+                $result = @simplexml_load_string($xml);
+                if ($result === false) {
+                    throw new ILSException('Problem parsing XML: ' . $xml);
+                }
             }
             $this->registerNamespaceFor($result);
             return $result;
