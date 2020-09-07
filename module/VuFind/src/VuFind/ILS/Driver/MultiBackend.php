@@ -936,7 +936,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         );
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
+            $holdDetails = $this->stripIdPrefixes(
+                $holdDetails, $source, ['id', 'item_id', 'cat_username']
+            );
             return $driver->getCancelHoldDetails($holdDetails);
         }
         throw new ILSException('No suitable backend driver found');
