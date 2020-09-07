@@ -508,7 +508,7 @@ class Primo extends \VuFind\RecordDriver\Primo
             : '';
         if ($dates = $this->getPublicationDates()) {
             $params['rft.date'] = $params['rft_date']
-                = implode('', $this->getPublicationDates());
+                = implode('', $dates);
         }
         if (!isset($params['rft.title'])) {
             $params['rft.title'] = $this->getTitle();

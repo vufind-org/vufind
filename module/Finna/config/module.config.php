@@ -612,9 +612,11 @@ $config = [
             'resolver_driver' => [
                 'factories' => [
                     'Finna\Resolver\Driver\Sfx' => 'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
+                    'Finna\Resolver\Driver\Alma' => 'VuFind\Resolver\Driver\DriverWithHttpClientFactory',
                 ],
                 'aliases' => [
                     'VuFind\Resolver\Driver\Sfx' => 'Finna\Resolver\Driver\Sfx',
+                    'VuFind\Resolver\Driver\Alma' => 'Finna\Resolver\Driver\Alma',
                 ]
             ],
             'search_backend' => [
