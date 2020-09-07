@@ -1167,6 +1167,13 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver->setHttpService($service);
     }
 
+    /**
+     * Load response from file
+     *
+     * @param string $filename File name of raw HTTP response
+     *
+     * @return HttpResponse Response object
+     */
     protected function loadResponse($filename)
     {
         $file = realpath(
@@ -1185,7 +1192,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Configure driver for test case
      *
-     * @param array|null $config
+     * @param array|null $config ILS driver configuration
      *
      * @return void
      */
