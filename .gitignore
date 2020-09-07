@@ -39,3 +39,6 @@ TuelibSolrmarcMixin.jar
 *.log
 *.log.*
 compiled.css
+
+# Solr synonym files
+/solr/vufind/biblio/conf/synonyms/*
