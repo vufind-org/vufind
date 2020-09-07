@@ -1151,7 +1151,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     protected function mockResponse($fixture = null)
     {
         $adapter = new TestAdapter();
-        if (!empty($fixture)){
+        if (!empty($fixture)) {
             $fixture = (array)$fixture;
             $responseObj = $this->loadResponse($fixture[0]);
             $adapter->setResponse($responseObj);
