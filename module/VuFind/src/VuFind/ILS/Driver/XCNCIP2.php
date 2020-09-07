@@ -88,6 +88,22 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $fromAgency = null;
 
     /**
+     * Statuses of available items lowercased status string from CirculationStatus
+     * NCIP element
+     *
+     * @var string[]
+     */
+    protected $availableStatuses = ['not charged', 'available on shelf'];
+
+    /**
+     * Statuses of active requests, lowercased status strings from RequestStatusType
+     * NCIP element
+     *
+     * @var string[]
+     */
+    protected $activeRequestStatuses = ['available for pickup', 'in process'];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -296,9 +312,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'status' => $status,
             'location' => $location,
             'callnumber' => $itemCallNo,
-            'availability' => in_array(
-                strtolower($status), ["not charged", "available on shelf"]
-            ),
+            'availability' => $this->isAvailable($status),
             'reserve' => 'N',       // not supported
         ];
         if (strtolower($status) === 'circulation status undefined') {
@@ -373,16 +387,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $volume = !empty($volume) ? (string)$volume[0] : '';
 
-        $holdType = in_array(
-            strtolower($status), ["not charged", "available on shelf"]
-        ) ? 'Hold' : 'Recall';
-
         // Build return array:
         $return = [
             'id' => $aggregate_id,
-            'availability' =>  in_array(
-                strtolower($status), ["not charged", "available on shelf"]
-            ),
+            'availability' =>  $this->isAvailable($status),
             'status' => $status,
             'item_id' => (string)$itemId[0],
             'bib_id' => $bib_id,
@@ -398,7 +406,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 ? (string)$itemId[0] : 'Unknown barcode',
             'is_holdable'  => true,
             'addLink' => true,
-            'holdtype' => $holdType,
+            'holdtype' => $this->getHoldType($status),
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => 'true',
         ];
@@ -1291,7 +1299,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
-            $cancelled = false;
             $this->registerNamespaceFor($current);
             $id = $current->xpath(
                 'ns1:Ext/ns1:BibliographicDescription/' .
@@ -1314,9 +1321,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $requestStatusType = $current->xpath('ns1:RequestStatusType');
             $status = !empty($requestStatusType) ? (string)$requestStatusType[0]
                 : null;
-            if (!in_array($status, ['Available For Pickup', 'In Process'])) {
-                $cancelled = true;
-            }
+
             $processed = false;
             if ($status === 'Available For Pickup') {
                 $processed = true;
@@ -1333,7 +1338,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'requestId' => !empty($requestId) ? (string)$requestId[0] : null,
                     'item_agency_id' => !empty($itemAgencyId)
                         ? (string)$itemAgencyId[0] : null,
-                    'canceled' => $cancelled,
+                    'canceled' => $this->isRequestCancelled($status),
                     'location' => (string)$pickupLocation[0],
                     'processed' => $processed,
                 ];
@@ -2130,5 +2135,42 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
         return $formatted;
+    }
+
+    /**
+     * Get Hold Type
+     *
+     * @param string $status Status string from CirculationStatus NCIP element
+     *
+     * @return string Hold type, could be 'Hold' or 'Recall'
+     */
+    protected function getHoldType(string $status)
+    {
+        return in_array(strtolower($status), $this->availableStatuses)
+            ? 'Hold' : 'Recall';
+    }
+
+    /**
+     * Is an item available?
+     *
+     * @param string $status Status string from CirculationStatus NCIP element
+     *
+     * @return bool Return true if item is available
+     */
+    protected function isAvailable(string $status)
+    {
+        return in_array(strtolower($status), $this->availableStatuses);
+    }
+
+    /**
+     * Is request cancelled?
+     *
+     * @param string $status Status string from RequestStatusType NCIP element
+     *
+     * @return bool Return true if a request was cancelled
+     */
+    protected function isRequestCancelled(string $status)
+    {
+        return !in_array(strtolower($status), $this->activeRequestStatuses);
     }
 }
