@@ -63,7 +63,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
                     'item_agency_id' => 'My Agency',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                     'duedate' => '11-19-2014',
                     'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
                     'item_id' => '104',
@@ -72,7 +72,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'id' => 'KN3183000000046386',
                     'item_agency_id' => 'Agency from lookup item',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                     'duedate' => '11-26-2014',
                     'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
                     'item_id' => '105',
@@ -88,7 +88,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
                     'item_agency_id' => 'My Agency',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                     'duedate' => '11-19-2014',
                     'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
                     'item_id' => '104',
@@ -97,7 +97,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'id' => 'MZK01000000456-MZK50000000456000440',
                     'item_agency_id' => 'My Agency',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                     'duedate' => '11-26-2014',
                     'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
                     'item_id' => '105',
@@ -113,7 +113,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
                     'item_agency_id' => 'My Agency',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                     'duedate' => '11-19-2014',
                     'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
                     'item_id' => '104',
@@ -122,7 +122,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'id' => 'MZK01000000456-MZK50000000456000440',
                     'item_agency_id' => 'My Agency',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                     'duedate' => '11-26-2014',
                     'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
                     'item_id' => '105',
@@ -168,7 +168,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'lookupUserResponse.xml',
             'result' => [
                 'id' => '700',
-                'patron_agency_id' => 'MZK',
+                'patronAgencyId' => 'MZK',
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz',
@@ -182,7 +182,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
             'result' => [
                 'id' => '700',
-                'patron_agency_id' => 'MZK',
+                'patronAgencyId' => 'MZK',
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz',
@@ -729,7 +729,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $transactions = $this->driver->getMyTransactions([
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
-                'patron_agency_id' => 'Test agency',
+                'patronAgencyId' => 'Test agency',
             ]);
             $this->assertEquals(
                 $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
@@ -750,7 +750,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $fines = $this->driver->getMyFines(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                 ]
             );
             $this->assertEquals($test['result'], $fines, 'Fixture file: ' . implode(', ', (array)$test['file']));
@@ -785,7 +785,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $holds = $this->driver->getMyHolds([
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
-                'patron_agency_id' => 'Test agency',
+                'patronAgencyId' => 'Test agency',
              ]);
             $this->assertEquals($test['result'], $holds, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
@@ -805,7 +805,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 [
                     'cat_username' => 'my_login',
                     'cat_password' => 'my_password',
-                    'patron_agency_id' => 'Test agency',
+                    'patronAgencyId' => 'Test agency',
                 ]
             );
             $this->assertEquals($test['result'], $profile, 'Fixture file: ' . implode(', ', (array)$test['file']));
@@ -825,7 +825,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $storageRetrievals = $this->driver->getMyStorageRetrievalRequests([
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
-                'patron_agency_id' => 'Test agency',
+                'patronAgencyId' => 'Test agency',
             ]);
             $this->assertEquals($test['result'], $storageRetrievals, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
@@ -858,11 +858,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([
             [
-                'locationID' => 'My University|1',
+                'locationId' => 'My University|1',
                 'locationDisplay' => 'Main Circulation Desk',
             ],
             [
-                'locationID' => 'My University|2',
+                'locationId' => 'My University|2',
                 'locationDisplay' => 'Stacks',
             ]
         ], $locations);
@@ -881,11 +881,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([
             [
-                'locationID' => 'My library|1',
+                'locationId' => 'My library|1',
                 'locationDisplay' => 'Main library',
             ],
             [
-                'locationID' => 'My library|2',
+                'locationId' => 'My library|2',
                 'locationDisplay' => 'Stacks',
             ]
         ], $locations);
@@ -920,7 +920,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patron_agency_id' => 'Test agency',
+                        'patronAgencyId' => 'Test agency',
                     ],
                     'bib_id' => '1',
                     'item_id' => '1',
@@ -949,7 +949,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patron_agency_id' => 'Test agency',
+                        'patronAgencyId' => 'Test agency',
                     ],
                     'bib_id' => '1',
                     'item_id' => '1',
@@ -978,7 +978,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patron_agency_id' => 'Test agency',
+                        'patronAgencyId' => 'Test agency',
                     ],
                     'details' => [
                         'My University|Request1|Item1',
@@ -1004,7 +1004,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patron_agency_id' => 'Test agency',
+                        'patronAgencyId' => 'Test agency',
                     ],
                     'details' => [
                         'My University|Request1|Item1',
@@ -1030,7 +1030,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patron_agency_id' => 'Test agency',
+                        'patronAgencyId' => 'Test agency',
                     ],
                     'details' => [
                         'My University|Item1',
