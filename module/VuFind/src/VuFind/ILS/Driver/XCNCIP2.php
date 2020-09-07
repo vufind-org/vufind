@@ -446,12 +446,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusRequest($idList, $resumption = null, $agency = null)
     {
-        // FIXME: We are using the first defined agency, it will probably not work in
-        // consortium scenario
-        if (null === $agency) {
-            $keys = array_keys($this->agency);
-            $agency = $keys[0];
-        }
+        $agency = $this->determineToAgencyId($agency);
 
         // Build a list of the types of information we want to retrieve:
         $desiredParts = [
@@ -1831,12 +1826,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getLookupAgencyRequest($agency = null)
     {
-        // FIXME: We are using the first defined agency, it will probably not work in
-        // consortium scenario
-        if (null === $agency) {
-            $keys = array_keys($this->agency);
-            $agency = $keys[0];
-        }
+        $agency = $this->determineToAgencyId($agency);
 
         $ret = $this->getNCIPMessageStart() .
             '<ns1:LookupAgency>' .
@@ -2172,5 +2162,25 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function isRequestCancelled(string $status)
     {
         return !in_array(strtolower($status), $this->activeRequestStatuses);
+    }
+
+    /**
+     * Determine ToAgencyId
+     *
+     * @param array|string|null $agency List of available (configured) agencies or
+     * Agency Id
+     *
+     * @return string|null First Agency Id found
+     */
+    protected function determineToAgencyId($agency = null)
+    {
+        // FIXME: We are using the first defined agency, it will probably not work in
+        // consortium scenario
+        if (null === $agency) {
+            $keys = array_keys($this->agency);
+            $agency = $keys[0];
+        }
+
+        return is_array($agency) ? $agency[0] : $agency;
     }
 }
