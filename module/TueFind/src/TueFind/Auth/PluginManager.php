@@ -1,8 +1,11 @@
 <?php
 
-namespace IxTheo\Auth;
+namespace TueFind\Auth;
 
-class PluginManager extends \TueFind\Auth\PluginManager {
+class PluginManager extends \VuFind\Auth\PluginManager {
+
+    use \TueFind\PluginManagerExtensionTrait;
+
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {

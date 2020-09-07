@@ -18,9 +18,11 @@ class PluginManager extends \VuFind\Db\Table\PluginManager {
         array $v3config = []
     ) {
         $this->aliases['redirect']        = Redirect::class;
+        $this->aliases['user']            = User::class;
         $this->factories[Redirect::class] = GatewayFactory::class;
+        $this->factories[User::class]     = \VuFind\Db\Table\UserFactory::class;
 
         $this->addAbstractFactory(PluginFactory::class);
-        return parent::__construct($configOrContainerInstance, $v3config);
+        parent::__construct($configOrContainerInstance, $v3config);
     }
 }
