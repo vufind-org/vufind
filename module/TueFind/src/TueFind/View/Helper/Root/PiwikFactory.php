@@ -27,7 +27,7 @@ class PiwikFactory extends \VuFind\View\Helper\Root\PiwikFactory
             $siteId = $config->Piwik->site_id ?: $siteId;
         }
         if ($siteId == -1) {
-            return new $requestedName("", null, false, null, null);
+            return new $requestedName("", null, false, null, null, null);
         }
 
         $settings = [
@@ -38,6 +38,7 @@ class PiwikFactory extends \VuFind\View\Helper\Root\PiwikFactory
         $customVars = $config->Piwik->custom_variables ?? false;
         $request = $container->get('Request');
         $router = $container->get('Router');
-        return new $requestedName($url, $settings, $customVars, $router, $request);
+        $auth = $container->get(\VuFind\Auth\Manager::class);
+        return new $requestedName($url, $settings, $customVars, $router, $request, $auth);
     }
 }
