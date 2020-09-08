@@ -25,12 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\UrlHighlight;
 
 use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Match;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
+use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
  * Provide url formatted as HTML and prefixed with proxy if applicable
@@ -41,7 +42,7 @@ use VStelmakh\UrlHighlight\Util\LinkHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LinkifyHighlighter implements HighlighterInterface
+class VuFindHighlighter implements HighlighterInterface
 {
     private const DEFAULT_SCHEME = 'http';
 
