@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HelpText extends \Zend\View\Helper\AbstractHelper
+class HelpText extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * The current language

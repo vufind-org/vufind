@@ -47,7 +47,7 @@ class AlphabrowseController extends AbstractBase
     /**
      * Gathers data for the view of the AlphaBrowser and does some initialization
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -95,7 +95,7 @@ class AlphabrowseController extends AbstractBase
             ? (int)$config->AlphaBrowse->page_size : 20;
 
         // Connect to Solr:
-        $db = $this->serviceLocator->get('VuFind\Search\BackendManager')
+        $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
             ->get('Solr');
 
         // Process incoming parameters:
@@ -160,7 +160,7 @@ class AlphabrowseController extends AbstractBase
             $highlight_row = $rows_before;
             // special case: match row is < rows_before (i.e. at beginning of list)
             if ($startRow_adj < $rows_before) {
-                $highlight_row =  $startRow_adj;
+                $highlight_row = $startRow_adj;
             }
             // special case: we've gone past the end
             // only the rows_before records will have been returned

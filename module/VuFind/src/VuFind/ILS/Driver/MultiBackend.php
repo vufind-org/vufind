@@ -42,7 +42,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -245,14 +245,17 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
@@ -265,7 +268,8 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $options
             );
             return $this->addIdPrefixes($holdings, $source);
         }
@@ -739,7 +743,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             }
             $locations = $driver->getPickUpLocations(
                 $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
+                $this->stripIdPrefixes(
+                    $holdDetails, $source, ['id', 'cat_username', 'item_id']
+                )
             );
             return $this->addIdPrefixes($locations, $source);
         }
@@ -1513,7 +1519,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 : $this->driversConfigPath . '/' . $source;
 
             $config = $this->configLoader->get($path);
-        } catch (\Zend\Config\Exception\RuntimeException $e) {
+        } catch (\Laminas\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             $this->error("Could not load config for $source");

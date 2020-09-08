@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordTab;
 
-use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record tab plugin manager
@@ -46,21 +46,25 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'collectionhierarchytree' => 'VuFind\RecordTab\CollectionHierarchyTree',
-        'collectionlist' => 'VuFind\RecordTab\CollectionList',
-        'description' => 'VuFind\RecordTab\Description',
-        'excerpt' => 'VuFind\RecordTab\Excerpt',
-        'hierarchytree' => 'VuFind\RecordTab\HierarchyTree',
-        'holdingsils' => 'VuFind\RecordTab\HoldingsILS',
-        'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
-        'map' => 'VuFind\RecordTab\Map',
-        'preview' => 'VuFind\RecordTab\Preview',
-        'reviews' => 'VuFind\RecordTab\Reviews',
-        'similaritemscarousel' => 'VuFind\RecordTab\SimilarItemsCarousel',
-        'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
-        'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
-        'toc' => 'VuFind\RecordTab\TOC',
-        'usercomments' => 'VuFind\RecordTab\UserComments',
+        'collectionhierarchytree' => CollectionHierarchyTree::class,
+        'collectionlist' => CollectionList::class,
+        'componentparts' => ComponentParts::class,
+        'description' => Description::class,
+        'excerpt' => Excerpt::class,
+        'formats' => Formats::class,
+        'hierarchytree' => HierarchyTree::class,
+        'holdingsils' => HoldingsILS::class,
+        'holdingsworldcat' => HoldingsWorldCat::class,
+        'map' => Map::class,
+        'preview' => Preview::class,
+        'reviews' => Reviews::class,
+        'search2collectionlist' => Search2CollectionList::class,
+        'similaritemscarousel' => SimilarItemsCarousel::class,
+        'staffviewarray' => StaffViewArray::class,
+        'staffviewmarc' => StaffViewMARC::class,
+        'staffviewoverdrive' => StaffViewOverdrive::class,
+        'toc' => TOC::class,
+        'usercomments' => UserComments::class,
     ];
 
     /**
@@ -69,30 +73,25 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\RecordTab\CollectionHierarchyTree' =>
-            'VuFind\RecordTab\Factory::getCollectionHierarchyTree',
-        'VuFind\RecordTab\CollectionList' =>
-            'VuFind\RecordTab\Factory::getCollectionList',
-        'VuFind\RecordTab\Description' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordTab\Excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
-        'VuFind\RecordTab\HierarchyTree' =>
-            'VuFind\RecordTab\Factory::getHierarchyTree',
-        'VuFind\RecordTab\HoldingsILS' => 'VuFind\RecordTab\Factory::getHoldingsILS',
-        'VuFind\RecordTab\HoldingsWorldCat' =>
-            'VuFind\RecordTab\Factory::getHoldingsWorldCat',
-        'VuFind\RecordTab\Map' => 'VuFind\RecordTab\Factory::getMap',
-        'VuFind\RecordTab\Preview' => 'VuFind\RecordTab\Factory::getPreview',
-        'VuFind\RecordTab\Reviews' => 'VuFind\RecordTab\Factory::getReviews',
-        'VuFind\RecordTab\SimilarItemsCarousel' =>
-            'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
-        'VuFind\RecordTab\StaffViewArray' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordTab\StaffViewMARC' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordTab\TOC' => 'VuFind\RecordTab\Factory::getTOC',
-        'VuFind\RecordTab\UserComments' =>
-            'VuFind\RecordTab\Factory::getUserComments',
+        CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
+        CollectionList::class => CollectionListFactory::class,
+        ComponentParts::class => ComponentPartsFactory::class,
+        Description::class => InvokableFactory::class,
+        Excerpt::class => ExcerptFactory::class,
+        Formats::class => InvokableFactory::class,
+        HierarchyTree::class => HierarchyTreeFactory::class,
+        HoldingsILS::class => HoldingsILSFactory::class,
+        HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
+        Map::class => MapFactory::class,
+        Preview::class => PreviewFactory::class,
+        Reviews::class => ReviewsFactory::class,
+        Search2CollectionList::class => CollectionListFactory::class,
+        SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
+        StaffViewArray::class => InvokableFactory::class,
+        StaffViewMARC::class => InvokableFactory::class,
+        StaffViewOverdrive::class => InvokableFactory::class,
+        TOC::class => TOCFactory::class,
+        UserComments::class => UserCommentsFactory::class,
     ];
 
     /**
@@ -107,38 +106,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\RecordTab\PluginFactory');
-        $this->addInitializer('ZfcRbac\Initializer\AuthorizationServiceInitializer');
+        $this->addAbstractFactory(PluginFactory::class);
+        $this->addInitializer(
+            \LmcRbacMvc\Initializer\AuthorizationServiceInitializer::class
+        );
         parent::__construct($configOrContainerInstance, $v3config);
-    }
-
-    /**
-     * Load the specified key from the configuration array using the best
-     * available match to the class of the provided driver. Return the default
-     * value if no match is found.
-     *
-     * @param AbstractRecordDriver $driver  Record driver
-     * @param array                $config  Tab configuration (map of
-     * driver class => tab configuration)
-     * @param string               $setting Key to load from configuration
-     * @param string               $default Default to use if no setting found
-     *
-     * @return mixed
-     */
-    protected function getConfigByClass(AbstractRecordDriver $driver,
-        array $config, $setting, $default
-    ) {
-        // Get the current record driver's class name, then start a loop
-        // in case we need to use a parent class' name to find the appropriate
-        // setting.
-        $className = get_class($driver);
-        do {
-            if (isset($config[$className][$setting])) {
-                return $config[$className][$setting];
-            }
-        } while ($className = get_parent_class($className));
-        // No setting found...
-        return $default;
     }
 
     /**
@@ -149,127 +121,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\RecordTab\TabInterface';
-    }
-
-    /**
-     * Get an array of service names by looking up the provided record driver in
-     * the provided tab configuration array.
-     *
-     * @param AbstractRecordDriver $driver Record driver
-     * @param array                $config Tab configuration (associative array
-     * including 'tabs' array mapping driver class => tab service name)
-     *
-     * @return array
-     */
-    protected function getTabServiceNames(AbstractRecordDriver $driver,
-        array $config
-    ) {
-        return $this->getConfigByClass($driver, $config, 'tabs', []);
-    }
-
-    /**
-     * Get an array of tabs names configured to load via AJAX in the background
-     *
-     * @param AbstractRecordDriver $driver Record driver
-     * @param array                $config Tab configuration (associative array
-     * including 'tabs' array mapping driver class => tab service name)
-     *
-     * @return array
-     */
-    public function getBackgroundTabNames(AbstractRecordDriver $driver,
-        array $config
-    ) {
-        return $this->getConfigByClass($driver, $config, 'backgroundLoadedTabs', []);
-    }
-
-    /**
-     * Get a default tab by looking up the provided record driver in the tab
-     * configuration array.
-     *
-     * @param AbstractRecordDriver $driver   Record driver
-     * @param array                $config   Tab configuration (map of
-     * driver class => tab configuration)
-     * @param array                $tabs     Details on available tabs (returned
-     * from getTabsForRecord()).
-     * @param string               $fallback Fallback to use if no tab specified
-     * or matched.
-     *
-     * @return string
-     */
-    public function getDefaultTabForRecord(AbstractRecordDriver $driver,
-        array $config, array $tabs, $fallback = null
-    ) {
-        // Load default from module configuration:
-        $default = $this->getConfigByClass($driver, $config, 'defaultTab', null);
-
-        // Missing/invalid record driver configuration? Fall back to provided
-        // default:
-        if ((!$default || !isset($tabs[$default])) && isset($tabs[$fallback])) {
-            $default = $fallback;
-        }
-
-        // Is configured tab still invalid? If so, pick first existing tab:
-        if ((!$default || !isset($tabs[$default])) && !empty($tabs)) {
-            $keys = array_keys($tabs);
-            $default = $keys[0];
-        }
-
-        return $default;
-    }
-
-    /**
-     * Convenience method to load tab information, including default, in a
-     * single pass. Returns an associative array with 'tabs' and 'default' keys.
-     *
-     * @param AbstractRecordDriver $driver   Record driver
-     * @param array                $config   Tab configuration (map of
-     * driver class => tab configuration)
-     * @param \Zend\Http\Request   $request  User request (optional)
-     * @param string               $fallback Fallback default tab to use if no
-     * tab specified or matched.
-     *
-     * @return array
-     */
-    public function getTabDetailsForRecord(AbstractRecordDriver $driver,
-        array $config, $request = null, $fallback = null
-    ) {
-        $tabs = $this->getTabsForRecord($driver, $config, $request);
-        $default = $this->getDefaultTabForRecord($driver, $config, $tabs, $fallback);
-        return compact('tabs', 'default');
-    }
-
-    /**
-     * Get an array of valid tabs for the provided record driver.
-     *
-     * @param AbstractRecordDriver $driver  Record driver
-     * @param array                $config  Tab configuration (map of
-     * driver class => tab configuration)
-     * @param \Zend\Http\Request   $request User request (optional)
-     *
-     * @return array               service name => tab object
-     */
-    public function getTabsForRecord(AbstractRecordDriver $driver,
-        array $config, $request = null
-    ) {
-        $tabs = [];
-        foreach ($this->getTabServiceNames($driver, $config) as $tabKey => $svc) {
-            if (!$this->has($svc)) {
-                continue;
-            }
-            $newTab = $this->get($svc);
-            if (method_exists($newTab, 'setRecordDriver')) {
-                $newTab->setRecordDriver($driver);
-            }
-            if ($request instanceof \Zend\Http\Request
-                && method_exists($newTab, 'setRequest')
-            ) {
-                $newTab->setRequest($request);
-            }
-            if ($newTab->isActive()) {
-                $tabs[$tabKey] = $newTab;
-            }
-        }
-        return $tabs;
+        return TabInterface::class;
     }
 }

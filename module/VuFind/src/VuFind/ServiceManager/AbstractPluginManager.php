@@ -27,8 +27,8 @@
  */
 namespace VuFind\ServiceManager;
 
-use Zend\ServiceManager\AbstractPluginManager as Base;
-use Zend\ServiceManager\Exception\InvalidServiceException;
+use Laminas\ServiceManager\AbstractPluginManager as Base;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
 
 /**
  * VuFind Plugin Manager
@@ -59,7 +59,7 @@ abstract class AbstractPluginManager extends Base
     ) {
         parent::__construct($configOrContainerInstance, $v3config);
         $this->addInitializer(
-            'VuFind\ServiceManager\ServiceInitializer', false
+            \VuFind\ServiceManager\ServiceInitializer::class, false
         );
     }
 

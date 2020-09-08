@@ -44,7 +44,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'browzine' => 'VuFind\DoiLinker\BrowZine',
+        'browzine' => BrowZine::class,
+        'unpaywall' => Unpaywall::class,
     ];
 
     /**
@@ -53,7 +54,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\DoiLinker\BrowZine' => 'VuFind\DoiLinker\BrowZineFactory',
+        BrowZine::class => BrowZineFactory::class,
+        Unpaywall::class => UnpaywallFactory::class,
     ];
 
     /**
@@ -64,6 +66,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\DoiLinker\DoiLinkerInterface';
+        return DoiLinkerInterface::class;
     }
 }

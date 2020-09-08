@@ -51,7 +51,7 @@ class EdsTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockBackend($id = 'EDS')
     {
-        return $this->getMockBuilder('VuFindSearch\Backend\EDS\Backend')
+        return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->setMethods(['autocomplete'])
             ->disableOriginalConstructor()->getMock();
     }

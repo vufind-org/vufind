@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search;
 
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  * Wrapper class to handle search memory
@@ -152,18 +152,6 @@ class Memory
         } else {
             $this->forgetSearch();
         }
-    }
-
-    /**
-     * Deprecated alias for retrieveSearch, for legacy compatibility.
-     *
-     * @deprecated
-     *
-     * @return string|null
-     */
-    public function retrieve()
-    {
-        return $this->retrieveSearch();
     }
 
     /**

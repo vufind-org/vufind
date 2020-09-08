@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Collection Controller
@@ -61,12 +61,13 @@ class CollectionController extends AbstractRecord
     /**
      * Get the tab configuration for this controller.
      *
-     * @return array
+     * @return \VuFind\RecordTab\TabManager
      */
-    protected function getRecordTabConfig()
+    protected function getRecordTabManager()
     {
-        $cfg = $this->serviceLocator->get('Config');
-        return $cfg['vufind']['recorddriver_collection_tabs'];
+        $manager = parent::getRecordTabManager();
+        $manager->setContext('collection');
+        return $manager;
     }
 
     /**
@@ -86,7 +87,7 @@ class CollectionController extends AbstractRecord
         }
 
         $result = parent::showTab($tab, $ajax);
-        if (!$ajax && $result instanceof \Zend\View\Model\ViewModel) {
+        if (!$ajax && $result instanceof \Laminas\View\Model\ViewModel) {
             $result->setTemplate('collection/view');
         }
         return $result;
@@ -99,7 +100,7 @@ class CollectionController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

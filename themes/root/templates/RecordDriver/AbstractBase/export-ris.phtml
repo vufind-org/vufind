@@ -157,6 +157,10 @@ foreach ($this->record($this->driver)->getUrlList() as $url) {
     echo 'UR  - ' . "$url\r\n";
 }
 
+if ($doi = $this->driver->tryMethod('getCleanDOI')) {
+    echo "DO  - $doi\r\n";
+}
+
 // End of Record:
 echo "ER  -\r\n\r\n";
 ?>

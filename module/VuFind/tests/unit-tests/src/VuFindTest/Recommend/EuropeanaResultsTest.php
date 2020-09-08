@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Recommend;
 
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use VuFind\Recommend\EuropeanaResults;
 use VuFindHttp\HttpService;
 use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
 
 /**
  * EuropeanaResults tests.
@@ -47,7 +47,7 @@ class EuropeanaResultsTest extends TestCase
     /**
      * Test that the module properly parses a sample response.
      *
-     * This is a bare minimum test to confirm that Zend\Feed deals with the RSS
+     * This is a bare minimum test to confirm that Laminas\Feed deals with the RSS
      * response correctly. More work should be done to confirm that URL generation
      * works appropriately, optional configuration parameters are respected, etc.
      *
@@ -59,7 +59,7 @@ class EuropeanaResultsTest extends TestCase
         $europeana->setHttpService($this->getHttpService());
         $europeana->setConfig(''); // use defaults
         $results = $this->getMockResults();
-        $query = new \Zend\StdLib\Parameters(['lookfor' => 'test']);
+        $query = new \Laminas\Stdlib\Parameters(['lookfor' => 'test']);
         $europeana->init($results->getParams(), $query);
         $europeana->process($results);
         $this->assertEquals(
@@ -140,7 +140,7 @@ class EuropeanaResultsTest extends TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
@@ -159,7 +159,7 @@ class EuropeanaResultsTest extends TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
             ->will($this->returnValue($query));

@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * ContentLoader helper factory.
@@ -64,7 +64,7 @@ class ContentLoaderFactory implements FactoryInterface
         // Use the requested service name to look up the appropriate content loader:
         $parts = explode('\\', $requestedName);
         $type = strtolower(array_pop($parts));
-        $loader = $container->get('VuFind\Content\PluginManager')->get($type);
+        $loader = $container->get(\VuFind\Content\PluginManager::class)->get($type);
         return new ContentLoader($loader);
     }
 }

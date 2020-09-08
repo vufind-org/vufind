@@ -231,7 +231,7 @@ class SideFacets extends AbstractFacets
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -245,6 +245,17 @@ class SideFacets extends AbstractFacets
         foreach ($this->checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
         }
+    }
+
+    /**
+     * Get checkbox facet information from the search results.
+     *
+     * @return array
+     */
+    public function getCheckboxFacetSet()
+    {
+        return $this->results->getParams()
+            ->getCheckboxFacets(array_keys($this->checkboxFacets));
     }
 
     /**
@@ -353,7 +364,7 @@ class SideFacets extends AbstractFacets
         if (empty($this->collapsedFacets)) {
             return [];
         } elseif ($this->collapsedFacets == '*') {
-            return array_keys($this->getFacetSet());
+            return array_keys($this->mainFacets);
         }
         return array_map('trim', explode(',', $this->collapsedFacets));
     }
@@ -402,39 +413,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Get the list of filters to display
-     *
-     * @param array $extraFilters Extra filters to add to the list.
-     *
-     * @return array
-     */
-    public function getVisibleFilters($extraFilters = [])
-    {
-        // Merge extras into main list:
-        $filterList = array_merge(
-            $this->results->getParams()->getFilterList(true), $extraFilters
-        );
-
-        // Filter out suppressed values:
-        $final = [];
-        foreach ($filterList as $field => $filters) {
-            $current = [];
-            foreach ($filters as $filter) {
-                if (!isset($filter['suppressDisplay'])
-                    || !$filter['suppressDisplay']
-                ) {
-                    $current[] = $filter;
-                }
-            }
-            if (!empty($current)) {
-                $final[$field] = $current;
-            }
-        }
-
-        return $final;
-    }
-
-    /**
      * Return range facet information in a format processed for use in the view.
      *
      * @param string $property Name of property containing active range facets
@@ -443,7 +421,7 @@ class SideFacets extends AbstractFacets
      */
     protected function getRangeFacets($property)
     {
-        $filters = $this->results->getParams()->getFilters();
+        $filters = $this->results->getParams()->getRawFilters();
         $result = [];
         if (isset($this->$property) && is_array($this->$property)) {
             foreach ($this->$property as $current) {

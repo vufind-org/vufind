@@ -41,6 +41,23 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Base\Params
 {
     use \VuFind\Search\Params\FacetLimitTrait;
+    use \VuFind\Search\Params\FacetRestrictionsTrait;
+
+    /**
+     * Search with facet.contains
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     *
+     * @var string
+     */
+    protected $facetContains = null;
+
+    /**
+     * Ignore Case when using facet.contains
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     *
+     * @var bool
+     */
+    protected $facetContainsIgnoreCase = null;
 
     /**
      * Offset for facet results
@@ -85,6 +102,23 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetHelper;
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced', 'HomePage', 'ResultsTop', 'Results', 'ExtraFacetLabels'];
+
+    /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -100,11 +134,9 @@ class Params extends \VuFind\Search\Base\Params
         // Use basic facet limit by default, if set:
         $config = $configLoader->get($options->getFacetsIni());
         $this->initFacetLimitsFromConfig($config->Results_Settings ?? null);
+        $this->initFacetRestrictionsFromConfig($config->Results_Settings ?? null);
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
-        }
-        if (isset($config->ExtraFacetLabels)) {
-            $this->extraFacetLabels = $config->ExtraFacetLabels->toArray();
         }
         if (isset($config->Results_Settings->sorted_by_index)
             && count($config->Results_Settings->sorted_by_index) > 0
@@ -177,10 +209,25 @@ class Params extends \VuFind\Search\Base\Params
                 if ($fieldLimit != $this->facetLimit) {
                     $facetSet["f.{$facetField}.facet.limit"] = $fieldLimit;
                 }
+                $fieldPrefix = $this->getFacetPrefixForField($facetField);
+                if (!empty($fieldPrefix)) {
+                    $facetSet["f.{$facetField}.facet.prefix"] = $fieldPrefix;
+                }
+                $fieldMatches = $this->getFacetMatchesForField($facetField);
+                if (!empty($fieldMatches)) {
+                    $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
+                }
                 if ($this->getFacetOperator($facetField) == 'OR') {
                     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                 }
                 $facetSet['field'][] = $facetField;
+            }
+            if ($this->facetContains != null) {
+                $facetSet['contains'] = $this->facetContains;
+            }
+            if ($this->facetContainsIgnoreCase != null) {
+                $facetSet['contains.ignoreCase']
+                    = $this->facetContainsIgnoreCase ? 'true' : 'false';
             }
             if ($this->facetOffset != null) {
                 $facetSet['offset'] = $this->facetOffset;
@@ -201,7 +248,7 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -216,6 +263,30 @@ class Params extends \VuFind\Search\Base\Params
             // Use standard initialization:
             parent::initSearch($request);
         }
+    }
+
+    /**
+     * Set Facet Contains
+     *
+     * @param string $p the new contains value
+     *
+     * @return void
+     */
+    public function setFacetContains($p)
+    {
+        $this->facetContains = $p;
+    }
+
+    /**
+     * Set Facet Contains Ignore Case
+     *
+     * @param bool $val the new boolean value
+     *
+     * @return void
+     */
+    public function setFacetContainsIgnoreCase($val)
+    {
+        $this->facetContainsIgnoreCase = $val;
     }
 
     /**
@@ -308,47 +379,9 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Initialize facet settings for the standard search screen.
-     *
-     * @return void
-     */
-    public function initBasicFacets()
-    {
-        $this->initFacetList('ResultsTop', 'Results_Settings');
-        $this->initFacetList('Results', 'Results_Settings');
-    }
-
-    /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings; if
-     * multiple sections contain the same facet, this section's description will
-     * be favored.
-     *
-     * @return void
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // Based on preference, change the order of initialization to make sure
-        // that preferred facet labels come in last.
-        if ($preferredSection == 'Advanced') {
-            $this->initHomePageFacets();
-            $this->initBasicFacets();
-            $this->initAdvancedFacets();
-        } else {
-            $this->initHomePageFacets();
-            $this->initAdvancedFacets();
-            $this->initBasicFacets();
-        }
-        $this->initCheckboxFacets();
-    }
-
-    /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -584,16 +617,35 @@ class Params extends \VuFind\Search\Base\Params
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = $hierarchicalFacetSeparators[$field] ?? '/';
-            $filter['displayText'] = $this->facetHelper->formatDisplayText(
-                $filter['displayText'], true, $separator
-            );
-            if ($translate) {
-                $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
-                    $field
+            if (!$translate) {
+                $filter['displayText'] = $this->facetHelper->formatDisplayText(
+                    $filter['displayText'],
+                    true,
+                    $separator
+                )->getDisplayString();
+            } else {
+                $domain = $this->getOptions()
+                    ->getTextDomainForTranslatedFacet($field);
+
+                // Provide translation of each separate element as a default
+                // while allowing one to translate the full string too:
+                $parts = $this->facetHelper
+                    ->getFilterStringParts($filter['value']);
+                $translated = [];
+                foreach ($parts as $part) {
+                    $translated[] = $this->translate([$domain, $part]);
+                }
+                $translatedParts = implode($separator, $translated);
+
+                $parts = array_map(
+                    function ($part) {
+                        return $part->getDisplayString();
+                    },
+                    $parts
                 );
-                $filter['displayText'] = $this->translate(
-                    [$domain, $filter['displayText']]
-                );
+                $str = implode($separator, $parts);
+                $filter['displayText']
+                    = $this->translate([$domain, $str], [], $translatedParts);
             }
         }
 

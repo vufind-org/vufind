@@ -36,7 +36,7 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
+class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Theme resource container
@@ -129,7 +129,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 $parts[1] .= ':' . $parts[2];
                 array_splice($parts, 2, 1);
             }
-            $headLink()->prependStylesheet(
+            $headLink()->forcePrependStylesheet(
                 trim($parts[0]),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
@@ -140,7 +140,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
             $parts = $this->parseSetting($current);
-            $headLink()->prependStylesheet(
+            $headLink()->forcePrependStylesheet(
                 $headLink()->addLessStylesheet(trim($parts[0])),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
@@ -170,8 +170,8 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Load Javascript (same ordering considerations as CSS, above):
         $headScript = $this->getView()->plugin('headScript');
         foreach (array_reverse($this->container->getJs()) as $current) {
-            $parts =  $this->parseSetting($current);
-            $headScript()->prependFile(
+            $parts = $this->parseSetting($current);
+            $headScript()->forcePrependFile(
                 trim($parts[0]),
                 'text/javascript',
                 isset($parts[1])

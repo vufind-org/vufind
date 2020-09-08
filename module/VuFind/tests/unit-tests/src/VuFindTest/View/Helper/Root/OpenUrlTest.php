@@ -28,8 +28,8 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Config\Config;
 use VuFind\View\Helper\Root\OpenUrl;
-use Zend\Config\Config;
 
 /**
  * OpenUrl Test Class
@@ -223,7 +223,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder('VuFind\View\Helper\Root\Context')
+        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
             ->disableOriginalConstructor()->getMock();
     }
 
@@ -290,14 +290,12 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     protected function getOpenUrl($rules = null, $config = [], $mockContext = null)
     {
         if (null === $rules) {
-            $json = __DIR__
-                . '/../../../../../../../../../config/vufind/OpenUrlRules.json';
-            $rules = json_decode(file_get_contents($json), true);
+            $rules = $this->getFixture('defaults.json');
         }
         if (null === $mockContext) {
             $mockContext = $this->getMockContext();
         }
-        $mockPm = $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')
+        $mockPm = $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());

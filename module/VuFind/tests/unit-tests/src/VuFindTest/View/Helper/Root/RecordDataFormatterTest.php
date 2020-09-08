@@ -42,6 +42,22 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
+     * Get a mock record router.
+     *
+     * @return \VuFind\Record\Router
+     */
+    protected function getMockRecordRouter()
+    {
+        $mock = $this->getMockBuilder(\VuFind\Record\Router::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getActionRouteDetails'])
+            ->getMock();
+        $mock->expects($this->any())->method('getActionRouteDetails')
+            ->will($this->returnValue(['route' => 'home', 'params' => []]));
+        return $mock;
+    }
+
+    /**
      * Get view helpers needed by test.
      *
      * @return array
@@ -51,17 +67,17 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $context = new \VuFind\View\Helper\Root\Context();
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
-                $this->getMockBuilder('VuFind\Auth\Manager')->disableOriginalConstructor()->getMock(),
-                $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')->disableOriginalConstructor()->getMock()
+                $this->getMockBuilder(\VuFind\Auth\Manager::class)->disableOriginalConstructor()->getMock(),
+                $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)->disableOriginalConstructor()->getMock()
             ),
             'context' => $context,
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
-            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder('VuFind\Resolver\Driver\PluginManager')->disableOriginalConstructor()->getMock()),
+            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
-            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockBuilder('VuFind\Record\Router')->disableOriginalConstructor()->getMock()),
+            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockRecordRouter()),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($this->getServiceManager())),
-            'searchTabs' => $this->getMockBuilder('VuFind\View\Helper\Root\SearchTabs')->disableOriginalConstructor()->getMock(),
+            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
@@ -81,7 +97,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $methods = [
             'getBuilding', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
         ];
-        $record = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+        $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->setMethods($methods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
@@ -133,10 +149,10 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
         $view = $this->getPhpRenderer($helpers);
 
         // Mock out the router to avoid errors:
-        $match = new \Zend\Router\RouteMatch([]);
+        $match = new \Laminas\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
         $view->plugin('url')
-            ->setRouter($this->createMock('Zend\Router\RouteStackInterface'))
+            ->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
             ->setRouteMatch($match);
 
         // Inject the view object into all of the helpers:
@@ -301,7 +317,8 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'Multi Data' => 'Book',
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
-            'Tags' => 'Add Tag No Tags, Be the first to tag this record!',
+            // Double slash at the end comes from inline javascript
+            'Tags' => 'Add Tag No Tags, Be the first to tag this record! //',
             'ZeroAllowed' => 0,
             'c' => 'c',
             'a' => 'a',
@@ -328,7 +345,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 
         // Check for exact markup in representative example:
         $this->assertEquals(
-            'Italian<br />Latin', $this->findResult('Language', $results)['value']
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>', $this->findResult('Language', $results)['value']
         );
 
         // Check for context in Building:

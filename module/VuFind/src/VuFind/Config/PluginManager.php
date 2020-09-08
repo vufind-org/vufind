@@ -27,7 +27,7 @@
  */
 namespace VuFind\Config;
 
-use Zend\ServiceManager\AbstractPluginManager as Base;
+use Laminas\ServiceManager\AbstractPluginManager as Base;
 
 /**
  * VuFind Config Manager
@@ -52,7 +52,7 @@ class PluginManager extends Base
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\Config\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -79,7 +79,7 @@ class PluginManager extends Base
      *
      * @param string $id Service identifier
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function reload($id)
     {

@@ -28,9 +28,9 @@
 namespace VuFind\Log;
 
 use Interop\Container\ContainerInterface;
-use Zend\Config\Config;
-use Zend\Log\Writer\WriterInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\Config\Config;
+use Laminas\Log\Writer\WriterInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating Logger
@@ -71,7 +71,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
-            $container->get('Zend\Db\Adapter\Adapter'),
+            $container->get(\Laminas\Db\Adapter\Adapter::class),
             $table_name, $columnMapping
         );
         $this->addWriters($logger, $writer, $filters);
@@ -96,7 +96,7 @@ class LoggerFactory implements FactoryInterface
         $error_types = $parts[1] ?? '';
 
         // use smtp
-        $mailer = $container->get('VuFind\Mailer\Mailer');
+        $mailer = $container->get(\VuFind\Mailer\Mailer::class);
         $msg = $mailer->getNewMessage()
             ->addFrom($config->Site->email)
             ->addTo($email)
@@ -164,15 +164,36 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $writer = new Writer\Slack(
             $config->Logging->slackurl,
-            $container->get('VuFindHttp\HttpService')->createClient(),
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $options
         );
         $writer->setContentType('application/json');
-        $formatter = new \Zend\Log\Formatter\Simple(
+        $formatter = new \Laminas\Log\Formatter\Simple(
             "*%priorityName%*: %message%"
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);
+    }
+
+    /**
+     * Is dynamic debug mode enabled?
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return bool
+     */
+    protected function hasDynamicDebug(ContainerInterface $container): bool
+    {
+        // Query parameters do not apply in console mode; if we do have a debug
+        // query parameter, and the appropriate permission is set, activate dynamic
+        // debug:
+        if (PHP_SAPI !== 'cli'
+            && $container->get('Request')->getQuery()->get('debug')
+        ) {
+            return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
+                ->isGranted('access.DebugMode');
+        }
+        return false;
     }
 
     /**
@@ -185,12 +206,13 @@ class LoggerFactory implements FactoryInterface
      */
     protected function configureLogger(ContainerInterface $container, Logger $logger)
     {
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
 
         $hasWriter = false;
 
         // DEBUGGER
-        if (!$config->System->debug == false) {
+        if (!$config->System->debug == false || $this->hasDynamicDebug($container)) {
             $hasWriter = true;
             $this->addDebugWriter($logger, $config->System->debug);
         }
@@ -221,7 +243,7 @@ class LoggerFactory implements FactoryInterface
 
         // Null (no-op) writer to avoid errors
         if (!$hasWriter) {
-            $logger->addWriter(new \Zend\Log\Writer\Noop());
+            $logger->addWriter(new \Laminas\Log\Writer\Noop());
         }
     }
 
@@ -243,7 +265,7 @@ class LoggerFactory implements FactoryInterface
 
         $hasDebugWriter = true;
         $writer = new Writer\Stream('php://output');
-        $formatter = new \Zend\Log\Formatter\Simple(
+        $formatter = new \Laminas\Log\Formatter\Simple(
             '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
@@ -278,7 +300,7 @@ class LoggerFactory implements FactoryInterface
             $verbosity = $parts[1] ?? false;
 
             // VuFind's configuration provides four priority options, each
-            // combining two of the standard Zend levels.
+            // combining two of the standard Laminas levels.
             switch (trim($priority)) {
             case 'debug':
                 // Set static flag indicating that debug is turned on:
@@ -321,8 +343,8 @@ class LoggerFactory implements FactoryInterface
             }
 
             // filtering -- only log messages between the min and max priority levels
-            $filter1 = new \Zend\Log\Filter\Priority($min, '<=');
-            $filter2 = new \Zend\Log\Filter\Priority($max, '>=');
+            $filter1 = new \Laminas\Log\Filter\Priority($min, '<=');
+            $filter2 = new \Laminas\Log\Filter\Priority($max, '>=');
             $newWriter->addFilter($filter1);
             $newWriter->addFilter($filter2);
 
@@ -351,8 +373,23 @@ class LoggerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $logger = new $requestedName();
-        $this->configureLogger($container, $logger);
-        return $logger;
+        // Construct the logger as a lazy loading value holder so that
+        // the object is not instantiated until it is called. This helps break
+        // potential circular dependencies with other services.
+        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+            // Indicate that initialization is complete to avoid reinitialization:
+            $proxy->setProxyInitializer(null);
+
+            // Now build the actual service:
+            $loggerOptions = [
+                'vufind_ip_reader' =>
+                    $container->get(\VuFind\Net\UserIpReader::class)
+            ];
+            $wrapped = new $requestedName($loggerOptions);
+            $this->configureLogger($container, $wrapped);
+        };
+        $cfg = $container->get(\ProxyManager\Configuration::class);
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($cfg);
+        return $factory->createProxy($requestedName, $callback);
     }
 }

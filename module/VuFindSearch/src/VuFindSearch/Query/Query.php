@@ -85,6 +85,28 @@ class Query extends AbstractQuery
     }
 
     /**
+     * Apply normalization to a string.
+     *
+     * @param string $text String to normalize.
+     *
+     * @return string
+     */
+    protected function normalizeText($text)
+    {
+        return strtolower($this->stripDiacritics($text));
+    }
+
+    /**
+     * Return search string in a normalized format.
+     *
+     * @return string
+     */
+    public function getNormalizedString()
+    {
+        return $this->normalizeText($this->queryString);
+    }
+
+    /**
      * Set the search string.
      *
      * @param string $string New search string
@@ -157,6 +179,24 @@ class Query extends AbstractQuery
     }
 
     /**
+     * Does the query contain the specified term when comparing normalized strings?
+     *
+     * @param string $needle Term to check
+     *
+     * @return bool
+     */
+    public function containsNormalizedTerm($needle)
+    {
+        // Escape characters with special meaning in regular expressions to avoid
+        // errors:
+        $needle = preg_quote($this->normalizeText($needle), '/');
+
+        return (bool)preg_match(
+            "/\b$needle\b/u", $this->getNormalizedString()
+        );
+    }
+
+    /**
      * Get a concatenated list of all query strings within the object.
      *
      * @return string
@@ -169,16 +209,19 @@ class Query extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return void
      */
-    public function replaceTerm($from, $to)
+    public function replaceTerm($from, $to, $normalize = false)
     {
         // Escape $from so it is regular expression safe (just in case it
         // includes any weird punctuation -- unlikely but possible):
-        $from = preg_quote($from, '/');
+        $from = preg_quote($normalize ? $this->normalizeText($from) : $from, '/');
+        $queryString = $normalize
+            ? $this->getNormalizedString() : $this->queryString;
 
         // If our "from" pattern contains non-word characters, we can't use word
         // boundaries for matching.  We want to try to use word boundaries when
@@ -191,6 +234,24 @@ class Query extends AbstractQuery
         }
 
         // Perform the replacement:
-        $this->queryString = preg_replace($pattern, $to, $this->queryString);
+        $this->queryString = preg_replace($pattern, $to, $queryString);
+    }
+
+    /**
+     * Remove diacritics (accents, umlauts, etc.) from a string
+     *
+     * @param string $string The text where we would like to remove diacritics
+     *
+     * @return string The input text with diacritics removed
+     */
+    protected function stripDiacritics($string)
+    {
+        // See http://userguide.icu-project.org/transforms/general for
+        // an explanation of this.
+        $transliterator = \Transliterator::createFromRules(
+            ':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;',
+            \Transliterator::FORWARD
+        );
+        return $transliterator->transliterate($string);
     }
 }

@@ -27,11 +27,11 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\Stdlib\Parameters;
 
 /**
  * "Get Facet Data" AJAX handler
@@ -108,11 +108,7 @@ class GetFacetData extends AbstractBase
             $facets = [];
         } else {
             $facetList = $facets[$facet]['data']['list'];
-
-            if (!empty($sort)) {
-                $this->facetHelper->sortFacetList($facetList, $sort == 'top');
-            }
-
+            $this->facetHelper->sortFacetList($facetList, $sort);
             $facets = $this->facetHelper->buildFacetArray(
                 $facet, $facetList, $results->getUrlQuery(), false
             );

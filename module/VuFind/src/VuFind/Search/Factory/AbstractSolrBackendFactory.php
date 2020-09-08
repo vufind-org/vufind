@@ -30,6 +30,8 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\Config\Config;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HideFacetValueListener;
@@ -38,20 +40,18 @@ use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
+
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
-
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+
 use VuFindSearch\Backend\Solr\QueryBuilder;
+
 use VuFindSearch\Backend\Solr\SimilarBuilder;
-
-use Zend\Config\Config;
-
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Abstract factory for SOLR backends.
@@ -67,7 +67,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -128,6 +128,20 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $uniqueKey = 'id';
 
     /**
+     * Solr connector class
+     *
+     * @var string
+     */
+    protected $connectorClass = Connector::class;
+
+    /**
+     * Solr backend class
+     *
+     * @var string
+     */
+    protected $backendClass = Backend::class;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -148,9 +162,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->config = $this->serviceLocator->get('VuFind\Config\PluginManager');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        $this->config = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         $backend   = $this->createBackend($connector);
@@ -167,7 +182,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-        $backend = new Backend($connector);
+        $backend = new $this->backendClass($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
         $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
@@ -324,11 +339,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createConnector()
     {
         $config = $this->config->get($this->mainConfig);
+        $searchConfig = $this->config->get($this->searchConfig);
+        $defaultFields = $searchConfig->General->default_record_fields ?? '*';
 
         $handlers = [
             'select' => [
                 'fallback' => true,
-                'defaults' => ['fl' => '*,score'],
+                'defaults' => ['fl' => $defaultFields],
                 'appends'  => ['fq' => []],
             ],
             'terms' => [
@@ -340,7 +357,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
-        $connector = new Connector(
+        $connector = new $this->connectorClass(
             $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
         );
         $connector->setTimeout(
@@ -350,9 +367,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if ($this->logger) {
             $connector->setLogger($this->logger);
         }
-        if ($this->serviceLocator->has('VuFindHttp\HttpService')) {
-            $connector
-                ->setProxy($this->serviceLocator->get('VuFindHttp\HttpService'));
+        if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
+            $connector->setProxy(
+                $this->serviceLocator->get(\VuFindHttp\HttpService::class)
+            );
         }
         return $connector;
     }
@@ -405,7 +423,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function loadSpecs()
     {
-        return $this->serviceLocator->get('VuFind\Config\SearchSpecsReader')
+        return $this->serviceLocator->get(\VuFind\Config\SearchSpecsReader::class)
             ->get($this->searchYaml);
     }
 
@@ -496,7 +514,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(
-            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+            $this->serviceLocator
+                ->get(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $listener;
     }

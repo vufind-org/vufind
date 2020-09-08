@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Primo Central Record Controller
@@ -63,7 +63,7 @@ class PrimorecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Primo');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

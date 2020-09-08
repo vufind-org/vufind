@@ -46,8 +46,7 @@ class Options extends \VuFind\Search\Base\Options
      * @var array
      */
     protected $facetSortOptions = [
-        'count' => 'sort_count',
-        'index' => 'sort_alphabetic'
+        '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic']
     ];
 
     /**
@@ -209,13 +208,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load autocomplete preferences:
-        if (isset($searchSettings->Autocomplete->enabled)) {
-            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
-        }
-        if (isset($searchSettings->Autocomplete->auto_submit)) {
-            $this->autocompleteAutoSubmit
-                = $searchSettings->Autocomplete->auto_submit;
-        }
+        $this->configureAutocomplete($searchSettings);
 
         // Load shard settings
         if (isset($searchSettings->IndexShards)
@@ -307,5 +300,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getHierarchicalFacetSeparators()
     {
         return $this->hierarchicalFacetSeparators;
+    }
+
+    /**
+     * Does this search backend support scheduled searching?
+     *
+     * @return bool
+     */
+    public function supportsScheduledSearch()
+    {
+        // Solr supports this!
+        return true;
     }
 }

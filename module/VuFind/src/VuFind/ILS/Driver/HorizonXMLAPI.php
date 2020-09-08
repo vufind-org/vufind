@@ -546,7 +546,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $initResponse = $this->makeRequest($params);
 
         if ($initResponse->request_confirm) {
-            $confirmParams =  [
+            $confirmParams = [
                 "session" => $session,
                 "profile" => $this->wsProfile,
                 "bibkey" => $requestDetails['bibId'],

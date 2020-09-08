@@ -28,7 +28,7 @@
 namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for \VuFind\Date\Converter
@@ -63,7 +63,8 @@ class DateConverterFactory implements FactoryInterface
         }
         // Pass along key [Site] settings: displayDateFormat, displayTimeFormat,
         // timezone
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $settings = isset($config->Site) ? $config->Site->toArray() : [];
         return new $requestedName($settings);
     }

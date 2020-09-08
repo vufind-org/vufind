@@ -8,7 +8,7 @@
   <?php endif; ?>
   </span>
   <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-    <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+    <span property="datePublished"><?=$this->escapeHtml($pubDate)?></span>
   <?php endif; ?>
   <br/>
 <?php endforeach; ?>

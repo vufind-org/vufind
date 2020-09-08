@@ -1,7 +1,12 @@
 module.exports = function(grunt) {
-  require('jit-grunt')(grunt); // Just in time library loading
+  const fs = require("fs");
 
-  var fs = require('fs');
+  // Local custom tasks
+  if (fs.existsSync("./Gruntfile.local.js")) {
+    require("./Gruntfile.local.js")(grunt);
+  }
+
+  require('jit-grunt')(grunt); // Just in time library loading
 
   function getLoadPaths(file) {
     var config;
@@ -227,5 +232,18 @@ module.exports = function(grunt) {
 
     grunt.config.set('sass', sassConfig);
     grunt.task.run('sass');
+  });
+
+  grunt.registerTask('default', function help() {
+    grunt.log.writeln(`\nHello! Here are your grunt command options:
+
+    - grunt less        = compile and compress all themes' LESS files to css.
+    - grunt scss        = compile and map all themes' SASS files to css.
+    - grunt lessdev     = compile and map all themes' LESS files to css.
+    - grunt watch:[cmd] = continuous monitor source files and run command when changes are detected.
+    - grunt watch:less
+    - grunt watch:scss
+    - grunt watch:lessdev
+    - grunt lessToSass  = transpile all LESS files to SASS.`);
   });
 };

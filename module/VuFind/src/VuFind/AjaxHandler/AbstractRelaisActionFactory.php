@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class AbstractRelaisActionFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,10 +63,10 @@ class AbstractRelaisActionFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $user = $container->get('VuFind\Auth\Manager')->isLoggedIn();
+        $user = $container->get(\VuFind\Auth\Manager::class)->isLoggedIn();
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Connection\Relais'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Connection\Relais::class),
             $user ?: null
         );
     }

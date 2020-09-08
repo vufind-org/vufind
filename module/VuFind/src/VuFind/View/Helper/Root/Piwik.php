@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Piwik extends \Zend\View\Helper\AbstractHelper
+class Piwik extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Piwik URL (false if disabled)
@@ -60,6 +60,13 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected $searchPrefix;
 
     /**
+     * Whether to disable cookies (see config.ini for details)
+     *
+     * @var bool
+     */
+    protected $disableCookies;
+
+    /**
      * Whether to track use custom variables to track additional information
      *
      * @var bool
@@ -69,14 +76,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     /**
      * Request object
      *
-     * @var Zend\Http\PhpEnvironment\Request
+     * @var \Laminas\Http\PhpEnvironment\Request
      */
     protected $request;
 
     /**
      * Router object
      *
-     * @var Zend\Router\Http\RouteMatch
+     * @var \Laminas\Router\Http\RouteMatch
      */
     protected $router;
 
@@ -105,14 +112,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param string|bool                      $url        Piwik address
+     * @param string|bool                         $url        Piwik address
      * (false if disabled)
-     * @param int|array                        $options    Options array (or,
+     * @param int|array                           $options    Options array (or,
      * if a single value, the Piwik site ID -- for backward compatibility)
-     * @param bool                             $customVars Whether to track
+     * @param bool                                $customVars Whether to track
      * additional information in custom variables
-     * @param Zend\Router\Http\RouteMatch      $router     Request
-     * @param Zend\Http\PhpEnvironment\Request $request    Request
+     * @param Laminas\Router\Http\RouteMatch      $router     Request
+     * @param Laminas\Http\PhpEnvironment\Request $request    Request
      */
     public function __construct($url, $options, $customVars, $router, $request)
     {
@@ -123,6 +130,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         if (is_array($options)) {
             $this->siteId = $options['siteId'];
             $this->searchPrefix = $options['searchPrefix'] ?? '';
+            $this->disableCookies = $options['disableCookies'] ?? '';
         } else {
             $this->siteId = $options;
         }
@@ -162,7 +170,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
 
         $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+        return $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $code, 'SET');
     }
 
     /**
@@ -426,7 +434,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getOpeningTrackingCode()
     {
         $escape = $this->getView()->plugin('escapejs');
-        return <<<EOT
+        $code = <<<EOT
 
 function initVuFindPiwikTracker{$this->timestamp}(){
     var VuFindPiwikTracker = Piwik.getTracker();
@@ -436,6 +444,14 @@ function initVuFindPiwikTracker{$this->timestamp}(){
     VuFindPiwikTracker.setCustomUrl('{$escape($this->getCustomUrl())}');
 
 EOT;
+        if ($this->disableCookies) {
+            $code .= <<<EOT
+    VuFindPiwikTracker.disableCookies();
+
+EOT;
+        }
+
+        return $code;
     }
 
     /**

@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * SearchTabs helper factory.
@@ -62,9 +62,9 @@ class SearchTabsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Results\PluginManager'),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewHelperManager')->get('url'),
-            $container->get('VuFind\Search\SearchTabsHelper')
+            $container->get(\VuFind\Search\SearchTabsHelper::class)
         );
     }
 }

@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use VuFindSearch\Backend\EDS\SearchRequestModel as SearchRequestModel;
 use VuFindSearch\ParamBag;
 
 /**
@@ -56,6 +55,23 @@ class Params extends \VuFind\Search\Base\Params
     protected $extraFilterList = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections
+        = ['Advanced_Facets', 'FacetsTop', 'Facets'];
+
+    /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+
+    /**
      * Is the request using this parameters objects for setup only?
      *
      * @var bool
@@ -63,9 +79,22 @@ class Params extends \VuFind\Search\Base\Params
     public $isSetupOnly = false;
 
     /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($options, $configLoader);
+        $this->addLimitersAsCheckboxFacets($options);
+        $this->addExpandersAsCheckboxFacets($options);
+    }
+
+    /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -137,89 +166,24 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
+        $hiddenFilterList = $this->getHiddenFilters();
         if (!empty($filterList)) {
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    $safeValue = SearchRequestModel::escapeSpecialCharacters(
-                        $filt['value']
-                    );
                     // Standard case:
-                    $fq = "{$filt['field']}:{$safeValue}";
+                    $fq = "{$filt['field']}:{$filt['value']}";
                     $params->add('filters', $fq);
                 }
             }
         }
-        $this->addLimitersAsCheckboxFacets($options);
-        $this->addExpandersAsCheckboxFacets($options);
-    }
-
-    /**
-     * Return an array structure containing information about all current filters.
-     *
-     * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
-     * the list (to be used as a complement to getCheckboxFacets()).
-     *
-     * @return array                       Field, values and translation status
-     */
-    public function getFilterList($excludeCheckboxFilters = false)
-    {
-        $filters = parent::getFilterList($excludeCheckboxFilters);
-        $label = $this->getFacetLabel('SEARCHMODE');
-        if (isset($filters[$label])) {
-            foreach (array_keys($filters[$label]) as $i) {
-                $filters[$label][$i]['suppressDisplay'] = true;
-            }
-        }
-        return $filters;
-    }
-
-    /**
-     * Set up limiter based on VuFind settings.
-     *
-     * @param ParamBag $params Parameter collection to update
-     *
-     * @return void
-     */
-    public function createBackendLimiterParameters(ParamBag $params)
-    {
-        //group limiters with same id together
-        $edsLimiters = [];
-        foreach ($this->limiters as $limiter) {
-            if (isset($limiter) && !empty($limiter)) {
-                // split the id/value
-                list($key, $value) = explode(':', $limiter, 2);
-                $value = SearchRequestModel::escapeSpecialCharacters($value);
-                $edsLimiters[$key] = (!isset($edsLimiters[$key]))
-                     ? $value : $edsLimiters[$key] . ',' . $value;
-            }
-        }
-        if (!empty($edsLimiters)) {
-            foreach ($edsLimiters as $key => $value) {
-                $params->add('limiters', $key . ':' . $value);
-            }
-        }
-    }
-
-    /**
-     * Set up expanders based on VuFind settings.
-     *
-     * @param ParamBag $params Parameter collection to update
-     *
-     * @return void
-     */
-    public function createBackendExpanderParameters(ParamBag $params)
-    {
-        // Which filters should be applied to our query?
-        if (!empty($this->expanders)) {
-            // Loop through all filters and add appropriate values to request:
-            $value = '';
-            foreach ($this->expanders as $expander) {
-                $value = (!empty($value))
-                    ? $value . ',' . $expander : $expander;
-            }
-            if (!empty($value)) {
-                $params->add('expander', $value);
+        if (!empty($hiddenFilterList)) {
+            foreach ($hiddenFilterList as $field => $hiddenFilters) {
+                foreach ($hiddenFilters as $value) {
+                    // Standard case:
+                    $hfq = "{$field}:{$value}";
+                    $params->add('filters', $hfq);
+                }
             }
         }
     }
@@ -287,25 +251,23 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return string         Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
-        //Also store Limiter/Search Mode IDs/Values in the config file
-        $facetId = $field;
+        // Also store Limiter/Search Mode IDs/Values in the config file
         if (substr($field, 0, 6) == 'LIMIT|') {
             $facetId = substr($field, 6);
-        }
-        if (substr($field, 0, 11) == 'SEARCHMODE|') {
+        } elseif (substr($field, 0, 11) == 'SEARCHMODE|') {
             $facetId = substr($field, 11);
+        } else {
+            $facetId = $field;
         }
-        return isset($this->facetConfig[$facetId])
-            ? $this->facetConfig[$facetId] : $facetId;
+        return parent::getFacetLabel($facetId, $value, $default ?: $facetId);
     }
 
     /**

@@ -38,8 +38,15 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'Solr';
+
     /**
      * Create an object
      *
@@ -60,20 +67,21 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $cacheDir = $container->get('VuFind\Cache\Manager')
+        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
             ->getCacheDir(false);
-        $hierarchyFilters = $container->get('VuFind\Config\PluginManager')
+        $hierarchyFilters = $container->get(\VuFind\Config\PluginManager::class)
             ->get('HierarchyDefault');
         $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
           ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
           : [];
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $batchSize = isset($config->Index->cursor_batch_size)
             ? $config->Index->cursor_batch_size : 1000;
-        $solr = $container->get('VuFind\Search\BackendManager')
-            ->get('Solr')->getConnector();
+        $solr = $container->get(\VuFind\Search\BackendManager::class)
+            ->get($this->backendId)->getConnector();
         $formatterManager = $container
-            ->get('VuFind\Hierarchy\TreeDataFormatter\PluginManager');
+            ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(
             $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
             $filters, $batchSize

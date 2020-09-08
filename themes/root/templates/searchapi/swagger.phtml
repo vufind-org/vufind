@@ -38,10 +38,10 @@
 <?php ob_end_clean(); ?>
 {
     "paths": {
-        "/record": {
+        "/<?=$recordRoute?>": {
             "get": {
-                "summary": "Fetch records",
-                "description": "Return a single record or multiple records. POST method may also be used if sending a long request.",
+                "summary": "Fetch records from <?=$this->indexLabel?> index",
+                "description": "Return a single record or multiple records from <?=$this->indexLabel?> index. POST method may also be used if sending a long request.",
                 "parameters": [
                     {
                         "name": "id",
@@ -71,7 +71,7 @@
                     "200": {
                         "description": "Response containing result count and records",
                         "schema": {
-                            "$ref": "#/definitions/SearchResponse"
+                            "$ref": "#/definitions/<?=$this->modelPrefix?>SearchResponse"
                         }
                     },
                     "default": {
@@ -83,10 +83,10 @@
                 }
             }
         },
-        "/search": {
+        "/<?=$searchRoute?>": {
             "get": {
-                "summary": "Search the index",
-                "description": "Search the index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the as the one used in VuFind user interface. It is possible to make a search in VuFind and copy the query parameters here to make the same search via the API.",
+                "summary": "Search <?=$this->indexLabel?> index",
+                "description": "Search <?=$this->indexLabel?> index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the as the one used in VuFind user interface. It is possible to make a search in VuFind and copy the query parameters here to make the same search via the API.",
                 "parameters": [
                     {
                         "name": "lookfor",
@@ -168,7 +168,7 @@
                     "200": {
                         "description": "Response containing result count, records and/or facets.",
                         "schema": {
-                            "$ref": "#/definitions/SearchResponse"
+                            "$ref": "#/definitions/<?=$this->modelPrefix?>SearchResponse"
                         }
                     },
                     "default": {
@@ -287,7 +287,7 @@
                 }
             }
         },
-        "Record": {
+        "<?=$this->modelPrefix?>Record": {
             "type": "object",
             "properties": <?=json_encode($this->recordFields) ?>
         },
@@ -307,7 +307,7 @@
                 }
             }
         },
-        "SearchResponse": {
+        "<?=$this->modelPrefix?>SearchResponse": {
             "type": "object",
             "properties": {
                 "resultCount": {
@@ -318,7 +318,7 @@
                     "description": "Records",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/Record"
+                        "$ref": "#/definitions/<?=$this->modelPrefix?>Record"
                     }
                 },
                 "facets": {

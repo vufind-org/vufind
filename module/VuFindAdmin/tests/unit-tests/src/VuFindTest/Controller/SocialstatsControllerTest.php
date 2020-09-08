@@ -47,17 +47,17 @@ class SocialstatsControllerTest extends \VuFindTest\Unit\TestCase
     public function testHome()
     {
         // Create mocks to simulate database lookups:
-        $c = $this->getMockBuilder('VuFindAdmin\Controller\SocialstatsController')
+        $c = $this->getMockBuilder(\VuFindAdmin\Controller\SocialstatsController::class)
             ->setMethods(['getTable'])->disableOriginalConstructor()->getMock();
-        $comments = $this->getMockBuilder('VuFind\Db\Table\Comments')
+        $comments = $this->getMockBuilder(\VuFind\Db\Table\Comments::class)
             ->disableOriginalConstructor()->setMethods(['getStatistics'])->getMock();
         $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
         $c->expects($this->at(0))->method('getTable')->with($this->equalTo('comments'))->will($this->returnValue($comments));
-        $userresource = $this->getMockBuilder('VuFind\Db\Table\UserResource')
+        $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
             ->setMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
         $c->expects($this->at(1))->method('getTable')->with($this->equalTo('userresource'))->will($this->returnValue($userresource));
-        $resourcetags = $this->getMockBuilder('VuFind\Db\Table\ResourceTags')
+        $resourcetags = $this->getMockBuilder(\VuFind\Db\Table\ResourceTags::class)
             ->disableOriginalConstructor()->setMethods(['getStatistics'])
             ->getMock();
         $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));

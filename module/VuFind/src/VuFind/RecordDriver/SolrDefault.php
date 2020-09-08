@@ -1,7 +1,7 @@
 <?php
 /**
  * Default model for Solr records -- used when a more specific model based on
- * the recordtype field cannot be found.
+ * the record_format field cannot be found.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\RecordDriver;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
- * the recordtype field cannot be found.
+ * the record_format field cannot be found.
  *
  * This should be used as the base class for all Solr-based record models.
  *
@@ -109,11 +109,12 @@ class SolrDefault extends DefaultRecord
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * for built-in defaults)
+     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * file (omit to use $mainConfig as $recordConfig)
+     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * file
      */
     public function __construct($mainConfig = null, $recordConfig = null,
         $searchSettings = null
@@ -133,6 +134,16 @@ class SolrDefault extends DefaultRecord
             = !isset($mainConfig->Hierarchy->simpleContainerLinks)
             ? false : $mainConfig->Hierarchy->simpleContainerLinks;
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
+    }
+
+    /**
+     * Get the date this record was first indexed (if set).
+     *
+     * @return string
+     */
+    public function getFirstIndexed()
+    {
+        return $this->fields['first_indexed'] ?? '';
     }
 
     /**

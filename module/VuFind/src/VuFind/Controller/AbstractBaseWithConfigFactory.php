@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic controller factory (with config injection).
@@ -39,7 +38,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractBaseWithConfigFactory implements FactoryInterface
+class AbstractBaseWithConfigFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -61,7 +60,10 @@ class AbstractBaseWithConfigFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        return new $requestedName($container, $config);
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        return $this->applyPermissions(
+            $container, new $requestedName($container, $config)
+        );
     }
 }

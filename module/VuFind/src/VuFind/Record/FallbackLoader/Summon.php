@@ -27,7 +27,7 @@
  */
 namespace VuFind\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Zend2 as Connector;
+use SerialsSolutions\Summon\Laminas as Connector;
 use VuFind\Db\Table\Resource;
 use VuFindSearch\Backend\Summon\Backend;
 use VuFindSearch\ParamBag;

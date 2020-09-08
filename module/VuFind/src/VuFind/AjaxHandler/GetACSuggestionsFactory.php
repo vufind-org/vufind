@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetACSuggestionsFactory implements
-    \Zend\ServiceManager\Factory\FactoryInterface
+    \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -64,8 +64,8 @@ class GetACSuggestionsFactory implements
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Autocomplete\Suggester')
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Autocomplete\Suggester::class)
         );
     }
 }

@@ -11,14 +11,14 @@
       <?php if ($isHierarchy = in_array($field, $hierarchicalFacets ?? [])):
           $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
           $this->headScript()->appendFile('facets.js');
-          $sort = $hierarchicalFacetSortOptions[$field] ?? '';
+          $sort = $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? 'all';
           $script = <<<JS
 $(document).ready(function() {
   $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
   initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
 });
 JS;
-          echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+          echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
         <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
@@ -29,7 +29,7 @@ JS;
               data-exclude="0"
               data-operator="AND"
               data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-              data-sort="all">
+              data-sort="<?=$sort?>">
           </div>
         </div>
         <noscript>

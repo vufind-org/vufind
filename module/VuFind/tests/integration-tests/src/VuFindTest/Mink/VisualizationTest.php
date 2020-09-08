@@ -35,9 +35,12 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class VisualizationTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Test that combined results work in mixed AJAX/non-AJAX mode.
      *
@@ -65,6 +68,6 @@ class VisualizationTest extends \VuFindTest\Unit\MinkTestCase
         $text = $this->findCss($page, '#visualResults')->getText();
         // Confirm that some content has been dynamically loaded into the
         // visualization area:
-        $this->assertContains('A - General Works', $text);
+        $this->assertStringContainsString('A - General Works', $text);
     }
 }

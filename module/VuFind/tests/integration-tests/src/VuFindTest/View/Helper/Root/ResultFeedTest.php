@@ -45,11 +45,12 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -60,23 +61,22 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getPlugins()
     {
-        $currentPath = $this->createMock('VuFind\View\Helper\Root\CurrentPath');
+        $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
         $currentPath->expects($this->any())->method('__invoke')
             ->will($this->returnValue('/test/path'));
 
-        $recordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
+        $recordLink = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLink::class)
             ->setConstructorArgs(
                 [
                     new \VuFind\Record\Router(
-                        $this->getServiceManager()->get('VuFind\Record\Loader'),
-                        new \Zend\Config\Config([])
+                        new \Laminas\Config\Config([])
                     )
                 ]
             )->getMock();
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
 
-        $serverUrl = $this->createMock('Zend\View\Helper\ServerUrl');
+        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->any())->method('__invoke')
             ->will($this->returnValue('http://server/url'));
 
@@ -90,11 +90,11 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Mock out the translator.
      *
-     * @return \Zend\I18n\Translator\TranslatorInterface
+     * @return \Laminas\I18n\Translator\TranslatorInterface
      */
     protected function getMockTranslator()
     {
-        $mock = $this->getMockBuilder('Zend\I18n\Translator\TranslatorInterface')
+        $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
         $mock->expects($this->at(1))->method('translate')
             ->with($this->equalTo('showing_results_of_html'), $this->equalTo('default'))
@@ -112,14 +112,14 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Set up a request -- we'll sort by title to ensure a predictable order
         // for the result list (relevance or last_indexed may lead to unstable test
         // cases).
-        $request = new \Zend\Stdlib\Parameters();
+        $request = new \Laminas\Stdlib\Parameters();
         $request->set('lookfor', 'id:testbug2 OR id:testsample1');
         $request->set('skip_rss_sort', 1);
         $request->set('sort', 'title');
         $request->set('view', 'rss');
 
         $results = $this->getServiceManager()
-            ->get('VuFind\Search\Results\PluginManager')->get('Solr');
+            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
@@ -137,7 +137,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $this->assertTrue(strstr($rss, 'dc:format') !== false);
 
         // Now re-parse it and check for some expected values:
-        $parsedFeed = \Zend\Feed\Reader\Reader::importString($rss);
+        $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
             'Showing 1 - 2 results of 2', $parsedFeed->getDescription()
         );

@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Authority Controller
@@ -54,7 +54,7 @@ class AuthorityController extends AbstractSearch
     /**
      * Home action
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -71,19 +71,15 @@ class AuthorityController extends AbstractSearch
     /**
      * Record action -- display a record
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function recordAction()
     {
         $id = $this->params()->fromQuery('id');
-        $cfg = $this->serviceLocator->get('Config');
-        $tabConfig = $cfg['vufind']['recorddriver_tabs'];
-        $driver = $this->serviceLocator->get('VuFind\Record\Loader')
+        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)
             ->load($id, 'SolrAuth');
         $request = $this->getRequest();
-        $tabs = $this->serviceLocator
-            ->get('VuFind\RecordTab\PluginManager')
-            ->getTabsForRecord($driver, $tabConfig, $request);
+        $tabs = $this->getRecordTabManager()->getTabsForRecord($driver, $request);
         return $this->createViewModel(['driver' => $driver, 'tabs' => $tabs]);
     }
 

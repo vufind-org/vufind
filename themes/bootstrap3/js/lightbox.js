@@ -1,4 +1,4 @@
-/*global grecaptcha, recaptchaOnLoad, resetCaptcha, VuFind */
+/*global recaptchaOnLoad, resetCaptcha, VuFind */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -141,9 +141,15 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
         var errorMsgs = [];
-        if (jq_xhr.status !== 205) {
+        var flashMessages = [];
+        if (jq_xhr.status === 204) {
+          // No content, close lightbox
+          close();
+          return;
+        } else if (jq_xhr.status !== 205) {
           var testDiv = $('<div/>').html(content);
           errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
+          flashMessages = testDiv.find('.flash-message:not([data-lightbox-ignore])');
           // Place Hold error isolation
           if (obj.url.match(/\/Record\/.*(Hold|Request)\?/)) {
             if (errorMsgs.length && testDiv.find('.record').length) {
@@ -164,7 +170,7 @@ VuFind.register('lightbox', function Lightbox() {
           obj.method && (
             obj.url.match(/catalogLogin/)
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
-          ) && errorMsgs.length === 0
+          ) && flashMessages.length === 0
         ) {
 
           var eventResult = _emit('VuFind.lightbox.login', {
@@ -230,10 +236,16 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
    */
   _constrainLink = function constrainLink(event) {
-    if (typeof $(this).data('lightboxIgnore') != 'undefined'
-      || typeof this.attributes.href === 'undefined'
-      || this.attributes.href.value.charAt(0) === '#'
-      || this.href.match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+    var $link = $(this);
+    if (typeof $link.data("lightboxIgnore") != "undefined"
+      || typeof $link.attr("href") === "undefined"
+      || $link.attr("href").charAt(0) === "#"
+      || $link.attr("href").match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+      || (typeof $link.attr("target") !== "undefined"
+        && (
+          $link.attr("target").toLowerCase() === "_new"
+          || $link.attr("target").toLowerCase() === "new"
+        ))
     ) {
       return true;
     }
@@ -270,13 +282,6 @@ VuFind.register('lightbox', function Lightbox() {
     // Gather data
     var form = event.target;
     var data = $(form).serializeArray();
-    // Check for recaptcha
-    if (typeof grecaptcha !== 'undefined') {
-      var recaptcha = $(form).find('.g-recaptcha');
-      if (recaptcha.length > 0) {
-        data.push({ name: 'g-recaptcha-response', value: grecaptcha.getResponse(recaptcha.data('captchaId')) });
-      }
-    }
     // Force layout
     data.push({ name: 'layout', value: 'lightbox' }); // Return in lightbox, please
     // Add submit button information

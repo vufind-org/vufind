@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetRecordDetailsFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -66,8 +66,8 @@ class GetRecordDetailsFactory
         return new $requestedName(
             $container->get('Config'),
             $container->get('Request'),
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\RecordTab\PluginManager'),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\RecordTab\TabManager::class),
             $container->get('ViewRenderer')
         );
     }

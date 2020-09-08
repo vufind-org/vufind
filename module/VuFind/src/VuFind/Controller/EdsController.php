@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Solr\Utils as SolrUtils;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * EDS Controller
@@ -59,7 +59,7 @@ class EdsController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('EDS');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

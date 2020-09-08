@@ -132,7 +132,7 @@ trait ILLRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->ILLRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->serviceLocator->get('VuFind\Date\Converter')
+        $defaultRequired = $this->serviceLocator->get(\VuFind\Date\Converter::class)
             ->convertToDisplayDate("U", $defaultRequired);
 
         // Get pickup libraries
@@ -145,12 +145,15 @@ trait ILLRequestsTrait
         // selected.
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
+        $config = $this->getConfig();
+        $allowHomeLibrary = $config->Account->set_home_library ?? true;
         $view = $this->createViewModel(
             [
                 'gatheredDetails' => $gatheredDetails,
                 'pickupLibraries' => $pickupLibraries,
                 'pickupLocations' => $pickupLocations,
-                'homeLibrary' => $this->getUser()->home_library,
+                'homeLibrary' => $allowHomeLibrary
+                    ? $this->getUser()->home_library : '',
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => $checkRequests['helpText'] ?? null

@@ -30,15 +30,17 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
+
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
 use VuFindSearch\Backend\Primo\QueryBuilder;
-use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 
 /**
  * Factory for Primo Central backends.
@@ -54,7 +56,7 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -68,7 +70,7 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Primo configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $primoConfig;
 
@@ -86,10 +88,11 @@ class PrimoBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $configReader = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $configReader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
         $this->primoConfig = $configReader->get('Primo');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
 
         $connector = $this->createConnector();
@@ -146,7 +149,7 @@ class PrimoBackendFactory implements FactoryInterface
             : null;
 
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
         $timeout = isset($this->primoConfig->General->timeout)
             ? $this->primoConfig->General->timeout : 30;
@@ -177,7 +180,8 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('Primo');
             $driver->setRawData($data);
@@ -209,7 +213,7 @@ class PrimoBackendFactory implements FactoryInterface
                 $this->primoConfig->Institutions
             );
             $permHandler->setAuthorizationService(
-                $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+                $this->serviceLocator->get(AuthorizationService::class)
             );
             return $permHandler;
         }

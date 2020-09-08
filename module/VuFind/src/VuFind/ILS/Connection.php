@@ -31,10 +31,11 @@
  */
 namespace VuFind\ILS;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Driver\DriverInterface;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * Catalog Connection Class
@@ -71,7 +72,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * ILS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -111,16 +112,25 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $failing = false;
 
     /**
+     * Request object
+     *
+     * @var \Laminas\Http\Request
+     */
+    protected $request;
+
+    /**
      * Constructor
      *
-     * @param \Zend\Config\Config              $config        Configuration
+     * @param \Laminas\Config\Config           $config        Configuration
      * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
+     * @param \Laminas\Http\Request            $request       Request object
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         \VuFind\ILS\Driver\PluginManager $driverManager,
-        \VuFind\Config\PluginManager $configReader
+        \VuFind\Config\PluginManager $configReader,
+        \Laminas\Http\Request $request = null
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -131,6 +141,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $this->config = $config;
         $this->configReader = $configReader;
         $this->driverManager = $driverManager;
+        $this->request = $request;
     }
 
     /**
@@ -164,7 +175,15 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     protected function initializeDriver()
     {
-        $this->driver->setConfig($this->getDriverConfig());
+        try {
+            $this->driver->setConfig($this->getDriverConfig());
+        } catch (\Exception $e) {
+            // Any errors thrown during configuration should be cast to BadConfig
+            // so we can handle them differently from other runtime problems.
+            throw $e instanceof BadConfig
+                ? $e
+                : new BadConfig('Failure during configuration.', 0, $e);
+        }
         $this->driver->init();
         $this->driverInitialized = true;
     }
@@ -185,10 +204,20 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * If configured, fail over to the NoILS driver and return true; otherwise,
      * return false.
      *
+     * @param \Exception $e The exception that triggered the failover.
+     *
      * @return bool
      */
-    protected function failOverToNoILS()
+    protected function failOverToNoILS(\Exception $e = null)
     {
+        // If the exception is caused by a configuration error, the administrator
+        // needs to fix it, but failing over to NoILS will mask the error and cause
+        // confusion. We shouldn't do that!
+        if ($e instanceof BadConfig) {
+            return false;
+        }
+
+        // If we got this far, we want to proceed with failover...
         $this->failing = true;
 
         // Only fail over if we're configured to allow it and we haven't already
@@ -222,7 +251,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             try {
                 $this->initializeDriver();
             } catch (\Exception $e) {
-                if (!$this->failOverToNoILS()) {
+                if (!$this->failOverToNoILS($e)) {
                     throw $e;
                 }
             }
@@ -659,6 +688,24 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check Patron login
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports patron login.
+     * It is currently assumed that all drivers do.
+     *
+     * @param array $functionConfig The patronLogin configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values for login; on failure, false.
+     */
+    protected function checkMethodpatronLogin($functionConfig, $params)
+    {
+        return $functionConfig;
+    }
+
+    /**
      * Get proper help text from the function config
      *
      * @param string|array $helpText Help text(s)
@@ -694,7 +741,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 return $this->getDriver()->checkRequestIsValid($id, $data, $patron);
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -729,7 +776,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -761,7 +808,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -845,7 +892,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             return $this->checkCapability('hasHoldings', [$id])
                 ? $this->getDriver()->hasHoldings($id) : true;
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -866,7 +913,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             return $this->checkCapability('loginIsHidden')
                 ? $this->getDriver()->loginIsHidden() : false;
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;
@@ -974,6 +1021,61 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Get holdings
+     *
+     * Retrieve holdings from ILS driver class and normalize result array if needed.
+     *
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Additional options
+     *
+     * @return array Array with holding data
+     */
+    public function getHolding($id, $patron = null, $options = [])
+    {
+        // Get pagination options for holdings tab:
+        $params = compact('id', 'patron');
+        $config = $this->checkCapability('getConfig', ['Holdings', $params])
+            ? $this->getDriver()->getConfig('Holdings', $params) : [];
+        if (empty($config['itemLimit'])) {
+            // Use itemLimit in Holds as fallback for backward compatibility:
+            $config
+                = $this->checkCapability('getConfig', ['Holds', $params])
+                ? $this->getDriver()->getConfig('Holds', $params) : [];
+        }
+        $itemLimit = !empty($config['itemLimit']) ? $config['itemLimit'] : null;
+
+        $page = $this->request ? $this->request->getQuery('page', 1) : 1;
+        $offset = ($itemLimit && is_numeric($itemLimit))
+            ? ($page * $itemLimit) - $itemLimit
+            : null;
+        $defaultOptions = compact('page', 'itemLimit', 'offset');
+        $finalOptions = $options + $defaultOptions;
+
+        // Get the holdings from the ILS
+        $holdings = $this->__call('getHolding', [$id, $patron, $finalOptions]);
+
+        // Return all the necessary details:
+        if (!isset($holdings['holdings'])) {
+            $holdings = [
+                'total' => count($holdings),
+                'holdings' => $holdings,
+                'electronic_holdings' => [],
+            ];
+        } else {
+            if (!isset($holdings['total'])) {
+                $holdings['total'] = count($holdings['holdings']);
+            }
+            if (!isset($holdings['electronic_holdings'])) {
+                $holdings['electronic_holdings'] = [];
+            }
+        }
+        $holdings['page'] = $finalOptions['page'];
+        $holdings['itemLimit'] = $finalOptions['itemLimit'];
+        return $holdings;
+    }
+
+    /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
@@ -993,7 +1095,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
             }
         } catch (\Exception $e) {
-            if ($this->failOverToNoILS()) {
+            if ($this->failOverToNoILS($e)) {
                 return call_user_func_array([$this, __METHOD__], func_get_args());
             }
             throw $e;

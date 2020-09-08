@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
  * Error Controller
@@ -48,7 +48,7 @@ class ErrorController extends AbstractActionController
     public function unavailableAction()
     {
         $this->getResponse()->setStatusCode(503);
-        return new \Zend\View\Model\ViewModel();
+        return new \Laminas\View\Model\ViewModel();
     }
 
     /**
@@ -59,7 +59,7 @@ class ErrorController extends AbstractActionController
     public function permissionDeniedAction()
     {
         $this->getResponse()->setStatusCode(403);
-        return new \Zend\View\Model\ViewModel(
+        return new \Laminas\View\Model\ViewModel(
             ['msg' => $this->params()->fromQuery('msg')]
         );
     }

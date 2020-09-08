@@ -88,11 +88,11 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a fake view object.
      *
-     * @return \Zend\View\Renderer\PhpRenderer
+     * @return \Laminas\View\Renderer\PhpRenderer
      */
     protected function getMockView()
     {
-        $view = $this->createMock('Zend\View\Renderer\PhpRenderer');
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
         $view->expects($this->at(0))->method('plugin')
             ->with($this->equalTo('headMeta'))
             ->will($this->returnValue($this->getMockHeadMeta()));
@@ -108,11 +108,11 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a fake HeadMeta helper.
      *
-     * @return \Zend\View\Helper\HeadMeta
+     * @return \Laminas\View\Helper\HeadMeta
      */
     protected function getMockHeadMeta()
     {
-        $mock = $this->getMockBuilder('VuFindTheme\View\Helper\HeadMeta')
+        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
             ->setMethods(['__invoke', 'prependHttpEquiv', 'appendName'])
             ->getMock();
@@ -127,11 +127,11 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a fake HeadLink helper.
      *
-     * @return \Zend\View\Helper\HeadLink
+     * @return \Laminas\View\Helper\HeadLink
      */
     protected function getMockHeadLink()
     {
-        $mock = $this->getMockBuilder('VuFindTheme\View\Helper\HeadLink')
+        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadLink::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
@@ -141,11 +141,11 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a fake HeadScript helper.
      *
-     * @return \Zend\View\Helper\HeadScript
+     * @return \Laminas\View\Helper\HeadScript
      */
     protected function getMockHeadScript()
     {
-        $mock = $this->getMockBuilder('VuFindTheme\View\Helper\HeadScript')
+        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadScript::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));

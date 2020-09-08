@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class AbstractIlsAndUserActionFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -61,10 +61,10 @@ class AbstractIlsAndUserActionFactory
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             ...($options ?: [])
         );
     }

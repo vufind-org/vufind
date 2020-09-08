@@ -111,7 +111,7 @@ public class CreatorTools
      * no declared relator.
      * @param relatorConfig         The setting in author-classification.ini which
      * defines which relator terms are acceptable (or a colon-delimited list)
-     * @param unknownRelatorAllowed Array of tag names whose relators should be indexed 
+     * @param unknownRelatorAllowed Array of tag names whose relators should be indexed
      * even if they are not listed in author-classification.ini.
      * @param indexRawRelators      Set to "true" to index relators raw, as found
      * in the MARC or "false" to index mapped versions.
@@ -569,7 +569,7 @@ public class CreatorTools
      * Normalizes the strings in a list.
      *
      * @param stringList List of strings to be normalized
-     * @return Normalized List of strings 
+     * @return Normalized List of strings
      */
     protected List<String> normalizeRelatorStringList(List<String> stringList)
     {
@@ -669,7 +669,7 @@ public class CreatorTools
             acceptUnknownRelators, "false"
         );
     }
-    
+
     /**
      * Takes a name and cuts it into initials
      * @param authorName e.g. Yeats, William Butler
@@ -678,17 +678,17 @@ public class CreatorTools
     protected String processInitials(String authorName) {
         Boolean isPersonalName = false;
         // we guess that if there is a comma before the end - this is a personal name
-        if ((authorName.indexOf(',') > 0) 
+        if ((authorName.indexOf(',') > 0)
             && (authorName.indexOf(',') < authorName.length()-1)) {
             isPersonalName = true;
         }
-        // get rid of non-alphabet chars but keep hyphens and accents 
+        // get rid of non-alphabet chars but keep hyphens and accents
         authorName = authorName.replaceAll("[^\\p{L} -]", "").toLowerCase();
         String[] names = authorName.split(" "); //split into tokens on spaces
         // if this is a personal name we'll reorganise to put lastname at the end
         String result = "";
         if (isPersonalName) {
-            String lastName = names[0]; 
+            String lastName = names[0];
             for (int i = 0; i < names.length-1; i++) {
                 names[i] = names[i+1];
             }
@@ -704,7 +704,7 @@ public class CreatorTools
                     String extra = name.substring(pos+1, pos+2);
                     initial = initial + " " + extra;
                 }
-                result += " " + initial; 
+                result += " " + initial;
             }
         }
         // grab all initials and stick them together
@@ -717,7 +717,7 @@ public class CreatorTools
         }
         // now we have initials separate and together
         if (!result.trim().equals(smushAll)) {
-            result += " " + smushAll; 
+            result += " " + smushAll;
         }
         result = result.trim();
         return result;

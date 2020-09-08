@@ -137,14 +137,6 @@ class Options extends \VuFind\Search\Base\Options
                 $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
             );
         }
-        // Load autocomplete preferences:
-        if (isset($searchSettings->Autocomplete->enabled)) {
-            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
-        }
-        if (isset($searchSettings->Autocomplete->auto_submit)) {
-            $this->autocompleteAutoSubmit
-                = $searchSettings->Autocomplete->auto_submit;
-        }
     }
 
     /**
@@ -260,9 +252,9 @@ class Options extends \VuFind\Search\Base\Options
      * at the time this method is called, so we just need to check if the
      * user-supplied values are valid, and if so, filter/reorder accordingly.
      *
-     * @param \Zend\Config\Config $searchSettings Configuration
-     * @param string              $section        Configuration section to read
-     * @param string              $property       Property of this object to read
+     * @param \Laminas\Config\Config $searchSettings Configuration
+     * @param string                 $section        Configuration section to read
+     * @param string                 $property       Property of this object to read
      * and/or modify.
      *
      * @return void
@@ -291,11 +283,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Apply user-requested "common" settings.
      *
-     * @param \Zend\Config\Config $searchSettings Configuration
-     * @param string              $setting        Name of common setting
-     * @param string              $list           Name of property containing valid
-     * values
-     * @param string              $target         Name of property to populate
+     * @param \Laminas\Config\Config $searchSettings Configuration
+     * @param string                 $setting        Name of common setting
+     * @param string                 $list           Name of property containing
+     * valid values
+     * @param string                 $target         Name of property to populate
      *
      * @return void
      */
@@ -305,7 +297,7 @@ class Options extends \VuFind\Search\Base\Options
             $userValues = explode(',', $searchSettings->General->$setting);
 
             if (!empty($userValues) && isset($this->$list) && !empty($this->$list)) {
-                // Reference to property containing API-provided whitelist of values
+                // Reference to property containing API-provided list of legal values
                 $listRef = & $this->$list;
                 // Reference to property containing final common settings
                 $targetRef = & $this->$target;
@@ -324,7 +316,7 @@ class Options extends \VuFind\Search\Base\Options
      * from the values in the Info method. (If the values set in the config files in
      * not a 'valid' EDS API value, it will be ignored.
      *
-     * @param \Zend\Config\Config $searchSettings Configuration
+     * @param \Laminas\Config\Config $searchSettings Configuration
      *
      * @return void
      */
@@ -406,6 +398,9 @@ class Options extends \VuFind\Search\Base\Options
         $this->setCommonSettings(
             $searchSettings, 'common_expanders', 'expanderOptions', 'commonExpanders'
         );
+
+        // Load autocomplete preferences:
+        $this->configureAutocomplete($searchSettings);
     }
 
     /**
@@ -486,7 +481,7 @@ class Options extends \VuFind\Search\Base\Options
                     if (isset($expander['DefaultOn'])
                         && 'y' == $expander['DefaultOn']
                     ) {
-                        $this->defaultExpanders[] =  $expander['Id'];
+                        $this->defaultExpanders[] = $expander['Id'];
                     }
                 }
             }

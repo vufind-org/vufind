@@ -45,7 +45,7 @@ class HorizonTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = new Horizon(new \VuFind\Date\Converter());
     }

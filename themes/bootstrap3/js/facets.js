@@ -26,8 +26,11 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       $i.appendTo($item);
       $item.append(' ');
     }
+    var $description = $('<span/>')
+      .addClass('facet-value')
+      .append(this.displayText);
+    $item.append($description);
 
-    $item.append(this.displayText);
     $item.appendTo($html);
 
     if (!this.isApplied && counts) {
@@ -248,7 +251,7 @@ VuFind.register('sideFacets', function SideFacets() {
           $.support.transition = false;
           if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
             $(item).collapse('show');
-          } else {
+          } else if (!$(item).data('forceIn')) {
             $(item).collapse('hide');
           }
         } finally {
@@ -266,6 +269,16 @@ VuFind.register('sideFacets', function SideFacets() {
         loadAjaxSideFacets();
       });
     loadAjaxSideFacets();
+
+    // Keep filter dropdowns on screen
+    $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
+      var $dropdown = $(e.target).find(".dropdown-menu");
+      if ($(e.target).position().left + $dropdown.width() >= window.innerWidth) {
+        $dropdown.addClass("dropdown-menu-right");
+      } else {
+        $dropdown.removeClass("dropdown-menu-right");
+      }
+    });
   }
 
   return { init: init, showLoadingOverlay: showLoadingOverlay };
@@ -334,3 +347,22 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   return { setup: setup };
 });
+
+function registerMoreLessFacetsEventHandlers() {
+  $('.more-facets, .less-facets').off('click');
+  $('.more-facets').click(function moreFacets() {
+    var id = 'narrowGroupHidden-' + $(this).data('title');
+    $('.' + id).removeClass('hidden');
+    $('#more-' + id).addClass('hidden');
+    return false;
+  });
+
+  $('.less-facets').click(function lessFacets() {
+    var id = 'narrowGroupHidden-' + $(this).data('title');
+    $('.' + id).addClass('hidden');
+    $('#more-' + id).removeClass('hidden');
+    return false;
+  });
+}
+
+VuFind.listen('VuFind.sidefacets.loaded', registerMoreLessFacetsEventHandlers);

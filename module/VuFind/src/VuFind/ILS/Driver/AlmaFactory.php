@@ -2,7 +2,7 @@
 /**
  * Factory for Alma ILS driver.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018.
  *
@@ -29,9 +29,9 @@ namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Alma ILS driver factory.
@@ -66,15 +66,15 @@ class AlmaFactory implements FactoryInterface
         // Set up the driver with the date converter (and any extra parameters
         // passed in as options):
         $driver = new $requestedName(
-            $container->get('VuFind\Date\Converter'),
-            $container->get('VuFind\Config\PluginManager'),
+            $container->get(\VuFind\Date\Converter::class),
+            $container->get(\VuFind\Config\PluginManager::class),
             ...($options ?: [])
         );
 
         // Populate cache storage if a setCacheStorage method is present:
         if (method_exists($driver, 'setCacheStorage')) {
             $driver->setCacheStorage(
-                $container->get('VuFind\Cache\Manager')->getCache('object')
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
             );
         }
 

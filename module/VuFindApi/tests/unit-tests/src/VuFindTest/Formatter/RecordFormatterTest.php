@@ -75,16 +75,16 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a helper plugin manager for the RecordFormatter.
      *
-     * @return \Zend\View\HelperPluginManager
+     * @return \Laminas\View\HelperPluginManager
      */
     protected function getHelperPluginManager()
     {
-        $hm = new \Zend\View\HelperPluginManager(
-            $this->createMock('Interop\Container\ContainerInterface')
+        $hm = new \Laminas\View\HelperPluginManager(
+            $this->createMock(\Interop\Container\ContainerInterface::class)
         );
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
 
-        $mockRecordLink = $this->getMockBuilder('VuFind\View\Helper\Root\RecordLink')
+        $mockRecordLink = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLink::class)
             ->disableOriginalConstructor()->getMock();
         $mockRecordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('http://record'));

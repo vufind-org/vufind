@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * GeoCoords helper factory.
@@ -61,7 +61,7 @@ class GeoCoordsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\GeoFeatures\MapSelectionConfig')
+        $config = $container->get(\VuFind\GeoFeatures\MapSelectionConfig::class)
             ->getMapSelectionOptions();
         return new $requestedName($config['default_coordinates']);
     }

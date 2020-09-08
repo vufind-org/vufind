@@ -46,7 +46,7 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -482,7 +482,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "Y-m-d", $display_date
         );
 
-        $checkTime =  $this->dateConverter->convertFromDisplayDate(
+        $checkTime = $this->dateConverter->convertFromDisplayDate(
             "U", $display_date
         );
         if (!is_numeric($checkTime)) {
@@ -770,16 +770,19 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         $this->debug(
             "Function getHolding($id, "
@@ -1029,7 +1032,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
-            $items[] =  [
+            $items[] = [
                 'id' => $rowItem['id']
             ];
             $rescount++;
@@ -1618,12 +1621,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $sql = "SELECT b.title, b.biblionumber,
-                       MAX(CONCAT(s.publisheddate, ' / ',s.serialseq))
+                       CONCAT(s.publisheddate, ' / ',s.serialseq)
                          AS 'date and enumeration'
                     FROM serial s
                     LEFT JOIN biblio b USING (biblionumber)
                     WHERE s.STATUS=2 and b.biblionumber = :id
-                    GROUP BY b.biblionumber
                     ORDER BY s.publisheddate DESC";
 
             $sqlStmt = $this->db->prepare($sql);

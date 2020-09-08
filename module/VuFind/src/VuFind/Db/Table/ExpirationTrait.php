@@ -29,8 +29,8 @@
  */
 namespace VuFind\Db\Table;
 
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 /**
  * Trait for tables that support expiration

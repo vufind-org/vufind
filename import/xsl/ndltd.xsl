@@ -28,8 +28,8 @@
                 </field>
 
 
-                <!-- RECORDTYPE -->
-                <field name="recordtype">oai_dc</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">oai_dc</field>
 
 
                 <!-- ALLFIELDS -->

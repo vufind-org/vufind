@@ -12,6 +12,7 @@
 #   useCaptcha (boolean) Should the form use Captcha validation? Requires the "feedback"
 #                        option to be turned on in the config.ini [Captcha] form setting.
 #                        (default = true, if Captcha turned on for feedback overall).
+#   reportReferrer (boolean) Should the form report the page from which it was invoked?
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
@@ -24,8 +25,19 @@
 #                    [Feedback] section)
 #     email (string) Recipient email address (default = recipient_email setting from
 #                    config.ini [Feedback] section)
+#
+#   Multiple recipients can be configured using a list:
+#
+#   recipient:
+#     - name: Recipient 1
+#       email: recipient1@email
+#     - name: Recipient 2
+#       email: recipient2@email
+#
 #   response (string) Reponse after form submit (translation key)
-#   senderInfoRequired (boolean)  Require sender to fill out name and email fields
+#   senderInfoRequired (boolean)  Require sender to fill out name and email fields - deprecated
+#   senderEmailRequired (boolean) Require sender to fill out email field
+#   senderNameRequired (boolean)  Require sender to fill out name field
 #
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
@@ -40,18 +52,49 @@
 #     required (boolean) Is the element required?
 #     settings (array)   HTML attributes as key-value pairs, for example:
 #       - [class, "custom-css-class another-class"]
-#     type (string)      Element type (text|textarea|email|url|select)
-#     help (string)      Element help text (translation key)
-#     
-#     And for select elements one of:
+#     type (string)      Element type (text|textarea|email|url|select|radio|checkbox|hidden)
+#
+#     help (string)      Element help text (translation key) that is displayed before the element.
+#                        To include HTML formatting, use a translation key ending
+#                        in '_html' here, and define markup in the language files.
+#
+#       or
+#
+#     help (array)
+#      pre (string)      Like above.
+#      post (string)     Like above but the help text is displayed after the element.
+#
+#
+#     And for select, radio and checkbox elements:
 # 
 #     options (array) List of select values (translation keys)
+#                     or a list of options with 'value' and 'label' (translation) keys.
+#                       Examples:
+#                         options:
+#                           - option-1
+#                           - option-2
 #
-#     or
+#                         or
+#
+#                         options:
+#                           - value: value-1
+#                             label: label-1
+#                           - value: value-2
+#                             label: label-2
+#
+#     or for select elements alternatively:
 #
 #     optionGroups (array) List of option groups with keys:
 #       label (string) Group label (translation key)
-#       options (array) List of select values (translation keys)
+#       options (array) List of select values (see above)
+#
+#     placeholder (string) Placeholder label (translation key). Used to instruct or force
+#       (when combined with 'required' attribute) the user to make a selection from the
+#       options-list. Only select elements with 'options' are supported.
+#       For text, textarea, email and url elements, a placeholder text (translation key)
+#       can be configured by adding a HTML-attribute via 'settings', for example:
+#       settings:
+#         - [placeholder, Please select...]
 #
 #-----------------------------------------------------------------------------------
 
@@ -63,6 +106,7 @@ forms:
     title: Send us your feedback!
     enabled: true
     useCaptcha: true
+    reportReferrer: false
     #recipient:
     #  name: Your Library
     #  email: feedback@myuniversity.edu
@@ -70,7 +114,8 @@ forms:
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
     response: Thank you for your feedback.
-    senderInfoRequired: false 
+    senderEmailRequired: false
+    senderNameRequired: false
 
     #help:
     #  pre: feedback_help_pre
@@ -91,7 +136,6 @@ forms:
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
-    title: Acquisition Request,
     response: Thank you for your feedback.
 
     recipient:
@@ -141,3 +185,13 @@ forms:
         type: text
         label: Format
         required: true
+
+      - name: boolean
+        type: radio
+        label: Need Help?
+        required: true
+        options:
+          - Yes
+          - No
+
+

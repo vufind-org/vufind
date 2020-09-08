@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Relais helper factory.
@@ -61,7 +61,8 @@ class RelaisFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $urlHelper = $container->get('ViewHelperManager')->get('url');
         $loginUrl = $urlHelper->__invoke('relais-login');
         return new $requestedName($config->Relais ?? null, $loginUrl);

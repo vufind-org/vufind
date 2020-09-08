@@ -1,5 +1,5 @@
 [
   { "status": 400 },
   { "headers": { "X-Okapi-Token": "x-okapi-token-after-invalid" } },
-  { "body": "{ \"locations\": [] }" }
+  { "body": "{ \"servicepoints\": [] }" }
 ]

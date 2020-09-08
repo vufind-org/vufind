@@ -5,7 +5,7 @@ $config = [
     'router' => [
         'routes' => [
             'default' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/[:controller[/[:action]]]',
                     'constraints' => [
@@ -19,7 +19,7 @@ $config = [
                 ],
             ],
             'alma-webhook' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Alma/Webhook/[:almaWebhookAction]',
                     'constraints' => [
@@ -33,7 +33,7 @@ $config = [
                 ],
             ],
             'content-page' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/Content/[:page]',
                     'constraints' => [
@@ -45,8 +45,21 @@ $config = [
                     ]
                 ],
             ],
+            'shortlink' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/short/[:id]',
+                    'constraints' => [
+                        'id'     => '[a-zA-Z0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Shortlink',
+                        'action'     => 'redirect',
+                    ]
+                ],
+            ],
             'legacy-alphabrowse-results' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/AlphaBrowse/Results',
                     'defaults' => [
@@ -56,7 +69,7 @@ $config = [
                 ]
             ],
             'legacy-bookcover' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/bookcover.php',
                     'defaults' => [
@@ -66,7 +79,7 @@ $config = [
                 ]
             ],
             'legacy-summonrecord' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Summon/Record',
                     'defaults' => [
@@ -76,7 +89,7 @@ $config = [
                 ]
             ],
             'legacy-worldcatrecord' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/WorldCat/Record',
                     'defaults' => [
@@ -86,7 +99,7 @@ $config = [
                 ]
             ],
             'soap-shibboleth-logout-notification-handler' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route' => '/soap/shiblogout',
                     'defaults' => [
@@ -143,6 +156,7 @@ $config = [
             'VuFind\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Search2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
@@ -152,6 +166,7 @@ $config = [
             'VuFind\Controller\MissingrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OaiController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Pazpar2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\PrimoController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\PrimorecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -161,6 +176,7 @@ $config = [
             'VuFind\Controller\RelaisController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SearchController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\ShibbolethLogoutNotificationController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\ShortlinkController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\SummonController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\SummonrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\TagController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -168,6 +184,9 @@ $config = [
             'VuFind\Controller\WebController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\WorldcatrecordController' => 'VuFind\Controller\AbstractBaseFactory',
+        ],
+        'initializers' => [
+            'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
             'AJAX' => 'VuFind\Controller\AjaxController',
@@ -216,6 +235,8 @@ $config = [
             'feedback' => 'VuFind\Controller\FeedbackController',
             'Search2' => 'VuFind\Controller\Search2Controller',
             'search2' => 'VuFind\Controller\Search2Controller',
+            'Search2Collection' => 'VuFind\Controller\Search2collectionController',
+            'search2collection' => 'VuFind\Controller\Search2collectionController',
             'Search2Record' => 'VuFind\Controller\Search2recordController',
             'search2record' => 'VuFind\Controller\Search2recordController',
             'Help' => 'VuFind\Controller\HelpController',
@@ -236,6 +257,8 @@ $config = [
             'myresearch' => 'VuFind\Controller\MyResearchController',
             'OAI' => 'VuFind\Controller\OaiController',
             'oai' => 'VuFind\Controller\OaiController',
+            'Overdrive' => 'VuFind\Controller\OverdriveController',
+            'overdrive' => 'VuFind\Controller\OverdriveController',
             'Pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'Primo' => 'VuFind\Controller\PrimoController',
@@ -254,6 +277,8 @@ $config = [
             'search' => 'VuFind\Controller\SearchController',
             'ShibbolethLogoutNotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
             'shibbolethlogoutnotification' => 'VuFind\Controller\ShibbolethLogoutNotificationController',
+            'Shortlink' => 'VuFind\Controller\ShortlinkController',
+            'shortlink' => 'VuFind\Controller\ShortlinkController',
             'Summon' => 'VuFind\Controller\SummonController',
             'summon' => 'VuFind\Controller\SummonController',
             'SummonRecord' => 'VuFind\Controller\SummonrecordController',
@@ -272,30 +297,33 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'VuFind\Controller\Plugin\DbUpgrade' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'VuFind\Controller\Plugin\Favorites' => 'VuFind\Controller\Plugin\Factory::getFavorites',
-            'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\Factory::getFollowup',
-            'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
-            'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\Factory::getILLRequests',
-            'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\Factory::getNewItems',
-            'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\Factory::getPermission',
-            'VuFind\Controller\Plugin\Recaptcha' => 'VuFind\Controller\Plugin\Factory::getRecaptcha',
-            'VuFind\Controller\Plugin\Renewals' => 'Zend\ServiceManager\Factory\InvokableFactory',
-            'VuFind\Controller\Plugin\Reserves' => 'VuFind\Controller\Plugin\Factory::getReserves',
-            'VuFind\Controller\Plugin\ResultScroller' => 'VuFind\Controller\Plugin\Factory::getResultScroller',
-            'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\Factory::getStorageRetrievalRequests',
-            'Zend\Mvc\Plugin\FlashMessenger\FlashMessenger' => 'VuFind\Controller\Plugin\Factory::getFlashMessenger',
+            'VuFind\Controller\Plugin\Captcha' => 'VuFind\Controller\Plugin\CaptchaFactory',
+            'VuFind\Controller\Plugin\DbUpgrade' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Controller\Plugin\Favorites' => 'VuFind\Controller\Plugin\FavoritesFactory',
+            'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\FollowupFactory',
+            'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
+            'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
+            'VuFind\Controller\Plugin\Renewals' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Controller\Plugin\Reserves' => 'VuFind\Controller\Plugin\ReservesFactory',
+            'VuFind\Controller\Plugin\ResultScroller' => 'VuFind\Controller\Plugin\ResultScrollerFactory',
+            'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger' => 'VuFind\Controller\Plugin\FlashMessengerFactory',
+        ],
+        'initializers' => [
+            'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'captcha' => 'VuFind\Controller\Plugin\Captcha',
             'dbUpgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
-            'flashMessenger' => 'Zend\Mvc\Plugin\FlashMessenger\FlashMessenger',
+            'flashMessenger' => 'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger',
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
-            'recaptcha' => 'VuFind\Controller\Plugin\Recaptcha',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
             'reserves' => 'VuFind\Controller\Plugin\Reserves',
             'resultScroller' => 'VuFind\Controller\Plugin\ResultScroller',
@@ -305,14 +333,17 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'ProxyManager\Configuration' => 'VuFind\Service\Factory::getProxyConfig',
+            'League\CommonMark\MarkdownConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'ProxyManager\Configuration' => 'VuFind\Service\ProxyConfigFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'VuFind\Auth\Manager' => 'VuFind\Auth\ManagerFactory',
             'VuFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Autocomplete\Suggester' => 'VuFind\Autocomplete\SuggesterFactory',
             'VuFind\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
+            'VuFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Cart' => 'VuFind\CartFactory',
             'VuFind\ChannelProvider\ChannelLoader' => 'VuFind\ChannelProvider\ChannelLoaderFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -322,10 +353,12 @@ $config = [
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Connection\WorldCatUtils' => 'VuFind\Connection\WorldCatUtilsFactory',
+            'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
             'VuFind\Content\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\AuthorNotes\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Covers\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Excerpts\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Content\ObalkyKnihService' => 'VuFind\Content\ObalkyKnihServiceFactory',
             'VuFind\Content\Reviews\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\Summaries\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\TOC\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -342,6 +375,7 @@ $config = [
             'VuFind\Db\AdapterFactory' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\Db\Row\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\Table\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\DoiLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
@@ -353,6 +387,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'VuFind\ILS\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\ILS\Logic\Holds' => 'VuFind\ILS\Logic\LogicFactory',
@@ -360,15 +395,20 @@ $config = [
             'VuFind\ILS\HoldSettings' => 'VuFind\ILS\HoldSettingsFactory',
             'VuFind\Log\Logger' => 'VuFind\Log\LoggerFactory',
             'VuFind\Mailer\Mailer' => 'VuFind\Mailer\Factory',
-            'VuFind\Net\IpAddressUtils' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Net\IpAddressUtils' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Net\UserIpReader' => 'VuFind\Net\UserIpReaderFactory',
+            'VuFind\OAI\Server' => 'VuFind\OAI\ServerFactory',
+            'VuFind\OAI\Server\Auth' => 'VuFind\OAI\ServerFactory',
             'VuFind\QRCode\Loader' => 'VuFind\QRCode\LoaderFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
             'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
-            'VuFind\Record\Router' => 'VuFind\Record\RouterFactory',
+            'VuFind\Record\Router' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
             'VuFind\Related\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Resolver\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
@@ -377,29 +417,36 @@ $config = [
             'VuFind\Search\History' => 'VuFind\Search\HistoryFactory',
             'VuFind\Search\Memory' => 'VuFind\Search\MemoryFactory',
             'VuFind\Search\FacetCache\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Search\Factory\UrlQueryHelperFactory' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\Options\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',
+            'VuFind\Security\CspHeaderGenerator' => 'VuFind\Security\CspHeaderGeneratorFactory',
+            'VuFind\Security\NonceGenerator' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Service\ReCaptcha' => 'VuFind\Service\ReCaptchaFactory',
             'VuFind\Session\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'VuFind\Session\Settings' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Session\Settings' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\SMS\SMSInterface' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Solr\WriterFactory',
             'VuFind\Tags' => 'VuFind\TagsFactory',
+            'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\CsrfFactory',
-            'VuFindHttp\HttpService' => 'VuFind\Service\Factory::getHttp',
-            'VuFindSearch\Service' => 'VuFind\Service\Factory::getSearchService',
-            'Zend\Db\Adapter\Adapter' => 'VuFind\Service\Factory::getDbAdapter',
-            'Zend\Mvc\I18n\Translator' => 'VuFind\Service\Factory::getTranslator',
-            'Zend\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
+            'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
+            'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
+            'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
+            'Laminas\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
+            'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'Request' => 'VuFind\Http\PhpEnvironment\Request',
             'VuFind\AccountCapabilities' => 'VuFind\Config\AccountCapabilities',
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\AuthPluginManager' => 'VuFind\Auth\PluginManager',
@@ -416,7 +463,7 @@ $config = [
             'VuFind\ContentTOCPluginManager' => 'VuFind\Content\TOC\PluginManager',
             'VuFind\CookieManager' => 'VuFind\Cookie\CookieManager',
             'VuFind\DateConverter' => 'VuFind\Date\Converter',
-            'VuFind\DbAdapter' => 'Zend\Db\Adapter\Adapter',
+            'VuFind\DbAdapter' => 'Laminas\Db\Adapter\Adapter',
             'VuFind\DbAdapterFactory' => 'VuFind\Db\AdapterFactory',
             'VuFind\DbRowPluginManager' => 'VuFind\Db\Row\PluginManager',
             'VuFind\DbTablePluginManager' => 'VuFind\Db\Table\PluginManager',
@@ -453,13 +500,13 @@ $config = [
             'VuFind\SearchRunner' => 'VuFind\Search\SearchRunner',
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelper',
-            'VuFind\SessionManager' => 'Zend\Session\SessionManager',
+            'VuFind\SessionManager' => 'Laminas\Session\SessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Session\PluginManager',
             'VuFind\SMS' => 'VuFind\SMS\SMSInterface',
-            'VuFind\Translator' => 'Zend\Mvc\I18n\Translator',
+            'VuFind\Translator' => 'Laminas\Mvc\I18n\Translator',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
-            'Zend\Validator\Csrf' => 'VuFind\Validator\Csrf',
+            'Laminas\Validator\Csrf' => 'VuFind\Validator\Csrf',
         ],
     ],
     'translator' => [],
@@ -479,12 +526,13 @@ $config = [
         ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
-    // unrelated to specific Zend Framework 2 components).
+    // unrelated to specific Laminas components).
     'vufind' => [
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => [ /* see VuFind\Config\PluginManager for defaults */ ],
         // PostgreSQL sequence mapping
         'pgsql_seq_mapping'  => [
+            'auth_hash'        => ['id', 'auth_hash_id_seq'],
             'comments'         => ['id', 'comments_id_seq'],
             'external_session' => ['id', 'external_session_id_seq'],
             'oai_resumption'   => ['id', 'oai_resumption_id_seq'],
@@ -493,6 +541,7 @@ $config = [
             'resource_tags'    => ['id', 'resource_tags_id_seq'],
             'search'           => ['id', 'search_id_seq'],
             'session'          => ['id', 'session_id_seq'],
+            'shortlinks'       => ['id', 'shortlinks_id_seq'],
             'tags'             => ['id', 'tags_id_seq'],
             'user'             => ['id', 'user_id_seq'],
             'user_card'        => ['id', 'user_card_id_seq'],
@@ -505,6 +554,7 @@ $config = [
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
+            'captcha' => [ /* see VuFind\Captcha\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
             'content' => [ /* see VuFind\Content\PluginManager for defaults */ ],
             'content_authornotes' => [ /* see VuFind\Content\AuthorNotes\PluginManager for defaults */ ],
@@ -523,6 +573,7 @@ $config = [
             'hierarchy_treedatasource' => [ /* see VuFind\Hierarchy\TreeDataSource\PluginManager for defaults */ ],
             'hierarchy_treerenderer' => [ /* see VuFind\Hierarchy\TreeRenderer\PluginManager for defaults */ ],
             'ils_driver' => [ /* See VuFind\ILS\Driver\PluginManager for defaults */ ],
+            'metadatavocabulary' => [ /* See VuFind\MetadataVocabulary\PluginManager for defaults */],
             'recommend' => [ /* See VuFind\Recommend\PluginManager for defaults */ ],
             'record_fallbackloader' => [ /* See VuFind\Record\FallbackLoader\PluginManager for defaults */ ],
             'recorddriver' => [ /* See VuFind\RecordDriver\PluginManager for defaults */ ],
@@ -535,114 +586,11 @@ $config = [
             'search_params' => [ /* See VuFind\Search\Params\PluginManager for defaults */ ],
             'search_results' => [ /* See VuFind\Search\Results\PluginManager for defaults */ ],
             'session' => [ /* see VuFind\Session\PluginManager for defaults */ ],
-        ],
-        // This section behaves just like recorddriver_tabs below, but is used for
-        // the collection module instead of the standard record view.
-        'recorddriver_collection_tabs' => [
-            'VuFind\RecordDriver\AbstractBase' => [
-                'tabs' => [
-                    'CollectionList' => 'CollectionList',
-                    'HierarchyTree' => 'CollectionHierarchyTree',
-                ],
-                'defaultTab' => null,
-            ],
-        ],
-        // This section controls which tabs are used for which record driver classes.
-        // Each sub-array is a map from a tab name (as used in a record URL) to a tab
-        // service (found in recordtab plugin manager settings above). If a
-        // particular record driver is not defined here, it will inherit
-        // configuration from a configured parent class.  The defaultTab setting may
-        // be used to specify the default active tab; if null, the value from the
-        // relevant .ini file will be used. You can also specify which tabs are
-        // loaded in the background when arriving at a record tabs view with
-        // backgroundLoadedTabs as a list of tab indexes.
-        'recorddriver_tabs' => [
-            'VuFind\RecordDriver\EDS' => [
-                'tabs' => [
-                    'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\Pazpar2' => [
-                'tabs' => [
-                    'Details' => 'StaffViewMARC',
-                 ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\Primo' => [
-                'tabs' => [
-                    'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\SolrAuthDefault' => [
-                'tabs' => [
-                    'Details' => 'StaffViewArray',
-                 ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\SolrAuthMarc' => [
-                'tabs' => [
-                    'Details' => 'StaffViewMARC',
-                 ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\DefaultRecord' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Similar' => 'SimilarItemsCarousel',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-                // 'backgroundLoadedTabs' => ['UserComments', 'Details']
-            ],
-            'VuFind\RecordDriver\SolrMarc' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Similar' => 'SimilarItemsCarousel',
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\Summon' => [
-                'tabs' => [
-                    'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'Details' => 'StaffViewArray',
-                ],
-                'defaultTab' => null,
-            ],
-            'VuFind\RecordDriver\WorldCat' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsWorldCat', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
+            'urlshortener' => [ /* see VuFind\UrlShortener\PluginManager for defaults */ ],
         ],
     ],
     // Authorization configuration:
-    'zfc_rbac' => [
+    'lmc_rbac' => [
         'identity_provider' => 'VuFind\Auth\Manager',
         'guest_role' => 'guest',
         'role_provider' => [
@@ -671,9 +619,8 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
-
-    // For legacy (1.x/2.x) compatibility:
-    'vufindrecord' => 'Record',
+    'search2collection' => 'Search2Collection',
+    'search2collectionrecord' => 'Search2Record',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
@@ -707,23 +654,28 @@ $staticRoutes = [
     'LibGuides/Home', 'LibGuides/Results',
     'LibraryCards/Home', 'LibraryCards/SelectCard',
     'LibraryCards/DeleteCard',
-    'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
-    'MyResearch/Delete', 'MyResearch/DeleteAccount', 'MyResearch/DeleteList',
-    'MyResearch/Edit', 'MyResearch/Email', 'MyResearch/Favorites',
+    'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
+    'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
+    'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
+    'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
     'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
     'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
-    'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',
-    'MyResearch/Verify', 'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search',
+    'MyResearch/StorageRetrievalRequests',
+    'MyResearch/Unsubscribe', 'MyResearch/UserLogin',
+    'MyResearch/Verify', 'MyResearch/VerifyEmail', 'OAI/Server',
+    'Overdrive/MyContent','Overdrive/Hold',
+    'Pazpar2/Home', 'Pazpar2/Search',
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
-    'Search/Advanced', 'Search/CollectionFacetList', 'Search/Email',
+    'Search/Advanced', 'Search/CollectionFacetList',
+    'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',
     'Search/Results', 'Search/Suggest',
-    'Search2/Advanced', 'Search2/Home', 'Search2/Results',
+    'Search2/Advanced', 'Search2/FacetList', 'Search2/Home', 'Search2/Results',
     'Summon/Advanced', 'Summon/FacetList', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',
@@ -742,7 +694,7 @@ $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 // Add the home route last
 $config['router']['routes']['home'] = [
-    'type' => 'Zend\Router\Http\Literal',
+    'type' => 'Laminas\Router\Http\Literal',
     'options' => [
         'route'    => '/',
         'defaults' => [

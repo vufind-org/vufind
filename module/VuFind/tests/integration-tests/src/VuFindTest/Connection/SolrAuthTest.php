@@ -45,11 +45,12 @@ class SolrAuthTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -60,7 +61,7 @@ class SolrAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testSimpleSearch()
     {
-        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
             ->get('SolrAuth');
 
         // Search for a term known to exist in the sample data; request just one

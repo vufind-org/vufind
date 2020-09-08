@@ -311,8 +311,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                     </field>
                 </xsl:if>
 
-                <!-- RECORDTYPE -->
-                <field name="recordtype">vudl</field>
+                <!-- RECORD FORMAT -->
+                <field name="record_format">vudl</field>
 
                 <!-- FULLRECORD -->
                 <field name="fullrecord">

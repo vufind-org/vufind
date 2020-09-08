@@ -28,7 +28,7 @@
 namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for channel providers relying on the ILS.
@@ -62,8 +62,8 @@ class AbstractILSChannelProviderFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory!');
         }
         return new $requestedName(
-            $container->get('VuFindSearch\Service'),
-            $container->get('VuFind\ILS\Connection')
+            $container->get(\VuFindSearch\Service::class),
+            $container->get(\VuFind\ILS\Connection::class)
         );
     }
 }

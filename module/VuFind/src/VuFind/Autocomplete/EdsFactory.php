@@ -40,7 +40,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EdsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class EdsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,7 +62,7 @@ class EdsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Search\BackendManager')->get('EDS')
+            $container->get(\VuFind\Search\BackendManager::class)->get('EDS')
         );
     }
 }

@@ -30,12 +30,11 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\EDS\Backend;
+use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
-use VuFindSearch\Backend\EDS\Zend2 as Connector;
-
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for EDS backends.
@@ -51,7 +50,7 @@ class EdsBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger = null;
 
@@ -65,7 +64,7 @@ class EdsBackendFactory implements FactoryInterface
     /**
      * EDS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $edsConfig;
 
@@ -90,10 +89,11 @@ class EdsBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
         $this->serviceLocator = $sm;
-        $this->edsConfig = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $this->edsConfig = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class)
             ->get('EDS');
-        if ($this->serviceLocator->has('VuFind\Log\Logger')) {
-            $this->logger = $this->serviceLocator->get('VuFind\Log\Logger');
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
         $connector = $this->createConnector();
         return $this->createBackend($connector);
@@ -108,17 +108,22 @@ class EdsBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-        $auth = $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService');
+        $auth = $this->serviceLocator
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
-        $session = new \Zend\Session\Container(
-            'EBSCO', $this->serviceLocator->get('Zend\Session\SessionManager')
+        $session = new \Laminas\Session\Container(
+            'EBSCO',
+            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
         $backend = new Backend(
             $connector, $this->createRecordCollectionFactory(),
-            $this->serviceLocator->get('VuFind\Cache\Manager')->getCache('object'),
+            $this->serviceLocator->get(\VuFind\Cache\Manager::class)
+                ->getCache('object'),
             $session, $this->edsConfig, $isGuest
         );
-        $backend->setAuthManager($this->serviceLocator->get('VuFind\Auth\Manager'));
+        $backend->setAuthManager(
+            $this->serviceLocator->get(\VuFind\Auth\Manager::class)
+        );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;
@@ -131,16 +136,15 @@ class EdsBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
-        $options = [];
-        $id = 'EDS';
-        $key = 'EDS';
+        $options = [
+            'timeout' => $this->edsConfig->General->timeout ?? 120,
+            'search_http_method' => $this->edsConfig->General->search_http_method
+                ?? 'POST'
+        ];
         // Build HTTP client:
-        $client = $this->serviceLocator->get('VuFindHttp\HttpService')
+        $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $timeout = isset($this->edsConfig->General->timeout)
-            ? $this->edsConfig->General->timeout : 30;
-        $client->setOptions(['timeout' => $timeout]);
-        $connector = new Connector($id, $key, $options, $client);
+        $connector = new Connector($options, $client);
         $connector->setLogger($this->logger);
         return $connector;
     }
@@ -163,7 +167,8 @@ class EdsBackendFactory implements FactoryInterface
      */
     protected function createRecordCollectionFactory()
     {
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('EDS');
             $driver->setRawData($data);

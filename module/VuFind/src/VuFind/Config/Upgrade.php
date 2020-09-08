@@ -292,11 +292,14 @@ class Upgrade
     {
         // Configuration files to load.  Note that config.ini must always be loaded
         // first so that getOldConfigPath can work properly!
-        $configs = [
-            'config.ini', 'authority.ini', 'facets.ini', 'geofeatures.ini',
-            'reserves.ini', 'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
-            'permissions.ini', 'Collection.ini', 'Primo.ini'
-        ];
+        $configs = ['config.ini'];
+        foreach (glob($this->rawDir . '/*.ini') as $ini) {
+            $parts = explode('/', str_replace('\\', '/', $ini));
+            $filename = array_pop($parts);
+            if ($filename !== 'config.ini') {
+                $configs[] = $filename;
+            }
+        }
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
             // settings:
@@ -502,25 +505,13 @@ class Upgrade
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
-        $hasAmazonReview = isset($config['Content']['reviews'])
-            && stristr($config['Content']['reviews'], 'amazon');
-        $hasAmazonCover = isset($config['Content']['coverimages'])
-            && stristr($config['Content']['coverimages'], 'amazon');
+        $hasAmazonReview = stristr($config['Content']['reviews'] ?? '', 'amazon');
+        $hasAmazonCover = stristr($config['Content']['coverimages'] ?? '', 'amazon');
         if ($hasAmazonReview || $hasAmazonCover) {
-            if (!isset($config['Content']['amazonsecret'])) {
-                $this->addWarning(
-                    'WARNING: You have Amazon content enabled but are missing '
-                    . 'the required amazonsecret setting in the [Content] section '
-                    . 'of config.ini'
-                );
-            }
-            if (!isset($config['Content']['amazonassociate'])) {
-                $this->addWarning(
-                    'WARNING: You have Amazon content enabled but are missing '
-                    . 'the required amazonassociate setting in the [Content] section'
-                    . ' of config.ini'
-                );
-            }
+            $this->addWarning(
+                'WARNING: You have Amazon content enabled, but VuFind no longer '
+                . 'supports it. You should remove Amazon references from config.ini.'
+            );
         }
     }
 
@@ -592,6 +583,29 @@ class Upgrade
                     . 'for important information on how to upgrade your Analytics.'
                 );
             }
+        }
+
+        // Upgrade CAPTCHA Options
+        $legacySettingsMap = [
+            'publicKey' => 'recaptcha_siteKey',
+            'siteKey' => 'recaptcha_siteKey',
+            'privateKey' => 'recaptcha_secretKey',
+            'secretKey' => 'recaptcha_secretKey',
+            'theme' => 'recaptcha_theme',
+        ];
+        $foundRecaptcha = false;
+        foreach ($legacySettingsMap as $old => $new) {
+            if (isset($newConfig['Captcha'][$old])) {
+                $newConfig['Captcha'][$new]
+                    = $newConfig['Captcha'][$old];
+                unset($newConfig['Captcha'][$old]);
+            }
+            if (isset($newConfig['Captcha'][$new])) {
+                $foundRecaptcha = true;
+            }
+        }
+        if ($foundRecaptcha && !isset($newConfig['Captcha']['types'])) {
+            $newConfig['Captcha']['types'] = ['recaptcha'];
         }
 
         // Warn the user about deprecated WorldCat settings:

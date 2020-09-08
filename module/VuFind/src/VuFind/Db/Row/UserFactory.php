@@ -67,15 +67,17 @@ class UserFactory extends RowGatewayFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $privacy = isset($config->Authentication->privacy)
             && $config->Authentication->privacy;
         $rowClass = $privacy ? $this->privateUserClass : $requestedName;
         $prototype = parent::__invoke($container, $rowClass, $options);
         $prototype->setConfig($config);
         if ($privacy) {
-            $sessionManager = $container->get('Zend\Session\SessionManager');
-            $session = new \Zend\Session\Container('Account', $sessionManager);
+            $sessionManager = $container
+                ->get(\Laminas\Session\SessionManager::class);
+            $session = new \Laminas\Session\Container('Account', $sessionManager);
             $prototype->setSession($session);
         }
         return $prototype;

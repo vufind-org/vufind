@@ -49,7 +49,7 @@ class MultiILS extends ILS
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -57,35 +57,17 @@ class MultiILS extends ILS
      */
     public function authenticate($request)
     {
-        $target = trim($request->getPost()->get('target'));
         $username = trim($request->getPost()->get('username'));
         $password = trim($request->getPost()->get('password'));
-        if ($username == '' || $password == '') {
-            throw new AuthException('authentication_error_blank');
-        }
+        $target = trim($request->getPost()->get('target'));
+        $loginMethod = $this->getILSLoginMethod($target);
 
         // We should have target either separately or already embedded into username
         if ($target) {
             $username = "$target.$username";
         }
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin($username, $password);
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Did the patron successfully log in?
-        if ($patron) {
-            return $this->processILSUser($patron);
-        }
-
-        // If we got this far, we have a problem:
-        throw new AuthException('authentication_error_invalid');
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**

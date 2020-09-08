@@ -39,7 +39,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetResolverLinksFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -64,10 +64,10 @@ class GetResolverLinksFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Resolver\Driver\PluginManager'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Resolver\Driver\PluginManager::class),
             $container->get('ViewRenderer'),
-            $container->get('VuFind\Config\PluginManager')->get('config')
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

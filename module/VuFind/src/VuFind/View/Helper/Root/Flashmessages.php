@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Flash message view helper

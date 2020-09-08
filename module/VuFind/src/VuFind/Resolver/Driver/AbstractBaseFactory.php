@@ -28,7 +28,7 @@
 namespace VuFind\Resolver\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory suitable for most resolver drivers.
@@ -58,7 +58,8 @@ class AbstractBaseFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         return new $requestedName(
             $config->OpenURL->url,
             ...($options ?: [])

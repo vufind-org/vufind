@@ -21,5 +21,14 @@ otherwise, it is recommended that you fix these.  Click Submit to proceed.</p>
 
 <form method="post" action="<?=$this->url('upgrade-fixduplicatetags')?>">
   <input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /><br /><br />
-  <input type="submit" name="skip" value="<?=$this->transEsc('skip_step') ?>." onclick="return confirm('<?=$this->transEsc('skip_confirm') ?>');"/>
+  <input type="submit" name="skip" value="<?=$this->transEsc('skip_step') ?>." id="skip" />
 </form>
+<?php
+$confirmText = $this->transEsc('skip_confirm');
+$script = <<<JS
+$('#skip').click(function(e) {
+  return confirm('${confirmText}');
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

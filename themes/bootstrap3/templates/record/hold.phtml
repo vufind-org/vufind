@@ -12,7 +12,7 @@
 <p class="helptext"><?=$this->helpText?></p>
 <?php endif; ?>
 
-<form class="form-record-hold" method="post" name="placeHold">
+<form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
   <?=$this->flashmessages()?>
   <label class="control-label"><?=$this->transEsc('Title')?></label>
   <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
@@ -92,7 +92,7 @@
           <?php endif; ?>
           <?php foreach ($this->pickup as $lib): ?>
             <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
-              <?=$this->transEsc('location_' . $lib['locationDisplay'], null, $lib['locationDisplay'])?>
+              <?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?>
             </option>
           <?php endforeach; ?>
         </select>

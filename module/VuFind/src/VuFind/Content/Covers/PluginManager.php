@@ -27,6 +27,9 @@
  */
 namespace VuFind\Content\Covers;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\Content\ObalkyKnihContentFactory;
+
 /**
  * Covers content loader plugin manager
  *
@@ -44,17 +47,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'amazon' => 'VuFind\Content\Covers\Amazon',
-        'booksite' => 'VuFind\Content\Covers\Booksite',
-        'buchhandel' => 'VuFind\Content\Covers\Buchhandel',
-        'browzine' => 'VuFind\Content\Covers\BrowZine',
-        'contentcafe' => 'VuFind\Content\Covers\ContentCafe',
-        'google' => 'VuFind\Content\Covers\Google',
-        'librarything' => 'VuFind\Content\Covers\LibraryThing',
-        'localfile' => 'VuFind\Content\Covers\LocalFile',
-        'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
-        'summon' => 'VuFind\Content\Covers\Summon',
-        'syndetics' => 'VuFind\Content\Covers\Syndetics',
+        Amazon::class => Deprecated::class,
+        'amazon' => Deprecated::class,
+        'booksite' => Booksite::class,
+        'buchhandel' => Buchhandel::class,
+        'browzine' => BrowZine::class,
+        'contentcafe' => ContentCafe::class,
+        'google' => Google::class,
+        'librarything' => LibraryThing::class,
+        'localfile' => LocalFile::class,
+        'obalkyknih' => ObalkyKnih::class,
+        'openlibrary' => OpenLibrary::class,
+        'summon' => Summon::class,
+        'syndetics' => Syndetics::class,
     ];
 
     /**
@@ -63,26 +68,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Content\Covers\Amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
-        'VuFind\Content\Covers\Booksite' =>
-            'VuFind\Content\Covers\Factory::getBooksite',
-        'VuFind\Content\Covers\BrowZine' => 'VuFind\Content\Covers\BrowZineFactory',
-        'VuFind\Content\Covers\Buchhandel' =>
-            'VuFind\Content\Covers\Factory::getBuchhandel',
-        'VuFind\Content\Covers\ContentCafe' =>
-            'VuFind\Content\Covers\Factory::getContentCafe',
-        'VuFind\Content\Covers\Google' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Content\Covers\LibraryThing' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Content\Covers\LocalFile' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Content\Covers\OpenLibrary' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Content\Covers\Summon' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Content\Covers\Syndetics' =>
-            'VuFind\Content\Covers\Factory::getSyndetics',
+        Amazon::class => AmazonFactory::class,
+        Booksite::class => BooksiteFactory::class,
+        BrowZine::class => BrowZineFactory::class,
+        Buchhandel::class => BuchhandelFactory::class,
+        ContentCafe::class => ContentCafeFactory::class,
+        Deprecated::class => InvokableFactory::class,
+        Google::class => InvokableFactory::class,
+        LibraryThing::class => InvokableFactory::class,
+        LocalFile::class => InvokableFactory::class,
+        ObalkyKnih::class => ObalkyKnihContentFactory::class,
+        OpenLibrary::class => InvokableFactory::class,
+        Summon::class => InvokableFactory::class,
+        Syndetics::class => SyndeticsFactory::class,
     ];
 
     /**
@@ -93,6 +91,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Content\AbstractCover';
+        return \VuFind\Content\AbstractCover::class;
     }
 }
