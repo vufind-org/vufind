@@ -227,9 +227,8 @@ class Query extends AbstractQuery
         // try again with a less restricted regular expression.
         // TODO: identify a test case where this fallback is actually needed; it
         // may not actually serve a useful purpose.
-        $before = $this->queryString;
         $this->queryString = preg_replace("/\b$from\b/i", $to, $queryString);
-        if ($before === $this->queryString) {
+        if ($queryString === $this->queryString) {
             $this->queryString = preg_replace("/$from/i", $to, $queryString);
         }
     }
