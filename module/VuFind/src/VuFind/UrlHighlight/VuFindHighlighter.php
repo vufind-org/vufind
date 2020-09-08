@@ -44,7 +44,7 @@ use VuFind\View\Helper\Root\ProxyUrl;
  */
 class VuFindHighlighter implements HighlighterInterface
 {
-    private const DEFAULT_SCHEME = 'http';
+    public const DEFAULT_SCHEME = 'http';
 
     /**
      * Url highlight html highlighter
@@ -63,11 +63,12 @@ class VuFindHighlighter implements HighlighterInterface
     /**
      * Constructor
      *
-     * @param ProxyUrl $proxyUrl proxy url helper
+     * @param ProxyUrl        $proxyUrl        Proxy url helper
+     * @param HtmlHighlighter $htmlHighlighter Default html highlighter
      */
-    public function __construct(ProxyUrl $proxyUrl)
+    public function __construct(ProxyUrl $proxyUrl, HtmlHighlighter $htmlHighlighter)
     {
-        $this->_htmlHighlighter = new HtmlHighlighter(self::DEFAULT_SCHEME, []);
+        $this->_htmlHighlighter = $htmlHighlighter;
         $this->_proxyUrl = $proxyUrl;
     }
 

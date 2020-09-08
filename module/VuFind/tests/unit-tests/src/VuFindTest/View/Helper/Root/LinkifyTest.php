@@ -29,6 +29,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\View\Helper\Root\Linkify;
 use VuFind\View\Helper\Root\ProxyUrl;
 use VuFindTest\Unit\ViewHelperTestCase;
@@ -48,7 +49,7 @@ class LinkifyTest extends ViewHelperTestCase
     /**
      * @var ProxyUrl&MockObject
      */
-    private $proxyUrl;
+    private $urlHighlight;
 
     /**
      * @var Linkify
@@ -57,93 +58,23 @@ class LinkifyTest extends ViewHelperTestCase
 
     public function setUp(): void
     {
-        $this->proxyUrl = $this->createMock(ProxyUrl::class);
-
-        $view = $this->getPhpRenderer([
-            'proxyUrl' => $this->proxyUrl,
-        ]);
-
-        $this->linkify = new Linkify();
-        $this->linkify->setView($view);
+        $this->urlHighlight = $this->createMock(UrlHighlight::class);
+        $this->linkify = new Linkify($this->urlHighlight);
     }
 
     public function tearDown(): void
     {
-        unset($this->proxyUrl, $this->linkify);
+        unset($this->proxyUrl, $this->urlHighlight);
     }
 
-    /**
-     * @dataProvider linkifyDataProvider
-     *
-     * @param string $input
-     * @param array $urls
-     * @param string $expected
-     */
-    public function testLinkify(string $input, array $urls, string $expected): void
+    public function testLinkify(): void
     {
-        $this->proxyUrl
+        $this->urlHighlight
             ->expects(self::atLeastOnce())
-            ->method('__invoke')
-            ->willReturnOnConsecutiveCalls(...$urls);
+            ->method('highlightUrls')
+            ->willReturn('Text with highlighted urls');
 
-        $actual = $this->linkify->__invoke($input);
-        self::assertSame($expected, $actual);
-    }
-
-    /**
-     * @return array[]
-     */
-    public function linkifyDataProvider(): array
-    {
-        return [
-            'http' => [
-                'This has http://vufind.org in the middle of it',
-                ['http://vufind.org'],
-                'This has <a href="http://vufind.org">http://vufind.org</a> in the middle of it',
-            ],
-            'https' => [
-                'This has https://vufind.org in the middle of it',
-                ['https://vufind.org'],
-                'This has <a href="https://vufind.org">https://vufind.org</a> in the middle of it',
-            ],
-            'complex link' => [
-                'This has https://vufind.org?foo=1&bar=2#xyzzy in the middle of it',
-                ['https://vufind.org?foo=1&bar=2#xyzzy'],
-                'This has <a href="https://vufind.org?foo=1&bar=2#xyzzy">https://vufind.org?foo=1&bar=2#xyzzy</a>'
-                . ' in the middle of it',
-            ],
-            'two urls' => [
-                'This has https://vufind.org and http://vufind.org in it',
-                ['https://vufind.org', 'http://vufind.org'],
-                'This has <a href="https://vufind.org">https://vufind.org</a> and '
-                . '<a href="http://vufind.org">http://vufind.org</a> in it',
-            ],
-            'html specialchars encoded' => [
-                'This has &lt;b&gt;http://vufind.org&lt;/b&gt; in the middle of it',
-                ['http://vufind.org'],
-                'This has &lt;b&gt;<a href="http://vufind.org">http://vufind.org</a>&lt;/b&gt; in the middle of it',
-            ],
-            'quotes' => [
-                'This has http://vufind.org/path/with"quotes"/?q=search in the middle of it',
-                ['http://vufind.org/path/with"quotes"/?q=search'],
-                'This has <a href="http://vufind.org/path/with%22quotes%22/?q=search">'
-                . 'http://vufind.org/path/with"quotes"/?q=search</a> in the middle of it',
-            ],
-            'no scheme' => [
-                'This has vufind.org in the middle of it',
-                ['http://vufind.org'],
-                'This has <a href="http://vufind.org">vufind.org</a> in the middle of it',
-            ],
-            'already highlighted' => [
-                'This has <a href="http://vufind.org">http://vufind.org</a> in the middle of it',
-                ['http://vufind.org'],
-                'This has <a href="http://vufind.org">http://vufind.org</a> in the middle of it',
-            ],
-            'email' => [
-                'This has user@vufind.org in the middle of it',
-                ['mailto:user@vufind.org'],
-                'This has <a href="mailto:user@vufind.org">user@vufind.org</a> in the middle of it',
-            ],
-        ];
+        $actual = $this->linkify->__invoke('input text');
+        self::assertSame('Text with highlighted urls', $actual);
     }
 }
