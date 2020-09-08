@@ -9,7 +9,7 @@
 <p>
   <form method="post" action="<?=$this->url('myresearch-newsletter')?>">
     <div class="form-group">
-      <label class="control-label">Möchten Sie regelmäßig einen Newsletter per E-Mail erhalten?</label>
+      <label class="control-label"><?=$this->transEsc('newsletter_info')?></label>
       <input type="checkbox" name="subscribed" <?=$this->subscribed ? 'checked' : ''?>>
     </div>
 
