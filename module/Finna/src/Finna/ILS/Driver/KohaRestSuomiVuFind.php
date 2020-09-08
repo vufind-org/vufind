@@ -545,6 +545,7 @@ class KohaRestSuomiVuFind extends \VuFind\ILS\Driver\AbstractBase implements
                     $renewLimit = null;
                 }
             }
+            $onsite = !empty($entry['onsite_checkout']);
 
             $transaction = [
                 'id' => $biblionumber,
@@ -559,7 +560,8 @@ class KohaRestSuomiVuFind extends \VuFind\ILS\Driver\AbstractBase implements
                 'renew' => $renewals,
                 'renewLimit' => $renewLimit,
                 'renewable' => $renewable,
-                'message' => $message
+                'message' => $message,
+                'onsite' => $onsite,
             ];
 
             $transactions[] = $transaction;

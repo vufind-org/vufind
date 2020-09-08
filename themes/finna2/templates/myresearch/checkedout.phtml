@@ -103,7 +103,7 @@
 
         <?php $i = 0; foreach ($this->transactions as $resource): ?>
           <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-          <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="myresearch-row">
+          <tr id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="myresearch-row<?=!empty($ilsDetails['onsite']) ? ' onsite-checkout' : ''?>">
             <td class="text-left checkbox-col">
             <?php if ($this->renewForm): ?>
               <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
@@ -179,6 +179,9 @@
                 </div>
               </div>
               <div class="status-column">
+                <?php if (!empty($ilsDetails['onsite'])): ?>
+                  <div class="alert alert-info"><?=$this->transEsc('onsite_checkout') ?></div>
+                <?php endif; ?>
                 <?php $showStatus = true; ?>
                 <?php if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
                   <?php $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
