@@ -99,7 +99,7 @@ class QueryTest extends TestCase
         $q = new Query("color code");
         $q->replaceTerm('color code', '((color code) OR (color codes))', true);
         $this->assertEquals('((color code) OR (color codes))', $q->getString());
-        $q->replaceTerm('color code', '((color code) OR (color coded))');
+        $q->replaceTerm('color code', '((color code) OR (color coded))', true);
         $this->assertEquals(
             '((((color code) OR (color coded))) OR (color codes))',
             $q->getString()
