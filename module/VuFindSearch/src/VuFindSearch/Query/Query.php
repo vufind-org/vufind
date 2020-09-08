@@ -223,18 +223,15 @@ class Query extends AbstractQuery
         $queryString = $normalize
             ? $this->getNormalizedString() : $this->queryString;
 
-        // If our "from" pattern contains non-word characters, we can't use word
-        // boundaries for matching.  We want to try to use word boundaries when
-        // possible, however, to avoid the replacement from affecting unexpected
-        // parts of the search query.
-        if (!preg_match('/.*[^\w].*/', $from)) {
-            $pattern = "/\b$from\b/i";
-        } else {
-            $pattern = "/$from/i";
+        // Try to match within word boundaries; if that fails to change anything,
+        // try again with a less restricted regular expression.
+        // TODO: identify a test case where this fallback is actually needed; it
+        // may not actually serve a useful purpose.
+        $before = $this->queryString;
+        $this->queryString = preg_replace("/\b$from\b/i", $to, $queryString);
+        if ($before === $this->queryString) {
+            $this->queryString = preg_replace("/$from/i", $to, $queryString);
         }
-
-        // Perform the replacement:
-        $this->queryString = preg_replace($pattern, $to, $queryString);
     }
 
     /**
