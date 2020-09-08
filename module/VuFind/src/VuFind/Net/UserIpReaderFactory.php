@@ -65,11 +65,11 @@ class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $allowForwardedIps = $config->Proxy->allow_forwarded_ips ?? false;
-        $ipFilter = (array)($config->Proxy->forwarded_ip_filter ?? []);
+        $ipFilter = $config->Proxy->forwarded_ip_filter ?? [];
         return new $requestedName(
             $container->get('Request')->getServer(),
             $allowForwardedIps,
-            $ipFilter
+            is_object($ipFilter) ? $ipFilter->toArray() : (array)$ipFilter
         );
     }
 }
