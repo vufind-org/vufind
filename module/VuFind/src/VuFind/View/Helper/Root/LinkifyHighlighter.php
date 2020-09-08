@@ -62,9 +62,9 @@ class LinkifyHighlighter implements HighlighterInterface
     /**
      * Constructor
      *
-     * @param ProxyUrl|null $proxyUrl proxy url helper
+     * @param ProxyUrl $proxyUrl proxy url helper
      */
-    public function __construct(?ProxyUrl $proxyUrl)
+    public function __construct(ProxyUrl $proxyUrl)
     {
         $this->_htmlHighlighter = new HtmlHighlighter(self::DEFAULT_SCHEME, []);
         $this->_proxyUrl = $proxyUrl;
