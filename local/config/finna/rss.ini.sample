@@ -3,7 +3,7 @@
 ;[newCarousel]
 ;active = [true or false]
 ;url[language code|*] = [url of rss feed]
-;type = [list, carousel, carousel-small, carousel-notext]
+;type = [list, carousel]
 ;items = [number of newest items to read from the feed, default 0 means all items]
 ;itemsPerPage = [number of visible items in the carousel, has no effect on lists]
 ;scrolledItems = [number of items to scroll -- defaults to itemsPerPage]
