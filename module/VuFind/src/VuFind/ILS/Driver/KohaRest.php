@@ -407,7 +407,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         $result = $this->makeRequest(
             [
-                'path' => 'v1/contrib/kohasuomi/patrons/validation',
+                'path' => 'v1/contrib/kohasuomi/auth/patrons/validation',
                 'json' => ['userid' => $username, 'password' => $password],
                 'method' => 'POST',
                 'errors' => true,
