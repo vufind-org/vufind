@@ -56,6 +56,17 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     ];
 
     /**
+     * Item status rankings. The lower the value, the more important the status.
+     *
+     * @var array
+     */
+    protected $statusRankings = [
+        'Lost--Library Applied' => 1,
+        'Charged' => 2,
+        'On Hold' => 3,
+    ];
+
+    /**
      * Whether to use location in addition to library when grouping holdings
      *
      * @param bool
@@ -1061,7 +1072,9 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             $available = $avail['available'];
             $statusCodes = $this->getItemStatusCodes($item);
             $status = $this->pickStatus($statusCodes);
-            if (isset($avail['unavailabilities']['Item::CheckedOut']['due_date'])) {
+            if (isset($avail['unavailabilities']['Item::CheckedOut']['due_date'])
+                && !isset($avail['unavailabilities']['Item::Lost'])
+            ) {
                 $duedate = $this->convertDate(
                     $avail['unavailabilities']['Item::CheckedOut']['due_date'],
                     true
