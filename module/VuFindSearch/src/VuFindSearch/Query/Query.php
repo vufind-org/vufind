@@ -93,7 +93,15 @@ class Query extends AbstractQuery
      */
     protected function normalizeText($text)
     {
-        return strtolower($this->stripDiacritics($text));
+        // The input to normalizeText may be a Solr query with Boolean operators
+        // in it; we want to be careful not to turn this into something invalid.
+        $stripped = $this->stripDiacritics($text);
+        $booleans = ['AND', 'OR', 'NOT'];
+        $words = [];
+        foreach (preg_split('/\s+/', $stripped) as $word) {
+            $words[] = in_array($word, $booleans) ? $word : strtolower($word);
+        }
+        return implode(' ', $words);
     }
 
     /**
