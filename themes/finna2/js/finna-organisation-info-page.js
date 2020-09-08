@@ -55,6 +55,11 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
           && window.location.hash === ''
       ) {
         window.location.hash = data.consortium.finna.service_point;
+      } else if (window.location.hash === '' && data.list.length > 1) {
+        $('.office.map-ui.map').removeClass('hidden');
+        $('.map-control-buttons .show-map').addClass('toggled');
+        map.resize();
+        map.reset();
       }
     }
   }
