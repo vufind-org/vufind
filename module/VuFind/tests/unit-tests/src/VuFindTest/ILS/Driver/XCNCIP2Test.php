@@ -1219,7 +1219,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'Catalog' => [
                 'url' => 'https://test.ncip.example',
                 'consortium' => false,
-                'agency' => ['Test agency'],
+                'agency' => 'Test agency',
                 'pickupLocationsFile' => 'XCNCIP2_locations.txt',
             ],
             'NCIP' => [],

@@ -271,7 +271,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 ? $this->config['Catalog']['http_timeout'] : 30;
             $client->setOptions(['timeout' => $timeout]);
             $client->setRawBody($xml);
-            $client->setEncType('application/xml; "charset=utf-8"');
+            $client->setEncType('application/xml; charset=UTF-8');
             $result = $client->setMethod('POST')->send();
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -626,7 +626,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (null !== $ids) {
             foreach ($ids as $id) {
                 // Need to parse out the 035$a format, e.g., "(Agency) 123"
-                if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $id, $matches)) {
+                if (preg_match('/\(([^\)]+)\)\s*(.+)/', $id, $matches)) {
                     $matchedAgency = $matches[1];
                     $matchedId = $matches[2];
                     if (array_key_exists($matchedAgency, $this->agency)) {
@@ -646,6 +646,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         foreach ($bibs as $bib) {
+            $this->registerNamespaceFor($bib);
             $bibIds = $bib->xpath(
                 'ns1:BibliographicId/ns1:BibliographicRecordId/' .
                 'ns1:BibliographicRecordIdentifier' .
@@ -657,6 +658,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $holdingSets = $bib->xpath('ns1:HoldingsSet');
             foreach ($holdingSets as $holding) {
+                $this->registerNamespaceFor($holding);
                 $holdCallNo = $holding->xpath('ns1:CallNumber');
                 $holdCallNo = !empty($holdCallNo) ? (string)$holdCallNo[0] : '';
                 $avail = $holding->xpath('ns1:ItemInformation');
