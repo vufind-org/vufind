@@ -62,11 +62,16 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     protected $coverRouter;
 
     /**
+     * PHP renderer
+     *
      * @var PhpRenderer
      */
     protected $renderer;
 
     /**
+     * If true we will render a fallback html template in case no image could be
+     * loaded
+     *
      * @var bool
      */
     protected $useCoverFallbacksOnFail = false;
@@ -74,11 +79,15 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     /**
      * GetRecordCover constructor.
      *
-     * @param RecordLoader $recordLoader Record loader
-     * @param CoverRouter  $coverRouter  Cover router
+     * @param RecordLoader $recordLoader            Record loader
+     * @param CoverRouter  $coverRouter             Cover router
+     * @param PhpRenderer  $renderer                PHP renderer
+     * @param bool         $useCoverFallbacksOnFail If true we will render a
+     * fallback html template in case no image could be loaded
      */
     public function __construct(RecordLoader $recordLoader,
-        CoverRouter $coverRouter, PhpRenderer $renderer, $useCoverFallbacksOnFail = false
+        CoverRouter $coverRouter, PhpRenderer $renderer,
+        $useCoverFallbacksOnFail = false
     ) {
         $this->recordLoader = $recordLoader;
         $this->coverRouter = $coverRouter;
@@ -115,14 +124,19 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        $url = $this->coverRouter->getUrl($record, $size ?? 'small',true,$this->useCoverFallbacksOnFail);
+        $url = $this->coverRouter->getUrl(
+            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail
+        );
 
         return ($url || !$this->useCoverFallbacksOnFail)
-            ? $this->formatResponse(compact('url','size'))
-            : $this->formatResponse([
-                'html' => $this->renderer->render(
-                    'record/coverReplacement',
-                    ['driver' => $record]
-                )]);
+            ? $this->formatResponse(compact('url', 'size'))
+            : $this->formatResponse(
+                [
+                    'html' => $this->renderer->render(
+                        'record/coverReplacement',
+                        ['driver' => $record]
+                    )
+                ]
+            );
     }
 }

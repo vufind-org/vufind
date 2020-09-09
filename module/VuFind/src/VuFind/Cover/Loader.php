@@ -355,6 +355,8 @@ class Loader extends \VuFind\ImageLoader
     /**
      * {@inheritdoc}
      * Adds @see self::$hasLoadedUnavailable flag
+     *
+     * @return void
      */
     public function loadUnavailable()
     {
@@ -367,7 +369,8 @@ class Loader extends \VuFind\ImageLoader
      *
      * @return bool
      */
-    public function hasLoadedUnavailable() {
+    public function hasLoadedUnavailable()
+    {
         return $this->hasLoadedUnavailable;
     }
 

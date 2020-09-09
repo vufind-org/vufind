@@ -78,6 +78,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      * small is default).
      * @param bool         $resolveDynamic Should we resolve dynamic cover data into
      * a URL (true) or simply return false (false)?
+     * @param bool         $testLoadImage  If true the function will try to load the
+     * cover image in advance and returns false in case no image could be loaded
      *
      * @return string|bool
      */
@@ -139,7 +141,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
             return $dynamicUrl;
         }
-        
+
         return false;
     }
 }
