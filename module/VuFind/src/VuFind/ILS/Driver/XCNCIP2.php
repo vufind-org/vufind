@@ -232,7 +232,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $return = [];
 
         $agencyId = $response->xpath('ns1:LookupAgencyResponse/ns1:AgencyId');
-        $agencyId = !empty($agencyId) ? (string)$agencyId[0] : '';
+        $agencyId = (string)($agencyId[0] ?? '');
         $locations = $response->xpath(
             'ns1:LookupAgencyResponse/ns1:Ext/ns1:LocationName/' .
             'ns1:LocationNameInstance'
@@ -316,7 +316,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $status = $current->xpath(
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
-        $status = empty($status) ? '' : (string)$status[0];
+        $status = (string)($status[0] ?? '');
 
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
@@ -362,11 +362,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $status = $current->xpath(
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
-        $status = empty($status) ? '' : (string)$status[0];
+        $status = (string)($status[0] ?? '');
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
         $itemType = $current->xpath('ns1:ItemId/ns1:ItemIdentifierType');
-        $itemType = !empty($itemType) ? (string)$itemType[0] : '';
+        $itemType = (string)($itemType[0] ?? '');
 
         $itemAgencyId = $current->xpath('ns1:ItemId/ns1:AgencyId');
 
@@ -394,19 +394,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
-        $itemCallNo = !empty($itemCallNo) ? (string)$itemCallNo[0] : '';
+        $itemCallNo = (string)($itemCallNo[0] ?? '');
 
         $number = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/' .
             'ns1:CopyNumber'
         );
-        $number = !empty($number) ? (string)$number[0] : '';
+        $number = (string)($number[0] ?? '');
 
         $volume = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/' .
             'ns1:HoldingsInformation/ns1:UnstructuredHoldingsData'
         );
-        $volume = !empty($volume) ? (string)$volume[0] : '';
+        $volume = (string)($volume[0] ?? '');
 
         // Build return array:
         $return = [
@@ -415,8 +415,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'status' => $status,
             'item_id' => (string)$itemId[0],
             'bib_id' => $bibId,
-            'item_agency_id' => !empty($itemAgencyId)
-                ? (string)$itemAgencyId[0] : '',
+            'item_agency_id' => (string)($itemAgencyId[0] ?? ''),
             'location' => $location,
             'reserve' => 'N',       // not supported
             'callnumber' => $itemCallNo,
@@ -660,12 +659,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($holdingSets as $holding) {
                 $this->registerNamespaceFor($holding);
                 $holdCallNo = $holding->xpath('ns1:CallNumber');
-                $holdCallNo = !empty($holdCallNo) ? (string)$holdCallNo[0] : '';
+                $holdCallNo = (string)($holdCallNo[0] ?? '');
                 $avail = $holding->xpath('ns1:ItemInformation');
                 $eResource = $holding->xpath(
                     'ns1:ElectronicResource/ns1:ReferenceToResource'
                 );
-                $eResource = !empty($eResource) ? (string)$eResource[0] : '';
+                $eResource = (string)($eResource[0] ?? '');
                 $holdingLocation = $holding->xpath(
                     'ns1:Location/ns1:LocationName/ns1:LocationNameInstance/' .
                     'ns1:LocationNameValue'
@@ -968,7 +967,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:BibliographicDescription/ns1:BibliographicItemId/' .
                 'ns1:BibliographicItemIdentifier'
             );
-            $id = !empty($bibId) ? (string)$bibId[0] : '';
+            $id = (string)($bibId[0] ?? '');
             $fines[] = [
                 'amount' => $amount,
                 'balance' => $amount,
