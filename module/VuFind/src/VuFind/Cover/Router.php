@@ -106,12 +106,6 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             : ['size' => $size];
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
-        if ($testLoadImage) {
-            $this->coverLoader->loadImage($settings);
-            if ($this->coverLoader->hasLoadedUnavailable()) {
-                return false;
-            }
-        }
 
         foreach ($handlers as $handler) {
             try {
@@ -133,6 +127,19 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 );
             }
         }
-        return $directUrl ?? $dynamicUrl ?? false;
+
+        if (isset($directUrl)) {
+            return $directUrl;
+        } elseif (isset($dynamicUrl)) {
+            if ($testLoadImage) {
+                $this->coverLoader->loadImage($settings);
+                if ($this->coverLoader->hasLoadedUnavailable()) {
+                    return false;
+                }
+            }
+            return $dynamicUrl;
+        }
+        
+        return false;
     }
 }
