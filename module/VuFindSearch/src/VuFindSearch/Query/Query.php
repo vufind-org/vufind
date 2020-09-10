@@ -175,8 +175,8 @@ class Query extends AbstractQuery
     /**
      * Replace a term.
      *
-     * @param string   $from      Search term to find
-     * @param string   $to        Search term to insert
+     * @param string   $from       Search term to find
+     * @param string   $to         Search term to insert
      * @param Callable $normalizer Function to normalize text strings (null for
      * no normalization)
      *
