@@ -79,7 +79,7 @@
           <?=$this->render($template)?>
         <?php endif; ?>
       </ul>
-      <ul role="menubar" class="nav navbar-nav lang">
+      <ul role="menubar" class="nav navbar-nav lang" aria-label="<?=$this->escapeHtmlAttr($this->translate('select_language'))?>">
         <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
           <?php $i = 1;?>
           <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
