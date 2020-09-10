@@ -97,7 +97,7 @@
       <?php
         $formatter = $this->recordDataFormatter();
         $coreFields = $formatter->getDefaults('core');
-        $coreFields = $driver->getRecordType() === 'ead3'
+        $coreFields = $driver->getRecordFormat() === 'ead3'
             ? $formatter->filterEAD3Fields($coreFields)
             : $formatter->filterEADFields($coreFields);
         $coreFields = $formatter->getData($driver, $coreFields);

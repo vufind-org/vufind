@@ -1,14 +1,13 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/record-image.phtml -->
 <?php
   $formats = $this->driver->tryMethod('getFormats');
-  $largeImageLayout = $this->driver->getSourceIdentifier() == 'Solr' && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward']);
   $enableImagePopupZoom = $this->record($this->driver)->getImagePopupZoom();
 ?>
 <div class="record-image-container <?= empty($images[0]['urls']['large']) && empty($images[0]['urls']['medium']) ? 'hide-image' : ''?>">
   <div class="recordcover-holder paginate" aria-hidden="true" data-format="<?=$this->transEsc(end($formats))?>" data-noimage="<?=$this->transEsc('no_image')?>">
   <?= $this->record($this->driver)->renderTemplate(
     'record-image-paginator.phtml',
-    ['images' => $images, 'type' => $type, 'largeImageLayout' => $largeImageLayout, 'formats' => $formats, 'enableImagePopupZoom' => $enableImagePopupZoom,
+    ['images' => $images, 'type' => $type, 'formats' => $formats, 'enableImagePopupZoom' => $enableImagePopupZoom,
      'numOfImages' => $numOfImages ?? null
     ]
   ); ?>

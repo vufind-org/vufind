@@ -1,7 +1,7 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/record-image-paginator.phtml -->
 <?php
   $isList = ($type === 'list' || $type === 'list grid');
-  $enableImageZoom = (isset($enableImagePopupZoom) && $enableImagePopupZoom) && in_array($this->driver->tryMethod('getRecordType'), ['lido', 'forward', 'ead', 'qdc']);
+  $enableImageZoom = (isset($enableImagePopupZoom) && $enableImagePopupZoom) && in_array($this->driver->tryMethod('getRecordFormat'), ['lido', 'forward', 'ead', 'qdc']);
 ?>
 <?php if ($type === 'record' || !$this->userAgent()->isBot()): ?>
   <?php
@@ -70,7 +70,7 @@
     <?php
       $settings = [
         'recordId' => $this->driver->getUniqueId(),
-        'recordType' => $this->driver->tryMethod('getRecordType'),
+        'recordType' => $this->driver->tryMethod('getRecordFormat'),
         'imagesPerPage' => 8,
         'imagesOnMobile' => $numOfImages['mobile'] ?? 4,
         'imagesOnNormal' => $numOfImages['mobile'] ?? 8,

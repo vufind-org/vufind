@@ -43,9 +43,21 @@ trait SolrAuthFinnaTrait
     /**
      * Return record format.
      *
+     * @deprecated Use getRecordFormat()
+     *
      * @return string
      */
     public function getRecordType()
+    {
+        return $this->getRecordFormat();
+    }
+
+    /**
+     * Return record format.
+     *
+     * @return string
+     */
+    public function getRecordFormat()
     {
         return $this->fields['record_format'] ?? '';
     }

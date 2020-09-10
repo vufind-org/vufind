@@ -1,7 +1,7 @@
 <?php
 /**
  * Default model for Solr records -- used when a more specific model based on
- * the recordtype field cannot be found.
+ * the record_format field cannot be found.
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace Finna\RecordDriver;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
- * the recordtype field cannot be found.
+ * the record_format field cannot be found.
  *
  * @category VuFind
  * @package  RecordDrivers

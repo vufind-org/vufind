@@ -2,7 +2,7 @@
 <?php $currentSource = $this->driver->tryMethod('getDataSource');
    $currentSourceTranslated = $this->transEsc("source_$currentSource", null, $currentSource);
    $mergedData = $this->driver->tryMethod('getMergedRecordData');
-   $recordType = $this->driver->tryMethod('getRecordType');
+   $recordType = $this->driver->tryMethod('getRecordFormat');
    $sector = $this->driver->tryMethod('getSector');
 ?>
 <div class="recordProvidedBy">

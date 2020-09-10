@@ -478,11 +478,23 @@ trait SolrFinnaTrait
     /**
      * Return record format.
      *
+     * @deprecated Use getRecordFormat()
+     *
      * @return string
      */
     public function getRecordType()
     {
-        return $this->fields['recordtype'] ?? '';
+        return $this->getRecordFormat();
+    }
+
+    /**
+     * Return record format.
+     *
+     * @return string
+     */
+    public function getRecordFormat()
+    {
+        return $this->fields['record_format'] ?? $this->fields['recordtype'] ?? '';
     }
 
     /**
