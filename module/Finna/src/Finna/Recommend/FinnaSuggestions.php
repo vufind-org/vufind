@@ -27,8 +27,7 @@
  */
 namespace Finna\Recommend;
 
-use VuFind\View\Helper\Root\Url;
-use Zend\Http\Client;
+use Laminas\Http\Client;
 
 /**
  * FinnaSuggestions Recommendations Module
@@ -45,7 +44,7 @@ class FinnaSuggestions implements
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFind\Recommend\RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -103,7 +102,7 @@ class FinnaSuggestions implements
     /**
      * HTTP client.
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $client;
 
@@ -131,7 +130,7 @@ class FinnaSuggestions implements
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

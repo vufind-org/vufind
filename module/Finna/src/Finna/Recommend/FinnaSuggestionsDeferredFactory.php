@@ -40,7 +40,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class FinnaSuggestionsDeferredFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
