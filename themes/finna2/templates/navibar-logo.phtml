@@ -1,7 +1,7 @@
 <!-- START of: finna - navibar-logo.phtml -->
 <?php if (($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo.' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc()->getSourceAddress('finna-logo'))): ?>
   <span class="sr-only"><?=$this->transEsc('Home');?></span>
-  <img src="<?=$srcUrl; ?>" alt="Site Logo" class="navbar-logo" aria-hidden="true" />
+  <img src="<?=$srcUrl; ?>" alt="<?=$this->escapeHtmlAttr($this->translate('Home'))?>" class="navbar-logo" aria-hidden="true" />
 <?php else: ?>
   <span class="sr-only"><?=$this->transEsc('Home');?></span>
 <?php endif; ?>
