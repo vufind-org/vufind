@@ -482,7 +482,8 @@ class Folio extends AbstractAPI implements
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
-                return !$note->staffOnly && $note->note ? $note->note : '';
+                return !($note->staffOnly ?? false)
+                    && !empty($note->note) ? $note->note : '';
             };
             $textFormatter = function ($supplement) {
                 $format = '%s %s';
@@ -491,7 +492,9 @@ class Folio extends AbstractAPI implements
                 $statement = trim(sprintf($format, $supStat, $supNote));
                 return $statement ?? '';
             };
-            $holdingNotes = array_map($notesFormatter, $holding->notes ?? []);
+            $holdingNotes = array_filter(
+                array_map($notesFormatter, $holding->notes ?? [])
+            );
             $hasHoldingNotes = !empty(implode($holdingNotes));
             $holdingsStatements = array_map(
                 $textFormatter,
