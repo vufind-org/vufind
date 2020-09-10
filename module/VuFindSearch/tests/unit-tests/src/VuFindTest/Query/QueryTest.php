@@ -89,6 +89,19 @@ class QueryTest extends TestCase
     }
 
     /**
+     * Test replacing a term containing punctuation; this exercises a special case
+     * in the code.
+     *
+     * @return void
+     */
+    public function testReplacePunctuatedTerm()
+    {
+        $q = new Query('this, that');
+        $q->replaceTerm('this,', 'the other,');
+        $this->assertEquals('the other, that', $q->getString());
+    }
+
+    /**
      * Test multiple replacements -- this simulates the scenario discussed in the
      * VUFIND-1423 JIRA ticket.
      *
