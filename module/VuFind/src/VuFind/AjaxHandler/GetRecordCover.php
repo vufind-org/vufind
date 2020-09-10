@@ -81,12 +81,14 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      *
      * @param RecordLoader $recordLoader            Record loader
      * @param CoverRouter  $coverRouter             Cover router
-     * @param PhpRenderer  $renderer                PHP renderer
+     * @param PhpRenderer  $renderer                PHP renderer (only required if
+     * $userCoverFallbacksOnFail is set to true)
      * @param bool         $useCoverFallbacksOnFail If true we will render a
      * fallback html template in case no image could be loaded
      */
     public function __construct(RecordLoader $recordLoader,
-        CoverRouter $coverRouter, PhpRenderer $renderer,
+        CoverRouter $coverRouter,
+        ?PhpRenderer $renderer = null,
         $useCoverFallbacksOnFail = false
     ) {
         $this->recordLoader = $recordLoader;
@@ -128,7 +130,7 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail
         );
 
-        return ($url || !$this->useCoverFallbacksOnFail)
+        return ($url || !$this->renderer || !$this->useCoverFallbacksOnFail)
             ? $this->formatResponse(compact('url', 'size'))
             : $this->formatResponse(
                 [
