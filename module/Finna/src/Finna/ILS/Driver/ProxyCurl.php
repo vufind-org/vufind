@@ -51,7 +51,7 @@ class ProxyCurl extends Curl
     /**
      * Response
      *
-     * @var \Zend\Http\Response
+     * @var \Laminas\Http\Response
      */
     protected $response = null;
 
@@ -129,12 +129,13 @@ class ProxyCurl extends Curl
                 $this->options['login'],
                 $this->options['password'] ?? '',
                 $authType === Curl::AUTH_TYPE_NTLM
-                    ? \Zend\Http\Client::AUTH_DIGEST : \Zend\Http\Client::AUTH_BASIC
+                    ? \Laminas\Http\Client::AUTH_DIGEST
+                    : \Laminas\Http\Client::AUTH_BASIC
             );
         }
 
         if (null !== $request) {
-            $client->setMethod(\Zend\Http\Request::METHOD_POST);
+            $client->setMethod(\Laminas\Http\Request::METHOD_POST);
             $client->setRawBody($request);
         }
 
