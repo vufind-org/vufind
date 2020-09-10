@@ -231,9 +231,10 @@ class Query extends AbstractQuery
         $queryString = $normalize
             ? $this->getNormalizedString() : $this->queryString;
 
-        // Try to match within word boundaries; if that fails to change anything,
-        // try again with a less restricted regular expression. The fallback is
-        // needed when $from contains punctuation characters such as commas.
+        // Try to match within word boundaries to prevent the replacement from
+        // affecting unexpected parts of the search query; if that fails to change
+        // anything, try again with a less restricted regular expression. The fall-
+        // back is needed when $from contains punctuation characters such as commas.
         $this->queryString = preg_replace("/\b$from\b/i", $to, $queryString);
         if ($queryString === $this->queryString) {
             $this->queryString = preg_replace("/$from/i", $to, $queryString);
