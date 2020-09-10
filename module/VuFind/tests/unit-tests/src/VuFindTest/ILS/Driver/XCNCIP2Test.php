@@ -53,6 +53,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
     }
 
+    /**
+     * Test definition for testGetMyTransactions
+     *
+     * @var array[]
+     */
     protected $transactionsTests = [
         [
             'file' => [
@@ -132,6 +137,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testGetMyFines
+     *
+     * @var array[]
+     */
     protected $finesTests = [
         [
             'file' => 'lookupUserResponse.xml',
@@ -163,6 +173,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testPatronLogin
+     *
+     * @var array[]
+     */
     protected $loginTests = [
         [
             'file' => 'lookupUserResponse.xml',
@@ -194,6 +209,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testGetMyHolds
+     *
+     * @var array[]
+     */
     protected $holdsTests = [
         [
             'file' => 'lookupUserResponse.xml',
@@ -261,6 +281,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testGetMyProfile
+     *
+     * @var array[]
+     */
     protected $profileTests = [
         [
             'file' => 'lookupUserResponse.xml',
@@ -288,6 +313,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testGetMyStorageRetrievalRequests
+     *
+     * @var array[]
+     */
     protected $storageRetrievalTests = [
         [
             'file' => 'lookupUserResponse.xml',
@@ -327,6 +357,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testGetStatuses
+     *
+     * @var array[]
+     */
     protected $statusesTests = [
         [
             'file' => 'lookupItemSet.xml',
@@ -417,6 +452,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testGetHolding
+     *
+     * @var array[]
+     */
     protected $holdingTests = [
         [
             'file' => 'lookupItemSet.xml',
@@ -510,6 +550,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testPlaceHold
+     *
+     * @var array[]
+     */
     protected $placeHoldTests = [
         [
             'file' => 'RequestItemResponseAcceptedWithItemId.xml',
@@ -555,6 +600,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testPlaceStorageRetrievalRequest
+     *
+     * @var array[]
+     */
     protected $placeStorageRetrievalRequestTests = [
         [
             'file' => 'RequestItemResponseAcceptedWithItemId.xml',
@@ -600,6 +650,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testCancelHolds
+     *
+     * @var array[]
+     */
     protected $cancelHoldsTests = [
         [
             'file' => 'CancelRequestItemResponseAccepted.xml',
@@ -639,6 +694,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    /**
+     * Test definition for testCancelStorageRetrievalRequests
+     *
+     * @var array[]
+     */
     protected $cancelStorageRetrievalTests = [
         [
             'file' => 'CancelRequestItemResponseAccepted.xml',
@@ -677,6 +737,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ],
         ],
     ];
+
+    /**
+     * Test definition for testRenewMyItems
+     *
+     * @var array[]
+     */
     protected $renewMyItemsTests = [
         [
             'file' => 'RenewItemResponseAccepted.xml',
@@ -847,6 +913,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         }
     }
 
+    /**
+     * Test getStatuses
+     *
+     * @return void
+     */
     public function testGetStatuses()
     {
         $this->configureDriver();
@@ -857,6 +928,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         }
     }
 
+    /**
+     * Test getHolding
+     *
+     * @return void
+     */
     public function testGetHolding()
     {
         $this->configureDriver();
@@ -867,6 +943,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         }
     }
 
+    /**
+     * Test getPickUpLocations
+     *
+     * @return void
+     */
     public function testGetPickupLocations()
     {
         // Test reading pickup locations from file
@@ -1057,6 +1138,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         }
     }
 
+    /**
+     * Test definition for testGetRequestMethods
+     *
+     * @var array[]
+     */
     protected $requestTests = [
         '1' => [
             'method' => 'getStatusRequest',
@@ -1136,7 +1222,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test getStatusRequest
+     * Test methods for creating NCIP requests
      *
      * @return void
      */
