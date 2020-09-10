@@ -488,19 +488,27 @@ class Folio extends AbstractAPI implements
                 $format = '%s %s';
                 $supStat = $supplement->statement;
                 $supNote = $supplement->note;
-                $statement = sprintf($format, $supStat, $supNote);
+                $statement = trim(sprintf($format, $supStat, $supNote));
                 return $statement ?? '';
             };
             $holdingNotes = array_map($notesFormatter, $holding->notes ?? []);
             $hasHoldingNotes = !empty(implode($holdingNotes));
-            $holdingsStatements = $holding->holdingsStatements;
-            $holdingsSupplements = $holding->holdingsStatementsForSupplements;
-            $holdingsIndexes = $holding->holdingsStatementsForIndexes;
-            $issues = array_map($textFormatter, $holdingsStatements ?? []);
-            $supplements = array_map($textFormatter, $holdingsSupplements ?? []);
-            $indexes = array_map($textFormatter, $holdingsIndexes ?? []);
+            $holdingsStatements = array_map(
+                $textFormatter,
+                $holding->holdingsStatements ?? []
+            );
+            $holdingsSupplements = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForSupplements ?? []
+            );
+            $holdingsIndexes = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForIndexes ?? []
+            );
             foreach ($itemBody->items as $item) {
-                $itemNotes = array_map($notesFormatter, $item->notes ?? []);
+                $itemNotes = array_filter(
+                    array_map($notesFormatter, $item->notes ?? [])
+                );
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -512,9 +520,9 @@ class Folio extends AbstractAPI implements
                     'is_holdable' => $this->isHoldable($locationName),
                     'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
                     'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-                    'issues' => $issues,
-                    'supplements' => $supplements,
-                    'indexes' => $indexes,
+                    'issues' => $holdingsStatements,
+                    'supplements' => $holdingsSupplements,
+                    'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',
