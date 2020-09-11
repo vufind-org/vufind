@@ -360,7 +360,7 @@ JS;
     <section role="search" class="searchContent<?=$currentTabClass?>">
       <h1 class="sr-only"><?=$this->transEsc('Search')?></h1>
         <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
-            <a class="btn btn-primary btn-uppercase floating-feedback-btn hidden-xs" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
+            <a class="btn btn-primary btn-uppercase floating-feedback-btn" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
         <?php endif; ?>
       <?php if (!empty($this->layout()->infoMessage)): ?>
         <div class="alert alert-info street-info">
