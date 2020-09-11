@@ -1,10 +1,7 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/external-interface-link.phtml -->
 <div class="external-interface-link">
-  <div class="heading">
-    <strong><?=$this->transEsc('material_provider_external_link')?>:</strong>
-  </div>
-  <a href="<?=$this->escapeHtmlAttr($this->link)?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>">
-    <i class="fa fa-external-link"></i> <?=$this->transEscWithPrefix('source_', $this->source)?>
+  <a role="button" class="btn btn-primary" href="<?=$this->escapeHtmlAttr($this->link)?>" target="_blank">
+  <?=$this->transEsc('title_hold_place')?> (<?=$this->transEsc('external_link')?>) <span class="sr-only">(<?=$this->transEsc('Open in a new window')?>)</span>
   </a>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/external-interface-link.phtml -->
