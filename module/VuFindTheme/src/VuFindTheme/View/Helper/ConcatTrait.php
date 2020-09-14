@@ -76,7 +76,7 @@ trait ConcatTrait
      * @param stdClass $item Element object
      * @param string   $path New path string
      *
-     * @return void
+     * @return stdClass
      */
     abstract protected function setResourceFilePath($item, $path);
 
@@ -364,6 +364,7 @@ trait ConcatTrait
                 // files, which are stored in a theme-independent cache).
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
+                $item->attributes['nonce'] = $this->cspNonce;
                 $output[] = parent::itemToString(
                     $item, $indent, $escapeStart, $escapeEnd
                 );
