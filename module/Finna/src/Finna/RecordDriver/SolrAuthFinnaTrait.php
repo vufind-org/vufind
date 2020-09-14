@@ -361,4 +361,14 @@ trait SolrAuthFinnaTrait
     {
         return $this->fields['record_type'] === 'Personal Name';
     }
+
+    /**
+     * Checks the current record if it's supported for generating OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsOpenUrl()
+    {
+        return false;
+    }
 }
