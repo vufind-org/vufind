@@ -24,12 +24,12 @@
     } ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
-    <?=$this->render('js-translations.phtml') ?>
     <?php
       // Collect small scripts together and append as one block:
       $appendScripts = [];
 
       if (!isset($this->renderingError)) {
+        echo $this->render('js-translations.phtml');
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
