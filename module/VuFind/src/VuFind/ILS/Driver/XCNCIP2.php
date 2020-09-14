@@ -413,7 +413,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'id' => $aggregateId,
             'availability' =>  $this->isAvailable($status),
             'status' => $status,
-            'item_id' => (string)$itemId[0],
+            'item_id' => (string)($itemId[0] ?? ''),
             'bib_id' => $bibId,
             'item_agency_id' => (string)($itemAgencyId[0] ?? ''),
             'location' => $location,
