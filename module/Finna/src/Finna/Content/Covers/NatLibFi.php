@@ -68,8 +68,8 @@ class NatLibFi extends \VuFind\Content\AbstractCover
         $isbn = '';
         if (isset($ids['isbn'])) {
             $isbn = $ids['isbn']->get13();
-        } elseif (isset($ids['invalid_isbn'])) {
-            $isbn = $ids['invalid_isbn'];
+        } elseif (isset($ids['invisbn'])) {
+            $isbn = $ids['invisbn'];
         }
         if ('' !== $isbn) {
             return 'http://s1.doria.fi/getImage.php?query=' . urlencode($isbn)
@@ -88,6 +88,6 @@ class NatLibFi extends \VuFind\Content\AbstractCover
     public function supports($ids)
     {
         return isset($ids['url']) || isset($ids['isbn'])
-            || isset($ids['invalid_isbn']);
+            || isset($ids['invisbn']);
     }
 }

@@ -217,7 +217,7 @@ class CoverController extends \VuFind\Controller\CoverController
     protected function getImageParams()
     {
         $params = parent::getImageParams();
-        $params['invalid_isbn'] =  $this->params()->fromQuery('invisbn');
+        $params['invisbn'] =  $this->params()->fromQuery('invisbn');
         return $params;
     }
 }
