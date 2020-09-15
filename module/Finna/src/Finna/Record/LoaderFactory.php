@@ -61,6 +61,13 @@ class LoaderFactory extends \VuFind\Record\LoaderFactory
         $loader->setPreferredLanguage(
             $container->get('VuFind\Translator')->getLocale()
         );
+        $redirectSources
+            = $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            ->Record->missing_record_redirect ?? null;
+        if ($redirectSources) {
+            $loader->setRecordRedirectionRules($redirectSources);
+        }
+
         return $loader;
     }
 }
