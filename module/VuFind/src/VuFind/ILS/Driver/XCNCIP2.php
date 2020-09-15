@@ -490,7 +490,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Add the desired data list:
         foreach ($desiredParts as $current) {
             $xml .= '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 htmlspecialchars($current) . '</ns1:ItemElementType>';
         }
@@ -1867,7 +1867,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->getInitiationHeaderXml($agency) .
             $this->getItemIdXml($agency, $itemId, $idType) .
             '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 'Bibliographic Description</ns1:ItemElementType>' .
         '</ns1:LookupItem></ns1:NCIPMessage>';
