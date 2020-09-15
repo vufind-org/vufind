@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
 /**
@@ -60,7 +61,7 @@ class ResourceTags extends Gateway
      * @param string        $table         Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $caseSensitive = false, $table = 'resource_tags'
+        ?RowGateway $rowObj = null, $caseSensitive = false, $table = 'resource_tags'
     ) {
         $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
@@ -166,7 +167,7 @@ class ResourceTags extends Gateway
                     'resource_id' => new Expression(
                         'DISTINCT(?)', ['resource_tags.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(
@@ -181,6 +182,92 @@ class ResourceTags extends Gateway
             if (null !== $listId) {
                 $select->where->equalTo('resource_tags.list_id', $listId);
             }
+        };
+
+        return $this->select($callback);
+    }
+
+    /**
+     * Get lists associated with a particular tag.
+     *
+     * @param string|array      $tag        Tag to match
+     * @param null|string|array $listId     List ID to retrieve (null for all)
+     * @param bool              $publicOnly Whether to return only public lists
+     * @param bool              $andTags    Use AND operator when filtering by tag.
+     *
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     */
+    public function getListsForTag(
+        $tag, $listId = null, $publicOnly = true, $andTags = true
+    ) {
+        $tag = (array)$tag;
+        $listId = $listId ? (array)$listId : null;
+
+        $callback = function ($select) use (
+            $tag, $listId, $publicOnly, $andTags
+        ) {
+            $columns = [Select::SQL_STAR];
+            if ($andTags) {
+                $columns['tag_cnt'] = new Expression(
+                    'COUNT(DISTINCT(?))', ['resource_tags.tag_id'],
+                    [Expression::TYPE_IDENTIFIER]
+                );
+            }
+            $select->columns($columns);
+
+            $select->join(
+                ['t' => 'tags'],
+                'resource_tags.tag_id = t.id',
+                [
+                    'tag' =>
+                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                ]
+            );
+            $select->join(
+                ['l' => 'user_list'],
+                'resource_tags.list_id = l.id',
+                []
+            );
+
+            // Discard tags assigned to a user resource.
+            $select->where->isNull('resource_id');
+
+            // Restrict to tags by list owner
+            $select->where->and->equalTo(
+                'resource_tags.user_id', new Expression('l.user_id')
+            );
+
+            if ($listId) {
+                $select->where->and->in('resource_tags.list_id', $listId);
+            }
+            if ($publicOnly) {
+                $select->where->and->equalTo('public', 1);
+            }
+            if ($tag) {
+                if ($this->caseSensitive) {
+                    $select->where->and->in('t.tag', $tag);
+                } else {
+                    $lowerTags = array_map(
+                        function ($t) {
+                            return new Expression(
+                                'lower(?)', [$t], [Expression::TYPE_VALUE]
+                            );
+                        }, $tag
+                    );
+                    $select->where->and->in(
+                        new Expression('lower(t.tag)'), $lowerTags
+                    );
+                }
+            }
+            $select->group('resource_tags.list_id');
+
+            if ($tag && $andTags) {
+                // Use AND operator for tags
+                $select->having->literal(
+                    'tag_cnt = ?', count(array_unique($tag))
+                );
+            }
+            $select->order('resource_tags.list_id');
         };
 
         return $this->select($callback);

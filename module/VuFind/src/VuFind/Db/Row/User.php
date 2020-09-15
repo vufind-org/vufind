@@ -30,6 +30,7 @@ namespace VuFind\Db\Row;
 use Laminas\Crypt\BlockCipher as BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 /**
  * Row Definition for user
@@ -338,7 +339,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $callback = function ($select) use ($userId) {
             $select->columns(
                 [
-                    '*',
+                    Select::SQL_STAR,
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))', ['ur.resource_id'],
                         [Expression::TYPE_IDENTIFIER]

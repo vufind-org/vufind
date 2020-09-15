@@ -82,6 +82,41 @@ class QueryTest extends TestCase
         $q = new Query('test query we<(ird and/or');
         $q->replaceTerm('and', 'not');
         $this->assertEquals('test query we<(ird not/or', $q->getString());
+
+        $q = new Query('th\bbbt');
+        $q->replaceTerm('th\bbbt', 'that');
+        $this->assertEquals('that', $q->getString());
+    }
+
+    /**
+     * Test replacing a term containing punctuation; this exercises a special case
+     * in the code.
+     *
+     * @return void
+     */
+    public function testReplacePunctuatedTerm()
+    {
+        $q = new Query('this, that');
+        $q->replaceTerm('this,', 'the other,');
+        $this->assertEquals('the other, that', $q->getString());
+    }
+
+    /**
+     * Test multiple replacements -- this simulates the scenario discussed in the
+     * VUFIND-1423 JIRA ticket.
+     *
+     * @return void
+     */
+    public function testMultipleReplacements()
+    {
+        $q = new Query("color code");
+        $q->replaceTerm('color code', '((color code) OR (color codes))', true);
+        $this->assertEquals('((color code) OR (color codes))', $q->getString());
+        $q->replaceTerm('color code', '((color code) OR (color coded))', true);
+        $this->assertEquals(
+            '((((color code) OR (color coded))) OR (color codes))',
+            $q->getString()
+        );
     }
 
     /**

@@ -62,7 +62,7 @@ class Tags extends Gateway
      * @param string        $table         Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $caseSensitive = false, $table = 'tags'
+        ?RowGateway $rowObj = null, $caseSensitive = false, $table = 'tags'
     ) {
         $this->caseSensitive = $caseSensitive;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
@@ -149,7 +149,7 @@ class Tags extends Gateway
             $select->join(
                 ['resource' => 'resource'],
                 'rt.resource_id = resource.id',
-                '*'
+                Select::SQL_STAR
             );
             if ($fuzzy) {
                 $select->where->literal('lower(tags.tag) like lower(?)', [$q]);

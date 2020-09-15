@@ -68,7 +68,7 @@ class Username implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // If no user is logged in, or the user doesn't match the passed-in
-        // whitelist, we can't grant the permission to any roles.
+        // filter, we can't grant the permission to any roles.
         $user = $this->auth->getIdentity();
         if (!$user || !in_array($user->username, (array)$options)) {
             return [];
