@@ -105,7 +105,7 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
             $url .= filemtime($details['path']);
             $item->href = $url;
         }
-        $item->attributes['nonce'] = $this->cspNonce;
+        $this->addNonce($item);
         return parent::itemToString($item);
     }
 
