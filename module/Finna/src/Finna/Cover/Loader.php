@@ -517,6 +517,6 @@ class Loader extends \VuFind\Cover\Loader
     protected function storeSanitizedSettings($settings)
     {
         parent::storeSanitizedSettings($settings);
-        $this->invalidIsbn = $settings['invalid_isbn'];
+        $this->invalidIsbn = $settings['invalid_isbn'] ?? '';
     }
 }
