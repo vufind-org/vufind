@@ -68,4 +68,34 @@ class Cookie extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->cookieManager->get($cookie);
     }
+
+    /**
+     * Get cookie domain context (null if unset).
+     *
+     * @return string
+     */
+    public function getCookieDomain()
+    {
+        return $this->cookieManager->getDomain();
+    }
+
+    /**
+     * Get cookie path ('/' if unset).
+     *
+     * @return string
+     */
+    public function getCookiePath()
+    {
+        return $this->cookieManager->getPath();
+    }
+
+    /**
+     * Get cookie SameSite attribute (null if unset).
+     *
+     * @return string
+     */
+    public function getCookieSameSite()
+    {
+        return $this->cookieManager->getSameSite();
+    }
 }

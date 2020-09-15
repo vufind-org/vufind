@@ -3,7 +3,7 @@ finna.finnaSurvey = (function finnaSurvey() {
   var _cookieName = 'finnaSurvey';
 
   function init() {
-    var cookie = $.cookie(_cookieName);
+    var cookie = finna.common.getCookie(_cookieName);
     if (typeof cookie !== 'undefined' && cookie === '1') {
       return;
     }
@@ -11,7 +11,7 @@ finna.finnaSurvey = (function finnaSurvey() {
     var holder = $('#finna-survey');
     holder.find('a').click(function onClickHolder(/*e*/) {
       holder.fadeOut(100);
-      $.cookie(_cookieName, '1', { path: '/' });
+      finna.common.setCookie(_cookieName, '1');
 
       if ($(this).hasClass('close-survey')) {
         return false;

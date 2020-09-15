@@ -1,5 +1,10 @@
 /*global VuFind, finna */
 finna.common = (function finnaCommon() {
+  var cookieSettings = {
+    path: '/',
+    domain: false,
+    SameSite: 'Lax'
+  };
 
   function decodeHtml(str) {
     return $("<textarea/>").html(str).text();
@@ -79,6 +84,26 @@ finna.common = (function finnaCommon() {
     });
   }
 
+  function _getCookieSettings() {
+    return cookieSettings;
+  }
+
+  function setCookieSettings(settings) {
+    cookieSettings = settings;
+  }
+
+  function getCookie(cookie) {
+    return window.Cookies.get(cookie);
+  }
+
+  function setCookie(cookie, value) {
+    window.Cookies.set(cookie, value, _getCookieSettings());
+
+  }
+  function removeCookie(cookie) {
+    window.Cookies.remove(cookie, _getCookieSettings());
+  }
+
   var my = {
     decodeHtml: decodeHtml,
     getField: getField,
@@ -86,9 +111,12 @@ finna.common = (function finnaCommon() {
     init: function init() {
       initSearchInputListener();
       initQrCodeLink();
-    }
+    },
+    getCookie: getCookie,
+    setCookie: setCookie,
+    removeCookie: removeCookie,
+    setCookieSettings: setCookieSettings,
   };
 
   return my;
-
 })();

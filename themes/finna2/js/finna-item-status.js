@@ -6,7 +6,7 @@ finna.itemStatus = (function finnaItemStatus() {
     holder.find('.dedup-select').change(function onChangeDedupSelection() {
       var id = $(this).val();
       var source = $(this).find('option:selected').data('source');
-      $.cookie('preferredRecordSource', source, {path: VuFind.path});
+      finna.common.setCookie('preferredRecordSource', source);
 
       var recordContainer = $(this).closest('.record-container');
       recordContainer.data('ajaxAvailabilityDone', 0);

@@ -785,10 +785,10 @@ finna.layout = (function finnaLayout() {
   }
 
   function initCookieConsent() {
-    var state = $.cookie('cookieConsent');
+    var state = finna.common.getCookie('cookieConsent');
     if ('undefined' === typeof state || !state) {
       $('.cookie-consent-dismiss').click(function dismiss() {
-        $.cookie('cookieConsent', 1, {path: VuFind.path, expires: 365});
+        finna.common.setCookie('cookieConsent', 1);
         $('.cookie-consent').addClass('hidden');
       });
       $('.cookie-consent').removeClass('hidden');

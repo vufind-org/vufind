@@ -151,7 +151,6 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/cookies.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
@@ -160,6 +159,10 @@
           $cookiePath = $cart->getCookiePath();
           if (!empty($cookiePath)) {
             $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
+          }
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
           }
           $this->jsTranslations()->addStrings(
             [
@@ -213,6 +216,15 @@
           $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
           $this->headScript()->appendFile("keep_alive.js");
       }
+
+      // Finna common
+      $cookie = $this->cookie();
+      $cookieSettings = [
+        'path' => $cookie->getCookiePath(),
+        'domain' => $cookie->getCookieDomain(),
+        'SameSite' => $cookie->getCookieSameSite(),
+      ];
+      $appendScripts[] = 'finna.common.setCookieSettings(' . json_encode($cookieSettings) . ');';
 
       // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
