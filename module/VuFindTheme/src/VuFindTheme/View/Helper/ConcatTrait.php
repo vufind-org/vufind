@@ -88,6 +88,20 @@ trait ConcatTrait
     abstract protected function getMinifier();
 
     /**
+     * Add a content security policy nonce to the item
+     *
+     * @param stdClass $item Item
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function addNonce($item)
+    {
+        // Default implementation does nothing
+    }
+
+    /**
      * Set the file path of the link object
      *
      * @param stdClass $item Link element object
@@ -364,7 +378,7 @@ trait ConcatTrait
                 // files, which are stored in a theme-independent cache).
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
-                $item->attributes['nonce'] = $this->cspNonce;
+                $this->addNonce($item);
                 $output[] = parent::itemToString(
                     $item, $indent, $escapeStart, $escapeEnd
                 );
