@@ -186,6 +186,11 @@ finna.feed = (function finnaFeed() {
               });
             });
 
+            holder.find('.slick-slider').on('afterChange', function onAfterChange() {
+              $(this).find('ul.slick-dots li').removeAttr('aria-current');
+              $(this).find('ul.slick-dots li.slick-active').attr('aria-current', true);
+            });
+
             // Text hover for touch devices
             if (finna.layout.isTouchDevice() && typeof settings.linkText === 'undefined') {
               $('.carousel-text').css('padding-bottom', '30px');
