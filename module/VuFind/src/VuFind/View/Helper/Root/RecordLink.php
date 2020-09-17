@@ -263,7 +263,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
             'lookfor0[]' => "\"$imploded\"",
             'type0[]' => 'WorkKeys',
             'bool0[]' => 'AND',
-            'sort' => 'main_date_str desc'
+            'sort' => 'publishDateSort desc'
         ];
 
         $urlHelper = $this->getView()->plugin('url');
