@@ -251,8 +251,11 @@ class Shibboleth extends AbstractBase
     public function isExpired()
     {
         $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
-        return ($proxy) ? isset($_SERVER[$this->normalize(self::SHIB_SESSION_ID)])
-            : isset($_ENV[self::SHIB_SESSION_ID]);
+        // It would be more proper to call getServer on a Laminas request
+        // object... except that the request object doesn't exist yet when
+        // this routine gets called.
+        return ($proxy) ? !isset($_SERVER[$this->normalize(self::SHIB_SESSION_ID)])
+            : !isset($_ENV[self::SHIB_SESSION_ID]);
     }
 
     /**
