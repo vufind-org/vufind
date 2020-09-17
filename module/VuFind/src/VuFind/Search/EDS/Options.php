@@ -297,7 +297,7 @@ class Options extends \VuFind\Search\Base\Options
             $userValues = explode(',', $searchSettings->General->$setting);
 
             if (!empty($userValues) && isset($this->$list) && !empty($this->$list)) {
-                // Reference to property containing API-provided whitelist of values
+                // Reference to property containing API-provided list of legal values
                 $listRef = & $this->$list;
                 // Reference to property containing final common settings
                 $targetRef = & $this->$target;

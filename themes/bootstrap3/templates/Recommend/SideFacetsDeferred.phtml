@@ -29,7 +29,7 @@
   }
 ?>
 <?php if ($results->getResultTotal() > 0): ?>
-  <h4><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h4>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h2>
   <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex) ?>">
 <?php endif; ?>
 <?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>

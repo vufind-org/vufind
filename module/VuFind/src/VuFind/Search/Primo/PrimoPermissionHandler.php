@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Primo;
 
-use ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Primo Permission Handler.

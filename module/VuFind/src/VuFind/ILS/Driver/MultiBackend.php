@@ -743,7 +743,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             }
             $locations = $driver->getPickUpLocations(
                 $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
+                $this->stripIdPrefixes(
+                    $holdDetails, $source, ['id', 'cat_username', 'item_id']
+                )
             );
             return $this->addIdPrefixes($locations, $source);
         }

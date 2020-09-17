@@ -69,7 +69,7 @@ class CommentRecordFactory
         return new $requestedName(
             $tablePluginManager->get(\VuFind\Db\Table\Resource::class),
             $controllerPluginManager
-                ->get(\VuFind\Controller\Plugin\Recaptcha::class),
+                ->get(\VuFind\Controller\Plugin\Captcha::class),
             $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $capabilities->getCommentSetting() !== 'disabled'
         );

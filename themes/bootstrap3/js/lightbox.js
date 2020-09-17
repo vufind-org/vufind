@@ -3,7 +3,7 @@ VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
   var _currentUrl = false;
-  var _lightboxTitle = '';
+  var _lightboxTitle = false;
   var refreshOnClose = false;
   var _modalParams = {};
   // Elements
@@ -15,14 +15,11 @@ VuFind.register('lightbox', function Lightbox() {
   function _html(content) {
     _modalBody.html(content);
     // Set or update title if we have one
-    if (_lightboxTitle !== '') {
-      var h2 = _modalBody.find('h2:first-child');
-      if (h2.length === 0) {
-        h2 = $('<h2/>').prependTo(_modalBody);
-      }
-      h2.text(_lightboxTitle);
-      _lightboxTitle = '';
+    var $h2 = _modalBody.find("h2:first-of-type");
+    if (_lightboxTitle && $h2) {
+      $h2.text(_lightboxTitle);
     }
+    _lightboxTitle = false;
     _modal.modal('handleUpdate');
   }
   function _emit(msg, _details) {
@@ -254,12 +251,12 @@ VuFind.register('lightbox', function Lightbox() {
     }
     if (this.href.length > 1) {
       event.preventDefault();
-      var obj = {url: $(this).data('lightboxHref') || this.href};
-      if ("string" === typeof $(this).data('lightboxPost')) {
+      var obj = {url: $(this).data('lightbox-href') || this.href};
+      if ("string" === typeof $(this).data('lightbox-post')) {
         obj.type = 'POST';
-        obj.data = $(this).data('lightboxPost');
+        obj.data = $(this).data('lightbox-post');
       }
-      _lightboxTitle = $(this).data('lightboxTitle') || '';
+      _lightboxTitle = $(this).data('lightbox-title') || false;
       _modalParams = $(this).data();
       VuFind.modal('show');
       ajax(obj);
@@ -327,7 +324,7 @@ VuFind.register('lightbox', function Lightbox() {
       submit.attr('disabled', 'disabled');
     }
     // Store custom title
-    _lightboxTitle = submit.data('lightboxTitle') || $(form).data('lightboxTitle') || '';
+    _lightboxTitle = submit.data('lightbox-title') || $(form).data('lightbox-title') || false;
     // Get Lightbox content
     ajax({
       url: $(form).attr('action') || _currentUrl,
@@ -387,7 +384,7 @@ VuFind.register('lightbox', function Lightbox() {
     _html(VuFind.translate('loading') + '...');
     _originalUrl = false;
     _currentUrl = false;
-    _lightboxTitle = '';
+    _lightboxTitle = false;
     _modalParams = {};
   }
   function init() {

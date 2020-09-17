@@ -109,7 +109,7 @@ class EdsBackendFactory implements FactoryInterface
     protected function createBackend(Connector $connector)
     {
         $auth = $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class);
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',

@@ -126,15 +126,16 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertEquals($limit * 2, count($items));
+        $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
         $this->assertEquals(
-            'Weird IDs 9 '
-            . 'Fiction 7 '
-            . 'The Study Of P|pes 1 '
-            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
-            . 'The Study of "Important" Things 1 '
-            . 'The Study of %\'s? 1 '
-            . 'The Study of +\'s? 1 '
-            . 'The Study of @Twitter #test 1 '
+            'Weird IDs 9 ' . $excludeControl
+            . 'Fiction 7 ' . $excludeControl
+            . 'The Study Of P|pes 1 ' . $excludeControl
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 ' . $excludeControl
+            . 'The Study of "Important" Things 1 ' . $excludeControl
+            . 'The Study of %\'s? 1 ' . $excludeControl
+            . 'The Study of +\'s? 1 ' . $excludeControl
+            . 'The Study of @Twitter #test 1 ' . $excludeControl
             . 'more ...',
             $this->findCss($page, '#modal #facet-list-count')->getText()
         );
@@ -148,10 +149,10 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
         $this->assertEquals($limit, count($items)); // reset number of items
         $this->assertEquals(
-            'Fiction 7 '
-            . 'The Study Of P|pes 1 '
-            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 '
-            . 'The Study of "Important" Things 1 '
+            'Fiction 7 ' . $excludeControl
+            . 'The Study Of P|pes 1 ' . $excludeControl
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 ' . $excludeControl
+            . 'The Study of "Important" Things 1 ' . $excludeControl
             . 'more ...',
             $this->findCss($page, '#modal #facet-list-index')->getText()
         );
@@ -324,7 +325,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('1/level1a/level2a/', $filter->getText());
+        $this->assertEquals('level1a/level2a', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 

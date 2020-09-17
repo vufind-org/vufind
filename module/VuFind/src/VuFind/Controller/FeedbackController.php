@@ -71,13 +71,13 @@ class FeedbackController extends AbstractBase
         }
 
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useRecaptcha
-            = $this->recaptcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha
+            = $this->captcha()->active('feedback') && $form->useCaptcha();
 
         $params = $this->params();
         $form->setData($params->fromPost());
 
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
@@ -173,7 +173,10 @@ class FeedbackController extends AbstractBase
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),
-                $emailSubject, $emailMessage, null, $replyToEmail
+                $emailSubject,
+                $emailMessage,
+                null,
+                new Address($replyToEmail, $replyToName)
             );
             return [true, null];
         } catch (MailException $e) {

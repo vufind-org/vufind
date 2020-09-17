@@ -463,10 +463,10 @@ class Record extends AbstractClassBasedTemplateRenderer
                     break;
                 }
             }
-
-            $details['html'] = $this->contextHelper->renderInContext(
-                'record/cover.phtml', $details
-            );
+            if ($details['size'] === false) {
+                list($details['size']) = explode(':', $preferredSize);
+            }
+            $details['html'] = $this->renderTemplate('cover.phtml', $details);
         }
         return $details;
     }
@@ -570,8 +570,12 @@ class Record extends AbstractClassBasedTemplateRenderer
      */
     public function getThumbnail($size = 'small')
     {
+        // Find out whether or not AJAX covers are enabled; this will control
+        // whether dynamic URLs are resolved immediately or deferred until later
+        // (see third parameter of getUrl() below).
+        $ajaxcovers = $this->config->Content->ajaxcovers ?? false;
         return $this->coverRouter
-            ? $this->coverRouter->getUrl($this->driver, $size)
+            ? $this->coverRouter->getUrl($this->driver, $size, !$ajaxcovers)
             : false;
     }
 

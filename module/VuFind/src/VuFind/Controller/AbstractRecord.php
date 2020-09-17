@@ -105,12 +105,12 @@ class AbstractRecord extends AbstractBase
             throw new ForbiddenException('Comments disabled');
         }
 
-        $recaptchaActive = $this->recaptcha()->active('userComments');
+        $captchaActive = $this->captcha()->active('userComments');
 
         // Force login:
         if (!($user = $this->getUser())) {
             // Validate CAPTCHA before redirecting to login:
-            if (!$this->formWasSubmitted('comment', $recaptchaActive)) {
+            if (!$this->formWasSubmitted('comment', $captchaActive)) {
                 return $this->redirectToRecord('', 'UserComments');
             }
 
@@ -129,7 +129,7 @@ class AbstractRecord extends AbstractBase
             $comment = $this->followup()->retrieveAndClear('comment');
         } else {
             // Validate CAPTCHA now only if we're not coming back post-login:
-            if (!$this->formWasSubmitted('comment', $recaptchaActive)) {
+            if (!$this->formWasSubmitted('comment', $captchaActive)) {
                 return $this->redirectToRecord('', 'UserComments');
             }
         }
@@ -446,10 +446,10 @@ class AbstractRecord extends AbstractBase
         );
         $mailer->setMaxRecipients($view->maxRecipients);
 
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
@@ -502,10 +502,10 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('sms');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('sms');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

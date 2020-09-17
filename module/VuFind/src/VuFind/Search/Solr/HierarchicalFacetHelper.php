@@ -28,6 +28,8 @@
 namespace VuFind\Search\Solr;
 
 use VuFind\I18n\TranslatableString;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\UrlQueryHelper;
 
 /**
@@ -39,8 +41,10 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HierarchicalFacetHelper
+class HierarchicalFacetHelper implements TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     /**
      * Helper method for building hierarchical facets:
      * Sort a facet list according to the given sort order
@@ -175,15 +179,18 @@ class HierarchicalFacetHelper
     /**
      * Format a facet display text for displaying
      *
-     * @param string $displayText Display text
-     * @param bool   $allLevels   Whether to display all levels or only
-     * the current one
-     * @param string $separator   Separator string displayed between levels
+     * @param string       $displayText Display text
+     * @param bool         $allLevels   Whether to display all levels or only the
+     * current one
+     * @param string       $separator   Separator string displayed between levels
+     * @param string|false $domain      Translation domain for default translations
+     * of a multilevel string or false to omit translation
      *
      * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
-        $displayText, $allLevels = false, $separator = '/'
+        $displayText, $allLevels = false, $separator = '/',
+        $domain = false
     ) {
         $originalText = $displayText;
         $parts = explode('/', $displayText);
@@ -193,10 +200,76 @@ class HierarchicalFacetHelper
             } else {
                 array_shift($parts);
                 array_pop($parts);
-                $displayText = implode($separator, $parts);
+
+                if (false !== $domain) {
+                    $translatedParts = [];
+                    foreach ($parts as $part) {
+                        $translatedParts[] = $this->translate([$domain, $part]);
+                    }
+                    $displayText = new TranslatableString(
+                        implode($separator, $parts),
+                        implode($separator, $translatedParts)
+                    );
+                } else {
+                    $displayText = implode($separator, $parts);
+                }
             }
         }
         return new TranslatableString($originalText, $displayText);
+    }
+
+    /**
+     * Format a filter string in parts suitable for displaying or translation
+     *
+     * @param string $filter Filter value
+     *
+     * @return array
+     */
+    public function getFilterStringParts($filter)
+    {
+        $parts = explode('/', $filter);
+        if (count($parts) <= 1 || !is_numeric($parts[0])) {
+            return $filter;
+        }
+        $result = [];
+        for ($level = 0; $level <= $parts[0]; $level++) {
+            $str = $level . '/' . implode('/', array_slice($parts, 1, $level + 1))
+                . '/';
+            $result[] = new TranslatableString($str, $parts[$level + 1]);
+        }
+        return $result;
+    }
+
+    /**
+     * Check if the given value is the deepest level in the facet list.
+     *
+     * Takes into account lists with multiple top levels.
+     *
+     * @param array  $facetList Facet list
+     * @param string $value     Facet value
+     *
+     * @return bool
+     */
+    public function isDeepestFacetLevel($facetList, $value)
+    {
+        $parts = explode('/', $value);
+        $level = array_shift($parts);
+        if (!is_numeric($level)) {
+            // Not a properly formatted hierarchical facet value
+            return true;
+        }
+        $path = implode('/', array_slice($parts, 0, $level + 1));
+        foreach ($facetList as $current) {
+            $parts = explode('/', $current);
+            $currentLevel = array_shift($parts);
+            if (is_numeric($currentLevel) && $currentLevel > $level) {
+                // Check if parent is same
+                if ($path === implode('/', array_slice($parts, 0, $level + 1))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

@@ -54,16 +54,26 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
     protected $themeInfo;
 
     /**
+     * CSP nonce
+     *
+     * @var string
+     */
+    protected $cspNonce;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo   $themeInfo Theme information service
      * @param string|bool $plconfig  Config for current application environment
+     * @param string      $nonce     Nonce from nonce generator
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig = false)
+    public function __construct(ThemeInfo $themeInfo, $plconfig = false, $nonce = '')
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
         $this->usePipeline = $this->enabledInConfig($plconfig);
+        $this->cspNonce = $nonce;
+        $this->optionalAttributes[] = 'nonce';
     }
 
     /**
@@ -103,6 +113,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
             }
         }
 
+        $this->addNonce($item);
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 
@@ -204,5 +215,17 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
             $data .= ';';
         }
         return $data;
+    }
+
+    /**
+     * Add a nonce to the item
+     *
+     * @param stdClass $item Item
+     *
+     * @return void
+     */
+    protected function addNonce($item)
+    {
+        $item->attributes['nonce'] = $this->cspNonce;
     }
 }

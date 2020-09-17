@@ -28,7 +28,7 @@
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
 <?php if ($results->getResultTotal() > 0): ?>
-  <h4><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h4>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h2>
 <?php endif; ?>
 <?php $checkboxFilters = $this->recommend->getCheckboxFacetSet(); ?>
 <?php $checkboxesShown = false; ?>
@@ -69,3 +69,4 @@
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerMoreLessFacetsEventHandlers();", 'SET');?>

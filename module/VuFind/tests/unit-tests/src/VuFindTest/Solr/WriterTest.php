@@ -144,7 +144,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
             ->getMock();
         $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
         $mockConnector->expects($this->any())->method('getTimeout')->will($this->returnValue(30));
-        $mockConnector->expects($this->any())->method('getUrl')->will($this->returnValue('http://localhost:8080/solr/biblio'));
+        $mockConnector->expects($this->any())->method('getUrl')->will($this->returnValue('http://localhost:8983/solr/biblio'));
         $sm->setService('Solr', $mockBackend);
         return $pm;
     }

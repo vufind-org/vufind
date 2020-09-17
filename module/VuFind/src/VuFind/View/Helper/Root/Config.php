@@ -78,4 +78,14 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->get('config')->Site->nonJavascriptSupportEnabled ?? false;
     }
+
+    /**
+     * Should be covers loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function ajaxCoversEnabled()
+    {
+        return $this->get('config')->Content->ajaxcovers ?? false;
+    }
 }
