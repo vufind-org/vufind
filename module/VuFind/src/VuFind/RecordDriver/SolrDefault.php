@@ -110,6 +110,13 @@ class SolrDefault extends DefaultRecord
     protected $searchService = null;
 
     /**
+     * Maximum number of other record versions to display
+     *
+     * @var int
+     */
+    protected $recordVersionsLimit = 100;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
@@ -136,6 +143,13 @@ class SolrDefault extends DefaultRecord
         $this->containerLinking
             = !isset($mainConfig->Hierarchy->simpleContainerLinks)
             ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+
+        // Record versions display limit
+        if (!empty($searchSettings->General->record_versions_limit)) {
+            $this->recordVersionsLimit
+                = (int)$searchSettings->General->record_versions_limit;
+        }
+
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
 
@@ -361,7 +375,7 @@ class SolrDefault extends DefaultRecord
 
         if (!isset($this->otherVersions)) {
             $params = new \VuFindSearch\ParamBag();
-            $params->add('rows', min($count, 100));
+            $params->add('rows', min($count, $this->recordVersionsLimit));
             $this->otherVersions = $this->searchService->workExpressions(
                 $this->getSourceIdentifier(),
                 $includeSelf ? '' : $this->getUniqueID(),
