@@ -6,11 +6,9 @@
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
-  // Use combined search script for versions tab results
-  if (isset($this->tabs['Versions'])) {
-    $this->headScript()->appendFile('combined-search.js');
-    $this->headScript()->appendFile('check_item_statuses.js');
-    $this->headScript()->appendFile('record_versions.js');
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+      $this->headScript()->appendFile($script);
   }
 
   // Add RDF header link if applicable:
