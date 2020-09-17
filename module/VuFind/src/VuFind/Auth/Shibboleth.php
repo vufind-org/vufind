@@ -379,7 +379,7 @@ class Shibboleth extends AbstractBase
             $header = $request->getHeader($this->normalize($attribute));
             return ($header) ? $header->getFieldValue() : null;
         } else {
-            return $request->getServer()->get($attribute) ?? null;
+            return $request->getServer()->get($attribute);
         }
     }
 
