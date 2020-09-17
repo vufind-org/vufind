@@ -212,7 +212,7 @@
           ++$available;
         }
       }
-      if ($row['duedate'] && empty($row['ignoreDueDate'])) {
+      if (!empty($row['duedate']) && empty($row['ignoreDueDate'])) {
         $date = strtotime($row['duedate']);
         if ((!$firstDueDate || abs(time() - $date) < abs(time() - $firstDueDate))) {
           $firstDueDate = $date;
@@ -280,7 +280,13 @@
     <?php endif; ?>
     <div class="holdings-container-heading">
       <div class="location">
-        <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>" aria-hidden="true"></i> <?=$this->transEscWithPrefix('location_', $holding['location'])?>
+        <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>" aria-hidden="true"></i>
+        <?php $locationText = $this->transEscWithPrefix('location_', $holding['location']); ?>
+        <?php if ($holding['locationhref'] ?? false): ?>
+          <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
+        <?php else: ?>
+          <?=$locationText?>
+        <?php endif; ?>
         <?php if ($this->holdings()->showDetailsAfterLocationGroup()): ?>
           <div class="details"><?=$this->partial('RecordTab/holdings-details.phtml', ['holdingId' => $holdingId, 'holding' => $holding, 'heading' => true]);?></div>
         <?php endif; ?>
