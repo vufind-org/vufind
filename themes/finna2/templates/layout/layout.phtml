@@ -417,7 +417,7 @@ JS;
         <?php endif; ?>
       </div>
     </div>
-    <?php if ($this->layout()->templateName === 'home' && !$this->translationEmpty('search_bg_image_info_html')): ?>
+    <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && !$this->translationEmpty('search_bg_image_info_html')): ?>
         <div aria-hidden="true" class="search-bg-image-info">
           <div class="search-bg-image-info-content">
             <?=$this->translate('search_bg_image_info_html')?>
