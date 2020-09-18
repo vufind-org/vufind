@@ -353,10 +353,10 @@ VuFind.register('lightbox', function Lightbox() {
    * if no other nodes exist then focuses on first close trigger
    */
   function setFocusToFirstNode() {
-    var focusableNodes = getFocusableNodes()
+    var focusableNodes = getFocusableNodes();
 
     // no focusable nodes
-    if (focusableNodes.length === 0) return
+    if (focusableNodes.length === 0) return;
 
     // remove nodes on whose click, the modal closes
     var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
@@ -364,7 +364,7 @@ VuFind.register('lightbox', function Lightbox() {
         !node.hasAttribute("data-dismiss") ||
         node.getAttribute("data-dismiss") !== "modal"
       );
-    })
+    });
 
     if (nodesWhichAreNotCloseTargets.length > 0) {
       nodesWhichAreNotCloseTargets[0].focus();
