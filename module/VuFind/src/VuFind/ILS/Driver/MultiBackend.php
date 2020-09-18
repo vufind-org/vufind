@@ -1554,7 +1554,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     $value, $source, $modifyFields
                 );
             } else {
-                if (!ctype_digit($key)
+                if (!ctype_digit((string)$key)
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
@@ -1596,7 +1596,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             } else {
                 $prefixLen = strlen($source) + 1;
                 if ((!is_array($data)
-                    || (!ctype_digit($key) && in_array($key, $modifyFields)))
+                    || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);
