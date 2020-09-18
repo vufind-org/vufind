@@ -697,7 +697,7 @@ class AbstractRecord extends AbstractBase
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
         $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
-        $this->tabsExtraScripts = $manager->getExtraScripts($driver);
+        $this->tabsExtraScripts = $manager->getExtraScripts();
     }
 
     /**
@@ -755,10 +755,8 @@ class AbstractRecord extends AbstractBase
         $allScripts = [];
         foreach (array_keys($tabs) as $tab) {
             if (!empty($this->tabsExtraScripts[$tab])) {
-                $allScripts = array_merge(
-                    $allScripts,
-                    explode('|', $this->tabsExtraScripts[$tab])
-                );
+                $allScripts
+                    = array_merge($allScripts, $this->tabsExtraScripts[$tab]);
             }
         }
         return array_unique($allScripts);
