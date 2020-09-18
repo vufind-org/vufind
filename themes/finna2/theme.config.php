@@ -21,6 +21,7 @@ $config = [
             'Finna\View\Helper\Root\FeedTabs' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\FileSrc' => 'Finna\View\Helper\Root\HelperWithThemeInfoFactory',
             'Finna\View\Helper\Root\FinnaSurvey' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
+            'Finna\View\Helper\Root\Followup' => 'Finna\View\Helper\Root\FollowupFactory',
             'Finna\View\Helper\Root\HtmlElement' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\HeadTitle' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'Finna\View\Helper\Root\Holdings' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
@@ -80,6 +81,7 @@ $config = [
             'feedTabs' => 'Finna\View\Helper\Root\FeedTabs',
             'fileSrc' => 'Finna\View\Helper\Root\FileSrc',
             'finnaSurvey' => 'Finna\View\Helper\Root\FinnaSurvey',
+            'followup' => 'Finna\View\Helper\Root\Followup',
             'headTitle' => 'Finna\View\Helper\Root\HeadTitle',
             'holdings' => 'Finna\View\Helper\Root\Holdings',
             // For back-compatibility
