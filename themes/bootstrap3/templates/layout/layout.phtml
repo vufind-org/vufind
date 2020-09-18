@@ -29,7 +29,7 @@
       $appendScripts = [];
 
       if (!isset($this->renderingError)) {
-        echo $this->render('js-translations.phtml');
+        $translations = $this->render('js-translations.phtml');
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
@@ -66,7 +66,7 @@
       }
 
       $root = rtrim($this->url('home'), '/');
-      $translations = $this->jsTranslations()->getJSON();
+      $translations = $translations ?? '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
