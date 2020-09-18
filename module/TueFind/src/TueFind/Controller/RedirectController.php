@@ -10,6 +10,16 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
+    /**
+     * Decoder for URL in GET params
+     * @var \TueFind\View\Helper\TueFind\TueFind
+     */
+    protected $decoder;
+
+    public function setDecoder(\TueFind\View\Helper\TueFind\TueFind $decoder) {
+        $this->decoder = $decoder;
+    }
+
     public function redirectAction()
     {
         /**
@@ -22,7 +32,7 @@ class RedirectController extends \VuFind\Controller\AbstractBase implements \VuF
         if ($url = $this->params('url')) {
             // URL needs to be base64, else we will have problems with slashes,
             // even if they are url encoded
-            $url = base64_decode($url);
+            $url = $this->decoder->base64UrlDecode($url);
             $group = $this->params('group') ?? null;
             $this->getDbTable('redirect')->insertUrl($url, $group);
             $view = $this->createViewModel();
