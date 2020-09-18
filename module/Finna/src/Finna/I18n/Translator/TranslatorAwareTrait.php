@@ -65,6 +65,9 @@ trait TranslatorAwareTrait
 
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+            if (!$str->isTranslatable()) {
+                return $str->getDisplayString();
+            }
             // On this pass, don't use the $default, since we want to fail over
             // to getDisplayString before giving up:
             $translated = $this
@@ -73,8 +76,24 @@ trait TranslatorAwareTrait
                 return $translated;
             }
 
+            $translated
+                = $this->translateHierarchicalString((string)$str, $domain, $tokens);
+            if (null !== $translated) {
+                return $translated;
+            }
+
             // Override $domain/$str using getDisplayString() before proceeding:
-            list($domain, $str) = $this->extractTextDomain($str->getDisplayString());
+            $str = $str->getDisplayString();
+            // Also the display string can be a TranslatableString. This makes it
+            // possible have multiple levels of translatable values while still
+            // providing a sane default string if translation is not found. Used at
+            // least with hierarchical facets where translation key can be the exact
+            // facet value (e.g. "0/Book/") or a displayable value (e.g. "Book").
+            if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+                return $this->translate($str, $tokens, $default);
+            } else {
+                list($domain, $str) = $this->extractTextDomain($str);
+            }
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
@@ -86,9 +105,29 @@ trait TranslatorAwareTrait
             return $defaultTranslation;
         }
 
-        // Try to translate a hierarchical string without the middle levels, but
-        // only if this looks like a hierarchical facet that starts with a number
-        // and ends with a slash
+        $translated
+            = $this->translateHierarchicalString((string)$str, $domain, $tokens);
+        if (null !== $translated) {
+            return $translated;
+        }
+
+        return $defaultTranslation;
+    }
+
+    /**
+     * Tries to translate a hierarchical string without the middle levels, bu only if
+     * it looks like a hierarchical facet that starts with a number and ends with a
+     * slash
+     *
+     * @param string $str    String to translate
+     * @param string $domain Translation domain
+     * @param array  $tokens Tokens to inject into the translated
+     * string
+     *
+     * @return string|null Translation or null
+     */
+    protected function translateHierarchicalString($str, $domain, $tokens)
+    {
         $parts = explode('/', (string)$str);
         $c = count($parts);
         if ($c > 3 && is_numeric($parts[0]) && array_pop($parts) === '') {
@@ -109,6 +148,6 @@ trait TranslatorAwareTrait
             }
         }
 
-        return $defaultTranslation;
+        return null;
     }
 }
