@@ -55,7 +55,9 @@ class MarkdownFactory implements FactoryInterface
      */
     protected static $configKeys = [
         'ExternalLink' => 'external_link',
+        'Footnote' => 'footnote',
         'HeadingPermalink' => 'heading_permalink',
+        'Mention' => 'mentions',
         'SmartPunct' => 'smartpunct',
         'TableOfContents' => 'table_of_contents',
     ];
@@ -110,7 +112,9 @@ class MarkdownFactory implements FactoryInterface
                 'League\CommonMark\Extension\%s\%sExtension', $ext, $ext
             );
             $environment->addExtension(new $extClass());
-            $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
+            if (isset($markdownConfig[$ext])) {
+                $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
+            }
         }
         return new CommonMarkConverter($config, $environment);
     }

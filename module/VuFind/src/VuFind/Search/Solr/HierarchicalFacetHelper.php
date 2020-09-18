@@ -229,7 +229,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
     {
         $parts = explode('/', $filter);
         if (count($parts) <= 1 || !is_numeric($parts[0])) {
-            return $filter;
+            return [$filter];
         }
         $result = [];
         for ($level = 0; $level <= $parts[0]; $level++) {

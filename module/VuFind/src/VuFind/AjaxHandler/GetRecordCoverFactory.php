@@ -63,9 +63,15 @@ class GetRecordCoverFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
+        $config
+            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $useFallbacks = $config->Content->useCoverFallbacksOnFail ?? false;
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Cover\Router::class)
+            $container->get(\VuFind\Cover\Router::class),
+            // We only need the view renderer if we're going to use fallbacks:
+            $useFallbacks ? $container->get('ViewRenderer') : null,
+            $useFallbacks
         );
     }
 }
