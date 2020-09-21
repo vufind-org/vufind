@@ -1978,7 +1978,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $response->getBody();
             $this->debug(
                 '[' . round(microtime(true) - $startTime, 4) . 's]'
-                . " GET request $apiUrl" . PHP_EOL . 'response: ' . PHP_EOL
+                . " $method request $apiUrl" . PHP_EOL . 'response (status code '
+                . $response->getStatusCode()
+                . '): ' . PHP_EOL
                 . $result
             );
             // Handle errors as complete failures only if the API call didn't return
