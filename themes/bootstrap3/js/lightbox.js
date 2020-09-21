@@ -386,7 +386,7 @@ VuFind.register('lightbox', function Lightbox() {
      */
     focusableNodes = focusableNodes.filter(function nodeHiddenFilter(node) {
       return (node.offsetParent !== null);
-    })
+    });
 
     // if disableFocus is true
     if (!_modal[0].contains(document.activeElement)) {
