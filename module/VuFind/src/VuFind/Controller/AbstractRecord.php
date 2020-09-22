@@ -65,6 +65,13 @@ class AbstractRecord extends AbstractBase
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
+     * Array of background tabs
+     *
+     * @var array
+     */
+    protected $backgroundTabs = null;
+
+    /**
      * Type of record to display
      *
      * @var string
