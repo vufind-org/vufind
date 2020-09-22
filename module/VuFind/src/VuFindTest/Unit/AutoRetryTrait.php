@@ -53,7 +53,7 @@ trait AutoRetryTrait
     protected static $failedAfterRetries = false;
 
     /**
-     * Flag whether we have retries left (set during the retry loop). This is
+     * Count of remaining retry attempts (updated during the retry loop). This is
      * exposed as a class property rather than a local variable so that classes
      * using the trait can be aware of the retry state. This is used, for example,
      * in the VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
