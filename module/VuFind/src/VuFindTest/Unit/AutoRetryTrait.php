@@ -53,9 +53,12 @@ trait AutoRetryTrait
     protected static $failedAfterRetries = false;
 
     /**
-     * Flag whether we have retries left (set during the retry loop).
+     * Flag whether we have retries left (set during the retry loop). This is
+     * exposed as a class property rather than a local variable so that classes
+     * using the trait can be aware of the retry state. This is used, for example,
+     * in the VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
      *
-     * @var bool
+     * @var int
      */
     protected $retriesLeft;
 
@@ -85,13 +88,9 @@ trait AutoRetryTrait
         $retryCallbacks = $annotations['method']['retryCallback'] ?? [];
         $retryCallbacks[] = 'tearDown';
 
-        // Run through all of the attempts... Note that even if retryCount is 0,
-        // we still need to run the test once (single attempt, no retries)...
-        // hence the $retryCount + 1 below.
-        for ($i = 0; $i < $retryCount + 1; $i++) {
-            // Set the "retries left" flag; this is used, for example, in the
-            // VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
-            $this->retriesLeft = $i < $retryCount;
+        // Run through all of the attempts...
+        $this->retriesLeft = $retryCount;
+        while ($this->retriesLeft >= 0) {
             try {
                 parent::runBare();
                 // No exception thrown? We can return as normal.
@@ -103,7 +102,7 @@ trait AutoRetryTrait
                 }
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
-                if ($this->retriesLeft) {
+                if ($this->retriesLeft > 0) {
                     foreach ($retryCallbacks as $callback) {
                         if (is_callable([$this, $callback])) {
                             $this->{$callback}();
@@ -111,6 +110,7 @@ trait AutoRetryTrait
                     }
                 }
             }
+            $this->retriesLeft--;
         }
 
         // If we got this far, something went wrong... under healthy circumstances,
