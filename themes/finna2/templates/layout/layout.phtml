@@ -429,6 +429,13 @@ JS;
         <?php endif; ?>
       </div>
     </div>
+    <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && !$this->translationEmpty('search_bg_image_info_html')): ?>
+        <div aria-hidden="true" class="search-bg-image-info">
+          <div class="search-bg-image-info-content">
+            <?=$this->translate('search_bg_image_info_html')?>
+          </div>
+        </div>
+    <?php endif; ?>
       <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search' && $template = $this->content()->findTemplateForLng('search/home/browsebar')): ?>
         <?=$this->render($template)?>
       <?php endif; ?>
@@ -490,6 +497,16 @@ JS;
     <?php if ($finnaSurvey): ?>
       <?=$this->finnaSurvey()->render()?>
     <?php endif; ?>
+    <?php
+      // Show post-login followup in lightbox
+      $url = $this->followup()->retrieveAndClear('postLoginLightbox', null);
+      if ($url && $this->layout()->getTemplate() !== 'layout/lightbox') {
+        $script = <<<EOT
+          finna.layout.showPostLoginLightbox('{$url}');
+EOT;
+          echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+      }
+    ?>
   </body>
 </html>
 <!-- END of: finna - layout/layout.phtml -->

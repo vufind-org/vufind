@@ -919,7 +919,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             } catch (\Exception $exception) {
                 $errorMessage = 'Configuration "expiryDate" in Alma.ini (see ' .
                                 '[NewUser] section) has the wrong format!';
-                error_log('[ALMA]: ' . $errorMessage);
+                $this->logError('[ALMA]: ' . $errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         } else {
@@ -937,7 +937,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             } catch (\Exception $exception) {
                 $errorMessage = 'Configuration "purgeDate" in Alma.ini (see ' .
                                 '[NewUser] section) has the wrong format!';
-                error_log('[ALMA]: ' . $errorMessage);
+                $this->logError('[ALMA]: ' . $errorMessage);
                 throw new \VuFind\Exception\Auth($errorMessage);
             }
         }

@@ -215,11 +215,6 @@
           <i class="fa fa-question-circle-big"></i>
         </button>
       <?php endif; ?>
-      <?php if ($module === 'search' && $action === 'home' && !$this->translationEmpty('tooltip_image_html')): ?>
-        <button aria-hidden="true" aria-label="" class="tooltip-image" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_image_html')?>">
-          <i class="fa fa-info-circle"></i>
-        </button>
-      <?php endif; ?>
     </div>
     <?php if ($module != 'record' && $module != 'collection'): ?>
       <?php if ($browse || $mainPage): ?>

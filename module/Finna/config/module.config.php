@@ -320,7 +320,7 @@ $config = [
             'Finna\Search\Solr\AuthorityHelper' => 'Finna\Search\Solr\AuthorityHelperFactory',
             'Finna\Search\Solr\HierarchicalFacetHelper' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\Favorites\FavoritesService' => 'Finna\Favorites\FavoritesServiceFactory',
-
+            'Finna\Service\RemsService' => 'Finna\Service\RemsServiceFactory',
             'FinnaSearch\Service' => 'VuFind\Service\SearchServiceFactory',
 
             'VuFind\Search\SearchTabsHelper' => 'Finna\Search\SearchTabsHelperFactory',
@@ -476,7 +476,7 @@ $config = [
                     'Finna\Auth\ILS' => 'VuFind\Auth\ILSFactory',
                     'Finna\Auth\MultiILS' => 'VuFind\Auth\ILSFactory',
                     'Finna\Auth\Shibboleth' => 'VuFind\Auth\ShibbolethFactory',
-                    'Finna\Auth\Suomifi' => 'VuFind\Auth\ShibbolethFactory',
+                    'Finna\Auth\Suomifi' => 'Finna\Auth\SuomifiFactory',
                 ],
                 'aliases' => [
                     'VuFind\Auth\ILS' => 'Finna\Auth\ILS',
@@ -575,6 +575,7 @@ $config = [
                     'Finna\ILS\Driver\KohaRestSuomi' => 'Finna\ILS\Driver\KohaRestSuomiFactory',
                     'Finna\ILS\Driver\Mikromarc' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
                     'Finna\ILS\Driver\MultiBackend' => 'Finna\ILS\Driver\MultiBackendFactory',
+                    'Finna\ILS\Driver\NoILS' => 'VuFind\ILS\Driver\NoILSFactory',
                     'Finna\ILS\Driver\SierraRest' => 'VuFind\ILS\Driver\SierraRestFactory',
                     'Finna\ILS\Driver\Voyager' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
                     'Finna\ILS\Driver\VoyagerRestful' => '\Finna\ILS\Driver\VoyagerRestfulFactory',
@@ -588,6 +589,7 @@ $config = [
                     'VuFind\ILS\Driver\Demo' => 'Finna\ILS\Driver\Demo',
                     'VuFind\ILS\Driver\KohaRest' => 'Finna\ILS\Driver\KohaRest',
                     'VuFind\ILS\Driver\MultiBackend' => 'Finna\ILS\Driver\MultiBackend',
+                    'VuFind\ILS\Driver\NoILS' => 'Finna\ILS\Driver\NoILS',
                     'VuFind\ILS\Driver\SierraRest' => 'Finna\ILS\Driver\SierraRest',
                     'VuFind\ILS\Driver\Voyager' => 'Finna\ILS\Driver\Voyager',
                     'VuFind\ILS\Driver\VoyagerRestful' => 'Finna\ILS\Driver\VoyagerRestful',

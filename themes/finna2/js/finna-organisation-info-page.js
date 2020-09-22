@@ -288,6 +288,10 @@ finna.organisationInfoPage = (function finnaOrganisationInfoPage() {
         address.show().find('> p').html(data.address);
       }
     }
+    if ('mailAddress' in data && !data.details.museum) {
+      var mailAddress = holder.find('.mail-address-contact');
+      mailAddress.show().find('> p').html(data.mailAddress);
+    }
     if ('email' in data) {
       var email = data.email;
       holder.find('.email').attr('href', 'mailto:' + email).show();

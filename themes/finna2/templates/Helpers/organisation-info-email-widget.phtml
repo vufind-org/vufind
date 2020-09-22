@@ -1,8 +1,8 @@
 <ul>
-<?php foreach ($this->emails as $email): ?>
-  <?php if (isset($email['name']) && count($this->emails) > 1): ?>
-    <dt><?=$this->escapeHtml($email['name'])?></dt>
-  <?php endif ?>
-  <dl><a href="mailto:<?=$this->escapeHtmlAttr($email['email'])?>"><?=$this->escapeHtml($email['email'])?></a></dl>
-<?php endforeach ?>
-</li>
+  <?php foreach ($this->emails as $email): ?>
+    <?php if (isset($email['name']) && count($this->emails) > 1): ?>
+      <li><b><?=$this->escapeHtml($email['name'])?></b></li>
+    <?php endif ?>
+    <li><a href="mailto:<?=$this->escapeHtmlAttr($email['email'])?>"><?=$this->escapeHtml($email['email'])?></a></li>
+  <?php endforeach ?>
+</ul>

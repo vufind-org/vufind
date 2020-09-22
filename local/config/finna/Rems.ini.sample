@@ -1,0 +1,25 @@
+; Resource Entitlement Management System (REMS)
+
+[General]
+apiUrl = 
+apiKey = 
+apiAdminUser =
+apiApproverUser =
+
+; REMS catalog item id
+catalogItem = 
+
+; Resource item id
+resourceItem =
+
+
+[RegistrationForm]
+
+; REMS registration form field id's
+field[firstname] = firstname
+field[lastname] = lastname
+field[email] = email
+field[usage_purpose] = purposeofuse
+field[age] = age
+field[license] = agreeterms
+field[user_id] = idnum

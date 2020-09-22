@@ -90,13 +90,13 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
           var addFullOpeningTimes = true;
           var firstElement = obj.times[0];
           var lastElement = obj.times[obj.times.length - 1];
+          var info = 'info' in obj ? obj.info : null;
           $.each(obj.times, function handleOpenTimes(tind, time) {
             var selfservice = !!time.selfservice;
             selfserviceAvail = selfserviceAvail || 'selfservice' in time;
 
             var date = dayCnt === 0 ? obj.date : '';
             var day = dayCnt === 0 ? obj.day : '';
-            var info = 'info' in time ? time.info : null;
 
             if (currentDate !== obj.date) {
               dayCnt = 0;
@@ -109,17 +109,17 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
                 var timeRow = timeRowTpl.clone();
                 timeRow.find('.date').text(date);
                 timeRow.find('.name').text(day);
+                if (info === null) {
+                  timeRow.find('.info').hide();
+                } else {
+                  timeRow.find('.info').text(info);
+                }
                 if (addFullOpeningTimes && obj.times.length > 1) {
                   timeRow.find('.opens').text(firstElement.opens);
                   timeRow.find('.closes').text(lastElement.closes);
                   dayRow.append(timeRow);
                   timeRow = timeRowTpl.clone();
                   addFullOpeningTimes = false;
-                }
-                if (info == null) {
-                  timeRow.find('.info').hide();
-                } else {
-                  timeRow.find('.info').text(info);
                 }
                 timeRow.find('.opens').text(timeOpens);
                 timeRow.find('.closes').text(timeCloses);

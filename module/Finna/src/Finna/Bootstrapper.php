@@ -252,4 +252,57 @@ class Bootstrapper
         $routeName = $routeMatch !== null ? $routeMatch->getMatchedRouteName() : '';
         return substr($routeName, -3) === 'Api';
     }
+
+    /**
+     * Set up Suomifi login listener.
+     *
+     * @return void
+     */
+    protected function initSuomifiLoginListener()
+    {
+        $sm = $this->event->getApplication()->getServiceManager();
+        $callback = function ($event) use ($sm) {
+            $r2Config = $sm->get(\VuFind\Config\PluginManager::class)->get('R2');
+            if (!($r2Config->R2->enabled ?? false)) {
+                return;
+            }
+            // Open REMS registration form after Suomifi login
+            $lightboxUrl = $sm->get('ViewHelperManager')
+                ->get('url')->__invoke('feedback-form', ['id' => 'R2Register']);
+
+            $followup = $sm->get(\Laminas\Mvc\Controller\PluginManager::class)
+                ->get(\VuFind\Controller\Plugin\Followup::class);
+
+            $followup->store(
+                ['postLoginLightbox' => $lightboxUrl],
+                $followup->retrieve('url', '')
+            );
+        };
+
+        $sm->get('SharedEventManager')->attach(
+            'Finna\Auth\Suomifi', \Finna\Auth\Suomifi::EVENT_LOGIN, $callback
+        );
+    }
+
+    /**
+     * Set up Suomifi logout listener.
+     *
+     * @return void
+     */
+    protected function initSuomifiLogoutListener()
+    {
+        $sm = $this->event->getApplication()->getServiceManager();
+        $callback = function ($event) use ($sm) {
+            $r2Config = $sm->get(\VuFind\Config\PluginManager::class)->get('R2');
+            if (!($r2Config->R2->enabled ?? false)) {
+                return;
+            }
+            $rems = $sm->get(\Finna\Service\RemsService::class);
+            $rems->onLogout();
+        };
+
+        $sm->get('SharedEventManager')->attach(
+            'Finna\Auth\Suomifi', \Finna\Auth\Suomifi::EVENT_LOGOUT, $callback
+        );
+    }
 }
