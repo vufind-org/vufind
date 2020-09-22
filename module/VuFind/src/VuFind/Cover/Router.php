@@ -27,6 +27,7 @@
  */
 namespace VuFind\Cover;
 
+use VuFind\Cover\Loader as CoverLoader;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
@@ -38,8 +39,10 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class Router
+class Router implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Base URL for dynamic cover images.
      *
@@ -48,26 +51,41 @@ class Router
     protected $dynamicUrl;
 
     /**
+     * Cover loader
+     *
+     * @var CoverLoader
+     */
+    protected $coverLoader;
+
+    /**
      * Constructor
      *
-     * @param string $url Base URL for dynamic cover images.
+     * @param string      $url         Base URL for dynamic cover images.
+     * @param CoverLoader $coverLoader Cover loader
      */
-    public function __construct($url)
+    public function __construct($url, CoverLoader $coverLoader)
     {
         $this->dynamicUrl = $url;
+        $this->coverLoader = $coverLoader;
     }
 
     /**
-     * Generate a thumbnail URL (return false if unsupported).
+     * Generate a thumbnail URL (return false if unsupported; return null to indicate
+     * that a subsequent AJAX check is needed).
      *
-     * @param RecordDriver $driver Record driver
-     * @param string       $size   Size of thumbnail (small, medium or large --
+     * @param RecordDriver $driver         Record driver
+     * @param string       $size           Size of thumbnail (small, medium or large;
      * small is default).
+     * @param bool         $resolveDynamic Should we resolve dynamic cover data into
+     * a URL (true) or simply return false (false)?
+     * @param bool         $testLoadImage  If true the function will try to load the
+     * cover image in advance and returns false in case no image could be loaded
      *
      * @return string|bool
      */
-    public function getUrl(RecordDriver $driver, $size = 'small')
-    {
+    public function getUrl(RecordDriver $driver, $size = 'small',
+        $resolveDynamic = true, $testLoadImage = false
+    ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
 
@@ -76,12 +94,54 @@ class Router
             return false;
         }
 
-        // Array?  It's parameters to send to the cover generator:
+        // Array? It's parameters to send to the cover generator:
         if (is_array($thumb)) {
-            return $this->dynamicUrl . '?' . http_build_query($thumb);
+            if (!$resolveDynamic) {
+                return null;
+            }
+            $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
+        } else {
+            return $thumb;
         }
 
-        // Default case -- return fixed string:
-        return $thumb;
+        $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
+            : ['size' => $size];
+        $handlers = $this->coverLoader->getHandlers();
+        $ids = $this->coverLoader->getIdentifiersForSettings($settings);
+
+        foreach ($handlers as $handler) {
+            try {
+                // Is the current provider appropriate for the available data?
+                if ($handler['handler']->supports($ids)
+                    && $handler['handler']->useDirectUrls()
+                ) {
+                    $nextDirectUrl = $handler['handler']
+                        ->getUrl($handler['key'], $size, $ids);
+                    if ($nextDirectUrl !== false) {
+                        $directUrl = $nextDirectUrl;
+                        break;
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during processing of '
+                    . get_class($handler['handler']) . ': ' . $e->getMessage()
+                );
+            }
+        }
+
+        if (isset($directUrl)) {
+            return $directUrl;
+        } elseif (isset($dynamicUrl)) {
+            if ($testLoadImage) {
+                $this->coverLoader->loadImage($settings);
+                if ($this->coverLoader->hasLoadedUnavailable()) {
+                    return false;
+                }
+            }
+            return $dynamicUrl;
+        }
+
+        return false;
     }
 }

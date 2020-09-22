@@ -88,6 +88,14 @@ abstract class AbstractCover
     protected $cacheAllowed = false;
 
     /**
+     * Use direct urls as image urls. When set to true, direct urls to content cover
+     * provider will be used in interface instead internal Cover/Show urls.
+     *
+     * @var bool
+     */
+    protected $directUrls = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @return bool
@@ -95,6 +103,16 @@ abstract class AbstractCover
     public function isCacheAllowed()
     {
         return $this->cacheAllowed;
+    }
+
+    /**
+     * Use direct urls? (Or proxied urls)
+     *
+     * @return bool
+     */
+    public function useDirectUrls()
+    {
+        return $this->directUrls;
     }
 
     /**

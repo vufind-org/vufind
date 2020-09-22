@@ -173,7 +173,10 @@ class FeedbackController extends AbstractBase
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),
-                $emailSubject, $emailMessage, null, $replyToEmail
+                $emailSubject,
+                $emailMessage,
+                null,
+                new Address($replyToEmail, $replyToName)
             );
             return [true, null];
         } catch (MailException $e) {

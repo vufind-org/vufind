@@ -66,7 +66,7 @@ class Loader extends \VuFind\Cover\Loader
      *
      * @var string
      */
-    protected $invalidIsbn;
+    protected $invalidIsbn = '';
 
     /**
      * Image index
@@ -257,7 +257,7 @@ class Loader extends \VuFind\Cover\Loader
 
         $identifiers = parent::getIdentifiers();
         if ($this->invalidIsbn) {
-            $identifiers['invalid_isbn'] = $this->invalidIsbn;
+            $identifiers['invisbn'] = $this->invalidIsbn;
         }
         return $identifiers;
     }
@@ -287,8 +287,8 @@ class Loader extends \VuFind\Cover\Loader
                 $keys['oclc'] = $ids['oclc'];
             } elseif (isset($ids['upc'])) {
                 $keys['upc'] = $ids['upc'];
-            } elseif (isset($ids['invalid_isbn'])) {
-                $keys['invalid_isbn'] = $ids['invalid_isbn'];
+            } elseif (isset($ids['invisbn'])) {
+                $keys['invisbn'] = $ids['invisbn'];
             }
         }
 
@@ -517,6 +517,6 @@ class Loader extends \VuFind\Cover\Loader
     protected function storeSanitizedSettings($settings)
     {
         parent::storeSanitizedSettings($settings);
-        $this->invalidIsbn = $settings['invalid_isbn'];
+        $this->invalidIsbn = $settings['invisbn'] ?? '';
     }
 }

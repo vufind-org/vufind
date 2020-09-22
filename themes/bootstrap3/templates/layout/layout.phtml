@@ -25,6 +25,9 @@
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
     <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
       if (!isset($this->renderingError)) {
         // Add translation strings
         $this->jsTranslations()->addStrings(
@@ -68,19 +71,19 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/cookies.js");
+          $this->headScript()->appendFile("vendor/js.cookie.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setDomain("' . $domain . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
           $cookiePath = $cart->getCookiePath();
           if (!empty($cookiePath)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setCookiePath("' . $cookiePath . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
+          }
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
           }
           $this->jsTranslations()->addStrings(
             [
@@ -104,8 +107,7 @@
 
       // Session keep-alive
       if ($this->keepAlive()) {
-          $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->keepAlive());
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
           $this->headScript()->appendFile("keep_alive.js");
       }
 
@@ -128,12 +130,16 @@
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = <<<JS
+      $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
-      $this->headScript()->appendScript($setupJS);
+      $this->headScript()->appendScript(implode("\n", $appendScripts));
+
+      if ($this->config()->ajaxCoversEnabled()) {
+          $this->headScript()->appendFile("covers.js");
+      }
     ?>
     <?=$this->headScript()?>
   </head>
@@ -193,9 +199,7 @@ JS;
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <div class="modal-body">
-            <span id="modal-title"><?=$this->transEsc('Loading') ?>...</span>
-          </div>
+          <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
         </div>
       </div>
     </div>

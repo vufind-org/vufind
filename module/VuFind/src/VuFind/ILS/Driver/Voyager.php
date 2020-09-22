@@ -2247,33 +2247,21 @@ EOT;
         $list = [];
 
         // Are funds disabled?  If so, do no work!
-        if (isset($this->config['Funds']['disabled'])
-            && $this->config['Funds']['disabled']
-        ) {
+        if ($this->config['Funds']['disabled'] ?? false) {
             return $list;
         }
 
-        // Load and normalize whitelist and blacklist if necessary:
-        if (isset($this->config['Funds']['whitelist'])
-            && is_array($this->config['Funds']['whitelist'])
-        ) {
-            $whitelist = [];
-            foreach ($this->config['Funds']['whitelist'] as $current) {
-                $whitelist[] = strtolower($current);
-            }
-        } else {
-            $whitelist = false;
-        }
-        if (isset($this->config['Funds']['blacklist'])
-            && is_array($this->config['Funds']['blacklist'])
-        ) {
-            $blacklist = [];
-            foreach ($this->config['Funds']['blacklist'] as $current) {
-                $blacklist[] = strtolower($current);
-            }
-        } else {
-            $blacklist = false;
-        }
+        // Load and normalize inclusion/exclusion lists if necessary:
+        $rawIncludeList = $this->config['Funds']['include_list']
+            ?? $this->config['Funds']['whitelist'] // deprecated terminology
+            ?? null;
+        $include = is_array($rawIncludeList)
+            ? array_map('strtolower', $rawIncludeList) : false;
+        $rawExcludeList = $this->config['Funds']['exclude_list']
+            ?? $this->config['Funds']['blacklist'] // deprecated terminology
+            ?? null;
+        $exclude = is_array($rawExcludeList)
+            ? array_map('strtolower', $rawExcludeList) : false;
 
         // Retrieve the data from Voyager; if we're limiting to a parent fund, we
         // need to apply a special WHERE clause and bind parameter.
@@ -2289,9 +2277,9 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql, $bindParams);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                // Process blacklist and whitelist to skip illegal values:
-                if ((is_array($blacklist) && in_array($row['NAME'], $blacklist))
-                    || (is_array($whitelist) && !in_array($row['NAME'], $whitelist))
+                // Process inclusion/exclusion lists to skip illegal values:
+                if ((is_array($exclude) && in_array($row['NAME'], $exclude))
+                    || (is_array($include) && !in_array($row['NAME'], $include))
                 ) {
                     continue;
                 }
