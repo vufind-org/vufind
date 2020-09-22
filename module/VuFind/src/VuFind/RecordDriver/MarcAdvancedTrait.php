@@ -643,7 +643,8 @@ trait MarcAdvancedTrait
     {
         // If set, use relationship information from subfield i
         if ($subfieldI = $field->getSubfield('i')) {
-            $data = trim($subfieldI->getData());
+            // VuFind will add a colon to the label, so prevent double colons:
+            $data = rtrim(trim($subfieldI->getData(), ':'));
             if (!empty($data)) {
                 return $data;
             }
