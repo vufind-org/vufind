@@ -84,6 +84,9 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
     public function getEmbeddedVideoUrl($url)
     {
         $parts = parse_url($url);
+        if (false === $parts) {
+            return '';
+        }
         $embedUrl = '';
         switch ($parts['host']) {
         case 'vimeo.com':
@@ -96,8 +99,6 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
             parse_str($parts['query'], $query);
             $embedUrl = "https://www.youtube.com/embed/" . $query['v'];
             break;
-        default:
-            $embedUrl = '';
         }
         return $embedUrl;
     }
