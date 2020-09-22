@@ -792,7 +792,7 @@ finna.layout = (function finnaLayout() {
     var state = finna.common.getCookie('cookieConsent');
     if ('undefined' === typeof state || !state) {
       $('.cookie-consent-dismiss').click(function dismiss() {
-        finna.common.setCookie('cookieConsent', 1);
+        finna.common.setCookie('cookieConsent', 1, { expires: 365 });
         $('.cookie-consent').addClass('hidden');
       });
       $('.cookie-consent').removeClass('hidden');

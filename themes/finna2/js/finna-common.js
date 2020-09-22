@@ -96,9 +96,8 @@ finna.common = (function finnaCommon() {
     return window.Cookies.get(cookie);
   }
 
-  function setCookie(cookie, value) {
-    window.Cookies.set(cookie, value, _getCookieSettings());
-
+  function setCookie(cookie, value, settings) {
+    window.Cookies.set(cookie, value, $.extend({}, _getCookieSettings(), settings));
   }
   function removeCookie(cookie) {
     window.Cookies.remove(cookie, _getCookieSettings());
