@@ -643,7 +643,7 @@ trait MarcAdvancedTrait
     {
         // If set, use relationship information from subfield i
         if ($subfieldI = $field->getSubfield('i')) {
-            $data = trim($subfieldI->getData());
+            $data = rtrim(trim($subfieldI->getData(), ':'));
             if (!empty($data)) {
                 return $data;
             }
