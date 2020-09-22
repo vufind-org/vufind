@@ -125,6 +125,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $storageRetrievalRequestTypes = ['stack retrieval'];
 
     /**
+     * Are renewals disabled for this driver instance? Defaults to false
+     *
+     * @var bool
+     */
+    protected $disableRenewals = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -164,6 +171,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->agency[$this->config['Catalog']['agency']] = 1;
             }
         }
+        $this->disableRenewals
+            = $this->config['Catalog']['disableRenewals'] ?? false;
     }
 
     /**
@@ -866,9 +875,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:ItemId/ns1:AgencyId'
             );
 
-            $notRenewable = $current->xpath(
-                'ns1:Ext/ns1:RenewalNotPermitted'
-            );
+            $renewable = $this->disableRenewals
+                ? false
+                : empty($current->xpath('ns1:Ext/ns1:RenewalNotPermitted'));
 
             $itemAgencyId = !empty($itemAgencyId) ? (string)$itemAgencyId[0] : null;
             $bibId = !empty($bibId) ? (string)$bibId[0] : null;
@@ -911,7 +920,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'duedate' => $due,
                 'title' => (string)$title[0],
                 'item_id' => $itemId,
-                'renewable' => empty($notRenewable),
+                'renewable' => $renewable,
             ];
         }
 
@@ -1636,6 +1645,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 "success" => false,
                 "item_id" => $itemId,
             ];
+            if ($this->disableRenewals) {
+                $details[$itemId] = $failureReturn;
+                continue;
+            }
             $request = $this->getRenewRequest(
                 $renewDetails['patron']['cat_username'],
                 $renewDetails['patron']['cat_password'], $itemId,
