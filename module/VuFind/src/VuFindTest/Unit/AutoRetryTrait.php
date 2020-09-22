@@ -53,6 +53,13 @@ trait AutoRetryTrait
     protected static $failedAfterRetries = false;
 
     /**
+     * Flag whether we have retries left (set during the retry loop).
+     *
+     * @var bool
+     */
+    protected $retriesLeft;
+
+    /**
      * Override PHPUnit's main run method, introducing annotation-based retry
      * behavior.
      *
@@ -82,6 +89,9 @@ trait AutoRetryTrait
         // we still need to run the test once (single attempt, no retries)...
         // hence the $retryCount + 1 below.
         for ($i = 0; $i < $retryCount + 1; $i++) {
+            // Set the "retries left" flag; this is used, for example, in the
+            // VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
+            $this->retriesLeft = $i < $retryCount;
             try {
                 parent::runBare();
                 // No exception thrown? We can return as normal.
@@ -91,10 +101,13 @@ trait AutoRetryTrait
                 if (get_class($e) == SkippedTestError::class) {
                     throw $e;
                 }
-                // Execute callbacks for interrupted test.
-                foreach ($retryCallbacks as $callback) {
-                    if (is_callable([$this, $callback])) {
-                        $this->{$callback}();
+                // Execute callbacks for interrupted test, unless this is the
+                // last round of testing:
+                if ($this->retriesLeft) {
+                    foreach ($retryCallbacks as $callback) {
+                        if (is_callable([$this, $callback])) {
+                            $this->{$callback}();
+                        }
                     }
                 }
             }
