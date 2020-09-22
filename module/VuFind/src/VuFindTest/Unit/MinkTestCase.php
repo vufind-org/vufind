@@ -382,17 +382,15 @@ abstract class MinkTestCase extends DbTestCase
     public function tearDown(): void
     {
         // Take screenshot of failed test
-        if ($this->hasFailed()) {
+        if ($this->hasFailed() && $imageDir = getenv('VUFIND_SCREENSHOT_DIR')) {
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
-            if ($imageData && !empty($imageData)) {
-                $imageDir = (getenv('VUFIND_HOME') ?? '/tmp')
-                    . '/tests/screenshots/';
+            if (!empty($imageData)) {
                 $filename = $this->getName() . '-' . hrtime(true) . '.png';
 
                 if (!file_exists($imageDir)) {
                     mkdir($imageDir);
                 }
-                file_put_contents($imageDir . $filename, $imageData);
+                file_put_contents($imageDir . '/' . $filename, $imageData);
             }
         }
 
