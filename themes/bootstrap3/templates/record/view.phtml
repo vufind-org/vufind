@@ -8,12 +8,12 @@
   }
   // Add any extra scripts the tabs require:
   foreach ($this->tabsExtraScripts as $script) {
-      $this->headScript()->appendFile($script);
+    $this->headScript()->appendFile($script);
   }
 
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
-      $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+    $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
   }
 
   // Set up breadcrumbs:
