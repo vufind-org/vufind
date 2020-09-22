@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class BooksiteFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

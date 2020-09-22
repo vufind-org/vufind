@@ -27,9 +27,8 @@
  */
 namespace VuFind;
 
-use Zend\Console\Console;
-use Zend\Mvc\MvcEvent;
-use Zend\Router\Http\RouteMatch;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -47,7 +46,7 @@ class Bootstrapper
     /**
      * Main VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
@@ -61,14 +60,14 @@ class Bootstrapper
     /**
      * Event manager
      *
-     * @var \Zend\EventManager\EventManagerInterface
+     * @var \Laminas\EventManager\EventManagerInterface
      */
     protected $events;
 
     /**
      * Constructor
      *
-     * @param MvcEvent $event Zend MVC Event object
+     * @param MvcEvent $event Laminas MVC Event object
      */
     public function __construct(MvcEvent $event)
     {
@@ -133,7 +132,7 @@ class Bootstrapper
     {
         // If the system is unavailable and we're not in the console, forward to the
         // unavailable page.
-        if (!Console::isConsole() && !($this->config->System->available ?? true)) {
+        if (PHP_SAPI !== 'cli' && !($this->config->System->available ?? true)) {
             $callback = function ($e) {
                 $routeMatch = new RouteMatch(
                     ['controller' => 'Error', 'action' => 'Unavailable'], 1
@@ -175,7 +174,7 @@ class Bootstrapper
     {
         $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
-            if (!Console::isConsole()) {
+            if (PHP_SAPI !== 'cli') {
                 $viewModel = $serviceManager->get('ViewManager')->getViewModel();
 
                 // Grab the template name from the first child -- we can use this to
@@ -206,7 +205,7 @@ class Bootstrapper
             $helperManager = $serviceManager->get('ViewHelperManager');
             $headTitle = $helperManager->get('headtitle');
             $headTitle->setDefaultAttachOrder(
-                \Zend\View\Helper\Placeholder\Container\AbstractContainer::SET
+                \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET
             );
         };
         $this->events->attach('dispatch', $callback);
@@ -278,7 +277,7 @@ class Bootstrapper
     protected function initLanguage()
     {
         // Language not supported in CLI mode:
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return;
         }
 
@@ -307,10 +306,10 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get(\Zend\Mvc\I18n\Translator::class);
+                $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
                 $translator->setLocale($language);
                 $this->addLanguageToTranslator($translator, $language);
-            } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $e) {
+            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
                     throw new \Exception(
                         'Translation broken due to missing PHP intl extension.'
@@ -366,7 +365,7 @@ class Bootstrapper
     protected function initExceptionBasedHttpStatuses()
     {
         // HTTP statuses not needed in console mode:
-        if (Console::isConsole()) {
+        if (PHP_SAPI == 'cli') {
             return;
         }
 
@@ -412,8 +411,8 @@ class Bootstrapper
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.
-                    $server = Console::isConsole()
-                        ? new \Zend\Stdlib\Parameters(['env' => 'console'])
+                    $server = (PHP_SAPI == 'cli')
+                        ? new \Laminas\Stdlib\Parameters(['env' => 'console'])
                         : $event->getRequest()->getServer();
                     if (!empty($exception)) {
                         $log->logException($exception, $server);
@@ -442,5 +441,23 @@ class Bootstrapper
             $viewModel->renderingError = true;
         };
         $this->events->attach('render.error', $callback, 10000);
+    }
+
+    /**
+     * Set up content security policy
+     *
+     * @return void
+     */
+    protected function initContentSecurityPolicy()
+    {
+        if (PHP_SAPI === 'cli') {
+            return;
+        }
+        $sm = $this->event->getApplication()->getServiceManager();
+        $headers = $this->event->getResponse()->getHeaders();
+        $cspHeaderGenerator = $sm->get(\VuFind\Security\CspHeaderGenerator::class);
+        if ($cspHeader = $cspHeaderGenerator->getHeader()) {
+            $headers->addHeader($cspHeader);
+        }
     }
 }

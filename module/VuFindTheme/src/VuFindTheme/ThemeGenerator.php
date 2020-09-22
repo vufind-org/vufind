@@ -28,10 +28,9 @@
  */
 namespace VuFindTheme;
 
+use Laminas\Config\Config;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
-use Zend\Config\Config;
-use Zend\Console\Console;
 
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.
@@ -43,8 +42,10 @@ use Zend\Console\Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ThemeGenerator extends AbstractThemeUtility
+class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
 {
+    use \VuFindConsole\ConsoleOutputTrait;
+
     /**
      * Generate a new theme from a template.
      *
@@ -60,12 +61,12 @@ class ThemeGenerator extends AbstractThemeUtility
         if (realpath($baseDir . $name)) {
             return $this->setLastError('Theme "' . $name . '" already exists');
         }
-        Console::writeLine('Creating new theme: "' . $name . '"');
+        $this->writeln('Creating new theme: "' . $name . '"');
         $source = $baseDir . $themeTemplate;
         $dest = $baseDir . $name;
-        Console::writeLine("\tCopying $themeTemplate");
-        Console::writeLine("\t\tFrom: " . $source);
-        Console::writeLine("\t\tTo: " . $dest);
+        $this->writeln("\tCopying $themeTemplate");
+        $this->writeln("\t\tFrom: " . $source);
+        $this->writeln("\t\tTo: " . $dest);
         return $this->copyDir($source, $dest);
     }
 
@@ -86,8 +87,8 @@ class ThemeGenerator extends AbstractThemeUtility
             return $this
                 ->setLastError("Expected configuration file missing: $configPath");
         }
-        Console::writeLine("\tUpdating $configPath...");
-        Console::writeLine("\t\t[Site] > theme = $name");
+        $this->writeln("\tUpdating $configPath...");
+        $this->writeln("\t\t[Site] > theme = $name");
         $writer = new ConfigWriter($configPath);
         $writer->set('Site', 'theme', $name);
         // Enable dropdown
@@ -96,7 +97,7 @@ class ThemeGenerator extends AbstractThemeUtility
             'custom' => strtolower(str_replace(' ', '', $name))
         ];
         // - Set alternate_themes
-        Console::writeLine("\t\t[Site] > alternate_themes");
+        $this->writeln("\t\t[Site] > alternate_themes");
         $altSetting = [];
         if (isset($config->Site->alternate_themes)) {
             $alts = explode(',', $config->Site->alternate_themes);
@@ -115,7 +116,7 @@ class ThemeGenerator extends AbstractThemeUtility
         $altSetting[] = $settingPrefixes['custom'] . ':' . $name;
         $writer->set('Site', 'alternate_themes', implode(',', $altSetting));
         // - Set selectable_themes
-        Console::writeLine("\t\t[Site] > selectable_themes");
+        $this->writeln("\t\t[Site] > selectable_themes");
         $dropSetting = [
             $settingPrefixes['bootstrap'] . ':Bootstrap',
             $settingPrefixes['custom'] . ':' . ucwords($name)

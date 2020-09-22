@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2019.
+ * Copyright (C) The National Library of Finland 2016-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,11 +27,11 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * III Sierra REST API driver
@@ -76,7 +76,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     /**
      * Session cache
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
@@ -153,9 +153,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * v5.1 (technically still v5 but added in a later revision):
      *   - summary holdings information (especially for serials)
      *
+     * Note that API version 3 is deprecated in Sierra 5.1 and will be removed later
+     * on (reported March 2020).
+     *
      * @var int
      */
     protected $apiVersion = 5;
+
+    /**
+     * API base path
+     *
+     * This is the default API level used even if apiVersion is higher so that any
+     * changes in existing methods don't cause trouble.
+     *
+     * @var string
+     */
+    protected $apiBase = 'v5';
 
     /**
      * Whether to sort items by enumchron. Default is true.
@@ -247,6 +260,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
+            // Default to API v5 unless a lower compatibility level is needed.
+            if ($this->apiVersion < 5) {
+                $this->apiBase = 'v' . floor($this->apiVersion);
+            }
         }
 
         $this->sortItemsByEnumChron
@@ -397,7 +414,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // which verifies the PIN code).
 
         $result = $this->makeRequest(
-            ['v3', 'info', 'token'],
+            [$this->apiBase, 'info', 'token'],
             [],
             'GET',
             ['cat_username' => $username, 'cat_password' => $password]
@@ -411,7 +428,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $patronId = $result['patronId'];
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patronId],
+            [$this->apiBase, 'patrons', $patronId],
             ['fields' => 'names,emails'],
             'GET',
             ['cat_username' => $username, 'cat_password' => $password]
@@ -479,7 +496,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     public function getMyProfile($patron)
     {
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id']],
+            [$this->apiBase, 'patrons', $patron['id']],
             [
                 'fields' => 'names,emails,phones,addresses,expirationDate'
             ],
@@ -546,7 +563,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $offset = isset($params['page']) ? ($params['page'] - 1) * $pageSize : 0;
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id'], 'checkouts'],
+            [$this->apiBase, 'patrons', $patron['id'], 'checkouts'],
             [
                 'limit' => $pageSize,
                 'offset' => $offset,
@@ -584,7 +601,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
             // Fetch item information
             $item = $this->makeRequest(
-                ['v3', 'items', $transaction['item_id']],
+                [$this->apiBase, 'items', $transaction['item_id']],
                 ['fields' => 'bibIds,varFields'],
                 'GET',
                 $patron
@@ -644,7 +661,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         foreach ($renewDetails['details'] as $details) {
             list($checkoutId, $itemId) = explode('|', $details);
             $result = $this->makeRequest(
-                ['v3', 'patrons', 'checkouts', $checkoutId, 'renewal'], [], 'POST',
+                [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
+                [],
+                'POST',
                 $patron
             );
             if (!empty($result['code'])) {
@@ -690,7 +709,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $sortOrder = isset($params['sort']) && 'checkout asc' === $params['sort']
             ? 'asc' : 'desc';
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id'], 'checkouts', 'history'],
+            [$this->apiBase, 'patrons', $patron['id'], 'checkouts', 'history'],
             [
                 'limit' => $pageSize,
                 'offset' => $offset,
@@ -720,7 +739,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ];
             // Fetch item information
             $item = $this->makeRequest(
-                ['v3', 'items', $transaction['item_id']],
+                [$this->apiBase, 'items', $transaction['item_id']],
                 ['fields' => 'bibIds,varFields'],
                 'GET',
                 $patron
@@ -769,7 +788,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $fields .= ',pickupByDate';
         }
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id'], 'holds'],
+            [$this->apiBase, 'patrons', $patron['id'], 'holds'],
             [
                 'limit' => 10000,
                 'fields' => $fields
@@ -791,7 +810,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $itemId = $this->extractId($entry['record']);
                 // Fetch bib ID from item
                 $item = $this->makeRequest(
-                    ['v3', 'items', $itemId],
+                    [$this->apiBase, 'items', $itemId],
                     ['fields' => 'bibIds,varFields'],
                     'GET',
                     $patron
@@ -1098,7 +1117,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         $result = $this->makeRequest(
-            [$comment ? 'v4' : 'v3', 'patrons', $patron['id'], 'holds', 'requests'],
+            [$this->apiBase, 'patrons', $patron['id'], 'holds', 'requests'],
             json_encode($request),
             'POST',
             $patron
@@ -1124,7 +1143,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     public function getMyFines($patron)
     {
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id'], 'fines'],
+            [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
                 'fields' => 'item,assessedDate,description,chargeType,itemCharge'
                     . ',processingFee,billingFee,paidAmount'
@@ -1165,7 +1184,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $itemId = $this->extractId($entry['item']);
                 // Fetch bib ID from item
                 $item = $this->makeRequest(
-                    ['v3', 'items', $itemId],
+                    [$this->apiBase, 'items', $itemId],
                     ['fields' => 'bibIds'],
                     'GET',
                     $patron
@@ -1230,7 +1249,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $request = ['pin' => $newPIN];
 
         $result = $this->makeRequest(
-            ['v3', 'patrons', $patron['id']],
+            [$this->apiBase, 'patrons', $patron['id']],
             json_encode($request),
             'PUT',
             $patron
@@ -1459,74 +1478,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         $patronCode = false;
         if ($patron && !empty($this->config['Catalog']['redirect_uri'])) {
-            // Do a patron login and then perform an authorization grant request
-            $params = [
-                'client_id' => $this->config['Catalog']['client_key'],
-                'redirect_uri' => $this->config['Catalog']['redirect_uri'],
-                'state' => 'auth',
-                'response_type' => 'code'
-            ];
-            $apiUrl = $this->config['Catalog']['host'] . '/authorize'
-                . '?' . http_build_query($params);
-
-            // First request the login form to get the hidden fields and cookies
-            $client = $this->createHttpClient($apiUrl);
-            $response = $client->send();
-            $doc = new \DOMDocument();
-            if (!@$doc->loadHTML($response->getBody())) {
-                $this->error('Could not parse the III CAS login form');
-                throw new ILSException('Problem with Sierra login.');
-            }
-            $usernameField = $this->config['Authentication']['username_field']
-                ?? 'code';
-            $passwordField = $this->config['Authentication']['password_field']
-                ?? 'pin';
-            $postParams = [
-                $usernameField => $patron['cat_username'],
-                $passwordField => $patron['cat_password'],
-            ];
-            foreach ($doc->getElementsByTagName('input') as $input) {
-                if ($input->getAttribute('type') == 'hidden') {
-                    $postParams[$input->getAttribute('name')]
-                        = $input->getAttribute('value');
-                }
-            }
-
-            $postUrl = $client->getUri();
-            $cookies = $client->getCookies();
-
-            // Reset client
-            $client = $this->createHttpClient($postUrl);
-            $client->addCookie($cookies);
-
-            // Allow two redirects so that we get back from CAS token verification
-            // to the authorize API address.
-            $client->setOptions(['maxredirects' => 2]);
-            $client->setParameterPost($postParams);
-            $response = $client->setMethod('POST')->send();
-            if (!$response->isSuccess() && !$response->isRedirect()) {
-                $this->error(
-                    "POST request for '" . $client->getRequest()->getUriString()
-                    . "' did not return 302 redirect: "
-                    . $response->getStatusCode() . ': '
-                    . $response->getReasonPhrase()
-                    . ', response content: ' . $response->getBody()
-                );
-                throw new ILSException('Problem with Sierra login.');
-            }
-            if ($response->isRedirect()) {
-                $location = $response->getHeaders()->get('Location')->getUri();
-                // Don't try to parse the URI since Sierra creates it wrong if the
-                // redirect_uri sent to it already contains a question mark.
-                if (!preg_match('/code=([^&\?]+)/', $location, $matches)) {
-                    $this->error(
-                        "Could not parse patron authentication code from '$location'"
-                    );
-                    throw new ILSException('Problem with Sierra login.');
-                }
-                $patronCode = $matches[1];
-            } else {
-                // Did not get a redirect, assume the login failed
+            if (!($patronCode = $this->getPatronAuthorizationCode($patron))) {
                 return false;
             }
         }
@@ -1583,11 +1535,122 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Login and retrieve authorization code for the patron
+     *
+     * @param array $patron Patron information
+     *
+     * @return string|bool
+     * @throws ILSException
+     */
+    protected function getPatronAuthorizationCode($patron)
+    {
+        // Do a patron login and then perform an authorization grant request
+        $redirectUri = $this->config['Catalog']['redirect_uri'];
+        $params = [
+            'client_id' => $this->config['Catalog']['client_key'],
+            'redirect_uri' => $redirectUri,
+            'state' => 'auth',
+            'response_type' => 'code'
+        ];
+        $apiUrl = $this->config['Catalog']['host'] . '/authorize'
+            . '?' . http_build_query($params);
+
+        // First request the login form to get the hidden fields and cookies
+        $client = $this->createHttpClient($apiUrl);
+        $response = $client->send();
+        $doc = new \DOMDocument();
+        if (!@$doc->loadHTML($response->getBody())) {
+            $this->error('Could not parse the III CAS login form');
+            throw new ILSException('Problem with Sierra login.');
+        }
+        $usernameField = $this->config['Authentication']['username_field'] ?? 'code';
+        $passwordField = $this->config['Authentication']['password_field'] ?? 'pin';
+        $postParams = [
+            $usernameField => $patron['cat_username'],
+            $passwordField => $patron['cat_password'],
+        ];
+        foreach ($doc->getElementsByTagName('input') as $input) {
+            if ($input->getAttribute('type') == 'hidden') {
+                $postParams[$input->getAttribute('name')]
+                    = $input->getAttribute('value');
+            }
+        }
+        $postUrl = $client->getUri();
+        if ($form = $doc->getElementById('fm1')) {
+            if ($action = $form->getAttribute('action')) {
+                $actionUrl = new \Laminas\Uri\Http($action);
+                if ($actionUrl->getScheme()) {
+                    $postUrl = $actionUrl;
+                } else {
+                    $postUrl->setPath($actionUrl->getPath());
+                    $postUrl->setQuery($actionUrl->getQuery());
+                }
+            }
+        }
+
+        // Collect cookies for session etc.
+        $cookies = $client->getCookies();
+
+        // Reset client
+        $client->reset();
+        $client->addCookie($cookies);
+
+        // Disable automatic following of redirects
+        $client->setOptions(['maxredirects' => 0]);
+        $adapter = $client->getAdapter();
+        if ($adapter instanceof \Laminas\Http\Client\Adapter\Curl) {
+            $adapter->setCurlOption(CURLOPT_FOLLOWLOCATION, false);
+        }
+
+        // Send the login request
+        $client->setParameterPost($postParams);
+        $response = $client->setMethod('POST')->send();
+        if (!$response->isSuccess() && !$response->isRedirect()) {
+            $this->error(
+                "POST request for '" . $client->getRequest()->getUriString()
+                . "' did not return 302 redirect: "
+                . $response->getStatusCode() . ': '
+                . $response->getReasonPhrase()
+                . ', response content: ' . $response->getBody()
+            );
+            throw new ILSException('Problem with Sierra login.');
+        }
+
+        // Process redirects here until the configured redirect url is reached or
+        // the sanity check for redirect count fails.
+        $patronCode = false;
+        $redirectCount = 0;
+        while ($response->isRedirect() && ++$redirectCount < 10) {
+            $location = $response->getHeaders()->get('Location')->getUri();
+            if (strncmp($location, $redirectUri, strlen($redirectUri)) === 0) {
+                // Don't try to parse the URI since Sierra creates it wrong if
+                // the redirect_uri sent to it already contains a question mark.
+                if (!preg_match('/code=([^&\?]+)/', $location, $matches)) {
+                    $this->error(
+                        "Could not parse authentication code from '$location'"
+                    );
+                    throw new ILSException('Problem with Sierra login.');
+                }
+                $patronCode = $matches[1];
+                break;
+            }
+            $cookies = array_merge($cookies, $client->getCookies());
+            $client->reset();
+            $client->addCookie($cookies);
+            $client->setUri($location);
+            $client->setMethod('GET');
+            $response = $client->send();
+        }
+
+        return $patronCode;
+    }
+
+    /**
      * Create a HTTP client
      *
      * @param string $url Request URL
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      */
     protected function createHttpClient($url)
     {
@@ -1692,7 +1755,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = null;
         while (null === $result || $limit === $result['total']) {
             $result = $this->makeRequest(
-                ['v3', 'items'],
+                [$this->apiBase, 'items'],
                 [
                     'bibIds' => $this->extractBibId($id),
                     'deleted' => 'false',
@@ -2136,7 +2199,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $blockReason = $this->getCachedData($cacheId);
         if (null === $blockReason) {
             $result = $this->makeRequest(
-                ['v3', 'patrons', $patronId],
+                [$this->apiBase, 'patrons', $patronId],
                 ['fields' => 'blockInfo'],
                 'GET',
                 $patron
@@ -2246,7 +2309,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getBibRecord($id, $fields, $patron = false)
     {
         return $this->makeRequest(
-            ['v3', 'bibs', $this->extractBibId($id)],
+            [$this->apiBase, 'bibs', $this->extractBibId($id)],
             ['fields' => $fields],
             'GET',
             $patron

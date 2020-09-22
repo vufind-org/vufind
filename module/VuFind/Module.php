@@ -27,7 +27,7 @@
  */
 namespace VuFind;
 
-use Zend\Mvc\MvcEvent;
+use Laminas\Mvc\MvcEvent;
 
 /**
  * Code module for the core of the VuFind application
@@ -58,12 +58,12 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\ClassMapAutoloader' => [
+            'Laminas\Loader\ClassMapAutoloader' => [
                 'classes' => [
                     'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php'
                 ]
             ],
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],

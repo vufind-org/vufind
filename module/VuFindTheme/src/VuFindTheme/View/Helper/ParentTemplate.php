@@ -27,7 +27,7 @@
  */
 namespace VuFindTheme\View\Helper;
 
-use Zend\View\Resolver\TemplatePathStack;
+use Laminas\View\Resolver\TemplatePathStack;
 
 /**
  * Helper to get path to a parent template (for including)
@@ -38,7 +38,7 @@ use Zend\View\Resolver\TemplatePathStack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ParentTemplate extends \Zend\View\Helper\AbstractHelper
+class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Inheritance stack of template folder paths

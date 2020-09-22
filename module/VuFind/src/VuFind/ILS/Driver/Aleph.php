@@ -155,7 +155,7 @@ class AlephTranslator
             echo "tab15 is null!<br>";
         }
         $findme = $tab15["tab15"] . "|" . $isc . "|" . $ipsc;
-        $result = $this->table15[$findme];
+        $result = $this->table15[$findme] ?? null;
         if ($result == null) {
             $findme = $tab15["tab15"] . "||" . $ipsc;
             $result = $this->table15[$findme];
@@ -300,7 +300,7 @@ class AlephRestfulException extends ILSException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
+class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

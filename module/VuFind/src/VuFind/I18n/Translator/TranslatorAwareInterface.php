@@ -27,11 +27,11 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Zend\I18n\Translator\TranslatorInterface;
+use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
  * Lightweight translator aware marker interface (used as an alternative to
- * \Zend\I18n\Translator\TranslatorAwareInterface, which requires an excessive
+ * \Laminas\I18n\Translator\TranslatorAwareInterface, which requires an excessive
  * number of methods to be implemented).
  *
  * @category VuFind

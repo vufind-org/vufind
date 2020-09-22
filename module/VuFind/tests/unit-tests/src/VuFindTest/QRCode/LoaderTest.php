@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\QRCode;
 
+use Laminas\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
-use Zend\Config\Config;
 
 /**
  * QR Code Loader Test Class

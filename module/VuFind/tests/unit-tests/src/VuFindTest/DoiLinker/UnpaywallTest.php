@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\DoiLinker;
 
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 use VuFind\DoiLinker\Unpaywall;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Response as HttpResponse;
 
 /**
  * Unpaywall Test Class
@@ -52,7 +52,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Missing configuration for Unpaywall DOI linker: unpaywall_email');
 
-        new Unpaywall(new \Zend\Config\Config([]));
+        new Unpaywall(new \Laminas\Config\Config([]));
     }
 
     /**
@@ -104,7 +104,7 @@ class UnpaywallTest extends \VuFindTest\Unit\TestCase
         $config = [
             'unpaywall_email' => 'foo@myuniversity.edu',
         ];
-        $unpaywall = new Unpaywall(new \Zend\Config\Config($config));
+        $unpaywall = new Unpaywall(new \Laminas\Config\Config($config));
 
         foreach ($testData as $data) {
             $response = file_get_contents($data['filename']);

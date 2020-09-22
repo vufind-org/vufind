@@ -41,7 +41,7 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void

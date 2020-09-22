@@ -338,6 +338,16 @@ class Cart
     }
 
     /**
+     * Get cookie SameSite attribute (null if unset).
+     *
+     * @return string
+     */
+    public function getCookieSameSite()
+    {
+        return $this->cookieManager->getSameSite();
+    }
+
+    /**
      * Process parameters and return the cart content.
      *
      * @return array $records The cart content

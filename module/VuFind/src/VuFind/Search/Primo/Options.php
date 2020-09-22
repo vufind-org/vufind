@@ -89,6 +89,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
+        $this->highlight = !empty($searchSettings->General->highlighting);
 
         // Result limit:
         if (isset($searchSettings->General->result_limit)) {

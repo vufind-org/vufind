@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\EventManager\Event;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
 use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
 
 /**
  * Unit tests for Hide Facet Value Listener.
@@ -120,7 +120,7 @@ class HideFacetValueListenerTest extends TestCase
     public function testAttach()
     {
         $listener = $this->getListener();
-        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
+        $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('post'),

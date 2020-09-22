@@ -43,7 +43,7 @@ class HierarchyController extends AbstractBase
      *
      * @param string $xml XML to output
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function output($xml)
     {
@@ -60,7 +60,7 @@ class HierarchyController extends AbstractBase
      * @param string $json   A JSON string
      * @param int    $status Response status code
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function outputJSON($json, $status = 200)
     {
@@ -76,7 +76,7 @@ class HierarchyController extends AbstractBase
      * Search the tree and echo a json result of items that
      * matched the keywords.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function searchtreeAction()
     {

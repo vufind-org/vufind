@@ -1,6 +1,6 @@
 <?php
 /**
- * Url view helper (extending core Zend helper with additional functionality)
+ * Url view helper (extending core Laminas helper with additional functionality)
  *
  * PHP version 7
  *
@@ -27,10 +27,10 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\Http\PhpEnvironment\Request;
+use Laminas\Http\PhpEnvironment\Request;
 
 /**
- * Url view helper (extending core Zend helper with additional functionality)
+ * Url view helper (extending core Laminas helper with additional functionality)
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,7 +38,7 @@ use Zend\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Url extends \Zend\View\Helper\Url
+class Url extends \Laminas\View\Helper\Url
 {
     /**
      * Request (or null if unavailable)
@@ -66,8 +66,8 @@ class Url extends \Zend\View\Helper\Url
      * @param bool              $reuseMatchedParams Whether to reuse matched
      * parameters
      *
-     * @see Zend\Mvc\Router\RouteInterface::assemble()
-     * @see Zend\Router\RouteInterface::assemble()
+     * @see Laminas\Mvc\Router\RouteInterface::assemble()
+     * @see Laminas\Router\RouteInterface::assemble()
      *
      * @throws Exception\RuntimeException If no RouteStackInterface was provided
      * @throws Exception\RuntimeException If no RouteMatch was provided
@@ -97,7 +97,10 @@ class Url extends \Zend\View\Helper\Url
     {
         $requestQuery = (null !== $this->request)
             ? $this->request->getQuery()->toArray() : [];
-        $options = ['query' => array_merge($requestQuery, $params)];
+        $options = [
+            'query' => array_merge($requestQuery, $params),
+            'normalize_path' => false, // fix for VUFIND-1392
+        ];
         return $this->__invoke(null, [], $options, $reuseMatchedParams);
     }
 }

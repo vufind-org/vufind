@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -314,6 +314,67 @@ class HierarchicalFacetHelperTest extends TestCase
             (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
             '1/Sound/Noisy/'
         );
+    }
+
+    /**
+     * Tests for isDeepestFacetLevel
+     *
+     * @return void
+     */
+    public function testIsDeepestFacetLevel()
+    {
+        $facetList = [
+            '0/Audio/',
+            '1/Audio/Music/',
+            '0/AV/',
+        ];
+        $this->assertFalse(
+            $this->helper->isDeepestFacetLevel($facetList, '0/Audio/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, '1/Audio/Music/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, '0/AV/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, '0/XYZZY/')
+        );
+        $this->assertTrue(
+            $this->helper->isDeepestFacetLevel($facetList, 'XYZ')
+        );
+    }
+
+    /**
+     * Tests for getFilterStringParts
+     *
+     * @return void
+     */
+    public function testGetFilterStringParts()
+    {
+        $result = $this->helper->getFilterStringParts('0/Foo/');
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertEquals('Foo', $result[0]->getDisplayString());
+
+        $result = $this->helper->getFilterStringParts('1/Foo/Bar/');
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertEquals('1/Foo/Bar/', (string)$result[1]);
+        $this->assertEquals('Foo', $result[0]->getDisplayString());
+        $this->assertEquals('Bar', $result[1]->getDisplayString());
+
+        $result = $this->helper->getFilterStringParts('Foo/Bar/');
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Foo/Bar/', $result[0]);
+
+        $result = $this->helper->getFilterStringParts('Foo');
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Foo', $result[0]);
     }
 
     /**

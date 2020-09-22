@@ -195,7 +195,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      * be needed.
      *
      * @param \VuFind\Search\Solr\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -334,7 +334,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         $result = [];
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
-        if (strpos($params->get('fq')[0], $this->geoField) !== false) {
+        $filters = $params->get('fq');
+        if (!empty($filters) && strpos($filters[0], $this->geoField) !== false) {
             $params->mergeWith($this->queryBuilder->build($this->searchQuery));
             $params->set('fl', 'id, ' . $this->geoField . ', title');
             $params->set('wt', 'json');

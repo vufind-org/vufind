@@ -61,8 +61,8 @@ class DemoFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($ns) use ($container) {
-            $manager = $container->get(\Zend\Session\SessionManager::class);
-            return new \Zend\Session\Container('DemoDriver' . $ns, $manager);
+            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            return new \Laminas\Session\Container('DemoDriver' . $ns, $manager);
         };
         return parent::__invoke(
             $container, $requestedName,

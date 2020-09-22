@@ -12,9 +12,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Log\LoggerAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\DigitalContent\OverdriveConnector;
-use Zend\Log\LoggerAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Overdrive Controller supports actions for Overdrive Integration
@@ -55,7 +55,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      * My Content Action
      * Prepares the view for the Overdrive MyContent template.
      *
-     * @return array|bool|\Zend\View\Model\ViewModel
+     * @return array|bool|\Laminas\View\Model\ViewModel
      */
     public function mycontentAction()
     {
@@ -140,7 +140,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      * Get Status Action
      * Supports the ajax getStatus calls
      *
-     * @return array|bool|\Zend\View\Model\ViewModel
+     * @return array|bool|\Laminas\View\Model\ViewModel
      */
     public function getStatusAction()
     {
@@ -162,7 +162,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      * Hold Action handles all of the actions involving
      * Overdrive content including checkout, hold, cancel hold etc.
      *
-     * @return array|bool|\Zend\View\Model\ViewModel
+     * @return array|bool|\Laminas\View\Model\ViewModel
      * @todo   Deal with situation that an unlogged in user requests
      *     an action but the action is no longer valid since they
      *     already have the content on hold/checked out or do not have acceess
@@ -283,8 +283,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 //Redirect to resource
                 $url = $result->data->downloadLink;
                 $this->debug("redirecting to: $url");
-                header("Location: $url");
-                exit();
+                return $this->redirect()->toUrl($url);
             }
         } else {
             $this->logWarning("overdrive action not defined: $action");

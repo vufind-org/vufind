@@ -28,7 +28,7 @@
 namespace VuFindTheme\View\Helper;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * TemplatePath helper factory.
@@ -62,7 +62,7 @@ class TemplatePathFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\Zend\View\Resolver\TemplatePathStack::class)
+            $container->get(\Laminas\View\Resolver\TemplatePathStack::class)
         );
     }
 }

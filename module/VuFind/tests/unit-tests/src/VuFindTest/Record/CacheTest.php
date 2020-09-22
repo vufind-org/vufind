@@ -205,7 +205,7 @@ class CacheTest extends TestCase
     /**
      * Create configuration
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     protected function getConfig()
     {
@@ -222,7 +222,7 @@ class CacheTest extends TestCase
             ],
         ];
 
-        $config = new \Zend\Config\Config($configArr);
+        $config = new \Laminas\Config\Config($configArr);
 
         return $config;
     }

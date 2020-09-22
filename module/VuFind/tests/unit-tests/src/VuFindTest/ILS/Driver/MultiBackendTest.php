@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014-2016.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\MultiBackend;
-use Zend\Log\Writer\Mock;
 
 /**
  * ILS driver test
@@ -80,15 +79,15 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testLogging()
     {
-        $logger = new \Zend\Log\Logger();
-        $writer = new \Zend\Log\Writer\Mock();
+        $logger = new \Laminas\Log\Logger();
+        $writer = new \Laminas\Log\Writer\Mock();
         $logger->addWriter($writer);
 
         $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
-                $this->throwException(new \Zend\Config\Exception\RuntimeException())
+                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
             );
         $driver = new MultiBackend(
             $mockPM, $this->getMockILSAuthenticator(), $this->getMockSM()
@@ -201,12 +200,12 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $val = $this->callMethod($driver, 'getDriverConfig', ['good']);
         $this->assertEquals($configData, $val);
 
-        $config = new \Zend\Config\Config($configData);
+        $config = new \Laminas\Config\Config($configData);
         $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
             ->will(
-                $this->throwException(new \Zend\Config\Exception\RuntimeException())
+                $this->throwException(new \Laminas\Config\Exception\RuntimeException())
             );
         $driver = new MultiBackend(
             $mockPM, $this->getMockILSAuthenticator(), $this->getMockSM()
@@ -281,6 +280,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $driver, 'addIdPrefixes', [$data, $source, $modify]
         );
         $this->assertEquals($expected, $result);
+
+        // Numeric keys are not considered
+        $data = [
+            'id' => 'record1',
+            'cat_username' => ['foo', 'bar']
+        ];
+        $expected = [
+            'id' => "$source.record1",
+            'cat_username' => ['foo', 'bar']
+        ];
+        $result = $this->callMethod(
+            $driver, 'addIdPrefixes', [$data, $source, $modify]
+        );
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -344,6 +357,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $modify = ['id', 'cat_username', 'cat_info'];
         $result = $this->callMethod(
             $driver, 'stripIdPrefixes', [$data, $source, $modify]
+        );
+        $this->assertEquals($expected, $result);
+
+        // Numeric keys are not considered
+        $data = [
+            'id' => "$source.record1",
+            'test' => ["$source.foo", "$source.bar"]
+        ];
+        $expected = [
+            'id' => "record1",
+            'test' => ["$source.foo", "$source.bar"]
+        ];
+        $result = $this->callMethod(
+            $driver, 'stripIdPrefixes', [$data, $source]
         );
         $this->assertEquals($expected, $result);
     }
@@ -2308,7 +2335,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     protected function getPluginManager()
     {
         $configData = ['config' => 'values'];
-        $config = new \Zend\Config\Config($configData);
+        $config = new \Laminas\Config\Config($configData);
         $mockPM = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockPM->expects($this->any())
             ->method('get')
@@ -2368,7 +2395,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockDemoDriver($methods)
     {
-        $session = $this->getMockBuilder(\Zend\Session\Container::class)
+        $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
             ->setMethods($methods)

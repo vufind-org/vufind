@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
 
 /**
@@ -90,17 +90,11 @@ function registerAjaxCommentRecord(_context) {
     var id = form.id.value;
     var recordSource = form.source.value;
     var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      var recaptcha = $(form).find('.g-recaptcha');
-      if (recaptcha.length > 0) {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
-      }
-    }
+    var data = {};
+    $(form).find("input,textarea").each(function appendCaptchaData() {
+      var input = $(this);
+      data[input.attr('name')] = input.val();
+    });
     $.ajax({
       type: 'POST',
       url: url,

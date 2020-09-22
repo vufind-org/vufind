@@ -16,7 +16,7 @@ rem SOLR_HOME
 rem   Home of the Solr indexes and configurations.
 rem
 rem SOLR_PORT
-rem   Network port for Solr. Defaults to 8080.
+rem   Network port for Solr. Defaults to 8983.
 rem
 rem JAVA_HOME
 rem   Home of Java installation (not directly used by this script, but passed along to
@@ -40,8 +40,8 @@ rem Unrecognized action -- display help text
 if "!%1!"=="!!" goto usage
 
 rem Set VUFIND_HOME (if not already set)
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -53,7 +53,7 @@ set VUFIND_HOME=%VUFIND_HOME:~0,-1%
 goto vufindhomefound
 :useenvbat
 call env > nul
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 echo You need to set the VUFIND_HOME environmental variable before running this script.
 goto end
 :vufindhomefound
@@ -80,7 +80,7 @@ set SOLR_HEAP=1G
 
 rem Set SOLR_PORT
 if not "!%SOLR_PORT%!"=="!!" goto solrportset
-set SOLR_PORT=8080
+set SOLR_PORT=8983
 :solrportset
 
 call %SOLR_BIN%\solr.cmd %1 %SOLR_ADDITIONAL_START_OPTIONS% -p %SOLR_PORT% -s %SOLR_HOME% -m %SOLR_HEAP% -a "-Ddisable.configEdit=true -Dsolr.log=%SOLR_LOGS_DIR% %SOLR_ADDITIONAL_JVM_OPTIONS%"

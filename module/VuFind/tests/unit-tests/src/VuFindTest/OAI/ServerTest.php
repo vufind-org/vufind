@@ -74,7 +74,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
             $this->getMockTableManager(),
-            new \Zend\Config\Config($config),
+            new \Laminas\Config\Config($config),
             $baseURL,
             $params
         );

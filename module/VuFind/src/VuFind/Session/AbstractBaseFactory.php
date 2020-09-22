@@ -28,7 +28,7 @@
 namespace VuFind\Session;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory for instantiating session handlers

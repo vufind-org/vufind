@@ -3,20 +3,16 @@
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
 ?>
 <?php
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtml($coverDetails['size'])?>">
-    <?php if ($coverDetails['cover']): ?>
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-        <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-      </a>
-    <?php else: ?>
-      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-      <div><?=$this->driver->getPubType()?></div>
-    <?php endif; ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+          <?=$cover ?>
+      </div>
   </div>
 <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
@@ -28,7 +24,7 @@
   <?php endif; ?>
   <div class="media-body">
     <div class="result-body">
-      <?php $items = $this->driver->getItems();
+      <?php $items = $this->driver->getItems('result-list');
         if (isset($items) && !empty($items)):
           foreach ($items as $item):
             if (!empty($item)): ?>
@@ -83,15 +79,27 @@
         &nbsp; &nbsp;
       <?php endif; ?>
 
+      <?php if ($this->driver->hasLinkedFullTextAvailable()): ?>
+        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'LinkedText'); ?>" class="fulltext" target="_blank">
+          <?=$this->transEsc('Linked Full Text')?>
+        </a>
+      <?php endif; ?>
+
       <?php if ($this->driver->hasPdfAvailable()): ?>
         <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'PDF'); ?>" class="icon pdf fulltext" target="_blank">
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <?php endif; ?>
 
+      <?php if ($this->driver->hasEpubAvailable()): ?>
+        <a href="<?= $this->recordLink()->getTabUrl($this->driver, 'Epub'); ?>" class="icon epub fulltext" target="_blank">
+          <?=$this->transEsc('ePub Full Text')?>
+        </a>
+      <?php endif; ?>
+
       <?php /* Links from DOI linker */ ?>
       <?php $doi = $this->doi($this->driver, 'results'); if ($doi->isActive()):?>
-        <?=$doi->renderTemplate()?>
+        <div><?=$doi->renderTemplate()?></div>
       <?php endif; ?>
     </div>
     <div class="result-links hidden-print">
@@ -137,6 +145,8 @@
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
+
+      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl())?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

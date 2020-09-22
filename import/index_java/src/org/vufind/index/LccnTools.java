@@ -103,7 +103,7 @@ public class LccnTools
      * @param prefix
      * @return Normalized LCCN
      */
-    public String getFirstNormalizedLCCN(SolrIndexer indexer, 
+    public String getFirstNormalizedLCCN(SolrIndexer indexer,
         Record record, String fieldSpec, String prefix) {
         // Loop through relevant fields in search of first valid LCCN:
         Set<String> lccns = SolrIndexer.instance().getFieldList(record, fieldSpec);

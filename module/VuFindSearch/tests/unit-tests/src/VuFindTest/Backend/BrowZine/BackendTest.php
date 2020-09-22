@@ -29,13 +29,13 @@
 namespace VuFindTest\Backend\BrowZine;
 
 use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for BrowZine backend.
@@ -185,7 +185,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\BrowZine\Connector::class)
             ->setMethods($mock)
             ->setConstructorArgs([$client, 'faketoken', 'fakeid'])

@@ -27,8 +27,8 @@
  */
 namespace VuFindLocalTemplate;
 
-use Zend\ModuleManager\ModuleManager;
-use Zend\Mvc\MvcEvent;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\Mvc\MvcEvent;
 
 /**
  * Template for code module for storing local overrides.
@@ -59,7 +59,7 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],

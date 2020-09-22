@@ -260,7 +260,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      * @param \VuFind\Config\PluginManager                $configLoader config loader
      * @param \VuFind\Search\Solr\Results                 $results      results object
      * @param string                                      $settings     settings
-     * @param \Zend\StdLib\Parameters                     $request      request
+     * @param \Laminas\Stdlib\Parameters                     $request      request
      * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper (true to build default, null to omit)
      *
      * @return SideFacets
@@ -277,7 +277,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
             $facetHelper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters([]);
+            $request = new \Laminas\Stdlib\Parameters([]);
         }
         $sf = new SideFacets($configLoader, $facetHelper);
         $sf->setConfig($settings);
@@ -299,7 +299,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
         $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Zend\Config\Config($config)));
+            ->will($this->returnValue(new \Laminas\Config\Config($config)));
         return $loader;
     }
 

@@ -1,6 +1,6 @@
 <?php
 // A driver-specific template may pass in format overrides; check for these before going to the driver itself:
-$formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->driver->tryMethod('getFormats');
+$formats = $this->slot('endnoteweb-formats')->get($this->driver->tryMethod('getFormats'));
 if (is_array($formats)) {
     foreach ($formats as $format) {
         switch (strtolower($format)) {
@@ -9,14 +9,18 @@ if (is_array($formats)) {
                 break;
             case "journal":
             case "article":
+            case "journal article":
                 $format = "JOUR";
                 break;
             case "thesis":
+            case "dissertation":
                 $format = "THES";
                 break;
+            case "book chapter":
+            case "conference proceeding":
+                // TODO: Find better codes for these; for now they'll drop through to "generic."
             default:
                 $format = "GEN";
-                break;
         }
 
         echo "TY  - $format\n";

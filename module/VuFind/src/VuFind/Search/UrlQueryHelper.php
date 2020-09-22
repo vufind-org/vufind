@@ -388,7 +388,7 @@ class UrlQueryHelper
      * @param string $value    Facet value
      * @param string $operator Facet type to add (AND, OR, NOT)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function removeFacet($field, $value, $operator = 'AND')
     {
@@ -492,7 +492,7 @@ class UrlQueryHelper
      * parameter.
      *
      * Note: This is called setViewParam rather than setView to avoid confusion
-     * with the \Zend\View\Helper\AbstractHelper interface.
+     * with the \Laminas\View\Helper\AbstractHelper interface.
      *
      * @param string $v New sort parameter (null for NO view parameter)
      *

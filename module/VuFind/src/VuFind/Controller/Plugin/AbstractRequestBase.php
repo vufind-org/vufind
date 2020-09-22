@@ -27,14 +27,14 @@
  */
 namespace VuFind\Controller\Plugin;
 
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 use VuFind\Crypt\HMAC;
 use VuFind\ILS\Connection;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Session\Container;
-use Zend\Session\SessionManager;
 
 /**
- * Zend action helper base class to perform request-related actions
+ * Action helper base class to perform request-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins

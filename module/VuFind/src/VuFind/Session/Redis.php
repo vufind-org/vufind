@@ -31,7 +31,7 @@
  */
 namespace VuFind\Session;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Redis session handler

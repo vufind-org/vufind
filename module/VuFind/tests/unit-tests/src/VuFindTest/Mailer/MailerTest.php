@@ -27,11 +27,11 @@
  */
 namespace VuFindTest\Mailer;
 
+use Laminas\Mail\Address;
+use Laminas\Mail\AddressList;
 use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
 use VuFindTest\Container\MockContainer;
-use Zend\Mail\Address;
-use Zend\Mail\AddressList;
 
 /**
  * Mailer Test Class
@@ -51,7 +51,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testFactoryConfiguration()
     {
-        $config = new \Zend\Config\Config(
+        $config = new \Laminas\Config\Config(
             [
                 'Mail' => [
                     'host' => 'vufindtest.localhost',
@@ -94,7 +94,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
@@ -114,7 +114,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('from@example.com', 'Sender TextName');
         $mailer = new Mailer($transport);
@@ -135,7 +135,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('to@example.com', 'Recipient TextName');
         $mailer = new Mailer($transport);
@@ -156,7 +156,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $list = new AddressList();
         $list->add(new Address('to@example.com', 'Recipient TextName'));
@@ -179,7 +179,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('me@example.com');
         $mailer = new Mailer($transport);
@@ -202,7 +202,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('me@example.com');
         $mailer = new Mailer($transport);
@@ -225,7 +225,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'subject' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $address = new Address('me@example.com');
         $mailer = new Mailer($transport);
@@ -243,7 +243,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
     }
@@ -258,7 +258,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Reply-To Email Address');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send(
             'good@good.com', 'from@example.com', 'subject', 'body', null, 'bad@bad'
@@ -275,7 +275,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('', 'from@example.com', 'subject', 'body');
     }
@@ -290,7 +290,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Too Many Email Recipients');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('one@test.com;two@test.com', 'from@example.com', 'subject', 'body');
     }
@@ -305,7 +305,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
     }
@@ -320,7 +320,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', new Address('bad@bad'), 'subject', 'body');
     }
@@ -335,7 +335,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Boom');
 
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
@@ -370,7 +370,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'Library Catalog Search Result' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->setMaxRecipients(2);
@@ -408,7 +408,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && 'body' == $message->getBody()
                 && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
-        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
@@ -421,14 +421,41 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      */
     public function testResetConnection()
     {
-        $transport = $this->createMock(\Zend\Mail\Transport\Smtp::class);
+        $transport = $this->createMock(\Laminas\Mail\Transport\Smtp::class);
         $transport->expects($this->once())->method('disconnect');
         $mailer = new Mailer($transport);
         $mailer->resetConnection();
     }
+
+    /**
+     * Test sending an email using with text part and html part and multipart content type.
+     *
+     * @return void
+     * @throws \VuFind\Exception\Mail
+     */
+    public function testSendMimeMessageWithMultipartAlternativeContentType()
+    {
+        $this->html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
+        $this->text = 'this is the text part';
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && 'Sender TextName <from@example.com>' == $fromString
+                && 'subject' == $message->getSubject()
+                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->html)
+                && 0 <= strpos($message->getBody()->getParts()[0]->getContent(), $this->text)
+                && 'multipart/alternative' == $message->getHeaders()->get('Content-Type')->getType();
+        };
+        $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('from@example.com', 'Sender TextName');
+        $mailer = new Mailer($transport);
+        $body = $mailer->buildMultipartBody($this->text, $this->html);
+        $mailer->send('to@example.com', $address, 'subject', $body);
+    }
 }
 
-class MockEmailRenderer extends \Zend\View\Renderer\PhpRenderer
+class MockEmailRenderer extends \Laminas\View\Renderer\PhpRenderer
 {
     public function partial($template, $driver)
     {

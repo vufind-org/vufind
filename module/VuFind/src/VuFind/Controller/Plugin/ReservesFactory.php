@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Reserves controller plugin.

@@ -28,7 +28,7 @@
  */
 namespace VuFind\Role;
 
-use ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Permission Manager

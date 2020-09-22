@@ -28,7 +28,7 @@
 namespace VuFind\Search;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Search history factory.
@@ -65,7 +65,8 @@ class HistoryFactory implements FactoryInterface
             ->get('Search');
         $resultsManager = $container
             ->get(\VuFind\Search\Results\PluginManager::class);
-        $sessionId = $container->get(\Zend\Session\SessionManager::class)->getId();
+        $sessionId = $container->get(\Laminas\Session\SessionManager::class)
+            ->getId();
         $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         return new $requestedName($searchTable, $sessionId, $resultsManager, $cfg);
     }

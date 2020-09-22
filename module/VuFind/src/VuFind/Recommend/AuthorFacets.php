@@ -28,9 +28,9 @@
  */
 namespace VuFind\Recommend;
 
+use Laminas\Http\Request;
+use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\Query;
-use Zend\Http\Request;
-use Zend\StdLib\Parameters;
 
 /**
  * AuthorFacets Recommendations Module
@@ -98,7 +98,7 @@ class AuthorFacets implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param Parameters                 $request Parameter object representing user
      * request.
      *
      * @return void

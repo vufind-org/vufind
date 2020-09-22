@@ -104,7 +104,7 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testTemplateDisplay()
     {
-        $this->expectException(\Zend\View\Exception\RuntimeException::class);
+        $this->expectException(\Laminas\View\Exception\RuntimeException::class);
 
         // Template does not exist, expect an exception, though
         $mockPmd = $this->getMockPmd(
@@ -200,11 +200,11 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Return a view object populated for these test cases.
      *
-     * @return \Zend\View\Renderer\PhpRenderer
+     * @return \Laminas\View\Renderer\PhpRenderer
      */
     protected function getMockView()
     {
-        $escapehtml = new \Zend\View\Helper\EscapeHtml();
+        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();
         $transEsc = new \VuFind\View\Helper\Root\TransEsc();
         $context = new \VuFind\View\Helper\Root\Context();

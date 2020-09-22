@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for controller plugins extending AbstractRequestBase.
@@ -63,7 +63,7 @@ class AbstractRequestBaseFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Crypt\HMAC::class),
-            $container->get(\Zend\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class)
         );
     }
 }

@@ -28,7 +28,7 @@
 namespace VuFindApi\Formatter;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Record Formatter factory.
@@ -41,6 +41,13 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 class RecordFormatterFactory implements FactoryInterface
 {
+    /**
+     * Record fields configuration file name
+     *
+     * @var string
+     */
+    protected $configFile = 'SearchApiRecordFields.yaml';
+
     /**
      * Create an object
      *
@@ -63,7 +70,7 @@ class RecordFormatterFactory implements FactoryInterface
         }
 
         $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get('SearchApiRecordFields.yaml');
+            ->get($this->configFile);
         $helperManager = $container->get('ViewHelperManager');
         return new $requestedName($recordFields, $helperManager);
     }

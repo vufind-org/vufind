@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Stdlib\Parameters;
 use VuFind\Auth\Database;
-use Zend\Db\ResultSet\ResultSet;
-use Zend\Stdlib\Parameters;
 
 /**
  * Database authentication test class.
@@ -230,12 +230,12 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $post POST parameters
      *
-     * @return \Zend\Http\PhpEnvironment\Request
+     * @return \Laminas\Http\PhpEnvironment\Request
      */
     protected function getRequest($post = [])
     {
         $post = new Parameters($post);
-        $request = $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
+        $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->setMethods(['getPost'])->getMock();
         $request->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));

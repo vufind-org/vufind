@@ -42,7 +42,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -743,7 +743,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             }
             $locations = $driver->getPickUpLocations(
                 $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
+                $this->stripIdPrefixes(
+                    $holdDetails, $source, ['id', 'cat_username', 'item_id']
+                )
             );
             return $this->addIdPrefixes($locations, $source);
         }
@@ -934,7 +936,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         );
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
+            $holdDetails = $this->stripIdPrefixes(
+                $holdDetails, $source, ['id', 'item_id', 'cat_username']
+            );
             return $driver->getCancelHoldDetails($holdDetails);
         }
         throw new ILSException('No suitable backend driver found');
@@ -1517,7 +1521,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 : $this->driversConfigPath . '/' . $source;
 
             $config = $this->configLoader->get($path);
-        } catch (\Zend\Config\Exception\RuntimeException $e) {
+        } catch (\Laminas\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             $this->error("Could not load config for $source");
@@ -1550,7 +1554,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                     $value, $source, $modifyFields
                 );
             } else {
-                if (!is_numeric($key)
+                if (!ctype_digit((string)$key)
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
@@ -1591,7 +1595,8 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 );
             } else {
                 $prefixLen = strlen($source) + 1;
-                if ((!is_array($data) || in_array($key, $modifyFields))
+                if ((!is_array($data)
+                    || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);

@@ -54,7 +54,7 @@ class DemoTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp(): void
     {
-        $session = $this->getMockBuilder(\Zend\Session\Container::class)
+        $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         $this->driver = new Demo(
             new \VuFind\Date\Converter(), $this->createMock(\VuFindSearch\Service::class),

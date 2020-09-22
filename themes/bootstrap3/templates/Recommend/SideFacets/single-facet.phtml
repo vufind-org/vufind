@@ -57,7 +57,10 @@
 
   <?php if ($this->exclude && !$this->facet['isApplied']): ?>
     <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
-    <a href="<?=$excludeURL ?>" data-lightbox-ignore title="<?=$this->transEsc('exclude_facet') ?>" class="exclude"><i class="fa fa-times" aria-hidden="true"></i></a>
+    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
+      <i class="fa fa-times" aria-hidden="true"></i>
+      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+    </a>
   <?php endif; ?>
 
 <?=$hasSubLinks ? '</div>' : '</a>'; ?>

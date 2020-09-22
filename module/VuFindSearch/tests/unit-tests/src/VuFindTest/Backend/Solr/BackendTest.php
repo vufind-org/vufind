@@ -29,15 +29,14 @@
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
+use Laminas\Http\Response;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use Zend\Http\Response;
 
 /**
  * Unit tests for SOLR backend.
@@ -354,7 +353,7 @@ class BackendTest extends TestCase
     protected function runRefineExceptionCall($msg)
     {
         $conn = $this->getConnectorMock(['query']);
-        $e = new RemoteErrorException($msg, 400, new \Zend\Http\Response());
+        $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
             ->will($this->throwException($e));
@@ -367,7 +366,7 @@ class BackendTest extends TestCase
      *
      * @param string $fixture Fixture file
      *
-     * @return Zend\Http\Response
+     * @return Laminas\Http\Response
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */

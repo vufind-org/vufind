@@ -88,7 +88,7 @@ class AlmaDatabase extends Database
     /**
      * Create a new user account in Alma AND in the VuFind Database.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      *                                                   new account details.
      *
      * @return NULL|\VuFind\Db\Row\User New user row.

@@ -27,7 +27,7 @@
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Hierarchy tree data source plugin manager

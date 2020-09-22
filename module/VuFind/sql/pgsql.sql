@@ -47,7 +47,7 @@ DROP TABLE IF EXISTS "resource_tags";
 
 CREATE TABLE resource_tags (
 id SERIAL,
-resource_id int NOT NULL DEFAULT '0',
+resource_id int DEFAULT NULL,
 tag_id int NOT NULL DEFAULT '0',
 list_id int DEFAULT NULL,
 user_id int DEFAULT NULL,
@@ -100,10 +100,11 @@ DROP TABLE IF EXISTS "shortlinks";
 CREATE TABLE shortlinks (
 id SERIAL,
 path text,
+hash varchar(32),
 created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (id)
 );
-
+CREATE UNIQUE INDEX shortlinks_hash_idx ON shortlinks (hash);
 
 -- --------------------------------------------------------
 

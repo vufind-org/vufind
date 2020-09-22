@@ -28,7 +28,7 @@
 namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for ListItems channel provider.
@@ -63,6 +63,8 @@ class ListItemsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Db\Table\PluginManager::class)->get('UserList'),
+            $container
+                ->get(\VuFind\Db\Table\PluginManager::class)->get('ResourceTags'),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Search\Results\PluginManager::class)
         );

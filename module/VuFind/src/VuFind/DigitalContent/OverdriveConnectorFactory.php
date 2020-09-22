@@ -33,7 +33,7 @@ namespace VuFind\DigitalContent;
 use Interop\Container\ContainerInterface;
 
 /**
- * Generic Amazon content plugin factory.
+ * Overdrive Connector factory.
  *
  * @category VuFind
  * @package  DigitalContent
@@ -44,7 +44,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class OverdriveConnectorFactory implements
-    \Zend\ServiceManager\Factory\FactoryInterface
+    \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -76,9 +76,9 @@ class OverdriveConnectorFactory implements
         $sessionContainer = null;
 
         if (PHP_SAPI !== 'cli') {
-            $sessionContainer = new \Zend\Session\Container(
+            $sessionContainer = new \Laminas\Session\Container(
                 'DigitalContent\OverdriveController',
-                $container->get('Zend\Session\SessionManager')
+                $container->get('Laminas\Session\SessionManager')
             );
         }
         $connector = new $requestedName(

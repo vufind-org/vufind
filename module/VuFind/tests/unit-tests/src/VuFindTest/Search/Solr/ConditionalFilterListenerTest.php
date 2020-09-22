@@ -28,14 +28,14 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\HandlerMap;
 
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
 
 /**
  * Unit tests for Conditional Filter listener.
@@ -92,7 +92,7 @@ class ConditionalFilterListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
+        $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
@@ -154,7 +154,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener->setAuthorizationService($mockAuth);
@@ -180,7 +180,7 @@ class ConditionalFilterListenerTest extends TestCase
             ]
         );
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener->setAuthorizationService($mockAuth);
@@ -205,7 +205,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag([ ]);
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -233,7 +233,7 @@ class ConditionalFilterListenerTest extends TestCase
         $params   = new ParamBag([ ]);
 
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -262,7 +262,7 @@ class ConditionalFilterListenerTest extends TestCase
         );
 
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -296,7 +296,7 @@ class ConditionalFilterListenerTest extends TestCase
         );
 
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')

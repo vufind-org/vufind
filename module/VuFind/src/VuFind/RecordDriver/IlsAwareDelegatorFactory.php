@@ -28,7 +28,7 @@
 namespace VuFind\RecordDriver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
+use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 
 /**
  * ILS aware delegator factory

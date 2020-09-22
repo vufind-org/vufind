@@ -27,11 +27,11 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
-use Zend\Http\PhpEnvironment\Request;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Record Details" AJAX handler
@@ -47,7 +47,7 @@ use Zend\View\Renderer\RendererInterface;
 class GetRecordDetails extends AbstractBase
 {
     /**
-     * ZF configuration
+     * Framework configuration
      *
      * @var array
      */
@@ -84,7 +84,7 @@ class GetRecordDetails extends AbstractBase
     /**
      * Constructor
      *
-     * @param array             $config   ZF configuration
+     * @param array             $config   Framework configuration
      * @param Request           $request  HTTP request
      * @param Loader            $loader   Record loader
      * @param TabManager        $tm       Record Tab manager

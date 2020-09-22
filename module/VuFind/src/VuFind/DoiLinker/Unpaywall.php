@@ -62,7 +62,7 @@ class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface,
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config DOI section of main VuFind config
+     * @param \Laminas\Config\Config $config DOI section of main VuFind config
      *
      * @throws \Exception
      */

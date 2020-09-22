@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\Auth;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -94,15 +94,15 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
@@ -113,7 +113,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBadService()
     {
-        $this->expectException(\Zend\ServiceManager\Exception\ServiceNotFoundException::class);
+        $this->expectException(\Laminas\ServiceManager\Exception\ServiceNotFoundException::class);
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
@@ -131,7 +131,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLoginWithBadClass()
     {
-        $this->expectException(\Zend\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
 
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';

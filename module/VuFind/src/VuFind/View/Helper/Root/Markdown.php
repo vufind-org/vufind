@@ -28,7 +28,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
+use League\CommonMark\MarkdownConverterInterface;
 
 /**
  * Helper for transforming markdown to html
@@ -44,16 +45,16 @@ class Markdown extends AbstractHelper
     /**
      * Markdown converter
      *
-     * @var \League\CommonMark\ConverterInterface
+     * @var MarkdownConverterInterface
      */
     protected $converter;
 
     /**
      * Markdown constructor.
      *
-     * @param \League\CommonMark\ConverterInterface $converter Markdown converter
+     * @param MarkdownConverterInterface $converter Markdown converter
      */
-    public function __construct(\League\CommonMark\ConverterInterface $converter)
+    public function __construct(MarkdownConverterInterface $converter)
     {
         $this->converter = $converter;
     }

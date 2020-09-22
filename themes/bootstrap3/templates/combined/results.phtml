@@ -1,11 +1,9 @@
 <?php
   // Set up page title:
   $lookfor = $this->params->getDisplayQuery();
-  if (isset($this->overrideTitle)) {
-    $this->headTitle($this->overrideTitle);
-  } else {
-      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
-  }
+  $headTitle = $this->slot('head-title')
+        ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  $this->headTitle($headTitle);
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -27,12 +25,7 @@
   $combinedResults = $this->results;
 
   // Set up breadcrumbs:
-  if (isset($this->overrideTitle)) {
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
-  } else {
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Search') . ': ' .
-      $this->escapeHtml($lookfor) . '</li>';
-  }
+  $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
 
   // Enable cart if appropriate:
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
@@ -42,6 +35,7 @@
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("vendor/hunt.min.js");
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
   $this->headScript()->appendFile("combined-search.js");

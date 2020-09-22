@@ -38,7 +38,7 @@ use VuFind\Search\Base\Options;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GeoCoords extends \Zend\View\Helper\AbstractHelper
+class GeoCoords extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Is Map Search enabled?

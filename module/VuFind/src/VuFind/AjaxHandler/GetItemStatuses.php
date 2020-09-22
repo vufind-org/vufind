@@ -29,14 +29,14 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Item Status" AJAX handler

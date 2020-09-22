@@ -98,6 +98,25 @@ class FeedbackTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Fill in the feedback form.
+     *
+     * @param Element $page Page element
+     *
+     * @return void
+     */
+    protected function fillInAndSubmitFeedbackForm($page)
+    {
+        $this->clickCss($page, '#feedbackLink');
+        $this->snooze();
+        $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
+        $this->findCss($page, '#modal .form-control[name="email"]')
+            ->setValue('test@test.com');
+        $this->findCss($page, "#modal #message")->setValue('test test test');
+        $this->clickCss($page, '#modal input[type="submit"]');
+        $this->snooze();
+    }
+
+    /**
      * Test that feedback form can be successfully populated and submitted.
      *
      * @return void
@@ -106,12 +125,35 @@ class FeedbackTest extends \VuFindTest\Unit\MinkTestCase
     {
         // By default, no OpenURL on record page:
         $page = $this->setupPage();
-        $this->clickCss($page, '#feedbackLink');
-        $this->snooze();
-        $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
-        $this->findCss($page, '#modal .form-control[name="email"]')
-            ->setValue('test@test.com');
-        $this->findCss($page, "#modal #message")->setValue('test test test');
+        $this->fillInAndSubmitFeedbackForm($page);
+        $this->assertEquals(
+            'Thank you for your feedback.',
+            $this->findCss($page, '#modal .alert-success')->getText()
+        );
+    }
+
+    /**
+     * Test that feedback form can be successfully populated and submitted.
+     *
+     * @return void
+     */
+    public function testFeedbackFormWithCaptcha()
+    {
+        // By default, no OpenURL on record page:
+        $page = $this->setupPage(
+            [
+                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback']
+            ]
+        );
+        $this->fillInAndSubmitFeedbackForm($page);
+        // CAPTCHA should have failed...
+        $this->assertEquals(
+            'CAPTCHA not passed',
+            $this->findCss($page, '.modal-body .alert-danger')->getText()
+        );
+        // Now fix the CAPTCHA
+        $this->findCss($page, 'form [name="demo_captcha"]')
+            ->setValue('demo');
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->snooze();
         $this->assertEquals(
