@@ -709,7 +709,7 @@ abstract class Options implements TranslatorAwareInterface
         } elseif (isset($this->advancedHandlers[$field])) {
             return $this->translate($this->advancedHandlers[$field]);
         } else {
-            return $field;
+            return $this->translate("search_field_$field", null, $field);
         }
     }
 

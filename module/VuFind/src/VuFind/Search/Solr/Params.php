@@ -651,4 +651,20 @@ class Params extends \VuFind\Search\Base\Params
 
         return $filter;
     }
+
+    /**
+     * Build a string for onscreen display showing the
+     *   query used in the search (not the filters).
+     *
+     * @return string user friendly version of 'query'
+     */
+    public function getDisplayQuery()
+    {
+        $result = parent::getDisplayQuery();
+
+        // Display WorkKeys search nicer
+        $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
+        $str = preg_quote($showField('WorkKeys'));
+        return preg_replace("/$str:\"[^\)]+\"/", $str, $result);
+    }
 }
