@@ -110,6 +110,13 @@ class SolrDefault extends DefaultRecord
     protected $searchService = null;
 
     /**
+     * Cached result of other versions (work expressions) count
+     *
+     * @var int
+     */
+    protected $otherVersionsCount = null;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
@@ -347,10 +354,11 @@ class SolrDefault extends DefaultRecord
      *
      * @param bool $includeSelf Whether to include this record
      * @param int  $count       Maximum number of records to display
+     * @param int  $offset      Start position (0-based)
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function getVersions($includeSelf = false, $count = 20)
+    public function getVersions($includeSelf = false, $count = 20, $offset = 0)
     {
         if (null === $this->searchService) {
             return false;
@@ -363,6 +371,7 @@ class SolrDefault extends DefaultRecord
         if (!isset($this->otherVersions)) {
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', $count);
+            $params->add('start', $offset);
             $this->otherVersions = $this->searchService->workExpressions(
                 $this->getSourceIdentifier(),
                 $includeSelf ? '' : $this->getUniqueID(),
