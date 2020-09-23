@@ -381,6 +381,24 @@ abstract class MinkTestCase extends DbTestCase
      */
     public function tearDown(): void
     {
+        // Take screenshot of failed test, if we have a screenshot directory set
+        // and we have run out of retries ($this->retriesLeft is set by the
+        // AutoRetryTrait when it is use, and we'll default it to 0 to cover
+        // cases where that trait is not in play):
+        if ($this->hasFailed() && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
+            && ($this->retriesLeft ?? 0) === 0
+        ) {
+            $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
+            if (!empty($imageData)) {
+                $filename = $this->getName() . '-' . hrtime(true) . '.png';
+
+                if (!file_exists($imageDir)) {
+                    mkdir($imageDir);
+                }
+                file_put_contents($imageDir . '/' . $filename, $imageData);
+            }
+        }
+
         $this->stopMinkSession();
         $this->restoreConfigs();
     }
