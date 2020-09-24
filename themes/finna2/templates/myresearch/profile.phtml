@@ -140,7 +140,7 @@
               <?php endforeach; ?>
             <?php else: ?>
               <?php $addressParams['address'] = $this->profile; ?>
-              <?=$this->render('myresearch/profile-address.phtml', ['address' => $this->profile, 'updateAddress' => $updateAddress, 'needsApproval' => $needsApproval, 'updatePhome' => $updatePhone, 'updateEmail' => $updateEmail])?>
+              <?=$this->render('myresearch/profile-address.phtml', $addressParams)?>
             <?php endif; ?>
             <?php if (!empty($this->profile['phone']) || $updatePhone): ?>
               <?php if ($updatePhone): ?>
