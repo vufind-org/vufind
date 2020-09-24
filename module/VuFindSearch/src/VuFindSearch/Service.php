@@ -381,10 +381,11 @@ class Service
                 $records = $backendInstance->retrieve($id)->getRecords();
                 if (!empty($records[0])) {
                     $fields = $records[0]->getRawData();
-                    $workKeys = $fields['work_keys_str_mv'] ?? [];
+                    $args['workKeys'] = $fields['work_keys_str_mv'] ?? [];
                 }
             }
-            $response = $backendInstance->workExpressions($id, $workKeys, $params);
+            $response = $backendInstance
+                ->workExpressions($id, $args['workKeys'], $params);
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;
