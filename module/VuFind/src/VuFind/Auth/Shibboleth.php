@@ -38,7 +38,7 @@ use Vufind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Shibboleth class
+ * Shibboleth authentication module.
  *
  * @category VuFind
  * @package  Authentication
