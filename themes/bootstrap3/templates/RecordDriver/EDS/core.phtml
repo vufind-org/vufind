@@ -2,21 +2,16 @@
 <?php
     $items = $this->driver->getItems('core');
     $dbLabel = $this->driver->getDbLabel();
-    $thumb = $this->driver->getThumbnail('medium');
-    $pubType = $this->driver->getPubType();
     $customLinks = $this->driver->getCustomLinks();
     $accessLevel = $this->driver->getAccessLevel();
     $restrictedView = empty($accessLevel) ? false : true;
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
+    $cover = $coverDetails['html'];
 ?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="media-left medium img-col">
-    <?php if ($thumb): ?>
-      <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-    <?php else: ?>
-      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-    <?php endif; ?>
-    <?php if ($pubType): ?>
-      <p><?=$this->transEsc($pubType)?></p>
+    <?php if ($cover): ?>
+      <?=$cover?>
     <?php endif; ?>
 
     <div class="external-links">

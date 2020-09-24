@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  VuFind\Security
+ * @package  Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
@@ -38,7 +38,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * Factory for creating  Content Security Policy http headers generator class
  *
  * @category VuFind
- * @package  VuFind\Security
+ * @package  Security
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
@@ -62,6 +62,9 @@ class CspHeaderGeneratorFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('contentsecuritypolicy');
         $nonceGenerator = $container->get(NonceGenerator::class);

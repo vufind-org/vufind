@@ -30,6 +30,13 @@ use VuFind\Form\Form;
 class FeedbackController extends AbstractBase
 {
     /**
+     * Feedback form class
+     *
+     * @var string
+     */
+    protected $formClass = \VuFind\Form\Form::class;
+
+    /**
      * Display Feedback home form.
      *
      * @return \Laminas\View\Model\ViewModel
@@ -54,7 +61,7 @@ class FeedbackController extends AbstractBase
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
+        $form = $this->serviceLocator->get($this->formClass);
         $params = [];
         if ($refererHeader = $this->getRequest()->getHeader('Referer')
         ) {
@@ -173,7 +180,10 @@ class FeedbackController extends AbstractBase
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),
-                $emailSubject, $emailMessage, null, $replyToEmail
+                $emailSubject,
+                $emailMessage,
+                null,
+                new Address($replyToEmail, $replyToName)
             );
             return [true, null];
         } catch (MailException $e) {

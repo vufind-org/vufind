@@ -29,6 +29,7 @@ namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
@@ -70,7 +71,7 @@ class Resource extends Gateway
      * @param string        $table     Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, DateConverter $converter, Loader $loader,
+        ?RowGateway $rowObj, DateConverter $converter, Loader $loader,
         $table = 'resource'
     ) {
         $this->dateConverter = $converter;
@@ -163,7 +164,7 @@ class Resource extends Gateway
                         new Expression(
                             'DISTINCT(?)', ['resource.id'],
                             [Expression::TYPE_IDENTIFIER]
-                        ), '*'
+                        ), Select::SQL_STAR
                     ]
                 );
                 $s->join(

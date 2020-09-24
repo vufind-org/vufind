@@ -93,7 +93,15 @@ class Query extends AbstractQuery
      */
     protected function normalizeText($text)
     {
-        return strtolower($this->stripDiacritics($text));
+        // The input to normalizeText may be a Solr query with Boolean operators
+        // in it; we want to be careful not to turn this into something invalid.
+        $stripped = $this->stripDiacritics($text);
+        $booleans = ['AND', 'OR', 'NOT'];
+        $words = [];
+        foreach (preg_split('/\s+/', $stripped) as $word) {
+            $words[] = in_array($word, $booleans) ? $word : strtolower($word);
+        }
+        return implode(' ', $words);
     }
 
     /**
@@ -223,18 +231,14 @@ class Query extends AbstractQuery
         $queryString = $normalize
             ? $this->getNormalizedString() : $this->queryString;
 
-        // If our "from" pattern contains non-word characters, we can't use word
-        // boundaries for matching.  We want to try to use word boundaries when
-        // possible, however, to avoid the replacement from affecting unexpected
-        // parts of the search query.
-        if (!preg_match('/.*[^\w].*/', $from)) {
-            $pattern = "/\b$from\b/i";
-        } else {
-            $pattern = "/$from/i";
+        // Try to match within word boundaries to prevent the replacement from
+        // affecting unexpected parts of the search query; if that fails to change
+        // anything, try again with a less restricted regular expression. The fall-
+        // back is needed when $from contains punctuation characters such as commas.
+        $this->queryString = preg_replace("/\b$from\b/i", $to, $queryString);
+        if ($queryString === $this->queryString) {
+            $this->queryString = preg_replace("/$from/i", $to, $queryString);
         }
-
-        // Perform the replacement:
-        $this->queryString = preg_replace($pattern, $to, $queryString);
     }
 
     /**

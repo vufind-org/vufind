@@ -181,7 +181,10 @@ class CombinedController extends AbstractSearch
             $combinedResults[$current]['domId']
                 = 'combined_' . str_replace(':', '____', $current);
 
-            $combinedResults[$current]['view'] = ($settings['ajax'] ?? false)
+            $permissionDenied = isset($settings['permission'])
+                && !$this->permission()->isAuthorized($settings['permission']);
+            $isAjax = $settings['ajax'] ?? false;
+            $combinedResults[$current]['view'] = ($permissionDenied || $isAjax)
                 ? $this->createViewModel(['results' => $results])
                 : $this->forwardTo($controller, $action);
 

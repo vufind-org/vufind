@@ -71,6 +71,9 @@
   <?php if ($list && !empty($list->description)): ?>
     <p><?=$this->escapeHtml($list->description)?></p>
   <?php endif; ?>
+  <?php if (!empty($listTags)): ?>
+    <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
+  <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
     <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>

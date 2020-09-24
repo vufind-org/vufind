@@ -3,20 +3,16 @@
   $accessLevel = $this->driver->getAccessLevel();
   $restrictedView = empty($accessLevel) ? false : true;
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
 ?>
 <?php
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   ob_start(); ?>
   <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtml($coverDetails['size'])?>">
-    <?php if ($coverDetails['cover']): ?>
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-        <img src="<?=$this->escapeHtmlAttr($coverDetails['cover'])?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-      </a>
-    <?php else: ?>
-      <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-      <div><?=$this->driver->getPubType()?></div>
-    <?php endif; ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+          <?=$cover ?>
+      </div>
   </div>
 <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>

@@ -812,7 +812,12 @@ class Server
             $this->attachNonDeleted($xml, $doc, $format, $headersOnly, $set);
             $currentCursor++;
         }
-        $nextCursorMark = $result->getCursorMark();
+        // We only need a cursor mark if we fetched results from Solr; if our
+        // $recordLimit is 0, it means that we're still in the process of
+        // retrieving deleted records, and we're only hitting Solr to obtain a
+        // total record count. Therefore, we don't want to change the cursor
+        // mark yet, or it will break pagination of deleted records.
+        $nextCursorMark = $recordLimit > 0 ? $result->getCursorMark() : '';
 
         // If our cursor didn't reach the last record, we need a resumption token!
         $listSize = $deletedCount + $nonDeletedCount;

@@ -61,7 +61,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $activeAuth;
 
     /**
-     * Whitelist of values allowed to be set into $activeAuth
+     * List of values allowed to be set into $activeAuth
      *
      * @var array
      */
@@ -672,7 +672,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         }
 
         // If this method supports switching to a different method and we haven't
-        // already initialized it, add those options to the whitelist. If the object
+        // already initialized it, add those options to the legal list. If the object
         // is already initialized, that means we've already gone through this step
         // and can save ourselves the trouble.
 

@@ -30,6 +30,7 @@ namespace VuFind\Db\Row;
 use Laminas\Crypt\BlockCipher as BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 /**
  * Row Definition for user
@@ -275,6 +276,19 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Get tags assigned by the user to a favorite list.
+     *
+     * @param int $listId List id
+     *
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     */
+    public function getListTags($listId)
+    {
+        return $this->getDbTable('Tags')
+            ->getForList($listId, $this->id);
+    }
+
+    /**
      * Same as getTags(), but returns a string for use in edit mode rather than an
      * array of tag objects.
      *
@@ -289,14 +303,25 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
-        $myTagList = $this->getTags($resourceId, $listId, $source);
+        return $this->formatTagString($this->getTags($resourceId, $listId, $source));
+    }
+
+    /**
+     * Same as getTagString(), but operates on a list of tags.
+     *
+     * @param array $tags Tags
+     *
+     * @return string
+     */
+    public function formatTagString($tags)
+    {
         $tagStr = '';
-        if (count($myTagList) > 0) {
-            foreach ($myTagList as $myTag) {
-                if (strstr($myTag->tag, ' ')) {
-                    $tagStr .= "\"$myTag->tag\" ";
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (strstr($tag->tag, ' ')) {
+                    $tagStr .= "\"$tag->tag\" ";
                 } else {
-                    $tagStr .= "$myTag->tag ";
+                    $tagStr .= "$tag->tag ";
                 }
             }
         }
@@ -314,7 +339,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $callback = function ($select) use ($userId) {
             $select->columns(
                 [
-                    '*',
+                    Select::SQL_STAR,
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))', ['ur.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
@@ -656,7 +681,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $list->delete($this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyLinks(null, $this->id);
+        $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
             $comments = $this->getDbTable('Comments');
             $comments->deleteByUser($this);

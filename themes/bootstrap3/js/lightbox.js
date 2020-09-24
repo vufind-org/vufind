@@ -7,7 +7,7 @@ VuFind.register('lightbox', function Lightbox() {
   var refreshOnClose = false;
   var _modalParams = {};
   // Elements
-  var _modal, _modalBody, _modalTitle, _clickedButton = null;
+  var _modal, _modalBody, _clickedButton = null;
   // Utilities
   function _storeClickedStatus() {
     _clickedButton = this;
@@ -15,10 +15,11 @@ VuFind.register('lightbox', function Lightbox() {
   function _html(content) {
     _modalBody.html(content);
     // Set or update title if we have one
-    if (_lightboxTitle) {
-      _modalTitle.text(_lightboxTitle);
-      _lightboxTitle = false;
+    var $h2 = _modalBody.find("h2:first-of-type");
+    if (_lightboxTitle && $h2) {
+      $h2.text(_lightboxTitle);
     }
+    _lightboxTitle = false;
     _modal.modal('handleUpdate');
   }
   function _emit(msg, _details) {
@@ -255,7 +256,7 @@ VuFind.register('lightbox', function Lightbox() {
         obj.type = 'POST';
         obj.data = $(this).data('lightbox-post');
       }
-      _lightboxTitle = $(this).data('lightbox-title') || '';
+      _lightboxTitle = $(this).data('lightbox-title') || false;
       _modalParams = $(this).data();
       VuFind.modal('show');
       ajax(obj);
@@ -323,7 +324,7 @@ VuFind.register('lightbox', function Lightbox() {
       submit.attr('disabled', 'disabled');
     }
     // Store custom title
-    _lightboxTitle = submit.data('lightbox-title') || $(form).data('lightbox-title') || '';
+    _lightboxTitle = submit.data('lightbox-title') || $(form).data('lightbox-title') || false;
     // Get Lightbox content
     ajax({
       url: $(form).attr('action') || _currentUrl,
@@ -336,6 +337,93 @@ VuFind.register('lightbox', function Lightbox() {
     VuFind.modal('show');
     return false;
   };
+
+  /**
+   * Keyboard and focus controllers
+   * Adapted from Micromodal
+   * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
+   */
+  var FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+  function getFocusableNodes () {
+    var nodes = _modal[0].querySelectorAll(FOCUSABLE_ELEMENTS);
+    return [].slice.apply(nodes);
+  }
+  /**
+   * Tries to set focus on a node which is not a close trigger
+   * if no other nodes exist then focuses on first close trigger
+   */
+  function setFocusToFirstNode() {
+    var focusableNodes = getFocusableNodes();
+
+    // no focusable nodes
+    if (focusableNodes.length === 0) return;
+
+    // remove nodes on whose click, the modal closes
+    var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
+      return !node.hasAttribute("data-lightbox-close") && (
+        !node.hasAttribute("data-dismiss") ||
+        node.getAttribute("data-dismiss") !== "modal"
+      );
+    });
+
+    if (nodesWhichAreNotCloseTargets.length > 0) {
+      nodesWhichAreNotCloseTargets[0].focus();
+    }
+    if (nodesWhichAreNotCloseTargets.length === 0) {
+      focusableNodes[0].focus();
+    }
+  }
+
+  function retainFocus(event) {
+    var focusableNodes = getFocusableNodes();
+
+    // no focusable nodes
+    if (focusableNodes.length === 0) return;
+
+    /**
+     * Filters nodes which are hidden to prevent
+     * focus leak outside modal
+     */
+    focusableNodes = focusableNodes.filter(function nodeHiddenFilter(node) {
+      return (node.offsetParent !== null);
+    });
+
+    // if disableFocus is true
+    if (!_modal[0].contains(document.activeElement)) {
+      focusableNodes[0].focus();
+    } else {
+      var focusedItemIndex = focusableNodes.indexOf(document.activeElement);
+
+      if (event.shiftKey && focusedItemIndex === 0) {
+        focusableNodes[focusableNodes.length - 1].focus();
+        event.preventDefault();
+      }
+
+      if (
+        !event.shiftKey &&
+        focusableNodes.length > 0 &&
+        focusedItemIndex === focusableNodes.length - 1
+      ) {
+        focusableNodes[0].focus();
+        event.preventDefault();
+      }
+    }
+  }
+  function onKeydown(event) {
+    if (event.keyCode === 27) { // esc
+      close();
+    }
+    if (event.keyCode === 9) { // tab
+      retainFocus(event);
+    }
+  }
+  function bindFocus() {
+    document.addEventListener('keydown', onKeydown);
+    setFocusToFirstNode();
+  }
+  function unbindFocus() {
+    document.removeEventListener('keydown', onKeydown);
+  }
 
   // Public: Attach listeners to the page
   function bind(el) {
@@ -383,23 +471,27 @@ VuFind.register('lightbox', function Lightbox() {
     _html(VuFind.translate('loading') + '...');
     _originalUrl = false;
     _currentUrl = false;
-    _lightboxTitle = '';
+    _lightboxTitle = false;
     _modalParams = {};
   }
   function init() {
     _modal = $('#modal');
     _modalBody = _modal.find('.modal-body');
-    _modalTitle = _modal.find('#modal-title');
     _modal.on('hide.bs.modal', function lightboxHide() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();
+      } else {
+        unbindFocus();
+        this.setAttribute('aria-hidden', true);
+        _emit('VuFind.lightbox.closing');
       }
-      this.setAttribute('aria-hidden', true);
-      _emit('VuFind.lightbox.closing');
     });
     _modal.on('hidden.bs.modal', function lightboxHidden() {
       VuFind.lightbox.reset();
       _emit('VuFind.lightbox.closed');
+    });
+    _modal.on("shown.bs.modal", function lightboxShown() {
+      bindFocus();
     });
 
     VuFind.modal = function modalShortcut(cmd) {
