@@ -45,6 +45,8 @@ use VuFindHttp\HttpServiceAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    const HOLDINGS_LINE_NUMBER = 40;
+
     use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -1734,8 +1736,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if (!empty($holdingsResult['entries'])) {
                 foreach ($holdingsResult['entries'] as $entry) {
                     $location = '';
-                    foreach ($entry['fixedFields'] as $field) {
-                        if ('LOCATION' === $field['label']) {
+                    foreach ($entry['fixedFields'] as $code => $field) {
+                        if ($code === static::HOLDINGS_LINE_NUMBER
+                            || $field['label'] === 'LOCATION'
+                        ) {
                             $location = $field['value'];
                             break;
                         }
