@@ -29,7 +29,7 @@ namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\VuFind\Exception;
+use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
