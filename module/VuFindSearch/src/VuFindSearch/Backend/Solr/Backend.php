@@ -357,9 +357,15 @@ class Backend extends AbstractBackend
             $query[] = "work_keys_str_mv:(\"$key\")";
         }
         $params->set('q', implode(' OR ', $query));
-        $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
-        $params->add('rows', 100);
-        $params->add('sort', 'main_date_str desc, title_sort asc');
+        if ($id) {
+            $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
+        }
+        if (!$params->hasParam('rows')) {
+            $params->add('rows', 100);
+        }
+        if (!$params->hasParam('sort')) {
+            $params->add('sort', 'publishDateSort desc, title_sort asc');
+        }
         $response = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
