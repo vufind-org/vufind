@@ -65,7 +65,7 @@
       }
 
       $root = rtrim($this->url('home'), '/');
-      $translations = isset($this->renderingError) ? '{}' : $this->render('js-translations.phtml');
+      $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
