@@ -10,6 +10,8 @@
     <xsl:param name="collection">DSpace</xsl:param>
     <xsl:param name="urlPrefix">http</xsl:param>
     <xsl:param name="geographic">false</xsl:param>
+    <xsl:param name="workKey_include_regEx">/([0-9A-Za-z]+)/</xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
@@ -168,6 +170,13 @@
                             <xsl:value-of select="." />
                         </field>
                     </xsl:if>
+                </xsl:for-each>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dc:title, //dc:creator, $workKey_include_regEx, $workKey_exclude_regEx)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
                 </xsl:for-each>
             </doc>
         </add>
