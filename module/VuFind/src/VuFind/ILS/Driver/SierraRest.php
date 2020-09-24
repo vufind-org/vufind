@@ -291,7 +291,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getStatus($id)
     {
-        return $this->getItemStatusesForBib($id);
+        return $this->getItemStatusesForBib($id, false);
     }
 
     /**
@@ -308,7 +308,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getItemStatusesForBib($id);
+            $items[] = $this->getItemStatusesForBib($id, false);
         }
         return $items;
     }
@@ -1707,19 +1707,20 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id The record id to retrieve the holdings for
+     * @param string $id            The record id to retrieve the holdings for
+     * @param bool   $checkHoldings Whether to check holdings records
      *
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    protected function getItemStatusesForBib($id)
+    protected function getItemStatusesForBib($id, $checkHoldings)
     {
         // If we need to look at bib call numbers, retrieve varFields:
         $bibFields = empty($this->config['CallNumber']['bib_fields'])
             ? 'bibLevel' : 'bibLevel,varFields';
         $bib = $this->getBibRecord($id, $bibFields);
         $holdingsData = [];
-        if ($this->apiVersion >= 5.1) {
+        if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
                 ['v5', 'holdings'],
                 [
