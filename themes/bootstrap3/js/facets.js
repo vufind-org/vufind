@@ -106,25 +106,23 @@ function initFacetTree(treeNode, inSidebar)
   }
   treeNode.data('loaded', true);
 
-  var source = treeNode.data('source');
-  var facet = treeNode.data('facet');
-  var operator = treeNode.data('operator');
-  var sort = treeNode.data('sort');
-  var query = window.location.href.split('?')[1];
-
   if (inSidebar) {
     treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></li>');
   } else {
     treeNode.prepend('<div><i class="fa fa-spinner fa-spin" aria-hidden="true"></i><div>');
   }
-  $.getJSON(VuFind.path + '/AJAX/JSON?' + query,
-    {
-      method: "getFacetData",
-      source: source,
-      facetName: facet,
-      facetSort: sort,
-      facetOperator: operator
-    },
+  var request = {
+    method: "getFacetData",
+    source: treeNode.data('source'),
+    facetName: treeNode.data('facet'),
+    facetSort: treeNode.data('sort'),
+    facetOperator: treeNode.data('operator'),
+    query: treeNode.data('query'),
+    querySuppressed: treeNode.data('querySuppressed'),
+    extraFields: treeNode.data('extraFields')
+  };
+  $.getJSON(VuFind.path + '/AJAX/JSON?' + request.query,
+    request,
     function getFacetData(response/*, textStatus*/) {
       buildFacetTree(treeNode, response.data.facets, inSidebar);
     }
