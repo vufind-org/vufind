@@ -112,7 +112,9 @@ class GetFacetData extends AbstractBase
         } else {
             // Set appropriate query suppression / extra field behavior:
             $queryHelper = $results->getUrlQuery();
-            $queryHelper->setSuppressQuery((bool)($request['querySuppressed'] ?? false));
+            $queryHelper->setSuppressQuery(
+                (bool)($request['querySuppressed'] ?? false)
+            );
             $extraFields = array_filter(explode(',', $request['extraFields'] ?? ''));
             foreach ($extraFields as $field) {
                 if (isset($request[$field])) {
