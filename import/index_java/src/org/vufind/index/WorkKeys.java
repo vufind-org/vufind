@@ -86,8 +86,9 @@ public class WorkKeys
     /**
      * Create a key string
      *
-     * @param  s      String to normalize
-     * @param  regExp Regular expression defining characters to strip out
+     * @param  s            String to normalize
+     * @param  includeRegEx Regular expression defining characters to keep
+     * @param  excludeRegEx Regular expression defining characters to remove
      * @return cleaned up string
      */
     protected String normalizeWorkKey(final String s, final String includeRegEx, final String excludeRegEx)
