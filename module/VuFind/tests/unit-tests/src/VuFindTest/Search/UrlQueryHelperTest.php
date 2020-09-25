@@ -69,6 +69,8 @@ class UrlQueryHelperTest extends TestCase
             '?foo=baz&lookfor=search',
             $helper->setDefaultParameter('foo', 'baz')->getParams(false)
         );
+        // Confirm that we can look up a list of configured parameters:
+        $this->assertEquals(['foo'], $helper->getParamsWithConfiguredDefaults);
 
         // Test query suppression
         $this->assertEquals(false, $helper->isQuerySuppressed());
