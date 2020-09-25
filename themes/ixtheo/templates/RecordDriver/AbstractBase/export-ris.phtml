@@ -1,4 +1,5 @@
 <?php
+// TODO: fold this logic into record driver methods at some point:
 $marc = $this->driver->tryMethod('getMarcRecord');
 if (is_object($marc)) {
     $marcPhdField = $marc->getField('502');
@@ -6,19 +7,20 @@ if (is_object($marc)) {
 } else {
     $marcPhdField = $marcProceedingsField = false;
 }
+$journalTitle = $this->driver->tryMethod('getContainerTitle');
 $formats = $this->driver->tryMethod('getFormats');
 if ($marcProceedingsField) {
     $format = 'CONF';
-} else if ($marcPhdField) {
+} elseif ($marcPhdField) {
     $format = 'THES';
-} else if (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
+} elseif (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
     // Possibly the superior work is a book although all the above criteria match
     $superior_formats = $this->driver->tryMethod('getSuperiorFormats');
     if (!empty($superior_formats) && in_array('Book', $superior_formats))
         $format = 'CHAP';
     else
         $format = 'JOUR';
-} else if (is_array($formats) && in_array('Journal', $formats)) {
+} elseif (is_array($formats) && in_array('Journal', $formats)) {
     $format = 'JFULL';
 } else {
     $format = 'BOOK';
@@ -63,16 +65,14 @@ if (!empty($volume)) {
     echo 'VL  - ' . "$volume\r\n";
 }
 
-
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series) && !empty($series)) {
     foreach ($series as $current) {
         echo 'T3  - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
         // If we do not have a volume yet, derive it from here
-        if (empty($volume)) {
-            $volume =  $current['number'];
-            if (!empty($volume))
-                echo 'VL  - ' . "$volume\r\n";
+        if (empty($volume) && !empty($current['number'])) {
+            $volume = $current['number'];
+            echo 'VL  - ' . "$volume\r\n";
         }
     }
 } else {
@@ -120,7 +120,6 @@ if ($format == 'CHAP') {
     $this->tuefind()->printPublicationInformation($pubPlaces, $pubDates, $pubNames);
 }
 
-
 $languages = $this->driver->tryMethod('getLanguages');
 if (is_array($languages)) {
     foreach ($languages as $lang) {
@@ -128,14 +127,14 @@ if (is_array($languages)) {
     }
 }
 
-$genres =  $this->driver->tryMethod('getGenres');
+$genres = $this->driver->tryMethod('getGenres');
 if (is_array($genres)) {
     foreach ($genres as $genre) {
         echo 'M3  - ' . "$genre\r\n";
     }
 }
 
-$topics =  $this->driver->tryMethod('getTopics');
+$topics = $this->driver->tryMethod('getTopics');
 if (is_array($topics)) {
     foreach ($topics as $topic) {
         echo 'KW  - ' . "$topic\r\n";
