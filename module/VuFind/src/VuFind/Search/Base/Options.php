@@ -709,7 +709,7 @@ abstract class Options implements TranslatorAwareInterface
         } elseif (isset($this->advancedHandlers[$field])) {
             return $this->translate($this->advancedHandlers[$field]);
         } else {
-            return $this->translate("search_field_$field", null, $field);
+            return $field;
         }
     }
 
@@ -792,6 +792,17 @@ abstract class Options implements TranslatorAwareInterface
      * @return string|bool
      */
     public function getFacetListAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the versions search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
     {
         return false;
     }

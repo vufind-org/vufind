@@ -253,21 +253,17 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function getVersionsSearchUrl($driver)
     {
-        $mapFunc = function ($val) {
-            return addcslashes($val, '"');
-        };
-        $keys = $driver->tryMethod('getWorkKeys', [], []);
-        $imploded = implode('" OR "', array_map($mapFunc, $keys));
+        $route = $this->getVersionsActionForSource($driver->getSourceIdentifier());
+        if (false === $route) {
+            return '';
+        }
+
         $urlParams = [
-            'join' => 'AND',
-            'lookfor0[]' => "\"$imploded\"",
-            'type0[]' => 'WorkKeys',
-            'bool0[]' => 'AND',
-            'sort' => 'publishDateSort desc'
+            'id' => $driver->getUniqueID(),
+            'keys' => $driver->tryMethod('getWorkKeys', [], [])
         ];
 
         $urlHelper = $this->getView()->plugin('url');
-        $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
         $url = $urlHelper($route, [], ['query' => $urlParams]);
         // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
@@ -285,5 +281,19 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
         return $optionsHelper->__invoke($source)->getSearchAction();
+    }
+
+    /**
+     * Given a record source ID, return the route name for version search with its
+     * backend.
+     *
+     * @param string $source Record source identifier.
+     *
+     * @return string|bool
+     */
+    protected function getVersionsActionForSource($source)
+    {
+        $optionsHelper = $this->getView()->plugin('searchOptions');
+        return $optionsHelper->__invoke($source)->getVersionsAction();
     }
 }

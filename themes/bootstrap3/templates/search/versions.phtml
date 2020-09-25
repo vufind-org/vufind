@@ -1,0 +1,116 @@
+<?php
+  // Set up page title:
+  $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
+  $headTitle = $this->slot('head-title')->get($this->translate('Versions'));
+  $this->headTitle($headTitle);
+
+  $this->slot('search-heading')->set('');
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      [
+        'lookfor' => '',
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchType' => $this->params->getSearchType(),
+        'searchId' => $this->results->getSearchId(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'filterList' => $this->params->getFilterList(true),
+        'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
+        'selectedShards' => $this->params->getSelectedShards(),
+        'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
+        'ignoreHiddenFilterMemory' => isset($this->ignoreHiddenFilterMemory) ? $this->ignoreHiddenFilterMemory : false,
+      ]
+  );
+
+  // Set up breadcrumbs:
+  $titleLink = '';
+  if ($this->driver) {
+    $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLink()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
+  }
+
+  $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . $titleLink . '</li>';
+
+  // Enable cart if appropriate:
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  // Checkboxes if appropriate:
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+    && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
+  // Enable bulk options if appropriate:
+  $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
+
+  $this->render('search/results-scripts.phtml');
+
+  // Load only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption() !== 'full') {
+      $this->headScript()->appendFile("record.js");
+      $this->headScript()->appendFile("embedded_record.js");
+  }
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?php $recordTotal = $this->results->getResultTotal(); ?>
+  <?=$this->flashmessages()?>
+  <div class="search-header hidden-print">
+    <div class="search-stats">
+      <?php if ($recordTotal > 0): ?>
+        <?=$this->context()->renderInContext('search/controls/showing.phtml', ['recordTotal' => $recordTotal]) ?>
+        <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand') ?>">
+          <?=$this->transEsc('Refine Results') ?>
+        </a>
+      <?php else: ?>
+        <h2><?=$this->transEsc('nohit_heading')?></h2>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($recordTotal > 0): ?>
+      <div class="search-controls">
+        <?=$this->render('search/controls/limit.phtml')?>
+        <?=$this->render('search/controls/sort.phtml')?>
+        <?=$this->render('search/controls/view.phtml')?>
+      </div>
+    <?php endif; ?>
+  </div>
+  <?php /* End Listing Options */ ?>
+
+  <?php if ($recordTotal < 1): ?>
+    <p>
+      <?php
+        $emptyMessage = $this->slot('empty-message')->get(
+          $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->transEsc('Versions')])
+        );
+        $this->layout()->srmessage = $emptyMessage;
+        echo $emptyMessage;
+      ?>
+    </p>
+    <?php if (isset($this->parseError)): ?>
+      <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+    <?php endif; ?>
+  <?php else: ?>
+    <form id="search-cart-form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
+    </form>
+    <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []])?>
+
+    <div class="searchtools hidden-print">
+      <strong><?=$this->transEsc('Search Tools')?>:</strong>
+      <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell" aria-hidden="true"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+      &mdash;
+      <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
+        <i class="fa fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Email this Search')?>
+      </a>
+    </div>
+  <?php endif; ?>
+</div>
+<?php /* End Main Listing */ ?>
+
+<?php /* Narrow Search Options */ ?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+  <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
+    <?=$this->recommend($current, 'side', $index)?>
+  <?php endforeach; ?>
+</div>
+<?php /* End Narrow Search Options */ ?>

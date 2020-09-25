@@ -12,7 +12,9 @@
   );
 ?>
 <?php if ($this->slot('search-heading')->isset()): ?>
-  <?php $showingResults .= ' ' . $this->slot('search-heading')->get(); ?>
+  <?php if ($heading = $this->slot('search-heading')->get()): ?>
+    <?php $showingResults .= " $heading"; ?>
+  <?php endif; ?>
 <?php elseif ($this->params->getSearchType() == 'basic'):
   $showingResults = $this->translate(
     isset($this->skipTotalCount) ? 'showing_results_for_html' : 'showing_results_of_for_html',
