@@ -91,13 +91,18 @@ class UrlQueryHelperTest extends TestCase
         // default does NOT override the existing value.
         $this->assertEquals(
             '?foo=bar&lookfor=search',
-            $helper->setDefaultParameter('foo', 'baz')->getParams(false)
+            $helper->setDefaultParameter('foo', 'baz', false)->getParams(false)
         );
         // Now let's add a default parameter that was NOT part of the incoming
         // request... we DO want this to get added to the query:
         $this->assertEquals(
             '?foo=bar&lookfor=search&xyzzy=true',
-            $helper->setDefaultParameter('xyzzy', 'true')->getParams(false)
+            $helper->setDefaultParameter('xyzzy', 'true', false)->getParams(false)
+        );
+        // Finally, let's force an override of an existing parameter:
+        $this->assertEquals(
+            '?foo=baz&lookfor=search&xyzzy=true',
+            $helper->setDefaultParameter('foo', 'baz', true)->getParams(false)
         );
 
         // Confirm that we can look up a list of configured parameters:
