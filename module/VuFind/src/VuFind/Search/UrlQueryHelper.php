@@ -200,7 +200,8 @@ class UrlQueryHelper
     public function setDefaultParameter($name, $value, $forceOverride = true)
     {
         // Add the new default to the configuration, and apply it to the query
-        // if no existing value has already been set in this position.
+        // if no existing value has already been set in this position (or if an
+        // override has been forced).
         $this->config['defaults'][$name] = $value;
         if (!isset($this->urlParams[$name]) || $forceOverride) {
             $this->urlParams[$name] = $value;
