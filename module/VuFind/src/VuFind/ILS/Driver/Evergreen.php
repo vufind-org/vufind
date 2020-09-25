@@ -119,7 +119,9 @@ FROM config.copy_status ccs
     INNER JOIN asset.copy ac ON ac.status = ccs.id
     INNER JOIN asset.call_number acn ON acn.id = ac.call_number
     INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
-WHERE acn.record = ?
+WHERE 
+    acn.record = ? AND
+    NOT ac.deleted
 HERE;
 
         // Execute SQL
@@ -218,7 +220,9 @@ FROM config.copy_status ccs
     FULL JOIN action.circulation circ ON (
         ac.id = circ.target_copy AND circ.checkin_time IS NULL
     )
-WHERE acn.record = ?
+WHERE 
+    acn.record = ? AND
+    NOT ac.deleted
 HERE;
 
         // Execute SQL

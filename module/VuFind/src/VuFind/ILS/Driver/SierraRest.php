@@ -28,8 +28,8 @@
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
@@ -45,6 +45,8 @@ use VuFindHttp\HttpServiceAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    const HOLDINGS_LINE_NUMBER = 40;
+
     use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -291,7 +293,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getStatus($id)
     {
-        return $this->getItemStatusesForBib($id);
+        return $this->getItemStatusesForBib($id, false);
     }
 
     /**
@@ -308,7 +310,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getItemStatusesForBib($id);
+            $items[] = $this->getItemStatusesForBib($id, false);
         }
         return $items;
     }
@@ -1707,19 +1709,20 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id The record id to retrieve the holdings for
+     * @param string $id            The record id to retrieve the holdings for
+     * @param bool   $checkHoldings Whether to check holdings records
      *
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    protected function getItemStatusesForBib($id)
+    protected function getItemStatusesForBib($id, $checkHoldings)
     {
         // If we need to look at bib call numbers, retrieve varFields:
         $bibFields = empty($this->config['CallNumber']['bib_fields'])
             ? 'bibLevel' : 'bibLevel,varFields';
         $bib = $this->getBibRecord($id, $bibFields);
         $holdingsData = [];
-        if ($this->apiVersion >= 5.1) {
+        if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
                 ['v5', 'holdings'],
                 [
@@ -1733,8 +1736,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if (!empty($holdingsResult['entries'])) {
                 foreach ($holdingsResult['entries'] as $entry) {
                     $location = '';
-                    foreach ($entry['fixedFields'] as $field) {
-                        if ('LOCATION' === $field['label']) {
+                    foreach ($entry['fixedFields'] as $code => $field) {
+                        if ($code === static::HOLDINGS_LINE_NUMBER
+                            || $field['label'] === 'LOCATION'
+                        ) {
                             $location = $field['value'];
                             break;
                         }

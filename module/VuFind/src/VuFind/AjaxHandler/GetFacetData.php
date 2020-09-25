@@ -93,25 +93,39 @@ class GetFacetData extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        $facet = $params->fromQuery('facetName');
-        $sort = $params->fromQuery('facetSort');
-        $operator = $params->fromQuery('facetOperator');
-        $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        // Allow both GET and POST variables:
+        $request = $params->fromQuery() + $params->fromPost();
+
+        $facet = $request['facetName'] ?? null;
+        $sort = $request['facetSort'] ?? null;
+        $operator = $request['facetOperator'] ?? null;
+        $backend = $request['source'] ?? DEFAULT_SEARCH_BACKEND;
 
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->addFacet($facet, null, $operator === 'OR');
-        $paramsObj->initFromRequest(new Parameters($params->fromQuery()));
+        $paramsObj->initFromRequest(new Parameters($request));
 
         $facets = $results->getFullFieldFacets([$facet], false, -1, 'count');
         if (empty($facets[$facet]['data']['list'])) {
             $facets = [];
         } else {
+            // Set appropriate query suppression / extra field behavior:
+            $queryHelper = $results->getUrlQuery();
+            $queryHelper->setSuppressQuery(
+                (bool)($request['querySuppressed'] ?? false)
+            );
+            $extraFields = array_filter(explode(',', $request['extraFields'] ?? ''));
+            foreach ($extraFields as $field) {
+                if (isset($request[$field])) {
+                    $queryHelper->setDefaultParameter($field, $request[$field]);
+                }
+            }
+
             $facetList = $facets[$facet]['data']['list'];
             $this->facetHelper->sortFacetList($facetList, $sort);
-            $facets = $this->facetHelper->buildFacetArray(
-                $facet, $facetList, $results->getUrlQuery(), false
-            );
+            $facets = $this->facetHelper
+                ->buildFacetArray($facet, $facetList, $queryHelper, false);
         }
         return $this->formatResponse(compact('facets'));
     }
