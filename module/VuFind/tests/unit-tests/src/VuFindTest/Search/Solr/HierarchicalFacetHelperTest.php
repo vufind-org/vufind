@@ -346,6 +346,38 @@ class HierarchicalFacetHelperTest extends TestCase
     }
 
     /**
+     * Tests for getFilterStringParts
+     *
+     * @return void
+     */
+    public function testGetFilterStringParts()
+    {
+        $result = $this->helper->getFilterStringParts('0/Foo/');
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertEquals('Foo', $result[0]->getDisplayString());
+
+        $result = $this->helper->getFilterStringParts('1/Foo/Bar/');
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertEquals('1/Foo/Bar/', (string)$result[1]);
+        $this->assertEquals('Foo', $result[0]->getDisplayString());
+        $this->assertEquals('Bar', $result[1]->getDisplayString());
+
+        $result = $this->helper->getFilterStringParts('Foo/Bar/');
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Foo/Bar/', $result[0]);
+
+        $result = $this->helper->getFilterStringParts('Foo');
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $this->assertEquals('Foo', $result[0]);
+    }
+
+    /**
      * Set 'isApplied' to true in facet item with the given value
      *
      * @param string $facetValue Value to search for
