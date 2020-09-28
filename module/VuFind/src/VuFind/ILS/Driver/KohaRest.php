@@ -152,6 +152,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
     /**
      * Permanent renewal blocks
+     *
+     * @var array
      */
     protected $permanentRenewalBlocks = [
         'onsite_checkout',
@@ -161,6 +163,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
     /**
      * Patron status mappings
+     *
+     * @var array
      */
     protected $patronStatusMappings = [
         'Hold::MaximumHoldsReached' => 'patron_status_maximum_requests',
@@ -169,6 +173,16 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'Patron::Debt' => 'patron_status_debt_limit_reached',
         'Patron::DebtGuarantees' => 'patron_status_guarantees_debt_limit_reached',
         'Patron::GoneNoAddress' => 'patron_status_address_missing',
+    ];
+
+    /**
+     * Item status mappings
+     *
+     * @var array
+     */
+    protected $itemStatusMappings = [
+        // NotForLoan with status number 1 is available in Koha by default:
+        'Item::NotForLoan1' => 'On Reference Desk'
     ];
 
     /**
@@ -243,6 +257,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (!empty($this->config['PatronStatusMappings'])) {
             $this->patronStatusMappings = array_merge(
                 $this->patronStatusMappings, $this->config['PatronStatusMappings']
+            );
+        }
+
+        if (!empty($this->config['ItemStatusMappings'])) {
+            $this->itemStatusMappings = array_merge(
+                $this->itemStatusMappings, $this->config['ItemStatusMappings']
             );
         }
 
@@ -1726,8 +1746,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $statuses[] = 'On Shelf';
         } elseif (isset($item['availability']['unavailabilities'])) {
             foreach ($item['availability']['unavailabilities'] as $key => $reason) {
-                if (isset($this->config['ItemStatusMappings'][$key])) {
-                    $statuses[] = $this->config['ItemStatusMappings'][$key];
+                if (isset($this->itemStatusMappings[$key])) {
+                    $statuses[] = $this->itemStatusMappings[$key];
                 } elseif (strncmp($key, 'Item::', 6) == 0) {
                     $status = substr($key, 6);
                     switch ($status) {
@@ -1748,18 +1768,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         break;
                     case 'NotForLoan':
                     case 'NotForLoanForcing':
-                        if (isset($reason['code'])) {
-                            switch ($reason['code']) {
-                            case 'Not For Loan':
-                                $statuses[] = 'On Reference Desk';
-                                break;
-                            default:
-                                $statuses[] = $reason['code'];
-                                break;
-                            }
-                        } else {
-                            $statuses[] = 'On Reference Desk';
-                        }
+                        // NotForLoan is special: status has a library-specific
+                        // status number. Allow mapping of different status numbers
+                        // separately (e.g. Item::NotForLoan with status number 4
+                        // is mapped with key Item::NotForLoan4):
+                        $statusKey = $key . ($reason['status'] ?? '-');
+                        $statuses[] = $this->itemStatusMappings[$statusKey]
+                            ?? $reason['code'] ?? $statusKey;
                         break;
                     case 'Transfer':
                         $onHold = false;
