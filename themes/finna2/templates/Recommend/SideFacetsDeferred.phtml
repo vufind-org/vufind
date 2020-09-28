@@ -24,8 +24,21 @@
   $resultsTotal = $results->getResultTotal();
 ?>
 <?php if ($resultsTotal > 0): ?>
-<div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex) ?>">
-  <h1><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?><?php if (null === $this->slot('side-facet-caption')->get() && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><?php endif; ?></h1>
+  <?php
+    // We need to pass the current URL query to the Javascript; we use substr() to
+    // strip off the leading ? character. The "suppress query" option is used for
+    // special search types like course reserves / new items. The AJAX handler needs
+    // the real Solr query in order to process facets correctly, so we need to
+    // unsuppress it here.
+    $querySuppressed = $results->getUrlQuery()->isQuerySuppressed();
+    $urlQuery = substr($results->getUrlQuery()->setSuppressQuery(false)->getParams(false), 1);
+    $results->getUrlQuery()->setSuppressQuery($querySuppressed); // restore original config
+    // We also need to inform the helper about any special parameters used in place
+    // of the suppressed query:
+    $extraUrlFields = $results->getUrlQuery()->getParamsWithConfiguredDefaults();
+  ?>
+  <div class="side-facets-container-ajax" data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>" data-location="<?=$this->escapeHtmlAttr($this->location) ?>" data-config-index="<?=$this->escapeHtmlAttr($this->configIndex)?>" data-query="<?=$this->escapeHtmlAttr($urlQuery)?>" data-query-suppressed="<?=$querySuppressed ? '1' : '0' ?>" data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
+ <h1><i class="fa fa-arrow-down visible-xs pull-left"></i> <?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?><?php if (null === $this->slot('side-facet-caption')->get() && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet pull-right" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><i class="fa fa-info-big"></i></span><?php endif; ?></h1>
 <?php endif; ?>
 <?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
 <?php $checkboxesShown = false; ?>
