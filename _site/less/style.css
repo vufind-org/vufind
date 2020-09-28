@@ -6454,3 +6454,21 @@ quote span {
   font-size: 12px;
   opacity: .5;
 }
+
+.header-announcement {
+  padding: 1px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #212e0e;
+  background-color: #8dc63f;
+}
+.header-announcement p {
+  margin: 0;
+  margin-bottom: 4px;
+  text-align: center;
+}
+.header-announcement a {
+  color: #212e0e;
+  text-decoration: underline;
+}

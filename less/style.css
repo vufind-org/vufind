@@ -6190,12 +6190,10 @@ button.close {
 .t-black {
   color: #000000;
 }
-.t-white,
-.body .demo-button {
+.t-white {
   color: #ffffff;
 }
-.blue,
-.body {
+.blue {
   background: #336e99;
   color: #ffffff;
 }
@@ -6203,13 +6201,11 @@ button.close {
   background: #8dc63f;
   color: #000000;
 }
-.orange,
-.body .demo-button {
+.orange {
   background: #ff8800;
   color: #ffffff;
 }
-.lgrey,
-.footer {
+.lgrey {
   background: #dddfdd;
   color: #666766;
 }
@@ -6257,9 +6253,6 @@ p {
   text-align: left;
   text-indent: 2em;
 }
-iframe {
-  max-width: 100%;
-}
 .table {
   background: #2d6086;
   color: #FFF;
@@ -6280,39 +6273,28 @@ iframe {
   padding: 1em 0;
 }
 .header {
-  width: 100%;
-  margin: 0;
+  background: #FFF;
   border: 4px solid #8dc63f;
   border-width: 6px 0;
-  background: #FFF;
+  margin: 0;
   text-align: center;
-}
-@media (min-width: 1015px) {
-  .header .header-break {
-    display: none;
-  }
+  width: 100%;
 }
 .header img {
   display: inline-block;
   margin: 5px;
 }
-.header a.logo {
-  display: inline-block;
-}
-.header a.logo img {
-  padding-left: 2rem;
-}
 .header a:not(.logo) {
   display: inline-block;
-  padding: 29px 10px;
-  font-size: 17px;
   font-family: "Questrial";
+  font-size: 17px;
+  padding: 29px 10px;
   text-decoration: none;
   vertical-align: top;
 }
 .header a:not(.logo):hover {
-  color: #FFF;
   background: #8DC63F;
+  color: #FFF;
 }
 @media (max-width: 991px) {
   .header a:not(.logo) {
@@ -6325,6 +6307,8 @@ iframe {
   }
 }
 .body {
+  background: #336e99;
+  color: #ffffff;
   padding: 16px 6px;
 }
 .body a {
@@ -6339,17 +6323,19 @@ iframe {
 .body h3,
 .body h4,
 .body h5 {
-  font-weight: 500;
   color: #FFF;
+  font-weight: 500;
   text-shadow: 0 1px 0 #333344;
 }
 .body .demo-button {
+  background: #ff8800;
+  color: #ffffff;
+  border: 3px solid #FFF;
+  border-radius: 3px;
   display: table;
+  font-size: 20pt;
   margin: auto;
   padding: 9px 20px;
-  border: 3px solid #FFF;
-  font-size: 20pt;
-  border-radius: 3px;
   text-decoration: none;
 }
 .body .demo-button:hover {
@@ -6357,24 +6343,24 @@ iframe {
   text-decoration: underline;
 }
 .carousel {
-  max-width: 545px;
-  margin: auto;
   box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+  margin: auto;
+  max-width: 545px;
 }
 .carousel .carousel-caption {
+  background: rgba(0, 0, 0, 0.4);
   bottom: 0px;
   left: 0px;
   right: 0px;
   padding: 8px 10px 25px 10px;
-  background: rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 .carousel .carousel-control {
-  padding-top: 20%;
+  background-image: none;
   font-size: 62pt;
   font-weight: bold;
-  background-image: none;
   text-decoration: none;
+  padding-top: 20%;
 }
 .carousel .carousel-control.left {
   padding-left: 5px;
@@ -6385,8 +6371,8 @@ iframe {
   text-align: right;
 }
 .carousel .carousel-indicators {
-  top: auto;
   bottom: -5px;
+  top: auto;
 }
 .carousel .item {
   height: 325px;
@@ -6397,14 +6383,15 @@ iframe {
   margin: 0 auto;
 }
 .content {
-  padding: 20px;
   color: #FFF;
+  padding: 20px;
 }
 .footer {
-  padding: 1em;
-  font-size: 14px;
+  background: #dddfdd;
   border-top: 1px solid #666766;
   color: #666766;
+  font-size: 14px;
+  padding: 1em;
 }
 .footer p {
   line-height: 1em;
@@ -6419,39 +6406,34 @@ iframe {
   margin: auto;
 }
 ul.support {
+  list-style: none;
   padding-left: 40px;
   text-indent: -30px;
-  list-style: none;
 }
 ul.support a {
   font-weight: bold;
 }
 quote {
-  display: block;
-  padding: 1em 0;
   border-bottom: 1px dotted #FFF;
+  display: block;
+  padding: 1em;
 }
 quote b {
-  display: block;
-  margin-bottom: 7px;
-  font-weight: 500;
   color: #FFF;
+  display: block;
+  font-weight: 500;
+  margin-bottom: 7px;
   text-align: justify;
 }
 quote span {
+  color: #bcdd8e;
   display: block;
   text-align: right;
-  color: #bcdd8e;
-}
-@media (min-width: 768px) {
-  quote {
-    padding: 1rem;
-  }
 }
 .video {
+  background: rgba(0, 0, 0, 0.7);
   padding: 6px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.7);
 }
 .video a {
   color: #8dc63f;
@@ -6461,9 +6443,9 @@ quote span {
   margin: 6px auto;
 }
 .newsfeed .feed-item-title {
-  margin: 5px 10px;
   font-size: 12pt;
   font-weight: normal;
+  margin: 5px 10px;
 }
 .newsfeed .lead {
   margin-bottom: 5px;
@@ -6471,4 +6453,22 @@ quote span {
 .newsfeed .rss2html-note {
   font-size: 12px;
   opacity: .5;
+}
+
+.header-announcement {
+  padding: 1px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #212e0e;
+  background-color: #8dc63f;
+}
+.header-announcement p {
+  margin: 0;
+  margin-bottom: 4px;
+  text-align: center;
+}
+.header-announcement a {
+  color: #212e0e;
+  text-decoration: underline;
 }
