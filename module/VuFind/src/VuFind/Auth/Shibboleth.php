@@ -148,7 +148,8 @@ class Shibboleth extends AbstractBase
         $username = $this->getAttribute($request, $shib['username']);
         $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
         if (empty($username)) {
-            $details = ($proxy) ? $request->getHeaders()->toArray() : $request->getServer()->toArray();
+            $details = ($proxy) ? $request->getHeaders()->toArray()
+                : $request->getServer()->toArray();
             $this->debug(
                 "No username attribute ({$shib['username']}) present in request: "
                 . print_r($details, true)
@@ -163,7 +164,8 @@ class Shibboleth extends AbstractBase
                 $this->getAttribute($request, $key)
             )
             ) {
-                $details = ($proxy) ? $request->getHeaders()->toArray() : $request->getServer()->toArray();
+                $details = ($proxy) ? $request->getHeaders()->toArray()
+                    : $request->getServer()->toArray();
                 $this->debug(
                     "Attribute '$key' does not match required value '$value' in"
                     . ' request: ' . print_r($details, true)
