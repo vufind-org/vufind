@@ -151,8 +151,8 @@ method = driver
 ;url[sv] = http://address.of.change.form/swedish
 ;url[en-gb] = http://address.of.change.form/english
 
-; Blacklist for removing certain methods from a service
-[messagingBlackLists]
+; Filters for removing certain methods from a service
+[messagingFilters]
 ; A colon-separated list used to remove certain method types from a service
 ; Meanings: snailMail = letter, ilsDefined = none
 ; Allowed options:

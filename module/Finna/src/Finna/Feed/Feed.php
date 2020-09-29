@@ -292,7 +292,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
   <channel>
     <atom:link href="" rel="self" type="application/rss+xml"/>
     <link></link>
-    <title><![CDATA[<!-- Feed URL blacklisted -->]]></title>
+    <title><![CDATA[<!-- Feed URL blocked -->]]></title>
     <description></description>
   </channel>
 </rss>

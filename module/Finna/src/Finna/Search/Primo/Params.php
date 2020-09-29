@@ -63,20 +63,20 @@ class Params extends \VuFind\Search\Primo\Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     * @param array $allowed List of checkbox filters to return (null for all)
      *
      * @return array
      */
-    public function getCheckboxFacets(array $whitelist = null)
+    public function getCheckboxFacets(array $allowed = null)
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $res = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
-                // If the current filter is not on the whitelist, skip it (but
-                // accept everything if the whitelist is empty).
-                if (!empty($whitelist) && !in_array($facet['filter'], $whitelist)) {
+                // If the current filter is not allowed, skip it (but accept
+                // everything if the list of allowed facets is empty).
+                if (!empty($allowed) && !in_array($facet['filter'], $allowed)) {
                     continue;
                 }
                 if ($this->hasHiddenFilter($facet['filter'])) {

@@ -82,11 +82,13 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
      */
     public function changePassword($details)
     {
-        // First check that the new password is not blacklisted
-        if (!empty($this->config['Catalog']['login_password_blacklist'])) {
+        // First check that the new password is not blocked
+        $blocklist = $this->config['Catalog']['login_password_blocklist']
+            ?? $this->config['Catalog']['login_password_blacklist']
+            ?? [];
+        if (!empty($blocklist)) {
             $newPIN = trim($this->sanitizePIN($details['newPassword']));
-            $blacklist = $this->config['Catalog']['login_password_blacklist'];
-            if (in_array($newPIN, $blacklist)) {
+            if (in_array($newPIN, $blocklist)) {
                 return [
                     'success' => false, 'status' => 'password_error_invalid'
                 ];

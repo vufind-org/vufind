@@ -295,10 +295,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     {
         $urls = [];
         foreach (parent::getURLs() as $url) {
-            $blacklisted = $this->urlBlacklisted(
-                $url['url'] ?? ''
-            );
-            if (!$blacklisted) {
+            if (!$this->urlBlocked($url['url'] ?? '')) {
                 $urls[] = $url;
             }
         }

@@ -736,7 +736,13 @@ trait VoyagerFinna
      */
     public function patronLogin($barcode, $login, $secondary = null)
     {
-        // First check that the login is not blacklisted
+        // First check that the login is not blocked
+        if (!empty($this->config['Catalog']['login_password_blocklist'])
+            && in_array($login, $this->config['Catalog']['login_password_blocklist'])
+        ) {
+            return null;
+        }
+        // Keep the following lines for back-compatibility:
         if (!empty($this->config['Catalog']['login_password_blacklist'])
             && in_array($login, $this->config['Catalog']['login_password_blacklist'])
         ) {

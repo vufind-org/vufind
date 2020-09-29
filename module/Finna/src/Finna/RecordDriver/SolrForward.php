@@ -1104,7 +1104,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     }
                 );
 
-                if ($this->urlBlacklisted($url, $description)) {
+                if ($this->urlBlocked($url, $description)) {
                     continue;
                 }
 

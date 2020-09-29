@@ -107,7 +107,7 @@ class SolrEad3 extends SolrEad
         foreach ($record->did->xpath('//daoset/dao') as $node) {
             $url = (string)$node->attributes()->href;
             $desc = $node->attributes()->linktitle ?? $url;
-            if (!$this->urlBlacklisted($url, $desc)) {
+            if (!$this->urlBlocked($url, $desc)) {
                 $urls[] = [
                     'url' => $url,
                     'desc' => $desc

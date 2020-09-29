@@ -54,11 +54,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected $simpleXML;
 
     /**
-     * Blacklist for undisplayable file formats
+     * List of undisplayable file formats
      *
      * @var array
      */
-    protected $fileFormatBlackList = [];
+    protected $undisplayableFileFormats = [];
 
     /**
      * Images cache
@@ -80,11 +80,15 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     public function __construct($mainConfig = null, $recordConfig = null,
         $searchSettings = null
     ) {
-        if (isset($mainConfig['Content']['lidoFileFormatBlackList'])) {
-            $blackList = $mainConfig['Content']['lidoFileFormatBlackList'];
-            $this->fileFormatBlackList = explode(',', $blackList);
-        }
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
+        // Keep old setting name for back-compatibility:
+        $this->undisplayableFileFormats
+            = explode(
+                ',',
+                $mainConfig['Content']['lidoFileFormatBlockList']
+                    ?? $mainConfig['Content']['lidoFileFormatBlackList']
+                    ?? ''
+            );
     }
 
     /**
@@ -228,15 +232,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 if (empty((string)$linkResource)) {
                     continue;
                 }
-                if (!empty($this->fileFormatBlackList)
+                if (!empty($this->undisplayableFileFormats)
                     && isset($linkResource->attributes()->formatResource)
                     && $attributes->type !== 'image_original'
                 ) {
                     $format = trim(
                         (string)$linkResource->attributes()->formatResource
                     );
-                    $formatDisallowed
-                        = in_array(strtolower($format), $this->fileFormatBlackList);
+                    $formatDisallowed = in_array(
+                        strtolower($format), $this->undisplayableFileFormats
+                    );
                     if ($formatDisallowed) {
                         continue;
                     }
@@ -892,11 +897,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     {
         $urls = [];
         foreach (parent::getURLs() as $url) {
-            $blacklisted = $this->urlBlacklisted(
-                $url['url'] ?? '',
-                $url['desc'] ?? ''
-            );
-            if (!$blacklisted) {
+            if (!$this->urlBlocked($url['url'] ?? '', $url['desc'] ?? '')) {
                 $urls[] = $url;
             }
         }

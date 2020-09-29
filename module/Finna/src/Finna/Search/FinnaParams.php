@@ -68,13 +68,13 @@ trait FinnaParams
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     * @param array $allowed List of checkbox filters to return (null for all)
      *
      * @return array
      */
-    public function getCheckboxFacets(array $whitelist = null)
+    public function getCheckboxFacets(array $allowed = null)
     {
-        $facets = parent::getCheckboxFacets($whitelist);
+        $facets = parent::getCheckboxFacets($allowed);
 
         // Hide checkboxfacets that are
         // configured as SearchTabsFilters

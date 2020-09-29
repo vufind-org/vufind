@@ -21,13 +21,13 @@ login_field = PATRON_PIN
 fallback_login_field = LAST_NAME
 
 ; Optional PATRON table field (colon-separated from text field label)
-; that is prompted when the user attempts to log in or add a library card to his 
+; that is prompted when the user attempts to log in or add a library card to his
 ; account.
 ;secondary_login_field = "LAST_NAME:Last Name"
 
-; Optional list of blacklisted passwords that cannot be used to log in.
-;login_password_blacklist[] = "0000"
-;login_password_blacklist[] = "1234"
+; Optional list of passwords that cannot be used to log in.
+;login_password_blocklist[] = "0000"
+;login_password_blocklist[] = "1234"
 
 ; These settings affect the Fund list used as a limiter in the "new items" module:
 [Funds]
@@ -61,10 +61,10 @@ fallback_login_field = LAST_NAME
 display_statuses = 1:2:3:5:8:9
 
 ; Status rankings can be used to either promote or demote certain item statuses when
-; determining the status to be displayed. The lower the rank, the higher the 
+; determining the status to be displayed. The lower the rank, the higher the
 ; priority. The sample values below make "Missing" most important and drop request
-; statuses below others so that e.g. "On Hold" is displayed instead of 
-; "Hold Request".    
+; statuses below others so that e.g. "On Hold" is displayed instead of
+; "Hold Request".
 ;[StatusRankings]
 ;Missing = 0
 ;Recall Request = 99
@@ -89,17 +89,17 @@ indexes = "868az"
 ; By default holdings are sorted by Voyager's Holdings Sort Groups. Uncomment this
 ; line to disable sorting.
 ;use_sort_groups = false
-; A colon-separated list of purchase order statuses displayed to the users for 
-; records without items. * = all. 
+; A colon-separated list of purchase order statuses displayed to the users for
+; records without items. * = all.
 ; Default is none.
 ;order_statuses = "Pending:Approved:Approved/Sent"
-; A colon-separated list of allowed BIB formats for purchase order statuses to be 
-; displayed. 
-; Default is any. 
+; A colon-separated list of allowed BIB formats for purchase order statuses to be
+; displayed.
+; Default is any.
 ;order_formats = 'am:jm'
-; Extra texts for the holdings display. These are run through translation, may 
+; Extra texts for the holdings display. These are run through translation, may
 ; contain HTML and %%recordId%% may be used as a placeholder for the BIB ID.
-;extra_texts[] = fennica_viola_access_rights_html 
+;extra_texts[] = fennica_viola_access_rights_html
 
 ; Status rankings can be used to either promote or demote certain item statuses when
 ; determining the status to be displayed. The lower the rank, the higher the

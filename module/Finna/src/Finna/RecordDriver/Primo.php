@@ -89,11 +89,11 @@ class Primo extends \VuFind\RecordDriver\Primo
             return [];
         }
 
-        // Whitelist:
-        $whitelist = array_map(
+        // Allowed formats:
+        $allowed = array_map(
             'trim', explode(',', $this->mainConfig->Record->citation_formats)
         );
-        return array_intersect($whitelist, $this->getSupportedCitationFormats());
+        return array_intersect($allowed, $this->getSupportedCitationFormats());
     }
 
     /**

@@ -213,7 +213,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      *
      * @var array
      */
-    protected $messagingBlackLists = [
+    protected $messagingFilters = [
         'pickUpNotice' => [],
         'overdueNotice' => [],
         'dueDateAlert' => []
@@ -411,20 +411,28 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             : [];
         $this->holdingsBranchOrder = array_flip($this->holdingsBranchOrder);
 
-        $this->messagingBlackLists['pickUpNotice']
-            = isset($this->config['messagingBlackLists']['pickUpNotice'])
-            ? explode(':', $this->config['messagingBlackLists']['pickUpNotice'])
-            : [];
-
-        $this->messagingBlackLists['overdueNotice']
-            = isset($this->config['messagingBlackLists']['overdueNotice'])
-            ? explode(':', $this->config['messagingBlackLists']['overdueNotice'])
-            : [];
-
-        $this->messagingBlackLists['dueDateAlert']
-            = isset($this->config['messagingBlackLists']['dueDateAlert'])
-            ? explode(':', $this->config['messagingBlackLists']['dueDateAlert'])
-            : [];
+        // Use new settings with fallbacks for old ones:
+        $this->messagingFilters['pickUpNotice']
+            = explode(
+                ':',
+                $this->config['messagingFilters']['pickUpNotice']
+                ?? $this->config['messagingBlackLists']['pickUpNotice']
+                ?? ''
+            );
+        $this->messagingFilters['overdueNotice']
+            = explode(
+                ':',
+                $this->config['messagingFilters']['overdueNotice']
+                ?? $this->config['messagingBlackLists']['overdueNotice']
+                ?? ''
+            );
+        $this->messagingFilters['dueDateAlert']
+            = explode(
+                ':',
+                $this->config['messagingFilters']['dueDateAlert']
+                ?? $this->config['messagingBlackLists']['dueDateAlert']
+                ?? ''
+            );
     }
 
     /**
@@ -1408,7 +1416,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             foreach ($validMethods as $methodKey) {
                 if (in_array(
                     $this->mapOldStatusToCode($methodKey),
-                    $this->messagingBlackLists[$service]
+                    $this->messagingFilters[$service]
                 )
                 ) {
                     continue;
