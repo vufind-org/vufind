@@ -427,9 +427,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         if (is_array($superior_series)) {
             foreach ($superior_series as $current) {
                 echo 'T3 - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
-                $volume =  $current['number'];
-                if (!empty($volume))
-                    echo 'SV - ' . "$volume\r\n";
+                if (!empty($current['number']))
+                    echo 'SV - ' . $current['number'] . "\r\n";
             }
             return true;
         }
