@@ -180,10 +180,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var array
      */
-    protected $itemStatusMappings = [
-        // NotForLoan with status number 1 is available in Koha by default:
-        'Item::NotForLoan1' => 'On Reference Desk'
-    ];
+    protected $itemStatusMappings = [];
 
     /**
      * Whether to display home library instead of holding library
