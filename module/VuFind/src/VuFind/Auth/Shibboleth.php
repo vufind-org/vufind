@@ -146,10 +146,12 @@ class Shibboleth extends AbstractBase
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['username']);
+        $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
         if (empty($username)) {
+            $details = ($proxy) ? $request->getHeaders()->toArray() : $request->getServer()->toArray();
             $this->debug(
                 "No username attribute ({$shib['username']}) present in request: "
-                . print_r($request->getServer()->toArray(), true)
+                . print_r($details, true)
             );
             throw new AuthException('authentication_error_admin');
         }
@@ -161,9 +163,10 @@ class Shibboleth extends AbstractBase
                 $this->getAttribute($request, $key)
             )
             ) {
+                $details = ($proxy) ? $request->getHeaders()->toArray() : $request->getServer()->toArray();
                 $this->debug(
                     "Attribute '$key' does not match required value '$value' in"
-                    . ' request: ' . print_r($request->getServer()->toArray(), true)
+                    . ' request: ' . print_r($details, true)
                 );
                 throw new AuthException('authentication_error_denied');
             }
