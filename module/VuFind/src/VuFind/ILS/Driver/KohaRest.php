@@ -1748,8 +1748,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             foreach ($item['availability']['unavailabilities'] as $key => $reason) {
                 if (isset($this->itemStatusMappings[$key])) {
                     $statuses[] = $this->itemStatusMappings[$key];
-                } elseif (strncmp($key, 'Item::', 6) == 0) {
-                    $status = substr($key, 6);
+                    continue;
+                }
+                $parts = explode('::', $key, 2);
+                $statusType = $parts[0];
+                $status = $parts[1] ?? '';
+
+                if ('Item' === $statusType || 'ItemType' === $statusType) {
                     switch ($status) {
                     case 'CheckedOut':
                         $overdue = false;
@@ -1773,8 +1778,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         // separately (e.g. Item::NotForLoan with status number 4
                         // is mapped with key Item::NotForLoan4):
                         $statusKey = $key . ($reason['status'] ?? '-');
+                        // Replace ':' in status key if used as status since ':' is
+                        // the namespace separator in translatable strings:
                         $statuses[] = $this->itemStatusMappings[$statusKey]
-                            ?? $reason['code'] ?? $statusKey;
+                            ?? $reason['code'] ?? str_replace(':', '_', $statusKey);
                         break;
                     case 'Transfer':
                         $onHold = false;
@@ -1799,13 +1806,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     default:
                         $statuses[] = !empty($reason['code'])
                             ? $reason['code'] : $status;
-                    }
-                } elseif (strncmp($key, 'ItemType::', 10) == 0) {
-                    $status = substr($key, 10);
-                    switch ($status) {
-                    case 'NotForLoan':
-                        $statuses[] = 'On Reference Desk';
-                        break;
                     }
                 }
             }
