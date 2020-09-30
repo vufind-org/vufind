@@ -101,12 +101,16 @@ class Shibboleth extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
-     * @param ConfigurationLoaderInterface      $configurationLoader Configuration
+     * @param \Laminas\Session\ManagerInterface    $sessionManager      Session
+     * manager
+     * @param ConfigurationLoaderInterface         $configurationLoader Configuration
      * loader
+     * @param \Laminas\Http\PhpEnvironment\Request $request             Http
+     * request object
      */
     public function __construct(\Laminas\Session\ManagerInterface $sessionManager,
-        ConfigurationLoaderInterface $configurationLoader, \Laminas\Http\PhpEnvironment\Request $request
+        ConfigurationLoaderInterface $configurationLoader,
+        \Laminas\Http\PhpEnvironment\Request $request
     ) {
         $this->sessionManager = $sessionManager;
         $this->configurationLoader = $configurationLoader;
@@ -266,8 +270,10 @@ class Shibboleth extends AbstractBase
         // It would be more proper to call getServer on a Laminas request
         // object... except that the request object doesn't exist yet when
         // this routine gets called.
-        $sessionId = $this->getAttribute($this->request,
-            self::SHIB_SESSION_ID);
+        $sessionId = $this->getAttribute(
+            $this->request,
+            self::SHIB_SESSION_ID
+        );
         return !isset($sessionId);
     }
 

@@ -67,7 +67,8 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $loader = $this->getConfigurationLoader($container);
         $request = $container->get('Request');
         return new $requestedName(
-            $container->get(\Laminas\Session\SessionManager::class), $loader, $request
+            $container->get(\Laminas\Session\SessionManager::class),
+            $loader, $request
         );
     }
 
