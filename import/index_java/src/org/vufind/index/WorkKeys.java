@@ -25,6 +25,8 @@ import org.marc4j.marc.Subfield;
 
 import org.vufind.index.FieldSpecTools;
 
+import com.ibm.icu.text.Transliterator;
+
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.LinkedHashSet;
@@ -40,25 +42,33 @@ public class WorkKeys
     /**
      * Get all work identification keys for the record.
      *
-     * @param  record              MARC record
-     * @param  uniformTitleTagList The field specification for uniform titles
-     * @param  titleTagList        The field specification for titles
-     * @param  authorTagList       The field specification for authors
-     * @param  includeRegEx        Regular expression defining characters to keep
-     * @param  excludeRegEx        Regular expression defining characters to remove
+     * @param  record               MARC record
+     * @param  uniformTitleTagList  The field specification for uniform titles
+     * @param  titleTagList         The field specification for titles
+     * @param  authorTagList        The field specification for authors
+     * @param  includeRegEx         Regular expression defining characters to keep
+     * @param  excludeRegEx         Regular expression defining characters to remove
+     * @param  transliterationRules ICU transliteration rules to be applied before
+     * the include and exclude regex's. See
+     * https://unicode-org.github.io/icu/userguide/transforms/general/#icu-transliterators
+     * for more information.
      * @return set of keys
      */
     public Set<String> getWorkKeys(final Record record, final String uniformTitleTagList,
         final String titleTagList, final String authorTagList, final String includeRegEx,
-        final String excludeRegEx
+        final String excludeRegEx, final String transliterationRules
 
     ) {
         Set<String> workKeys = new LinkedHashSet<String>();
 
+        final Transliterator transliterator = transliterationRules.isEmpty() ? null
+            : Transliterator.createFromRules("workkeys", transliterationRules, Transliterator.FORWARD);
+
         // Uniform title
         final Set<String> uniformTitles = FieldSpecTools.getFieldsByTagList(record, uniformTitleTagList);
         for (String uniformTitle : uniformTitles) {
-            final String normalizedUniformTitle = normalizeWorkKey(uniformTitle, includeRegEx, excludeRegEx);
+            final String normalizedUniformTitle
+                = normalizeWorkKey(uniformTitle, includeRegEx, excludeRegEx, transliterator);
             if (!normalizedUniformTitle.isEmpty()) {
                 workKeys.add("UT ".concat(normalizedUniformTitle));
             }
@@ -69,10 +79,12 @@ public class WorkKeys
         final Set<String> authors = FieldSpecTools.getFieldsByTagList(record, authorTagList);
 
         for (String title : titles) {
-            final String normalizedTitle = normalizeWorkKey(title, includeRegEx, excludeRegEx);
+            final String normalizedTitle
+                = normalizeWorkKey(title, includeRegEx, excludeRegEx, transliterator);
             if (!normalizedTitle.isEmpty()) {
                 for (String author : authors) {
-                    final String normalizedAuthor = normalizeWorkKey(author, includeRegEx, excludeRegEx);
+                    final String normalizedAuthor
+                        = normalizeWorkKey(author, includeRegEx, excludeRegEx, transliterator);
                     if (!normalizedAuthor.isEmpty()) {
                         workKeys.add("AT ".concat(normalizedAuthor).concat(" ").concat(normalizedTitle));
                     }
@@ -86,14 +98,17 @@ public class WorkKeys
     /**
      * Create a key string
      *
-     * @param  s            String to normalize
-     * @param  includeRegEx Regular expression defining characters to keep
-     * @param  excludeRegEx Regular expression defining characters to remove
-     * @return cleaned up string
+     * @param  s              String to normalize
+     * @param  includeRegEx   Regular expression defining characters to keep
+     * @param  excludeRegEx   Regular expression defining characters to remove
+     * @param  transliterator Optional ICU transliterator to use
      */
-    protected String normalizeWorkKey(final String s, final String includeRegEx, final String excludeRegEx)
-    {
-        String normalized = Normalizer.normalize(s, Normalizer.Form.NFKC);
+    protected String normalizeWorkKey(final String s, final String includeRegEx, final String excludeRegEx,
+        final Transliterator transliterator
+    ) {
+
+        String normalized = transliterator != null ? transliterator.transliterate(s)
+            : Normalizer.normalize(s, Normalizer.Form.NFKC);
         if (!includeRegEx.isBlank()) {
             StringBuilder result = new StringBuilder();
             Matcher m = Pattern.compile(includeRegEx).matcher(normalized);

@@ -44,25 +44,37 @@ class VuFindWorkKeys
     /**
      * Get all work identification keys for the record.
      *
-     * @param Iterable $uniformTitles Uniform title(s) for the work
-     * @param Iterable $titles        Other title(s) for the work
-     * @param Iterable $authors       Author(s) for the work
-     * @param string   $includeRegEx  Regular expression defining characters to keep
-     * @param string   $excludeRegEx  Regular expression defining characters to
+     * @param Iterable $uniformTitles       Uniform title(s) for the work
+     * @param Iterable $titles              Other title(s) for the work
+     * @param Iterable $authors             Author(s) for the work
+     * @param string   $includeRegEx        Regular expression defining characters to
+     * keep
+     * @param string   $excludeRegEx        Regular expression defining characters to
      * remove
+     * @param string   $transliteratorRules Optional ICU transliteration rules to be
+     * applied before the include and exclude regex's. See
+     * https://unicode-org.github.io/icu/userguide/transforms/general/#icu-transliterators
+     * for more information on the transliteration rules.
      *
      * @return DOMDocument
      */
     public static function getWorkKeys($uniformTitles, $titles, $authors,
-        $includeRegEx = '', $excludeRegEx = ''
+        $includeRegEx = '', $excludeRegEx = '', $transliteratorRules = ''
     ) {
+
+        $transliterator = $transliteratorRules
+            ? \Transliterator::createFromRules(
+                $transliteratorRules, \Transliterator::FORWARD
+            ) : null;
+
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $uniformTitles = is_iterable($uniformTitles)
             ? $uniformTitles : (array)$uniformTitles;
         foreach ($uniformTitles as $uniformTitle) {
-            $normalizedTitle
-                = self::normalize($uniformTitle, $includeRegEx, $excludeRegEx);
+            $normalizedTitle = self::normalize(
+                $uniformTitle, $includeRegEx, $excludeRegEx, $transliterator
+            );
             if (!empty($normalizedTitle)) {
                 $element = $dom->createElement('workKey', 'UT ' . $normalizedTitle);
                 $dom->appendChild($element);
@@ -72,14 +84,16 @@ class VuFindWorkKeys
         $titles = is_iterable($titles) ? $titles : (array)$titles;
         $authors = is_iterable($titles) ? $authors : (array)$titles;
         foreach ($titles as $title) {
-            $normalizedTitle
-                = self::normalize($title, $includeRegEx, $excludeRegEx);
+            $normalizedTitle = self::normalize(
+                $title, $includeRegEx, $excludeRegEx, $transliterator
+            );
             if (empty($normalizedTitle)) {
                 continue;
             }
             foreach ($authors as $author) {
-                $normalizedAuthor
-                    = self::normalize($author, $includeRegEx, $excludeRegEx);
+                $normalizedAuthor = self::normalize(
+                    $author, $includeRegEx, $excludeRegEx, $transliterator
+                );
                 if (!empty($author)) {
                     $key = 'AT ' . $normalizedAuthor . ' ' . $normalizedTitle;
                     $element = $dom->createElement('workKey', $key);
@@ -94,20 +108,22 @@ class VuFindWorkKeys
     /**
      * Create a key string.
      *
-     * @param string $string       String to normalize
-     * @param string $includeRegEx Regular expression defining characters to keep
-     * @param string $excludeRegEx Regular expression defining characters to remove
+     * @param string|DOMElement $string       String to normalize
+     * @param string            $includeRegEx Regular expression defining characters
+     * to keep
+     * @param string            $excludeRegEx Regular expression defining characters
+     * to remove
+     * @param \Transliterator   $transliterator Transliterator
      *
      * @return string
      */
-    protected static function normalize($string, $includeRegEx = '',
-        $excludeRegEx = ''
+    protected static function normalize($string, $includeRegEx, $excludeRegEx,
+        $transliterator
     ) {
-        $normalized = Normalizer::normalize(
-            // Handle strings and/or DOM elements:
-            $string->textContent ?? (string)$string,
-            Normalizer::FORM_KC
-        );
+        // Handle strings and/or DOM elements:
+        $string = $string->textContent ?? (string)$string;
+        $normalized = $transliterator ? $transliterator->transliterate($string)
+            : Normalizer::normalize($string, Normalizer::FORM_KC);
         if (!empty($includeRegEx)) {
             preg_match_all($includeRegEx, $normalized, $matches);
             $normalized = implode($matches[0] ?? []);

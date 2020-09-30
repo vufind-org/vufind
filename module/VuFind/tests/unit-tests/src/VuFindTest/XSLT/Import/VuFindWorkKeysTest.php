@@ -89,4 +89,30 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
             simplexml_import_dom($result)->asXml()
         );
     }
+
+    /**
+     * Test the work keys helper with an ICU tranliteration.
+     *
+     * @return void
+     */
+    public function testGetWorkKeysWithTransliteration()
+    {
+        $expected = '<?xml version="1.0" encoding="utf-8"?>'
+            . "\n<workKey>UT uniformtitle</workKey>\n"
+            . "<workKey>AT author1 nonuniformtitle</workKey>\n"
+            . "<workKey>AT author2 nonuniformtitle</workKey>\n";
+
+        $result = VuFindWorkKeys::getWorkKeys(
+            'UNIFORM title +Å',
+            ['nonUniform  Title'],
+            ['AUTHOR * 1', 'author - 2'],
+            '',
+            '',
+            ':: NFC; :: lower; :: Latin; :: [^a-z0-9] Remove;'
+        );
+        $this->assertEquals(
+            $expected,
+            simplexml_import_dom($result)->asXml()
+        );
+    }
 }
