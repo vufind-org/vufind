@@ -92,6 +92,13 @@ class Shibboleth extends AbstractBase
     protected $configurationLoader;
 
     /**
+     * Http Request object
+     *
+     * @var \Laminas\Http\PhpEnvironment\Request
+     */
+    protected $request;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
@@ -99,10 +106,11 @@ class Shibboleth extends AbstractBase
      * loader
      */
     public function __construct(\Laminas\Session\ManagerInterface $sessionManager,
-        ConfigurationLoaderInterface $configurationLoader
+        ConfigurationLoaderInterface $configurationLoader, \Laminas\Http\PhpEnvironment\Request $request
     ) {
         $this->sessionManager = $sessionManager;
         $this->configurationLoader = $configurationLoader;
+        $this->request = $request;
     }
 
     /**
@@ -255,12 +263,12 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
-        $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
         // It would be more proper to call getServer on a Laminas request
         // object... except that the request object doesn't exist yet when
         // this routine gets called.
-        return ($proxy) ? !isset($_SERVER[$this->normalize(self::SHIB_SESSION_ID)])
-            : !isset($_ENV[self::SHIB_SESSION_ID]);
+        $sessionId = $this->getAttribute($this->request,
+            self::SHIB_SESSION_ID);
+        return !isset($sessionId);
     }
 
     /**
@@ -377,7 +385,6 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Http\PhpEnvironment\Request $request   Request object
      * @param string                               $attribute Attribute name
      *
-     * @throws AuthException
      * @return string attribute value
      */
     protected function getAttribute($request, $attribute)

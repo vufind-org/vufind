@@ -120,7 +120,8 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
         } else {
             $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
         }
-        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class), $loader);
+        $obj = new Shibboleth($this->createMock(\Laminas\Session\ManagerInterface::class), $loader,
+            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class));
         $initializer = new \VuFind\ServiceManager\ServiceInitializer();
         $initializer($this->getServiceManager(), $obj);
         $obj->setConfig($config);

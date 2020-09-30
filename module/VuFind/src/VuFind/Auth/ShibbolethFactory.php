@@ -65,8 +65,9 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
             throw new \Exception('Unexpected options sent to factory.');
         }
         $loader = $this->getConfigurationLoader($container);
+        $request = $container->get('Request');
         return new $requestedName(
-            $container->get(\Laminas\Session\SessionManager::class), $loader
+            $container->get(\Laminas\Session\SessionManager::class), $loader, $request
         );
     }
 
