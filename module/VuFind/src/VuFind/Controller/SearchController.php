@@ -41,8 +41,6 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
  */
 class SearchController extends AbstractSolrSearch
 {
-    use Feature\RecordVersionsSearchTrait;
-
     /**
      * Show facet list for Solr-driven collections.
      *

@@ -1,6 +1,7 @@
 <?php
 /**
  * VuFind Action Feature Trait - Record Versions Search
+ * Depends on method getSearchResultsView and record driver's method getWorkKeys.
  *
  * PHP version 7
  *
@@ -74,7 +75,8 @@ trait RecordVersionsSearchTrait
         $this->saveToHistory = false;
 
         $callback = function ($runner, $params, $searchId) {
-            $defaultCallback = $this->getSearchSetupCallback();
+            $defaultCallback = is_callable([$this, 'getSearchSetupCallback'])
+                ? $this->getSearchSetupCallback() : null;
             if (is_callable($defaultCallback)) {
                 $defaultCallback($runner, $params, $searchId);
             }

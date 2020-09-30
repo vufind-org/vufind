@@ -93,7 +93,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         StaffViewOverdrive::class => InvokableFactory::class,
         TOC::class => TOCFactory::class,
         UserComments::class => UserCommentsFactory::class,
-        Versions::class => VersionsFactory::class,
+        Versions::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
     ];
 
     /**

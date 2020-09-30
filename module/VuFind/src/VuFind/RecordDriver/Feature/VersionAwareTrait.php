@@ -1,6 +1,6 @@
 <?php
 /**
- * Logic for record versions support.
+ * Logic for record versions support. Depends on versionAwareInterface.
  *
  * PHP version 7
  *
@@ -39,6 +39,13 @@ namespace VuFind\RecordDriver\Feature;
 trait VersionAwareTrait
 {
     /**
+     * Cached result of other versions (work expressions) count
+     *
+     * @var int
+     */
+    protected $otherVersionsCount = null;
+
+    /**
      * Return count of other versions available
      *
      * @return int
@@ -49,11 +56,16 @@ trait VersionAwareTrait
             return false;
         }
 
-        if (!($workKeys = $this->getWorkKeys())) {
-            return false;
-        }
-
         if (!isset($this->otherVersionsCount)) {
+            if (!($workKeys = $this->tryMethod('getWorkKeys'))) {
+                if (!($this instanceof VersionAwareInterface)) {
+                    throw new \Exception(
+                        'VersionAwareTrait requires VersionAwareInterface'
+                    );
+                }
+                return false;
+            }
+
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', 0);
             $results = $this->searchService->workExpressions(

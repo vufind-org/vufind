@@ -62,6 +62,16 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
+     * Return the route name for the versions search action.
+     *
+     * @return string
+     */
+    public function getVersionsAction()
+    {
+        return 'search2-versions';
+    }
+
+    /**
      * Return the route name for the search results action.
      *
      * @return string

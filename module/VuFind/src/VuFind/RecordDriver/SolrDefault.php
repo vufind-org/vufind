@@ -112,13 +112,6 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
     protected $searchService = null;
 
     /**
-     * Cached result of other versions (work expressions) count
-     *
-     * @var int
-     */
-    protected $otherVersionsCount = null;
-
-    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
