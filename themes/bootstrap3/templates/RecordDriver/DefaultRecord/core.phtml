@@ -41,7 +41,9 @@
       <?=$this->extraControls['availabilityInfo'] ?? ''?>
     <?php endif; ?>
 
-    <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+    <?php if (!empty($this->config()->get('config')->Record->display_versions)): ?>
+      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+    <?php endif; ?>
 
     <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <?php if ($summary): ?>
