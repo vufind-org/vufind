@@ -19,6 +19,7 @@
 
 namespace TueFind\RecordDriver;
 use Interop\Container\ContainerInterface;
+use VuFind\Exception\RecordMissing as RecordMissingException;
 
 class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 {
@@ -235,11 +236,15 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
 
     public function getSuperiorRecord() {
-
         $superior_ppn = $this->getSuperiorPPN();
         if (empty($superior_ppn))
             return NULL;
-        return $this->getRecordDriverByPPN($superior_ppn);
+
+        try {
+            return $this->getRecordDriverByPPN($superior_ppn);
+        } catch (RecordMissingException $e) {
+            return NULL;
+        }
     }
 
 
