@@ -197,7 +197,7 @@ indexes = "868az"
 ; * can be used to denote all physical material types:
 ;hiddenProcessTypes[*] = "ACQ"
 
-; Optional kink to an external interface such as Primo. Replace at least SOMETHING
+; Optional link to an external interface such as Primo. Replace at least SOMETHING
 ; and VIEWID with correct values.
 ;externalInterfaceUrl = "https://SOMETHING.primo.exlibrisgroup.com/discovery/fulldisplay?context=L&vid=VIEWID:VU1&docid=alma%%id%%"
 
