@@ -165,7 +165,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $retval = explode(':', $this->fields['following_ppn_and_title'], 2);
         return $retval;
     }
-    
+
     /**
      * Get the issue of the current record.
      *
@@ -235,10 +235,11 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
 
     public function getSuperiorRecord() {
-       $superior_ppn = $this->getSuperiorPPN();
-       if (empty($superior_ppn))
-           return NULL;
-       return $this->getRecordDriverByPPN($superior_ppn);
+
+        $superior_ppn = $this->getSuperiorPPN();
+        if (empty($superior_ppn))
+            return NULL;
+        return $this->getRecordDriverByPPN($superior_ppn);
     }
 
 
