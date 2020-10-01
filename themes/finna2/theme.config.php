@@ -237,7 +237,6 @@ $config = [
         'vendor/respond.js',
         'vendor/simplemde.min.js',
         'vendor/slick.min.js',
-        'vendor/jquery.touchSwipe.min.js',
         'vendor/gauge.min.js',
         'vendor/priority-nav.min.js',
         'vendor/leaflet.min.js',
