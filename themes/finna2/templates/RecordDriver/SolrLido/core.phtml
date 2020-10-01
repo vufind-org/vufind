@@ -52,87 +52,88 @@
   $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false;
   ob_start();
 ?>
-  <div class="truncate-field wide recordSummary">
-    <p class="summary"><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($summary)); /* Allow <br> tag */ ?></p>
-  </div>
+<div class="truncate-field wide recordSummary">
+  <p class="summary"><?=preg_replace('/&lt;br\/?&gt;/', '<br>', $this->escapeHtml($summary)); /* Allow <br> tag */ ?></p>
+</div>
 <?php
   $summaryContent = ob_get_contents();
   ob_end_clean();
 ?>
-  <?php $this->headScript()->appendFile("finna-record.js"); ?>
-  <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-    <h1 property="name" class="record-title visible-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
-    <?php if ($summary): ?>
-      <div class="truncate-wrapper visible-xs">
-        <?=$summaryContent?>
-      </div>
-    <?php endif; ?>
-    <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
-      <?=$thumbnail ?>
-    <?php endif; ?>
-      <div class="media-body record-information">
-        <h1 property="name" class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
-        <?php if ($results = $this->driver->getAlternativeTitles()): ?>
-          <div class="recordAltTitles record-alt-titles">
-            <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
-          </div>
-        <?php endif; ?>
 
-        <div class="record-core-metadata">
-          <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>
-            <div class="truncate-field">
-              <?php foreach($results as $index => $author): ?>
-                <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><?php endif; ?>
-              <?php endforeach; ?>
-              <?php if ($dates = $this->driver->getResultDateRange()): ?>
-                <?=$this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><?php endif; ?>
-              <?php endif; ?>
-              <?php if (($results = $this->driver->getSubjectDates()) && !isset($dates[0])): ?>
-                <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
-              <?php endif; ?>
-            </div>
-          <?php endif; ?>
-
-          <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+<?php $this->metadata()->generateMetatags($this->driver);?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <h1 property="name" class="record-title visible-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+  <?php if ($summary): ?>
+    <div class="truncate-wrapper visible-xs">
+      <?=$summaryContent?>
+    </div>
+  <?php endif; ?>
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
+    <div class="media-body record-information">
+      <h1 property="name" class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+      <?php if ($results = $this->driver->getAlternativeTitles()): ?>
+        <div class="recordAltTitles record-alt-titles">
+          <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
         </div>
+      <?php endif; ?>
 
-        <?php if ($summary): ?>
-          <div class="truncate-wrapper hidden-xs">
-            <?=$summaryContent?>
+      <div class="record-core-metadata">
+        <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>
+          <div class="truncate-field">
+            <?php foreach($results as $index => $author): ?>
+              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><?php endif; ?>
+            <?php endforeach; ?>
+            <?php if ($dates = $this->driver->getResultDateRange()): ?>
+              <?=$this->escapeHtml($dates[0]);?><?php if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><?php endif; ?>
+            <?php endif; ?>
+            <?php if (($results = $this->driver->getSubjectDates()) && !isset($dates[0])): ?>
+              <?=implode('<br/>', array_map([$this, 'escapeHtml'], $results))?>
+            <?php endif; ?>
           </div>
         <?php endif; ?>
 
-        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <?php /* Display the lists that this record is saved to */ ?>
-          <div class="savedLists" id="savedLists">
-            <strong><?=$this->transEsc("Saved in")?>:</strong>
-          </div>
-        <?php endif; ?>
-
-        <?/* Display Main Details */?>
-        <?php
-          $formatter = $this->recordDataFormatter();
-          $coreFields = $formatter->getData(
-              $driver, $formatter->filterLidoFields($formatter->getDefaults('core'))
-          );
-        ?>
-        <?php if (!empty($coreFields)): ?>
-          <table class="table table-finna-record record-details record-details-more">
-            <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
-          </table>
-          <button class="btn show-details-button hidden"><?=$this->transEsc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
-          <button class="btn hide-details-button hidden"><?=$this->transEsc('show_less_details');?> <i class="fa fa-arrow-up"></i></button>
-        <?php endif; ?>
-        <?/* End Main Details */?>
-
-        <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
-        <div>
-          <?=$this->render($template)?>
-        </div>
-        <?php endif; ?>
+        <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
       </div>
-    <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
-      <?=$thumbnail ?>
-    <?php endif; ?>
+
+      <?php if ($summary): ?>
+        <div class="truncate-wrapper hidden-xs">
+          <?=$summaryContent?>
+        </div>
+      <?php endif; ?>
+
+      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <?php /* Display the lists that this record is saved to */ ?>
+        <div class="savedLists" id="savedLists">
+          <strong><?=$this->transEsc("Saved in")?>:</strong>
+        </div>
+      <?php endif; ?>
+
+      <?/* Display Main Details */?>
+      <?php
+        $formatter = $this->recordDataFormatter();
+        $coreFields = $formatter->getData(
+            $driver, $formatter->filterLidoFields($formatter->getDefaults('core'))
+        );
+      ?>
+      <?php if (!empty($coreFields)): ?>
+        <table class="table table-finna-record record-details record-details-more">
+          <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
+        </table>
+        <button class="btn show-details-button hidden"><?=$this->transEsc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
+        <button class="btn hide-details-button hidden"><?=$this->transEsc('show_less_details');?> <i class="fa fa-arrow-up"></i></button>
+      <?php endif; ?>
+      <?/* End Main Details */?>
+
+      <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
+      <div>
+        <?=$this->render($template)?>
+      </div>
+      <?php endif; ?>
+    </div>
+  <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
 </div>
 <!-- END of: finna - RecordDriver/SolrLido/core.phtml -->

@@ -25,11 +25,10 @@
     </div>
     <?php $thumbnail = ob_get_contents(); ?>
     <?php ob_end_clean(); ?>
-  <?php } ?>
+    <?php
+  }
+?>
 
-
-
-<?php $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="media" vocab="http://schema.org/" resource="#record">
   <div class="visible-xs">
     <p class="format"><?=$this->transEsc($formats[0])?></p>

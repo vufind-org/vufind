@@ -1,4 +1,5 @@
 <!-- START of: finna - RecordDriver/Primo/core.phtml -->
+<?php $this->metadata()->generateMetatags($this->driver);?>
 <div vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
 
   <?php // if you have a preview tab but want to move or remove the preview link
