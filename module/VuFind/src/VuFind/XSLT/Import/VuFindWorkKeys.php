@@ -61,7 +61,6 @@ class VuFindWorkKeys
     public static function getWorkKeys($uniformTitles, $titles, $authors,
         $includeRegEx = '', $excludeRegEx = '', $transliteratorRules = ''
     ) {
-
         $transliterator = $transliteratorRules
             ? \Transliterator::createFromRules(
                 $transliteratorRules, \Transliterator::FORWARD
@@ -108,11 +107,11 @@ class VuFindWorkKeys
     /**
      * Create a key string.
      *
-     * @param string|DOMElement $string       String to normalize
-     * @param string            $includeRegEx Regular expression defining characters
-     * to keep
-     * @param string            $excludeRegEx Regular expression defining characters
-     * to remove
+     * @param string|DOMElement $string         String to normalize
+     * @param string            $includeRegEx   Regular expression defining
+     * characters to keep
+     * @param string            $excludeRegEx   Regular expression defining
+     * characters to remove
      * @param \Transliterator   $transliterator Transliterator
      *
      * @return string
