@@ -53,7 +53,7 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
             . "<workKey>AT author2 nonuniformtitle</workKey>\n";
 
         $result = VuFindWorkKeys::getWorkKeys(
-            'UNIFORM title',
+            'UNIFORM title.',
             ['nonUniform Title'],
             ['AUTHOR 1', 'author 2'],
             '/([0-9A-Za-z]+)/',
@@ -98,17 +98,17 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
     public function testGetWorkKeysWithTransliteration()
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
-            . "\n<workKey>UT uniformtitle</workKey>\n"
+            . "\n<workKey>UT uniformtitlea</workKey>\n"
             . "<workKey>AT author1 nonuniformtitle</workKey>\n"
             . "<workKey>AT author2 nonuniformtitle</workKey>\n";
 
         $result = VuFindWorkKeys::getWorkKeys(
             'UNIFORM title +Å',
-            ['nonUniform  Title'],
+            ['nonUniform  Titlë'],
             ['AUTHOR * 1', 'author - 2'],
             '',
             '',
-            ':: NFKC; :: lower; :: Latin; :: [^a-z0-9] Remove;'
+            ':: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;'
         );
         $this->assertEquals(
             $expected,
