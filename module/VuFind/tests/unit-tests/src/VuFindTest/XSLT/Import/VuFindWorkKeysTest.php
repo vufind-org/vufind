@@ -108,7 +108,7 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
             ['AUTHOR * 1', 'author - 2'],
             '',
             '',
-            ':: NFC; :: lower; :: Latin; :: [^a-z0-9] Remove;'
+            ':: NFKC; :: lower; :: Latin; :: [^a-z0-9] Remove;'
         );
         $this->assertEquals(
             $expected,
