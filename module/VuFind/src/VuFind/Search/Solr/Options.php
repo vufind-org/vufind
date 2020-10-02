@@ -71,6 +71,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $emptySearchRelevanceOverride = null;
 
     /**
+     * Whether to display record versions
+     *
+     * @var bool
+     */
+    protected $displayRecordVersions;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -114,6 +121,9 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
+        $this->displayRecordVersions
+            = !empty($searchSettings->General->display_versions);
+
         // Result limit:
         if (isset($searchSettings->General->result_limit)) {
             $this->resultLimit = $searchSettings->General->result_limit;
@@ -273,13 +283,13 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Return the route name for the versions search action.
+     * Return the route name for the versions search action or false if disabled.
      *
-     * @return string
+     * @return string|bool
      */
     public function getVersionsAction()
     {
-        return 'search-versions';
+        return $this->displayRecordVersions ? 'search-versions' : false;
     }
 
     /**

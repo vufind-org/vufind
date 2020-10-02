@@ -52,13 +52,24 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     protected $config;
 
     /**
+     * Search options plugin manager
+     *
+     * @var \VuFind\Search\Options\PluginManager;
+     */
+    protected $searchOptionsManager;
+
+    /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param \Zend\Config\Config                  $config Configuration
+     * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
+     * manager
      */
-    public function __construct(\Laminas\Config\Config $config)
-    {
+    public function __construct(\Laminas\Config\Config $config,
+        \VuFind\Search\Options\PluginManager $som
+    ) {
         $this->config = $config;
+        $this->searchOptionsManager = $som;
     }
 
     /**
@@ -68,9 +79,10 @@ class Versions extends \VuFind\RecordTab\AbstractBase
      */
     public function isActive()
     {
-        return !empty($this->config->Record->display_versions)
-            && $this->getRecordDriver()
-                    ->tryMethod('getOtherVersionCount') > 0;
+        $options = $this->searchOptionsManager
+            ->get($this->getRecordDriver()->getSourceIdentifier());
+        return $options->getVersionsAction()
+            && $this->getRecordDriver()->tryMethod('getOtherVersionCount') > 0;
     }
 
     /**
