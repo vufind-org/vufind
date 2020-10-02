@@ -11,6 +11,7 @@
     $transParams
   );
 ?>
+<?php // Use search-heading if it's set, but append only if it's not empty to avoid extra whitespace: ?>
 <?php if ($this->slot('search-heading')->isset()): ?>
   <?php if ($heading = $this->slot('search-heading')->get()): ?>
     <?php $showingResults .= " $heading"; ?>
