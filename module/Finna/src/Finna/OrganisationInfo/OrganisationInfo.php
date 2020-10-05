@@ -196,11 +196,6 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
      */
     public function query($parent, $params, $buildings = null)
     {
-        $id = null;
-        if (isset($params['id'])) {
-            $id = $params['id'];
-        }
-
         if (!$this->isAvailable()) {
             $this->logError("Organisation info disabled ($parent)");
             return false;
@@ -208,8 +203,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
 
         if (!isset($this->config->General->url)) {
             $this->logError(
-                "URL missing from organisation info configuration"
-                . "($parent)"
+                "URL missing from organisation info configuration ($parent)"
             );
             return false;
         }
