@@ -99,6 +99,13 @@ class Shibboleth extends AbstractBase
     protected $request;
 
     /**
+     * Is proxy enabled?
+     *
+     * @var boolean
+     */
+    protected $proxy = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Session\ManagerInterface    $sessionManager      Session
@@ -115,6 +122,7 @@ class Shibboleth extends AbstractBase
         $this->sessionManager = $sessionManager;
         $this->configurationLoader = $configurationLoader;
         $this->request = $request;
+        $this->proxy = $this->config->Shibboleth->proxy ?? false;
     }
 
     /**
@@ -158,9 +166,8 @@ class Shibboleth extends AbstractBase
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['username']);
-        $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
         if (empty($username)) {
-            $details = ($proxy) ? $request->getHeaders()->toArray()
+            $details = ($this->proxy) ? $request->getHeaders()->toArray()
                 : $request->getServer()->toArray();
             $this->debug(
                 "No username attribute ({$shib['username']}) present in request: "
@@ -176,7 +183,7 @@ class Shibboleth extends AbstractBase
                 $this->getAttribute($request, $key)
             )
             ) {
-                $details = ($proxy) ? $request->getHeaders()->toArray()
+                $details = ($this->proxy) ? $request->getHeaders()->toArray()
                     : $request->getServer()->toArray();
                 $this->debug(
                     "Attribute '$key' does not match required value '$value' in"
@@ -395,8 +402,7 @@ class Shibboleth extends AbstractBase
      */
     protected function getAttribute($request, $attribute)
     {
-        $proxy = $this->getConfig()->Shibboleth->proxy ?? false;
-        if ($proxy) {
+        if ($this->proxy) {
             $header = $request->getHeader($this->normalize($attribute));
             return ($header) ? $header->getFieldValue() : null;
         } else {
