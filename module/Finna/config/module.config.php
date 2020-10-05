@@ -225,6 +225,7 @@ $config = [
             'Finna\Controller\ErrorController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\ExternalAuthController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Finna\Controller\R2FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\FeedContentController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'Finna\Controller\LocationServiceController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -258,6 +259,8 @@ $config = [
             'organisationinfo' => 'Finna\Controller\OrganisationInfoController',
             'ListPage' => 'Finna\Controller\ListController',
             'listpage' => 'Finna\Controller\ListController',
+            'r2feedback' => 'Finna\Controller\R2FeedbackController',
+            'R2Feedback' => 'Finna\Controller\R2FeedbackController',
 
             // Overrides:
             'VuFind\Controller\AuthorityController' => 'Finna\Controller\AuthorityController',
@@ -832,7 +835,8 @@ $recordRoutes = [
 $dynamicRoutes = [
     'Comments' => ['inappropriate' => 'inappropriate/[:id]'],
     'LibraryCards' => ['newLibraryCardPassword' => 'newPassword/[:id]'],
-    'MyResearch' => ['sortList' => 'SortList/[:id]']
+    'MyResearch' => ['sortList' => 'SortList/[:id]'],
+    'R2Feedback' => ['r2feedback-form' => 'Form/[:id]']
 ];
 
 $staticRoutes = [

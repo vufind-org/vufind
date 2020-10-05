@@ -17,7 +17,17 @@
   }
 }
 
-.feedback-form {
+.dynamic-form {
+  .form-control {
+    &[disabled],
+    &[readonly],
+    fieldset[disabled] {
+      cursor: default;
+      box-shadow: none;
+      border: none;
+    }
+  }
+
   & .form-group {
     margin-bottom: 20px;
     & label {
@@ -50,7 +60,7 @@ form[name=FeedbackRecord] .form-info {
   }
 }
 
-.feedback-content {
+div:not(.modal-body) > .feedback-content {
   @media(min-width: @screen-sm) {
     width: 50%;
   }

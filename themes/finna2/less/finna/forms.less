@@ -182,7 +182,9 @@ button.multiselect {
     width: auto;
   }
 }
-.template-dir-feedback .template-name-form {
+.template-dir-feedback .template-name-form form,
+.modal-dialog .feedback-content form,
+.modal-dialog form.dynamic-form {
     input[name='url'] {
         margin-bottom: 30px;
     }
@@ -241,5 +243,21 @@ button.multiselect {
     color: @link-color;
     padding-top: 8px;
     background-color: white;
+  }
+}
+
+// R2 registration form
+form.dynamic-form#R2Register,
+form.dynamic-form#R2RegisterReturningUser {
+  .form-info {
+    font-weight: initial;
+  }
+  .form-group.group-usage_purpose label,
+  .form-group.group-firstname .info.pre {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .form-group .info.post {
+    margin-top: 10px;
   }
 }

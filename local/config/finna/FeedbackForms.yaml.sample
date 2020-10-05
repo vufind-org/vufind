@@ -51,6 +51,8 @@
 #   or a different set of fields is configured in 'fields' list):
 #      hideSenderInfo (boolean) Hide default sender fields (name & email)
 #
+#   hideRecipientInfo (boolean) Hide recipient info (default = false)
+#
 #   help
 #     pre (string)  Help text displayed at the beginning of the form (translation key).
 #     post (string) Help text displayed at the end of the form (translation key)

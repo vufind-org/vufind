@@ -352,7 +352,9 @@ class Form extends \VuFind\Form\Form
                 $pre .= '<span class="datasource-info">'
                     . $this->translate($datasourceKey) . '</span>';
             }
-        } elseif ($this->institution) {
+        } elseif (!($this->formConfig['hideRecipientInfo'] ?? false)
+            && $this->institution
+        ) {
             // Receiver info
             $institution = $this->institution;
             $institutionName = $this->translate(
@@ -619,7 +621,7 @@ class Form extends \VuFind\Form\Form
 
         $fields = array_merge(
             $fields,
-            ['hideSenderInfo', 'sendMethod', 'senderInfoHelp']
+            ['hideRecipientInfo', 'hideSenderInfo', 'sendMethod', 'senderInfoHelp']
         );
 
         return $fields;

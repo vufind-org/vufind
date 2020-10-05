@@ -1,0 +1,135 @@
+---
+# REMS registration forms
+# See FeedbackForms.yaml for supported configuration options.
+#-----------------------------------------------------------------------------------
+
+forms:
+
+  R2Register:
+    allowLocalOverride: false
+    title: "R2_register_form_title"
+    enabled: false
+    useCaptcha: false
+    onlyForLoggedUsers: true
+    response: Thank you for your feedback.
+    senderInfoRequired: false 
+    senderInfoHelp: feedback_info
+    hideSenderInfo: true
+    hideRecipientInfo: true
+    help:
+      pre: R2_register_form_help_pre_html
+      post: R2_register_form_help_post_html
+  
+    fields:
+      - name: usage_purpose
+        type: select
+        options:
+          - label: R2_register_form_usage_option1
+            value: option1
+          - label: R2_register_form_usage_option2
+            value: option2
+          - label: R2_register_form_usage_option3
+            value: option3
+          - label: R2_register_form_usage_option4
+            value: option4
+          - label: R2_register_form_usage_option5
+            value: option5
+          - label: R2_register_form_usage_option6
+            value: option6
+        label: R2_register_form_usage
+        help:
+          post: R2_register_form_usage_help_html
+          
+        placeholder: Select
+        required: true
+      - name: firstname
+        type: text
+        required: true
+        label: First Name
+            
+      - name: lastname
+        type: text
+        required: true
+        label: Last Name
+      - name: email
+        type: email
+        required: true
+        label: Email
+        help:
+          post: R2_register_form_datasource
+      - name: license
+        type: checkbox
+        options:
+          - label: R2_register_form_license_accept
+            value: option1
+        required: true
+      - name: age
+        type: checkbox      
+        options:
+          - label: R2_register_form_age
+            value: option1
+        required: true
+
+  R2RegisterReturningUser:       
+    allowLocalOverride: false
+    title: "R2_register_form_title"
+    enabled: false
+    useCaptcha: false
+    onlyForLoggedUsers: true
+    response: Thank you for your feedback.
+    senderInfoRequired: false 
+    senderInfoHelp: feedback_info
+    hideSenderInfo: true
+    hideRecipientInfo: true
+    help:
+      post: R2_register_form_help_post_html
+
+    fields:
+      - name: usage_purpose
+        type: select
+        options:
+          - label: R2_register_form_usage_option1
+            value: option1
+          - label: R2_register_form_usage_option2
+            value: option2
+          - label: R2_register_form_usage_option3
+            value: option3
+          - label: R2_register_form_usage_option4
+            value: option4
+          - label: R2_register_form_usage_option5
+            value: option5
+          - label: R2_register_form_usage_option6
+            value: option6
+        label: R2_register_form_usage
+        help:
+          post: R2_register_form_usage_help_html
+          
+        placeholder: Select
+        required: true
+      - name: firstname
+        type: text
+        required: true
+        label: First Name
+      - name: lastname
+        type: text
+        required: true
+        label: Last Name
+      - name: email
+        type: email
+        required: true
+        label: Email
+        help:
+          post: R2_register_form_datasource
+      - name: license
+        type: checkbox
+        options:
+          - label: R2_register_form_license_accept
+            value: option1
+        required: true
+      - name: age
+        type: checkbox      
+        options:
+          - label: R2_register_form_age
+            value: option1
+        required: true
+
