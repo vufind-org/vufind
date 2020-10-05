@@ -2141,11 +2141,14 @@ class KohaRestSuomiVuFind extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getItem($id)
     {
-        static $cachedRecords = [];
-        if (!isset($cachedRecords[$id])) {
-            $cachedRecords[$id] = $this->makeRequest(['v1', 'items', $id]);
+        $cacheId = "items|$id";
+        $item = $this->getCachedData($cacheId);
+        if (null === $item) {
+            $result = $this->makeRequest(['v1', 'items', $id]);
+            $item = $result['data'] ?? false;
+            $this->putCachedData($cacheId, $item, 300);
         }
-        return $cachedRecords[$id];
+        return $item ?: null;
     }
 
     /**
