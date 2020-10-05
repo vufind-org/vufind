@@ -2145,7 +2145,7 @@ class KohaRestSuomiVuFind extends \VuFind\ILS\Driver\AbstractBase implements
         $item = $this->getCachedData($cacheId);
         if (null === $item) {
             $result = $this->makeRequest(['v1', 'items', $id]);
-            $item = $result['data'] ?? false;
+            $item = $result;
             $this->putCachedData($cacheId, $item, 300);
         }
         return $item ?: null;
