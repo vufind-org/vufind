@@ -1095,7 +1095,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 throw new DateException('Result should be numeric');
             }
         } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.');
+            throw new ILSException('Problem parsing required by date.', 0, $e);
         }
 
         if (time() > $checkTime) {
@@ -1440,7 +1440,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 . $client->getRequest()->getContent() . "' caused exception: "
                 . $e->getMessage()
             );
-            throw new ILSException('Problem with Sierra REST API.');
+            throw new ILSException('Problem with Sierra REST API.', 0, $e);
         }
         // If we get a 401, we need to renew the access token and try again
         if ($response->getStatusCode() == 401) {
@@ -1530,7 +1530,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 "POST request for '$apiUrl' caused exception: "
                 . $e->getMessage()
             );
-            throw new ILSException('Problem with Sierra REST API.');
+            throw new ILSException('Problem with Sierra REST API.', 0, $e);
         }
 
         if (!$response->isSuccess()) {
@@ -1587,7 +1587,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 "GET request for '$apiUrl' caused exception: "
                 . $e->getMessage()
             );
-            throw new ILSException('Problem with Sierra REST API.');
+            throw new ILSException('Problem with Sierra REST API.', 0, $e);
         }
 
         $doc = new \DOMDocument();
