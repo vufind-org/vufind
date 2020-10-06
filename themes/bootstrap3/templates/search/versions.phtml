@@ -1,7 +1,11 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-  $headTitle = $this->slot('head-title')->get($this->translate('Versions'));
+  $title = $this->translate('Versions');
+  if ($this->driver) {
+    $title .= ' - ' . $this->driver->getBreadcrumb();
+  }
+  $headTitle = $this->slot('head-title')->get($title);
   $this->headTitle($headTitle);
 
   $this->slot('search-heading')->set('');
@@ -30,7 +34,7 @@
     $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLink()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
   }
 
-  $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . $titleLink . '</li>';
+  $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Versions') . $titleLink . '</li>';
 
   // Enable cart if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
