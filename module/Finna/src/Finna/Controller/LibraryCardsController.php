@@ -656,7 +656,14 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
         // Connect to the ILS and check that the credentials are correct:
         $loginMethod = $this->getILSLoginMethod($target);
         $catalog = $this->getILS();
-        $patron = $catalog->patronLogin($username, $password, $secondaryUsername);
+        try {
+            $patron
+                = $catalog->patronLogin($username, $password, $secondaryUsername);
+        } catch (\VuFind\Exception\ILS $e) {
+            $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            return false;
+        }
+
         if ('password' === $loginMethod && !$patron) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_invalid', 'error');
