@@ -1429,7 +1429,19 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Send request and retrieve response
         $startTime = microtime(true);
-        $response = $client->setMethod($method)->send();
+        try {
+            $response = $client->setMethod($method)->send();
+        } catch (\Exception $e) {
+            $params = $method == 'GET'
+                ? $client->getRequest()->getQuery()->toString()
+                : $client->getRequest()->getPost()->toString();
+            $this->error(
+                "$method request for '$apiUrl' with params '$params' and contents '"
+                . $client->getRequest()->getContent() . "' caused exception: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with Sierra REST API.');
+        }
         // If we get a 401, we need to renew the access token and try again
         if ($response->getStatusCode() == 401) {
             if (!$this->renewAccessToken($patron)) {
@@ -1511,7 +1523,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Send request and retrieve response
         $startTime = microtime(true);
-        $response = $client->setMethod('POST')->send();
+        try {
+            $response = $client->setMethod('POST')->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "POST request for '$apiUrl' caused exception: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with Sierra REST API.');
+        }
+
         if (!$response->isSuccess()) {
             $this->error(
                 "POST request for '$apiUrl' with contents '"
@@ -1559,7 +1580,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // First request the login form to get the hidden fields and cookies
         $client = $this->createHttpClient($apiUrl);
-        $response = $client->send();
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "GET request for '$apiUrl' caused exception: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with Sierra REST API.');
+        }
+
         $doc = new \DOMDocument();
         if (!@$doc->loadHTML($response->getBody())) {
             $this->error('Could not parse the III CAS login form');
