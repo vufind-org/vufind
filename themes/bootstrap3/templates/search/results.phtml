@@ -34,7 +34,7 @@
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
 
-  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params()->getOptions()->getVersionsAction())]);
+  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
 
   // Load only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() !== 'full') {
