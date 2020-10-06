@@ -64,19 +64,20 @@ trait SolrForwardTrait
         foreach ($this->getAllRecordsXML() as $xml) {
             foreach ($xml->ProductionEvent as $event) {
                 $attributes = $event->ProductionEventType->attributes();
-                if (empty($attributes{'elokuva-elonet-materiaali-kuva-url'})) {
+                if (empty($attributes->{'elokuva-elonet-materiaali-kuva-url'})) {
                     continue;
                 }
-                $url = (string)$attributes{'elokuva-elonet-materiaali-kuva-url'};
+                $url = (string)$attributes->{'elokuva-elonet-materiaali-kuva-url'};
                 if (!empty($xml->Title->PartDesignation->Value)) {
                     $partAttrs = $xml->Title->PartDesignation->Value->attributes();
-                    $desc = (string)$partAttrs{'kuva-kuvateksti'};
+                    $desc = (string)$partAttrs->{'kuva-kuvateksti'};
                 } else {
                     $desc = '';
                 }
                 $rights = [];
-                if (!empty($attributes{'finna-kayttooikeus'})) {
-                    $rights['copyright'] = (string)$attributes{'finna-kayttooikeus'};
+                if (!empty($attributes->{'finna-kayttooikeus'})) {
+                    $rights['copyright']
+                        = (string)$attributes->{'finna-kayttooikeus'};
                     $link = $this->getRightsLink(
                         strtoupper($rights['copyright']), $language
                     );
