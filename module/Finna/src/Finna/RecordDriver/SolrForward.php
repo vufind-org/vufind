@@ -1182,20 +1182,17 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 $time = $place = $viewers = '';
                 $attributes = $event->ProductionEventType->attributes();
                 if (!empty($attributes->{'elokuva-elotelevisioesitys-esitysaika'})) {
-                    $time = (string)$attributes->{
-                        'elokuva-elotelevisioesitys-esitysaika'
-                    };
+                    $time = (string)$attributes
+                        ->{'elokuva-elotelevisioesitys-esitysaika'};
                 }
                 if (!empty($attributes->{'elokuva-elotelevisioesitys-paikka'})) {
-                    $place = (string)$attributes->{
-                        'elokuva-elotelevisioesitys-paikka'
-                    };
+                    $place = (string)$attributes
+                        ->{'elokuva-elotelevisioesitys-paikka'};
                 }
                 if (!empty($attributes->{'elokuva-elotelevisioesitys-katsojamaara'})
                 ) {
-                    $viewers = (string)$attributes->{
-                        'elokuva-elotelevisioesitys-katsojamaara'
-                    };
+                    $viewers = (string)$attributes
+                        ->{'elokuva-elotelevisioesitys-katsojamaara'};
                 }
                 if (empty($attributes->{'elokuva-elotelevisioesitys-esitysaika'})) {
                     continue;
@@ -1223,20 +1220,14 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         foreach ($this->getAllRecordsXML() as $xml) {
             foreach ($xml->ProductionEvent as $event) {
                 $atr = $event->ProductionEventType->attributes();
-                if (!empty($atr->{'elokuva-elofestivaaliosallistuminen-aihe'})) {
-                    $name = (string)$atr->{
-                        'elokuva-elofestivaaliosallistuminen-aihe'
-                    };
-                    if (!empty($event->Region->RegionName)) {
-                        $region = (string)$event->Region->RegionName;
-                    }
-                    if (!empty($event->DateText)) {
-                        $date = (string)$event->DateText;
-                    }
-                }
                 if (empty($atr->{'elokuva-elofestivaaliosallistuminen-aihe'})) {
                     continue;
                 }
+                $name = (string)$atr->{'elokuva-elofestivaaliosallistuminen-aihe'};
+                $region = !empty($event->Region->RegionName)
+                    ? ((string)$event->Region->RegionName) : '';
+                $date = !empty($event->DateText)
+                    ? ((string)$event->DateText) : '';
                 $results[] = [
                     'name' => $name,
                     'region' => $region,
@@ -1258,17 +1249,14 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         foreach ($this->getAllRecordsXML() as $xml) {
             foreach ($xml->ProductionEvent as $event) {
                 $atr = $event->ProductionEventType->attributes();
-                if (!empty($atr->{'elokuva-eloulkomaanmyynti-levittaja'})) {
-                    $name = (string)$atr->{
-                        'elokuva-eloulkomaanmyynti-levittaja'
-                    };
-                    if (!empty($event->Region->RegionName)) {
-                        $region = (string)$event->Region->RegionName;
-                    }
-                }
                 if (empty($atr->{'elokuva-eloulkomaanmyynti-levittaja'})) {
                     continue;
                 }
+                $name = (string)$atr->{
+                    'elokuva-eloulkomaanmyynti-levittaja'
+                };
+                $region = !empty($event->Region->RegionName)
+                    ? ((string)$event->Region->RegionName) : '';
                 $results[] = [
                     'name' => $name,
                     'region' => $region
@@ -1299,20 +1287,14 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         foreach ($this->getAllRecordsXML() as $xml) {
             foreach ($xml->ProductionEvent as $event) {
                 $atr = $event->ProductionEventType->attributes();
-                if (!empty($atr->{'elokuva-muuesitys-aihe'})) {
-                    $name = (string)$atr->{
-                        'elokuva-muuesitys-aihe'
-                    };
-                    if (!empty($event->Region->RegionName)) {
-                        $region = (string)$event->Region->RegionName;
-                    }
-                    if (!empty($event->DateText)) {
-                        $date = (string)$event->DateText;
-                    }
-                }
                 if (empty($atr->{'elokuva-muuesitys-aihe'})) {
                     continue;
                 }
+                $name = (string)$atr->{'elokuva-muuesitys-aihe'};
+                $region = !empty($event->Region->RegionName)
+                    ? ((string)$event->Region->RegionName) : '';
+                $date = !empty($event->DateText)
+                    ? ((string)$event->DateText) : '';
                 $results[] = [
                     'name' => $name,
                     'region' => $region,
