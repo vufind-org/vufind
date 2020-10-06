@@ -95,6 +95,8 @@ class Session extends \VuFind\Db\Table\Session
             try {
                 $result = call_user_func_array($method, $params);
                 return $result;
+            } catch (\VuFind\Exception\SessionExpired $e) {
+                throw $e;
             } catch (\Exception $e) {
                 if ($try <= 5) {
                     usleep($try * 100000);
