@@ -1420,6 +1420,46 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return exteriors
+     *
+     * @return string
+     */
+    public function getExteriors()
+    {
+        return $this->getProductionEventElement('elokuva_ulkokuvat');
+    }
+
+    /**
+     * Return interiors
+     *
+     * @return string
+     */
+    public function getInteriors()
+    {
+        return $this->getProductionEventElement('elokuva_sisakuvat');
+    }
+
+    /**
+     * Return studios
+     *
+     * @return string
+     */
+    public function getStudios()
+    {
+        return $this->getProductionEventElement('elokuva_studiot');
+    }
+
+    /**
+     * Return location notes
+     *
+     * @return string
+     */
+    public function getLocationNotes()
+    {
+        return $this->getProductionEventElement('elokuva_kuvauspaikkahuomautus');
+    }
+
+    /**
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
