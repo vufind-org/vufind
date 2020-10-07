@@ -995,6 +995,10 @@ class RecordDataFormatterFactory
         $spec->setTemplateLine(
             'Related Authorities', 'getRelations', 'data-relations-author.phtml'
         );
+        $spec->setTemplateLine(
+            'Associated Groups', 'getAssociatedGroups',
+            'data-lines-with-detail.phtml'
+        );
         $spec->setLine('Additional Information', 'getAdditionalInformation');
         return $spec->getArray();
     }

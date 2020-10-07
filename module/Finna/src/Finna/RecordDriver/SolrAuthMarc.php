@@ -231,6 +231,36 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc
     }
 
     /**
+     * Return associated groups.
+     *
+     * @return array
+     */
+    public function getAssociatedGroups()
+    {
+        $result = [];
+        foreach ($this->getMarcRecord()->getFields('373') as $field) {
+            if ($groups = ($this->getSubFieldArray($field, ['a'], false))) {
+                if (count($groups) > 1) {
+                    $result = array_merge(
+                        array_map(
+                            function ($group) {
+                                return ['data' => $group];
+                            },
+                            $groups
+                        ),
+                        $result
+                    );
+                } else {
+                    $dates = $this->getFieldSubFields($field, ['s','t'], false);
+                    $detail = sprintf('%s-%s', $dates['s'] ?? '', $dates['t'] ?? '');
+                    $result[] = ['data' => $groups[0], 'detail' => $detail];
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Return related places.
      *
      * @return array
