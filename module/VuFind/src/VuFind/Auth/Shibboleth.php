@@ -284,9 +284,6 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
-        // It would be more proper to call getServer on a Laminas request
-        // object... except that the request object doesn't exist yet when
-        // this routine gets called.
         $sessionId = $this->getAttribute(
             $this->request,
             self::SHIB_SESSION_ID
