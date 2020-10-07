@@ -1,0 +1,11 @@
+<?php
+  $url = $this->recordLink()->getUrl($this->driver);
+  $url = isset($info['baseUrl']) ? ($info['baseUrl'] . $url) : $this->serverUrl($url);
+?>
+@misc {
+  url = <?= $url ?>
+<?php
+// Record separator:
+echo "}\n\n";
+?>
+

@@ -59,4 +59,19 @@ class Resource extends \VuFind\Db\Row\Resource
         }
         return $this;
     }
+
+    /**
+     * Save
+     *
+     * @return int
+     */
+    public function save()
+    {
+        // Save only record id for restricted Solr R2 records
+        if ($this->source === 'R2') {
+            $this->title = '';
+            $this->author = $this->year = $this->extra_metadata = null;
+        }
+        return parent::save();
+    }
 }
