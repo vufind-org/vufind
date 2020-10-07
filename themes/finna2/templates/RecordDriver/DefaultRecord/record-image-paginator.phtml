@@ -71,6 +71,7 @@
       $settings = [
         'recordId' => $this->driver->getUniqueId(),
         'recordType' => $this->driver->tryMethod('getRecordFormat'),
+        'recordSource' => $this->driver->tryMethod('getSourceIdentifier'),
         'imagesPerPage' => 8,
         'imagesOnMobile' => $numOfImages['mobile'] ?? 4,
         'imagesOnNormal' => $numOfImages['mobile'] ?? 8,

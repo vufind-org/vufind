@@ -6,7 +6,7 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
   if ($img) {
-    $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]);
+    $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]], $this->driver->getSourceIdentifier());
   }
 ?>
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">

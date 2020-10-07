@@ -371,4 +371,16 @@ trait SolrAuthFinnaTrait
     {
         return false;
     }
+
+    /**
+     * Get online URLs
+     *
+     * @param bool $raw Whether to return raw data
+     *
+     * @return array
+     */
+    public function getOnlineURLs($raw = false)
+    {
+        return [];
+    }
 }

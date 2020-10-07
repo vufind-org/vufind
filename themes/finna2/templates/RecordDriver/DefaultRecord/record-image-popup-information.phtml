@@ -163,7 +163,9 @@
   <?php if ($this->resolver('record/record-organisation-menu.phtml')): ?>
     <?=$this->render('record/record-organisation-menu.phtml') ?>
   <?php endif; ?>
-  <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['rights' => $rights, 'truncateLicense' => true]); ?>
+  <?php if ($this->driver->getSourceIdentifier() !== 'SolrAuth'): ?>
+    <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['rights' => $rights, 'truncateLicense' => true]); ?>
+  <?php endif ?>
   <div style="clear: both;"></div>
 </div>
 <?=

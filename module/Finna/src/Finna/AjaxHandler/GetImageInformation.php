@@ -129,11 +129,13 @@ class GetImageInformation extends \VuFind\AjaxHandler\AbstractBase
         $publicList = $params->fromQuery('publicList') === '1';
         $listId = $params->fromQuery('listId');
 
-        list($source, $recId) = explode('.', $id, 2);
-        if ('pci' === $source) {
-            $source = 'Primo';
-        } else {
-            $source = 'Solr';
+        if (null === ($source = $params->fromQuery('source'))) {
+            list($source, $recId) = explode('.', $id, 2);
+            if ('pci' === $source) {
+                $source = 'Primo';
+            } else {
+                $source = 'Solr';
+            }
         }
         $driver = $this->recordLoader->load($id, $source);
 
