@@ -281,12 +281,12 @@ FinnaPopup.prototype.focusTrap = function focusTrap(e) {
     var events = (typeof params.noClick === 'undefined' || !params.noClick) ? 'click openmodal.finna' : 'openmodal.finna';
     _.off(events).on(events, function showModal(e) {
       e.preventDefault();
-      _.on('removeclick.finna', function removeClick() {
-        _.off('click');
-      });
       // We need to tell which triggers is being used
       $.fn.finnaPopup.popups[id].openIndex = _.data('popup-' + id + '-index');
       $.fn.finnaPopup.popups[id].onPopupOpen(params.onPopupOpen, params.onPopupClose);
+    });
+    _.on('removeclick.finna', function removeClick() {
+      _.off('click');
     });
     if (typeof params.embed !== 'undefined' && params.embed) {
       if (typeof $.fn.finnaPopup.popups[id].content === 'undefined') {
