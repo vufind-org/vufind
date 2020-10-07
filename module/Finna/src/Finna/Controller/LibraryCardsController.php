@@ -464,18 +464,23 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
             } else {
                 $params['userdataok'] = true;
                 $session->params[$hash] = $params;
-                $catalog->registerPatron(
+                $result = $catalog->registerPatron(
                     [
                         'cat_username' => "$target.123",
                         'userdata' => $params['userdata']
                     ]
                 );
-                $this->flashMessenger()->addSuccessMessage('new_ils_account_added');
-                return $this->redirect()->toRoute(
-                    'librarycards-registrationdone',
-                    [],
-                    ['query' => ['hash' => $hash]]
-                );
+                if ($result['success']) {
+                    $this->flashMessenger()
+                        ->addSuccessMessage('new_ils_account_added');
+                    return $this->redirect()->toRoute(
+                        'librarycards-registrationdone',
+                        [],
+                        ['query' => ['hash' => $hash]]
+                    );
+                } else {
+                    $this->flashMessenger()->addErrorMessage($result['status']);
+                }
             }
         }
         return $view;

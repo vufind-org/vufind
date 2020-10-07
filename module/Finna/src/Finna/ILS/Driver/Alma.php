@@ -1002,20 +1002,41 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 $note->addChild('note_text', $formParams['identitynumber']);
                 $note->addChild('user_viewable', 'false');
                 $note->addChild('popup_note', 'false');
+            } else {
+                // Assume it's a user identifier type in Alma
+                $userIdentifiers = $xml->addChild('user_identifiers');
+                $userIdentifier = $userIdentifiers->addChild('user_identifier');
+                $userIdentifier->addChild('id_type', $identityField);
+                $userIdentifier->addChild('value', $formParams['identitynumber']);
             }
         }
 
         $userXml = $xml->asXML();
 
         // Create user in Alma
-        $this->makeRequest(
+        list($result, $statusCode) = $this->makeRequest(
             '/users',
             [],
             [],
             'POST',
             $userXml,
-            ['Content-Type' => 'application/xml']
+            ['Content-Type' => 'application/xml'],
+            ['400'],
+            true
         );
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            return [
+                'success' => true
+            ];
+        }
+
+        $errorCode = (string)($result->errorList->error[0]->errorCode ?? '');
+        return [
+            'success' => false,
+            'status' => '401851' === $errorCode
+                ? 'new_ils_account_duplicate' : 'An error has occurred'
+        ];
 
         return true;
     }

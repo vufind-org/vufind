@@ -134,8 +134,8 @@ expiryDate = P10Y
 ; If not set, the purge date of the Alma user account will be empty.
 purgeDate = P11Y
 
-; Field where the identity number is stored. Default is primary id. Supported values are:
-; "primary_id", "inst_id", "note"
+; Field where the identity number is stored. Default is primary id. Supported special values are:
+; "primary_id", "inst_id", "note". Anything else is considered to be a user identifier type in Alma.
 ;identityField =
 
 ; Optional introduction texts that can be displayed on the initial email form
