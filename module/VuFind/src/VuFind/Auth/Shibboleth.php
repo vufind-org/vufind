@@ -122,6 +122,18 @@ class Shibboleth extends AbstractBase
         $this->sessionManager = $sessionManager;
         $this->configurationLoader = $configurationLoader;
         $this->request = $request;
+    }
+
+    /**
+     * Set configuration.
+     *
+     * @param \Laminas\Config\Config $config Configuration to set
+     *
+     * @return void
+     */
+    public function setConfig($config)
+    {
+        parent::setConfig($config);
         $this->proxy = $this->config->Shibboleth->proxy ?? false;
     }
 
@@ -162,6 +174,8 @@ class Shibboleth extends AbstractBase
      */
     public function authenticate($request)
     {
+        // validate config before authentication
+        $this->validateConfig();
         // Check if username is set.
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
@@ -178,11 +192,7 @@ class Shibboleth extends AbstractBase
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes($shib) as $key => $value) {
-            if (!preg_match(
-                '/' . $value . '/',
-                $this->getAttribute($request, $key)
-            )
-            ) {
+            if (!preg_match("/$value/", $this->getAttribute($request, $key))) {
                 $details = ($this->proxy) ? $request->getHeaders()->toArray()
                     : $request->getServer()->toArray();
                 $this->debug(
@@ -369,11 +379,8 @@ class Shibboleth extends AbstractBase
             return;
         }
         $localSessionId = $this->sessionManager->getId();
-        $externalSession = $this->getDbTableManager()
-            ->get('ExternalSession');
-        $externalSession->addSessionMapping(
-            $localSessionId, $shibSessionId
-        );
+        $externalSession = $this->getDbTableManager()->get('ExternalSession');
+        $externalSession->addSessionMapping($localSessionId, $shibSessionId);
         $this->debug(
             "Cached Shibboleth session id '$shibSessionId' for local session"
             . " '$localSessionId'"
@@ -406,7 +413,7 @@ class Shibboleth extends AbstractBase
             $header = $request->getHeader($this->normalize($attribute));
             return ($header) ? $header->getFieldValue() : null;
         } else {
-            return $request->getServer()->get($attribute);
+            return $request->getServer()->get($attribute, null);
         }
     }
 

@@ -81,9 +81,7 @@ class MultiIdPConfigurationLoader implements ConfigurationLoaderInterface,
             );
             throw new AuthException('Missing configuration for IdP.');
         }
-        foreach ($idpConfig as $key => $value) {
-            $config[$key] = $value;
-        }
+        $config = array_merge($config, $idpConfig);
         $config['prefix'] = $prefix;
         return $config;
     }
