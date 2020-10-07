@@ -97,7 +97,7 @@
        $placeholder = $this->translate('Find') . '...';
      }
   ?>
-<nav class="nav searchbox hidden-print">
+<div class="searchbox hidden-print">
   <div class="<?=$mainPage ? 'searchbox-home' : '' ?> <?= $module == 'record' || $module == 'collection' ? 'searchbox-flex' : 'searchbox-columns' ?>">
     <?php if ($module == 'record' || $module == 'collection'): ?>
       <div class="record-back hidden-print">
@@ -288,6 +288,6 @@
       <?php endif; ?>
     <?php endif; ?>
   </div>
-</nav>
+</div>
 <?php endif; ?>
 <!-- END of: finna - search/searchbox.phtml -->
