@@ -99,11 +99,11 @@ class Shibboleth extends AbstractBase
     protected $request;
 
     /**
-     * Is proxy enabled?
+     * Read attributes from headers instead of environment variables
      *
      * @var boolean
      */
-    protected $proxy = false;
+    protected $useHeaders = false;
 
     /**
      * Constructor
@@ -134,7 +134,7 @@ class Shibboleth extends AbstractBase
     public function setConfig($config)
     {
         parent::setConfig($config);
-        $this->proxy = $this->config->Shibboleth->proxy ?? false;
+        $this->useHeaders = $this->config->Shibboleth->use_headers ?? false;
     }
 
     /**
@@ -181,7 +181,7 @@ class Shibboleth extends AbstractBase
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['username']);
         if (empty($username)) {
-            $details = ($this->proxy) ? $request->getHeaders()->toArray()
+            $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
                 : $request->getServer()->toArray();
             $this->debug(
                 "No username attribute ({$shib['username']}) present in request: "
@@ -193,7 +193,7 @@ class Shibboleth extends AbstractBase
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes($shib) as $key => $value) {
             if (!preg_match("/$value/", $this->getAttribute($request, $key))) {
-                $details = ($this->proxy) ? $request->getHeaders()->toArray()
+                $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
                     : $request->getServer()->toArray();
                 $this->debug(
                     "Attribute '$key' does not match required value '$value' in"
@@ -406,7 +406,7 @@ class Shibboleth extends AbstractBase
      */
     protected function getAttribute($request, $attribute)
     {
-        if ($this->proxy) {
+        if ($this->useHeaders) {
             $header = $request->getHeader($this->normalize($attribute));
             return ($header) ? $header->getFieldValue() : null;
         } else {
@@ -415,8 +415,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Convert name of server environment variable to header name - used
-     * when shibboleth is behind proxy.
+     * Convert name of server environment variable to header name.
      *
      * @param string $attribute name of server environment variable
      *

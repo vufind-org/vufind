@@ -104,15 +104,15 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param Config $config Configuration to use (null for default)
      * @param Config $shibConfig Configuration with IdP
-     * @param boolean $proxy proxy mode - use HTTP headers instead of environment variables
+     * @param boolean $useHeaders use HTTP headers instead of environment variables
      * @param boolean $requiredAttributes required attributes
      *
      * @return Shibboleth
      */
-    public function getAuthObject($config = null, $shibConfig = null, $proxy = false, $requiredAttributes = true)
+    public function getAuthObject($config = null, $shibConfig = null, $useHeaders = false, $requiredAttributes = true)
     {
         if (null === $config) {
-            $config = $this->getAuthConfig($proxy, $requiredAttributes);
+            $config = $this->getAuthConfig($useHeaders, $requiredAttributes);
         }
         $loader = null;
         if ($shibConfig == null) {
@@ -133,13 +133,13 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return Config
      */
-    public function getAuthConfig($proxy = false, $requiredAttributes = true)
+    public function getAuthConfig($useHeaders = false, $requiredAttributes = true)
     {
         $config = [
             'login' => 'http://myserver',
             'username' => 'username',
             'email' => 'email',
-            'proxy' => $proxy
+            'use_headers' => $useHeaders
         ];
         if ($requiredAttributes) {
             $config += [
@@ -197,19 +197,19 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      * Support method -- get parameters to log into an account (but allow override of
      * individual parameters so we can test different scenarios).
      *
-     * @param array $overrides Associative array of parameters to override.
-     * @param boolean $proxy Proxy request
+     * @param array $overrides    Associative array of parameters to override.
+     * @param boolean $useHeaders Use headers instead of environment variables
      *
      * @return \Laminas\Http\Request
      */
-    protected function getLoginRequest($overrides = [], $proxy = false)
+    protected function getLoginRequest($overrides = [], $useHeaders = false)
     {
         $server = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
             'password' => 'testpass'
         ];
         $request = new \Laminas\Http\PhpEnvironment\Request();
-        if ($proxy) {
+        if ($useHeaders) {
             $headers = new Headers();
             $headers->addHeaders($server);
             $request->setHeaders($headers);
@@ -351,7 +351,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     }
 
     /**
-     * Test login using proxy.
+     * Test login using attributes passed in headers.
      *
      * @return void
      */
