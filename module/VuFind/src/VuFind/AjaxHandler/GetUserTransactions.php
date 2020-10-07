@@ -57,25 +57,52 @@ class GetUserTransactions extends AbstractIlsAndUserAction
         if (!$this->ils->checkCapability('getMyTransactions')) {
             return $this->formatResponse('', self::STATUS_HTTP_ERROR, 405);
         }
-        $items = $this->ils->getMyTransactions($patron);
+
         $counts = [
             'ok' => 0,
             'warn' => 0,
             'overdue' => 0
         ];
-        foreach ($items['records'] as $item) {
-            switch ($item['dueStatus'] ?? '') {
-            case 'due':
-                $counts['warn']++;
-                break;
-            case 'overdue':
-                $counts['overdue']++;
-                break;
-            default:
-                $counts['ok']++;
-                break;
+        $functionConfig = $this->ils->checkFunction('getMyTransactions', $patron);
+        $page = 1;
+        $pageEnd = 1;
+        while ($page <= $pageEnd) {
+            // Try to use large page size, but take ILS limits into account
+            $pageOptions = $this->getPaginationHelper()
+                ->getOptions($page, null, 1000, $functionConfig);
+            $result = $this->ils
+                ->getMyTransactions($patron, $pageOptions['ilsParams']);
+            foreach ($result['records'] as $item) {
+                switch ($item['dueStatus'] ?? '') {
+                case 'due':
+                    $counts['warn']++;
+                    break;
+                case 'overdue':
+                    $counts['overdue']++;
+                    break;
+                default:
+                    $counts['ok']++;
+                    break;
+                }
             }
+            $pageEnd = $pageOptions['ilsPaging']
+                ? ceil($result['count'] / $pageOptions['limit'])
+                : 1;
+            $page += 1;
         }
         return $this->formatResponse($counts);
+    }
+
+    /**
+     * Get the ILS pagination helper
+     *
+     * @return \VuFind\ILS\PaginationHelper
+     */
+    protected function getPaginationHelper()
+    {
+        if (null === $this->paginationHelper) {
+            $this->paginationHelper = new \VuFind\ILS\PaginationHelper();
+        }
+        return $this->paginationHelper;
     }
 }
