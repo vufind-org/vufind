@@ -289,7 +289,17 @@ function applyRecordTabHash() {
 
 $(window).on('hashchange', applyRecordTabHash);
 
+function removeCheckRouteParam() {
+  if (window.location.search.indexOf('checkRoute=1') >= 0) {
+    var newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', newHref);
+    }
+  }
+}
+
 function recordDocReady() {
+  removeCheckRouteParam();
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
