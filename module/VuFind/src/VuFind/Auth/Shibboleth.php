@@ -407,7 +407,7 @@ class Shibboleth extends AbstractBase
     protected function getAttribute($request, $attribute)
     {
         if ($this->useHeaders) {
-            $header = $request->getHeader($this->normalize($attribute));
+            $header = $request->getHeader($this->normalizeAttrName($attribute));
             return ($header) ? $header->getFieldValue() : null;
         } else {
             return $request->getServer()->get($attribute, null);
@@ -421,7 +421,7 @@ class Shibboleth extends AbstractBase
      *
      * @return string header name
      */
-    protected function normalize($attribute)
+    protected function normalizeAttrName($attribute)
     {
         return "HTTP_" . strtoupper(str_replace('-', '_', $attribute));
     }
