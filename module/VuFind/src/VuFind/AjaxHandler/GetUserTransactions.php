@@ -101,6 +101,18 @@ class GetUserTransactions extends AbstractIlsAndUserAction
     }
 
     /**
+     * Set the ILS pagination helper
+     *
+     * @param \VuFind\ILS\PaginationHelper $helper Pagination helper
+     *
+     * @return void
+     */
+    protected function setPaginationHelper($helper)
+    {
+        $this->paginationHelper = $helper;
+    }
+
+    /**
      * Get the ILS pagination helper
      *
      * @return \VuFind\ILS\PaginationHelper
