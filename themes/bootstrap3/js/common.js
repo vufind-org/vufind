@@ -367,6 +367,27 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).change();
 }
 
+function setupQRCodeLinks(_container) {
+  var container = _container || $('body');
+
+  container.find('a.qrcodeLink').click(function qrcodeToggle() {
+    if ($(this).hasClass("active")) {
+      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
+    } else {
+      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
+    }
+
+    var holder = $(this).next('.qrcode');
+    if (holder.find('img').length === 0) {
+      // We need to insert the QRCode image
+      var template = holder.find('.qrCodeImgTag').html();
+      holder.html(template);
+    }
+    holder.toggleClass('hidden');
+    return false;
+  });
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -379,6 +400,9 @@ $(document).ready(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
+
+  // handle QR code links
+  setupQRCodeLinks();
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
@@ -395,24 +419,6 @@ $(document).ready(function commonDocReady() {
     }
     $form.find('.checkbox-select-all').prop('checked', false);
     $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
-  });
-
-  // handle QR code links
-  $('a.qrcodeLink').click(function qrcodeToggle() {
-    if ($(this).hasClass("active")) {
-      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
-    } else {
-      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
-    }
-
-    var holder = $(this).next('.qrcode');
-    if (holder.find('img').length === 0) {
-      // We need to insert the QRCode image
-      var template = holder.find('.qrCodeImgTag').html();
-      holder.html(template);
-    }
-    holder.toggleClass('hidden');
-    return false;
   });
 
   // Print

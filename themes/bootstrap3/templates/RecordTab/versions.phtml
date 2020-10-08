@@ -31,12 +31,15 @@
 </div>
 
 <?php
-$translations = json_encode(
+$this->jsTranslations()->addStrings(
   [
-    'qrcode_hide' => $this->translate('qrcode_hide'),
-    'qrcode_show' => $this->translate('qrcode_show'),
+    'qrcode_hide' => 'qrcode_hide',
+    'qrcode_show' => 'qrcode_show',
   ]
 );
+$translations = $this->jsTranslations()->getJSON();
+// Use combinedSearch.initResultScripts to avoid duplicating the list of scripts
+// required for results loaded via AJAX:
 $script = <<<JS
 VuFind.addTranslations($translations);
 VuFind.combinedSearch.initResultScripts($('.results'));

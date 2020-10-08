@@ -1,9 +1,10 @@
-/*global VuFind, checkSaveStatuses */
+/*global VuFind, checkSaveStatuses, setupQRCodeLinks */
 VuFind.combinedSearch = (function CombinedSearch() {
   function initResultScripts(container) {
     VuFind.openurl.init(container);
     VuFind.itemStatuses.init(container);
     checkSaveStatuses(container);
+    setupQRCodeLinks(container);
     VuFind.recordVersions.init(container);
   }
 
