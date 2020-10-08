@@ -838,7 +838,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function getPresenters()
     {
-        global $configArray;
         $result = ['presenters' => [], 'details' => []];
 
         foreach (['100', '110', '700', '710'] as $fieldCode) {
