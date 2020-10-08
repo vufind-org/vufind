@@ -10,8 +10,9 @@
     <xsl:param name="collection">DSpace</xsl:param>
     <xsl:param name="urlPrefix">http</xsl:param>
     <xsl:param name="geographic">false</xsl:param>
-    <xsl:param name="workKey_include_regEx">/([0-9A-Za-z]+)/</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
     <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
@@ -173,7 +174,7 @@
                 </xsl:for-each>
 
                 <!-- Work Keys -->
-                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dc:title, //dc:creator, $workKey_include_regEx, $workKey_exclude_regEx)/workKey">
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dc:title, //dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
                     <field name="work_keys_str_mv">
                         <xsl:value-of select="." />
                     </field>
