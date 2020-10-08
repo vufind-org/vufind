@@ -216,7 +216,9 @@ class Shibboleth extends AbstractBase
                 $value = $this->getAttribute($request, $shib[$attribute]);
                 if ($attribute == 'email') {
                     $user->updateEmail($value);
-                } elseif ($attribute == 'cat_username' && isset($shib['prefix'])) {
+                } elseif ($attribute == 'cat_username' && isset($shib['prefix'])
+                    && !empty($value)
+                ) {
                     $user->cat_username = $shib['prefix'] . '.'
                         . (($value === null) ? '' : $value);
                 } elseif ($attribute == 'cat_password') {
