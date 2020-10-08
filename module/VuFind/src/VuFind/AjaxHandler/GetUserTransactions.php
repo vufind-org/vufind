@@ -41,6 +41,13 @@ use Laminas\Mvc\Controller\Plugin\Params;
 class GetUserTransactions extends AbstractIlsAndUserAction
 {
     /**
+     * Paginator
+     *
+     * @var \VuFind\ILS\PaginationHelper
+     */
+    protected $paginator = null;
+
+    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -65,8 +72,7 @@ class GetUserTransactions extends AbstractIlsAndUserAction
         ];
         $functionConfig = $this->ils->checkFunction('getMyTransactions', $patron);
         $page = 1;
-        $pageEnd = 1;
-        while ($page <= $pageEnd) {
+        do {
             // Try to use large page size, but take ILS limits into account
             $pageOptions = $this->getPaginationHelper()
                 ->getOptions($page, null, 1000, $functionConfig);
@@ -88,8 +94,9 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             $pageEnd = $pageOptions['ilsPaging']
                 ? ceil($result['count'] / $pageOptions['limit'])
                 : 1;
-            $page += 1;
-        }
+            $page++;
+        } while ($page <= $pageEnd);
+
         return $this->formatResponse($counts);
     }
 
