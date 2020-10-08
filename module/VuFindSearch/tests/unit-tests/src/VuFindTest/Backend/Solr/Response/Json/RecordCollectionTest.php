@@ -66,6 +66,29 @@ class RecordCollectionTest extends TestCase
     }
 
     /**
+     * Test that the object returns appropriate defaults when given a null response
+     * element.
+     *
+     * @return void
+     */
+    public function testDefaultsWithNullResponse()
+    {
+        $coll = new RecordCollection(['response' => null]);
+        $this->assertEquals(
+            'VuFindSearch\Backend\Solr\Response\Json\Spellcheck',
+            get_class($coll->getSpellcheck())
+        );
+        $this->assertEquals(0, $coll->getTotal());
+        $this->assertEquals(
+            'VuFindSearch\Backend\Solr\Response\Json\Facets',
+            get_class($coll->getFacets())
+        );
+        $this->assertEquals([], $coll->getGroups());
+        $this->assertEquals([], $coll->getHighlighting());
+        $this->assertEquals(0, $coll->getOffset());
+    }
+
+    /**
      * Test that the object handles offsets properly.
      *
      * @return void
