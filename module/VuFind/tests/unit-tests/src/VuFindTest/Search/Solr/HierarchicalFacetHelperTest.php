@@ -101,6 +101,35 @@ class HierarchicalFacetHelperTest extends TestCase
     ];
 
     /**
+     * Invalid test input data.
+     *
+     * @var array
+     */
+    protected $invalidFacetList = [
+        [
+            'value' => 'Book',
+            'displayText' => 'Book',
+            'count' => 1000,
+            'operator' => 'OR',
+            'isApplied' => false
+        ],
+        [
+            'value' => 'AV',
+            'displayText' => 'Audiovisual',
+            'count' => 600,
+            'operator' => 'OR',
+            'isApplied' => false
+        ],
+        [
+            'value' => 'Audio',
+            'displayText' => 'Sound',
+            'count' => 400,
+            'operator' => 'OR',
+            'isApplied' => false
+        ],
+    ];
+
+    /**
      * Hierarchical Facet Helper
      *
      * @var HierarchicalFacetHelper
@@ -255,6 +284,32 @@ class HierarchicalFacetHelperTest extends TestCase
         );
         $this->assertEquals(true, $facetList[0]['children'][0]['isApplied']);
     }
+
+    /**
+     * Tests for buildFacetArray with invalid values
+     *
+     * @return void
+     */
+    public function testBuildFacetArrayInvalidValues()
+    {
+        // Test without active filters
+        $facetList = $this->helper
+            ->buildFacetArray('format', $this->invalidFacetList);
+        $this->assertEquals('Book', $facetList[0]['value']);
+        $this->assertEquals(0, $facetList[0]['level']);
+        $this->assertFalse($facetList[0]['isApplied']);
+        $this->assertFalse($facetList[0]['hasAppliedChildren']);
+        $this->assertEquals('AV', $facetList[1]['value']);
+        $this->assertEquals('Audio', $facetList[2]['value']);
+
+        // Test with active filter
+        $facetList = $this->helper->buildFacetArray(
+            'format',
+            $this->setApplied('Book', $facetList)
+        );
+        $this->assertEquals('Book', $facetList[0]['value']);
+        $this->assertTrue($facetList[0]['isApplied']);
+        $this->assertFalse($facetList[0]['hasAppliedChildren']);
     }
 
     /**
