@@ -346,16 +346,15 @@ class Record extends \VuFind\View\Helper\Root\Record
         $type, $lookfor, $data, $params = []
     ) {
         $id = $data['id'] ?? null;
+        $linkType = $this->getAuthorityLinkType();
 
         // Discard search tabs hiddenFilters when jumping to Authority page
-        $preserveSearchTabsFilters
-            = $this->getAuthorityLinkType() !== AuthorityHelper::LINK_TYPE_PAGE;
+        $preserveSearchTabsFilters = $linkType !== AuthorityHelper::LINK_TYPE_PAGE;
 
-        list($url, $urlType)
-            = $this->getLink(
-                $type, $lookfor, $params + ['id' => $id], true,
-                $preserveSearchTabsFilters
-            );
+        list($url, $urlType) = $this->getLink(
+            $type, $lookfor, $params + compact('id', 'linkType'), true,
+            $preserveSearchTabsFilters
+        );
 
         if (!$this->isAuthorityEnabled()
             || !in_array($urlType, ['authority-search', 'authority-page'])
