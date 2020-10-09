@@ -31,6 +31,7 @@ namespace FinnaSearch\Backend\Solr;
 
 use FinnaSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -46,6 +47,30 @@ use VuFindSearch\Response\RecordCollectionInterface;
 class Backend extends \VuFindSearch\Backend\Solr\Backend
     implements WorkExpressionsInterface
 {
+    /**
+     * Perform a search and return record collection.
+     *
+     * @param AbstractQuery $query  Search query
+     * @param int           $offset Search offset
+     * @param int           $limit  Search limit
+     * @param ParamBag      $params Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function search(AbstractQuery $query, $offset, $limit,
+        ParamBag $params = null
+    ) {
+        // Enforce a hard limit to avoid problems due to bad configuration
+        if ($params->get('cursorMark')) {
+            if ($limit > 1000) {
+                $limit = 1000;
+            }
+        } elseif ($limit > 100) {
+            $limit = 100;
+        }
+        return parent::search($query, $offset, $limit, $params);
+    }
+
     /**
      * Return similar records.
      *
