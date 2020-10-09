@@ -52,6 +52,13 @@ trait SolrFinnaTrait
     protected $searchSettings = [];
 
     /**
+     * Runtime cache for method results to avoid duplicate processing
+     *
+     * @var array
+     */
+    protected $cache = [];
+
+    /**
      * Return access restriction notes for the record.
      *
      * @return array
@@ -510,6 +517,11 @@ trait SolrFinnaTrait
      */
     public function getThumbnail($size = 'small')
     {
+        $cacheKey = __FUNCTION__ . "/$size";
+        if (isset($this->cache[$cacheKey])) {
+            return $this->cache[$cacheKey];
+        }
+
         $result = parent::getThumbnail($size);
 
         if (is_array($result) && !isset($result['isbn'])) {
@@ -519,6 +531,7 @@ trait SolrFinnaTrait
             }
         }
 
+        $this->cache[$cacheKey] = $result;
         return $result;
     }
 
@@ -540,6 +553,10 @@ trait SolrFinnaTrait
      */
     public function getFirstISBN()
     {
+        if (isset($this->cache[__FUNCTION__])) {
+            return $this->cache[__FUNCTION__];
+        }
+
         // Get all the ISBNs and initialize the return value:
         $isbns = $this->getISBNs();
         $isbn13 = false;
@@ -557,6 +574,7 @@ trait SolrFinnaTrait
                 return $isbn;
             }
         }
+        $this->cache[__FUNCTION__] = $isbn13;
         return $isbn13;
     }
 
