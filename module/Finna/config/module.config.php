@@ -58,7 +58,7 @@ $config = [
                 ],
             ],
             'linked-events-content' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/FeedContent/LinkedEvents[/:id]',
                     'constraints' => [

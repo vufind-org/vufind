@@ -73,7 +73,7 @@ class FeedContentController extends ContentController
     /**
      * Linked events action
      *
-     * @return Zend\View\Model\ViewModel
+     * @return Laminas\View\Model\ViewModel
      */
     public function linkedEventsAction()
     {
