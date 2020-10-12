@@ -163,7 +163,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $url = $this->apiUrl . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
-        $response = $client->send();
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
+            return null;
+        }
         return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
     }
 }
