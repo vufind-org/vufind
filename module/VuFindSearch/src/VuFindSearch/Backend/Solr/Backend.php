@@ -110,7 +110,7 @@ class Backend extends AbstractBackend
      */
     public function setPageSize($pageSize)
     {
-        if(!empty($pageSize)) {
+        if (!empty($pageSize)) {
             $this->pageSize = $pageSize;
         }
     }
