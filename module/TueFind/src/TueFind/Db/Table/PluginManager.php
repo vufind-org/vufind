@@ -5,6 +5,9 @@ namespace TueFind\Db\Table;
 use VuFind\Db\Table\GatewayFactory;
 
 class PluginManager extends \VuFind\Db\Table\PluginManager {
+
+    use \TueFind\PluginManagerExtensionTrait;
+
     /**
      * Constructor
      *
@@ -17,10 +20,11 @@ class PluginManager extends \VuFind\Db\Table\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['redirect']        = Redirect::class;
-        $this->aliases['user']            = User::class;
-        $this->factories[Redirect::class] = GatewayFactory::class;
-        $this->factories[User::class]     = \VuFind\Db\Table\UserFactory::class;
+        $this->addOverride('aliases', 'redirect', Redirect::class);
+        $this->addOverride('aliases', 'user', User::class);
+        $this->addOverride('factories', Redirect::class, GatewayFactory::class);
+        $this->addOverride('factories', User::class, \VuFind\Db\Table\UserFactory::class);
+        $this->applyOverrides();
 
         $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
