@@ -65,7 +65,7 @@
          $this->layout()->searchTabs = $searchTabs;
       }
     }
-    $mainPage = $action === 'home' && in_array($module, ['combined', 'primo', 'search', 'eds', 'summon']);
+    $mainPage = $action === 'home' && in_array($module, ['combined', 'primo', 'search', 'eds', 'summon', 'authority']);
 ?>
 <?php if ($this->searchType != 'advanced'): ?>
   <?php
@@ -98,7 +98,7 @@
      }
   ?>
 <div class="searchbox hidden-print">
-  <div class="<?=$mainPage ? 'searchbox-home' : '' ?> <?= $module == 'record' || $module == 'collection' ? 'searchbox-flex' : 'searchbox-columns' ?>">
+  <div class="<?=$mainPage ? 'searchbox-home' : '' ?> <?= $module == 'record' || $module == 'collection' ? 'searchbox-flex' : 'searchbox-columns' ?> <?=$this->escapeHtmlAttr("searchbox-$module-$action")?>">
     <?php if ($module == 'record' || $module == 'collection'): ?>
       <div class="record-back hidden-print">
           <?php
@@ -217,7 +217,7 @@
       <?php endif; ?>
     </div>
     <?php if ($module != 'record' && $module != 'collection'): ?>
-      <?php if ($browse || $mainPage): ?>
+      <?php if ($browse || $mainPage || ($module === 'authority' && $action === 'search')): ?>
         <div class="search-links">
           <?php if ($advSearch): ?>
           <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>

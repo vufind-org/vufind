@@ -36,7 +36,7 @@ heading   = "Heading"
 
 [Facets]
 source             = "Authority File"
-record_type        = "Type"
+record_type        = "authority_type"
 field_of_activity    = "Field of activity"
 occupation         = "Occupation"
 gender             = "Gender"
