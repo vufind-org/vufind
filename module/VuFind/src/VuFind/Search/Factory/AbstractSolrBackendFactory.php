@@ -182,7 +182,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
+        $config = $this->config->get($this->mainConfig);
         $backend = new $this->backendClass($connector);
+        $backend->setPageSize($config->Index->record_batch_size);
         $backend->setQueryBuilder($this->createQueryBuilder());
         $backend->setSimilarBuilder($this->createSimilarBuilder());
         if ($this->logger) {
