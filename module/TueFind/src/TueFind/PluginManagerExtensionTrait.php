@@ -28,8 +28,21 @@ trait PluginManagerExtensionTrait {
     protected function applyOverrides() {
         $overrides = array_reverse($this->overrides);
         foreach ($overrides as $override) {
-            $classvar = $override['type'];
-            $this->$classvar[$override['key']] = $override['value'];
+            switch ($override['type']) {
+                // Use ServiceManager's functions to override instead of
+                // writing directly to class variables (e.g. to reset cache)
+                case 'aliases':
+                    $this->setAlias($override['key'], $override['value']);
+                    break;
+                case 'factories':
+                    $this->setFactory($override['key'], $override['value']);
+                    break;
+                case 'delegators':
+                    $this->addDelegator($override['key'], $override['value']);
+                    break;
+                default:
+                    throw new \Exception("Unknown override type: " . $override['type']);
+            }
         }
     }
 }
