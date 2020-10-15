@@ -288,7 +288,7 @@ trait MarcAdvancedTrait
      */
     public function getPlayingTimes()
     {
-        $times = $this->getFieldArray('306', ['a'], true);
+        $times = $this->getFieldArray('306', ['a'], false);
 
         // Format the times to include colons ("HH:MM:SS" format).
         foreach ($times as $x => $time) {
