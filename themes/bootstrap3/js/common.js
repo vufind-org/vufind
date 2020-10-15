@@ -424,6 +424,7 @@ $(document).ready(function commonDocReady() {
       // when the "test mode" cookie is set. This should never happen
       // under normal usage outside of the Phing startup process.
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
+        window.addEventListener("afterprint", () => history.back(), { once: true });
         window.print();
       } else {
         console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
