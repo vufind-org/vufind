@@ -235,6 +235,17 @@ class Backend extends AbstractBackend
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
                 break;
+            case 138:
+                // User requested unavailable deep search results; first extract the
+                // next legal position from the error message:
+                $parts = explode(' ', trim($e->getApiDetailedErrorDescription()));
+                $legalPos = array_pop($parts);
+                // Now calculate the legal page number and throw an exception so the
+                // controller can fix it from here:
+                $legalPage = floor($legalPos / $limit);
+                throw new \VuFindSearch\Backend\Exception\DeepPagingException(
+                    $e->getMessage(), $e->getCode(), $legalPage, $e
+                );
             default:
                 $response = [];
                 break;
@@ -541,13 +552,7 @@ class Backend extends AbstractBackend
         ) {
             return $this->session->sessionID;
         }
-
-        // When creating a new session, also call the INFO method to pull the
-        // available search criteria for this profile
-        $sessionToken = $this->createEBSCOSession();
-        $this->session->info = $this->getInfo($sessionToken);
-
-        return $sessionToken;
+        return $this->createEBSCOSession();
     }
 
     /**
@@ -628,16 +633,35 @@ class Backend extends AbstractBackend
      */
     public function getInfo($sessionToken = null)
     {
+        // Use a different cache key for guests, just in case info differs:
+        $cacheKey = $this->isGuest ? 'edsGuestInfo' : 'edsLoggedInInfo';
+        if ($data = $this->cache->getItem($cacheKey)) {
+            return $data;
+        }
         $authenticationToken = $this->getAuthenticationToken();
         if (null == $sessionToken) {
-            $sessionToken = $this->getSessionToken();
+            try {
+                $sessionToken = $this->getSessionToken();
+            } catch (ApiException $e) {
+                // Retry once to work around occasional 106 errors:
+                $sessionToken = $this->getSessionToken();
+            }
         }
         try {
             $response = $this->client->info($authenticationToken, $sessionToken);
         } catch (ApiException $e) {
-            if ($e->getApiErrorCode() == 104) {
+            // if the auth or session token was invalid, try once more
+            switch ($e->getApiErrorCode()) {
+            case 104:
+            case 108:
+            case 109:
                 try {
-                    $authenticationToken = $this->getAuthenticationToken(true);
+                    // For error 104, retry auth token; for 108/9, retry sess token:
+                    if ($e->getApiErrorCode() == 104) {
+                        $authenticationToken = $this->getAuthenticationToken(true);
+                    } else {
+                        $sessionToken = $this->getSessionToken(true);
+                    }
                     $response = $this->client
                         ->info($authenticationToken, $sessionToken);
                 } catch (Exception $e) {
@@ -647,9 +671,13 @@ class Backend extends AbstractBackend
                         $e
                     );
                 }
-            } else {
+                break;
+            default:
                 $response = [];
             }
+        }
+        if (!empty($response)) {
+            $this->cache->setItem($cacheKey, $response);
         }
         return $response;
     }

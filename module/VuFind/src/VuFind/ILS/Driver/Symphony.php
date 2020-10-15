@@ -500,14 +500,14 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function libraryIsFilteredOut($libraryID)
     {
-        $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
+        $notIncluded = !empty($this->config['LibraryFilter']['include_only'])
             && !in_array(
                 $libraryID, $this->config['LibraryFilter']['include_only']
             );
-        $onBlacklist = in_array(
+        $excluded = in_array(
             $libraryID, $this->config['LibraryFilter']['exclude']
         );
-        return $notInWhitelist || $onBlacklist;
+        return $notIncluded || $excluded;
     }
 
     /**
@@ -773,7 +773,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $library_id = $titleOrderInfo->orderLibraryID;
 
             /* Allow returned holdings information to be
-             * limited to a whitelist of library names. */
+             * limited to a specified list of library names. */
             if (isset($this->config['holdings']['include_libraries'])
                 && !in_array(
                     $library_id,

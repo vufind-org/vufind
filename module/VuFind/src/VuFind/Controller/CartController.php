@@ -255,11 +255,11 @@ class CartController extends AbstractBase
             null, $this->translate('bulk_email_title')
         );
         $view->records = $this->getRecordLoader()->loadBatch($ids);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {

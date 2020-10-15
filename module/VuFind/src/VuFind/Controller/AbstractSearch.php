@@ -258,6 +258,30 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * If the search backend has thrown a "deep paging" exception, we should show a
+     * flash message and redirect the user to a legal page.
+     *
+     * @param array $request Incoming request parameters
+     * @param int   $page    Legal page number
+     *
+     * @return mixed
+     */
+    protected function redirectToLegalSearchPage(array $request, int $page)
+    {
+        if (($request['page'] ?? 0) <= $page) {
+            throw new \Exception('Unrecoverable deep paging error.');
+        }
+        $request['page'] = $page;
+        $this->flashMessenger()->addErrorMessage(
+            [
+                'msg' => 'deep_paging_failure',
+                'tokens' => ['%%page%%' => $page],
+            ]
+        );
+        return $this->redirect()->toUrl('?' . http_build_query($request));
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Laminas\View\Model\ViewModel
@@ -280,10 +304,14 @@ class AbstractSearch extends AbstractBase
 
         $lastView = $this->getSearchMemory()
             ->retrieveLastSetting($this->searchClassId, 'view');
-        $view->results = $results = $runner->run(
-            $request, $this->searchClassId, $this->getSearchSetupCallback(),
-            $lastView
-        );
+        try {
+            $view->results = $results = $runner->run(
+                $request, $this->searchClassId, $this->getSearchSetupCallback(),
+                $lastView
+            );
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
+        }
         $view->params = $results->getParams();
 
         // If we received an EmptySet back, that indicates that the real search
@@ -505,7 +533,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param string $config  Name of config file
      * @param string $section Configuration section to check
-     * @param array  $filter  Whitelist of fields to include (if empty, all
+     * @param array  $filter  List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -529,7 +557,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -546,7 +574,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -563,7 +591,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array
@@ -580,7 +608,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param object $savedSearch Saved search object (false if none)
      * @param string $config      Name of config file
-     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * @param array  $filter      List of fields to include (if empty, all
      * fields will be returned)
      *
      * @return array

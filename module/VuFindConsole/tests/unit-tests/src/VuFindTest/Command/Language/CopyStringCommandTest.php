@@ -72,11 +72,13 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the simplest possible success case.
+     * Get a command mock with expectations of success.
      *
-     * @return void
+     * @param string $expectedString The expected output string of the process.
+     *
+     * @return CopyStringCommand
      */
-    public function testSuccessWithMinimalParameters()
+    protected function getSuccessfulMockCommand($expectedString = 'baz')
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
@@ -91,10 +93,68 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->equalTo($expectedPath),
                 $this->equalTo('xyzzy'),
-                $this->equalTo('baz')
+                $this->equalTo($expectedString)
             );
+        return $command;
+    }
+
+    /**
+     * Test the simplest possible success case.
+     *
+     * @return void
+     */
+    public function testSuccessWithMinimalParameters()
+    {
+        $command = $this->getSuccessfulMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'foo::bar', 'target' => 'foo::xyzzy']);
+        $this->assertEquals(
+            "Processing en.ini...\nProcessing en.ini...\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test success with the replace option set.
+     *
+     * @return void
+     */
+    public function testSuccessWithReplaceOptionAndDefaultDelimiter()
+    {
+        $command = $this->getSuccessfulMockCommand('transformed');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            [
+                'source' => 'foo::bar',
+                'target' => 'foo::xyzzy',
+                '--replace' => 'baz/transformed'
+            ]
+        );
+        $this->assertEquals(
+            "Processing en.ini...\nProcessing en.ini...\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test success with the replace and replaceDelimiter options set.
+     *
+     * @return void
+     */
+    public function testSuccessWithReplaceOptionAndCustomDelimiter()
+    {
+        $command = $this->getSuccessfulMockCommand('transformed');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            [
+                'source' => 'foo::bar',
+                'target' => 'foo::xyzzy',
+                '--replace' => 'baz|transformed',
+                '--replaceDelimiter' => '|',
+            ]
+        );
         $this->assertEquals(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()

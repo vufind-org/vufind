@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
 
 /**
@@ -90,17 +90,11 @@ function registerAjaxCommentRecord(_context) {
     var id = form.id.value;
     var recordSource = form.source.value;
     var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      var recaptcha = $(form).find('.g-recaptcha');
-      if (recaptcha.length > 0) {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
-      }
-    }
+    var data = {};
+    $(form).find("input,textarea").each(function appendCaptchaData() {
+      var input = $(this);
+      data[input.attr('name')] = input.val();
+    });
     $.ajax({
       type: 'POST',
       url: url,
@@ -295,7 +289,17 @@ function applyRecordTabHash() {
 
 $(window).on('hashchange', applyRecordTabHash);
 
+function removeCheckRouteParam() {
+  if (window.location.search.indexOf('checkRoute=1') >= 0) {
+    var newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', newHref);
+    }
+  }
+}
+
 function recordDocReady() {
+  removeCheckRouteParam();
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.

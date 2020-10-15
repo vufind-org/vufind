@@ -95,7 +95,7 @@
           <?=$helpPost?>
         </div>
       <?php endif ?>
-      <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+      <?=$this->captcha()->html($this->useCaptcha) ?>
     <?php endif ?>
     <?= $this->formRow($formElement) ?>
     <?php if (!empty($elementHelpPost)): ?>

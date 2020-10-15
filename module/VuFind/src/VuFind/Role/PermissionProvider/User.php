@@ -27,7 +27,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use ZfcRbac\Service\AuthorizationService;
+use LmcRbacMvc\Service\AuthorizationService;
 
 /**
  * LDAP permission provider for VuFind.
@@ -72,7 +72,7 @@ class User implements PermissionProviderInterface,
     public function getPermissions($options)
     {
         // If no user is logged in, or the user doesn't match the passed-in
-        // whitelist, we can't grant the permission to any roles.
+        // filter, we can't grant the permission to any roles.
         if (!($user = $this->auth->getIdentity())) {
             return [];
         }

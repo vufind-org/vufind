@@ -91,7 +91,7 @@ set args="%bib_index%" "%field%" "%auth_index%" "%browse%.tmp"
 :skipauth
 
 rem Extract lines from Solr
-java %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
+%JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
 
 rem Sort lines
 sort %browse%.tmp /o sorted-%browse%.tmp /rec 65535
@@ -100,7 +100,7 @@ rem Remove duplicate lines
 php %VUFIND_HOME%\util\dedupe.php "sorted-%browse%.tmp" "unique-%browse%.tmp"
 
 rem Build database file
-java -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
+%JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
 
 del /q *.tmp > nul
 

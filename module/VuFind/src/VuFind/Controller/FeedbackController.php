@@ -30,6 +30,13 @@ use VuFind\Form\Form;
 class FeedbackController extends AbstractBase
 {
     /**
+     * Feedback form class
+     *
+     * @var string
+     */
+    protected $formClass = \VuFind\Form\Form::class;
+
+    /**
      * Display Feedback home form.
      *
      * @return \Laminas\View\Model\ViewModel
@@ -54,7 +61,7 @@ class FeedbackController extends AbstractBase
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
+        $form = $this->serviceLocator->get($this->formClass);
         $params = [];
         if ($refererHeader = $this->getRequest()->getHeader('Referer')
         ) {
@@ -71,13 +78,13 @@ class FeedbackController extends AbstractBase
         }
 
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useRecaptcha
-            = $this->recaptcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha
+            = $this->captcha()->active('feedback') && $form->useCaptcha();
 
         $params = $this->params();
         $form->setData($params->fromPost());
 
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
@@ -173,7 +180,10 @@ class FeedbackController extends AbstractBase
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),
-                $emailSubject, $emailMessage, null, $replyToEmail
+                $emailSubject,
+                $emailMessage,
+                null,
+                new Address($replyToEmail, $replyToName)
             );
             return [true, null];
         } catch (MailException $e) {

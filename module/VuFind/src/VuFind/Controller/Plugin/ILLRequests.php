@@ -141,7 +141,7 @@ class ILLRequests extends AbstractRequestBase
 
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
-                // whitelist, something has been tampered with -- abort the process.
+                // legal list, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
                     $flashMsg->addMessage('error_inconsistent_parameters', 'error');
                     return [];

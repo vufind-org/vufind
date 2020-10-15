@@ -15,8 +15,8 @@
     ?>
     <tr>
       <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
-      <td><?=$missingCount ?><?php if($missingCount > 0): ?> (<a href="#" onclick="return diffManager.showMissing('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<?php endif; ?></td>
-      <td><?=$extraCount ?><?php if($extraCount > 0): ?> (<a href="#" onclick="return diffManager.showExtra('<?=$langCode ?>')"><?=$this->transEsc('show') ?></a>)<?php endif; ?></td>
+      <td><?=$missingCount ?><?php if($missingCount > 0): ?> (<button class="missing_count btn btn-link" data-langcode="<?=$langCode?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
+      <td><?=$extraCount ?><?php if($extraCount > 0): ?> (<button class="extra_count btn btn-link" data-langcode="<?=$langCode?>" href="#"><?=$this->transEsc('show') ?></button>)<?php endif; ?></td>
       <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
       <td><?=count($diffs['helpFiles'])?></td>
     </tr>
@@ -33,14 +33,21 @@
         console.log(details[lang].object[opArray[i]] || details.en.object[opArray[i]]);
         arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
       }
-      return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25)+ '" onClick="this.select()">' + arr.join('\\n') + '</textarea>';
+      return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25)+ '">' + arr.join('\\n') + '</textarea>';
+    }
+    function bindTextareaEvent() {
+       $('.translation-output').click(function(e) {
+        this.select();
+      });
     }
     function showExtra(lang) {
       VuFind.lightbox.render('<h2>Extra Lines</h2>'+makeRow(details[lang].notInL1, lang));
+      bindTextareaEvent();
       return false;
     }
     function showMissing(lang) {
       VuFind.lightbox.render('<h2>Missing Lines</h2>'+makeRow(details[lang].notInL2, lang));
+      bindTextareaEvent();
       return false;
     }
     return {
@@ -49,6 +56,15 @@
     }
   }
   var diffManager = createDiffManager();
+  
+  $('.missing_count').click(function(e) {
+    lang = $(this).data('langcode');
+    return diffManager.showMissing(lang);
+  });
+  $('.extra_count').click(function(e) {
+    lang = $(this).data('langcode');
+    return diffManager.showExtra(lang);
+  });
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

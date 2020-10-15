@@ -200,6 +200,17 @@ class TabManager
     }
 
     /**
+     * Get an array of extra JS scripts by looking up the provided record driver in
+     * the provided tab configuration array.
+     *
+     * @return array
+     */
+    public function getExtraScripts()
+    {
+        return $this->config[$this->context]['TabScripts'] ?? [];
+    }
+
+    /**
      * Get a default tab by looking up the provided record driver in the tab
      * configuration array.
      *

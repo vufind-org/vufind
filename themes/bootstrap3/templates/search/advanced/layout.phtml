@@ -86,7 +86,7 @@
       </div>
       <span id="groupPlaceHolder" class="hidden">
         <i class="fa fa-plus-circle" aria-hidden="true"></i>
-        <a href="#" onClick="addGroup();return false"><?= $this->transEsc('add_search_group') ?></a>
+        <a href="#" role="button"><?= $this->transEsc('add_search_group') ?></a>
       </span>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
@@ -99,7 +99,7 @@
             <?php endif; ?>
             <div id="group<?=$group ?>" class="adv-group">
               <div class="adv-group-terms">
-                <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
+                <label class="adv-group-label" for="search_lookfor<?=$group ?>_0"><?=$this->transEsc("adv_search_label")?>:</label>
                 <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
                   <?php if($group == 0 && $search == 0): ?>
                     <div id="new_search_template">
@@ -111,13 +111,16 @@
                         <option value="<?=$this->escapeHtml($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
                       <?php endforeach; ?>
                     </select>
-                    <a href="#" class="adv-term-remove hidden">&times;</a>
+                    <a href="#" class="adv-term-remove hidden">
+                      <i class="fa fa-times" aria-hidden="true"></i>
+                      <span class="sr-only"><?=$this->transEsc('remove') ?></span>
+                    </a>
                   </div>
                   <?php if($group == 0 && $search == 0): ?>
                       </div>
                     <span class="float-left">
                       <i class="fa fa-plus-circle search_place_holder hidden" aria-hidden="true"></i>
-                      <a href="#" class="add_search_link hidden"><?=$this->transEsc("add_search")?></a>
+                      <a href="#" class="add_search_link hidden" role="button"><?=$this->transEsc("add_search")?></a>
                     </span>
                   <?php endif; ?>
                 <?php endfor; ?>
@@ -130,7 +133,7 @@
                   <option value="NOT"<?php if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_NOT")?></option>
                 </select>
               </div>
-              <a href="#" class="adv-group-close hidden"><i class="fa fa-close"></i> <?=$this->transEsc("del_search")?></a>
+              <a href="#" class="adv-group-close hidden" role="button"><i class="fa fa-close"></i> <?=$this->transEsc("del_search")?></a>
             </div>
             <?php if($group == 0): ?>
               </div>
@@ -158,7 +161,7 @@
         <input type="hidden" name="dfApplied" value="1" />
       <?php endif ?>
       <?php if (!empty($searchFilters)): ?>
-        <h4><?=$this->transEsc("adv_search_filters")?></h4>
+        <h2><?=$this->transEsc("adv_search_filters")?></h2>
         <div class="facet-group">
           <label class="checkbox">
             <input type="checkbox" checked="checked" class="checkbox-select-all"/>
@@ -174,7 +177,7 @@
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
-      <h4><?=$this->transEsc("Search Tips")?></h4>
+      <h2><?=$this->transEsc("Search Tips")?></h2>
       <div class="facet-group">
         <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Advanced Search")?></a>
         <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Search Operators")?></a>
@@ -182,3 +185,12 @@
     </div>
   </form>
 </div>
+<?php
+$script = <<<JS
+$('#groupPlaceHolder a').click(function(e) {
+  addGroup();
+  return false;
+})
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

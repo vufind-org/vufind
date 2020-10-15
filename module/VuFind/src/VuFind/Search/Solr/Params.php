@@ -41,6 +41,7 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Base\Params
 {
     use \VuFind\Search\Params\FacetLimitTrait;
+    use \VuFind\Search\Params\FacetRestrictionsTrait;
 
     /**
      * Search with facet.contains
@@ -133,6 +134,7 @@ class Params extends \VuFind\Search\Base\Params
         // Use basic facet limit by default, if set:
         $config = $configLoader->get($options->getFacetsIni());
         $this->initFacetLimitsFromConfig($config->Results_Settings ?? null);
+        $this->initFacetRestrictionsFromConfig($config->Results_Settings ?? null);
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
         }
@@ -206,6 +208,14 @@ class Params extends \VuFind\Search\Base\Params
                 $fieldLimit = $this->getFacetLimitForField($facetField);
                 if ($fieldLimit != $this->facetLimit) {
                     $facetSet["f.{$facetField}.facet.limit"] = $fieldLimit;
+                }
+                $fieldPrefix = $this->getFacetPrefixForField($facetField);
+                if (!empty($fieldPrefix)) {
+                    $facetSet["f.{$facetField}.facet.prefix"] = $fieldPrefix;
+                }
+                $fieldMatches = $this->getFacetMatchesForField($facetField);
+                if (!empty($fieldMatches)) {
+                    $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
                 }
                 if ($this->getFacetOperator($facetField) == 'OR') {
                     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
@@ -607,16 +617,35 @@ class Params extends \VuFind\Search\Base\Params
         } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = $hierarchicalFacetSeparators[$field] ?? '/';
-            $filter['displayText'] = $this->facetHelper->formatDisplayText(
-                $filter['displayText'], true, $separator
-            );
-            if ($translate) {
-                $domain = $this->getOptions()->getTextDomainForTranslatedFacet(
-                    $field
+            if (!$translate) {
+                $filter['displayText'] = $this->facetHelper->formatDisplayText(
+                    $filter['displayText'],
+                    true,
+                    $separator
+                )->getDisplayString();
+            } else {
+                $domain = $this->getOptions()
+                    ->getTextDomainForTranslatedFacet($field);
+
+                // Provide translation of each separate element as a default
+                // while allowing one to translate the full string too:
+                $parts = $this->facetHelper
+                    ->getFilterStringParts($filter['value']);
+                $translated = [];
+                foreach ($parts as $part) {
+                    $translated[] = $this->translate([$domain, $part]);
+                }
+                $translatedParts = implode($separator, $translated);
+
+                $parts = array_map(
+                    function ($part) {
+                        return $part->getDisplayString();
+                    },
+                    $parts
                 );
-                $filter['displayText'] = $this->translate(
-                    [$domain, $filter['displayText']]
-                );
+                $str = implode($separator, $parts);
+                $filter['displayText']
+                    = $this->translate([$domain, $str], [], $translatedParts);
             }
         }
 

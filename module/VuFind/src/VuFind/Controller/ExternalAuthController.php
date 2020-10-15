@@ -68,7 +68,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
         $user = $this->getUser();
 
         $authService = $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class);
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
         if ($authService->isGranted($this->ezproxyRequiredPermission)) {
             // Access granted, redirect to EZproxy
             if (empty($config->EZproxy->disable_ticket_auth_logging)) {

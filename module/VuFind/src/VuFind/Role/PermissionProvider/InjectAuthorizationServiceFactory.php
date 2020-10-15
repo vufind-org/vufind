@@ -28,7 +28,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 use Interop\Container\ContainerInterface;
-use ZfcRbac\Service\AuthorizationService;
+use LmcRbacMvc\Service\AuthorizationService;
 
 /**
  * Factory for instantiating permission providers with authorization service.

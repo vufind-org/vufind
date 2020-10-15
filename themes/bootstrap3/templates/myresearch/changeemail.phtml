@@ -20,7 +20,7 @@
         <label class="control-label"><?=$this->transEsc('Email Address') ?>:</label>
         <input type="text" name="email" class="form-control" value="<?=$this->escapeHtmlAttr($this->email)?>" />
       </div>
-      <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+      <?=$this->captcha()->html($this->useCaptcha) ?>
       <div class="form-group">
         <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>" />
       </div>

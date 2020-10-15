@@ -29,6 +29,7 @@ namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -68,6 +69,18 @@ class CopyStringCommand extends AbstractCommand
                 'target',
                 InputArgument::REQUIRED,
                 'the target key to write ' . $note
+            )->addOption(
+                'replace',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'string delimited by replaceDelimiter option, representing '
+                . "search-and-replace operation.\ne.g. textToReplace/replacementText"
+            )->addOption(
+                'replaceDelimiter',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'delimiter used in replace option',
+                '/'
             );
     }
 
@@ -91,6 +104,20 @@ class CopyStringCommand extends AbstractCommand
     }
 
     /**
+     * Apply a replacement rule, if necessary.
+     *
+     * @param string $text Text to transform
+     * @param array  $rule Replacement rule (empty for no change; [text to replace,
+     * replacement] array to apply a transformation)
+     *
+     * @return string
+     */
+    protected function applyReplaceRule(string $text, array $rule): string
+    {
+        return empty($rule) ? $text : str_replace($rule[0], $rule[1], $text);
+    }
+
+    /**
      * Run the command.
      *
      * @param InputInterface  $input  Input object
@@ -102,6 +129,9 @@ class CopyStringCommand extends AbstractCommand
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
+        $replace = $input->getOption('replace');
+        $replaceDelimiter = $input->getOption('replaceDelimiter');
+        $replaceRule = empty($replace) ? [] : explode($replaceDelimiter, $replace);
 
         list($sourceDomain, $sourceKey) = $this->extractTextDomain($source);
         list($targetDomain, $targetKey) = $this->extractTextDomain($target);
@@ -114,14 +144,17 @@ class CopyStringCommand extends AbstractCommand
 
         // First, collect the source values from the source text domain:
         $sources = [];
-        $sourceCallback = function ($full) use ($output, $sourceKey, & $sources) {
-            $strings = $this->reader->getTextDomain($full, false);
-            if (!isset($strings[$sourceKey])) {
-                $output->writeln('Source key not found.');
-            } else {
-                $sources[basename($full)] = $strings[$sourceKey];
-            }
-        };
+        $sourceCallback
+            = function ($full) use ($output, $replaceRule, $sourceKey, & $sources) {
+                $strings = $this->reader->getTextDomain($full, false);
+                if (!isset($strings[$sourceKey])) {
+                    $output->writeln('Source key not found.');
+                    return;
+                }
+                $sources[basename($full)] = $this->applyReplaceRule(
+                    $strings[$sourceKey], $replaceRule
+                );
+            };
         $this->processDirectory($sourceDir, $sourceCallback, [$output, 'writeln']);
 
         // Make sure that all target files exist:

@@ -97,7 +97,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotificationWithRecentExecution()
     {
-        $lastDate = date('Y-m-d h:i:s');
+        $lastDate = date('Y-m-d H:i:s');
         $overrides = [
             'last_notification_sent' => $lastDate,
             'search_object' => null,
@@ -235,8 +235,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
+        $zeroDate = str_replace(' ', 'T', date('Y-m-d H:i:s', 0)) . 'Z';
         $expected = "Processing 1 searches\n"
-            . "  No new results for search (1): 1970-01-01T00:00:00Z < 2000-01-01T00:00:00Z\n"
+            . "  No new results for search (1): $zeroDate < 2000-01-01T00:00:00Z\n"
             . "Done processing searches\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -258,14 +259,15 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $params->expects($this->any())->method('getCheckboxFacets')
                 ->will($this->returnValue([]));
         };
-        $now = str_replace(' ', 'T', date('Y-m-d h:i:s')) . 'Z';
+        $date = date('Y-m-d H:i:s');
+        $expectedDate = str_replace(' ', 'T', $date) . 'Z';
         $record = new \VuFindTest\RecordDriver\TestHarness();
         $record->setRawData(
             [
-                'FirstIndexed' => $now,
+                'FirstIndexed' => $date,
             ]
         );
-        $resultsCallback = function ($results) use ($now, $record) {
+        $resultsCallback = function ($results) use ($record) {
             $results->expects($this->any())->method('getSearchId')
                 ->will($this->returnValue(1));
             $results->expects($this->any())->method('getResults')
@@ -317,7 +319,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "Processing 1 searches\n"
-            . "  New results for search (1): $now >= 2000-01-01T00:00:00Z\n"
+            . "  New results for search (1): $expectedDate >= 2000-01-01T00:00:00Z\n"
             . "Done processing searches\n";
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());

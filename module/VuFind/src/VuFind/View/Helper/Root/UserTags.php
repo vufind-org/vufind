@@ -48,13 +48,22 @@ class UserTags extends AbstractHelper
     protected $mode;
 
     /**
+     * List tag mode (enabled or disabled)
+     *
+     * @var string
+     */
+    protected $listMode;
+
+    /**
      * Constructor
      *
-     * @param string $mode Tag mode (enabled or disabled)
+     * @param string $mode     Tag mode (enabled or disabled)
+     * @param string $listMode List tag mode (enabled or disabled)
      */
-    public function __construct($mode = 'enabled')
+    public function __construct($mode = 'enabled', $listMode = 'disabled')
     {
         $this->mode = $mode;
+        $this->listMode = $listMode;
     }
 
     /**
@@ -65,5 +74,15 @@ class UserTags extends AbstractHelper
     public function getMode()
     {
         return $this->mode;
+    }
+
+    /**
+     * Get list mode
+     *
+     * @return string
+     */
+    public function getListMode()
+    {
+        return $this->listMode;
     }
 }

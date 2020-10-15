@@ -117,8 +117,8 @@ class SearchController extends AbstractSolrSearch
         $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
         $view->url = $this->params()->fromPost(
             'url', $this->params()->fromQuery(
                 'url',
@@ -147,7 +147,7 @@ class SearchController extends AbstractSolrSearch
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:

@@ -34,10 +34,10 @@ use Laminas\Config\Config;
 use Laminas\Http\Client;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
+use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
-use ZfcRbac\Service\AuthorizationServiceAwareInterface;
-use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * OverdriveConnector
@@ -795,6 +795,9 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf->showMyContent
             = strtolower($this->recordConfig->Overdrive->showMyContent);
         $conf->noAccessString = $this->recordConfig->Overdrive->noAccessString;
+        $admin = $this->recordConfig->Overdrive->showOverdriveAdminMenu ?? false;
+        $conf->showOverdriveAdminMenu
+            = (strtolower($admin) === 'false') ? false : $admin;
         $conf->tokenCacheLifetime
             = $this->recordConfig->API->tokenCacheLifetime;
         return $conf;

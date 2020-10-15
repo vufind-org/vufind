@@ -32,10 +32,10 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
-use ZfcRbac\Service\AuthorizationServiceAwareInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -265,12 +265,12 @@ class AbstractBase extends AbstractActionController
      * rather than through injection with the AuthorizationServiceAwareInterface
      * to minimize expensive initialization when authorization is not needed.
      *
-     * @return \ZfcRbac\Service\AuthorizationService
+     * @return \LmcRbacMvc\Service\AuthorizationService
      */
     protected function getAuthorizationService()
     {
         return $this->serviceLocator
-            ->get(\ZfcRbac\Service\AuthorizationService::class);
+            ->get(\LmcRbacMvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -538,17 +538,17 @@ class AbstractBase extends AbstractActionController
      * Also validate the Captcha, if it's activated
      *
      * @param string $submitElement Name of the post field of the submit button
-     * @param bool   $useRecaptcha  Are we using captcha in this situation?
+     * @param bool   $useCaptcha    Are we using captcha in this situation?
      *
      * @return bool
      */
     protected function formWasSubmitted($submitElement = 'submit',
-        $useRecaptcha = false
+        $useCaptcha = false
     ) {
         // Fail if the expected submission element was missing from the POST:
         // Form was submitted; if CAPTCHA is expected, validate it now.
         return $this->params()->fromPost($submitElement, false)
-            && (!$useRecaptcha || $this->recaptcha()->validate());
+            && (!$useCaptcha || $this->captcha()->verify());
     }
 
     /**
