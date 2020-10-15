@@ -291,12 +291,13 @@ trait MarcAdvancedTrait
         $times = $this->getFieldArray('306', ['a'], false);
 
         // Format the times to include colons ("HH:MM:SS" format).
-        for ($x = 0; $x < count($times); $x++) {
-            $times[$x] = substr($times[$x], 0, 2) . ':' .
-                substr($times[$x], 2, 2) . ':' .
-                substr($times[$x], 4, 2);
+        foreach ($times as $x => $time) {
+            if (!preg_match('/\d\d:\d\d:\d\d/', $time)) {
+                $times[$x] = substr($time, 0, 2) . ':' .
+                    substr($time, 2, 2) . ':' .
+                    substr($time, 4, 2);
+            }
         }
-
         return $times;
     }
 
