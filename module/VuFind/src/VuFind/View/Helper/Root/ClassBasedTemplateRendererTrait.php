@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract base class for helpers that render a template based on a class name.
+ * Trait for helpers that render a template based on a class name.
  *
  * PHP version 7
  *
@@ -28,11 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Resolver\ResolverInterface;
 
 /**
- * Authentication view helper
+ * Trait for helpers that render a template based on a class name.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,7 +39,7 @@ use Laminas\View\Resolver\ResolverInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
+trait ClassBasedTemplateRendererTrait
 {
     /**
      * Cache for found templates
@@ -98,6 +97,7 @@ abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
      * @param array  $context   Context for rendering template
      *
      * @return string
+     * @throws RuntimeException
      */
     protected function renderClassTemplate($template, $className, $context = [])
     {
@@ -106,19 +106,33 @@ abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
         $contextHelper = $view->plugin('context');
         $oldContext = $contextHelper($view)->apply($context);
 
-        // Find the template for the current class:
-        if (!isset($this->templateCache[$className][$template])) {
-            $this->templateCache[$className][$template]
-                = $this->resolveClassTemplate(
-                    $template, $className, $view->resolver()
-                );
-        }
-        // Render the template:
-        $html = $view->render($this->templateCache[$className][$template]);
+        // Find and render the template:
+        $html = $view->render($this->getCachedClassTemplate($template, $className));
 
         // Restore the original context before returning the result:
         $contextHelper($view)->restore($oldContext);
         return $html;
+    }
+
+    /**
+     * Resolve the class template file unless already cached and return the file
+     * name.
+     *
+     * @param string $template  Template path (with %s as class name placeholder)
+     * @param string $className Name of class to apply to template.
+     *
+     * @return string
+     * @throws RuntimeException
+     */
+    protected function getCachedClassTemplate($template, $className)
+    {
+        if (!isset($this->templateCache[$className][$template])) {
+            $this->templateCache[$className][$template]
+                = $this->resolveClassTemplate(
+                    $template, $className, $this->getView()->resolver()
+                );
+        }
+        return $this->templateCache[$className][$template];
     }
 
     /**
