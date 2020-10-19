@@ -29,7 +29,7 @@
 
     <?php /* TueFind: Newsletter */?>
     <tr>
-      <th>Newsletter:</th><td><input type="checkbox" <?=$this->user->hasSubscribedToNewsletter() ? 'checked' : ''?> readonly></td>
+      <th>Newsletter:</th><td><input type="checkbox" <?=$this->user->hasSubscribedToNewsletter() ? 'checked' : ''?> disabled></td>
     </tr>
     <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
     <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
