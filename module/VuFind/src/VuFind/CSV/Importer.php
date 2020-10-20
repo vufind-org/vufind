@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-namespace VuFind\XSLT;
+namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Locator as ConfigLocator;
@@ -87,6 +87,18 @@ class Importer
             );
         }
         return $csv;
+    }
+
+    /**
+     * Process a single line of the CSV file.
+     *
+     * @param array $line Line to process.
+     *
+     * @return array
+     */
+    protected function processLine($line)
+    {
+        return $line;
     }
 
     /**

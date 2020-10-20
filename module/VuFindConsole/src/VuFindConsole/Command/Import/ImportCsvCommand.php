@@ -43,7 +43,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ImportXslCommand extends RelativeFileAwareCommand
+class ImportCsvCommand extends RelativeFileAwareCommand
 {
     /**
      * The name of the command
