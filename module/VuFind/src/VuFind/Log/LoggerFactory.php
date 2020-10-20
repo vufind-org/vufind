@@ -269,12 +269,12 @@ class LoggerFactory implements FactoryInterface
         }
 
         // Activate Office365 logging, if applicable:
-            if (isset($config->Logging->office365)
-                && isset($config->Logging->office365_url)
-            ) {
-                $hasWriter = true;
-                $this->addOffice365Writers($logger, $container, $config);
-            }
+        if (isset($config->Logging->office365)
+            && isset($config->Logging->office365_url)
+        ) {
+            $hasWriter = true;
+            $this->addOffice365Writers($logger, $container, $config);
+        }
 
         // Activate slack logging, if applicable:
         if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
