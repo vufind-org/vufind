@@ -277,12 +277,12 @@ class LoggerFactory implements FactoryInterface
             }
 
         // Activate slack logging, if applicable:
-            if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
-                $hasWriter = true;
-                $this->addSlackWriters($logger, $container, $config);
-            }
+        if (isset($config->Logging->slack) && isset($config->Logging->slackurl)) {
+            $hasWriter = true;
+            $this->addSlackWriters($logger, $container, $config);
+        }
 
-                // Null (no-op) writer to avoid errors
+        // Null (no-op) writer to avoid errors
         if (!$hasWriter) {
             $logger->addWriter(new \Laminas\Log\Writer\Noop());
         }
