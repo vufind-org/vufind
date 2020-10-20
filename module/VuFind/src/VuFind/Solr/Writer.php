@@ -34,6 +34,7 @@ use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
+use VuFindSearch\ParamBag;
 
 /**
  * Solr Writer service
@@ -158,13 +159,17 @@ class Writer
      *
      * @param string           $backend Backend ID
      * @param AbstractDocument $doc     Document(s) to save
+     * @param string           $format  Serialization format: 'csv', 'json' or 'xml'
+     * @param string           $handler Update handler
+     * @param ParamBag         $params  Update handler parameters
      *
      * @return void
      */
-    public function save($backend, AbstractDocument $doc)
-    {
+    public function save($backend, AbstractDocument $doc, $format = 'xml',
+        $handler = 'update', ParamBag $params = null
+    ) {
         $connector = $this->getConnector($backend);
-        $connector->write($doc);
+        $connector->write($doc, $format, $handler, $params);
     }
 
     /**
