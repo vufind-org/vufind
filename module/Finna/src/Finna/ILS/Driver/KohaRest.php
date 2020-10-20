@@ -1113,8 +1113,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 'libraryId' => $libraryId,
                 'locationId' => $locationId
             ];
-            if (!empty($item['itemnotes'])) {
-                $entry['item_notes'] = [$item['itemnotes']];
+            if (!empty($item['public_notes'])) {
+                $entry['item_notes'] = [$item['public_notes']];
             }
 
             if ($patron && $this->itemHoldAllowed($item)) {
