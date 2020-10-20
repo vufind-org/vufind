@@ -90,6 +90,19 @@ class Importer
     }
 
     /**
+     * Determine the list of fields that will be loaded.
+     *
+     * @param array    $options Configuration
+     * @param resource $in      File handle to input file
+     *
+     * @return string
+     */
+    protected function determineFieldList($options, $in)
+    {
+        return 'TODO';
+    }
+
+    /**
      * Process a single line of the CSV file.
      *
      * @param array $line Line to process.
@@ -123,6 +136,7 @@ class Importer
         if (!$in) {
             throw new \Exception("Cannot open CSV file: {$csvFile}.");
         }
+        $fields = $this->determineFieldList($options, $in);
         $out = fopen('php://temp', 'r+');
         while ($line = fgetcsv($in)) {
             fputcsv($out, $this->processLine($line));
