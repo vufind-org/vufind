@@ -1705,8 +1705,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $result['data']['hold_queue_length']]
                 )
             ];
-            if (!empty($item['itemnotes'])) {
-                $entry['item_notes'] = [$item['itemnotes']];
+            if (!empty($item['public_notes'])) {
+                $entry['item_notes'] = [$item['public_notes']];
             }
 
             if ($patron && $this->itemHoldAllowed($item)) {
