@@ -183,6 +183,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $itemStatusMappings = [];
 
     /**
+     * Item status mapping methods used when the item status mappings above don't
+     * contain a direct mapping.
+     *
+     * @var array
+     */
+    protected $itemStatusMappingMethods = [
+        'Item::CheckedOut' => 'getStatusCodeItemCheckedOut',
+        'Item::Lost' => 'getStatusCodeItemLost',
+        'Item::NotForLoan' => 'getStatusCodeItemNotForLoan',
+        'Item::NotForLoanForcing' => 'getStatusCodeItemNotForLoan',
+        'Item::Transfer' => 'getStatusCodeItemTransfer',
+        'Item::Held' => 'getStatusCodeItemHeld',
+        'Item::Waiting' => 'getStatusCodeItemWaiting',
+        'ItemType::NotForLoan' => 'getStatusCodeItemNotForLoan',
+    ];
+
+    /**
      * Whether to display home library instead of holding library
      *
      * @var bool
@@ -1750,9 +1767,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 }
 
                 // Check for a mapping method for the unavailability reason:
-                $methodName = 'getStatusCode'
-                    . preg_replace('/[^a-zA-Z0-9_]/', '', $code);
-                if (method_exists($this, $methodName)) {
+                if ($methodName = ($this->itemStatusMappingMethods[$code] ?? '')) {
                     $statuses[]
                         = call_user_func([$this, $methodName], $code, $data, $item);
                 } else {
