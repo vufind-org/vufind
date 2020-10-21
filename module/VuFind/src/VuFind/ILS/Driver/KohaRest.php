@@ -1750,7 +1750,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 }
 
                 // Check for a mapping method for the unavailability reason:
-                $methodName = 'GetStatusCode'
+                $methodName = 'getStatusCode'
                     . preg_replace('/[^a-zA-Z0-9_]/', '', $code);
                 if (method_exists($this, $methodName)) {
                     $statuses[]
