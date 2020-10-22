@@ -1862,20 +1862,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get item status code for NorForLoanForcing status
-     *
-     * @param string $code Status code
-     * @param array  $data Status data
-     * @param array  $item Item
-     *
-     * @return string
-     */
-    protected function getStatusCodeItemNotForLoanForcing($code, $data, $item)
-    {
-        return $this->getStatusCodeItemNotForLoan($code, $data, $item);
-    }
-
-    /**
      * Get item status code for Transfer status
      *
      * @param string $code Status code
@@ -1925,20 +1911,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getStatusCodeItemWaiting($code, $data, $item)
     {
         return 'On Holdshelf';
-    }
-
-    /**
-     * Get item type status code for NotForLoan status
-     *
-     * @param string $code Status code
-     * @param array  $data Status data
-     * @param array  $item Item
-     *
-     * @return string
-     */
-    protected function getStatusCodeItemTypeNotForLoan($code, $data, $item)
-    {
-        return $this->getStatusCodeItemNotForLoan($code, $data, $item);
     }
 
     /**
