@@ -1,10 +1,14 @@
 <?php
 /**
- * Trait for helpers that render a template based on a class name.
+ * Trait for view helpers that render a template based on a class name.
+ *
+ * Note: This trait is for view helpers only. It expects $this->getView() method to
+ * be available.
  *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +26,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -31,11 +36,12 @@ use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Resolver\ResolverInterface;
 
 /**
- * Trait for helpers that render a template based on a class name.
+ * Trait for view helpers that render a template based on a class name.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
