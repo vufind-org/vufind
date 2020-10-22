@@ -71,9 +71,9 @@ trait FinnaOnlinePaymentControllerTrait
 
         if ($session->sessionId !== $sessionId) {
             $this->logError(
-                'PaymentSessionError: Sessionid does not match for: '
+                'PaymentSessionError: Session id does not match for: '
                 . json_encode($patron) . '. Old id / new id hashes = '
-                . $sessions->sessionId . ' and ' . $sessionId
+                . $session->sessionId . ' and ' . $sessionId
             );
             $finesUpdated = true;
         }
@@ -355,7 +355,9 @@ trait FinnaOnlinePaymentControllerTrait
     {
         $this->setLogger($this->serviceLocator->get(\VuFind\Log\Logger::class));
         if (!Console::isConsole()) {
-            $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
+            if (is_callable([$this->logger, 'logException'])) {
+                $this->logger->logException($e, new \Laminas\Stdlib\Parameters());
+            }
         } else {
             $this->logException($e);
         }
