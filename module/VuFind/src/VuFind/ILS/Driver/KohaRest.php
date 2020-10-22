@@ -180,22 +180,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var array
      */
-    protected $itemStatusMappings = [];
+    protected $itemStatusMappings = [
+        'Item::Held' => 'On Hold',
+        'Item::Lost' => 'Lost--Library Applied',
+        'Item::Waiting' => 'On Holdshelf',
+    ];
 
     /**
-     * Item status mapping methods used when the item status mappings above don't
-     * contain a direct mapping.
+     * Item status mapping methods used when the item status mappings above
+     * (or in the configuration file) don't contain a direct mapping.
      *
      * @var array
      */
     protected $itemStatusMappingMethods = [
         'Item::CheckedOut' => 'getStatusCodeItemCheckedOut',
-        'Item::Lost' => 'getStatusCodeItemLost',
         'Item::NotForLoan' => 'getStatusCodeItemNotForLoan',
         'Item::NotForLoanForcing' => 'getStatusCodeItemNotForLoan',
         'Item::Transfer' => 'getStatusCodeItemTransfer',
-        'Item::Held' => 'getStatusCodeItemHeld',
-        'Item::Waiting' => 'getStatusCodeItemWaiting',
         'ItemType::NotForLoan' => 'getStatusCodeItemNotForLoan',
     ];
 
@@ -1822,22 +1823,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get item status code for Lost status
-     *
-     * @param string $code Status code
-     * @param array  $data Status data
-     * @param array  $item Item
-     *
-     * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function getStatusCodeItemLost($code, $data, $item)
-    {
-        return 'Lost--Library Applied';
-    }
-
-    /**
      * Get item status code for NotForLoan status
      *
      * @param string $code Status code
@@ -1879,38 +1864,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $item['availability']['notes'] ?? []
         );
         return $onHold ? 'In Transit On Hold' : 'In Transit';
-    }
-
-    /**
-     * Get item status code for Held status
-     *
-     * @param string $code Status code
-     * @param array  $data Status data
-     * @param array  $item Item
-     *
-     * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function getStatusCodeItemHeld($code, $data, $item)
-    {
-        return 'On Hold';
-    }
-
-    /**
-     * Get item status code for Waiting status
-     *
-     * @param string $code Status code
-     * @param array  $data Status data
-     * @param array  $item Item
-     *
-     * @return string
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function getStatusCodeItemWaiting($code, $data, $item)
-    {
-        return 'On Holdshelf';
     }
 
     /**
