@@ -544,6 +544,7 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         // Check if hash is expired
         $hashtime = $this->getHashAge($hash);
+        $config = $this->getConfig();
         $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
             ? $config->Authentication->recover_hash_lifetime
             : 1209600; // Two weeks
