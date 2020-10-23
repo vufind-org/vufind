@@ -264,12 +264,12 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
 
     protected function array_key_last($array) {
-       if (!function_exists("array_key_last")) {
-           if (!is_array($array) || empty($array))
-               return NULL;
-           return array_keys($array)[count($array)-1];
-       }
-       return array_key_last($array);
+        if (!function_exists("array_key_last")) {
+            if (!is_array($array) || empty($array))
+                return NULL;
+            return array_keys($array)[count($array)-1];
+        }
+        return array_key_last($array);
     }
 
 
@@ -280,8 +280,8 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $xpath = new \DOMXPath($dom);
         $highlight_nodes =  $xpath->query('//' . self::esHighlightTag);
         $snippet_trees = [];
-        $previous_highlight_parent_node;
-        $previous_sibling_right; // This variable is passed as reference to hasIntersectionWithPreviousEnd and thus transfers status during the iterations
+        $previous_highlight_parent_node = null;
+        $previous_sibling_right = null; // This variable is passed as reference to hasIntersectionWithPreviousEnd and thus transfers status during the iterations
         foreach ($highlight_nodes as $highlight_node) {
             $parent_node = $highlight_node->parentNode;
             if (is_null($parent_node))

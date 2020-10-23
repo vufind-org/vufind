@@ -2,6 +2,8 @@
 
 namespace TueFind\Controller;
 
+use VuFind\Exception\Mail as MailException;
+
 class CartController extends \VuFind\Controller\CartController {
 
     public function emailAction()

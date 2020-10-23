@@ -18,7 +18,9 @@
  */
 
 namespace TueFind\RecordDriver;
+
 use Interop\Container\ContainerInterface;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 
 class SolrDefault extends \VuFind\RecordDriver\SolrMarc
@@ -274,6 +276,14 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return isset($this->fields['is_open_access']) && ($this->fields['is_open_access'] == 'open-access');
     }
 
+    /**
+     * @return string
+     */
+    public function getPageRange()
+    {
+        return isset($this->fields['page_range']) ? $this->fields['page_range'] : '';
+    }
+
     public function getSubitoURL() {
         // Suppress Subito links for open access items:
         if ($this->isOpenAccess())
@@ -307,19 +317,19 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
                 if ((!empty($isbn) || !empty($issn)) && !empty($title) && !empty($authors) && !empty($page_range)
                     && (!empty($volume) || !empty($issue)) && !empty($year))
                 {
-                    $title = $this->escapeHtml($title);
+                    $title = urlencode($title);
                     $author_list = "";
                     foreach ($authors as $author) {
                         if (!empty($author_list))
                             $author_list .= "%3B";
-                        $author_list .= $this->escapeHtml($author);
+                        $author_list .= urlencode($author);
                     }
-                    $page_range = $this->escapeHtml($page_range);
+                    $page_range = urlencode($page_range);
 
-                    $volume_and_or_issue = $this->escapeHtml($volume);
+                    $volume_and_or_issue = urlencode($volume);
                     if (!empty($volume_and_or_issue))
                         $volume_and_or_issue .= "%2F";
-                    $volume_and_or_issue .= $this->escapeHtml($issue);
+                    $volume_and_or_issue .= urlencode($issue);
 
                     return $base_url . (!empty($isbn) ? "&SB=" . $isbn : "&SS=" . $issn) . "&ATI=" . $title . "&AAU="
                         . $author_list . "&PG=" . $page_range . "&APY=" . $year . "&VOL=" . $volume_and_or_issue;
@@ -481,6 +491,14 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     {
         return (isset($this->fields['zdb_number'])) ?
             $this->fields['zdb_number'] : '';
+    }
+
+    /** Check whether a record is potentially available for PDA
+     *
+     * @return bool
+     */
+    public function isPotentiallyPDA() {
+        return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
     }
 
     public function isSuperiorWork() {

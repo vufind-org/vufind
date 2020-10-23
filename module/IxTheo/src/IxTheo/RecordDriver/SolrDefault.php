@@ -338,12 +338,4 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         }
         return $bible_references;
     }
-
-    /** Check whether a record is potentially available for PDA
-     *
-     * @return bool
-     */
-    public function isPotentiallyPDA() {
-        return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
-    }
 }

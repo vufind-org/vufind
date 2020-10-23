@@ -443,6 +443,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
              if ($total == 0 && count($pubDates) > 0) {
                  $total = 1;
              }
+             $dateTimeHelper = $this->container->get('ViewHelperManager')->get('dateTime');
              for ($i = 0; $i < $total; $i++) {
                  if (isset($pubPlaces[$i])) {
                      echo "CY  - " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\r\n";
@@ -452,7 +453,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                  }
                  $date = trim($pubDates[$i], '[]. ');
                  if (strlen($date) > 4) {
-                     $date = $this->dateTime()->extractYear($date);
+                     $date = $dateTimeHelper->extractYear($date);
                  }
                  if ($date) {
                      echo 'PY  - ' . "$date\r\n";

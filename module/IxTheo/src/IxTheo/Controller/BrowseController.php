@@ -2,6 +2,8 @@
 
 namespace IxTheo\Controller;
 
+use VuFind\Exception\Forbidden as ForbiddenException;
+
 class BrowseController extends \VuFind\Controller\BrowseController
 {
     /**
