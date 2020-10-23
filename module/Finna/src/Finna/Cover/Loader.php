@@ -454,6 +454,7 @@ class Loader extends \VuFind\Cover\Loader
                 return false;
             }
         } catch (\Exception $e) {
+            $this->logError("Failed to load '$url': " . $e->getMessage());
             $this->addHostFailure($host);
             return false;
         }
