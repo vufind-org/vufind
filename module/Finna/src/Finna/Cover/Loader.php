@@ -420,10 +420,6 @@ class Loader extends \VuFind\Cover\Loader
         // $statusFile is used for blocking a non-responding server for a while.
         $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
         $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
-        $host = parse_url($url, PHP_URL_HOST);
-        if ($this->isHostBlocked($host)) {
-            return false;
-        }
 
         $pdfFile = preg_match('/\.pdf$/i', $url);
         $convertPdfService
@@ -437,6 +433,11 @@ class Loader extends \VuFind\Cover\Loader
         if ($pdfFile) {
             // Convert pdf to jpg
             $url = "$convertPdfService?url=" . urlencode($url);
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+        if ($this->isHostBlocked($host)) {
+            return false;
         }
 
         // Attempt to pull down the image:
