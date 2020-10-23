@@ -31,8 +31,6 @@
  */
 namespace Finna\Cover;
 
-use VuFindCode\ISBN;
-
 /**
  * Record image loader
  *
@@ -102,20 +100,6 @@ class Loader extends \VuFind\Cover\Loader
      * @var string
      */
     protected $datasourceCoverConfig = null;
-
-    /**
-     * Duration of a server block for a non-responding server in seconds.
-     *
-     * @var int
-     */
-    protected $badHostBlockTime = 600;
-
-    /**
-     * Threshold for failures after a non-responding server is blocked.
-     *
-     * @var int
-     */
-    protected $badHostBlockThreshold = 10;
 
     /**
      * Set datasource spesific cover image configuration.
@@ -559,13 +543,17 @@ class Loader extends \VuFind\Cover\Loader
         if (!file_exists($statusFile)) {
             return false;
         }
-        if (filemtime($statusFile) + $this->badHostBlockTime < time()) {
+        $blockDuration = $this->config->Content->coverServerFailureBlockDuration
+            ?? 3600;
+        if (filemtime($statusFile) + $blockDuration < time()) {
             unlink($statusFile);
             $this->logWarning("Host $host has been unblocked");
             return false;
         }
         $tries = file_get_contents($statusFile);
-        if ($tries >= $this->badHostBlockThreshold) {
+        $blockThreshold = $this->config->Content->coverServerFailureBlockThreshold
+            ?? 10;
+        if ($tries >= $blockThreshold) {
             return true;
         }
         return false;
@@ -582,13 +570,31 @@ class Loader extends \VuFind\Cover\Loader
     {
         $statusFile = $this->getCachePath('failure', $host ? $host : 'invalid-host');
         $failures = 0;
+        $blockDuration = $this->config->Content->coverServerFailureBlockDuration
+            ?? 3600;
         if (file_exists($statusFile)
-            && filemtime($statusFile) + $this->badHostBlockTime >= time()
+            && filemtime($statusFile) + $blockDuration >= time()
         ) {
             $failures = file_get_contents($statusFile);
         }
         ++$failures;
         file_put_contents($statusFile, $failures, LOCK_EX);
         $this->logWarning("Host $host has $failures recorded failures");
+    }
+
+    /**
+     * Record a success for a server
+     *
+     * @param string $host Host name
+     *
+     * @return void
+     */
+    protected function addHostSuccess($host)
+    {
+        $statusFile = $this->getCachePath('failure', $host ? $host : 'invalid-host');
+        if (file_exists($statusFile)) {
+            $this->logWarning("Host $host success, failure count cleared");
+            unlink($statusFile);
+        }
     }
 }

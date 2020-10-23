@@ -702,6 +702,12 @@ noCoverAvailableImage = images/noCover2.gif
 ; Comma separated list of record formats whose PDF converted record images may be downloaded.
 pdfCoverImageDownload = "0/Map/"
 
+; Threshold of consecutive failures after which a server is blocked. Default is 10.
+coverServerFailureBlockThreshold = 10
+
+; Duration of failed server block in seconds. Default is 3600.
+coverServerFailureBlockDuration = 3600
+
 ; How long book summaries are cached locally in minutes. Default is one day
 summarycachetime = 1440
 
