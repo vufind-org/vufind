@@ -75,7 +75,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     public function testFallback()
     {
         $pathStack = [
-            realpath($this->getFixtureDir() . 'fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
