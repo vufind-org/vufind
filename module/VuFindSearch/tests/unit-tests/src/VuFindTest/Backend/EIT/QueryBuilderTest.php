@@ -61,9 +61,7 @@ class QueryBuilderTest extends TestCase
         foreach ($tests as $test) {
             list($input, $output) = $test;
             $q = unserialize(
-                file_get_contents(
-                    PHPUNIT_SEARCH_FIXTURES . '/eit/query/' . $input
-                )
+                $this->getFixture("eit/query/$input", 'VuFindSearch')
             );
             $response = $qb->build($q);
             $parsedQ = $response->get('query');
