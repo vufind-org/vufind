@@ -50,6 +50,8 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
  */
 class ErrorListenerTest extends TestCase
 {
+    use \VuFindTest\FixtureTrait;
+
     /**
      * Detect parser error response.
      *
@@ -97,15 +99,6 @@ class ErrorListenerTest extends TestCase
      */
     protected function createResponse($name)
     {
-        $file = realpath(
-            \VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/response/solr/' . $name
-        );
-        if (!$file) {
-            throw new RuntimeException(
-                sprintf('Unable to resolve fixture to fixture file: %s', $name)
-            );
-        }
-        $response = Response::fromString(file_get_contents($file));
-        return $response;
+        return Response::fromString($this->getFixture($file));
     }
 }
