@@ -150,7 +150,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function loadResponse($fixture)
     {
-        return $this->getFixture("eit/response/$fixture");
+        return $this->getFixture("eit/response/$fixture", 'VuFindSearch');
     }
 
     /**
