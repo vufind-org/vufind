@@ -42,7 +42,7 @@ use VuFindTheme\ThemeInfo;
  */
 class PageLocatorTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Test determining a template and renderer.
@@ -54,7 +54,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
         $language  = 'aa';
         $defaultLanguage = 'bb';
         $pathPrefix = 'templates/page-locator-test/';
-        $fixturePath = $this->getFixturePath('VuFindTheme');
+        $fixturePath = $this->getFixtureDir('VuFindTheme') . 'themes/';
         $testCases = [
             [
                 'pageName' => 'page1',
@@ -109,7 +109,7 @@ class PageLocatorTest extends \VuFindTest\Unit\TestCase
                 'result' => null,
             ],
         ];
-        $themeInfo = new ThemeInfo($fixturePath, 'parent');
+        $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
         $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
         foreach ($testCases as $case) {
             $this->assertEquals($case['result'], $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName']));

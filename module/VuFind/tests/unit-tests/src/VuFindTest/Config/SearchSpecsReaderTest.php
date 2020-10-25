@@ -42,7 +42,7 @@ use VuFind\Config\SearchSpecsReader;
  */
 class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Flag -- did writing config files fail?

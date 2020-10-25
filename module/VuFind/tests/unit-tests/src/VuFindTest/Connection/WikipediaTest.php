@@ -44,7 +44,7 @@ use VuFind\Connection\Wikipedia;
  */
 class WikipediaTest extends \PHPUnit\Framework\TestCase
 {
-    use VuFindTest\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Test processing of English-language Jane Austen entry.
@@ -71,7 +71,7 @@ class WikipediaTest extends \PHPUnit\Framework\TestCase
     protected function getClient($fixture)
     {
         $adapter = new TestAdapter();
-        $adapter->setResponse(this->getFixture("wikipedia/$fixture"));
+        $adapter->setResponse($this->getFixture("wikipedia/$fixture"));
         $client = new HttpClient();
         $client->setAdapter($adapter);
         return $client;

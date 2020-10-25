@@ -50,7 +50,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testReadFile()
     {
-        $test = new Writer($file);
+        $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
         $this->assertEquals(
             $this->getFixture('configs/1.1/sms.ini'), $test->getContent()
         );
