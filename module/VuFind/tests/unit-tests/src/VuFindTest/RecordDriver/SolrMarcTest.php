@@ -58,7 +58,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
         $config = new \Laminas\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadJsonFixture('misc/testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
             ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
@@ -77,7 +77,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     public function testBug2()
     {
         $record = new \VuFind\RecordDriver\SolrMarc();
-        $fixture = $this->loadJsonFixture('misc/testbug2.json');
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
@@ -104,7 +104,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     {
         $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadJsonFixture('misc/testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $this->assertEquals(
             [['Matematica', 'Periodici.']],
@@ -131,7 +131,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     {
         $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
-        $fixture = $this->loadJsonFixture('misc/testbug1.json');
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $input = [
             'foo' => 'msg|true',

@@ -66,7 +66,7 @@ trait FixtureTrait
     {
         $realFilename = realpath($this->getFixtureDir($module) . $filename);
         if (!$realFilename || !file_exists($realFilename)
-            || !is_readable($filename)
+            || !is_readable($realFilename)
         ) {
             throw new RuntimeException(
                 sprintf('Unable to resolve fixture to fixture file: %s', $filename)

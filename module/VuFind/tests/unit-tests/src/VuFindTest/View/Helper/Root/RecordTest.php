@@ -618,7 +618,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     protected function loadRecordFixture($file)
     {
-        $json = $this->loadJsonFixture('misc/' . $file);
+        $json = $this->getJsonFixture('misc/' . $file);
         $record = new \VuFind\RecordDriver\SolrMarc();
         $record->setRawData($json['response']['docs'][0]);
         return $record;

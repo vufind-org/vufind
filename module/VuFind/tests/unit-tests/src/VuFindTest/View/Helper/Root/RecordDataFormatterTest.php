@@ -121,7 +121,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue($authors));
 
         // Load record data from fixture file:
-        $fixture = $this->loadJsonFixture('misc/testbug2.json');
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }
