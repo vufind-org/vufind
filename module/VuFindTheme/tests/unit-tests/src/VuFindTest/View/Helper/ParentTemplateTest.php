@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\View\Helper;
 
-use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\ParentTemplate;
 
 /**
@@ -61,7 +60,7 @@ class ParentTemplateTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a populated resource container for testing.
      *
-     * @return ResourceContainer
+     * @return ParentTemplate
      */
     protected function getHelper($stack)
     {

@@ -232,7 +232,7 @@ class ThemeCompilerTest extends Unit\TestCase
     /**
      * Get a test ThemeCompiler object
      *
-     * @return ThemeInfo
+     * @return ThemeCompiler
      */
     protected function getThemeCompiler()
     {
