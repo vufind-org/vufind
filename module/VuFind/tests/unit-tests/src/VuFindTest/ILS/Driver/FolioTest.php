@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use InvalidArgumentException;
-
 use VuFind\ILS\Driver\Folio;
 
 /**

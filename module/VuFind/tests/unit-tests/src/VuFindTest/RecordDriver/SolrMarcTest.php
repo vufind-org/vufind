@@ -41,7 +41,7 @@ namespace VuFindTest\RecordDriver;
  */
 class SolrMarcTest extends \VuFindTest\Unit\TestCase
 {
-	use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Test a record that used to be known to cause problems because of the way

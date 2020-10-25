@@ -65,7 +65,7 @@ class ThemeCompilerTest extends Unit\TestCase
     public function setUp(): void
     {
         $this->info = new ThemeInfo(
-            $this->getFixtureDir('VuFindTheme') . 'themes' , 'parent'
+            $this->getFixtureDir('VuFindTheme') . 'themes', 'parent'
         );
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:

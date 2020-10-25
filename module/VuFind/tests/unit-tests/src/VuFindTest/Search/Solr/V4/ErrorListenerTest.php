@@ -33,7 +33,6 @@ use Laminas\EventManager\Event;
 use Laminas\Http\Response;
 
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 use VuFind\Search\Solr\V4\ErrorListener;
 

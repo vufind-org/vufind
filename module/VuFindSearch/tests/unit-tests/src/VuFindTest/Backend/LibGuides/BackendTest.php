@@ -28,7 +28,6 @@
  */
 namespace VuFindTest\Backend\LibGuides;
 
-use InvalidArgumentException;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
 use VuFindSearch\Backend\LibGuides\Backend;

@@ -43,7 +43,7 @@ use VuFind\RecordDriver\SolrDefault;
  */
 class SolrDefaultTest extends \VuFindTest\Unit\TestCase
 {
-	use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Test an OpenURL for a book.
