@@ -58,7 +58,9 @@ class CssPreCompilerTest extends Unit\TestCase
     /**
      * Data Provider for extensions and classes
      *
-     * @return void
+     * @return LessCompiler::class|ScssCompiler::class|string[][]
+     *
+     * @psalm-return array{0: array{0: string, 1: string}, 1: array{0: string, 1: string}}
      */
     public static function extClassProvider()
     {
