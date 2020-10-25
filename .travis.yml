@@ -20,7 +20,8 @@ cache:
   directories:
     - downloads
     - .php_cs_cache
+    - .psalm_cache
     - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass
+  - vendor/bin/phing eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass psalm-console
