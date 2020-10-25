@@ -44,7 +44,7 @@ use VuFindTheme\ThemeInfo;
  */
 class RecordTest extends \PHPUnit\Framework\TestCase
 {
-    use VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Theme to use for testing purposes.

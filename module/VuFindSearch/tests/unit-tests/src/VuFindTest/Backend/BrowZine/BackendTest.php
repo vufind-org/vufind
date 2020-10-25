@@ -48,7 +48,7 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
-    use VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Test retrieving a record (not supported).
