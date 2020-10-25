@@ -221,7 +221,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testElementOptions()
     {
-        $config = Yaml::parse($this->getFixture('feedbackforms/test.yaml'));
+        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
         $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
             ->disableOriginalConstructor()
             ->setMethods(['get'])

@@ -156,6 +156,6 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     protected function getReader($fixture = 'reserves.csv')
     {
-        return new CsvReader($this->getFixtureDir() . "reserves/$fixture"));
+        return new CsvReader($this->getFixtureDir() . "reserves/$fixture");
     }
 }

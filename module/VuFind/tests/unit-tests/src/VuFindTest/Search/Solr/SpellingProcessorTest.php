@@ -566,6 +566,6 @@ class SpellingProcessorTest extends TestCase
      */
     protected function unserializeFixture($file)
     {
-        return unserialize($this->getFixture("fixtures/spell/$file"));
+        return unserialize($this->getFixture("spell/$file"));
     }
 }
