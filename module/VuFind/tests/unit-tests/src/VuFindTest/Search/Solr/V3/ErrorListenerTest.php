@@ -98,6 +98,8 @@ class ErrorListenerTest extends TestCase
      */
     protected function createResponse($name)
     {
-        return Response::fromString($this->getFixture($file));
+        return Response::fromString(
+            $this->getFixture('response/solr/' . $name)
+        );
     }
 }
