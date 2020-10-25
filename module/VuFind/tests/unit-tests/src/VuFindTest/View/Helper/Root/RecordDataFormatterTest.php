@@ -41,7 +41,7 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
  */
 class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
-    use VuFindTest\FixtureTrait;
+    use VuFindTest\Unit\FixtureTrait;
 
     /**
      * Get a mock record router.

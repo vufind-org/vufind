@@ -49,7 +49,7 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
  */
 class ErrorListenerTest extends TestCase
 {
-    use \VuFindTest\FixtureTrait;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * Detect parser error response.
