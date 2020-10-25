@@ -42,6 +42,8 @@ use VuFindSearch\Backend\EIT\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test query parsing.
      *
