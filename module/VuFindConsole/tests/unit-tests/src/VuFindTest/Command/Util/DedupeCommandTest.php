@@ -43,6 +43,8 @@ use VuFindConsole\Command\Util\DedupeCommand;
  */
 class DedupeCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Get a mocked-out command object.
      *
@@ -114,7 +116,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $this->setSuccessfulExpectations($command, $outputFilename);
         $commandTester = new CommandTester($command);
-        $fixture = __DIR__ . '/../../../../../fixtures/fileWithDuplicateLines';
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'fileWithDuplicateLines';
         $commandTester->execute(
             [
                 'input' => $fixture,
@@ -132,7 +134,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithoutArguments()
     {
-        $fixture = __DIR__ . '/../../../../../fixtures/fileWithDuplicateLines';
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'fileWithDuplicateLines';
         $outputFilename = '/fake/outfile';
         $command = $this->getMockCommand();
         $command->expects($this->at(0))->method('getInput')
