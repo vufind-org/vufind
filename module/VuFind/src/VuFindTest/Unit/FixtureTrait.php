@@ -44,7 +44,7 @@ trait FixtureTrait
     /**
      * Get the base directory containing fixtures.
      *
-     * @param string $module   Module containing fixture.
+     * @param string $module Module containing fixture.
      *
      * @return string
      */
