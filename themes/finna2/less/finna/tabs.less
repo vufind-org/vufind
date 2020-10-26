@@ -41,6 +41,8 @@
       border-bottom: 1px solid transparent;
       border-left: 1px solid transparent;
       border-right: 1px solid transparent;
+      background-color: #EDEDED;
+      border-bottom: 1px solid #919191;
       @media (max-width: @screen-sm) {
         &:not(.many-tabs) {
           flex-basis: 50%;
@@ -51,12 +53,13 @@
         border-left: 1px solid @main-tabs-border-color;
         border-right: 1px solid @main-tabs-border-color;
         border-bottom: 1px solid @body-bg;
+        background-color: @main-tabs-background-color;
+        box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.25);
         a:hover {
           border: none;
         }
       }
       > a {
-        background-color: @main-tabs-background-color;
         padding: 10px 5px;
         margin-bottom: 0;
         border: 0;

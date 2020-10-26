@@ -1,58 +1,65 @@
 <!-- START of: finna - search/searchTabs.phtml -->
-<?php $isManyTabs = (count($searchTabs) > 2) ?>
+<?php
+  $isManyTabs = (count($searchTabs) > 2);
+  $module = $this->layout()->templateDir;
+?>
 <?php if (!$isManyTabs): ?>
   <div class="tabs-table">
 <?php endif; ?>
 <?php if (!empty($searchTabs)): ?>
-<?php
-  $tooltipElement = $this->htmlElement()->addAttributeTemplate('tooltip-element', [
-    'class' => 'tooltip',
-    'data-toggle' => 'tooltip',
-    'data-html' => 'true',
-    'data-placement' => 'bottom'
-  ]);
-?>
-
-<ul class="nav nav-tabs <?=$isManyTabs ? ' many-tabs hidden-xs' : '';?>">
-    <?php foreach ($searchTabs as $tab): ?>
-      <?php if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
-      <li class="<?=$tab['selected'] ? 'active' : 'hidden-print'?>">
-        <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
-        <?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName !== 'advanced'): ?>
-          <?php
-            $tooltip = [
-              'aria-label' => $this->translate('Help') . ' - ' . $this->translate($tab['label']),
-              'data-original-title' => $this->translate('tooltip_' . $tab['label'] . '_html'),
-              'class' => $this->translate('tooltip-' . $tab['label']),
-            ];
-          ?>
-          <button <?= $this->htmlElement()->getAttributes($tooltip, 'tooltip-element'); ?>>
-            <i class="fa fa-info-big"></i>
-          </button>
-        <?php endif; ?>
-      </li>
-    <?php endforeach; ?>
-</ul>
-<div class="mobile-main-tabs <?=count($searchTabs) > 2 ? 'visible-xs' : 'hidden';?>">
-  <div class="dropdown visible-xs">
-    <?php foreach ($searchTabs as $tab): ?>
-      <?php if ($tab['selected']): ?>
-        <div class="dropdown-toggle clearfix" data-toggle="dropdown">
-          <div class="tab-title"><?=$this->transEsc($tab['label']); ?></div>
-          <div class="more"><?=$this->transEsc("More");?><b class="caret"></b></div>
-        </div>
-      <?php endif; ?>
-    <?php endforeach; ?>
-    <ul class="dropdown-menu" role="menu">
+  <?php
+    $tooltipElement = $this->htmlElement()->addAttributeTemplate('tooltip-element', [
+      'class' => 'tooltip',
+      'data-toggle' => 'tooltip',
+      'data-html' => 'true',
+      'data-placement' => 'bottom'
+    ]);
+  ?>
+  <ul class="nav nav-tabs <?=$isManyTabs ? ' many-tabs hidden-xs' : '';?>">
       <?php foreach ($searchTabs as $tab): ?>
         <?php if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
-        <li role="menuitem" class="<?=$tab['selected'] ? 'active' : ''?>">
+        <li class="<?=$tab['selected'] ? 'active' : 'hidden-print'?>">
           <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+          <?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName !== 'advanced'): ?>
+            <?php
+              $tooltip = [
+                'aria-label' => $this->translate('Help') . ' - ' . $this->translate($tab['label']),
+                'data-original-title' => $this->translate('tooltip_' . $tab['label'] . '_html'),
+                'class' => $this->translate('tooltip-' . $tab['label']),
+              ];
+            ?>
+            <button <?= $this->htmlElement()->getAttributes($tooltip, 'tooltip-element'); ?>>
+              <i class="fa fa-info-big"></i>
+            </button>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
-    </ul>
+  </ul>
+  <?php if (!$this->translationEmpty("search_tab_tip_{$module}_html")) :?>
+    <div class="search-tab-tip">
+      <?=$this->translate("search_tab_tip_{$module}_html");?>
+    </div>
+  <?php endif; ?>
+  <div class="mobile-main-tabs <?=count($searchTabs) > 2 ? 'visible-xs' : 'hidden';?>">
+    <div class="dropdown visible-xs">
+      <?php foreach ($searchTabs as $tab): ?>
+        <?php if ($tab['selected']): ?>
+          <div class="dropdown-toggle clearfix" data-toggle="dropdown">
+            <div class="tab-title"><?=$this->transEsc($tab['label']); ?></div>
+            <div class="more"><?=$this->transEsc("More");?><b class="caret"></b></div>
+          </div>
+        <?php endif; ?>
+      <?php endforeach; ?>
+      <ul class="dropdown-menu" role="menu">
+        <?php foreach ($searchTabs as $tab): ?>
+          <?php if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
+          <li role="menuitem" class="<?=$tab['selected'] ? 'active' : ''?>">
+            <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
   </div>
-</div>
 <?php endif; ?>
 <?php if (!$isManyTabs): ?>
   </div>
