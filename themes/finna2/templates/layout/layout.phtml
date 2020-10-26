@@ -366,7 +366,7 @@ JS;
         </div>
       </div>
     </header>
-    <section role="search" class="searchContent<?=$currentTabClass?>">
+    <section aria-label="<?=$this->transEsc('Search functions')?>" class="searchContent<?=$currentTabClass?>">
       <h1 class="sr-only"><?=$this->transEsc('Search')?></h1>
         <?php if ($this->layout()->templateName === 'home' && $this->layout()->templateDir === 'search'): ?>
             <a class="btn btn-primary btn-uppercase floating-feedback-btn" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a>
