@@ -109,6 +109,6 @@ class GetSimilarRecords extends \VuFind\AjaxHandler\AbstractBase
             ['related' => $this->similar]
         );
 
-        return $this->formatResponse($html);
+        return $this->formatResponse(compact('html'));
     }
 }

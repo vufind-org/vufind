@@ -1,23 +1,7 @@
-<?php if ($data = $this->related->getResults()): ?>
-<div class="related-records">
-  <h1><?=$this->transEsc('Related Items')?></h1>
-  <ul class="list-group">
-    <?php foreach ($data as $type => $records): ?>
-      <li class="list-group-item">
-        <p><?=$this->transEsc("record_driver_related:$type")?></p>
-        <ul>  
-        <?php foreach ($records as $record): ?>
-        <?php $formats = $record->getFormats(); ?>
-          <li>    
-            <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
-            <a href="<?=$this->recordLink()->getUrl($record)?>">
-              <?=$this->escapeHtml($record->getTitle())?>
-            </a>
-          </li>
-        <?php endforeach; ?>
-        </ul>
-      </li>
-    <?php endforeach; ?>
-  </ul>
+<!-- START of: finna - Related/RecordDriverRelated.phtml -->
+<?php if ($this->related->hasRelatedRecords()): ?>
+<div class="record-driver-related-records" data-id="<?=$this->escapeHtmlAttr($this->related->getRecordId())?>" data-source="<?=$this->escapeHtmlAttr($this->related->getRecordSource())?>">
+  <i class="fa fa-spinner fa-spin hide"></i>
 </div>
 <?php endif; ?>
+<!-- END of: finna - Related/RecordDriverRelated.phtml -->

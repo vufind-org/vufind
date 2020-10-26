@@ -208,6 +208,17 @@ trait FinnaRecordTrait
     }
 
     /**
+     * Whether the record has related records declared in metadata.
+     * (used by RecordDriverRelated related module).
+     *
+     * @return bool
+     */
+    public function hasRelatedRecords()
+    {
+        return false;
+    }
+
+    /**
      * Format authority id by prefixing the given id with authority record source.
      *
      * @param string $id   Authority id

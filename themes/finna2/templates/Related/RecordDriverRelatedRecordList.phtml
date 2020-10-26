@@ -1,0 +1,22 @@
+<?php if (!($data = $this->results)) { return; } ?>
+<div class="related-records">
+  <h1><?=$this->transEsc('Related Items')?></h1>
+  <ul class="list-group">
+    <?php foreach ($data as $type => $records): ?>
+      <li class="list-group-item">
+        <p><?=$this->transEsc("RelatedRecordType::$type")?></p>
+        <ul class="list-group list-sub-group <?=$this->escapeHtmlAttr($type)?>">
+        <?php foreach ($records as $record): ?>
+        <?php $formats = $record->getFormats(); ?>
+          <li>    
+            <a href="<?=$this->recordLink()->getUrl($record)?>">
+              <?=$this->escapeHtml($record->getTitle())?>
+            </a>
+            <?=$this->record($record)->getFormatList();?>
+          </li>
+        <?php endforeach; ?>
+        </ul>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+</div>

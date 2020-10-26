@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,18 +39,11 @@ namespace Finna\Related;
 class RecordDriverRelated implements \VuFind\Related\RelatedInterface
 {
     /**
-     * Records
+     * Record driver
      *
-     * @var array
+     * @var \VuFind\RecordDriver\AbstractBase
      */
-    protected $results;
-
-    /**
-     * Search service
-     *
-     * @var \VuFind\Record\Loader
-     */
-    protected $recordLoader;
+    protected $driver = null;
 
     /**
      * Constructor
@@ -59,7 +52,6 @@ class RecordDriverRelated implements \VuFind\Related\RelatedInterface
      */
     public function __construct(\VuFind\Record\Loader $recordLoader)
     {
-        $this->recordLoader = $recordLoader;
     }
 
     /**
@@ -72,20 +64,45 @@ class RecordDriverRelated implements \VuFind\Related\RelatedInterface
      */
     public function init($settings, $driver)
     {
-        foreach ($driver->getRelatedItems() as $type => $ids) {
-            $this->results[$type] = $this->recordLoader->loadBatchForSource(
-                $ids, 'Solr', true
-            );
-        }
+        $this->driver = $driver;
     }
 
     /**
-     * Get an array of result records.
+     * Check if the current record has related records.
      *
-     * @return array
+     * @return bool
      */
-    public function getResults()
+    public function hasRelatedRecords()
     {
-        return $this->results;
+        if (!$this->driver) {
+            return false;
+        }
+        return $this->driver->tryMethod('hasRelatedRecords', [], false);
+    }
+
+    /**
+     * Get the current record ID
+     *
+     * @return string
+     */
+    public function getRecordId()
+    {
+        if (!$this->driver) {
+            return '';
+        }
+        return $this->driver->getUniqueID();
+    }
+
+    /**
+     * Get the current record source
+     *
+     * @return string
+     */
+    public function getRecordSource()
+    {
+        if (!$this->driver) {
+            return '';
+        }
+        return $this->driver->getSourceIdentifier();
     }
 }
