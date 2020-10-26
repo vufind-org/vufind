@@ -3,6 +3,8 @@
 User-agent: *
 Disallow: /AJAX/
 Disallow: /*/AJAX/
+Disallow: /Search/FacetList
+Disallow: /*/Search/FacetList
 # Block QRCodes:
 Disallow: /QRCode/
 Disallow: /*/QRCode/
