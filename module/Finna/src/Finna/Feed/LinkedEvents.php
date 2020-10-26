@@ -214,8 +214,8 @@ class LinkedEvents implements \VuFindHttp\HttpServiceAwareInterface,
                         'location-info' =>
                             $this->getField($eventData, 'location_extra_info'),
                         'location' => $this->getField($eventData, 'location'),
-                        'telephone' =>
-                            $this->getField($eventData['location'], 'telephone'),
+                        'phone' => $this->getField($eventData, 'provider_phone'),
+                        'email' => $this->getField($eventData, 'provider_email'),
                         'address' =>
                             $this->getField(
                                 $eventData['location'], 'street_address'

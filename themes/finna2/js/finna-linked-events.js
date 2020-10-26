@@ -95,6 +95,12 @@ finna.linkedEvents = (function finnaLinkedEvents() {
           $('.linked-event-' + field).closest('.linked-event-field').removeClass('hidden');
           return true;
         }
+        if (field === 'phone') {
+          $('.linked-event-phone').attr('href', 'tel:' + value);
+        }
+        if (field === 'email') {
+          $('.linked-event-email').attr('href', 'mailto:' + value);
+        }
         if (field === 'image') {
           $('.linked-event-image').attr('src', value.url);
         } if (field === 'keywords') {
