@@ -17,9 +17,9 @@ class PluginManager extends \VuFind\Db\Row\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['redirect']         = Redirects::class;
+        $this->aliases['redirect']         = Redirect::class;
         $this->aliases['user']             = User::class;
-        $this->factories[Redirects::class] = RowGatewayFactory::class;
+        $this->factories[Redirect::class]  = RowGatewayFactory::class;
         $this->factories[User::class]      = \VuFind\Db\Row\UserFactory::class;
 
         parent::__construct($configOrContainerInstance, $v3config);

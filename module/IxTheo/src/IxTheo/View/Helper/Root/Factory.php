@@ -45,6 +45,6 @@ class Factory
      */
 
     public static function getIxTheo(ServiceManager $sm) {
-        return new IxTheo($sm);
+        return new \IxTheo\View\Helper\IxTheo\IxTheo($sm);
    }
 }

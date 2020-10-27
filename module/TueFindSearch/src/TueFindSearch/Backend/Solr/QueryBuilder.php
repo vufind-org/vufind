@@ -18,7 +18,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder {
     const FULLTEXT_TOC_ALL_LANGUAGE_SYNONYMS_FIELD = 'fulltext_toc_synonyms_all';
     const FULLTEXT_ABSTRACT_ONE_LANGUAGE_SYNONYMS_FIELD = 'fulltext_abstract_synonyms'; // Language selection is done by SOLR itself
     const FULLTEXT_ABSTRACT_ALL_LANGUAGE_SYNONYMS_FIELD = 'fulltext_abstract_synonyms_all';
-    const FULLTEXT_SUMMARY_ONE_LANGUAGE_SYNONYMS = 'fulltext_summary_synonyms'; // Language selection is done by SOLR itself
+    const FULLTEXT_SUMMARY_ONE_LANGUAGE_SYNONYMS_FIELD = 'fulltext_summary_synonyms'; // Language selection is done by SOLR itself
     const FULLTEXT_SUMMARY_ALL_LANGUAGE_SYNONYMS_FIELD = 'fulltext_summary_synonyms_all';
     const FULLTEXT_TYPE_FULLTEXT = "Fulltext";
     const FULLTEXT_TYPE_ABSTRACT = "Abstract";

@@ -102,14 +102,6 @@ class SolrMarc extends SolrDefault
             $this->fields['key_word_chain_bag'] : '';
     }
 
-    /**
-      * @return string
-      */
-    public function getPageRange()
-    {
-        return isset($this->fields['page_range']) ? $this->fields['page_range'] : '';
-    }
-
     public function getPrefix4KeyWordChainBag()
     {
         return isset($this->fields['prefix4_key_word_chain_bag']) ?
