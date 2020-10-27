@@ -3,7 +3,7 @@
 namespace IxTheo\Search\Options;
 use Zend\ServiceManager\ServiceManager;
 
-class Factory extends \VuFind\Search\Options\Factory
+class Factory extends \VuFind\Search\Options\OptionsFactory
 {
     /**
      * Factory for PDASubscriptions results object.

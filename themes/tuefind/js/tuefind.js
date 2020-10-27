@@ -12,14 +12,20 @@ var TueFind = {
     },
 
     GetSearchboxSearchContext: function() {
-        return $("#searchForm").attr('action').replace(/\/(.*)\/Results/, "$1").toLowerCase();
+        if ($("#searchForm").length > 0)
+            return $("#searchForm").attr('action').replace(/\/(.*)\/Results/, "$1").toLowerCase();
+        else
+            return null;
     },
 
     AdjustSearchHandlers: function() {
         // Make sure that a selection of the search handler is transparently adjusted for a potential reload
         // i.e. when changing the sort order
-        var search_context = TueFind.GetSearchboxSearchContext();
-        var saved_search_handler = sessionStorage.getItem("tuefind_saved_search_handler_" + search_context);
+        let search_context = TueFind.GetSearchboxSearchContext();
+        if (search_context === null)
+            return;
+
+        let saved_search_handler = sessionStorage.getItem("tuefind_saved_search_handler_" + search_context);
         if (saved_search_handler != null) {
             $("#searchForm_type option:selected").removeAttr('selected');
             $("#searchForm_type").val(saved_search_handler);
@@ -91,6 +97,8 @@ var TueFind = {
                             $(this).replaceWith('<div id="snippets_' + doc_id + '" class="snippet-div">' + snippets.join('<br/>') + '<br/></div>');
                         else if (verbose)
                             $(this).replaceWith(TueFind.GetNoMatchesMessage(doc_id));
+                        else
+                            $(this).replaceWith();
                     });
                     if (snippets)
                         $(this).removeAttr('style');
@@ -108,7 +116,7 @@ var TueFind = {
                             $(this).html("");
                     });
                     $("[id^=snippets_] > p").each(function () { this.style.transform="none"; });
-                    if (!verbose)
+                    if (!verbose && snippets)
                         $("#snippets_" + doc_id).after(TueFind.ItemFulltextLink(doc_id, query, synonyms));
                 });
             }, // end success
@@ -222,13 +230,12 @@ var TueFind = {
 
     // helper function to set focus on a specified input field, also sets cursor position to end of field content
     SetFocus: function(input_selector) {
-        $(input_selector).focus();
-        if ($(input_selector).length) {
-           // now we are sure that element exists
-           // don't assign input_field earlier, JS might crash if element doesnt exist
-           let input_field = $(input_selector);
-           input_field[0].setSelectionRange(input_field.val().length, input_field.val().length);
-        }
+        // intentionally use .each so we do not need to test if empty
+        $(input_selector).each(function() {
+            // here we use native JS instead of jQuery to avoid problems
+            this.focus();
+            this.setSelectionRange(this.value.length, this.value.length);
+        });
     },
 
     HandlePassedFulltextQuery : function() {
@@ -245,21 +252,48 @@ var TueFind = {
         searchForm_fulltext.val(fulltextquery);
         $('#itemFTSearchScope').val(fulltextscope);
         searchForm_fulltext.submit();
+    },
+
+    WildcardHandler : function(query_text) {
+        const forbidden_chars = /[*?]/i;
+        if (forbidden_chars.test(query_text)) {
+            alert(VuFind.translate("fulltext_wildcard_error"));
+            return false;
+        }
+        return true;
+    },
+
+    CheckWildcards : function(event) {
+        // Case 1: ItemFulltextSearch
+        if (event.type == 'submit' && event.target.id == 'ItemFulltextSearchForm')
+            return this.WildcardHandler($("#searchForm_fulltext").val());
+        // Case 2: The submit button was pressed
+        // Case 3: The tab nav was chosen
+        else if ((event.type == 'submit' && this.GetSearchboxSearchContext() == 'search2') ||
+                 (event.type == 'click' && event.explicitOriginalTarget.href.match('/Search2/')) ) {
+                 return this.WildcardHandler($("#searchForm_lookfor").val());
+        }
+        return true;
     }
 };
 
 
 $(document).ready(function () {
+
+    // Home search: set focus on first input field of first search group
+    if (window.location.pathname.match(/\/Search(2)?\/Home$/i) || window.location.pathname === '/') {
+        TueFind.SetFocus('#searchForm_lookfor');
     // advanced search: set focus on first input field of first search group
-    if (window.location.href.match(/\/Search\/Advanced/i)) {
+    } else if (window.location.pathname.match(/\/Search\/Advanced$/i)) {
         TueFind.SetFocus('#search_lookfor0_0');
     // keywordchainsearch: set focus on 2nd input field
-    } else if (window.location.href.match(/\/Keywordchainsearch\//i)) {
+    } else if (window.location.pathname.match(/\/Keywordchainsearch/i)) {
         TueFind.SetFocus('#kwc_input');
     // alphabrowse: set focus on "starting from" edit field
-    } else if (window.location.href.match(/\/Alphabrowse\//i)) {
+    } else if (window.location.pathname.match(/\/Alphabrowse/i)) {
         TueFind.SetFocus('#alphaBrowseForm_from');
     }
+
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
 });

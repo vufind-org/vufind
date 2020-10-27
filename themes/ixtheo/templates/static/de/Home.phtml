@@ -1,8 +1,3 @@
-<div id="breaking_news">
-   <h4 class="text-center" style="color: #343deb ; margin-top: 12px; margin-bottom: 2px">
-      +++ <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1" style="color : #343deb">Neuer Service: Volltextsuche - hinterlassen Sie Ihr Feedback rechts unten</a> +++ <a href="/docs/Volltextsuche_Beschreibung.pdf" class="text-warning" style="color : #343deb" target="_blank">Beschreibung</a> +++
-   </h4>
-</div>
 <style>
     .read-more-state ~ .read-more-trigger:before {
         content: 'Mehr';
@@ -12,12 +7,60 @@
         content: 'Weniger';
     }
 </style>
+<div id="breaking_news">
+   <h4 class="text-center" style="color: #343deb ; margin-top: 12px; margin-bottom: 2px">
+      ++ Großes Digitalisierungsprojekt durch die DFG bewilligt ++ Mehr Informationen finden Sie  <a href="/docs/DigiTheo5_de.pdf" class="text-warning" style="color : #343deb" target="_blank"><u>hier</u></a> ++
+   </h4>
+</div>
 <?php
     $panelId = 0;
     $panelClass = "panel-default";
     $panelWidth = "col-md-6";
 ?>
 <div class="col-md-12" style="margin-top: 30px;"></div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-bell-o"></i> Willkommen!
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body">
+                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
+                <div class="read-more-wrap">
+                    <p>Der neue IxTheo ist eine umfassende Bibliographie für Theologie und Religionswissenschaft. Es können nun
+                            neben Aufsätzen auch Monographien, Datenbanken und relevante Internetlinks recherchiert werden.</p>
+                    <div class="read-more-target">
+                        <p>Neu ist auch, dass die Daten ausgewählter Rezensionsorgane in den IxTheo einbezogen werden. Wenn es lizenzrechtlich
+                            möglich ist, kann direkt auf die Volltexte der Aufsätze, Rezensionen und Bücher zugegriffen werden.</p>
+                        <p>Der neue IxTheo bleibt weiterhin ein kostenloses open access Angebot an die weltweite Fachcommunity.
+                            Herausgeber des IxTheo sind die Universitätsbibliothek Tübingen sowie die Evangelisch-Theologische Fakultät
+                            Tübingen und die Katholisch-Theologische Fakultät Tübingen.</p>
+                        <p>Wir wünschen
+                            Ihnen viel Freude beim Entdecken des neuen IxTheo und sind dankbar über Ihr Feedback!</p>
+                    </div>
+                </div>
+                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 ix-panel-news">
+    <div class="panel <?= $panelClass; ?>">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-search-plus"></i> Volltextsuche<div class="new">neu</div>
+            </h4>
+        </div>
+        <div id="<?= $panelId++; ?>" class="panel-collapse">
+            <div class="panel-body flex-col">
+                    Mit der <a href="/Search2/Home?hiddenFilters[]=has_fulltext%3A1">Volltextsuche</a> besteht nun eine Möglichkeit, kommerzielle und freie Volltexte, Inhaltsverzeichnisse und Abstracts direkt zu durchsuchen.<br/> Ausführliche Informationen finden sich in der <a href="/docs/Volltextsuche_Beschreibung.pdf" target="_blank">Beschreibung</a>. 
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12"></div>
 <div class="col-md-6 ix-panel-news">
     <div class="panel <?= $panelClass; ?>">
         <div class="panel-heading">
@@ -79,39 +122,9 @@
             <div class="panel-body">
                 <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
                 <div class="read-more-wrap">
-                    <p>Der Fachinformationsdienst (FID) Theologie kooperiert mit der Katholisch-Theologischen Fakultät in Innsbruck (Österreich) bei der Erstellung einer Fachbibliographie für Bibelwissenschaften und für das Kirchenrecht.</p>
-                    <div class="read-more-target">
-                        <p>Die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> wurden vollständig in den IxTheo migriert. Mehr als 200.000 sehr gut erschlossene Daten bereichern nun den Nachweis bibelwissenschaftlicher Literatur in IxTheo/BILDI. Ein eigenständiger Zugang für die bibelwissenschaftliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von BILDI und IxTheo verantwortet.</p>
+                    <p>Der Fachinformationsdienst (FID) Theologie kooperiert mit der Katholisch-Theologischen Fakultät in Innsbruck (Österreich) bei der Erstellung einer Fachbibliographie <div class="read-more-target">  für Bibelwissenschaften und für das Kirchenrecht.</p>
+                                            <p>Die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/bildi/">BILDI</a> wurden vollständig in den IxTheo migriert. Mehr als 200.000 sehr gut erschlossene Daten bereichern nun den Nachweis bibelwissenschaftlicher Literatur in IxTheo/BILDI. Ein eigenständiger Zugang für die bibelwissenschaftliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von BILDI und IxTheo verantwortet.</p>
                         <p>Ebenso wurden die Metadaten von <a target="_blank" href="https://www.uibk.ac.at/praktheol/kaldi/">KALDI</a> vollständig in den IxTheo migriert. Mehr als 34.000 sehr gut erschlossene Daten bereichern nun den Nachweis kirchenrechtlicher Literatur in IxTheo/KALDI. Ein eigenständiger Zugang für die kirchenrechtliche Literatur steht Ende 2019 zur Verfügung und wird zukünftig gemeinsam von KALDI, DaKaR (Münster) und IxTheo verantwortet.</p>
-                    </div>
-                </div>
-                <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-md-12"><hr></div>
-<div class="col-md-6 ix-panel-news">
-    <div class="panel <?= $panelClass; ?>">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <i class="fa fa-bell-o"></i> Willkommen!
-            </h4>
-        </div>
-        <div id="<?= $panelId++; ?>" class="panel-collapse">
-            <div class="panel-body">
-                <input type="checkbox" class="read-more-state" id="post-<?= $panelId; ?>" />
-                <div class="read-more-wrap">
-                    <p>Der neue IxTheo ist eine umfassende Bibliographie für Theologie und Religionswissenschaft. Es können nun
-                            neben Aufsätzen auch Monographien, Datenbanken und relevante Internetlinks recherchiert werden.</p>
-                    <div class="read-more-target">
-                        <p>Neu ist auch, dass die Daten ausgewählter Rezensionsorgane in den IxTheo einbezogen werden. Wenn es lizenzrechtlich
-                            möglich ist, kann direkt auf die Volltexte der Aufsätze, Rezensionen und Bücher zugegriffen werden.</p>
-                        <p>Der neue IxTheo bleibt weiterhin ein kostenloses open access Angebot an die weltweite Fachcommunity.
-                            Herausgeber des IxTheo sind die Universitätsbibliothek Tübingen sowie die Evangelisch-Theologische Fakultät
-                            Tübingen und die Katholisch-Theologische Fakultät Tübingen.</p>
-                        <p>Wir wünschen
-                            Ihnen viel Freude beim Entdecken des neuen IxTheo und sind dankbar über Ihr Feedback!</p>
                     </div>
                 </div>
                 <label for="post-<?= $panelId; ?>" class="read-more-trigger"></label>

@@ -3,7 +3,7 @@ return [
     'extends' => 'bootstrap3',
     'helpers' => [
         'factories' => [
-            'VuFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
+            'TueFind\View\Helper\Root\Piwik' => 'TueFind\View\Helper\Root\PiwikFactory',
             'TueFind\View\Helper\Root\HelpText' => 'VuFind\View\Helper\Root\HelpTextFactory',
             'TueFind\View\Helper\Root\RecordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatterFactory',
             'TueFind\View\Helper\Root\SearchTabs' => 'VuFind\View\Helper\Root\SearchTabsFactory',
@@ -18,6 +18,7 @@ return [
             'helpText' => 'TueFind\View\Helper\Root\HelpText',
             'HelpText' => 'TueFind\View\Helper\Root\HelpText',
             'metadata' => 'TueFind\View\Helper\TueFind\Metadata',
+            'piwik' => 'TueFind\View\Helper\Root\Piwik',
             'recaptcha' => 'TueFind\View\Helper\Bootstrap3\Recaptcha',
             'recordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatter',
             'searchTabs' => 'TueFind\View\Helper\Root\SearchTabs',

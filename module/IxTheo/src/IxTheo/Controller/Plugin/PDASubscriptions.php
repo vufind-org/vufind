@@ -1,12 +1,11 @@
 <?php
 
 namespace IxTheo\Controller\Plugin;
-use VuFind\Exception\LoginRequired as LoginRequiredException,
+use Zend\Mail\Address,
+    Zend\Mail\AddressList,
     Zend\Mvc\Controller\Plugin\AbstractPlugin,
-    VuFind\Db\Row\User, VuFind\Record\Cache,
-    Zend\Mail\Address,
-    Zend\Mail\AddressList;
-
+    VuFind\Db\Row\User,
+    VuFind\Exception\Mail as MailException;
 
 
 /**
@@ -121,7 +120,7 @@ class PDASubscriptions extends AbstractPlugin
                  $emailSubject, $emailMessage
              );
         } catch (MailException $e) {
-            $this->flashMessenger()->addMessage($e->getMessage(), 'Error sending email');
+            $this->getController()->flashMessenger()->addMessage($e->getMessage(), 'Error sending email');
         }
     }
 

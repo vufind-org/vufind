@@ -19,6 +19,40 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Php version of perl's MIME::Base64::URLSafe, that provides an url-safe
+     * base64 string encoding/decoding (compatible with python base64's urlsafe methods)
+     *
+     * @see https://www.php.net/manual/de/function.base64-encode.php
+     *
+     * @param string $string
+     * @return string
+     */
+    public function base64UrlEncode(string $string): string {
+        $data = base64_encode($string);
+        $data = str_replace(['+','/','='],['-','_','.'], $data);
+        return $data;
+    }
+
+    /**
+     * Php version of perl's MIME::Base64::URLSafe, that provides an url-safe
+     * base64 string encoding/decoding (compatible with python base64's urlsafe methods)
+     *
+     * @see https://www.php.net/manual/de/function.base64-encode.php
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function base64UrlDecode(string $string): string {
+        $data = str_replace(['-','_','.'], ['+','/','='], $string);
+        $mod4 = strlen($data) % 4;
+        if ($mod4) {
+            $data .= substr('====', $mod4);
+        }
+        return base64_decode($data);
+    }
+
+    /**
      * Convert a Date/Time string to ISO 8601 format.
      *
      * If the given datetime consists only of a year, return the plain year.
@@ -222,7 +256,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get URL to redirect page which also saves the redirect with timestamp for later analysis
+     * Get URL to redirect page which also saves the redirect with timestamp for later analysis.
+     * Uses special variant of base64 without url-specific '/' and '+' characters.
      *
      * @param string $targetUrl
      * @param string $group
@@ -231,7 +266,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      */
     public function getRedirectUrl(string $targetUrl, string $group=null): string {
         $urlHelper = $this->container->get('ViewHelperManager')->get('url');
-        return $urlHelper('redirect', ['url' => base64_encode($targetUrl), 'group' => $group]);
+        return $urlHelper('redirect', ['url' => $this->base64UrlEncode($targetUrl), 'group' => $group]);
     }
 
     /**
@@ -392,9 +427,8 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         if (is_array($superior_series)) {
             foreach ($superior_series as $current) {
                 echo 'T3 - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
-                $volume =  $current['number'];
-                if (!empty($volume))
-                    echo 'SV - ' . "$volume\r\n";
+                if (!empty($current['number']))
+                    echo 'SV - ' . $current['number'] . "\r\n";
             }
             return true;
         }
@@ -409,6 +443,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
              if ($total == 0 && count($pubDates) > 0) {
                  $total = 1;
              }
+             $dateTimeHelper = $this->container->get('ViewHelperManager')->get('dateTime');
              for ($i = 0; $i < $total; $i++) {
                  if (isset($pubPlaces[$i])) {
                      echo "CY  - " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\r\n";
@@ -418,7 +453,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
                  }
                  $date = trim($pubDates[$i], '[]. ');
                  if (strlen($date) > 4) {
-                     $date = $this->dateTime()->extractYear($date);
+                     $date = $dateTimeHelper->extractYear($date);
                  }
                  if ($date) {
                      echo 'PY  - ' . "$date\r\n";

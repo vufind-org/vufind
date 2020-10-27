@@ -54,14 +54,6 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc {
             ? $this->fields['page_count'] : '';
     }
 
-    /**
-     * @return string
-     */
-    public function getPageRange()
-    {
-        return isset($this->fields['page_range']) ? $this->fields['page_range'] : '';
-    }
-
     public function getTopics()
     {
         return isset($this->fields['topic']) ? $this->fields['topic'] : array();
