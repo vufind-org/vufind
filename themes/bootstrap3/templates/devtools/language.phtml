@@ -2,14 +2,14 @@
 $pageTitle = 'Comparing Languages Against English';
 $this->headTitle($pageTitle);
 
-$uLangs = array();
+$uLangs = [];
 if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1) {
     foreach ($this->layout()->allLangs as $c => $n) {
         $uLangs[] = $c;
     }
 }
 $i = 0;
-$data = array();
+$data = [];
 foreach ($details as $langCode => $diffs) {
   $extraCount = count($diffs['notInL1']);
   $missingCount = count($diffs['notInL2']);
@@ -76,7 +76,7 @@ $dir_lang = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEP
   </button>
   <ul class="dropdown-menu" aria-labelledby="dmb-<?=$val['lang']?>">
   <?php foreach ($val['files'] as $k => $v): ?>
-  <li><a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url("help-home") . "?lng=".$val['lang']."&amp;topic=". str_replace(".phtml", "", $v);?>"><?=$v?></a></li>
+  <li><a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url("help-home") . "?lng=" . $val['lang'] . "&amp;topic=" . str_replace(".phtml", "", $v);?>"><?=$v?></a></li>
   <?php endforeach; ?>
   </ul>
 </div>
