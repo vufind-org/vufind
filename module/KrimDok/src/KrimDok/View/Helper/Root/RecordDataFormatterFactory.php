@@ -33,7 +33,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $this->addHBZ($spec);
         // PDA (KrimDok-specific)
         $spec->setTemplateLine(
-            'PDA', 'isAvailableForPDA', 'data-PDA.phtml'
+            'PDA', 'showPDA', 'data-PDA.phtml'
         );
         $this->addSubito($spec);
         $this->addVolumesAndArticles($spec);

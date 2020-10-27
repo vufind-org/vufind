@@ -212,7 +212,7 @@ class SolrMarc extends SolrDefault
 
     public function showPDA() {
         $formats = $this->getFormats();
-        return (!empty($formats) && (in_array('Book', $formats)) && $this->isPotentiallyPDA());
+        return (!empty($formats) && (in_array('Book', $formats)) && $this->isAvailableForPDA());
     }
 
     public function showSubito() {
