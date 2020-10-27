@@ -490,13 +490,44 @@ trait MarcAdvancedTrait
         foreach ($fields as $field) {
             $subfields = $field->getSubfields();
             foreach ($subfields as $subfield) {
-                // Break the string into appropriate chunks, filtering empty strings,
-                // and merge them into return array:
-                $toc = array_merge(
-                    $toc,
-                    array_filter(explode('--', $subfield->getData()), 'trim')
-                );
+                $code = strtolower($subfield->getCode());
+                switch ($code) {
+                case 'a':
+                    // Break the string into appropriate chunks, filtering empty
+                    // strings, and merge them into return array:
+                    $toc = array_merge(
+                        $toc,
+                        array_filter(explode('--', $subfield->getData()), 'trim')
+                    );
+                    break;
+                case 'g':
+                case 'r':
+                case 't':
+                    // If we have reached the end of a previous entry, add it to the
+                    // results. We identify "end of entry" by encountering a subfield
+                    // t or a terminating "--" on the previous subfield.
+                    if (isset($titleInProgress)
+                        && (substr($titleInProgress, -2) == '--' || $code == 't')
+                    ) {
+                        $toc = array_merge(
+                            $toc,
+                            array_filter(explode('--', $titleInProgress))
+                        );
+                        $titleInProgress = '';
+                    }
+                    // Now collect the new value:
+                    $titleInProgress
+                        = trim($titleInProgress . ' ' . $subfield->getData());
+                    break;
+                }
             }
+        }
+        // If we have a title in progress from the loop above, save it now:
+        if (isset($titleInProgress)) {
+            $toc = array_merge(
+                $toc,
+                array_filter(explode('--', $titleInProgress))
+            );
         }
         return $toc;
     }
