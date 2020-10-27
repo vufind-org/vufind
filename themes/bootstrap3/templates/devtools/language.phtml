@@ -3,33 +3,8 @@ $pageTitle = 'Comparing Languages Against English';
 $this->headTitle($pageTitle);
 
 $uLangs = [];
-if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1) {
-    foreach ($this->layout()->allLangs as $c => $n) {
-        $uLangs[] = $c;
-    }
-}
-$i = 0;
-$data = [];
-foreach ($details as $langCode => $diffs) {
-  $extraCount = count($diffs['notInL1']);
-  $missingCount = count($diffs['notInL2']);
-  $data[$i]["lang"] = $langCode;
-  $data[$i]["name"] = $diffs['name'];
-  $data[$i]["langtitle"] = $langCode . (($langCode != $diffs['name']) ? " (" . $diffs['name'] . ")" : '');
-  $data[$i]["missing"] = $missingCount;
-  $data[$i]["extra"] = $extraCount;
-  $data[$i]["percent"] = $diffs['l2Percent'];
-  $data[$i]["countfiles"] = count($diffs['helpFiles']);
-  $data[$i]["files"] = $diffs['helpFiles'];
-  $data[$i]["progress"] = "";
-  if ($diffs['l2Percent'] > 90) {
-    $data[$i]["progress"] = "progress-bar-info progress-bar-striped";
-  } elseif ($diffs['l2Percent'] > 70) {
-    $data[$i]["progress"] = "progress-bar-warning progress-bar-striped";
-  } elseif ($diffs['l2Percent'] < 71) {
-    $data[$i]["progress"] = "progress-bar-danger progress-bar-striped";
-  }
-  $i++;
+foreach ($this->layout()->allLangs ?? [] as $c => $n) {
+  $uLangs[] = $c;
 }
 
 $css = '.progress{height:7px;margin-bottom:0;}';
@@ -55,14 +30,14 @@ $dir_lang = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEP
 </tr>
 </thead>
 <tbody>
-<?php foreach ($data as $key => $val): ?>
+<?php foreach ($data as $val): ?>
   <tr class="<?=$val['lang']?> <?=((in_array($val['lang'], $uLangs)) ? '' : 'hide')?>">
     <td><?=$val['langtitle']?></td>
     <td class="text-right"><?php if($val['missing'] > 0):?> <button class="btn-missing btn btn-default btn-light" title="Missing Lines: <?=$val['langtitle']?>" data-langcode="<?=$val['lang']?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$val['missing'] ?></td>
     <td class="text-right"><?php if($val['extra'] > 0):?> <button class="btn-extra btn btn-default btn-light" title="Extra Lines: <?=$val['langtitle']?>" data-langcode="<?=$val['lang']?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$val['extra'] ?></td>
     <td class="text-right">
       <?=$this->escapeHtml($val['percent'])?>%
-      <div class="progress <?=$val['progress']?>">
+      <div class="progress progress-bar-<?=$val['progresslevel']?> progress-bar-striped">
       <div class="progress-bar" role="progressbar" aria-valuenow="<?=$this->escapeHtml($val['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$val['percent']?>%;">
       <span class="sr-only"><?=$val['percent']?>% Complete</span>
       </div>
