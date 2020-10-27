@@ -86,7 +86,7 @@ class ILS extends AbstractBase
      * Get the ILS driver associated with this object (or load the default from
      * the service manager.
      *
-     * @return \VuFind\ILS\Driver\DriverInterface
+     * @return \VuFind\ILS\Connection
      */
     public function getCatalog()
     {
