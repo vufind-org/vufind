@@ -14,6 +14,9 @@ $this->headstyle()->appendStyle($css);
 $dir_help = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . 'root' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'HelpTranslations' . DIRECTORY_SEPARATOR;
 // Languages
 $dir_lang = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEPARATOR;
+
+$hiddenLanguages = false;
+
 ?>
 
 <h1><?=$pageTitle;?></h1>
@@ -31,7 +34,11 @@ $dir_lang = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEP
 </thead>
 <tbody>
 <?php foreach ($data as $val): ?>
-  <tr class="<?=$val['lang']?> <?=((in_array($val['lang'], $uLangs)) ? '' : 'hide')?>">
+  <?php
+    $languageActive = in_array($val['lang'], $uLangs);
+    $hiddenLanguages = $hiddenLanguages || !$languageActive;
+  ?>
+  <tr class="<?=$val['lang']?> <?=$languageActive ? '' : 'hide'?>">
     <td><?=$val['langtitle']?></td>
     <td class="text-right"><?php if($val['missing'] > 0):?> <button class="btn-missing btn btn-default btn-light" title="Missing Lines: <?=$val['langtitle']?>" data-langcode="<?=$val['lang']?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$val['missing'] ?></td>
     <td class="text-right"><?php if($val['extra'] > 0):?> <button class="btn-extra btn btn-default btn-light" title="Extra Lines: <?=$val['langtitle']?>" data-langcode="<?=$val['lang']?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$val['extra'] ?></td>
@@ -64,7 +71,9 @@ $dir_lang = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEP
 </tbody>
 </table>
 
-<div class="show-all" data-text="Show all languages"></div>
+<?php if ($hiddenLanguages): ?>
+  <div class="show-all" data-text="Show all languages"></div>
+<?php endif; ?>
 
 <h2>Directories</h2>
 <p>Languages in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$dir_lang?></em> as .ini files.</p>
@@ -90,12 +99,12 @@ function createDiffManager() {
     });
   }
   function showExtra(lang, title) {
-    VuFind.lightbox.render('<h1>' + title + '</h1>' + makeRow(details[lang].notInL1, lang));
+    VuFind.lightbox.render('<h2>' + title + '</h2>' + makeRow(details[lang].notInL1, lang));
     bindTextareaEvent();
     return false;
   }
   function showMissing(lang, title) {
-    VuFind.lightbox.render('<h1>' + title + '</h1>' + makeRow(details[lang].notInL2, lang));
+    VuFind.lightbox.render('<h2>' + title + '</h2>' + makeRow(details[lang].notInL2, lang));
     bindTextareaEvent();
     return false;
   }
