@@ -1,5 +1,5 @@
 <?php if ($this->pageCount): ?>
-  <ul class="pagination">
+  <ul class="pagination hidden-print">
     <?php if (isset($this->previous)): ?>
       <?php $newParams = $this->params; $newParams['page'] = 1; ?>
       <li class="pagination-button"><a href="<?=$this->currentPath() . '?' . http_build_query($newParams)?>"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First')?></span></a></li>
