@@ -39,7 +39,9 @@
       <?php if (!empty($this->transactions)): ?>
         <div class="history-controls toolbar">
           <div class="text-right hidden-print right-control">
-            <?=$this->render('search/controls/sort.phtml')?>
+            <?php if ($this->sortList): ?>
+              <?=$this->render('search/controls/sort.phtml')?>
+            <?php endif; ?>
           </div>
           <?php if ($purgeAllowed): ?>
             <div class="hidden-print left-control">
