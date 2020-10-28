@@ -68,4 +68,9 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc {
     {
         return (isset($this->fields['available_in_tubingen']) ? $this->fields['available_in_tubingen'] : false);
     }
+
+    public function showAvailabilityInTuebingen()
+    {
+        return $this->isAvailableInTuebingen() && !empty($this->getLocalSignatures());
+    }
 }

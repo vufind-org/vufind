@@ -5,6 +5,7 @@ namespace TueFind\ContentBlock;
 class Home implements \VuFind\ContentBlock\ContentBlockInterface, RequestAwareInterface
 {
     protected $target = '.searchHomeContent';
+    protected $request;
 
     public function setConfig($settings)
     {

@@ -87,17 +87,17 @@ class PDAProxyController extends \VuFind\Controller\AbstractBase
 
     public function loadAction()
     {
-
         $NO_ISBN = "0000000";
         $query = $this->getRequest()->getUri()->getQuery();
         $parameters = [];
         parse_str($query, $parameters);
         $isbn = !empty($parameters['isbn']) ? $parameters['isbn'] : $NO_ISBN;
+        $pda_available = false;
 
         try {
             $pda_available = ($isbn != $NO_ISBN) ? (!$this->isAvailableForILL($isbn)) : false;
         } catch (Exception $e) {
-          echo 'We got exception' . $e->getMessage() . "\n";
+            echo 'We got exception' . $e->getMessage() . "\n";
         }
 
         $pda_status = $pda_available ? "OFFER_PDA" : "NO_OFFER_PDA";
