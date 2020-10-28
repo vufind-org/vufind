@@ -301,12 +301,20 @@ class LanguageHelper
     {
         $main = $this->loadLanguage($mainLanguage);
         $details = $this->getAllLanguageDetails($main);
+        $dirHelpParts = [
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+        ];
+        $dirLangParts = [APPLICATION_PATH, 'languages'];
         return [
-            'data' => $this->summarizeData($details),
             'details' => $details,
+            'dirHelp' => implode(DIRECTORY_SEPARATOR, $dirHelpParts)
+                . DIRECTORY_SEPARATOR,
+            'dirLang' => implode(DIRECTORY_SEPARATOR, $dirLangParts)
+                . DIRECTORY_SEPARATOR,
             'mainCode' => $mainLanguage,
             'mainName' => $this->getLangName($mainLanguage),
             'main' => $main,
+            'summaryData' => $this->summarizeData($details),
         ];
     }
 }

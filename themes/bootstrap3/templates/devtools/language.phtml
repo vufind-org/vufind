@@ -1,74 +1,73 @@
 <?php
-$pageTitle = 'Comparing Languages Against English';
-$this->headTitle($pageTitle);
+  $pageTitle = 'Comparing Languages Against ' . $mainName;
+  $this->headTitle($pageTitle);
 
-$uLangs = [];
-foreach ($this->layout()->allLangs ?? [] as $c => $n) {
-  $uLangs[] = $c;
-}
+  $uLangs = [];
+  foreach ($this->layout()->allLangs ?? [] as $c => $n) {
+    $uLangs[] = $c;
+  }
 
-$css = '.progress{height:7px;margin-bottom:0;}';
-$this->headstyle()->appendStyle($css);
+  $css = '.progress{height:7px;margin-bottom:0;}';
+  $this->headstyle()->appendStyle($css);
 
-// Help translations
-$dir_help = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . 'root' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'HelpTranslations' . DIRECTORY_SEPARATOR;
-// Languages
-$dir_lang = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'languages' . DIRECTORY_SEPARATOR;
-
-$hiddenLanguages = false;
-
+  // Initialize flag -- did any languages get hidden due to missing configuration?
+  $hiddenLanguages = false;
 ?>
 
-<h1><?=$pageTitle;?></h1>
+<h1><?=$this->escapeHtml($pageTitle)?></h1>
 
 <table id="lang-summary" class="table table-striped">
-<caption>Summarize status of translations in language files</caption>
-<thead>
-<tr>
-  <th scope="col">Language</th>
-  <th scope="col" class="text-right">Missing Lines</th>
-  <th scope="col" class="text-right">Extra Lines</th>
-  <th scope="col" class="text-right">Percent Translated</th>
-  <th scope="col" class="text-right">Extra Help Files</th>
-</tr>
-</thead>
-<tbody>
-<?php foreach ($data as $val): ?>
-  <?php
-    $languageActive = in_array($val['lang'], $uLangs);
-    $hiddenLanguages = $hiddenLanguages || !$languageActive;
-  ?>
-  <tr class="<?=$val['lang']?> <?=$languageActive ? '' : 'hide'?>">
-    <td><?=$val['langtitle']?></td>
-    <td class="text-right"><?php if($val['missing'] > 0):?> <button class="btn-missing btn btn-default btn-light" title="Missing Lines: <?=$val['langtitle']?>" data-langcode="<?=$val['lang']?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$val['missing'] ?></td>
-    <td class="text-right"><?php if($val['extra'] > 0):?> <button class="btn-extra btn btn-default btn-light" title="Extra Lines: <?=$val['langtitle']?>" data-langcode="<?=$val['lang']?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$val['extra'] ?></td>
-    <td class="text-right">
-      <?=$this->escapeHtml($val['percent'])?>%
-      <div class="progress progress-bar-<?=$val['progresslevel']?> progress-bar-striped">
-      <div class="progress-bar" role="progressbar" aria-valuenow="<?=$this->escapeHtml($val['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$val['percent']?>%;">
-      <span class="sr-only"><?=$val['percent']?>% Complete</span>
-      </div>
-      </div>
-    </td>
-    <td class="text-right">
-<?php if(($val['countfiles'] > 0) && (in_array($val['lang'], $uLangs))):?>
-<div class="btn-group">
-  <button type="button" class="btn btn-default btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$val['lang']?>">
-  <?=$val['countfiles']?> <span class="caret d-none"></span>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dmb-<?=$val['lang']?>">
-  <?php foreach ($val['files'] as $k => $v): ?>
-  <li><a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url("help-home") . "?lng=" . $val['lang'] . "&amp;topic=" . str_replace(".phtml", "", $v);?>"><?=$v?></a></li>
-  <?php endforeach; ?>
-  </ul>
-</div>
-<?php else: ?>
-<?=$val['countfiles']?>
-<?php endif; ?>
-    </td>
-  </tr>
-<?php endforeach; ?>
-</tbody>
+  <caption>Summarize status of translations in language files</caption>
+  <thead>
+    <tr>
+      <th scope="col">Language</th>
+      <th scope="col" class="text-right">Missing Lines</th>
+      <th scope="col" class="text-right">Extra Lines</th>
+      <th scope="col" class="text-right">Percent Translated</th>
+      <th scope="col" class="text-right">Extra Help Files</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach ($summaryData as $row): ?>
+      <?php
+        $languageActive = in_array($row['lang'], $uLangs);
+        $hiddenLanguages = $hiddenLanguages || !$languageActive;
+      ?>
+      <tr class="<?=$this->escapeHtmlAttr($row['lang'])?> <?=$languageActive ? '' : 'hide'?>">
+        <td><?=$this->escapeHtml($row['langtitle'])?></td>
+        <td class="text-right"><?php if($row['missing'] > 0):?> <button class="btn-missing btn btn-default btn-light" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$this->escapeHtml($row['missing']) ?></td>
+        <td class="text-right"><?php if($row['extra'] > 0):?> <button class="btn-extra btn btn-default btn-light" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$this->escapeHtml($row['extra']) ?></td>
+        <td class="text-right">
+          <?=$this->escapeHtml($row['percent'])?>%
+          <div class="progress progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?> progress-bar-striped">
+            <div class="progress-bar" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
+              <span class="sr-only"><?=$this->escapeHtml($row['percent'])?>% Complete</span>
+            </div>
+          </div>
+        </td>
+        <td class="text-right">
+          <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
+                <?=$this->escapeHtml($row['countfiles'])?> <span class="caret d-none"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
+              <?php foreach ($row['files'] as $k => $v): ?>
+                <li>
+                  <a class="dropdown-item" target="_blank" data-lightbox href="<?=$this->url("help-home") . "?lng=" . $this->escapeHtmlAttr($row['lang']) . "&amp;topic=" . $this->escapeHtmlAttr(str_replace(".phtml", "", $v));?>">
+                    <?=$this->escapeHtml($v)?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php else: ?>
+            <?=$this->escapeHtml($row['countfiles'])?>
+          <?php endif; ?>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
 </table>
 
 <?php if ($hiddenLanguages): ?>
@@ -76,19 +75,17 @@ $hiddenLanguages = false;
 <?php endif; ?>
 
 <h2>Directories</h2>
-<p>Languages in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$dir_lang?></em> as .ini files.</p>
-<p>Translation of Help in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$dir_help?></em> as .phtml files.</p>
-
+<p>Languages in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
+<p>Translation of Help in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
 
 <?php
-$json = json_encode($details);
-$script = <<<JS
+  $json = json_encode($details);
+  $script = <<<JS
 function createDiffManager() {
   var details = {$json};
   function makeRow(opArray, lang) {
     var arr = [];
     for (var i = 0; i < opArray.length; i++) {
-      //console.log(details[lang].object[opArray[i]] || details.en.object[opArray[i]]);
       arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
     }
     return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
