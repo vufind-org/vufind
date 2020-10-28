@@ -31,6 +31,8 @@
 </div>
 
 <?php
+// We need to add conditional translations here since the normal mechanism in
+// layout.phtml is not used with AJAX tabs:
 $this->jsTranslations()->addStrings(
   [
     'qrcode_hide' => 'qrcode_hide',
