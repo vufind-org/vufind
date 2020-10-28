@@ -635,8 +635,4 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     public function isHybrid() {
         return isset($this->fields['is_hybrid']) && $this->fields['is_hybrid'] == true;
     }
-
-    public function showAvailabilityInTuebingen() {
-        return $this->isAvailableInTuebingen() && !empty($this->getLocalSignatures());
-    }
 }
