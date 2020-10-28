@@ -480,54 +480,19 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         // Return empty array if we have no table of contents:
-        $fields = $this->getMarcRecord()->getFields('505');
-        if (!$fields) {
-            return [];
-        }
-
-        // If we got this far, we have a table -- collect it as a string:
         $toc = [];
-        foreach ($fields as $field) {
-            $subfields = $field->getSubfields();
-            foreach ($subfields as $subfield) {
-                $code = strtolower($subfield->getCode());
-                switch ($code) {
-                case 'a':
-                    // Break the string into appropriate chunks, filtering empty
-                    // strings, and merge them into return array:
-                    $toc = array_merge(
-                        $toc,
-                        array_filter(explode('--', $subfield->getData()), 'trim')
-                    );
-                    break;
-                case 'g':
-                case 'r':
-                case 't':
-                    // If we have reached the end of a previous entry, add it to the
-                    // results. We identify "end of entry" by encountering a subfield
-                    // t or a terminating "--" on the previous subfield.
-                    if (isset($titleInProgress)
-                        && (substr($titleInProgress, -2) == '--' || $code == 't')
-                    ) {
-                        $toc = array_merge(
-                            $toc,
-                            array_filter(explode('--', $titleInProgress))
-                        );
-                        $titleInProgress = '';
-                    }
-                    // Now collect the new value:
-                    $titleInProgress
-                        = trim($titleInProgress . ' ' . $subfield->getData());
-                    break;
+        if ($fields = $this->getMarcRecord()->getFields('505')) {
+            foreach ($fields as $field) {
+                // Implode all the subfields into a single string, then explode
+                // on the -- separators. Due to inconsistent application of
+                // subfield codes, this is the most reliable way to split up a
+                // table of contents.
+                $str = '';
+                foreach ($field->getSubfields() as $subfield) {
+                    $str .= trim($subfield->getData()) . ' ';
                 }
+                $toc = array_merge($toc, array_filter(explode('--', $str), 'trim'));
             }
-        }
-        // If we have a title in progress from the loop above, save it now:
-        if (isset($titleInProgress)) {
-            $toc = array_merge(
-                $toc,
-                array_filter(explode('--', $titleInProgress))
-            );
         }
         return $toc;
     }
