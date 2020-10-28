@@ -31,14 +31,7 @@
 </div>
 
 <?php
-// We need to add conditional translations here since the normal mechanism in
-// layout.phtml is not used with AJAX tabs:
-$this->jsTranslations()->addStrings(
-  [
-    'qrcode_hide' => 'qrcode_hide',
-    'qrcode_show' => 'qrcode_show',
-  ]
-);
+// Add any translations added when processing the search results:
 $translations = $this->jsTranslations()->getJSON();
 // Use combinedSearch.initResultScripts to avoid duplicating the list of scripts
 // required for results loaded via AJAX:
