@@ -902,8 +902,9 @@ trait SolrFinnaTrait
     {
         $scheme = parse_url($url, PHP_URL_SCHEME);
 
-        $allowedSchemes = $this->recordConfig->Record->allowed_url_schemes
-            ?? ['http', 'https', 'tel', 'mailto', 'maps'];
+        $allowedSchemes = isset($this->recordConfig->Record->allowed_url_schemes)
+            ? $this->recordConfig->Record->allowed_url_schemes->toArray()
+            : ['http', 'https', 'tel', 'mailto', 'maps'];
         if (!in_array($scheme, $allowedSchemes)) {
             return true;
         }
