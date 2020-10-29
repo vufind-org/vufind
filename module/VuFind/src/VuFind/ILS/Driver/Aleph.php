@@ -335,13 +335,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Duedate configuration
-     *
-     * @var array
-     */
-    protected $duedates = false;
-
-    /**
      * Translator object
      *
      * @var AlephTranslator
@@ -532,9 +525,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $this->dlfbaseurl = $this->config['Catalog']['dlfbaseurl'];
         }
         $this->sublibadm = $this->config['sublibadm'];
-        if (isset($this->config['duedates'])) {
-            $this->duedates = $this->config['duedates'];
-        }
         $this->available_statuses
             = explode(',', $this->config['Catalog']['available_statuses']);
         $this->quick_availability
@@ -941,8 +931,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $addLink = ($hold_request[0] == 'Y');
             }
             $matches = [];
-            $dueDateWithStatusRegEx = "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*);([a-zA-Z ]*)/";
-            $dueDateRegEx = "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*)/";
+            $dueDateWithStatusRegEx = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*);([a-zA-Z ]*)/";
+            $dueDateRegEx = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*)/";
             if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
                 $requested = (trim($matches[2]) == "Requested");
@@ -950,23 +940,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $duedate = $this->parseDate($matches[1]);
             } else {
                 $duedate = null;
-            }
-            // process duedate
-            if ($availability) {
-                if ($this->duedates) {
-                    foreach ($this->duedates as $key => $value) {
-                        if (preg_match($value, $item_status['desc'])) {
-                            $duedate = $key;
-                            break;
-                        }
-                    }
-                } else {
-                    $duedate = $item_status['desc'];
-                }
-            } else {
-                if ($status == "On Hold" || $status == "Requested") {
-                    $duedate = "requested";
-                }
             }
             $item_id = $item->attributes()->href;
             $item_id = substr($item_id, strrpos($item_id, '/') + 1);
