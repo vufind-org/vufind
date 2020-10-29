@@ -41,6 +41,8 @@ use VuFind\Config\Upgrade;
  */
 class UpgradeTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Target upgrade version
      *
@@ -57,7 +59,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
      */
     protected function getUpgrader($version)
     {
-        $oldDir = realpath(__DIR__ . '/../../../../fixtures/configs/' . $version);
+        $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
         return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
     }
@@ -469,7 +471,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     {
         $upgrader = $this->getUpgrader('1.4');
         $meaningless = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/empty.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/empty.properties'
         );
         $this->assertFalse(
             $this->callMethod(
@@ -477,7 +479,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $meaningful = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/meaningful.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/meaningful.properties'
         );
         $this->assertTrue(
             $this->callMethod(

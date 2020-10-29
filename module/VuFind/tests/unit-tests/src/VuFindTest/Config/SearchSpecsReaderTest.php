@@ -42,6 +42,8 @@ use VuFind\Config\SearchSpecsReader;
  */
 class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Flag -- did writing config files fail?
      *
@@ -122,8 +124,8 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     public function testYamlLoad()
     {
         $reader = new SearchSpecsReader();
-        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
+        $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'bar'],
@@ -148,8 +150,8 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     public function testYamlMerge()
     {
         $reader = new SearchSpecsReader();
-        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
+        $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'xyzzy'],

@@ -183,7 +183,8 @@ class FeedbackController extends AbstractBase
                 $emailSubject,
                 $emailMessage,
                 null,
-                new Address($replyToEmail, $replyToName)
+                !empty($replyToEmail)
+                    ? new Address($replyToEmail, $replyToName) : null
             );
             return [true, null];
         } catch (MailException $e) {
