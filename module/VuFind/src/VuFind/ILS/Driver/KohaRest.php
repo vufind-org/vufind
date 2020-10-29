@@ -180,7 +180,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var array
      */
-    protected $itemStatusMappings = [];
+    protected $itemStatusMappings = [
+        'Item::Held' => 'On Hold',
+        'Item::Waiting' => 'On Holdshelf',
+    ];
+
+    /**
+     * Item status mapping methods used when the item status mappings above
+     * (or in the configuration file) don't contain a direct mapping.
+     *
+     * @var array
+     */
+    protected $itemStatusMappingMethods = [
+        'Item::CheckedOut' => 'getStatusCodeItemCheckedOut',
+        'Item::Lost' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::NotForLoan' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::NotForLoanForcing' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::Transfer' => 'getStatusCodeItemTransfer',
+        'ItemType::NotForLoan' => 'getStatusCodeItemNotForLoanOrLost',
+    ];
 
     /**
      * Whether to display home library instead of holding library
@@ -1705,8 +1723,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $result['data']['hold_queue_length']]
                 )
             ];
-            if (!empty($item['itemnotes'])) {
-                $entry['item_notes'] = [$item['itemnotes']];
+            if (!empty($item['public_notes'])) {
+                $entry['item_notes'] = [$item['public_notes']];
             }
 
             if ($patron && $this->itemHoldAllowed($item)) {
@@ -1742,67 +1760,25 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($item['availability']['available']) {
             $statuses[] = 'On Shelf';
         } elseif (isset($item['availability']['unavailabilities'])) {
-            foreach ($item['availability']['unavailabilities'] as $key => $reason) {
-                if (isset($this->itemStatusMappings[$key])) {
-                    $statuses[] = $this->itemStatusMappings[$key];
+            foreach ($item['availability']['unavailabilities'] as $code => $data) {
+                // If we have a direct mapping, use it:
+                if (isset($this->itemStatusMappings[$code])) {
+                    $statuses[] = $this->itemStatusMappings[$code];
                     continue;
                 }
-                $parts = explode('::', $key, 2);
-                $statusType = $parts[0];
-                $status = $parts[1] ?? '';
 
-                if ('Item' === $statusType || 'ItemType' === $statusType) {
-                    switch ($status) {
-                    case 'CheckedOut':
-                        $overdue = false;
-                        if (!empty($reason['due_date'])) {
-                            $duedate = $this->dateConverter->convert(
-                                'Y-m-d',
-                                'U',
-                                $reason['due_date']
-                            );
-                            $overdue = $duedate < time();
+                // Check for a mapping method for the unavailability reason:
+                if ($methodName = ($this->itemStatusMappingMethods[$code] ?? '')) {
+                    $statuses[]
+                        = call_user_func([$this, $methodName], $code, $data, $item);
+                } else {
+                    if (!empty($data['code'])) {
+                        $statuses[] = $data['code'];
+                    } else {
+                        $parts = explode('::', $code, 2);
+                        if (isset($parts[1])) {
+                            $statuses[] = $parts[1];
                         }
-                        $statuses[] = $overdue ? 'Overdue' : 'Charged';
-                        break;
-                    case 'Lost':
-                        $statuses[] = 'Lost--Library Applied';
-                        break;
-                    case 'NotForLoan':
-                    case 'NotForLoanForcing':
-                        // NotForLoan is special: status has a library-specific
-                        // status number. Allow mapping of different status numbers
-                        // separately (e.g. Item::NotForLoan with status number 4
-                        // is mapped with key Item::NotForLoan4):
-                        $statusKey = $key . ($reason['status'] ?? '-');
-                        // Replace ':' in status key if used as status since ':' is
-                        // the namespace separator in translatable strings:
-                        $statuses[] = $this->itemStatusMappings[$statusKey]
-                            ?? $reason['code'] ?? str_replace(':', '_', $statusKey);
-                        break;
-                    case 'Transfer':
-                        $onHold = false;
-                        if (!empty($item['availability']['notes'])) {
-                            foreach (array_keys($item['availability']['notes'])
-                                as $noteKey
-                            ) {
-                                if ('Item::Held' === $noteKey) {
-                                    $onHold = true;
-                                    break;
-                                }
-                            }
-                        }
-                        $statuses[] = $onHold ? 'In Transit On Hold' : 'In Transit';
-                        break;
-                    case 'Held':
-                        $statuses[] = 'On Hold';
-                        break;
-                    case 'Waiting':
-                        $statuses[] = 'On Holdshelf';
-                        break;
-                    default:
-                        $statuses[] = !empty($reason['code'])
-                            ? $reason['code'] : $status;
                     }
                 }
             }
@@ -1819,6 +1795,75 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $statuses[] = 'No information available';
         }
         return array_unique($statuses);
+    }
+
+    /**
+     * Get item status code for CheckedOut status
+     *
+     * @param string $code Status code
+     * @param array  $data Status data
+     * @param array  $item Item
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getStatusCodeItemCheckedOut($code, $data, $item)
+    {
+        $overdue = false;
+        if (!empty($data['due_date'])) {
+            $duedate = $this->dateConverter->convert(
+                'Y-m-d',
+                'U',
+                $data['due_date']
+            );
+            $overdue = $duedate < time();
+        }
+        return $overdue ? 'Overdue' : 'Charged';
+    }
+
+    /**
+     * Get item status code for NotForLoan or Lost status
+     *
+     * @param string $code Status code
+     * @param array  $data Status data
+     * @param array  $item Item
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getStatusCodeItemNotForLoanOrLost($code, $data, $item)
+    {
+        // NotForLoan and Lost are special: status has a library-specific
+        // status number. Allow mapping of different status numbers
+        // separately (e.g. Item::NotForLoan with status number 4
+        // is mapped with key Item::NotForLoan4):
+        $statusKey = $code . ($data['status'] ?? '-');
+        // Replace ':' in status key if used as status since ':' is
+        // the namespace separator in translatable strings:
+        return $this->itemStatusMappings[$statusKey]
+            ?? $data['code'] ?? str_replace(':', '_', $statusKey);
+    }
+
+    /**
+     * Get item status code for Transfer status
+     *
+     * @param string $code Status code
+     * @param array  $data Status data
+     * @param array  $item Item
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getStatusCodeItemTransfer($code, $data, $item)
+    {
+        $onHold = array_key_exists(
+            'Item::Held',
+            $item['availability']['notes'] ?? []
+        );
+        return $onHold ? 'In Transit On Hold' : 'In Transit';
     }
 
     /**

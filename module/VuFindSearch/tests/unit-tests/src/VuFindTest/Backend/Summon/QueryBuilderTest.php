@@ -42,6 +42,8 @@ use VuFindSearch\Backend\Summon\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test query parsing.
      *
@@ -62,9 +64,7 @@ class QueryBuilderTest extends TestCase
         foreach ($tests as $test) {
             list($input, $output) = $test;
             $q = unserialize(
-                file_get_contents(
-                    PHPUNIT_SEARCH_FIXTURES . '/summon/query/' . $input
-                )
+                $this->getFixture("summon/query/$input", 'VuFindSearch')
             );
             $response = $qb->build($q);
             $processedQ = $response->get('query');
