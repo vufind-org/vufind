@@ -65,7 +65,7 @@ function normalizeHeights() {
   });
   items.css('min-height', (tallest+25) + 'px');
 }
-$('#similar-items-carousel img').load(normalizeHeights);
+$('#similar-items-carousel img').on('load', normalizeHeights);
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
