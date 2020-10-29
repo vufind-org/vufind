@@ -20,8 +20,6 @@ package org.vufind.index;
  */
 
 import org.marc4j.marc.Record;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Subfield;
 
 import org.vufind.index.FieldSpecTools;
 
@@ -45,6 +43,8 @@ public class WorkKeys
      * @param  record               MARC record
      * @param  uniformTitleTagList  The field specification for uniform titles
      * @param  titleTagList         The field specification for titles
+     * @param  titleTagListNF       The field specification for titles with
+     * non-filing characters removed
      * @param  authorTagList        The field specification for authors
      * @param  includeRegEx         Regular expression defining characters to keep
      * @param  excludeRegEx         Regular expression defining characters to remove
@@ -55,8 +55,8 @@ public class WorkKeys
      * @return set of keys
      */
     public Set<String> getWorkKeys(final Record record, final String uniformTitleTagList,
-        final String titleTagList, final String authorTagList, final String includeRegEx,
-        final String excludeRegEx, final String transliterationRules
+        final String titleTagList, final String titleTagListNF, final String authorTagList,
+        final String includeRegEx, final String excludeRegEx, final String transliterationRules
 
     ) {
         Set<String> workKeys = new LinkedHashSet<String>();
@@ -75,7 +75,8 @@ public class WorkKeys
         }
 
         // Title + Author
-        final Set<String> titles = FieldSpecTools.getFieldsByTagList(record, titleTagList);
+        Set<String> titles = FieldSpecTools.getFieldsByTagList(record, titleTagList);
+        titles.addAll(FieldSpecTools.getFieldsByTagList(record, titleTagListNF, true));
         final Set<String> authors = FieldSpecTools.getFieldsByTagList(record, authorTagList);
 
         for (String title : titles) {
@@ -106,7 +107,6 @@ public class WorkKeys
     protected String normalizeWorkKey(final String s, final String includeRegEx, final String excludeRegEx,
         final Transliterator transliterator
     ) {
-
         String normalized = transliterator != null ? transliterator.transliterate(s)
             : Normalizer.normalize(s, Normalizer.Form.NFKC);
         if (!includeRegEx.isBlank()) {
