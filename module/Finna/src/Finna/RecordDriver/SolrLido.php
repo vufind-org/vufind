@@ -906,11 +906,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getWebResource()
     {
-        $url = $this->getXmlRecord()->xpath(
+        $nodes = $this->getXmlRecord()->xpath(
             'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
             . 'relatedWorkSet/relatedWork/object/objectWebResource'
         );
-        return $url[0] ?? false;
+        if ($url = trim($nodes[0] ?? '')) {
+            if (!$this->urlBlocked($url)) {
+                return $url;
+            }
+        }
+        return false;
     }
 
     /**

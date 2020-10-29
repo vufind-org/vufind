@@ -900,6 +900,14 @@ trait SolrFinnaTrait
      */
     protected function urlBlocked($url, $desc = '')
     {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+
+        $allowedSchemes = $this->recordConfig->Record->allowed_url_schemes
+            ?? ['http', 'https', 'tel', 'mailto', 'maps'];
+        if (!in_array($scheme, $allowedSchemes)) {
+            return true;
+        }
+
         // Keep old setting name for back-compatibility:
         $blocklist = $this->recordConfig->Record->url_blocklist
             ?? $this->recordConfig->Record->url_blacklist

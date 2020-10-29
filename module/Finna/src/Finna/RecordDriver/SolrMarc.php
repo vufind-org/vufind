@@ -177,45 +177,43 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return $this->cache[$cacheKey];
         }
 
-        $getUrls = function ($acceptPdf) {
-            $result = [];
-            foreach ($this->getMarcRecord()->getFields('856') as $url) {
-                $isImage = false;
-                $type = $url->getSubfield('q');
-                if ($type) {
-                    $type = $type->getData();
-                    $isImage = strcasecmp('image', $type) == 0
-                        || 'image/jpeg' == $type;
-                }
-                $address = $url->getSubfield('u');
-                $isPdf = $acceptPdf && preg_match('/\.pdf$/i', $address);
-                if ($isImage || $isPdf) {
-                    if ($address && $this->urlAllowed($address->getData())) {
-                        $address = $address->getData();
-                        $result[] = [
-                            'urls' => [
-                                'small' => $address,
-                                'medium' => $address,
-                                'large' => $address
-                             ],
-                            'description' => '',
-                            'rights' => [],
-                            'pdf' => $isPdf
-                        ];
-                        if ($isPdf) {
-                            break;
-                        }
-                    }
-                }
+        $urls = [];
+        foreach ($this->getMarcRecord()->getFields('856') as $url) {
+            $address = $url->getSubfield('u');
+            if (!$address) {
+                continue;
             }
-            return $result;
-        };
+            $address = $address->getData();
 
-        $result = $getUrls(false);
-        if ($includePdf && empty($result)) {
-            // Attempt to find a PDF file to be converted to a coverimage
-            $result = array_merge($result, $getUrls(true));
+            $type = $url->getSubfield('q');
+            $type = $type ? $type->getData() : '';
+            $image = 'image/jpeg' === $type || strcasecmp('image', $type) === 0;
+            $pdf = 'application/pdf' === $type || preg_match('/\.pdf$/i', $address);
+
+            if (($image || $pdf) && $this->urlAllowed($address)
+                && !$this->urlBlocked($address)
+            ) {
+                $urls[$image ? 'images' : 'pdfs'][] = [
+                    'urls' => [
+                        'small' => $address,
+                        'medium' => $address,
+                        'large' => $address
+                        ],
+                    'description' => '',
+                    'rights' => [],
+                    'pdf' => $pdf
+                ];
+            }
         }
+
+        if ($urls['images'] ?? []) {
+            $result = $urls['images'];
+        } elseif ($includePdf && ($urls['pdfs'] ?? false)) {
+            $result = array_slice($urls['pdfs'], 0, 1);
+        } else {
+            $result = [];
+        }
+
         $this->cache[$cacheKey] = $result;
         return $result;
     }

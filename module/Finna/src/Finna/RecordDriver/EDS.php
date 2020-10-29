@@ -329,7 +329,6 @@ class EDS extends \VuFind\RecordDriver\EDS
         $retVal = [];
 
         if ($url = $this->getPLink()) {
-            $urlParts = parse_url($url);
             $retVal[] = [
                 'desc' => 'View in EDS',
                 'url' => $url,
@@ -338,7 +337,6 @@ class EDS extends \VuFind\RecordDriver\EDS
         }
 
         if ($url = $this->getPdfLink()) {
-            $urlParts = parse_url($url);
             $retVal[] = [
                 'desc' => 'PDF Full Text',
                 'url' => $url
