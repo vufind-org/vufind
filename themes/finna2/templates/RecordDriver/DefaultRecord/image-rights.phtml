@@ -1,6 +1,9 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/image-rights.phtml -->
 <div class="access-rights">
   <?php if (isset($rights) && !empty($rights)): ?>
+    <?php
+      $descriptions = $rights['description'] ?? [];
+    ?>
     <div class="image-rights">
       <?php $hasLink = isset($rights['link']) && !empty($rights['link']); ?>
       <strong><?=$this->transEsc($imageRightsLabel ?? 'Image Rights') ?></strong><br>
@@ -11,23 +14,18 @@
             <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $copyright]);?><?php if ($hasLink): ?><a target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>" href="<?=$this->escapeHtmlAttr($rights['link']) ?>"><?php endif; ?><?php if ($copyright === "Luvanvarainen käyttö / ei tiedossa"): ?><?= $this->transEsc('usage_F') ?><?php else: ?><?=$copyright ?><?php endif; ?><?php if ($hasLink): ?></a><?php endif; ?>
           <?php endif; ?>
         <?php else: ?>
-          <?php if (isset($rights['description'])): ?>
-            <?php foreach ($rights['description'] as $item): ?>
-              <?php if (!empty($item)): ?>
-                <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $item])?> <?php if ($hasLink): ?><a target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>" href="<?=$this->escapeHtmlAttr($rights['link']) ?>"><?php endif; ?><?=$item ?><?php if ($hasLink): ?></a><?php endif; ?>
-              <?php endif; ?>
-            <?php endforeach ?>
-          <?php endif; ?>
+          <?php foreach ($descriptions as $item): ?>
+            <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $item])?> <?php if ($hasLink): ?><a target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>" href="<?=$this->escapeHtmlAttr($rights['link']) ?>"><?php endif; ?><?= $item ?><?php if ($hasLink): ?></a><?php endif; ?>
+          <?php endforeach ?>
+          <?php $descriptions = []; ?>
         <?php endif; ?>
       </span> <p class="copyright-meaning"><a target="_blank" <?php if ($hasLink): ?>aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>" href="<?=$this->escapeHtmlAttr($rights['link']) ?>"><?php else: ?> href="<?=$this->url('content-page', ['page' => 'terms'])?>"><?php endif; ?><?=$this->transEsc('usage_meaning') ?></a></p>
     </div>
   <?php endif ?>
   <div class="copyright<?=$this->truncateLicense ? ' truncate-field' : ''?>">
-    <?php if (isset($rights['description'])): ?>
-      <?php foreach ($rights['description'] as $item): ?>
-        <p><?=$this->transEsc($item) ?></p>
-      <?php endforeach ?>
-    <?php endif ?>
+    <?php foreach ($descriptions as $item): ?>
+      <p><?=$this->transEsc($item)?></p>
+    <?php endforeach ?>
   </div>
   <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
     <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See terms and conditions') ?></a></p>
