@@ -484,9 +484,9 @@ trait MarcAdvancedTrait
         if ($fields = $this->getMarcRecord()->getFields('505')) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
-                // on the -- separators. Due to inconsistent application of
-                // subfield codes, this is the most reliable way to split up a
-                // table of contents.
+                // on the -- separators (filtering out empty chunks). Due to
+                // inconsistent application of subfield codes, this is the most
+                // reliable way to split up a table of contents.
                 $str = '';
                 foreach ($field->getSubfields() as $subfield) {
                     $str .= trim($subfield->getData()) . ' ';
