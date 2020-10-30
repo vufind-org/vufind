@@ -28,6 +28,7 @@
 namespace Finna\Service;
 
 use Laminas\Config\Config;
+use Laminas\EventManager\EventManager;
 use Laminas\Session\Container;
 
 /**
@@ -63,10 +64,18 @@ class RemsService implements
     const SESSION_BLOCKLISTED = 'blocklisted';
     const SESSION_USAGE_PURPOSE = 'usage-purpose';
 
+    const SESSION_DAILY_LIMIT_EXCEEDED = 'daily-limit-exceeded';
+    const SESSION_MONTHLY_LIMIT_EXCEEDED = 'monthly-limit-exceeded';
+
+    const SESSION_USER_REGISTERED_TIME = 'user-registered-time';
+
     // REMS API user types
     const TYPE_ADMIN = 0;
     const TYPE_APPROVER = 1;
     const TYPE_USER = 2;
+
+    // Events
+    const EVENT_USER_REGISTERED = 'event-user-registered';
 
     /**
      * REMS configuration
@@ -104,6 +113,13 @@ class RemsService implements
     protected $userIdentityNumber = null;
 
     /**
+     * Event manager.
+     *
+     * @var EventManager
+     */
+    protected $events;
+
+    /**
      * Constructor.
      *
      * @param Config         $config             REMS configuration
@@ -112,6 +128,7 @@ class RemsService implements
      * of current user
      * @param string|null    $userId             ID of current user
      * @param bool           $authenticated      Is the user authenticated?
+     * @param EventManager   $events             Event manager
      */
     public function __construct(
         Config $config,
@@ -120,13 +137,17 @@ class RemsService implements
         // module is created (before login, when displaying the login page)
         $userIdentityNumber,
         $userId,
-        bool $authenticated
+        bool $authenticated,
+        EventManager $events
     ) {
         $this->config = $config;
         $this->session = $session;
         $this->userIdentityNumber = $userIdentityNumber;
         $this->userId = $userId;
         $this->authenticated = $authenticated;
+
+        $events->setIdentifiers([__CLASS__]);
+        $this->events = $events;
     }
 
     /**
@@ -185,20 +206,55 @@ class RemsService implements
     }
 
     /**
-     * Is user session expired?
+     * Return timestamp when REMS session expires if the expiration time
+     * is within the configured threshold.
      *
-     * @param bool $ignoreCache Ignore cache?
+     * @return null|DateTime
+     */
+    public function getSessionExpirationTime()
+    {
+        $general = $this->config->General;
+        if (!($sessionMaxAge = $general->sessionMaxAge ?? null)) {
+            return null;
+        }
+        if (!$sessionWarning = ($general->sessionExpirationWarning ?? null)) {
+            return null;
+        }
+
+        $registeredTime
+            = ($this->session->{RemsService::SESSION_USER_REGISTERED_TIME}
+            ?? null);
+
+        if ($registeredTime) {
+            $sessionAge = (time() - $registeredTime) / 60;
+            if (($sessionAge + $sessionWarning) > $sessionMaxAge) {
+                $interval = date_interval_create_from_date_string(
+                    "{$sessionMaxAge} minutes"
+                );
+                return (new \DateTime())
+                    ->setTimeStamp($registeredTime)->add($interval);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Is search limit exceeded?
+     *
+     * @param string $type daily|monthly
      *
      * @return bool
      */
-    public function isSessionExpired($ignoreCache = false)
+    public function isSearchLimitExceeded($type = 'daily')
     {
-        try {
-            return $this->getAccessPermission($ignoreCache)
-                === RemsService::STATUS_EXPIRED;
-        } catch (\Exception $e) {
+        if (!$this->validateSearchLimit($type)) {
             return false;
         }
+        $res = $this->session->{
+            $type === 'daily'
+                ? self::SESSION_DAILY_LIMIT_EXCEEDED
+                : self::SESSION_MONTHLY_LIMIT_EXCEEDED};
+        return $res ?: false;
     }
 
     /**
@@ -285,7 +341,7 @@ class RemsService implements
             $usagePurpose = null;
 
             $fieldIds = $this->config->RegistrationForm->field;
-            $fields = $application['application/form']['form/fields'];
+            $fields = $application['application/forms'][0]['form/fields'];
             foreach ($fields as $field) {
                 if ($field['field/id'] === $fieldIds['usage_purpose']) {
                     $usagePurpose = $field['field/value'];
@@ -349,21 +405,25 @@ class RemsService implements
         $applicationId = $response['application-id'];
 
         $fieldIds = $this->config->RegistrationForm->field;
+        $formId = (int)$this->config->RegistrationForm->id;
 
         // 3. Save draft
         $params =  [
             'application-id' => $applicationId,
             'field-values' =>  [
-                ['field' => $fieldIds['firstname'], 'value' => $firstname],
-                ['field' => $fieldIds['lastname'], 'value' => $lastname],
-                ['field' => $fieldIds['email'], 'value' => $email],
-                ['field' => $fieldIds['usage_purpose'],
+                ['form' => $formId,
+                 'field' => $fieldIds['firstname'], 'value' => $firstname],
+                ['form' => $formId,
+                 'field' => $fieldIds['lastname'], 'value' => $lastname],
+                ['form' => $formId,
+                 'field' => $fieldIds['email'], 'value' => $email],
+                ['form' => $formId, 'field' => $fieldIds['usage_purpose'],
                  'value' => $formParams['usage_purpose']],
-                ['field' => $fieldIds['age'],
+                ['form' => $formId, 'field' => $fieldIds['age'],
                  'value' => $formParams['age'] ?? null],
-                ['field' => $fieldIds['license'],
+                ['form' => $formId, 'field' => $fieldIds['license'],
                  'value' => $formParams['license'] ?? null],
-                ['field' => $fieldIds['user_id'],
+                ['form' => $formId, 'field' => $fieldIds['user_id'],
                  'value' => $this->userIdentityNumber]
             ]
         ];
@@ -383,8 +443,16 @@ class RemsService implements
         );
 
         $this->session->{RemsService::SESSION_IS_REMS_REGISTERED} = true;
+        $this->session->{RemsService::SESSION_USER_REGISTERED_TIME} = time();
         $this->session->{RemsService::SESSION_USAGE_PURPOSE}
             = $formParams['usage_purpose_text'];
+
+        // Refresh permission session variables
+        $this->getAccessPermission(true);
+
+        $this->events->trigger(
+            self::EVENT_USER_REGISTERED, __CLASS__, ['user' => $this->getUserId()]
+        );
 
         return true;
     }
@@ -414,6 +482,8 @@ class RemsService implements
                 = 'R2_register_form_usage_'
                   . $entitlementApplication['usagePurpose'];
         } else {
+            $this->session->{self::SESSION_USER_REGISTERED_TIME} = null;
+            $this->session->{self::SESSION_IS_REMS_REGISTERED} = null;
             return null;
         }
 
@@ -434,9 +504,12 @@ class RemsService implements
     /**
      * Close all open applications.
      *
+     * @param bool $requireRegistration Require the user to be registered to REMS
+     * during the session?
+     *
      * @return void
      */
-    public function closeOpenApplications()
+    public function closeOpenApplications($requireRegistration = true)
     {
         try {
             $applications = $this->getApplications(
@@ -450,7 +523,7 @@ class RemsService implements
                 $this->sendRequest(
                     'applications/close',
                     [], 'POST', RemsService::TYPE_APPROVER,
-                    json_encode($params)
+                    json_encode($params), $requireRegistration
                 );
             }
         } catch (\Exception $e) {
@@ -458,6 +531,24 @@ class RemsService implements
                 'Error closing open applications on logout: ' . $e->getMessage()
             );
         }
+    }
+
+    /**
+     * Close all open applications by user id.
+     * This is called after receiving Shibboleth logout notification.
+     *
+     * @param string $userId User ID
+     *
+     * @return void
+     */
+    public function closeOpenApplicationsForUser($userId)
+    {
+        $this->userId = $userId;
+        // Init $authenticated since it's checked in sendRequest.
+        $this->authenticated = true;
+        // Close applications without requiring the caller to be registered.
+        $this->closeOpenApplications(false);
+        $this->userId = null;
     }
 
     /**
@@ -480,11 +571,16 @@ class RemsService implements
         case 'manual-revoked':
             $status = self::STATUS_REVOKED;
             break;
-        case 'session-expired':
+        case 'session-expired-closed':
+            // REMS session closed due to user's inactivity
             $status = self::STATUS_EXPIRED;
             break;
         default:
             $status = self::STATUS_CLOSED;
+        }
+        if ($status !== self::STATUS_APPROVED) {
+            $this->session->{self::SESSION_USER_REGISTERED_TIME} = null;
+            $this->session->{self::SESSION_IS_REMS_REGISTERED} = null;
         }
         $this->session->{self::SESSION_ACCESS_STATUS} = $status;
     }
@@ -501,6 +597,30 @@ class RemsService implements
     public function setBlocklistStatusFromConnector($status)
     {
         $this->session->{self::SESSION_BLOCKLISTED} = $status;
+    }
+
+    /**
+     * Set search limit exceeded status.
+     * This is called from R2 backend connector.
+     *
+     * @param string $type     daily|monthly
+     * @param bool   $exceeded Limit exceeded?
+     *
+     * @return void
+     */
+    public function setSearchLimitExceededFromConnector($type, $exceeded)
+    {
+        if (!$this->validateSearchLimit($type)) {
+            $this->error(
+                "Error setting search limit exceeded with type $type"
+            );
+            return;
+        }
+        if ($type === 'daily') {
+            $this->session->{self::SESSION_DAILY_LIMIT_EXCEEDED} = $exceeded;
+        } elseif ($type === 'monthly') {
+            $this->session->{self::SESSION_MONTHLY_LIMIT_EXCEEDED} = $exceeded;
+        }
     }
 
     /**
@@ -531,7 +651,7 @@ class RemsService implements
     protected function getApplication($id, $throw = false)
     {
         return $this->sendRequest(
-            "applications/$id", [], 'GET', RemsService::TYPE_USER,
+            "applications/$id/raw", [], 'GET', RemsService::TYPE_APPROVER,
             null, false, $throw
         );
     }
@@ -553,6 +673,10 @@ class RemsService implements
                 [], 'GET', RemsService::TYPE_USER, null, false
             );
         } catch (\Exception $e) {
+            return [];
+        }
+
+        if (empty($result)) {
             return [];
         }
 
@@ -712,6 +836,9 @@ class RemsService implements
         $this->session->{self::SESSION_BLOCKLISTED} = null;
         $this->session->{self::SESSION_USAGE_PURPOSE} = null;
         $this->session->{self::SESSION_IS_REMS_REGISTERED} = null;
+        $this->session->{self::SESSION_USER_REGISTERED_TIME} = null;
+        $this->session->{self::SESSION_DAILY_LIMIT_EXCEEDED} = null;
+        $this->session->{self::SESSION_MONTHLY_LIMIT_EXCEEDED} = null;
     }
 
     /**
@@ -795,5 +922,17 @@ class RemsService implements
         ];
 
         return $statusMap[$remsStatus] ?? 'unknown';
+    }
+
+    /**
+     * Validate search limit type.
+     *
+     * @param string $limit Limit
+     *
+     * @return bol
+     */
+    protected function validateSearchLimit($limit)
+    {
+        return in_array($limit, ['daily', 'monthly']);
     }
 }

@@ -28,6 +28,7 @@
 namespace Finna\Service;
 
 use Interop\Container\ContainerInterface;
+use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -80,7 +81,8 @@ class RemsServiceFactory implements FactoryInterface
             $sessionContainer,
             $shibbolethSessionContainer['identity_number'] ?? null,
             $user ? $user->username : null,
-            $auth->isGranted('access.R2Authenticated')
+            $auth->isGranted('access.R2Authenticated'),
+            new EventManager($container->get('SharedEventManager'))
         );
     }
 }

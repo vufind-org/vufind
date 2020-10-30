@@ -12,8 +12,13 @@ catalogItem =
 ; Resource item id
 resourceItem =
 
+; Session maximum age in minutes (R2 index closes the session)
+sessionMaxAge = 480
+; Show warning X minutes before session expires.
+sessionExpirationWarning = 15
 
 [RegistrationForm]
+id =
 
 ; REMS registration form field id's
 field[firstname] = firstname
