@@ -414,7 +414,10 @@ class SolrMarc extends SolrDefault
             $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
             if (!empty($subfield_a)) {
                 $additional_information = $_022field->getSubfield('2') ? $this->translate($_022field->getSubfield('2')->getData()) : '';
-                $additional_information .= $_022field->getSubfield('3') ? (' ' . $_022field->getSubfield('3')->getData()) : '';
+		if (!empty($additional_information && $_022field->getSubfield('3')))
+                    $additional_information .= ' ';
+		if ($_022field->getSubfield('3'))
+                    $additional_information .= $_022field->getSubfield('3')->getData());
                 $issns_and_additional_information[$this->cleanISSN($subfield_a)] = $additional_information;
             }
         }
