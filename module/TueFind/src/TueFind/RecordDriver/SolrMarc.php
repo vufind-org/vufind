@@ -413,11 +413,14 @@ class SolrMarc extends SolrDefault
         foreach ($_022fields as $_022field) {
             $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
             if (!empty($subfield_a)) {
-                $additional_information = $_022field->getSubfield('2') ? $this->translate($_022field->getSubfield('2')->getData()) : '';
-		if (!empty($additional_information && $_022field->getSubfield('3')))
-                    $additional_information .= ' ';
-		if ($_022field->getSubfield('3'))
-                    $additional_information .= $_022field->getSubfield('3')->getData());
+	        $subfield_2 = $_022field->getSubfield('2') ?? '';
+		$additional_information = empty($subfield_2) ? '' : $this->translate($subfield_2);
+	        $subfield_3 = $_022field->getSubfield('3') ?? '';
+		if (!empty($subfield_3)) {
+		    if (!empty($additional_information))
+		        $additional_information .= ' ';
+		    $additional_information .= $subfield_3;
+		}
                 $issns_and_additional_information[$this->cleanISSN($subfield_a)] = $additional_information;
             }
         }
