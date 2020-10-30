@@ -386,12 +386,31 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Marc Record
+     * Get Marc Reader
      *
-     * Override the base marc trait to return a fake marc obj.
+     * Override the base marc trait to return an empty marc reader object if no MARC
+     * is available.
      *
      * @return \File_MARCBASE
      * @throws \File_MARC_Exception
+     */
+    public function getMarcReader()
+    {
+        if ($this->getIsMarc()) {
+            return parent::getMarcReader();
+        } else {
+            return new MarcReader('<record></record');
+        }
+    }
+
+    /**
+     * Get Marc Record
+     *
+     * Override the base marc trait to return a fake marc object
+     *
+     * @return     \File_MARCBASE
+     * @throws     \File_MARC_Exception
+     * @deprecated Use getMarcReader()
      */
     public function getMarcRecord()
     {

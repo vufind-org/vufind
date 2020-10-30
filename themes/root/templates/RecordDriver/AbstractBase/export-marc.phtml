@@ -1,1 +1,1 @@
-<?=$this->driver->getMarcRecord()->toRaw()?>
+<?=$this->driver->getMarcReader()->toISO2709() ?: $this->driver->getMarcReader()->toXML() ?>
