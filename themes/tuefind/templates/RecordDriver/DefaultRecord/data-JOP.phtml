@@ -1,17 +1,18 @@
 <?php $formats = $this->driver->getFormats(); ?>
 <?php $i = 0 ?>
-<?php $issns_and_titles = [] ?>
+<?php $issns_and_additional_information = [] ?>
 <?php if (in_array("Article", $formats) || in_array("Review", $formats)): ?>
     <?php $article_issn = $this->driver->tryMethod('getCleanISSN') ?>
     <?php if (!empty($article_issn)): ?>
-        <?php $issns_and_titles[$article_issn] = '' ?>
+        <?php $issns_and_additional_information[$article_issn] = '' ?>
     <?php endif; ?>
 <?php elseif (in_array("Journal", $formats) || in_array("Serial", $formats)): ?>
-    <?php $issns_and_titles = $this->driver->tryMethod('getJOPISSNsAndTitles') ?>
+    <?php $issns_and_additional_information = $this->driver->tryMethod('getJOPISSNsAndAdditionalInformation') ?>
 <?php endif; ?>
-<?php foreach ($issns_and_titles as $issn => $title): ?>
+<?php foreach ($issns_and_additional_information as $issn => $additional_information): ?>
     <?php ++$i ?>
-    <?php if ($title == '') $title = 'ISSN: ' . $issn ?>
+    <?php $title = 'ISSN: ' . $issn ?>
+    <?php if ($additional_information != '') $title .= ' (' . $additional_information . ')' ?>
     <?php $jop_place_holder_id = "jop_place_holder_" . $i ?>
     <?php $jop_icons_id = "jop_icons_" . $i ?>
 
@@ -75,7 +76,7 @@
             <a href="<?= $url_html ?>" target="_blank">
                 <?= $part_img ?>
             </a>
-            <?php if (count($issns_and_titles) > 1): ?>
+            <?php if (count($issns_and_additional_information) > 1): ?>
                 <span><?= $title ?></span>
             <?php endif; ?>
         </div>

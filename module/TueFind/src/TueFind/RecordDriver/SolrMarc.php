@@ -407,15 +407,21 @@ class SolrMarc extends SolrDefault
     }
 
 
-    public function getJOPISSNsAndTitles() {
-        $issns_and_titles = [];
+    public function getJOPISSNsAndAdditionalInformation() {
+        $issns_and_additional_information = [];
         $_022fields = $this->getMarcRecord()->getFields('022');
         foreach ($_022fields as $_022field) {
-             $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
+            $subfield_a = $_022field->getSubfield('a')->getData() ?? ''; //$a is non-repeatable in 022
             if (!empty($subfield_a)) {
-                $orig_title = $_022field->getSubfield('9') ? $_022field->getSubfield('9')->getData() : '';
-                $print_or_online = $_022field->getSubfield('2') ? $_022field->getSubfield('2')->getData() : '';
-                $issns_and_titles[$this->cleanISSN($subfield_a)] = $orig_title . (empty($print_or_online) ? '' : ' ('. $this->translate($print_or_online) . ')');
+                $subfield_2 = $_022field->getSubfield('2')->getData() ?? '';
+                $additional_information = empty($subfield_2) ? '' : $this->translate($subfield_2);
+                $subfield_3 = $_022field->getSubfield('3')->getData() ?? '';
+                if (!empty($subfield_3)) {
+                    if (!empty($additional_information))
+                        $additional_information .= ' ';
+                    $additional_information .= $subfield_3;
+                }
+                $issns_and_additional_information[$this->cleanISSN($subfield_a)] = $additional_information;
             }
         }
         $_029fields = $this->getMarcRecord()->getFields('029');
@@ -423,17 +429,17 @@ class SolrMarc extends SolrDefault
             if ($_029field->getIndicator('1') == 'x') {
                 switch ($_029field->getIndicator('2')) {
                     case 'c':
-                        $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : '';
+                        $subfield_a = $_029field->getSubfield('a') ? $_029field->getSubfield('a')->getData() : '';
                         $issn = $this->cleanISSN($subfield_a);
-                        if (!array_key_exists($issn, $issns_and_titles))
-                            $issns_and_titles[$issn] = '';
+                        if (!array_key_exists($issn, $issns_and_additional_information))
+                            $issns_and_additional_information[$issn] = '';
                         break;
                     default:
                         break;
                 }
             }
         }
-        return $issns_and_titles;
+        return $issns_and_additional_information;
     }
 
     public function getSuperiorFrom773a() {
