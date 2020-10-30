@@ -123,6 +123,58 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test table of contents support.
+     *
+     * @return void
+     */
+    public function testTOC()
+    {
+        $marc = $this->getFixture('marc/toc1.xml');
+        $config = new \Laminas\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals(
+            [
+                'About the Association of Professors of Missions / Robert Danielson',
+                'Foreword / Angel Santiago-Vendrell',
+                'Conference theme',
+                'Plenary Papers',
+                'Teaching missiology in and for world Christianity content and method / Peter C. Phan',
+                'The bodies we teach by: (en) gendering mission for global Christianities / Mai-Ahn Le',
+                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress / Philip Wingeier-Rayo',
+                'Conference Papers',
+                'Theological metaphors of teaching mission in an age of world Christianity in the North American context / David Thang Moe',
+                'Mission shifts from Pope Benedict XVI to Pope Francis / William P. Gregory',
+                'The elephant in the room: towards a paradigm shift in missiological education / Sarita D. Gallagher',
+                'Historic models of teaching Christian mission: case studies informing an age of world Christianity / Robert L. Gallagher',
+                'How the West was won: world Christianity as historic reality / Matt Friedman',
+                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s Christian universities / Janice Horsager Rasmussen',
+                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
+                'Mary McLeod Bethune: Christ did not designate any particular color to go / Mary Cloutier',
+                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom / Angel Santiago-Vendrell',
+                'Conference Proceedings',
+                'First Fruits report for the APM',
+                'Minutes of 2016 meeting',
+                'Secretary\'s treasury report',
+                'Conference program.',
+            ],
+            $record->getTOC()
+        );
+        $marc2 = $this->getFixture('marc/toc2.xml');
+        $record2 = new \VuFind\RecordDriver\SolrMarc($config);
+        $record2->setRawData(['fullrecord' => $marc2]);
+        $this->assertEquals(
+            [
+                'Don\'t split the unspaced--separator.',
+                'Do split the spaced one.',
+                'Respect pre-AACR2-style separation',
+                'Even though it\'s old.',
+            ],
+            $record2->getTOC()
+        );
+    }
+
+    /**
      * Test getFormattedMarcDetails() method.
      *
      * @return void

@@ -491,7 +491,10 @@ trait MarcAdvancedTrait
                 foreach ($field->getSubfields() as $subfield) {
                     $str .= trim($subfield->getData()) . ' ';
                 }
-                $toc = array_merge($toc, array_filter(explode('--', $str), 'trim'));
+                $toc = array_merge(
+                    $toc,
+                    array_filter(array_map('trim', preg_split('/[.\s]--/', $str)))
+                );
             }
         }
         return $toc;
