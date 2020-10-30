@@ -411,11 +411,11 @@ class SolrMarc extends SolrDefault
         $issns_and_additional_information = [];
         $_022fields = $this->getMarcRecord()->getFields('022');
         foreach ($_022fields as $_022field) {
-            $subfield_a = $_022field->getSubfield('a') ? $_022field->getSubfield('a')->getData() : ''; //$a is non-repeatable in 022
+            $subfield_a = $_022field->getSubfield('a')->getData() ?? ''; //$a is non-repeatable in 022
             if (!empty($subfield_a)) {
-	        $subfield_2 = $_022field->getSubfield('2') ?? '';
+	        $subfield_2 = $_022field->getSubfield('2')->getData() ?? '';
 		$additional_information = empty($subfield_2) ? '' : $this->translate($subfield_2);
-	        $subfield_3 = $_022field->getSubfield('3') ?? '';
+	        $subfield_3 = $_022field->getSubfield('3')->getData() ?? '';
 		if (!empty($subfield_3)) {
 		    if (!empty($additional_information))
 		        $additional_information .= ' ';
