@@ -43,6 +43,8 @@ namespace VuFind\RecordDriver;
  */
 trait MarcReaderTrait
 {
+    protected $marcReaderClass = \VuFind\Marc\MarcReader::class;
+
     /**
      * MARC reader. Access only via getMarcReader() as this is initialized lazily.
      */
@@ -65,7 +67,7 @@ trait MarcReaderTrait
     {
         if (null === $this->lazyMarcReader) {
             $marc = trim($this->fields['fullrecord']);
-            $this->lazyMarcReader = new MarcReader($marc);
+            $this->lazyMarcReader = new $this->marcReaderClass($marc);
         }
 
         return $this->lazyMarcReader;
