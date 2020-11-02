@@ -157,7 +157,9 @@ trait MarcBasicTrait
         $fields = $this->getMarcReader()->getFields('041');
         foreach ($fields as $field) {
             if ($field['i2'] !== '7') {
-                $retVal[] = $this->getSubfields($field, 'a');
+                foreach ($this->getSubfields($field, 'a') as $subfield) {
+                    $retVal[] = $subfield;
+                }
             }
         }
         return array_unique($retVal);
