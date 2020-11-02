@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns='http://www.loc.gov/MARC21/slim'>
+
+    <record
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+        xmlns="http://www.loc.gov/MARC21/slim">
+        <leader>00000cam a22000004i 4500</leader>
+        <controlfield tag="001">123</controlfield>
+        <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
+        <datafield tag="020" ind1=" " ind2=" ">
+            <subfield code="a">978-3-16-148410-0</subfield>
+            <subfield code="z">978-3-16-148410-1</subfield>
+        </datafield>
+        <datafield tag="010" ind1=" " ind2=" ">
+            <subfield code="a">LC123</subfield>
+        </datafield>
+        <datafield tag="015" ind1=" " ind2=" ">
+            <subfield code="a">NBN12</subfield>
+            <subfield code="7">NB</subfield>
+        </datafield>
+        <datafield tag="022" ind1=" " ind2=" ">
+            <subfield code="a">0000-1111</subfield>
+        </datafield>
+        <datafield tag="024" ind1="1" ind2=" ">
+            <subfield code="a">upc</subfield>
+        </datafield>
+        <datafield tag="024" ind1="2" ind2=" ">
+            <subfield code="a">ismn</subfield>
+        </datafield>
+        <datafield tag="024" ind1="3" ind2=" ">
+            <subfield code="a">ian</subfield>
+        </datafield>
+        <datafield tag="035" ind1=" " ind2=" ">
+            <subfield code="a">(FOO)123</subfield>
+        </datafield>
+        <datafield tag="035" ind1=" " ind2=" ">
+            <subfield code="a">(Baz)456</subfield>
+        </datafield>
+        <datafield tag="041" ind1="0" ind2=" ">
+            <subfield code="a">ger</subfield>
+        </datafield>
+        <datafield tag="041" ind1="1" ind2="7">
+            <subfield code="a">spa</subfield>
+        </datafield>
+        <datafield tag="050" ind1=" " ind2="0">
+            <subfield code="b">c3</subfield>
+        </datafield>
+        <datafield tag="082" ind1="0" ind2=" ">
+            <subfield code="a">d1</subfield>
+        </datafield>
+        <datafield tag="090" ind1=" " ind2=" ">
+            <subfield code="a">c1</subfield>
+        </datafield>
+        <datafield tag="090" ind1=" " ind2=" ">
+            <subfield code="a">c2</subfield>
+        </datafield>
+        <datafield tag="100" ind1="1" ind2=" ">
+            <subfield code="a">Author, Test</subfield>
+            <subfield code="d">(1800-)</subfield>
+        </datafield>
+        <datafield tag="110" ind1="2" ind2=" ">
+            <subfield code="a">Testcorp</subfield>
+        </datafield>
+        <datafield tag="245" ind1="0" ind2="4">
+            <subfield code="a">The Foo:</subfield>
+            <subfield code="b">Bar! /</subfield>
+            <subfield code="c">Test Author.</subfield>
+            <subfield code="n">2.</subfield>
+            <subfield code="p">Return</subfield>
+            <subfield code="h">Format 1</subfield>
+            <subfield code="h">Format 2</subfield>
+        </datafield>
+        <datafield tag="250" ind1=" " ind2=" ">
+            <subfield code="a">2nd ed.</subfield>
+        </datafield>
+        <datafield tag="260" ind1=" " ind2=" ">
+            <subfield code="a">Place :</subfield>
+            <subfield code="b">Publisher,</subfield>
+            <subfield code="c">2020</subfield>
+        </datafield>
+        <datafield tag="264" ind1=" " ind2="0">
+            <subfield code="a">Place :</subfield>
+            <subfield code="b">Producer,</subfield>
+            <subfield code="c">2019</subfield>
+        </datafield>
+        <datafield tag="264" ind1=" " ind2="1">
+            <subfield code="a">Location :</subfield>
+            <subfield code="b">The Publishers,</subfield>
+            <subfield code="c">2020</subfield>
+        </datafield>
+        <datafield tag="300" ind1=" " ind2=" ">
+            <subfield code="a">1 book :</subfield>
+            <subfield code="b">colored,</subfield>
+            <subfield code="c">28 cm</subfield>
+            <subfield code="e">1 cd</subfield>
+        </datafield>
+        <datafield tag="306" ind1=" " ind2=" ">
+            <subfield code="a">002010</subfield>
+            <subfield code="a">013055</subfield>
+        </datafield>
+        <datafield tag="310" ind1=" " ind2=" ">
+            <subfield code="a">Frequency varies,</subfield>
+            <subfield code="b">2020-</subfield>
+        </datafield>
+        <datafield tag="362" ind1=" " ind2=" ">
+            <subfield code="a">2020-</subfield>
+        </datafield>
+        <datafield tag="440" ind1=" " ind2="0">
+            <subfield code="a">Development Series</subfield>    
+            <subfield code="x">1111-2222</subfield>
+        </datafield>
+        <datafield tag="490" ind1="0" ind2=" ">
+            <subfield code="a">System Collection</subfield>    
+            <subfield code="x">2222-3333</subfield>
+        </datafield>
+        <datafield tag="500" ind1=" " ind2=" ">
+            <subfield code="a">General notes here.</subfield>
+        </datafield>
+        <datafield tag="500" ind1=" " ind2=" ">
+            <subfield code="a">Translation.</subfield>
+        </datafield>
+        <datafield tag="504" ind1=" " ind2=" ">
+            <subfield code="a">Bibliography: p. 122</subfield>
+        </datafield>
+        <datafield tag="506" ind1=" " ind2=" ">
+            <subfield code="a">Classified.</subfield>
+        </datafield>
+        <datafield tag="508" ind1=" " ind2=" ">
+            <subfield code="a">Producer: VuFind</subfield>
+        </datafield>
+        <datafield tag="520" ind1=" " ind2=" ">
+            <subfield code="a">Summary.</subfield>
+            <subfield code="b">Expanded.</subfield>
+        </datafield>
+        <datafield tag="521" ind1=" " ind2=" ">
+            <subfield code="a">Developers</subfield>
+        </datafield>
+        <datafield tag="538" ind1=" " ind2=" ">
+            <subfield code="a">Data in UTF-8</subfield>
+        </datafield>
+        <datafield tag="555" ind1="0" ind2=" ">
+            <subfield code="a">Finding aid available</subfield>
+        </datafield>
+        <datafield tag="580" ind1=" " ind2=" ">
+            <subfield code="a">Merged with several branches</subfield>
+        </datafield>
+        <datafield tag="586" ind1=" " ind2=" ">
+            <subfield code="a">VuFind Golden Award, 2020</subfield>
+        </datafield>
+        <datafield tag="650" ind1=" " ind2="4">
+            <subfield code="a">Foo</subfield>
+            <subfield code="g">test</subfield>
+            <subfield code="7">null</subfield>
+        </datafield>
+        <datafield tag="650" ind1=" " ind2="4">
+            <subfield code="a">Bar</subfield>
+            <subfield code="g">test again</subfield>
+            <subfield code="7">null</subfield>
+        </datafield>
+        <datafield tag="710" ind1="2" ind2=" ">
+            <subfield code="a">Foobar Inc.</subfield>
+        </datafield>
+        <datafield tag="730" ind1="0" ind2=" ">
+            <subfield code="x">3333-4444</subfield>
+        </datafield>
+        <datafield tag="752" ind1=" " ind2=" ">
+            <subfield code="a">Zoolandia</subfield>
+            <subfield code="b">City.</subfield>
+        </datafield>
+        <datafield tag="752" ind1=" " ind2=" ">
+            <subfield code="a">Funland</subfield>
+            <subfield code="b">Funtown.</subfield>
+        </datafield>
+        <datafield tag="773" ind1="0" ind2=" ">
+            <subfield code="z">1-84356-028-3</subfield>
+        </datafield>
+        <datafield tag="773" ind1="0" ind2=" ">
+            <subfield code="x">4444-5555</subfield>
+        </datafield>
+        <datafield tag="776" ind1="0" ind2=" ">
+            <subfield code="x">5555-6666</subfield>
+        </datafield>
+        <datafield tag="780" ind1="0" ind2="0">
+            <subfield code="a">Old Journal</subfield>    
+            <subfield code="x">6666-7777</subfield>
+        </datafield>
+        <datafield tag="785" ind1="0" ind2="0">
+            <subfield code="a">New Journal</subfield>    
+            <subfield code="x">7777-8888</subfield>
+        </datafield>
+        <datafield tag="830" ind1=" " ind2="0">
+            <subfield code="a">Development</subfield>    
+            <subfield code="v">no. 2</subfield>
+            <subfield code="x">7777-8888</subfield>
+        </datafield>
+        <datafield tag="856" ind1="4" ind2="2">
+            <subfield code="u">https://vufind.org/vufind/</subfield>    
+            <subfield code="y">VuFind Home Page</subfield>
+        </datafield>
+    </record>
+</collection>
