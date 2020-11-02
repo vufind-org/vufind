@@ -27,7 +27,7 @@
  */
 namespace VuFind\Marc;
 
-use VuFind\Marc\Serialization\ISO2709;
+use VuFind\Marc\Serialization\Iso2709;
 use VuFind\Marc\Serialization\MarcXml;
 
 /**
@@ -75,7 +75,7 @@ class MarcReader
         if (MarcXml::canParse($data)) {
             $this->fields = MarcXml::fromString($data);
         } elseif (Iso2709::canParse($data)) {
-            $this->fields = ISO2709::fromString($data);
+            $this->fields = Iso2709::fromString($data);
         }
     }
 
@@ -98,7 +98,7 @@ class MarcReader
      */
     public function toISO2709(): string
     {
-        return ISO2709::toString($this->getLeader(), $this->fields);
+        return Iso2709::toString($this->getLeader(), $this->fields);
     }
 
     /**
