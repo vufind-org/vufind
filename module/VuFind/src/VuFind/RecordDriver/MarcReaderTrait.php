@@ -61,7 +61,7 @@ trait MarcReaderTrait
     /**
      * Get access to the MarcReader object.
      *
-     * @return MarcReader
+     * @return \VuFind\Marc\MarcReader
      */
     public function getMarcReader()
     {
