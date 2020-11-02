@@ -116,7 +116,8 @@ class MarcXml
     {
         $xml = simplexml_load_string(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n"
-            . "<collection><record></record></collection>"
+            . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
+            . "<record></record></collection>"
         );
         $record = $xml->record[0];
 

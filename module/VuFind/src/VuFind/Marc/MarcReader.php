@@ -46,8 +46,11 @@ class MarcReader
      *  [001] - "12345"
      *  [245] - i1: '0'
      *          i2: '1'
-     *          s:  [{a => "Title"},
-     *               {p => "Part"}
+     *          s:  [
+     *                  ['a' => 'Title'],
+     *                  ['k' => 'Form'],
+     *                  ['k' => 'Another'],
+     *                  ['p' => 'Part'],
      *              ]
      */
     protected $fields;
@@ -116,17 +119,17 @@ class MarcReader
 
     /**
      * Return an associative array for a data field, a string for a control field or
-     * false if field does not exist
+     * an empty array if field does not exist
      *
      * @param string $fieldTag      The MARC field tag to get
      * @param array  $subfieldCodes The MARC subfield codes to get, or empty for all
      *
-     * @return array|string|false
+     * @return array|string
      */
     public function getField(string $fieldTag, ?array $subfieldCodes = null)
     {
         $results = $this->getFields($fieldTag, $subfieldCodes);
-        return $results[0] ?? false;
+        return $results[0] ?? [];
     }
 
     /**
@@ -185,7 +188,7 @@ class MarcReader
      */
     public function getSubfield(array $field, string $subfieldCode): string
     {
-        foreach ($field['subfields'] as $current) {
+        foreach ($field['subfields'] ?? [] as $current) {
             if ($current['code'] == $subfieldCode) {
                 return trim($current['data']);
             }
@@ -196,18 +199,18 @@ class MarcReader
 
     /**
      * Return all subfields with the given code in the MARC field provided by
-     * getField or getFields
+     * getField or getFields. Returns all subfields if subfieldCode is empty.
      *
      * @param array  $field        Result from MarcReader::getFields
      * @param string $subfieldCode The MARC subfield code to get
      *
      * @return array
      */
-    public function getSubfields(array $field, string $subfieldCode): array
+    public function getSubfields(array $field, string $subfieldCode = ''): array
     {
         $result = [];
-        foreach ($field['subfields'] as $current) {
-            if ($current['code'] == $subfieldCode) {
+        foreach ($field['subfields'] ?? [] as $current) {
+            if ('' === $subfieldCode || $current['code'] == $subfieldCode) {
                 $result[] = trim($current['data']);
             }
         }
