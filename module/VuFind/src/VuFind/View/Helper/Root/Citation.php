@@ -213,7 +213,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
-            $apa['publisher'] = $this->getPublisher();
+            $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
             return $partial('Citation/apa.phtml', $apa);
         } else {
@@ -266,17 +266,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
-            $mla['publisher'] = $this->getPublisher();
+            $mla['publisher'] = $this->getPublisher(false);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
             return $partial('Citation/mla.phtml', $mla);
-        } else {
-            // Add other journal-specific details:
-            $mla['pageRange'] = $this->getPageRange();
-            $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
-            $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
-            return $partial('Citation/mla-article.phtml', $mla);
         }
+        // If we got this far, we should add other journal-specific details:
+        $mla['pageRange'] = $this->getPageRange();
+        $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
+        $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
+        return $partial('Citation/mla-article.phtml', $mla);
     }
 
     /**
@@ -729,18 +728,18 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * Get publisher information (place: name) for inclusion in a citation.
      * Shared by APA and MLA functionality.
      *
+     * @param bool $includePubPlace Should we include the place of publication?
+     *
      * @return string
      */
-    protected function getPublisher()
+    protected function getPublisher($includePubPlace = true)
     {
         $parts = [];
-        if (isset($this->details['pubPlace'])
-            && !empty($this->details['pubPlace'])
+        if ($includePubPlace && !empty($this->details['pubPlace'])
         ) {
             $parts[] = $this->stripPunctuation($this->details['pubPlace']);
         }
-        if (isset($this->details['pubName'])
-            && !empty($this->details['pubName'])
+        if (!empty($this->details['pubName'])
         ) {
             $parts[] = $this->details['pubName'];
         }

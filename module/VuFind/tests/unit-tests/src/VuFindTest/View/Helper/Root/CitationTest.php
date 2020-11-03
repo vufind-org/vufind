@@ -58,8 +58,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby'],
                 'PublicationDates' => ['1958']
             ],
-            'apa' => 'Shafer, K. N. (1958). <span style="font-style:italic;">Medical-surgical nursing</span>. St. Louis: Mosby.',
-            'mla' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. St. Louis: Mosby, 1958.',
+            'apa' => 'Shafer, K. N. (1958). <span style="font-style:italic;">Medical-surgical nursing</span>. Mosby.',
+            'mla' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. Mosby, 1958.',
             'chicago' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. St. Louis: Mosby, 1958.',
         ],
         [
@@ -72,8 +72,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [  // subtitle embedded in title
@@ -85,8 +85,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
@@ -99,8 +99,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span>. St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span>. Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
@@ -113,8 +113,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> (7th ed.). Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
@@ -127,8 +127,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S., IV. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S., IV. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> Mosby Elsevier.',
+            'mla' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
@@ -141,8 +141,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Holmes & Meier,'],
                 'PublicationDates' => ['1980.']
             ],
-            'apa' => 'Burch, P. H., Jr. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
+            'apa' => 'Burch, P. H., Jr. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier, 1980.',
             'chicago' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
         ],
         [
@@ -155,8 +155,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Holmes & Meier,'],
                 'PublicationDates' => ['1980.']
             ],
-            'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
+            'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier, 1980.',
             'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
         ],
         [
@@ -182,8 +182,8 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'PlacesOfPublication' => ['New York'],
                 'Publishers' => ['Holmes & Meier']
             ],
-            'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
+            'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <span style="font-style:italic;">The New Deal to the Carter administration</span>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier.',
             'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
         ],
         [  // eight authors
