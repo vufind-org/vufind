@@ -30,7 +30,7 @@ namespace VuFindTest\Log;
 use VuFind\Log\Logger;
 
 /**
- * Sitemap Test Class
+ * Logger Test Class
  *
  * @category VuFind
  * @package  Tests

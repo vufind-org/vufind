@@ -1956,7 +1956,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $stmt->execute(
                 [ $newPassword_hashed, $detail['patron']['id'] ]
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [ 'success' => false, 'status' => $e->getMessage() ];
         }
         return [
