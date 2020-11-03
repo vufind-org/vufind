@@ -161,7 +161,7 @@ public class CreatorTools
      * @return HashMap
      * @deprecated
      */
-    protected HashMap<String, Set<String>> getParsedTagList(String tagList)
+    @Deprecated protected HashMap<String, Set<String>> getParsedTagList(String tagList)
     {
         // Thin wrapper around FieldSpecTools.getParsedTagList() for backward
         // compatibility; this will be removed in VuFind 8.0.
