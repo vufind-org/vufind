@@ -638,7 +638,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'path' => 'v1/holds',
                 'query' => [
                     'patron_id' => $patron['id'],
-                    '_match' => 'exact'
+                    '_match' => 'exact',
+                    '_per_page' => -1
                 ]
             ]
         );
@@ -1972,7 +1973,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $cacheKey = 'libraries';
         $libraries = $this->getCachedData($cacheKey);
         if (null === $libraries) {
-            $result = $this->makeRequest('v1/libraries');
+            $result = $this->makeRequest('v1/libraries?_per_page=-1');
             $libraries = [];
             foreach ($result['data'] as $library) {
                 $libraries[$library['library_id']] = $library;
