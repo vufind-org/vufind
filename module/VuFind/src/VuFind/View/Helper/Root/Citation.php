@@ -238,7 +238,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCitationChicago()
     {
-        return $this->getCitationMLA(9, ', no. ');
+        return $this->getCitationMLA(9, ', no. ', true);
     }
 
     /**
@@ -252,11 +252,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * al.'
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation.
+     * @param bool   $includePubPlace Should we include the place of publication?
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.')
-    {
+    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.',
+        $includePubPlace = false
+    ) {
         $mla = [
             'title' => $this->getMLATitle(),
             'authors' => $this->getMLAAuthors($etAlThreshold)
@@ -266,7 +268,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
-            $mla['publisher'] = $this->getPublisher(false);
+            $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
             return $partial('Citation/mla.phtml', $mla);
