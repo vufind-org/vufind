@@ -80,8 +80,8 @@ class DOI implements RecommendInterface
     public function setConfig($settings)
     {
         // Find the last colon in the configuration that is not part of a URL:
-        $breakPoint = strrpos(':', $settings);
-        if (substr($settings, $breakPoint + 1, 2) !== '//') {
+        $breakPoint = strrpos($settings, ':');
+        if ($breakPoint && substr($settings, $breakPoint + 1, 2) !== '//') {
             $prefix = substr($settings, 0, $breakPoint);
             $redirect = substr($settings, $breakPoint + 1);
         } else {
