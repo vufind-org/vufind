@@ -1,4 +1,5 @@
 parameters:
     paths:
         - %currentWorkingDirectory%/module
+    tmpDir: %currentWorkingDirectory%/.phpstan_cache
     level: 0
