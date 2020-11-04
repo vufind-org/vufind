@@ -143,28 +143,50 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     protected function prepareAuthors($authors)
     {
+        $callables = [];
+
         // If this data comes from a MARC record, we can probably assume that
         // anything without a comma is a valid corporate author that should be
-        // left alone...
-        if (is_a($this->driver, 'VuFind\RecordDriver\SolrMarc')) {
-            return $authors;
+        // left alone... otherwise, it's worth trying to reverse names (for example,
+        // this may be dirty data from Summon):
+        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)) {
+            $callables[] = function (string $name): string {
+                if (!strstr($name, ',')) {
+                    $parts = explode(' ', $name);
+                    if (count($parts) > 1) {
+                        $last = array_pop($parts);
+                        $first = implode(' ', $parts);
+                        return rtrim($last, '.') . ', ' . $first;
+                    }
+                }
+                return $name;
+            };
         }
 
-        // If we got this far, it's worth trying to reverse names (for example,
-        // this may be dirty data from Summon):
-        $processed = [];
-        foreach ($authors as $name) {
-            if (!strstr($name, ',')) {
-                $parts = explode(' ', $name);
-                if (count($parts) > 1) {
-                    $last = array_pop($parts);
-                    $first = implode(' ', $parts);
-                    $name = $last . ', ' . $first;
-                }
+        // We always want to apply these standard cleanup routines:
+        $callables[] = function (string $name): string {
+            // Split the text into words:
+            $parts = explode(' ', $name);
+
+            // If we have exactly two parts, we should trim any trailing
+            // punctuation from the second part (this reduces the odds of
+            // accidentally trimming a "Jr." or "Sr."):
+            if (count($parts) == 2) {
+                $parts[1] = rtrim($parts[1], '.');
             }
-            $processed[] = $name;
-        }
-        return $processed;
+            return implode(' ', $parts);
+        };
+
+        // Now apply all of the functions we collected to all of the strings:
+        return array_map(
+            function (string $value) use ($callables): string {
+                foreach ($callables as $current) {
+                    $value = $current($value);
+                }
+                return $value;
+            },
+            $authors
+        );
     }
 
     /**

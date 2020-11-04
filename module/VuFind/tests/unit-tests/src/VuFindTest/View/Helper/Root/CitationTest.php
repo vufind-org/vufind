@@ -186,6 +186,21 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier.',
             'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
         ],
+        [  // eight authors, with a blend of formatting and extra punctuation
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person.', 'Person Two', 'Three, Person', 'Person Four.', 'Five, Person', 'Six, Person', 'Seven, Person', 'Eight, Person'],
+                'ShortTitle' => 'Test Article',
+                'ContainerTitle' => 'Test Journal',
+                'ContainerVolume' => 1,
+                'ContainerIssue' => 7,
+                'PublicationDates' => ['1999'],
+                'ContainerStartPage' => 19,
+                'ContainerEndPage' => 21
+            ],
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+        ],
         [  // eight authors
             'raw' => [
                 'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person', 'Eight, Person'],
