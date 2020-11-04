@@ -186,9 +186,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier.',
             'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
         ],
-        [  // eight authors, with a blend of formatting and extra punctuation
+        [  // eight authors, with a blend of formatting and extra punctuation/malformed dates
             'raw' => [
-                'SecondaryAuthors' => ['One, Person.', 'Person Two', 'Three, Person', 'Person Four.', 'Five, Person', 'Six, Person', 'Seven, Person', 'Eight, Person'],
+                'SecondaryAuthors' => ['One, Person.', 'Person Two', 'Three, Person', 'Person Four.', 'Five, Person, 1900-1950', 'Six, Person 1910-1963', 'Person Seven', 'Person Eight 1900-1999'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,

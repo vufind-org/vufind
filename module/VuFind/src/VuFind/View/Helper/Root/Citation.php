@@ -151,6 +151,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // this may be dirty data from Summon):
         if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)) {
             $callables[] = function (string $name): string {
+                $name = $this->cleanNameDates($name);
                 if (!strstr($name, ',')) {
                     $parts = explode(' ', $name);
                     if (count($parts) > 1) {
@@ -460,21 +461,18 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     protected function abbreviateName($name)
     {
-        $parts = explode(', ', $name);
+        $parts = explode(', ', $this->cleanNameDates($name));
         $name = $parts[0];
 
-        // Attach initials... but if we encountered a date range, the name
-        // ended earlier than expected, and we should stop now.
-        if (isset($parts[1]) && !$this->isDateRange($parts[1])) {
+        // Attach initials...
+        if (isset($parts[1])) {
             $fnameParts = explode(' ', $parts[1]);
             for ($i = 0; $i < count($fnameParts); $i++) {
                 // Use the multi-byte substring function if available to avoid
                 // problems with accented characters:
-                if (function_exists('mb_substr')) {
-                    $fnameParts[$i] = mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.';
-                } else {
-                    $fnameParts[$i] = substr($fnameParts[$i], 0, 1) . '.';
-                }
+                $fnameParts[$i] = function_exists('mb_substr')
+                    ? mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.'
+                    : substr($fnameParts[$i], 0, 1) . '.';
             }
             $name .= ', ' . implode(' ', $fnameParts);
             if (isset($parts[2]) && $this->isNameSuffix($parts[2])) {
@@ -520,7 +518,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 $name .= ', ' . $arr[2];
             }
         }
-        return $name;
+        // For good measure, strip out any remaining date ranges lurking in
+        // non-standard places.
+        return preg_replace('/\s+\d{4}-\d{4}\.*/', '', $name);
     }
 
     /**
