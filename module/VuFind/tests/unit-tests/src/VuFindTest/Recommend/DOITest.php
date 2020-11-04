@@ -51,6 +51,7 @@ class DOITest extends \VuFindTest\Unit\TestCase
         $this->assertNull($doi->getDOI());
         $this->assertNull($doi->getURL());
         $this->assertFalse($doi->isFullMatch());
+        $this->assertTrue($doi->redirectFullMatch());
     }
 
     /**
@@ -64,6 +65,7 @@ class DOITest extends \VuFindTest\Unit\TestCase
         $this->assertNull($doi->getDOI());
         $this->assertNull($doi->getURL());
         $this->assertFalse($doi->isFullMatch());
+        $this->assertTrue($doi->redirectFullMatch());
     }
 
     /**
@@ -77,6 +79,7 @@ class DOITest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
         $this->assertEquals('http://doi/10.1109%2FCC.2018.8485472', $doi->getURL());
         $this->assertTrue($doi->isFullMatch());
+        $this->assertTrue($doi->redirectFullMatch());
     }
 
     /**
@@ -90,6 +93,34 @@ class DOITest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
         $this->assertEquals('http://doi/10.1109%2FCC.2018.8485472', $doi->getURL());
         $this->assertFalse($doi->isFullMatch());
+        $this->assertTrue($doi->redirectFullMatch());
+    }
+
+    /**
+     * Test configuration of the redirect setting:
+     *
+     * @return void
+     */
+    public function testDoiRedirectConfigs()
+    {
+        $testData = [
+            'true' => true,
+            'false' => false,
+            '' => false,
+            '1' => true,
+            '0' => false,
+        ];
+        $url = 'https://doi/';
+        foreach ($testData as $config => $expected) {
+            $doi = $this->getDOI(
+                $this->getMockResults('Yes 10.1109/CC.2018.8485472'),
+                $url . ':' . $config
+            );
+            $this->assertEquals('10.1109/CC.2018.8485472', $doi->getDOI());
+            $this->assertEquals($url . '10.1109%2FCC.2018.8485472', $doi->getURL());
+            $this->assertFalse($doi->isFullMatch());
+            $this->assertEquals($expected, $doi->redirectFullMatch());
+        }
     }
 
     /**
