@@ -257,7 +257,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(
             [
-                ['name' => 'Development Series'],
+                ['name' => 'Development Series &\'><"'],
                 ['name' => 'Development', 'number' => 'no. 2']
             ],
             $obj->getSeries()
