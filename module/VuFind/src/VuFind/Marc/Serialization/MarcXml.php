@@ -114,15 +114,14 @@ class MarcXml
      */
     public static function toString(string $leader, array $fields): string
     {
-        $xml = simplexml_load_string(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n"
-            . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
-            . "<record></record></collection>"
-        );
-        $record = $xml->record[0];
-
+        $xml = new \XMLWriter();
+        $xml->openMemory();
+        $xml->setIndent(true);
+        $xml->startDocument('1.0', 'UTF-8');
+        $xml->startElementNs(null, 'collection', "http://www.loc.gov/MARC21/slim");
+        $xml->startElement('record');
         if ($leader) {
-            $record->addChild('leader', $leader);
+            $xml->writeElement('leader', $leader);
         }
 
         foreach ($fields as $tag => $fields) {
@@ -131,16 +130,15 @@ class MarcXml
             }
             foreach ($fields as $data) {
                 if (!is_array($data)) {
-                    $field = $record->addChild(
-                        'controlfield',
-                        htmlspecialchars($data, ENT_NOQUOTES)
-                    );
-                    $field->addAttribute('tag', $tag);
+                    $xml->startElement('controlfield');
+                    $xml->writeAttribute('tag', $tag);
+                    $xml->text($data);
+                    $xml->endElement();
                 } else {
-                    $field = $record->addChild('datafield');
-                    $field->addAttribute('tag', $tag);
-                    $field->addAttribute('ind1', $data['i1']);
-                    $field->addAttribute('ind2', $data['i2']);
+                    $xml->startElement('datafield');
+                    $xml->writeAttribute('tag', $tag);
+                    $xml->writeAttribute('ind1', $data['i1']);
+                    $xml->writeAttribute('ind2', $data['i2']);
                     if (isset($data['s'])) {
                         foreach ($data['s'] as $subfield) {
                             $subfieldData = current($subfield);
@@ -148,18 +146,20 @@ class MarcXml
                             if ($subfieldData == '') {
                                 continue;
                             }
-                            $subfield = $field->addChild(
-                                'subfield',
-                                htmlspecialchars($subfieldData, ENT_NOQUOTES)
-                            );
-                            $subfield->addAttribute('code', $subfieldCode);
+                            $xml->startElement('subfield');
+                            $xml->writeAttribute('code', $subfieldCode);
+                            $xml->text($subfieldData);
+                            $xml->endElement();
                         }
                     }
+                    $xml->endElement();
                 }
             }
         }
+        $xml->endElement();
+        $xml->endDocument();
 
-        return $xml->asXML();
+        return $xml->outputMemory(true);
     }
 
     /**
