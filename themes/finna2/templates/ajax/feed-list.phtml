@@ -11,7 +11,7 @@
           <?= $item['date']; ?>
         </span>
       <?php endif; ?>
-      <?php if (!isset($this->linkText) && isset($item['link'])):?>
+      <?php if (isset($item['link'])):?>
       <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']) . ($this->feedUrl ? '?feedUrl=' . $this->escapeHtmlAttr(urlencode($this->feedUrl)) : '')?>"<?=$item['modal'] ? ' data-lightbox="" data-lightbox-title="' . $this->escapeHtmlAttr($item['title']) . '"' : ''?> data-feed="<?=$this->escapeHtmlAttr($this->feedUrl)?>"><?php endif; ?>
         <?php if (isset($item['image']) && isset($item['image']['url'])): ?>
           <img src="<?= $item['image']['url']; ?>" alt="" />
@@ -31,7 +31,7 @@
           </div>
         <?php endif; ?>
         <?php if (isset($item['text'])): ?><span class="text"><?= $item['text']; ?></span><?php endif; ?>
-        <?php if (!isset($this->linkText) && isset($item['link'])):?></a><?php endif; ?>
+        <?php if (isset($item['link'])):?></a><?php endif; ?>
     </li>
     <?php endforeach; ?>
 
