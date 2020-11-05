@@ -270,6 +270,7 @@ trait FinnaOnlinePaymentControllerTrait
                 $this->flashMessenger()->addMessage(
                     'online_payment_successful', 'success'
                 );
+                $view->paymentRegistered = true;
                 return;
             }
 

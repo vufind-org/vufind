@@ -198,12 +198,20 @@
     <?php endif; ?>
   </div>
 </div>
-<?php if (isset($this->registerPayment) && $this->registerPayment): ?>
+<?php if (!empty($this->registerPayment)): ?>
   <?php $this->headScript()->appendFile('finna-online-payment.js'); ?>
   <?=$this->inlineScript(
     \Laminas\View\Helper\HeadScript::SCRIPT,
     '$(document).ready(function() {'
         . "finna.onlinePayment.registerPayment('" . $this->json($registerPaymentParams) . "');" . '
+    });',
+    'SET'
+  ); ?>
+<?php elseif (!empty($this->paymentRegistered)): ?>
+  <?=$this->inlineScript(
+    \Laminas\View\Helper\HeadScript::SCRIPT,
+    '$(document).ready(function() {'
+        . "VuFind.account.clearCache();" . '
     });',
     'SET'
   ); ?>
