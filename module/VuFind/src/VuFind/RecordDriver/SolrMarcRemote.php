@@ -77,10 +77,9 @@ class SolrMarcRemote extends SolrMarc implements
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
 
         // get config values for remote fullrecord service
-        if (! $mainConfig->Record->get('remote_marc_url')) {
+        $this->uriPattern = $mainConfig->Record->remote_marc_url ?? null;
+        if (!$this->uriPattern) {
             throw new \Exception('SolrMarcRemote baseUrl-setting missing.');
-        } else {
-            $this->uriPattern = $mainConfig->Record->get('remote_marc_url');
         }
     }
 
