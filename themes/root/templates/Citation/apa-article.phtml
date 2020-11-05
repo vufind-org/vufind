@@ -4,5 +4,4 @@
  <span style="font-style:italic;"><?=$this->escapeHtml($this->journal)?><?php if (!empty($this->volume) || !empty($this->issue) || !empty($this->pageRange)): ?>, <?php endif; ?>
 <?php if (!empty($this->volume)): ?><?=$this->escapeHtml($this->volume)?><?php endif; ?></span><?php if (!empty($this->issue)): ?>(<?=$this->escapeHtml($this->issue)?>)<?php endif; ?>
 <?php if (!empty($this->volume) || !empty($this->issue)): ?>, <?php endif; ?>
-<?php if (!empty($this->pageRange)) echo strstr($this->pageRange, '-') ? 'pp. ' : 'p. '; ?>
 <?=$this->escapeHtml($this->pageRange)?>. <?php if (isset($this->doi)): ?>https://doi.org/<?=$this->escapeHtml($this->doi)?><?php endif; ?>

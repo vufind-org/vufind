@@ -264,7 +264,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCitationChicago()
     {
-        return $this->getCitationMLA(9, ', no. ', true, 'https://dx.doi.org/');
+        return $this
+            ->getCitationMLA(9, ', no. ', true, 'https://dx.doi.org/', false);
     }
 
     /**
@@ -281,15 +282,17 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @param bool   $includePubPlace Should we include the place of publication?
      * @param string $doiPrefix       Prefix to display in front of DOI; set to
      * false to omit DOIs.
+     * @param bool   $labelPageRange  Should we include p./pp. before page ranges?
      *
      * @return string
      */
     public function getCitationMLA($etAlThreshold = 2, $volNumSeparator = '.',
-        $includePubPlace = false, $doiPrefix = false
+        $includePubPlace = false, $doiPrefix = false, $labelPageRange = true
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
-            'authors' => $this->getMLAAuthors($etAlThreshold)
+            'authors' => $this->getMLAAuthors($etAlThreshold),
+            'labelPageRange' => $labelPageRange,
         ];
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
         if ($doiPrefix && $doi = $this->driver->tryMethod('getCleanDOI')) {
