@@ -1,0 +1,48 @@
+//== Styling Finna radiobuttons
+.radiobutton {
+  font-size: 14px;
+  font-weight: normal;
+
+  & :last-child {
+    padding-bottom: 5px;
+  }
+  & input {
+    border: none;
+    background: transparent;
+    margin-right: 10px;
+    margin-top: 4px;
+  }
+  & input:before {
+    content: "\e61b";
+    font-family: finnaicons;
+    font-size: 18px;
+    margin: -3px 0px 0px -3px;
+    position: absolute;
+    background: @body-bg;
+    border-radius: 50%;
+    color: @gray-light;
+    transition: color .1s linear;
+  }
+  & input:checked:before  {
+    font-family: finnaicons;
+    content: "\e61a";
+    color: @link-color;
+  }
+}
+
+//== Bulk actions buttons
+
+.bulkActionButtons {
+  & .btn-group {
+    .btn {
+      border: 1px solid @gray-lighter;
+      background: @gray-ultralight;
+      color: @text-color;
+      padding: 5px 10px;
+      font-size: 0.9em;
+      @media(max-width: @screen-xs-max) {
+        padding: 5px;
+      }
+    }
+  }
+}

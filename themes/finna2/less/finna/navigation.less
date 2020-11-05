@@ -25,45 +25,10 @@
   }
 }
 
-.nav {
-  margin-bottom: 12px;
-  margin-top: 12px;
-  > li {
-    display: block;
-    > a {
-      transition: background .2s ease-in-out;
-    }
-  }
-}
-@media (min-width:@screen-md-min) {
-  .nav > li {
-    display: inline-block;
-  }
-}
 @media (max-width: @screen-md-max) {
   .finna-navbar .nav >li>a {
     padding: 0 6px;
   }
-}
-
-.navbar .navbar-logo {
-  height: @navbar-logo-height;
-  margin-top: ((@navbar-height/2)-(@navbar-logo-height/2));
-  margin-right: 10px;
-}
-
-.navbar-nav>li.lang>a {
-  line-height: @line-height-computed;
-  margin: 0;
-}
-
-.navbar-nav>li.lang {
-  display: inline-block;
-  border-left: 1px solid @text-color;
-}
-
-.navbar-nav>li.lang:first-child {
-  border-left: none;
 }
 
 // fix navbar for logoutoptions
@@ -109,25 +74,6 @@
   .description {
     font-size: 0.9em;
     line-height: 1.2em;
-  }
-}
-
-.navbar {
-  max-width: 1300px; // dont fully scale the navigation bar text
-
-  .logoutOptions, #loginOptions {
-    .login-text {
-      padding-left: 0.5em;
-      @media (max-width: @screen-xxs) {
-        display: none;
-      }
-    }
-  }
-  #loginOptions-navi .login-text {
-    padding-left: 0.5em;
-    @media (max-width: @screen-xxs) {
-      display: inherit;
-    }
   }
 }
 
@@ -187,174 +133,9 @@
   }
 }
 
-.navbar {
-  .dropdown .dropdown-menu > li > a > div:not(.description) {
-    font-weight: bold;
-  }
-  .dropdown .dropdown-menu > li > a > div.description {
-    font-size: .9em;
-  }
-}
-
-.navbar-collapse {
-  border-top: 3px solid @brand-primary;
-  @media (min-width: @grid-float-breakpoint) {
-    border-top: 0;
-    box-shadow: none;
-  }
-}
-
-.navbar-brand {
-  padding: 0;
-  line-height: @navbar-height;
-  max-width: 200px;
-  .navbar-logo {
-    font-size: @navbar-logo-height;
-    color: @logo-color;
-  }
-  img {
-    height: @navbar-logo-height;
-    width: auto;
-  }
-}
-
-.navbar-toggle {
-  position: absolute;
-  z-index: 30;
-  right:0;
-  height: @navbar-height;
-  width: @navbar-height;
-  margin:0;
-  color: @btn-primary-color;
-  background-color: @brand-primary;
-  padding: 0;
-  border-radius: 0;
-  i {
-    font-size: 24px;
-    cursor: pointer;
-  }
-  &.collapsed .fa.fa-times{
-    display: none;
-  }
-  &:not(.collapsed) .fa.fa-bars {
-    display: none;
-  }
-}
-
 &.dropdown-toggle:focus {
   outline: 1px dotted #212121;
   outline: 5px auto -webkit-focus-ring-color;
-}
-
-.navbar-nav {
-  margin: (@navbar-padding-vertical / 2) -@navbar-padding-horizontal;
-
-  > li > a {
-    padding-top: @navbar-padding-vertical;
-    padding-bottom: @navbar-padding-vertical;
-    line-height: @navbar-height / 2;
-    margin-top: @navbar-height / 4;
-    margin-bottom: @navbar-height / 4;
-    font-size: @navbar-font-size;
-    font-weight: @navbar-font-weight;
-    @media (min-width:@screen-md-min) {
-      margin-bottom: 0;
-    }
-  }
-  &.language:not(.lang-1):before {
-    color: @navbar-default-link-color;
-    content: '';
-    @media (min-width: @grid-float-breakpoint) {
-      border-left: solid 1px @navbar-default-link-color;
-    }
-    height: ((@navbar-height) - 24);
-    margin-top: ((@navbar-height - (@navbar-height - 24)) / 2);
-  }
-  &.lang-1 {
-    margin-left: 10px;
-  }
-  @media (max-width: @grid-float-breakpoint-max) {
-    &.lang-1 {
-      margin-left: -15px;
-      border-top: 1px solid #000;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-      &:before {
-        border-left: none;
-      }
-    }
-    // Dropdowns get custom display when collapsed
-    .open:not(.logoutOptions):not(.browsebar-dropdown) .dropdown-menu {
-      position: static;
-      float: none;
-      width: auto;
-      margin-top: 0;
-      background-color: transparent;
-      border: 0;
-      box-shadow: none;
-      transition: background-color 0.2s ease-in-out;
-      padding: 0;
-      > li > a,
-      .dropdown-header {
-        padding: 5px 15px 5px 25px;
-      }
-      > li {
-        border-bottom: none;
-        &:first-child, &:last-child, &:first-child > a, &:last-child > a {
-          .border-top-radius(0px);
-          .border-bottom-radius(0px);
-        }
-      }
-      > li > a {
-        line-height: @line-height-computed;
-        white-space: normal;
-        &:hover,
-        &:focus {
-          background-image: none;
-          background-color: @nav-link-hover-bg;
-        }
-      }
-    }
-    .open .dropdown-menu {
-      position: absolute;
-      float: left;
-      width: initial;
-      margin-top: 0;
-      background-color: @dropdown-bg;
-      border: 1px solid @dropdown-fallback-border; // IE8 fallback
-      border: 1px solid @dropdown-border;
-      border-radius: @border-radius-base;
-      .box-shadow(0 6px 12px rgba(0,0,0,.275));
-      > li > a,
-      .dropdown-header {
-        padding: 5px 15px 5px 25px;
-      }
-      > li > a {
-        padding: 7px 15px;
-        line-height: @line-height-computed;
-        &:hover,
-        &:focus,
-        &:active {
-          text-decoration: none;
-          color: @dropdown-link-hover-color;
-          background-color: @dropdown-link-hover-bg;
-        }
-      }
-    }
-  }
-  // Uncollapse the nav
-  @media (min-width: @grid-float-breakpoint) {
-    flex-grow: 1;
-    flex-shrink: 1;
-    float: initial;
-    margin: 0;
-
-    &.navbar-main {
-      margin-bottom: @navbar-height / 4;
-    }
-  }
-  .btn {
-    vertical-align: baseline;
-  }
 }
 
 .finna-navbar {
@@ -362,44 +143,6 @@
   .navbar-collapse.in .dropdown-menu a {
     color: @header-text-color;
     padding: 0 10px;
-  }
-}
-
-// Menu position and menu carets
-.navbar-nav > li > .dropdown-menu {
-  margin-top: 0;
-  .border-top-radius(@border-radius-base);
-}
-
-// Specified Finna styles for navbar
-.nav.nav-absolute {
-  position: absolute;
-  margin:0;
-  line-height: @navbar-height;
-  top: 0px;
-  right: 15px;
-  flex-grow: 0;
-  flex-shrink: 0;
-  .dropdown-menu > li > a {
-    white-space: normal;
-  }
-}
-
-@media (max-width: @screen-sm-max) {
-  .nav.nav-absolute {
-    right: @navbar-right;
-    #loginOptions {
-      margin-right: 16px;
-    }
-  }
-}
-
-// Fix dropdowns in navbar for wide screen
-@media (min-width: @screen-md-min) {
-  .navbar .dropdown-menu > li > a {
-    width: 280px;
-    white-space: normal;
-    transition: none;
   }
 }
 
@@ -421,39 +164,6 @@
   }
   > li a {
     color: @breadcrumb-color;
-  }
-}
-
-.dropdown-menu {
-  padding: 0px 1px;
-  border: 1px solid @dropdown-border;
-  border-radius: @border-radius-base;
-  min-width: 0;
-  .box-shadow(0 6px 12px rgba(0, 0, 0, .275));
-
-  > li {
-    border-bottom: 1px solid @gray-lighter;
-  }
-  > li:last-child > a, li:last-child {
-    border-bottom: none;
-    .border-bottom-radius(8px);
-  }
-  > li:first-child > a, li:first-child {
-    .border-top-radius(8px);
-  }
-
-  > li > a {
-    padding: 7px 15px;
-  }
-}
-
-.dropdown-menu > li > a {
-  &:hover,
-  &:focus,
-  &:active {
-    text-decoration: none;
-    color: @dropdown-link-hover-color;
-    background-color: @dropdown-link-hover-bg;
   }
 }
 
@@ -606,46 +316,6 @@
   z-index: 1; /* this is necessary for overcome the pseudo element */
 }
 
-.navbar-nav.lang {
-  line-height: 64px;
-}
-.navbar-nav.nav-login {
-  border-top: 1px solid @gray-lighter;
-  display: none;
-  line-height: 64px;
-  text-align: center;
-}
-
-/* Mobile navbar */
-@media(max-width: @grid-float-breakpoint-max) {
-  .finna-navbar {
-    position: fixed;
-    right: 0;
-    left: 0;
-    z-index: 100;
-    top: 0;
-    border-width: 0 0 1px;
-    background-color: @header-background-color;
-    box-shadow: 0 0 3px 3px rgba(0,0,0,0.1);
-    .navbar-collapse > ul > li {
-      border-bottom: 1px solid @gray-lighter;
-    }
-    .navbar-nav > li.lang, .navbar-nav > li.nav-login {
-      border-bottom: none;
-    }
-    .navbar-nav.nav-login {
-      display: inherit;
-    }
-  }
-  .navbar-collapse.in {
-    box-shadow: 0 3px 5px @gray;
-    max-height: ~"calc(100vh - "@navbar-height~")";
-  }
-  .navbar-header {
-    padding-left: 10px;
-  }
-}
-
 @media(min-width: @grid-float-breakpoint) {
   .finna-navbar {
     display: flex;
@@ -661,10 +331,6 @@
       flex-shrink: 0;
     }
   }
-}
-
-.navbar-nav>li>.dropdown-menu {
-  margin-top: -5px;
 }
 
 header {

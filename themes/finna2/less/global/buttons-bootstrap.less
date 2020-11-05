@@ -1,0 +1,28 @@
+.btn {
+  border-radius: @finna-button-radius;
+  .transition(background .1s ease-in-out);
+  border: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 500;
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    cursor: not-allowed;
+    pointer-events: none; // Future-proof disabling of clicks
+    .opacity(.5);
+    .box-shadow(none);
+  }
+  a {
+    color: @btn-default-color;
+  }
+}
+
+.btn-default {
+  border-radius: @finna-button-radius;
+  border: 1px solid @btn-default-border;
+  color: @text-color;
+  &:hover {
+    color: @text-color;
+  }
+}

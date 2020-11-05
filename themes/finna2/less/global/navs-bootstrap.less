@@ -1,0 +1,157 @@
+.nav {
+  margin-bottom: 12px;
+  margin-top: 12px;
+  > li {
+    display: block;
+    > a {
+      transition: background .2s ease-in-out;
+    }
+  }
+}
+@media (min-width:@screen-md-min) {
+  .nav > li {
+    display: inline-block;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 1px solid @nav-tabs-border-color;
+  // style 5 tabs to make sure they stay as tabs
+  > li {
+    // Make the list-items overlay the bottom border
+    margin-bottom: -1px;
+    > a {
+      font-size: 1.1em;
+      font-weight: 500;
+      background-color: transparent;
+      color: @nav-tabs-text-color;
+      margin-right: 3px;
+      padding: .6em .5em;
+      border: 1px solid transparent;
+      margin-bottom: 0;
+      border-radius: 0;
+      transition: none;
+      border-top: 4px solid transparent;
+      @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        i {
+          display: block;
+          text-align: center;
+        }
+      }
+      @media (max-width: @screen-sm-max) {
+        font-size: .9em;
+      }
+      &:hover {
+        color: @nav-tabs-link-hover-color;
+        border-color: transparent;
+      }
+    }
+    // Active state, and its :hover to override normal :hover
+    &.active > a {
+      &,
+      &:hover,
+      &:focus {
+        background-color: @body-bg;
+        border: 1px solid @nav-tabs-border-color;
+        border-top: 4px solid @nav-tabs-active-color;
+        border-bottom-color: transparent;
+        transition: border 0.05s linear;
+        color: @text-color;
+      }
+    }
+  }
+}
+
+@media (max-width:@screen-xs-max) {
+  .nav-tabs {
+    text-align: center;
+    //border-bottom: 5px solid @gray-lighter;
+    #details {
+      display: none;
+    }
+    > li {
+      word-wrap: break-word;
+    }
+    > li > a {
+      padding: 0 10px 10px;
+      background-color: transparent;
+      border: none;
+      border-bottom: 5px solid transparent;
+      margin:0;
+      i {
+        display: block;
+        min-height: 14px;
+      }
+    }
+    > li.active > a {
+      &,
+      &:hover,
+      &:focus {
+        border: none;
+        border-bottom: 5px solid @link-color;
+      }
+    }
+  }
+}
+
+.tab-content {
+  margin-bottom: 20px;
+  div.dataTables_info {
+    white-space: normal;
+  }
+  #commentList {
+    margin-bottom: 20px;
+  }
+  .comment-wrapper {
+    background: @body-bg;
+    padding: 10px;
+    padding-top: 5px;
+    margin-bottom: 10px;
+    .name {
+      padding-bottom: 4px;
+      border-bottom: 2px solid @gray-lighter;
+    }
+    .comment-text {
+      padding-top: 5px;
+    }
+    .comment-rating {
+      display: inline-block;
+    }
+    .comment-info {
+      display: inline;
+      margin-left: 10px;
+    }
+  }
+  .usercomments-tab {
+    form.comment .rating-holder .info {
+      float: left;
+      margin-right: 5px;
+    }
+  }
+  .toc-tab, ul.toc {
+    margin-left: 10px;
+  }
+}
+
+// Specified Finna styles for navbar
+.nav.nav-absolute {
+  position: absolute;
+  margin:0;
+  line-height: @navbar-height;
+  top: 0px;
+  right: 15px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  .dropdown-menu > li > a {
+    white-space: normal;
+  }
+}
+
+@media (max-width: @screen-sm-max) {
+  .nav.nav-absolute {
+    right: @navbar-right;
+    #loginOptions {
+      margin-right: 16px;
+    }
+  }
+}

@@ -1,10 +1,3 @@
-@import "../../bootstrap3/less/vendor/bootstrap/bootstrap";   //Bootstrap v3.4.0
-@import "finna-variables";
-
-// Import bootstrap3 components
-@import "../../bootstrap3/less/components/js-tree";
-
-// Import Finna extensions
 @import "finna/accordion";
 @import "finna/advanced-search";
 @import "finna/autocomplete";
@@ -54,7 +47,7 @@
 @import "finna/headings";
 @import "finna/footer";
 @import "finna/modal";
-@import "finna/buttons";
+@import "finna/button-groups";
 @import "finna/common";
 @import "finna/video-player";
 @import "finna/record";
@@ -350,24 +343,4 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .well {
     background-color: mix(@body-bg, contrast(@body-bg), 95%);
     border: 1px solid mix(@body-bg, contrast(@body-bg), 85%);
-}
-
-//Bootstrap 3.4.0 >>
-.caret {
-    display: initial;
-    width: initial;
-    height: initial;
-    margin-left: initial;
-    vertical-align: initial;
-    border: initial;
-    border-top: none;
-
-    &::before {
-        font-family: finnaicons;
-        content: "\e613";
-    }
-}
-
-.navbar-nav > li {
-    float: none;
 }
