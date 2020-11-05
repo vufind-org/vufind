@@ -229,27 +229,29 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             'authors' => $this->getAPAAuthors(),
             'edition' => $this->getEdition()
         ];
+
         // Show a period after the title if it does not already have punctuation
         // and is not followed by an edition statement:
         $apa['periodAfterTitle']
             = (!$this->isPunctuated($apa['title']) && empty($apa['edition']));
+        if ($doi = $this->driver->tryMethod('getCleanDOI')) {
+            $apa['doi'] = $doi;
+        }
 
-        // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
+        // Behave differently for books vs. journals:
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
             return $partial('Citation/apa.phtml', $apa);
-        } else {
-            list($apa['volume'], $apa['issue'], $apa['date'])
-                = $this->getAPANumbersAndDate();
-            $apa['journal'] = $this->details['journal'];
-            $apa['pageRange'] = $this->getPageRange();
-            if ($doi = $this->driver->tryMethod('getCleanDOI')) {
-                $apa['doi'] = $doi;
-            }
-            return $partial('Citation/apa-article.phtml', $apa);
         }
+
+        // If we got this far, it's the default article case:
+        list($apa['volume'], $apa['issue'], $apa['date'])
+            = $this->getAPANumbersAndDate();
+        $apa['journal'] = $this->details['journal'];
+        $apa['pageRange'] = $this->getPageRange();
+        return $partial('Citation/apa-article.phtml', $apa);
     }
 
     /**
