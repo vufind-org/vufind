@@ -89,22 +89,11 @@
     $menuListItems = array_merge($menuListItems, $nonLibraryItems);
 
     $desktopList = [
-      'open-loans' => [
-        'active' => in_array($activeToLower, ['checkedout', 'historicloans', 'holds', 'storageretrievalrequests', 'illrequests']),
-        'url' => 'myresearch-checkedout',
-        'translation' => 'checked_out_menu_heading',
-        'dropdown' => true,
-        'ulId' => 'myLoans',
-        'show' => !$ilsOffline && $showLibraryTabs,
-        'children' => [
-          'checkedout',
-          'historicloans',
-          'holds',
-          'storageretrievalrequests',
-          'illrequests'
-        ],
-        'statusKey' => 'loans-menu',
-      ],
+      'checkedout',
+      'historicloans',
+      'holds',
+      'storageretrievalrequests',
+      'illrequests',
       'fines',
       'librarycards',
       'profile',
@@ -170,46 +159,23 @@
       continue;
     }
     $name = $isArray ? $id : $value;
-    $hasChildren = $listItem['children'] ?? false;
     $hasPartial = $listItem['partial'] ?? false;
     $showSpinner = $listItem['showSpinner'] ?? false;
   ?>
-    <?php if ($hasChildren || $hasPartial): ?>
+    <?php if ($hasPartial): ?>
       <li role="menuitem" class="dropdown <?= $listItem['active'] ? ' active' : ''?>">
         <a href="<?=$this->escapeHtmlAttr($this->url($listItem['url']) . ($listItem['query'] ?? ''))?>" id="<?=$id?>" class="hidden-xs hidden-sm list-group-item <?= !$listItem['active'] ? 'collapsed' : '' ?>" >
           <?=$this->transEsc($listItem['translation'])?>
           <?php if ($showSpinner) : ?>
             <i class="hidden fa fa-spinner fa-spin"></i><span class="ajax-error hidden"><small> <?=$this->translate('An error has occurred'); ?></small></span>
           <?php endif; ?>
-          <?php if (!empty($listItem['statusKey'])): ?>
-            <span class="<?=$listItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-          <?php endif; ?>
           <span class="caret"></span>
         </a>
-        <?php if ($hasPartial) : ?>
-          <div class="<?= $value['partial']['wrapperClass'] ?? 'ajax-wrapper'?>">
-            <?php if ($listItem['active']): ?>
-              <?= $this->partial($value['partial']['url'], $value['partial']['params']); ?>
-            <?php endif; ?>
-          </div>
-        <?php else: ?>
-          <ul id="<?=$listItem['ulId']?>" role="presentation" class="dropdown-menu subtabs collapse <?= $listItem['active'] ? ' in' : ''?>">
-            <?php foreach ($listItem['children'] as $childKey) : ?>
-              <?php
-                $childItem = $menuListItems[$childKey] ?? ['show' => false];
-                if (isset($childItem['show']) && !$childItem['show']) { continue; }
-              ?>
-                <li role="menuitem" class="<?="menu-$name"?>  <?=$activeToLower === $childKey ? ' active' : ''?>">
-                  <a href="<?=$this->escapeHtmlAttr($this->url($childItem['url']) . ($childItem['query'] ?? ''))?>" class="list-group-item" <?=$activeToLower === $childKey ? 'aria-current="page"' : ''?>>
-                    <?=$this->transEsc($childItem['translation'])?>
-                    <?php if (!empty($childItem['statusKey'])): ?>
-                      <span class="<?=$childItem['statusKey']?>-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
-                    <?php endif; ?>
-                  </a>
-                </li>
-            <?php endforeach; ?>
-          </ul>
-        <?php endif; ?>
+        <div class="<?= $value['partial']['wrapperClass'] ?? 'ajax-wrapper'?>">
+          <?php if ($listItem['active']): ?>
+            <?= $this->partial($value['partial']['url'], $value['partial']['params']); ?>
+          <?php endif; ?>
+        </div>
       </li>
     <?php else: ?>
       <li role="menuitem" class="hidden-xs hidden-sm <?="menu-$name"?> <?=$activeToLower === $name ? ' active' : ''?>">

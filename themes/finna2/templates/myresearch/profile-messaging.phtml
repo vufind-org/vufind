@@ -8,7 +8,7 @@ if (!isset($capabilityParams)) {
 <?php $updateSettings = $this->ils()->checkFunction('updateMessagingSettings', $capabilityParams); ?>
 <form method="post" class="inline" id="messaging-form">
     <div>
-        <span class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></span>
+        <h4 class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></h4>
     </div>
     <?php foreach ($profile['messagingServices'] as $service): ?>
             <?php

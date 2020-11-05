@@ -48,6 +48,7 @@
 <?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']); ?>
 
 <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
+  <h2><?=$this->transEsc('Profile')?></h2>
   <div class="my-research-content">
     <div>
       <?php if (!$this->translationEmpty('profile_instructions')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><?php endif; ?>
@@ -65,7 +66,7 @@
       <?php endif; ?>
       <?=$this->partial('myresearch/profile-messages.phtml', ['messages' => $this->profile['messages'] ?? []]); ?>
       <?php if (is_array($this->profile)): ?>
-        <div class="myresearch-profile-header"><span><?=$this->transEsc('Library Card Settings');?></span></div>
+        <div class="myresearch-profile-header"><h3><?=$this->transEsc('Library Card Settings');?></h3></div>
         <div class="myresearch-profile-list library-profile">
           <?php if ($showHomeLibForm): ?>
             <form id="profile_form" class="inline" method="post">
@@ -102,7 +103,7 @@
           ?>
           <?php if ($selectedCard !== null && $this->ils()->checkFunction('changePassword', $selectedCard->toArray())): ?>
             <div>
-              <span class="myresearch-profile-middle-header"><?=$this->transEsc('change_password_heading') ?></span>
+              <h4 class="myresearch-profile-middle-header"><?=$this->transEsc('change_password_heading') ?></h4>
             </div>
             <div>
               <span class="change-password-link">
@@ -113,7 +114,7 @@
           <div class="clearfix"></div>
           <form id="profile_library_form" class="inline" method="post">
             <div>
-              <span class="myresearch-profile-middle-header"><?=$this->transEsc('Personal details maintained by the library') ?></span>
+              <h4 class="myresearch-profile-middle-header"><?=$this->transEsc('Personal details maintained by the library') ?></h4>
               <?php if (!$this->translationEmpty('contact_details_instructions')): ?><p class="no-content-message"><?=$this->translate('contact_details_instructions')?></p><?php endif; ?>
             </div>
             <?php if (!empty($this->profile['firstname'])): ?>
@@ -269,13 +270,13 @@
       <?php endif; ?>
     </div>
     <div class="myresearch-profile-header">
-      <span id="profile-settings"><?= $this->transEsc("Settings") ?></span>
+      <h3 id="profile-settings"><?= $this->transEsc("finna_account_settings") ?></h3>
     </div>
     <div class="myresearch-profile-list library-profile">
       <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards, 'hideDueDateReminder' => $this->hideDueDateReminder, 'hideProfileEmailAddress' => $this->hideProfileEmailAddress]); ?>
     </div>
     <div class="myresearch-profile-header">
-      <span><?= $this->transEsc("my_profile_export_import") . ' / ' . $this->transEsc('delete_account_title') ?></span>
+      <h3><?= $this->transEsc("my_profile_export_import") . ' / ' . $this->transEsc('delete_account_title') ?></h3>
     </div>
     <div class="myresearch-profile-list library-profile">
       <div class="my-profile-row">
