@@ -308,7 +308,6 @@ $config = [
             'Finna\Feed\Feed' => 'Finna\Feed\FeedFactory',
             'Finna\Feed\LinkedEvents' => 'Finna\Feed\LinkedEventsFactory',
             'Finna\Form\Form' => 'Finna\Form\FormFactory',
-            'Finna\Http\HttpService' => 'Finna\Service\HttpServiceFactory',
             'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'Finna\LocationService\LocationService' => 'Finna\LocationService\LocationServiceFactory',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
@@ -352,8 +351,6 @@ $config = [
             'VuFind\Role\PermissionManager' => 'Finna\Role\PermissionManager',
             'VuFind\Search\Memory' => 'Finna\Search\Memory',
             'VuFind\Search\Solr\HierarchicalFacetHelper' => 'Finna\Search\Solr\HierarchicalFacetHelper',
-
-            'VuFindHttp\HttpService' => 'Finna\Http\HttpService',
 
             'VuFindSearch\Service' => 'FinnaSearch\Service',
         ]
