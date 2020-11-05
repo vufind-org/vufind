@@ -246,6 +246,21 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
+        [  // three authors, including one with a random trailing comma
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person,', 'Two, Person', 'Three, Person'],
+                'ShortTitle' => 'Test Article',
+                'ContainerTitle' => 'Test Journal',
+                'ContainerVolume' => 1,
+                'ContainerIssue' => 7,
+                'PublicationDates' => ['1999'],
+                'ContainerStartPage' => 19,
+                'ContainerEndPage' => 21
+            ],
+            'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
+            'mla' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
+            'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+        ],
         [  // two authors
             'raw' => [
                 'SecondaryAuthors' => ['One, Person', 'Two, Person'],

@@ -175,7 +175,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             if (count($parts) == 2) {
                 $parts[1] = rtrim($parts[1], '.');
             }
-            return implode(' ', $parts);
+            // Put the parts back together; eliminate stray commas:
+            return rtrim(implode(' ', $parts), ',');
         };
 
         // Now apply all of the functions we collected to all of the strings:
