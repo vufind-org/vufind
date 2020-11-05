@@ -13,7 +13,7 @@
     ob_start(); ?>
     <div class="media-<?=$thumbnailAlignment ?>">
       <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', [
-        'img' => $img, 'disableModal' => true, 'source' => 'SolrAuth', 'imageRightsLabel' => 'Image Rights Authority',
+        'img' => $img, 'disableModal' => true, 'imageRightsLabel' => 'Image Rights Authority',
         'numOfImages' => ['mobile' => 4, 'normal' => 4]
       ]);?>
       <?php if ($this->resolver('record/record-organisation-menu.phtml')): ?>
