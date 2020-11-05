@@ -284,7 +284,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.',
+    public function getCitationMLA($etAlThreshold = 2, $volNumSeparator = '.',
         $includePubPlace = false, $doiPrefix = false
     ) {
         $mla = [
@@ -723,11 +723,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * Get an array of authors for an MLA or Chicago Style citation.
      *
      * @param int $etAlThreshold The number of authors to abbreviate with 'et al.'
-     * This is the only difference between MLA/Chicago Style.
+     * This is a major difference between MLA/Chicago Style.
      *
      * @return array
      */
-    protected function getMLAAuthors($etAlThreshold = 4)
+    protected function getMLAAuthors($etAlThreshold = 2)
     {
         $authorStr = '';
         if (isset($this->details['authors'])

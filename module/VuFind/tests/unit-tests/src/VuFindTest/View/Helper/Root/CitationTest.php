@@ -157,7 +157,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'PublicationDates' => ['1980.']
             ],
             'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier, 1980.',
+            'mla' => 'Burch, Philip H., Jr., et al. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier, 1980.',
             'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
         ],
         [
@@ -184,7 +184,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Holmes & Meier']
             ],
             'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <span style="font-style:italic;">The New Deal to the Carter administration</span>. Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr., et al. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. Holmes &amp; Meier.',
             'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
         ],
         [  // eight authors, with a blend of formatting and extra punctuation/malformed dates
@@ -259,7 +259,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // two authors
