@@ -365,7 +365,7 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return void
      */
     protected function storeShibbolethSession($request)
     {
