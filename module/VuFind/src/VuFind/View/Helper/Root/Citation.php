@@ -264,7 +264,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCitationChicago()
     {
-        return $this->getCitationMLA(9, ', no. ', true);
+        return $this->getCitationMLA(9, ', no. ', true, 'https://dx.doi.org/');
     }
 
     /**
@@ -279,17 +279,23 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation.
      * @param bool   $includePubPlace Should we include the place of publication?
+     * @param string $doiPrefix       Prefix to display in front of DOI; set to
+     * false to omit DOIs.
      *
      * @return string
      */
     public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.',
-        $includePubPlace = false
+        $includePubPlace = false, $doiPrefix = false
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
             'authors' => $this->getMLAAuthors($etAlThreshold)
         ];
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
+        if ($doiPrefix && $doi = $this->driver->tryMethod('getCleanDOI')) {
+            $mla['doi'] = $doi;
+            $mla['doiPrefix'] = $doiPrefix;
+        }
 
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');

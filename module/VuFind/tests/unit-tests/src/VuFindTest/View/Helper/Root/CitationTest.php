@@ -88,7 +88,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             ],
             'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). Mosby Elsevier. https://doi.org/myDOI',
             'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://dx.doi.org/myDOI.',
         ],
         [
             'raw' => [
@@ -336,7 +336,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             ],
             'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21. https://doi.org/testDOI',
             'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21. https://dx.doi.org/testDOI.',
         ]
         // @codingStandardsIgnoreEnd
     ];
