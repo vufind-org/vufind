@@ -41,9 +41,12 @@ namespace Finna\RecordDriver;
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrQdc extends \VuFind\RecordDriver\SolrDefault
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use SolrFinnaTrait;
     use XmlReaderTrait;
+    use UrlCheckTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Constructor
@@ -120,7 +123,9 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
             $url = isset($attributes->href)
                 ? (string)$attributes->href : (string)$node;
 
-            if (!preg_match('/\.(jpg|png)$/i', $url)) {
+            if (!preg_match('/\.(jpg|png)$/i', $url)
+                || !$this->isUrlLoadable($url, $this->getUniqueID())
+            ) {
                 continue;
             }
             $urls[$size] = $url;

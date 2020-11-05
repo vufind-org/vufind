@@ -37,6 +37,7 @@ namespace Finna\RecordDriver;
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrAuthForward extends SolrAuthDefault
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use SolrAuthFinnaTrait;
     use SolrForwardTrait {
@@ -44,6 +45,8 @@ class SolrAuthForward extends SolrAuthDefault
         getDeathPlace as _getDeathPlace;
     }
     use XmlReaderTrait;
+    use UrlCheckTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Get an array of alternative titles for the record.

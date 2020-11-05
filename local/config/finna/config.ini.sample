@@ -1319,6 +1319,32 @@ allowed_url_schemes[] = 'tel'
 allowed_url_schemes[] = 'mailto'
 allowed_url_schemes[] = 'maps'
 
+; Exact matches or regular expressions (enclosed in //) for allowed hosts in external
+; content loaders (cover images, descriptions).  All hosts are converted to lowercase
+; before comparison, and lookup is done with both the host name and IP address.
+;allowed_external_hosts[] = 'good.host'
+;allowed_external_hosts[] = '/^(s1|s2)\.good\.host$/'
+
+; Mode to use for processing the allowed_external_hosts lists. Valid options are:
+; enforce - The list is used to filter hosts (default)
+; enforce-report - The list is used to filter hosts. Matching hosts are also logged.
+; report  - Non-matching hosts are reported but loading is not blocked
+; disable - List processing is disabled
+;allowed_external_hosts_mode = enforce
+
+; Exact matches or regular expressions (enclosed in //) for hosts blocked in external
+; content loaders (cover images, descriptions). All hosts are converted to lowercase
+; before comparison, and lookup is done with both the host name and IP address.
+;disallowed_external_hosts[] = 'bad.host'
+;disallowed_external_hosts[] = '/\.bad\.host$/'
+
+; Mode to use for processing the disallowed_external_hosts lists. Valid options are:
+; enforce - The list is used to filter hosts (default)
+; enforce-report - The list is used to filter hosts. Matching hosts are also logged.
+; report  - Matching hosts are reported but loading is not blocked
+; disable - List processing is disabled
+;disallowed_external_hosts_mode = enforce
+
 ; Allow image links from BTJ (default is false)
 ;btj_links = true
 

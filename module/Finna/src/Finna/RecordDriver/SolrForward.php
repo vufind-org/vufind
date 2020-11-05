@@ -39,10 +39,14 @@ namespace Finna\RecordDriver;
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrForward extends \VuFind\RecordDriver\SolrDefault
+    implements \Laminas\Log\LoggerAwareInterface
 {
-    use SolrFinnaTrait, SolrForwardTrait {
+    use SolrFinnaTrait;
+    use SolrForwardTrait {
         SolrForwardTrait::getAllImages insteadof SolrFinnaTrait;
     }
+    use UrlCheckTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Non-presenter author relator codes.

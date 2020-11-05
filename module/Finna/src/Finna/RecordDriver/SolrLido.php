@@ -43,9 +43,12 @@ namespace Finna\RecordDriver;
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrLido extends \VuFind\RecordDriver\SolrDefault
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use SolrFinnaTrait;
     use XmlReaderTrait;
+    use UrlCheckTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * List of undisplayable file formats
@@ -222,6 +225,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $highResolution = [];
             foreach ($resourceSet->resourceRepresentation as $representation) {
                 $linkResource = $representation->linkResource;
+                $url = (string)$linkResource;
+                if (!$this->isUrlLoadable($url, $this->getUniqueID())) {
+                    continue;
+                }
                 $attributes = $representation->attributes();
                 if (empty((string)$linkResource)) {
                     continue;
@@ -263,7 +270,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     break;
                 }
 
-                $url = (string)$linkResource;
                 if (!$size) {
                     if ($urls) {
                         // We already have URL's, store them in the results first.

@@ -68,6 +68,9 @@ trait SolrForwardTrait
                     continue;
                 }
                 $url = (string)$attributes->{'elokuva-elonet-materiaali-kuva-url'};
+                if (!$this->isUrlLoadable($url, $this->getUniqueID())) {
+                    continue;
+                }
                 if (!empty($xml->Title->PartDesignation->Value)) {
                     $partAttrs = $xml->Title->PartDesignation->Value->attributes();
                     $desc = (string)$partAttrs->{'kuva-kuvateksti'};

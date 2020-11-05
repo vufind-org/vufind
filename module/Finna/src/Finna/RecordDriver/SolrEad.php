@@ -46,9 +46,12 @@ namespace Finna\RecordDriver;
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrEad extends \VuFind\RecordDriver\SolrDefault
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use SolrFinnaTrait;
     use XmlReaderTrait;
+    use UrlCheckTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Constructor
@@ -138,6 +141,10 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             $urls = [];
             foreach ($daogrp->daoloc as $daoloc) {
                 $attributes = $daoloc->attributes();
+                $url = (string)$attributes->href;
+                if (!$this->isUrlLoadable($url, $this->getUniqueID())) {
+                    continue;
+                }
                 $role = (string)$attributes->role;
                 $size = '';
                 switch ($role) {
@@ -154,7 +161,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 if (!$size) {
                     continue;
                 }
-                $url = (string)$attributes->href;
                 $urls[$size] = $url;
             }
             if (empty($urls)) {

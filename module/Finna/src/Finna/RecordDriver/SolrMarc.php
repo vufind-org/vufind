@@ -39,9 +39,12 @@ namespace Finna\RecordDriver;
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrMarc extends \VuFind\RecordDriver\SolrMarc
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use SolrFinnaTrait;
     use MarcReaderTrait;
+    use UrlCheckTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Fields that may contain subject headings, and their descriptions
@@ -192,6 +195,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
             if (($image || $pdf) && $this->urlAllowed($address)
                 && !$this->urlBlocked($address)
+                && ($pdf || $this->isUrlLoadable($address, $this->getUniqueID()))
             ) {
                 $urls[$image ? 'images' : 'pdfs'][] = [
                     'urls' => [
@@ -401,7 +405,9 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 if ("text" == $type || "text/html" == $type) {
                     if ($address = $url->getSubfield('u')) {
                         $address = $address->getData();
-                        return $address;
+                        if ($this->isUrlLoadable($address, $this->getUniqueID())) {
+                            return $address;
+                        }
                     }
                 }
             }
