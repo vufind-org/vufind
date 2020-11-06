@@ -69,10 +69,10 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     ];
 
     protected $proxyUser = [
-        'HTTP_SHIB_IDENTITY_PROVIDER' => 'https://idp1.example.org/',
-        'HTTP_USERNAME' => 'testuser3',
-        'HTTP_USERLIBRARYID' => 'testuser3',
-        'HTTP_MAIL' => 'testuser3@example.org',
+        'Shib-Identity-Provider' => 'https://idp1.example.org/',
+        'username' => 'testuser3',
+        'userLibraryId' => 'testuser3',
+        'mail' => 'testuser3@example.org',
     ];
 
     /**

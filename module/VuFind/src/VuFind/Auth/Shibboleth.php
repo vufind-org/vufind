@@ -106,6 +106,20 @@ class Shibboleth extends AbstractBase
     protected $useHeaders = false;
 
     /**
+     * Name of attribute with shibboleth identity provider
+     *
+     * @var string
+     */
+    protected $shibIdentityProvider = self::DEFAULT_IDPSERVERPARAM;
+
+    /**
+     * Name of attribute with shibboleth session ID
+     *
+     * @var string
+     */
+    protected $shibSessionId = self::SHIB_SESSION_ID;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Session\ManagerInterface    $sessionManager      Session
@@ -135,6 +149,10 @@ class Shibboleth extends AbstractBase
     {
         parent::setConfig($config);
         $this->useHeaders = $this->config->Shibboleth->use_headers ?? false;
+        $this->shibIdentityProvider = $this->config->Shibboleth->shibIdentityProvider
+            ?? self::DEFAULT_IDPSERVERPARAM;
+        $this->shibSessionId = $this->config->Shibboleth->shibSessionId
+            ?? self::SHIB_SESSION_ID;
     }
 
     /**
@@ -286,10 +304,7 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
-        $sessionId = $this->getAttribute(
-            $this->request,
-            self::SHIB_SESSION_ID
-        );
+        $sessionId = $this->getAttribute($this->request, $this->shibSessionId);
         return !isset($sessionId);
     }
 
@@ -395,7 +410,7 @@ class Shibboleth extends AbstractBase
      */
     protected function getCurrentEntityId($request)
     {
-        return $this->getAttribute($request, static::DEFAULT_IDPSERVERPARAM);
+        return $this->getAttribute($request, $this->shibIdentityProvider);
     }
 
     /**
@@ -409,22 +424,10 @@ class Shibboleth extends AbstractBase
     protected function getAttribute($request, $attribute)
     {
         if ($this->useHeaders) {
-            $header = $request->getHeader($this->normalizeAttrName($attribute));
+            $header = $request->getHeader($attribute);
             return ($header) ? $header->getFieldValue() : null;
         } else {
             return $request->getServer()->get($attribute, null);
         }
-    }
-
-    /**
-     * Convert name of server environment variable to header name.
-     *
-     * @param string $attribute name of server environment variable
-     *
-     * @return string header name
-     */
-    protected function normalizeAttrName($attribute)
-    {
-        return "HTTP_" . strtoupper(str_replace('-', '_', $attribute));
     }
 }
