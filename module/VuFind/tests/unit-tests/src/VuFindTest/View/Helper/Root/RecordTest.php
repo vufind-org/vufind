@@ -84,7 +84,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('RecordDriver/SolrMarc/collection-record.phtml'))
             ->will($this->returnValue(false));
         $this->setSuccessTemplate(
-            $record, 'RecordDriver/SolrDefault/collection-record.phtml', 'success', 1, 3
+            $record, 'RecordDriver/SolrDefault/collection-record.phtml', 'success', 1, 2
         );
         $this->assertEquals('success', $record->getCollectionBriefRecord());
     }
@@ -198,7 +198,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getView()->resolver()->expects($this->at(0))->method('resolve')
             ->will($this->returnValue(false));
         $this->setSuccessTemplate(
-            $record, 'RecordDriver/AbstractBase/list-entry.phtml', 'success', 1, 3
+            $record, 'RecordDriver/AbstractBase/list-entry.phtml', 'success', 1, 2
         );
         $this->assertEquals('success', $record->getListEntry(null, $user));
     }
