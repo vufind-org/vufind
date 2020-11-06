@@ -29,7 +29,9 @@ namespace VuFindTest\RecordDriver;
 
 use Exception;
 use Laminas\Config\Config;
+use Laminas\Http\Response;
 use VuFind\RecordDriver\SolrMarcRemote;
+use VuFindHttp\HttpServiceInterface;
 
 /**
  * SolrMarcRemote Record Driver Test Class
@@ -69,15 +71,47 @@ class SolrMarcRemoteTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test actually retrieving a record.
+     *
+     * @return void
+     */
+    public function testRecordRetrieval(): void
+    {
+        $driver = $this->getDriver();
+        $driver->setHttpService($this->getMockHttpService());
+        $driver->setRawData(['id' => 1]);
+        $this->assertEquals(4, count($driver->getTOC()));
+    }
+
+    /**
      * Get a SolrMarcRemote driver preconfigured to load a record.
      *
      * @return SolrMarcRemote
      */
     protected function getDriver(): SolrMarcRemote
     {
-        $url = 'http://foo';
+        $url = 'http://foo/%s';
         $config = new Config(['Record' => ['remote_marc_url' => $url]]);
         $driver = new SolrMarcRemote($config);
         return $driver;
+    }
+
+    /**
+     * Get a mock HttpService for testing
+     *
+     * @return HttpServiceInterface
+     */
+    protected function getMockHttpService(): HttpServiceInterface
+    {
+        $marc = $this->getFixture('marc/toc2.xml');
+        $response =  Response::fromString(
+            "HTTP/1.1 200 OK\n\n"
+            . $marc
+        );
+        $service = $this->getMockBuilder(HttpServiceInterface::class)->getMock();
+        $service->expects($this->once())->method('get')
+            ->with($this->equalTo('http://foo/1'))
+            ->will($this->returnValue($response));
+        return $service;
     }
 }
