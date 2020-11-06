@@ -28,7 +28,6 @@
 namespace VuFindTest\RecordDriver;
 
 use Laminas\Config\Config;
-use VuFind\Auth\ILSAuthenticator;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\RecordDriver\SolrOverdrive;
 
@@ -50,25 +49,153 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testSupportsOpenUrl()
+    public function testSupportsOpenUrl(): void
     {
         // Not supported:
         $this->assertFalse($this->getDriver()->supportsOpenUrl());
+        $this->assertFalse($this->getDriver()->supportsCoinsOpenUrl());
+    }
+
+    /**
+     * Test getOverdriveID in MARC mode
+     *
+     * @return void
+     */
+    public function testGetOverdriveIDWithMarc(): void
+    {
+        $connector = $this->getMockConnector(
+            '{ "isMarc": true, "idField": "010", "idSubfield": "a" }'
+        );
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
+        );
+        $this->assertEquals('lc123', $driver->getOverdriveID());
+    }
+
+    /**
+     * Test getOverdriveID in non-MARC mode
+     *
+     * @return void
+     */
+    public function testGetOverdriveIDWithoutMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": false }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['id' => 'LC345']
+        );
+        $this->assertEquals('lc345', $driver->getOverdriveID());
+    }
+
+    /**
+     * Test getBreadcrumb()
+     *
+     * @return void
+     */
+    public function testGetBreadcrumb(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": false }');
+        $driver = $this->getDriver(null, null, $connector);
+        // Confirm that we use short title when available, title otherwise:
+        $driver->setRawData(['title' => 'title : full', 'title_short' => 'title']);
+        $this->assertEquals('title', $driver->getBreadcrumb());
+        $driver->setRawData(['title' => 'title : full']);
+        $this->assertEquals('title : full', $driver->getBreadcrumb());
+    }
+
+    /**
+     * Test getTitleSection()
+     *
+     * @return void
+     */
+    public function testGetTitleSection(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": true }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
+        );
+        $this->assertEquals('2. Return', $driver->getTitleSection());
+    }
+
+    /**
+     * Test getGeneralNotes()
+     *
+     * @return void
+     */
+    public function testGetGeneralNotes(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": true }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
+        );
+        $this->assertEquals(
+            ['General notes here.', 'Translation.'], $driver->getGeneralNotes()
+        );
+    }
+
+    /**
+     * Test getRawData behavior in MARC mode
+     *
+     * @return void
+     */
+    public function testGetRawDataMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": true }');
+        $driver = $this->getDriver(null, null, $connector);
+        $raw = ['foo' => 'bar'];
+        $driver->setRawData($raw);
+        $this->assertEquals($raw, $driver->getRawData());
+    }
+
+    /**
+     * Test getRawData behavior in non-MARC mode
+     *
+     * @return void
+     */
+    public function testGetRawDataNonMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": false }');
+        $driver = $this->getDriver(null, null, $connector);
+        $raw = ['foo' => 'bar'];
+        $driver->setRawData(['fullrecord' => json_encode($raw)]);
+        $this->assertEquals($raw, $driver->getRawData());
     }
 
     /**
      * Get a record driver to test with.
      *
+     * @param Config             $config       Main configuration
+     * @param Config             $recordConfig Record configuration
+     * @param OverdriveConnector $connector    Overdrive connector
+     *
      * @return SolrOverdrive
      */
-    protected function getDriver($config = null, $recordConfig = null)
+    protected function getDriver(Config $config = null, Config $recordConfig = null,
+        OverdriveConnector $connector = null
+    ): SolrOverdrive {
+        return new SolrOverdrive(
+            $config ?? new Config([]),
+            $recordConfig ?? new Config([]),
+            $connector ?? $this->getMockConnector()
+        );
+    }
+
+    /**
+     * Get a mock Overdrive connector.
+     *
+     * @param string $config JSON-formatted configuration
+     *
+     * @return OverdriveConnector
+     */
+    protected function getMockConnector(string $config = '{}'): OverdriveConnector
     {
-        $finalConfig = $config ?? new Config([]);
-        $finalRecordConfig = $recordConfig ?? new Config([]);
-        $auth = $this->getMockBuilder(ILSAuthenticator::class)
-            ->disableOriginalConstructor()->getMock();
         $connector = $this->getMockBuilder(OverdriveConnector::class)
             ->disableOriginalConstructor()->getMock();
-        return new SolrOverdrive($finalConfig, $finalRecordConfig, $connector);
+        $connector->expects($this->any())->method('getConfig')
+            ->will($this->returnValue(json_decode($config)));
+        return $connector;
     }
 }
