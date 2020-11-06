@@ -28,8 +28,8 @@
 namespace VuFindTest\RecordDriver;
 
 use Laminas\Config\Config;
-use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\RecordDriver\SolrOverdrive;
 
 /**
