@@ -386,8 +386,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * Override the base marc trait to return an empty marc reader object if no MARC
      * is available.
      *
-     * @return \File_MARCBASE
-     * @throws \File_MARC_Exception
+     * @return \VuFind\Marc\MarcReader
      */
     public function getMarcReader()
     {
