@@ -291,7 +291,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $field = $this->config->idField;
                 $subfield = $this->config->idSubfield;
                 $result = strtolower(
-                    $this->getFieldArray($field, $subfield)[0]
+                    $this->getFieldArray($field, $subfield)[0] ?? ''
                 );
             } else {
                 $result = strtolower($this->getUniqueID());
@@ -391,11 +391,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getMarcReader()
     {
-        if ($this->getIsMarc()) {
-            return parent::getMarcReader();
-        } else {
-            return new $this->marcReaderClass('<record></record>');
-        }
+        return $this->getIsMarc()
+            ? parent::getMarcReader()
+            : new $this->marcReaderClass('<record></record>');
     }
 
     /**
