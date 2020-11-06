@@ -293,7 +293,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $field = $this->config->idField;
                 $subfield = $this->confif->idSubfield;
                 $result = strtolower(
-                    $this->getFieldArray($field, $subfield)[0]
+                    $this->getFieldArray($field, $subfield)[0] ?? ''
                 );
             } else {
                 $result = strtolower($this->getUniqueID());
@@ -386,12 +386,28 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Get Marc Reader
+     *
+     * Override the base marc trait to return an empty marc reader object if no MARC
+     * is available.
+     *
+     * @return \VuFind\Marc\MarcReader
+     */
+    public function getMarcReader()
+    {
+        return $this->getIsMarc()
+            ? parent::getMarcReader()
+            : new $this->marcReaderClass('<record></record>');
+    }
+
+    /**
      * Get Marc Record
      *
-     * Override the base marc trait to return a fake marc obj.
+     * Override the base marc trait to return a fake marc object
      *
-     * @return \File_MARCBASE
-     * @throws \File_MARC_Exception
+     * @return     \File_MARCBASE
+     * @throws     \File_MARC_Exception
+     * @deprecated Use getMarcReader()
      */
     public function getMarcRecord()
     {
