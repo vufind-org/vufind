@@ -445,9 +445,11 @@ class EDS extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        return $this->extractEbscoDataFromRecordInfo(
-            'BibRecord/BibRelationships/HasContributorRelationships/*/'
-            . 'PersonEntity/Name/NameFull'
+        return array_unique(
+            $this->extractEbscoDataFromRecordInfo(
+                'BibRecord/BibRelationships/HasContributorRelationships/*/'
+                . 'PersonEntity/Name/NameFull'
+            )
         );
     }
 
@@ -778,6 +780,29 @@ class EDS extends DefaultRecord
             'BibRecord/BibEntity/PhysicalDescription/Pagination'
         );
         return $pagination['StartPage'] ?? '';
+    }
+
+    /**
+     * Get the end page of the item that contains this record.
+     *
+     * @return string
+     */
+    public function getContainerEndPage()
+    {
+        // EBSCO doesn't make this information readily available, but in some
+        // cases we can abstract it from an OpenURL.
+        $startPage = $this->getContainerStartPage();
+        if (!empty($startPage)) {
+            $regex = "/&pages={$startPage}-(\d+)/";
+            foreach ($this->getFTCustomLinks() as $link) {
+                if (preg_match($regex, $link['Url'] ?? '', $matches)) {
+                    if (isset($matches[1])) {
+                        return $matches[1];
+                    }
+                }
+            }
+        }
+        return '';
     }
 
     /**

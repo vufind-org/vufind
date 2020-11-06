@@ -95,7 +95,7 @@ trait MarcBasicTrait
      */
     public function getUniqueID()
     {
-        return (string)$this->getMarcRecord()->getField('001')->getData();
+        return (string)$this->getMarcReader()->getField('001');
     }
 
     /**
@@ -148,18 +148,17 @@ trait MarcBasicTrait
     public function getLanguages()
     {
         $retVal = [];
-        $field = $this->getMarcRecord()->getField('008');
+        $field = $this->getMarcReader()->getField('008');
         if ($field) {
-            $content = $field->getData();
-            if (strlen($content) >= 38) {
-                $retVal[] = substr($content, 35, 3);
+            if (strlen($field) >= 38) {
+                $retVal[] = substr($field, 35, 3);
             }
         }
-        $fields = $this->getMarcRecord()->getFields('041');
+        $fields = $this->getMarcReader()->getFields('041');
         foreach ($fields as $field) {
-            if (strcmp($field->getIndicator(2), '7') !== 0) {
-                foreach ($field->getSubFields('a') as $sf) {
-                    $retVal[] = $sf->getData();
+            if ($field['i2'] !== '7') {
+                foreach ($this->getSubfields($field, 'a') as $subfield) {
+                    $retVal[] = $subfield;
                 }
             }
         }
@@ -183,13 +182,10 @@ trait MarcBasicTrait
      */
     public function getSortTitle()
     {
-        $field = $this->getMarcRecord()->getField('245');
-        if ($field) {
-            $title = $field->getSubfield('a');
-            if ($title) {
-                $skip = $field->getIndicator(2);
-                return substr($title->getData(), $skip);
-            }
+        $field = $this->getMarcReader()->getField('245');
+        if ($field && $title = $this->getSubfield($field, 'a')) {
+            $skip = $field['i2'];
+            return substr($title, $skip);
         }
         return parent::getSortTitle();
     }

@@ -43,6 +43,8 @@ use VuFind\ILS\Driver\XCNCIP2;
  */
 class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Standard setup method.
      *
@@ -1278,17 +1280,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function loadResponse($filename)
     {
-        $file = realpath(
-            __DIR__ .
-            '/../../../../../../tests/fixtures/xcncip2/response/' . $filename
+        return HttpResponse::fromString(
+            $this->getFixture("xcncip2/response/$filename")
         );
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to load fixture file: %s ', $file)
-            );
-        }
-        $response = file_get_contents($file);
-        return HttpResponse::fromString($response);
     }
 
     /**

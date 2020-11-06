@@ -42,6 +42,8 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test that missing parameters yield an error message.
      *
@@ -71,7 +73,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithMinimalParameters()
     {
-        $configFixturePath = __DIR__ . '/../../../../../fixtures/empty.config.php';
+        $configFixturePath = $this->getFixtureDir('VuFindConsole') . 'empty.config.php';
         $expectedConfig = [
             'router' => [
                 'routes' => [

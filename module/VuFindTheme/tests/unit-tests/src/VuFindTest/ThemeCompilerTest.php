@@ -41,12 +41,7 @@ use VuFindTheme\ThemeInfo;
  */
 class ThemeCompilerTest extends Unit\TestCase
 {
-    /**
-     * Path to theme fixtures
-     *
-     * @var string
-     */
-    protected $fixturePath;
+    use \VuFindTest\Unit\FixtureTrait;
 
     /**
      * ThemeInfo object for tests
@@ -69,8 +64,9 @@ class ThemeCompilerTest extends Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
-        $this->info = new ThemeInfo($this->fixturePath, 'parent');
+        $this->info = new ThemeInfo(
+            $this->getFixtureDir('VuFindTheme') . 'themes', 'parent'
+        );
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
         if (is_dir($this->targetPath)) {
@@ -232,7 +228,7 @@ class ThemeCompilerTest extends Unit\TestCase
     /**
      * Get a test ThemeCompiler object
      *
-     * @return ThemeInfo
+     * @return ThemeCompiler
      */
     protected function getThemeCompiler()
     {

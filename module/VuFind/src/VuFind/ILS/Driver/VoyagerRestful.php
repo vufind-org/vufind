@@ -2378,7 +2378,7 @@ EOT;
 
         $replyCode = (string)$results->{'reply-code'};
         if ($replyCode != 0 && $replyCode != 8) {
-            throw new Exception('System error fetching call slips');
+            throw new \Exception('System error fetching call slips');
         }
         $requests = [];
         if (isset($results->callslips->institution)) {
