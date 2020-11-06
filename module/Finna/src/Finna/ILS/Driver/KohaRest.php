@@ -1435,7 +1435,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         $location = $this->getLibraryName($holdings['holding_library_id']);
         $callnumber = '';
-        if (!empty($holdings['ccode'])
+        if (!empty($holdings['collection_code'])
             && !empty($this->config['Holdings']['display_ccode'])
         ) {
             $callnumber = $this->translateCollection(
@@ -1526,6 +1526,44 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             'status' => '',
             'barcode' => null,
         ];
+    }
+
+    /**
+     * Return a call number for a Koha item
+     *
+     * @param array $item Item
+     *
+     * @return string
+     */
+    protected function getItemCallNumber($item)
+    {
+        $result = [];
+        if (!empty($item['collection_code'])
+            && !empty($this->config['Holdings']['display_ccode'])
+        ) {
+            $result[] = $this->translateCollection(
+                $item['collection_code'],
+                $item['collection_code_description'] ?? $item['collection_code']
+            );
+        }
+        if (!$this->groupHoldingsByLocation) {
+            $loc = $this->translateLocation(
+                $item['location'],
+                !empty($item['location_description'])
+                    ? $item['location_description'] : $item['location']
+            );
+            if ($loc) {
+                $result[] = $loc;
+            }
+        }
+        if ((!empty($item['callnumber'])
+            || !empty($item['callnumber_display']))
+            && !empty($this->config['Holdings']['display_full_call_number'])
+        ) {
+            $result[] = $item['callnumber'];
+        }
+        $str = implode(', ', $result);
+        return $str;
     }
 
     /**
