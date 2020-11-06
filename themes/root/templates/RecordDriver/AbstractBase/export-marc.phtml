@@ -1,5 +1,5 @@
 <?php
-$marc = $this->driver->getMarcReader()->toISO2709();
+$marc = $this->driver->getMarcReader()->toFormat('ISO2709');
 if (!$marc) {
     throw new \VuFind\Exception\FormatUnavailable();
 }
