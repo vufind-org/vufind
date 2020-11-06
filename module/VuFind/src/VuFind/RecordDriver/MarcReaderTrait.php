@@ -243,8 +243,7 @@ trait MarcReaderTrait
         // note that it is important to retain the original MARC order here!
         foreach ($currentField['subfields'] as $currentSubfield) {
             if (in_array($currentSubfield['code'], $subfields)) {
-                // Grab the current subfield value and act on it if it is
-                // non-empty:
+                // Grab the current subfield value and act on it if it is non-empty:
                 $data = trim($currentSubfield['data']);
                 if (!empty($data)) {
                     $matches[] = $data;

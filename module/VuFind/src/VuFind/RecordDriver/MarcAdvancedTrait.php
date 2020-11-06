@@ -219,8 +219,8 @@ trait MarcAdvancedTrait
         $record = clone $this->getMarcReader();
         // The default implementation does not filter out any fields
         // $marc = new \File_MARCXML($record->toXML(), \File_MARCXML::SOURCE_STRING);
-        // $record->deleteFields('9', true);
-        // return $record->toXML();
+        // $marc->deleteFields('9', true);
+        // return $marc->toXML();
         //
         return $record->toXML();
     }
@@ -941,9 +941,7 @@ trait MarcAdvancedTrait
     {
         $field = $this->getMarcReader()->getField('015');
         if ($field && $nbn = $this->getSubfield($field, 'a')) {
-            $result = [
-                'nbn' => $nbn
-            ];
+            $result = compact('nbn');
             if ($source = $this->getSubfield($field, '7')) {
                 $result['source'] = $source;
             }

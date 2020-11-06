@@ -42,6 +42,13 @@ use VuFind\Marc\Serialization\MarcXml;
 class MarcReader
 {
     /**
+     * MARC leader
+     *
+     * @var string
+     */
+    protected $leader;
+
+    /**
      * MARC is stored in a multidimensional array:
      *  [001] - "12345"
      *  [245] - i1: '0'
@@ -52,6 +59,8 @@ class MarcReader
      *                  ['k' => 'Another'],
      *                  ['p' => 'Part'],
      *              ]
+     *
+     * @var array
      */
     protected $fields;
 
@@ -76,10 +85,12 @@ class MarcReader
     public function setData(string $data): void
     {
         if (MarcXml::canParse($data)) {
-            $this->fields = MarcXml::fromString($data);
+            list($leader, $this->fields) = MarcXml::fromString($data);
         } elseif (Iso2709::canParse($data)) {
-            $this->fields = Iso2709::fromString($data);
+            list($leader, $this->fields) = Iso2709::fromString($data);
         }
+        // Make sure leader is 24 characters
+        $this->leader = $leader ? str_pad(substr($leader, 0, 24), 24) : '';
     }
 
     /**
@@ -111,10 +122,7 @@ class MarcReader
      */
     public function getLeader(): string
     {
-        // Make sure leader is 24 characters. E.g. Voyager is often missing the last
-        // '0' of the leader.
-        return isset($this->fields['000'])
-            ? str_pad(substr($this->fields['000'], 0, 24), 24) : '';
+        return $this->leader;
     }
 
     /**

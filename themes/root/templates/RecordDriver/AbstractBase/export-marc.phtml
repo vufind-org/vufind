@@ -1,1 +1,7 @@
-<?=$this->driver->getMarcReader()->toISO2709() ?: $this->driver->getMarcReader()->toXML() ?>
+<?php
+$marc = $this->driver->getMarcReader()->toISO2709();
+if (!$marc) {
+    throw new \VuFind\Exception\FormatUnavailable();
+}
+echo $marc;
+?>

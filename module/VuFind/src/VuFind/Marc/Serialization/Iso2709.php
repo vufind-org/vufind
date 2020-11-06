@@ -36,7 +36,7 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class Iso2709
+class Iso2709 implements SerializationInterface
 {
     const SUBFIELD_INDICATOR = "\x1F";
     const END_OF_FIELD = "\x1E";
@@ -53,7 +53,6 @@ class Iso2709
     public static function canParse(string $marc): bool
     {
         // A pretty naïve check, but it's enough to tell the different formats apart
-
         return ctype_digit(substr($marc, 0, 4));
     }
 
@@ -73,9 +72,8 @@ class Iso2709
             ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
         );
 
-        $fields = [
-            '000' => substr($marc, 0, 24)
-        ];
+        $leader = substr($marc, 0, 24);
+        $fields = [];
         $dataStart = 0 + (int)substr($marc, 12, 5);
         $dirLen = $dataStart - self::LEADER_LEN - 1;
 
@@ -117,7 +115,7 @@ class Iso2709
             $offset += 12;
         }
 
-        return $fields;
+        return [$leader, $fields];
     }
 
     /**
@@ -134,9 +132,6 @@ class Iso2709
         $data = '';
         $datapos = 0;
         foreach ($fields as $tag => $fields) {
-            if ($tag == '000') {
-                continue;
-            }
             if (strlen($tag) != 3) {
                 continue;
             }

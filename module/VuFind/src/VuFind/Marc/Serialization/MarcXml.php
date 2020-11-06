@@ -36,7 +36,7 @@ namespace VuFind\Marc\Serialization;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class MarcXml
+class MarcXml implements SerializationInterface
 {
     /**
      * Check if this class can parse the given MARC string
@@ -48,7 +48,6 @@ class MarcXml
     public static function canParse(string $marc): bool
     {
         // A pretty naïve check, but it's enough to tell the different formats apart
-
         return strncmp($marc, '<', 1) === 0;
     }
 
@@ -78,15 +77,11 @@ class MarcXml
             $xml = $xml->record;
         }
 
-        $fields = [
-            '000' => isset($xml->leader) ? (string)$xml->leader[0] : ''
-        ];
+        $leader = isset($xml->leader) ? (string)$xml->leader[0] : '';
+        $fields = [];
 
         foreach ($xml->controlfield as $field) {
             $tag = (string)$field['tag'];
-            if ('000' === $tag) {
-                continue;
-            }
             $fields[$tag][] = (string)$field;
         }
 
@@ -101,7 +96,7 @@ class MarcXml
             $fields[(string)$field['tag']][] = $newField;
         }
 
-        return $fields;
+        return [$leader, $fields];
     }
 
     /**
@@ -125,9 +120,6 @@ class MarcXml
         }
 
         foreach ($fields as $tag => $fields) {
-            if ($tag == '000') {
-                continue;
-            }
             foreach ($fields as $data) {
                 if (!is_array($data)) {
                     $xml->startElement('controlfield');

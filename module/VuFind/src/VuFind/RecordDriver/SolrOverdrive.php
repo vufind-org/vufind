@@ -399,7 +399,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         if ($this->getIsMarc()) {
             return parent::getMarcReader();
         } else {
-            return new MarcReader('<record></record');
+            return new $this->marcReaderClass('<record></record>');
         }
     }
 
