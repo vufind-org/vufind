@@ -28,6 +28,7 @@
 namespace VuFindTest\RecordDriver;
 
 use Exception;
+use Laminas\Config\Config;
 use VuFind\RecordDriver\SolrMarcRemote;
 
 /**
@@ -48,10 +49,35 @@ class SolrMarcRemoteTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function testRequiredConfigException()
+    public function testRequiredConfigException(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('SolrMarcRemote baseUrl-setting missing.');
         new SolrMarcRemote();
+    }
+
+    /**
+     * Test record ID validation (a record with no ID cannot be resolved).
+     *
+     * @return void
+     */
+    public function testMissingRecordId(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('No unique id given for fullrecord retrieval');
+        $this->getDriver()->getSummary();
+    }
+
+    /**
+     * Get a SolrMarcRemote driver preconfigured to load a record.
+     *
+     * @return SolrMarcRemote
+     */
+    protected function getDriver(): SolrMarcRemote
+    {
+        $url = 'http://foo';
+        $config = new Config(['Record' => ['remote_marc_url' => $url]]);
+        $driver = new SolrMarcRemote($config);
+        return $driver;
     }
 }

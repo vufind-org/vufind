@@ -95,7 +95,7 @@ class SolrMarcRemote extends SolrMarc implements
         // handle availability of fullrecord
         if (!isset($this->fields['fullrecord'])) {
             // retrieve fullrecord from external source
-            if (! isset($this->fields['id'])) {
+            if (!isset($this->fields['id'])) {
                 throw new \Exception(
                     'No unique id given for fullrecord retrieval'
                 );
