@@ -151,6 +151,8 @@ enabled = true
 ; The field to display as the SMS number. Default is sms_number.
 ; Set to empty string for "none".
 ;smsNumberField = ""
+; Whether to display messaging settings. Default is true.
+;messagingSettings = false
 
 ; Changing of SMS alert number is enabled if method parameter is set. Only valid
 ; value for Koha is 'driver'. Set to empty string to disable.
