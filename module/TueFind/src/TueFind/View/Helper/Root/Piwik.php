@@ -9,16 +9,16 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
     public function __construct($url, $options, $customVars, $router, $request, ?\VuFind\Auth\Manager $auth)
     {
         parent::__construct($url, $options, $customVars, $router, $request);
-	$this->auth = $auth;
+        $this->auth = $auth;
     }
 
     protected function getCustomVarsCode($customVars)
     {
         $customVars['isLoggedIn'] = ((isset($this->auth) && $this->auth->isLoggedIn()) ? 'true' : 'false');
-        if ($this->isfulltextsearch()) {
-		$customVars['SearchType'] = 'fulltext';
+        if ($this->isValidFulltextSearch()) {
+                $customVars['SearchType'] = 'fulltext';
 	}
-	return parent::getCustomVarsCode($customVars);
+        return parent::getCustomVarsCode($customVars);
     }
 
     protected function getTrackSearchCode($results)
@@ -26,9 +26,9 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         $escape = $this->getView()->plugin('escapeHtmlAttr');
         $params = $results->getParams();
         $searchTerms = $escape($params->getDisplayQuery());
-	$searchType = $escape($params->getSearchType());
-	if ($this->isfulltextsearch()) {
-		$searchType = $escape('fulltext');
+        $searchType = $escape($params->getSearchType());
+        if ($this->isValidFulltextSearch()) {
+                $searchType = $escape('fulltext');
 	}
         $resultCount = $results->getResultTotal();
         $backendId = $results->getOptions()->getSearchClassId();
@@ -42,8 +42,11 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
 EOT;
     }
 
-    protected function isfulltextsearch() {
-        return strpos($this->request->getUriString(), 'Search2') !== false;
+    //function checks whether the fulltext search is being used and that the search input isn't empty(ignoring blank spaces)
+    protected function isValidFulltextSearch(): bool {
+        $condFulltextSearch = strpos($this->request->getUriString(), 'Search2/Results') !== false;
+        $condSearchNotEmpty = preg_replace("/\s+/", "",$_GET["lookfor"]) !== '';
+        return $condFulltextSearch && $condSearchNotEmpty;
     }
 }
 ?>
