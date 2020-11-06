@@ -218,11 +218,13 @@ trait MarcAdvancedTrait
     {
         $record = clone $this->getMarcReader();
         // The default implementation does not filter out any fields
-        // $marc = new \File_MARCXML($record->toXML(), \File_MARCXML::SOURCE_STRING);
+        // $marc = new \File_MARCXML(
+        //    $record->toFormat('MARCXML'), \File_MARCXML::SOURCE_STRING
+        //);
         // $marc->deleteFields('9', true);
         // return $marc->toXML();
         //
-        return $record->toXML();
+        return $record->toFormat('MARCXML');
     }
 
     /**
@@ -868,7 +870,9 @@ trait MarcAdvancedTrait
             $xml = simplexml_load_string(
                 trim(
                     preg_replace(
-                        "/$sanitizeXmlRegEx/u", ' ', $this->getMarcReader()->toXML()
+                        "/$sanitizeXmlRegEx/u",
+                        ' ',
+                        $this->getMarcReader()->toFormat('MARCXML')
                     )
                 )
             );
@@ -900,7 +904,7 @@ trait MarcAdvancedTrait
     public function getRDFXML()
     {
         return XSLTProcessor::process(
-            'record-rdf-mods.xsl', trim($this->getMarcReader()->toXML())
+            'record-rdf-mods.xsl', trim($this->getMarcReader()->toFormat('MARCXML'))
         );
     }
 

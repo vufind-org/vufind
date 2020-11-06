@@ -27,9 +27,6 @@
  */
 namespace VuFind\Marc;
 
-use VuFind\Marc\Serialization\Iso2709;
-use VuFind\Marc\Serialization\MarcXml;
-
 /**
  * MARC record reader class.
  *
@@ -41,6 +38,16 @@ use VuFind\Marc\Serialization\MarcXml;
  */
 class MarcReader
 {
+    /**
+     * Supported serialization formats
+     *
+     * @var array
+     */
+    protected $serializations = [
+        'ISO2709' => Serialization\Iso2709::class,
+        'MARCXML' => Serialization\MarcXml::class,
+    ];
+
     /**
      * MARC leader
      *
@@ -84,35 +91,35 @@ class MarcReader
      */
     public function setData(string $data): void
     {
-        if (MarcXml::canParse($data)) {
-            list($leader, $this->fields) = MarcXml::fromString($data);
-        } elseif (Iso2709::canParse($data)) {
-            list($leader, $this->fields) = Iso2709::fromString($data);
+        $valid = false;
+        foreach ($this->serializations as $serialization) {
+            if ($serialization::canParse($data)) {
+                list($leader, $this->fields) = $serialization::fromString($data);
+                $valid = true;
+                break;
+            }
+        }
+        if (!$valid) {
+            throw new \Exception('MARC record format not recognized');
         }
         // Make sure leader is 24 characters
         $this->leader = $leader ? str_pad(substr($leader, 0, 24), 24) : '';
     }
 
     /**
-     * Serialize the record into MARCXML
+     * Serialize the record
+     *
+     * @param string $format Format to return (e.g. 'ISO2709' or 'MARCXML')
      *
      * @return string
      */
-    public function toXML(): string
+    public function toFormat(string $format): string
     {
-        return MarcXml::toString($this->getLeader(), $this->fields);
-    }
-
-    /**
-     * Convert to ISO2709.
-     *
-     * Returns an empty string if the record is too long.
-     *
-     * @return string
-     */
-    public function toISO2709(): string
-    {
-        return Iso2709::toString($this->getLeader(), $this->fields);
+        $serialization = $this->serializations[$format] ?? null;
+        if (null === $serialization) {
+            throw new \Exception("Unknown MARC format '$format' requested");
+        }
+        return $serialization::toString($this->getLeader(), $this->fields);
     }
 
     /**

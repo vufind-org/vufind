@@ -52,8 +52,8 @@ class MarcReaderTest extends \VuFindTest\Unit\TestCase
         $reader = new \VuFind\Marc\MarcReader($marc);
 
         // Test round-trips
-        $reader = new \VuFind\Marc\MarcReader($reader->toXML());
-        $reader = new \VuFind\Marc\MarcReader($reader->toISO2709());
+        $reader = new \VuFind\Marc\MarcReader($reader->toFormat('MARCXML'));
+        $reader = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
 
         $this->assertRegExp('/^\d{5}cam a22\d{5}4i 4500$/', $reader->getLeader());
         $this->assertEquals(
