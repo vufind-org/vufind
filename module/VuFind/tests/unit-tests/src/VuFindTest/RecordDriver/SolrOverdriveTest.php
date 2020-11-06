@@ -105,6 +105,28 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test getThumbnail without MARC
+     *
+     * @return void
+     */
+    public function testGetThumbnailNoMarc(): void
+    {
+        $data = '{"images": {'
+            . '"cover300Wide": {"href": "http://300wide"},'
+            . '"cover150Wide": {"href": "http://150wide"},'
+            . '"thumbnail": {"href": "http://thumb"},'
+            . '"cover": {"href": "http://cover"}'
+            . '}}';
+        $connector = $this->getMockConnector('{ "isMarc": false }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(['fullrecord' => $data]);
+        $this->assertEquals('http://300wide', $driver->getThumbnail('large'));
+        $this->assertEquals('http://150wide', $driver->getThumbnail('medium'));
+        $this->assertEquals('http://thumb', $driver->getThumbnail('small'));
+        $this->assertEquals('http://cover', $driver->getThumbnail('foo'));
+    }
+
+    /**
      * Test getTitleSection()
      *
      * @return void
@@ -133,6 +155,75 @@ class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(
             ['General notes here.', 'Translation.'], $driver->getGeneralNotes()
+        );
+    }
+
+    /**
+     * Test getSummary() with MARC
+     *
+     * @return void
+     */
+    public function testGetSummaryMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": true }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
+        );
+        $this->assertEquals(
+            ['Summary.'], $driver->getSummary()
+        );
+    }
+
+    /**
+     * Test getSummary() without MARC
+     *
+     * @return void
+     */
+    public function testGetSummaryNonMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": false }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['description' => '<tag>&#8217;&#8217;Summary.</tag>']
+        );
+        $this->assertEquals(
+            ['Summary.'], array_values($driver->getSummary())
+        );
+    }
+
+    /**
+     * Test getAllSubjectHeadings() with MARC
+     *
+     * @return void
+     */
+    public function testGetAllSubjectHeadingsMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": true }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['fullrecord' => $this->getFixture('marc/marctraits.xml')]
+        );
+        $this->assertEquals(
+            [['Foo', 'test'], ['Bar', 'test again']],
+            $driver->getAllSubjectHeadings()
+        );
+    }
+
+    /**
+     * Test getAllSubjectHeadings() without MARC
+     *
+     * @return void
+     */
+    public function testGetAllSubjectHeadingsNonMarc(): void
+    {
+        $connector = $this->getMockConnector('{ "isMarc": false }');
+        $driver = $this->getDriver(null, null, $connector);
+        $driver->setRawData(
+            ['era' => ['foo'], 'genre' => ['bar']]
+        );
+        $this->assertEquals(
+            [['bar'], ['foo']], $driver->getAllSubjectHeadings()
         );
     }
 

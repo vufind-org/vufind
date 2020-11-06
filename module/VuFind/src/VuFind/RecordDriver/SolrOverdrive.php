@@ -392,34 +392,33 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         if ($this->getIsMarc()) {
             return parent::getMarcRecord();
-        } else {
-            //return new fake marc class
-            return new class {
-                /**
-                 * Get the field
-                 *
-                 * @param string $f Fieldname
-                 *
-                 * @return string
-                 */
-                public function getField($f)
-                {
-                    return "";
-                }
-
-                /**
-                 * Get the fields
-                 *
-                 * @param array $f Fieldnames
-                 *
-                 * @return array
-                 */
-                public function getFields($f)
-                {
-                    return [];
-                }
-            };
         }
+        // No MARC support? Return new fake MARC class.
+        return new class {
+            /**
+             * Get the field
+             *
+             * @param string $f Fieldname
+             *
+             * @return string
+             */
+            public function getField($f)
+            {
+                return "";
+            }
+
+            /**
+             * Get the fields
+             *
+             * @param array $f Fieldnames
+             *
+             * @return array
+             */
+            public function getFields($f)
+            {
+                return [];
+            }
+        };
     }
 
     /**
@@ -457,36 +456,25 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      * @return string|array|bool
      * @throws \Exception
      */
-    public function getThumbnail(
-        $size = 'small'
-    ) {
-        if ($size == 'large') {
-            $cover = "cover300Wide";
-        } elseif ($size == 'medium') {
-            $cover = "cover150Wide";
-        } elseif ($size == 'small') {
-            $cover = 'thumbnail';
-        } else {
-            $cover = "cover";
-        }
+    public function getThumbnail($size = 'small')
+    {
+        $coverMap = [
+            'large' => 'cover300Wide',
+            'medium' => 'cover150Wide',
+            'small' => 'thumbnail'
+        ];
+        $cover = $coverMap[$size] ?? 'cover';
 
-        //if the record is marc then the cover links probably aren't there.
+        // If the record is marc then the cover links probably aren't there.
         if ($this->getIsMarc()) {
             $od_id = $this->getOverdriveID();
             $fulldata = $this->connector->getMetadata([$od_id]);
             $data = $fulldata[strtolower($od_id)];
         } else {
-            $result = false;
             $jsonData = $this->fields['fullrecord'];
             $data = json_decode($jsonData, false);
         }
-
-        if (isset($data->images)) {
-            if (isset($data->images->{$cover})) {
-                $result = $data->images->{$cover}->href;
-            }
-        }
-        return $result;
+        return $data->images->{$cover}->href ?? false;
     }
 
     /**
@@ -498,13 +486,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         if ($this->getIsMarc()) {
             return parent::getSummary();
-        } else {
-            $desc = $this->fields["description"];
-
-            $newDesc = preg_replace("/&#8217;/i", "", $desc);
-            $newDesc = strip_tags($newDesc);
-            return ["Summary" => $newDesc];
         }
+        // Non-MARC case:
+        $desc = $this->fields["description"] ?? '';
+
+        $newDesc = preg_replace("/&#8217;/i", "", $desc);
+        $newDesc = strip_tags($newDesc);
+        return ["Summary" => $newDesc];
     }
 
     /**
@@ -547,35 +535,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getAllSubjectHeadings($extended = false)
     {
-        if ($this->config) {
-            if ($this->getIsMarc()) {
-                return parent::getAllSubjectHeadings($extended);
-            } else {
-                $headings = [];
-                foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
-                    if (isset($this->fields[$field])) {
-                        $headings = array_merge(
-                            $headings, $this->fields[$field]
-                        );
-                    }
-                }
-
-                // The default index schema doesn't currently store subject
-                // headings in a
-                // broken-down format, so we'll just send each value as a
-                // single chunk.
-                // Other record drivers (i.e. SolrMarc) can offer this data
-                // in a more granular format.
-                $callback = function ($i) use ($extended) {
-                    return $extended
-                        ? ['heading' => [$i], 'type' => '', 'source' => '']
-                        : [$i];
-                };
-                return array_map($callback, array_unique($headings));
-            }
-        } else {
+        if (!$this->config) {
             return [];
         }
+        return $this->getIsMarc()
+            ? parent::getAllSubjectHeadings($extended)
+            : DefaultRecord::getAllSubjectHeadings($extended);
     }
 
     /**
