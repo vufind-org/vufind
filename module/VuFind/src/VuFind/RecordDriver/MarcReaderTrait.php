@@ -43,17 +43,41 @@ namespace VuFind\RecordDriver;
  */
 trait MarcReaderTrait
 {
+    protected $marcReaderClass = \VuFind\Marc\MarcReader::class;
+
     /**
-     * MARC record. Access only via getMarcRecord() as this is initialized lazily.
+     * MARC reader. Access only via getMarcReader() as this is initialized lazily.
+     */
+    protected $lazyMarcReader = null;
+
+    /**
+     * MARC record for legacy support. Access only via getMarcRecord() as this is
+     * initialized lazily.
      *
      * @var \File_MARC_Record
      */
     protected $lazyMarcRecord = null;
 
     /**
+     * Get access to the MarcReader object.
+     *
+     * @return \VuFind\Marc\MarcReader
+     */
+    public function getMarcReader()
+    {
+        if (null === $this->lazyMarcReader) {
+            $marc = trim($this->fields['fullrecord']);
+            $this->lazyMarcReader = new $this->marcReaderClass($marc);
+        }
+
+        return $this->lazyMarcReader;
+    }
+
+    /**
      * Get access to the raw File_MARC object.
      *
-     * @return \File_MARC_Record
+     * @return     \File_MARC_Record
+     * @deprecated Use getMarcReader()
      */
     public function getMarcRecord()
     {
@@ -102,25 +126,8 @@ trait MarcReaderTrait
         if (!is_array($subfields)) {
             $subfields = ['a'];
         }
-
-        // Initialize return array
-        $matches = [];
-
-        // Try to look up the specified field, return empty array if it doesn't
-        // exist.
-        $fields = $this->getMarcRecord()->getFields($field);
-        if (!is_array($fields)) {
-            return $matches;
-        }
-
-        // Extract all the requested subfields, if applicable.
-        foreach ($fields as $currentField) {
-            $next = $this
-                ->getSubfieldArray($currentField, $subfields, $concat, $separator);
-            $matches = array_merge($matches, $next);
-        }
-
-        return $matches;
+        return $this->getMarcReader()
+            ->getFieldsSubfields($field, $subfields, $concat, $separator);
     }
 
     /**
@@ -135,8 +142,7 @@ trait MarcReaderTrait
     protected function getFirstFieldValue($field, $subfields = null)
     {
         $matches = $this->getFieldArray($field, $subfields);
-        return (is_array($matches) && count($matches) > 0) ?
-            $matches[0] : null;
+        return $matches[0] ?? null;
     }
 
     /**
@@ -161,20 +167,18 @@ trait MarcReaderTrait
         // consistent with default SolrMarc handling of names/dates.
         $pubResults = $copyResults = [];
 
-        $fields = $this->getMarcRecord()->getFields('264');
-        if (is_array($fields)) {
-            foreach ($fields as $currentField) {
-                $currentVal = $this
-                    ->getSubfieldArray($currentField, [$subfield], true, $separator);
-                if (!empty($currentVal)) {
-                    switch ($currentField->getIndicator('2')) {
-                    case '1':
-                        $pubResults = array_merge($pubResults, $currentVal);
-                        break;
-                    case '4':
-                        $copyResults = array_merge($copyResults, $currentVal);
-                        break;
-                    }
+        $fields = $this->getMarcReader()->getFields('264', [$subfield]);
+        foreach ($fields as $currentField) {
+            $currentVal = $this
+                ->getSubfieldArray($currentField, [$subfield], true, $separator);
+            if (!empty($currentVal)) {
+                switch ($currentField['i2']) {
+                case '1':
+                    $pubResults = array_merge($pubResults, $currentVal);
+                    break;
+                case '4':
+                    $copyResults = array_merge($copyResults, $currentVal);
+                    break;
                 }
             }
         }
@@ -190,13 +194,39 @@ trait MarcReaderTrait
     }
 
     /**
+     * Return first subfield with the given code in the provided MARC field
+     *
+     * @param array  $field    Result from MarcReader::getFields
+     * @param string $subfield The MARC subfield code to get
+     *
+     * @return string
+     */
+    protected function getSubfield($field, $subfield)
+    {
+        return $this->getMarcReader()->getSubfield($field, $subfield);
+    }
+
+    /**
+     * Return all subfields with the given code in the provided MARC field
+     *
+     * @param array  $field    Result from MarcReader::getFields
+     * @param string $subfield The MARC subfield code to get
+     *
+     * @return array
+     */
+    protected function getSubfields($field, $subfield)
+    {
+        return $this->getMarcReader()->getSubfields($field, $subfield);
+    }
+
+    /**
      * Return an array of non-empty subfield values found in the provided MARC
      * field.  If $concat is true, the array will contain either zero or one
      * entries (empty array if no subfields found, subfield values concatenated
      * together in specified order if found).  If concat is false, the array
      * will contain a separate entry for each subfield value found.
      *
-     * @param object $currentField Result from File_MARC::getFields.
+     * @param array  $currentField Result from MarcReader::getFields
      * @param array  $subfields    The MARC subfield codes to read
      * @param bool   $concat       Should we concatenate subfields?
      * @param string $separator    Separator string (used only when $concat === true)
@@ -211,16 +241,12 @@ trait MarcReaderTrait
 
         // Loop through all subfields, collecting results that match the filter;
         // note that it is important to retain the original MARC order here!
-        $allSubfields = $currentField->getSubfields();
-        if (!empty($allSubfields)) {
-            foreach ($allSubfields as $currentSubfield) {
-                if (in_array($currentSubfield->getCode(), $subfields)) {
-                    // Grab the current subfield value and act on it if it is
-                    // non-empty:
-                    $data = trim($currentSubfield->getData());
-                    if (!empty($data)) {
-                        $matches[] = $data;
-                    }
+        foreach ($currentField['subfields'] as $currentSubfield) {
+            if (in_array($currentSubfield['code'], $subfields)) {
+                // Grab the current subfield value and act on it if it is non-empty:
+                $data = trim($currentSubfield['data']);
+                if (!empty($data)) {
+                    $matches[] = $data;
                 }
             }
         }

@@ -223,11 +223,11 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     public function testMarcAdvancedTrait()
     {
         $xml = $this->getFixture('marc/marctraits.xml');
-        $record = (new \File_MARCXML($xml, \File_MARCXML::SOURCE_STRING))->next();
+        $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
-            ->onlyMethods(['getMarcRecord'])->getMock();
+            ->onlyMethods(['getMarcReader'])->getMock();
         $obj->expects($this->any())
-            ->method('getMarcRecord')
+            ->method('getMarcReader')
             ->will($this->returnValue($record));
 
         $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
@@ -257,7 +257,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(
             [
-                ['name' => 'Development Series'],
+                ['name' => 'Development Series &\'><"'],
                 ['name' => 'Development', 'number' => 'no. 2']
             ],
             $obj->getSeries()
