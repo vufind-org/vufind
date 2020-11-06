@@ -1,10 +1,14 @@
 <?php
 /**
- * Abstract base class for helpers that render a template based on a class name.
+ * Trait for view helpers that render a template based on a class name.
+ *
+ * Note: This trait is for view helpers only. It expects $this->getView() method to
+ * be available.
  *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,45 +26,55 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Resolver\ResolverInterface;
 
 /**
- * Authentication view helper
+ * Trait for view helpers that render a template based on a class name.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
+trait ClassBasedTemplateRendererTrait
 {
     /**
-     * Recursively locate and render a template that matches the provided class
-     * name (or one of its parent classes); throw an exception if no match is
-     * found.
+     * Cache for found templates
      *
-     * @param string $template     Template path (with %s as class name placeholder)
-     * @param string $className    Name of class to apply to template.
-     * @param string $topClassName Top-level parent class of $className (or null
-     * if $className is already the top level; used for recursion only).
+     * @var array
+     */
+    protected $templateCache = [];
+
+    /**
+     * Recursively locate a template that matches the provided class name
+     * (or one of its parent classes); throw an exception if no match is found.
+     *
+     * @param string            $template     Template path (with %s as class name
+     * placeholder)
+     * @param string            $className    Name of class to apply to template.
+     * @param ResolverInterface $resolver     Resolver to use
+     * @param string            $topClassName Top-level parent class of $className
+     * (or null if $className is already the top level; used for recursion only).
      *
      * @return string
      * @throws RuntimeException
      */
     protected function resolveClassTemplate($template, $className,
-        $topClassName = null
+        ResolverInterface $resolver, $topClassName = null
     ) {
-        // If the template resolves, we can render it!
+        // If the template resolves, return it:
         $templateWithClass = sprintf($template, $this->getBriefClass($className));
-        if ($this->getView()->resolver()->resolve($templateWithClass)) {
-            return $this->getView()->render($templateWithClass);
+        if ($resolver->resolve($templateWithClass)) {
+            return $templateWithClass;
         }
 
         // If the template doesn't resolve, let's see if we can inherit a
@@ -76,7 +90,7 @@ abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
 
         // Recurse until we find a template or run out of parents...
         return $this->resolveClassTemplate(
-            $template, $parentClass, $topClassName ?? $className
+            $template, $parentClass, $resolver, $topClassName ?? $className
         );
     }
 
@@ -89,19 +103,42 @@ abstract class AbstractClassBasedTemplateRenderer extends AbstractHelper
      * @param array  $context   Context for rendering template
      *
      * @return string
+     * @throws RuntimeException
      */
     protected function renderClassTemplate($template, $className, $context = [])
     {
         // Set up the needed context in the view:
-        $contextHelper = $this->getView()->plugin('context');
-        $oldContext = $contextHelper($this->getView())->apply($context);
+        $view = $this->getView();
+        $contextHelper = $view->plugin('context');
+        $oldContext = $contextHelper($view)->apply($context);
 
-        // Render the template for the current class:
-        $html = $this->resolveClassTemplate($template, $className);
+        // Find and render the template:
+        $html = $view->render($this->getCachedClassTemplate($template, $className));
 
         // Restore the original context before returning the result:
-        $contextHelper($this->getView())->restore($oldContext);
+        $contextHelper($view)->restore($oldContext);
         return $html;
+    }
+
+    /**
+     * Resolve the class template file unless already cached and return the file
+     * name.
+     *
+     * @param string $template  Template path (with %s as class name placeholder)
+     * @param string $className Name of class to apply to template.
+     *
+     * @return string
+     * @throws RuntimeException
+     */
+    protected function getCachedClassTemplate($template, $className)
+    {
+        if (!isset($this->templateCache[$className][$template])) {
+            $this->templateCache[$className][$template]
+                = $this->resolveClassTemplate(
+                    $template, $className, $this->getView()->resolver()
+                );
+        }
+        return $this->templateCache[$className][$template];
     }
 
     /**

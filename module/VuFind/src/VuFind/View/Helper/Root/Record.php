@@ -38,8 +38,10 @@ use VuFind\Cover\Router as CoverRouter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends AbstractClassBasedTemplateRenderer
+class Record extends \Laminas\View\Helper\AbstractHelper
 {
+    use ClassBasedTemplateRendererTrait;
+
     /**
      * Context view helper
      *
