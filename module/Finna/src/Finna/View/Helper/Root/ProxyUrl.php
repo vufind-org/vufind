@@ -153,22 +153,17 @@ class ProxyUrl extends \VuFind\View\Helper\Root\ProxyUrl
                         return $url;
                     }
                 }
-                $datasources = $driver->tryMethod('getSource');
-                if (!empty($datasources)) {
-                    foreach (is_array($datasources) ? $datasources : [$datasources]
-                        as $datasource
-                    ) {
-                        if (!empty($config->include_datasource)) {
-                            $sources = $config->include_datasource->toArray();
-                            if (!in_array($datasource, $sources)) {
-                                return $url;
-                            }
+                if ($datasource = $driver->tryMethod('getSource')) {
+                    if (!empty($config->include_datasource)) {
+                        $sources = $config->include_datasource->toArray();
+                        if (!in_array($datasource, $sources)) {
+                            return $url;
                         }
-                        if (!empty($config->exclude_datasource)) {
-                            $sources = $config->exclude_datasource->toArray();
-                            if (in_array($datasource, $sources)) {
-                                return $url;
-                            }
+                    }
+                    if (!empty($config->exclude_datasource)) {
+                        $sources = $config->exclude_datasource->toArray();
+                        if (in_array($datasource, $sources)) {
+                            return $url;
                         }
                     }
                 }

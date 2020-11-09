@@ -516,8 +516,8 @@ shortTitle:
   description: Short title (title excluding any subtitle)
   type: string
 source:
-  vufind.method: "Formatter::getSource"
-  description: Record source
+  vufind.method: "Formatter::getSources"
+  description: Record sources
   type: array
   items:
     $ref: '#/definitions/TranslatedField'

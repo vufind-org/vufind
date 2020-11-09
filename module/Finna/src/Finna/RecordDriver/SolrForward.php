@@ -999,11 +999,10 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     protected function getVideoUrls()
     {
         // Get video URLs, if any
-        $source = $this->getSource();
-        $source = $source[0] ?? '';
         if (empty($this->recordConfig->Record->video_sources)) {
             return [];
         }
+        $source = $this->getSource();
         $sourceConfigs = [];
         $sourcePriority = 0;
         foreach ($this->recordConfig->Record->video_sources as $current) {

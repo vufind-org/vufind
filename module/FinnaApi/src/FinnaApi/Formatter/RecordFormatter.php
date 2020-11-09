@@ -293,15 +293,28 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
     }
 
     /**
-     * Get source
+     * Get sources
+     *
+     * @param \VuFind\RecordDriver\SolrDefault $record Record driver
+     *
+     * @return     array|null
+     * @deprecated For back-compatibility, use getSources
+     */
+    protected function getSource($record)
+    {
+        return $this->getSources($record);
+    }
+
+    /**
+     * Get sources
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
      *
      * @return array|null
      */
-    protected function getSource($record)
+    protected function getSources($record)
     {
-        if ($sources = $record->tryMethod('getSource')) {
+        if ($sources = $record->tryMethod('getSources')) {
             $result = [];
             $translate = $this->helperManager->get('translate');
             foreach ($sources as $source) {
