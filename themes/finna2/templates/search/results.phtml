@@ -146,11 +146,9 @@
       <?php if (null !== $this->slot('empty-message')->get()): ?>
         <p><?=$this->slot('empty-message')->get()?></p>
       <?php elseif ($lookfor == '' && $this->params->getSearchClassId() == 'Primo'): ?>
-        <?php $this->layout()->srmessage = $this->transEsc('primo_no_searchword'); ?>
-        <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
+        <h4 class="no-results"><?=$this->transEsc('primo_no_searchword'); ?></h4>
       <?php else: ?>
-        <?php $this->layout()->srmessage .= $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
-        <h4 class="no-results"><?=$this->layout()->srmessage ?></h4>
+        <h4 class="no-results"><?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?></h4>
         <?php if (isset($filterList)): ?>
           <div class="noresults alert alert-info">
             <p><?= $this->translate('nohit_active_filters_html'); ?></p>
@@ -212,7 +210,6 @@
             <div class="pagination-container">
                 <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
             </div>
-          <?php $this->layout()->srmessage .= strip_tags($resultsStr); ?>
       </div>
     <?php endif; ?>
     <?php if ($this->results->getResultTotal() > 0): ?>
@@ -249,10 +246,10 @@
     <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
       <?=$this->recommend($current, 'side', $index)?>
       <?php if (!$messageAdded) {
-        if (!isset($this->layout()->srmessage)) {
-          $this->layout()->srmessage = '';
+        if (!isset($this->layout()->skiplink)) {
+          $this->layout()->skiplink = '';
         }
-        $this->layout()->srmessage .= ' <a href="#sidebar">' . $this->transEsc('Skip to narrowing options') . '</a>';
+        $this->layout()->skiplink .= ' <a class="sr-only sr-only-focusable" href="#sidebar">' . $this->transEsc('Skip to narrowing options') . '</a>';
         $messageAdded = true;
       }?>
     <?php endforeach; ?>

@@ -357,13 +357,14 @@ JS;
         </div>
       <?php endif; ?>
       <div class="container-fluid navbar">
-        <div>
-          <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-            <span class="sr-only"><?=$this->layout()->srmessage ?></span>
-          <?php endif; ?>
-          <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-          <?=$this->render('navibar.phtml')?>
-        </div>
+        <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+          <span class="sr-only"><?=$this->layout()->srmessage ?></span>
+        <?php endif; ?>
+        <?php if (isset($this->layout()->skiplink)): // additional skip links ?>
+          <?=$this->layout()->skiplink ?>
+        <?php endif; ?>
+        <a class="sr-only sr-only-focusable" href="#content"><?=$this->transEsc('Skip to content') // skip to content ?></a>
+        <?=$this->render('navibar.phtml')?>
       </div>
     </header>
     <section aria-label="<?=$this->transEsc('Search functions')?>" class="searchContent<?=$currentTabClass?>">
