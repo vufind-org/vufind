@@ -322,6 +322,9 @@
       }
 
       input.blur(function onInputBlur(e) {
+        if (searchTimer) {
+          clearInterval(searchTimer);
+        }
         if (e.target.acitem) {
           setTimeout(hide, 10);
         } else {
