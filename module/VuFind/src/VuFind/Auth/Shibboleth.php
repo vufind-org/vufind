@@ -304,8 +304,9 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
+        $config = $this->getConfig();
         $sessionId = $this->getAttribute($this->request, $this->shibSessionId);
-        return !isset($sessionId);
+        return isset($config->Shibboleth->logout) && !isset($sessionId);
     }
 
     /**
