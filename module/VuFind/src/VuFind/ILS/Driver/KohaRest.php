@@ -182,7 +182,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected $itemStatusMappings = [
         'Item::Held' => 'On Hold',
-        'Item::Lost' => 'Lost--Library Applied',
         'Item::Waiting' => 'On Holdshelf',
     ];
 
@@ -194,10 +193,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected $itemStatusMappingMethods = [
         'Item::CheckedOut' => 'getStatusCodeItemCheckedOut',
-        'Item::NotForLoan' => 'getStatusCodeItemNotForLoan',
-        'Item::NotForLoanForcing' => 'getStatusCodeItemNotForLoan',
+        'Item::Lost' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::NotForLoan' => 'getStatusCodeItemNotForLoanOrLost',
+        'Item::NotForLoanForcing' => 'getStatusCodeItemNotForLoanOrLost',
         'Item::Transfer' => 'getStatusCodeItemTransfer',
-        'ItemType::NotForLoan' => 'getStatusCodeItemNotForLoan',
+        'ItemType::NotForLoan' => 'getStatusCodeItemNotForLoanOrLost',
     ];
 
     /**
@@ -638,7 +638,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'path' => 'v1/holds',
                 'query' => [
                     'patron_id' => $patron['id'],
-                    '_match' => 'exact'
+                    '_match' => 'exact',
+                    '_per_page' => -1
                 ]
             ]
         );
@@ -1823,7 +1824,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Get item status code for NotForLoan status
+     * Get item status code for NotForLoan or Lost status
      *
      * @param string $code Status code
      * @param array  $data Status data
@@ -1833,9 +1834,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getStatusCodeItemNotForLoan($code, $data, $item)
+    protected function getStatusCodeItemNotForLoanOrLost($code, $data, $item)
     {
-        // NotForLoan is special: status has a library-specific
+        // NotForLoan and Lost are special: status has a library-specific
         // status number. Allow mapping of different status numbers
         // separately (e.g. Item::NotForLoan with status number 4
         // is mapped with key Item::NotForLoan4):
@@ -1972,7 +1973,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $cacheKey = 'libraries';
         $libraries = $this->getCachedData($cacheKey);
         if (null === $libraries) {
-            $result = $this->makeRequest('v1/libraries');
+            $result = $this->makeRequest('v1/libraries?_per_page=-1');
             $libraries = [];
             foreach ($result['data'] as $library) {
                 $libraries[$library['library_id']] = $library;
