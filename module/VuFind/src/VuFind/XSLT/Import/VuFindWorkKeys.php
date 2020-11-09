@@ -46,6 +46,8 @@ class VuFindWorkKeys
      *
      * @param Iterable $uniformTitles       Uniform title(s) for the work
      * @param Iterable $titles              Other title(s) for the work
+     * @param Iterable $trimmedTitles       Title(s) with leading articles, etc.,
+     * removed
      * @param Iterable $authors             Author(s) for the work
      * @param string   $includeRegEx        Regular expression defining characters to
      * keep
@@ -53,13 +55,13 @@ class VuFindWorkKeys
      * remove
      * @param string   $transliteratorRules Optional ICU transliteration rules to be
      * applied before the include and exclude regex's. See
-     * https://unicode-org.github.io/icu/userguide/transforms/general/#icu-transliterators
-     * for more information on the transliteration rules.
+     * https://unicode-org.github.io/icu/userguide/transforms/general/
+     * #icu-transliterators for more information on the transliteration rules.
      *
      * @return DOMDocument
      */
-    public static function getWorkKeys($uniformTitles, $titles, $authors,
-        $includeRegEx = '', $excludeRegEx = '', $transliteratorRules = ''
+    public static function getWorkKeys($uniformTitles, $titles, $trimmedTitles,
+        $authors, $includeRegEx = '', $excludeRegEx = '', $transliteratorRules = ''
     ) {
         $transliterator = $transliteratorRules
             ? \Transliterator::createFromRules(
@@ -80,15 +82,22 @@ class VuFindWorkKeys
             }
         }
 
-        $titles = is_iterable($titles) ? $titles : (array)$titles;
-        $authors = is_iterable($titles) ? $authors : (array)$titles;
-        foreach ($titles as $title) {
+        $titles = $titles instanceof \Traversable
+            ? iterator_to_array($titles) : (array)$titles;
+        $trimmedTitles = $trimmedTitles instanceof \Traversable
+            ? iterator_to_array($trimmedTitles) : (array)$trimmedTitles;
+        $authors = is_iterable($authors) ? $authors : (array)$authors;
+        $normalizedTitles = [];
+        foreach (array_merge($titles, $trimmedTitles) as $title) {
             $normalizedTitle = self::normalize(
                 $title, $includeRegEx, $excludeRegEx, $transliterator
             );
-            if (empty($normalizedTitle)) {
+            if (in_array($normalizedTitle, $normalizedTitles) // avoid dupes
+                || empty($normalizedTitle)                    // skip empties
+            ) {
                 continue;
             }
+            $normalizedTitles[] = $normalizedTitle;
             foreach ($authors as $author) {
                 $normalizedAuthor = self::normalize(
                     $author, $includeRegEx, $excludeRegEx, $transliterator
@@ -105,9 +114,21 @@ class VuFindWorkKeys
     }
 
     /**
+     * Force a value to a string, even if it's a DOMElement.
+     *
+     * @param string|DOMElement $string String to normalize
+     *
+     * @return string
+     */
+    protected static function deDom($string): string
+    {
+        return $string->textContent ?? (string)$string;
+    }
+
+    /**
      * Create a key string.
      *
-     * @param string|DOMElement $string         String to normalize
+     * @param string|DOMElement $rawString      String to normalize
      * @param string            $includeRegEx   Regular expression defining
      * characters to keep
      * @param string            $excludeRegEx   Regular expression defining
@@ -116,11 +137,11 @@ class VuFindWorkKeys
      *
      * @return string
      */
-    protected static function normalize($string, $includeRegEx, $excludeRegEx,
+    protected static function normalize($rawString, $includeRegEx, $excludeRegEx,
         $transliterator
     ) {
         // Handle strings and/or DOM elements:
-        $string = $string->textContent ?? (string)$string;
+        $string = self::deDom($rawString);
         $normalized = $transliterator ? $transliterator->transliterate($string)
             : Normalizer::normalize($string, Normalizer::FORM_KC);
         if (!empty($includeRegEx)) {

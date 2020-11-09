@@ -49,11 +49,40 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT uniformtitle</workKey>\n"
+            . "<workKey>AT author1 thenonuniformtitle</workKey>\n"
+            . "<workKey>AT author2 thenonuniformtitle</workKey>\n"
             . "<workKey>AT author1 nonuniformtitle</workKey>\n"
             . "<workKey>AT author2 nonuniformtitle</workKey>\n";
 
         $result = VuFindWorkKeys::getWorkKeys(
             'UNIFORM title.',
+            ['The nonUniform Title'],
+            ['nonUniform Title'],
+            ['AUTHOR 1', 'author 2'],
+            '/([0-9A-Za-z]+)/',
+            ''
+        );
+        $this->assertEquals(
+            $expected,
+            simplexml_import_dom($result)->asXml()
+        );
+    }
+
+    /**
+     * Test the work keys helper with an include regex and trimmed titles === titles.
+     *
+     * @return void
+     */
+    public function testGetWorkKeysWithIncludeRegExAndDuplicateTitles()
+    {
+        $expected = '<?xml version="1.0" encoding="utf-8"?>'
+            . "\n<workKey>UT uniformtitle</workKey>\n"
+            . "<workKey>AT author1 nonuniformtitle</workKey>\n"
+            . "<workKey>AT author2 nonuniformtitle</workKey>\n";
+
+        $result = VuFindWorkKeys::getWorkKeys(
+            'UNIFORM title.',
+            ['nonUniform Title'],
             ['nonUniform Title'],
             ['AUTHOR 1', 'author 2'],
             '/([0-9A-Za-z]+)/',
@@ -74,11 +103,14 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT unformttle</workKey>\n"
+            . "<workKey>AT author1 thenonunformttle</workKey>\n"
+            . "<workKey>AT author2 thenonunformttle</workKey>\n"
             . "<workKey>AT author1 nonunformttle</workKey>\n"
             . "<workKey>AT author2 nonunformttle</workKey>\n";
 
         $result = VuFindWorkKeys::getWorkKeys(
             'UNIFORM title',
+            ['The nonUniform Title'],
             ['nonUniform Title'],
             ['AUTHOR 1', 'author 2'],
             '',
@@ -99,11 +131,14 @@ class VuFindWorkKeysTest extends \VuFindTest\Unit\TestCase
     {
         $expected = '<?xml version="1.0" encoding="utf-8"?>'
             . "\n<workKey>UT uniformtitlea</workKey>\n"
+            . "<workKey>AT author1 thenonuniformtitle</workKey>\n"
+            . "<workKey>AT author2 thenonuniformtitle</workKey>\n"
             . "<workKey>AT author1 nonuniformtitle</workKey>\n"
             . "<workKey>AT author2 nonuniformtitle</workKey>\n";
 
         $result = VuFindWorkKeys::getWorkKeys(
             'UNIFORM title +Å',
+            ['The nonUniform  Titlë'],
             ['nonUniform  Titlë'],
             ['AUTHOR * 1', 'author - 2'],
             '',
