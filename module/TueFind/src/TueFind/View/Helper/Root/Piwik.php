@@ -16,7 +16,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
     {
         $customVars['isLoggedIn'] = ((isset($this->auth) && $this->auth->isLoggedIn()) ? 'true' : 'false');
         if ($this->isValidFulltextSearch()) {
-             $customVars['SearchType'] = 'fulltext';
+            $customVars['SearchType'] = 'fulltext';
 	}
         return parent::getCustomVarsCode($customVars);
     }
@@ -28,7 +28,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         $searchTerms = $escape($params->getDisplayQuery());
         $searchType = $escape($params->getSearchType());
         if ($this->isValidFulltextSearch()) {
-             $searchType = $escape('fulltext');
+            $searchType = $escape('fulltext');
         }
         $resultCount = $results->getResultTotal();
         $backendId = $results->getOptions()->getSearchClassId();
@@ -46,7 +46,7 @@ EOT;
     protected function isValidFulltextSearch(): bool 
     {
         $condFulltextSearch = strpos($this->request->getUriString(), 'Search2/Results') !== false; 
-        $condSearchNotEmpty = !preg_match("/lookfor=&type/", $this->request->getUriString());
+        $condSearchNotEmpty = preg_match("/lookfor=[^&]+/", $this->request->getUriString());
         return $condFulltextSearch && $condSearchNotEmpty;
     }
 }
