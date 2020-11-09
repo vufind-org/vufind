@@ -305,4 +305,44 @@ class Bootstrapper
             'Finna\Auth\Suomifi', \Finna\Auth\Suomifi::EVENT_LOGOUT, $callback
         );
     }
+
+    /**
+     * Set up REMS registration listener.
+     *
+     * @return void
+     */
+    protected function initRemsRegistrationListener()
+    {
+        if (!$this->isR2Enabled()) {
+            return;
+        }
+        $sm = $this->event->getApplication()->getServiceManager();
+        $callback = function ($event) use ($sm) {
+            $params = $event->getParams();
+            if ($remsUserId = ($params['user'] ?? null)) {
+                $table = $sm->get(\VuFind\Db\Table\PluginManager::class)
+                    ->get('ExternalSession');
+                $sessionId
+                    = $sm->get(\Laminas\Session\SessionManager::class)->getId();
+                $table->addSessionMapping("{$sessionId}REMS", $remsUserId);
+            }
+        };
+
+        $sm->get('SharedEventManager')->attach(
+            'Finna\Service\RemsService',
+            \Finna\Service\RemsService::EVENT_USER_REGISTERED, $callback
+        );
+    }
+
+    /**
+     * Check if R2 search is enabled.
+     *
+     * @return bool
+     */
+    protected function isR2Enabled()
+    {
+        $sm = $this->event->getApplication()->getServiceManager();
+        $r2Config = $sm->get(\VuFind\Config\PluginManager::class)->get('R2');
+        return $r2Config->R2->enabled ?? false;
+    }
 }
