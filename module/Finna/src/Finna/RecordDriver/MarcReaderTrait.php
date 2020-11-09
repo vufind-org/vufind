@@ -43,36 +43,6 @@ namespace Finna\RecordDriver;
 trait MarcReaderTrait
 {
     /**
-     * Get selected subfields from a MARC field
-     *
-     * @param \File_MARC_Data_Field $field     Field
-     * @param array                 $subfields Subfields
-     * @param bool                  $concat    Concat subfields into a string?
-     * If false, the subfields are returned as an associative array.
-     *
-     * @return string|array
-     */
-    protected function getFieldSubfields(
-        \File_MARC_Data_Field $field, $subfields, $concat = true
-    ) {
-        $result = [];
-        foreach ($field->getSubfields() as $code => $content) {
-            if (in_array($code, $subfields)) {
-                $data = $content->getData();
-                if ($concat) {
-                    $result[] = $data;
-                } else {
-                    $result[$code] = $data;
-                }
-            }
-        }
-        if ($concat) {
-            $result = implode(' ', $result);
-        }
-        return $result;
-    }
-
-    /**
      * Strip trailing spaces and punctuation characters from a string
      *
      * @param string|array $input      String to strip
@@ -102,5 +72,24 @@ trait MarcReaderTrait
             }
         }
         return $array ? $input : $input[0];
+    }
+
+    /**
+     * Get all subfields from a field
+     *
+     * @param array $field MARC field
+     *
+     * @return array
+     */
+    protected function getAllSubfields(array $field): array
+    {
+        $result = [];
+        foreach ($field['subfields'] as $subfield) {
+            $result[] = [
+                'code' => key($subfield),
+                'data' => trim(current($subfield)),
+            ];
+        }
+        return $result;
     }
 }
