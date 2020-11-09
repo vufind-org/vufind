@@ -45,7 +45,9 @@ EOT;
     //function checks whether the fulltext search is being used and that the search input isn't empty(ignoring blank spaces)
     protected function isValidFulltextSearch(): bool {
         $condFulltextSearch = strpos($this->request->getUriString(), 'Search2/Results') !== false;
-        $condSearchNotEmpty = preg_replace("/\s+/", "",$_GET["lookfor"]) !== '';
+        if (strpos($this->request->getUriString(), 'Search2/Results') !== false){
+            $condSearchNotEmpty = preg_replace("/\s+/", "",$_GET["lookfor"]) !== '';
+        }
         return $condFulltextSearch && $condSearchNotEmpty;
     }
 }
