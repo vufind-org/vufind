@@ -16,7 +16,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
     {
         $customVars['isLoggedIn'] = ((isset($this->auth) && $this->auth->isLoggedIn()) ? 'true' : 'false');
         if ($this->isValidFulltextSearch()) {
-                $customVars['SearchType'] = 'fulltext';
+             $customVars['SearchType'] = 'fulltext';
 	}
         return parent::getCustomVarsCode($customVars);
     }
@@ -28,8 +28,8 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         $searchTerms = $escape($params->getDisplayQuery());
         $searchType = $escape($params->getSearchType());
         if ($this->isValidFulltextSearch()) {
-                $searchType = $escape('fulltext');
-	}
+             $searchType = $escape('fulltext');
+        }
         $resultCount = $results->getResultTotal();
         $backendId = $results->getOptions()->getSearchClassId();
 
@@ -42,12 +42,11 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
 EOT;
     }
 
-    //function checks whether the fulltext search is being used and that the search input isn't empty(ignoring blank spaces)
-    protected function isValidFulltextSearch(): bool {
-        $condFulltextSearch = strpos($this->request->getUriString(), 'Search2/Results') !== false;
-        if (strpos($this->request->getUriString(), 'Search2/Results') !== false){
-            $condSearchNotEmpty = preg_replace("/\s+/", "",$_GET["lookfor"]) !== '';
-        }
+    //function checks whether the fulltext search is being used and that the search input isn't empty
+    protected function isValidFulltextSearch(): bool 
+    {
+        $condFulltextSearch = strpos($this->request->getUriString(), 'Search2/Results') !== false; 
+        $condSearchNotEmpty = !preg_match("/lookfor=&type/", $this->request->getUriString());
         return $condFulltextSearch && $condSearchNotEmpty;
     }
 }
