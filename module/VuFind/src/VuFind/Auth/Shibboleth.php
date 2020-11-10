@@ -59,12 +59,6 @@ class Shibboleth extends AbstractBase
     const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
 
     /**
-     * Header name of the internal session key assigned to the
-     * session associated with the request.
-     */
-    const SHIB_SESSION_ID = "Shib-Session-ID";
-
-    /**
      * This is array of attributes which $this->authenticate()
      * method should check for.
      *
@@ -117,7 +111,7 @@ class Shibboleth extends AbstractBase
      *
      * @var string
      */
-    protected $shibSessionId = self::SHIB_SESSION_ID;
+    protected $shibSessionId = null;
 
     /**
      * Constructor
@@ -149,10 +143,9 @@ class Shibboleth extends AbstractBase
     {
         parent::setConfig($config);
         $this->useHeaders = $this->config->Shibboleth->use_headers ?? false;
-        $this->shibIdentityProvider = $this->config->Shibboleth->shibIdentityProvider
+        $this->shibIdentityProvider = $this->config->Shibboleth->idpserverparam
             ?? self::DEFAULT_IDPSERVERPARAM;
-        $this->shibSessionId = $this->config->Shibboleth->shibSessionId
-            ?? self::SHIB_SESSION_ID;
+        $this->shibSessionId = $this->config->Shibboleth->session_id ?? null;
     }
 
     /**
@@ -305,8 +298,12 @@ class Shibboleth extends AbstractBase
     public function isExpired()
     {
         $config = $this->getConfig();
+        if (!isset($this->shibSessionId)) {
+            return false;
+        }
         $sessionId = $this->getAttribute($this->request, $this->shibSessionId);
-        return isset($config->Shibboleth->logout) && !isset($sessionId);
+        return ($config->Shibboleth->checkExpiredSession ?? false)
+            && !isset($sessionId);
     }
 
     /**
@@ -385,11 +382,10 @@ class Shibboleth extends AbstractBase
      */
     protected function storeShibbolethSession($request)
     {
-        $shib = $this->getConfig()->Shibboleth;
-        if (!isset($shib['session_id'])) {
+        if (!isset($this->shibSessionId)) {
             return;
         }
-        $shibSessionId = $this->getAttribute($request, $shib['session_id']);
+        $shibSessionId = $this->getAttribute($request, $this->shibSessionId);
         if (null === $shibSessionId) {
             return;
         }
