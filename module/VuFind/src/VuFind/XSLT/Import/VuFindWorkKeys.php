@@ -92,8 +92,8 @@ class VuFindWorkKeys
             $normalizedTitle = self::normalize(
                 $title, $includeRegEx, $excludeRegEx, $transliterator
             );
-            if (in_array($normalizedTitle, $normalizedTitles) // avoid dupes
-                || empty($normalizedTitle)                    // skip empties
+            if (empty($normalizedTitle)                          // skip empties
+                || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;
             }
