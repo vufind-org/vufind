@@ -65,7 +65,7 @@ VuFind.register('channels', function Channels() {
     var words = el.innerHTML.split(" ");
     while (el.scrollHeight > el.offsetHeight) {
       words.pop();
-      el.innerHTML = words.join(" ") + "...";
+      el.innerHTML = words.join(" ") + VuFind.translate("eol_ellipsis");
     }
   }
 
