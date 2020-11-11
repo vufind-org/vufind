@@ -72,12 +72,14 @@ trait SolrFinnaTrait
     /**
      * Return type of access restriction for the record.
      *
+     * @param string $language Language
+     *
      * @return mixed array with keys:
      *   'copyright'   Copyright (e.g. 'CC BY 4.0')
      *   'link'        Link to copyright info, see IndexRecord::getRightsLink
      *   or false if no access restriction type is defined.
      */
-    public function getAccessRestrictionsType()
+    public function getAccessRestrictionsType($language)
     {
         return false;
     }
