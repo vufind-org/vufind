@@ -532,7 +532,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
         // For good measure, strip out any remaining date ranges lurking in
         // non-standard places.
-        return preg_replace('/\s+\d{4}-\d{4}\.*/', '', $name);
+        return preg_replace(
+            '/\s+(\d{4}-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
+        );
     }
 
     /**
@@ -741,7 +743,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 $author = $this->details['authors'][0];
                 $authorStr = $this->cleanNameDates($author) . ', et al.';
             } else {
-                foreach ($this->details['authors'] as $author) {
+                foreach ($this->details['authors'] as $rawAuthor) {
+                    $author = $this->cleanNameDates($rawAuthor);
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         $authorStr .= ', ' . $this->translate('and') . ' ' .
@@ -751,7 +754,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                             $this->reverseName($this->stripPunctuation($author));
                     } else {
                         // First
-                        $authorStr .= $this->cleanNameDates($author);
+                        $authorStr .= $author;
                     }
                     $i++;
                 }

@@ -262,9 +262,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
             'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
-        [  // two authors, single-page article
+        [  // two authors with birth dates in different formats, single-page article
             'raw' => [
-                'SecondaryAuthors' => ['One, Person', 'Two, Person'],
+                'SecondaryAuthors' => ['One, Person, b. 1960', 'Two, Person, 1970-'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
@@ -294,7 +294,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
         ],
         [  // eight authors in "first name first" format.
             'raw' => [
-                'SecondaryAuthors' => ['Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'],
+                'SecondaryAuthors' => ['Person One b. 1960', 'Person Two 1869-', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
