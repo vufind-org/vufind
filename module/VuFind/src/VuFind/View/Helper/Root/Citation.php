@@ -264,8 +264,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCitationChicago()
     {
-        return $this
-            ->getCitationMLA(9, ', no. ', true, 'https://dx.doi.org/', false);
+        return $this->getCitationMLA(
+            9, ', no. ', ' ', '', ' (%s)', ':', true, 'https://dx.doi.org/', false
+        );
     }
 
     /**
@@ -279,6 +280,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * al.'
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation.
+     * @param string $numPrefix       String to display in front of numbering
+     * @param string $volPrefix       String to display in front of volume
+     * @param string $yearFormat      Format string for year display
+     * @param string $pageNoSeparator Separator between date / page no.
      * @param bool   $includePubPlace Should we include the place of publication?
      * @param string $doiPrefix       Prefix to display in front of DOI; set to
      * false to omit DOIs.
@@ -286,13 +291,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getCitationMLA($etAlThreshold = 2, $volNumSeparator = '.',
-        $includePubPlace = false, $doiPrefix = false, $labelPageRange = true
+    public function getCitationMLA($etAlThreshold = 2, $volNumSeparator = ', no. ',
+        $numPrefix = ', ', $volPrefix = 'vol. ', $yearFormat = ', %s',
+        $pageNoSeparator = ',', $includePubPlace = false, $doiPrefix = false,
+        $labelPageRange = true
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
             'authors' => $this->getMLAAuthors($etAlThreshold),
             'labelPageRange' => $labelPageRange,
+            'pageNumberSeparator' => $pageNoSeparator,
         ];
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
         if ($doiPrefix && $doi = $this->driver->tryMethod('getCleanDOI')) {
@@ -311,7 +319,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // If we got this far, we should add other journal-specific details:
         $mla['pageRange'] = $this->getPageRange();
         $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
-        $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
+        $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(
+            $volNumSeparator, $volPrefix, $yearFormat
+        );
         return $partial('Citation/mla-article.phtml', $mla);
     }
 
@@ -333,11 +343,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $volNumSeparator String to separate volume and issue number
      * in citation (only difference between MLA/Chicago Style).
+     * @param string $volPrefix       String to display in front of volume
+     * @param string $yearFormat      Format string for year display
      *
      * @return string
      */
-    protected function getMLANumberAndDate($volNumSeparator = '.')
-    {
+    protected function getMLANumberAndDate($volNumSeparator = '.', $volPrefix = '',
+        $yearFormat = ', %s'
+    ) {
         $vol = $this->driver->tryMethod('getContainerVolume');
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
@@ -358,21 +371,23 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $month = $day = '';
         }
 
-        // We need to supply additional date information if no vol/num:
+        // If vol/num is set, we need to display one format...
         if (!empty($vol) || !empty($num)) {
             // If volume and number are both non-empty, separate them with a
             // period; otherwise just use the one that is set.
             $volNum = (!empty($vol) && !empty($num))
                 ? $vol . $volNumSeparator . $num : $vol . $num;
-            return $volNum . ' (' . $year . ')';
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            return (($day > 1) ? $day . ' ' : '')
-                . (empty($month) ? '' : $month . ' ')
-                . $year;
+            return (empty($vol) ? '' : $volPrefix)
+                . $volNum . sprintf($yearFormat, $year);
         }
+        // If we got this far, there's no vol/num, so we need to supply additional
+        // date information...
+        // Right now, we'll assume if day == 1, this is a monthly publication;
+        // that's probably going to result in some bad citations, but it's the
+        // best we can do without writing extra record driver methods.
+        return (($day > 1) ? $day . ' ' : '')
+            . (empty($month) ? '' : $month . ' ')
+            . $year;
     }
 
     /**

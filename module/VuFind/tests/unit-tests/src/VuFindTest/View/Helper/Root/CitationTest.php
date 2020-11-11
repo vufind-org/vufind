@@ -199,7 +199,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // eight authors
@@ -214,7 +214,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // seven authors
@@ -229,7 +229,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, and Person Seven. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // six authors
@@ -244,7 +244,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // three authors, including one with a random trailing comma
@@ -259,7 +259,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // two authors with birth dates in different formats, single-page article
@@ -274,7 +274,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 19
             ],
             'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19.',
-            'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): p. 19.',
+            'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, p. 19.',
             'chicago' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19.',
         ],
         [  // one author
@@ -289,7 +289,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // eight authors in "first name first" format.
@@ -304,7 +304,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // ten authors in "first name first" format.
@@ -319,7 +319,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21
             ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
         ],
         [  // DOI
@@ -335,7 +335,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'CleanDOI' => 'testDOI'
             ],
             'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21. https://doi.org/testDOI',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): pp. 19-21.',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span>, vol. 1, no. 7, 1999, pp. 19-21.',
             'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21. https://dx.doi.org/testDOI.',
         ]
         // @codingStandardsIgnoreEnd
