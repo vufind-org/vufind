@@ -9,8 +9,6 @@ User-agent: SemrushBot
 User-agent: SemrushBot/2~bl
 User-agent: SemrushBot-SA
 User-agent: SEOkicks-Robot
-User-agent: Yandex
-User-agent: YandexBot/3.0
 Disallow: /
 
 User-agent: *
