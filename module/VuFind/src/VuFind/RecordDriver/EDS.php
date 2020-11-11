@@ -82,6 +82,21 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the subtitle (if any) of the record.
+     *
+     * @return string
+     */
+    public function getSubtitle()
+    {
+        $title = $this->getTitle();
+        if (null == $title) {
+            return '';
+        }
+        $parts = explode(':', $title, 2);
+        return count($parts) > 1 ? trim(array_pop($parts)) : '';
+    }
+
+    /**
      * Get the abstract (summary) of the record.
      *
      * @return string
