@@ -17,7 +17,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik
         $customVars['isLoggedIn'] = ((isset($this->auth) && $this->auth->isLoggedIn()) ? 'true' : 'false');
         if ($this->isValidFulltextSearch()) {
             $customVars['SearchType'] = 'fulltext';
-	}
+        }
         return parent::getCustomVarsCode($customVars);
     }
 
