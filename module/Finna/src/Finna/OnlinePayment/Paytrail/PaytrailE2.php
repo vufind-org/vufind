@@ -222,7 +222,7 @@ class PaytrailE2
     public function setPaymentDescription($description)
     {
         $this->paymentDescription = preg_replace(
-            '/[^\pL-0-9- "\', ()\[\]{}*+\-_,.]+/u', ' ', $description
+            '/[^\pL0-9 "\', ()\[\]{}*+\-_,.]+/u', ' ', $description
         );
     }
 
@@ -236,7 +236,7 @@ class PaytrailE2
     public function setMerchantDescription($description)
     {
         $this->merchantDescription = preg_replace(
-            '/[^\pL-0-9- "\', ()\[\]{}*+\-_,.]+/u', ' ', $description
+            '/[^\pL0-9 "\', ()\[\]{}*+\-_,.]+/u', ' ', $description
         );
     }
 
@@ -251,7 +251,7 @@ class PaytrailE2
     {
         $this->firstName = mb_substr(
             preg_replace(
-                '/[^\pL-0-9- "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
+                '/[^\pL0-9 "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
             ),
             0, 64, 'UTF-8'
         );
@@ -268,7 +268,7 @@ class PaytrailE2
     {
         $this->lastName = mb_substr(
             preg_replace(
-                '/[^\pL-0-9- "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
+                '/[^\pL0-9 "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
             ),
             0, 64, 'UTF-8'
         );
@@ -319,7 +319,7 @@ class PaytrailE2
             $name = "$code $name";
         }
         $name = preg_replace(
-            '/[^\pL-0-9- "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
+            '/[^\pL0-9 "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
         );
         $this->products[] = [
             "ITEM_TITLE[$index]" => substr($name, 0, 255),
