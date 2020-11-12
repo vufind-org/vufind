@@ -1,0 +1,266 @@
+; Most of the settings found in searches.ini and facets.ini can be dropped into
+; this file and will behave the same way. Some selected settings from config.ini
+; that apply only to the main Solr index are also overridden here. To ease
+; maintenance of documentation, comments from those files are not duplicated here.
+; See those files for more details of how all settings work. Look for section
+; marker comments within this file to see where groups of settings come from.
+
+; ---------- config.ini settings ----------
+
+[Index]
+url             = http://localhost:8983/solr
+default_core    = biblio
+maxBooleanClauses = 1024
+timeout = 30
+default_dismax_handler = dismax
+
+[Spelling]
+enabled = true
+limit   = 3
+phrase = false
+expand  = true
+simple = false
+skip_numeric = true
+
+[Record]
+next_prev_navigation = false
+;related[] = Similar
+
+; ---------- searches.ini settings ----------
+
+[General]
+default_handler = AllFields
+default_sort = relevance
+default_view = list
+view_options_icons = true
+default_limit = 20
+limit_options = 20,50,100
+case_sensitive_bools = true
+case_sensitive_ranges = true
+
+default_top_recommend[] = TopFacets:ResultsTop:L1
+default_side_recommend[] = SideFacetsDeferred:Results:CheckboxFacets:L1
+default_noresults_recommend[] = SwitchType
+default_noresults_recommend[] = SwitchQuery
+default_noresults_recommend[] = SpellingSuggestions
+
+highlighting = true
+;highlighting_fields = *
+snippets = true
+retain_filters_by_default = true
+;default_filters[] = "format:Book"
+;default_filters[] = "institution:MyInstitution"
+;default_filters[] = "(format:Book AND institution:MyInstitution)"
+;default_record_fields = "*,score"
+
+[Cache]
+type = File
+
+[Basic_Searches]
+AllFields           = "All Fields"
+Title               = Title
+;JournalTitle        = "Journal Title"
+Author              = Author
+Subject             = Subject
+CallNumber          = "Call Number"
+ISN                 = "ISBN/ISSN"
+;Coordinate        = Coordinates
+tag                 = Tag
+
+[Advanced_Searches]
+; Advanced searches are not supported at the moment.
+
+[Sorting]
+relevance = sort_relevance
+main_date_str desc = sort_year
+main_date_str asc = "sort_year asc"
+callnumber-sort = sort_callnumber
+;dewey-sort = sort_callnumber
+author = sort_author
+title = sort_title
+
+[DefaultSortingByType]
+CallNumber = callnumber-sort
+
+[SideRecommendations]
+;Subject[]          = SideFacets
+;Subject[]          = OpenLibrarySubjectsDeferred:lookfor:5:true:topic,place,person,time
+
+[TopRecommendations]
+;Author[]            = AuthorFacets
+;Author[]            = SpellingSuggestions
+;Author[]           = WorldCatIdentities
+;CallNumber[]        = "TopFacets:ResultsTop"
+
+[NoResultsRecommendations]
+;CallNumber[] = SwitchQuery::wildcard:truncatechar
+;CallNumber[] = RemoveFilters
+;CallNumber[] = AlphaBrowseLink:lcc
+
+[RSS]
+sort = "last_indexed desc"
+
+[Autocomplete]
+enabled = true
+default_handler = L1
+
+[Autocomplete_Types]
+Title = "L1:Title"
+JournalTitle = "L1:JournalTitle"
+Author = "L1:Author:author,author2"
+Subject = "L1:Subject:topic,genre,geographic,era"
+CallNumber = "L1CN"
+ISN = "L1:ISN:isbn,issn"
+Coordinate = "None"
+tag = "Tag"
+
+[Snippet_Captions]
+author2 = "Other Authors"
+contents = "Table of Contents"
+topic = "Subjects"
+container_title = "Journal Title"
+
+;[IndexShards]
+;Library Catalog = localhost:8983/solr/biblio
+;Website = localhost:8983/solr/website
+
+;[ShardPreferences]
+;showCheckboxes = true
+;defaultChecked[] = "Library Catalog"
+;defaultChecked[] = "Website"
+
+[StripFields]
+
+[Views]
+list = List
+;grid = Grid
+;condensed = Condensed
+;compact = Compact
+
+[List]
+view=full
+
+; This section is for backend specific filters. Keys are ignored, but increasing
+; numeric values (1, 2, 3...) are recommended. Values are fully-formed filter
+; queries.
+[BackendFilters]
+;0 = ""
+
+[HiddenFilters]
+datasource_str_mv = aoe ; This filter is required.
+
+[RawHiddenFilters]
+;0 = "format:\"Book\" OR format:\"Journal\""
+;1 = "language:\"English\" OR language:\"French\""
+
+[ConditionalHiddenFilters]
+;0 = "-conditionalFilter.MyUniversity|format:Book"
+;1 = "conditionalFilter.MyUniversity|format:Article"
+
+[Records]
+;deduplication = true
+;sources = alli,testsrc
+
+[MoreLikeThis]
+;useMoreLikeThisHandler = true
+;params = "qf=title,title_short,callnumber-label,topic,language,author,publishDate mintf=1 mindf=1";
+;count = 5
+
+[HomePage]
+;content[] = IlsStatusMonitor
+content[] = FacetList:L1
+
+; ---------- facets.ini settings ----------
+
+[Results]
+usage_rights_str_mv = "Usage Rights"
+educational_audience_str_mv = "Kohderyhmä"
+educational_level_str_mv = "Koulutusaste"
+educational_material_type_str_mv = "Oppimateriaalin tyyppi"
+educational_subject_str_mv = "Oppiaine/ tutkinto/ tieteenala"
+educational_aim_str_mv = "Tavoite ja sisältöalue"
+topic_facet = Topic
+author_facet = Author
+language = Language
+
+[ResultsTop]
+;topic_facet        = "Suggested Topics"
+
+[FacetLabels]
+labelSections[] = Advanced_Facets
+labelSections[] = HomePage_Facets
+labelSections[] = ResultsTop
+labelSections[] = Results
+labelSections[] = ExtraFacetLabels
+checkboxSections[] = CheckboxFacets
+
+[ExtraFacetLabels]
+long_lat = "Geographic Search"
+
+[SpecialFacets]
+dateRange[] = publishDate
+fullDateRange[] = example_field_date
+numericRange[] = example_field_str
+genericRange[] = example_field_str
+hierarchical[] = building
+hierarchical[] = educational_level_str_mv
+hierarchicalFacetSortOptions[building] = top
+hierarchicalFacetDisplayStyles[format] = full
+hierarchicalFacetSeparators[format] = " > "
+
+hierarchicalFacetSortOptions[educational_level_str_mv] = all
+
+[CheckboxFacets]
+;edition:1st* = "First Edition"
+
+[Results_Settings]
+facet_limit = 30
+showMore[*] = 6
+showMoreInLightbox[*] = more
+;lightboxLimit = 50
+top_rows = 2
+top_cols = 3
+;exclude = *
+orFacets = *
+collapsedFacets = usage_rights_str_mv,educational_audience_str_mv,educational_material_type_str_mv,educational_subject_str_mv,educational_aim_str_mv,topic_facet,author_facet,language
+;sorted_by_index[] = building;
+;sorted_by_index[] = institution;
+
+[Advanced_Facets]
+callnumber-first = "Call Number"
+language         = Language
+format           = Format
+;hierarchy_top_title   = Collections
+
+[Advanced_Settings]
+facet_limit      = 100
+orFacets = *
+delimiter = "{{{_:::_}}}"
+special_facets   = "illustrated,daterange"
+translated_facets[] = institution
+translated_facets[] = building
+translated_facets[] = format
+translated_facets[] = callnumber-first:CallNumberFirst
+translated_facets[] = educational_level_str_mv
+translated_facets[] = educational_material_type_str_mv
+translated_facets[] = educational_audience_str_mv
+translated_facets[] = usage_rights_str_mv
+translated_facets[] = language
+delimited_facets[] = author_id_str
+delimited_facets[] = "author_id_str|:::"
+
+hierarchicalFacetSortOptions[educational_level_str_mv] = "all"
+
+[HomePage_Facets]
+callnumber-first = "Call Number"
+language         = Language
+format           = Format
+;hierarchy_top_title   = Collections
+
+[HomePage_Facet_Settings]
+facet_limit      = 20
+
+[LegacyFields]
+
+[HideFacetValue]
+;format[] = "Book"

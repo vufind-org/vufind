@@ -55,6 +55,13 @@ class SolrDefaultBackendFactory
     extends \VuFind\Search\Factory\SolrDefaultBackendFactory
 {
     /**
+     * Callback for creating a record driver.
+     *
+     * @var string
+     */
+    protected $createRecordMethod = 'getSolrRecord';
+
+    /**
      * Create the SOLR backend.
      *
      * @param Connector $connector Connector
@@ -70,9 +77,9 @@ class SolrDefaultBackendFactory
             $backend->setLogger($this->logger);
         }
         $manager
-            = $this->serviceLocator->get(\VuFind\RecordDriver\PluginManager::class);
+            = $this->serviceLocator->get(\Finna\RecordDriver\PluginManager::class);
         $factory = new RecordCollectionFactory(
-            [$manager, 'getSolrRecord'],
+            [$manager, $this->createRecordMethod],
             'FinnaSearch\Backend\Solr\Response\Json\RecordCollection'
         );
         $backend->setRecordCollectionFactory($factory);
