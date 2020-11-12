@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/vufind-org/vufind.svg?branch=dev)](https://travis-ci.org/vufind-org/vufind)
+[![Build Status](https://travis-ci.com/vufind-org/vufind.svg?branch=dev)](https://travis-ci.com/vufind-org/vufind)
 VuFind
 ======
 

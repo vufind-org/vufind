@@ -40,6 +40,8 @@ use VuFindTheme\View\Helper\TemplatePath;
  */
 class TemplatePathTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Path to theme fixtures
      *
@@ -54,7 +56,8 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../../../fixtures/themes');
+        $this->fixturePath
+            = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
     }
 
     /**
