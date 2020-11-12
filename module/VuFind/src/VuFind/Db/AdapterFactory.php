@@ -29,8 +29,12 @@
 namespace VuFind\Db;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
+
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Database utility class. May be used as a service or as a standard
