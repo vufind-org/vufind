@@ -111,6 +111,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $modelPrefix = '';
 
     /**
+     * Max limit of search results in API response (default 100);
+     *
+     * @var int
+     */
+    protected $maxLimit = 100;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -158,6 +165,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'searchIndex' => $this->searchClassId,
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
+            'maxLimit' => $this->maxLimit,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
@@ -271,7 +279,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
 
         if (isset($request['limit'])
             && (!ctype_digit($request['limit'])
-            || $request['limit'] < 0 || $request['limit'] > 100)
+            || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
         ) {
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
         }

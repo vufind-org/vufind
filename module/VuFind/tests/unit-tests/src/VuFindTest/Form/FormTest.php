@@ -42,6 +42,8 @@ use VuFind\Form\Form;
  */
 class FormTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test defaults with no configuration.
      *
@@ -219,11 +221,7 @@ class FormTest extends \VuFindTest\Unit\TestCase
      */
     public function testElementOptions()
     {
-        $config = Yaml::parse(
-            file_get_contents(
-                __DIR__ . '/../../../../fixtures/configs/feedbackforms/test.yaml'
-            )
-        );
+        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
         $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
             ->disableOriginalConstructor()
             ->setMethods(['get'])

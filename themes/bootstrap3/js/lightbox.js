@@ -497,6 +497,9 @@ VuFind.register('lightbox', function Lightbox() {
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
         _modal.modal($.extend({ show: true }, _modalParams)).attr('aria-hidden', false);
+
+        // Set keyboard focus
+        setFocusToFirstNode();
       } else {
         _modal.modal(cmd);
       }
