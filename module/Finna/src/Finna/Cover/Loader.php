@@ -462,7 +462,7 @@ class Loader extends \VuFind\Cover\Loader
             $this->addHostFailure($host);
             return false;
         }
-        $exif = exif_read_data($tempFile);
+        $exif = @exif_read_data($tempFile);
         $image = file_get_contents($tempFile);
 
         // We no longer need the temp file:
