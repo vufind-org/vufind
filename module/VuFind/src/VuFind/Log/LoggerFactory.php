@@ -30,6 +30,9 @@ namespace VuFind\Log;
 use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**

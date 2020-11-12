@@ -29,6 +29,9 @@ namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
 use Laminas\Router\RouteMatch;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
