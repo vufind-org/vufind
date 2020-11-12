@@ -29,9 +29,6 @@ namespace VuFind\Role;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
