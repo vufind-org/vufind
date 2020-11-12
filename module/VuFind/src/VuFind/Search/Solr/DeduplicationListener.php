@@ -3,7 +3,8 @@
 /**
  * Solr deduplication (merged records) listener.
  *
- * See https://vufind.org/wiki/indexing:deduplication for details on how this is used.
+ * See https://vufind.org/wiki/indexing:deduplication for details on how this is
+ * used.
  *
  * PHP version 7
  *
