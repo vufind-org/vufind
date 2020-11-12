@@ -82,11 +82,15 @@ class VuFindWorkKeys
             }
         }
 
+        // Exit early if there are no authors, since we can't make author/title keys:
+        $authors = is_iterable($authors) ? $authors : (array)$authors;
+        if (empty($authors)) {
+            return $dom;
+        }
         $titles = $titles instanceof \Traversable
             ? iterator_to_array($titles) : (array)$titles;
         $trimmedTitles = $trimmedTitles instanceof \Traversable
             ? iterator_to_array($trimmedTitles) : (array)$trimmedTitles;
-        $authors = is_iterable($authors) ? $authors : (array)$authors;
         $normalizedTitles = [];
         foreach (array_merge($titles, $trimmedTitles) as $title) {
             $normalizedTitle = self::normalize(
