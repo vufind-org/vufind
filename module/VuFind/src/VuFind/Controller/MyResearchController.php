@@ -1545,7 +1545,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send account recovery email
      *
-     * @return View object
+     * @return mixed
      */
     public function recoverAction()
     {
@@ -1752,7 +1752,7 @@ class MyResearchController extends AbstractBase
     /**
      * Receive a hash and display the new password form if it's valid
      *
-     * @return view
+     * @return mixed
      */
     public function verifyAction()
     {
@@ -1795,7 +1795,7 @@ class MyResearchController extends AbstractBase
     /**
      * Receive a hash and display the new password form if it's valid
      *
-     * @return view
+     * @return mixed
      */
     public function verifyEmailAction()
     {
@@ -1856,7 +1856,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handling submission of a new password for a user.
      *
-     * @return view
+     * @return mixed
      */
     public function newPasswordAction()
     {
@@ -1929,7 +1929,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handling submission of a new email for a user.
      *
-     * @return view
+     * @return mixed
      */
     public function changeEmailAction()
     {
@@ -2002,7 +2002,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handling submission of a new password for a user.
      *
-     * @return view
+     * @return mixed
      */
     public function changePasswordAction()
     {
