@@ -3,6 +3,9 @@
 /**
  * Solr deduplication (merged records) listener.
  *
+ * See https://vufind.org/wiki/indexing:deduplication for details on how this is
+ * used.
+ *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
@@ -137,7 +140,9 @@ class DeduplicationListener
             if ($params && in_array($context, ['search', 'similar', 'getids'])) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
-                if ($this->enabled && 'getids' !== $context) {
+                if ($this->enabled && 'getids' !== $context
+                    && !$this->hasChildFilter($params)
+                ) {
                     $fq = '-merged_child_boolean:true';
                     if ($context == 'similar' && $id = $event->getParam('id')) {
                         $fq .= ' AND -local_ids_str_mv:"'
@@ -150,6 +155,19 @@ class DeduplicationListener
             }
         }
         return $event;
+    }
+
+    /**
+     * Check search parameters for child records filter
+     *
+     * @param array|ArrayAccess $params Search parameters
+     *
+     * @return bool
+     */
+    public function hasChildFilter($params)
+    {
+        $filters = $params->get('fq');
+        return $filters != null && in_array('merged_child_boolean:true', $filters);
     }
 
     /**
