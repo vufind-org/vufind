@@ -573,6 +573,12 @@ class RecordDataFormatterFactory
             ]
         );
         $setTemplateLine(
+            'Filming Date', 'getFilmingDate', 'data-escapeHtml.phtml',
+            [
+                'context' => ['class' => 'record-filming-date']
+            ]
+        );
+        $setTemplateLine(
             'Additional Information', 'getTitleStatement', 'data-addInfo.phtml',
             [
                 'context' => ['class' => 'recordTitleStatement']

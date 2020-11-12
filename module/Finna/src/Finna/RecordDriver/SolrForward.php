@@ -1463,6 +1463,16 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return filming date
+     *
+     * @return string
+     */
+    public function getFilmingDate()
+    {
+        return $this->getProductionEventAttribute('elokuva-kuvausaika');
+    }
+
+    /**
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
