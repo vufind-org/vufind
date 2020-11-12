@@ -79,15 +79,17 @@ public class WorkKeys
         titles.addAll(FieldSpecTools.getFieldsByTagList(record, titleTagListNF, true));
         final Set<String> authors = FieldSpecTools.getFieldsByTagList(record, authorTagList);
 
-        for (String title : titles) {
-            final String normalizedTitle
-                = normalizeWorkKey(title, includeRegEx, excludeRegEx, transliterator);
-            if (!normalizedTitle.isEmpty()) {
-                for (String author : authors) {
-                    final String normalizedAuthor
-                        = normalizeWorkKey(author, includeRegEx, excludeRegEx, transliterator);
-                    if (!normalizedAuthor.isEmpty()) {
-                        workKeys.add("AT ".concat(normalizedAuthor).concat(" ").concat(normalizedTitle));
+        if (!authors.isEmpty()) {
+            for (String title : titles) {
+                final String normalizedTitle
+                    = normalizeWorkKey(title, includeRegEx, excludeRegEx, transliterator);
+                if (!normalizedTitle.isEmpty()) {
+                    for (String author : authors) {
+                        final String normalizedAuthor
+                            = normalizeWorkKey(author, includeRegEx, excludeRegEx, transliterator);
+                        if (!normalizedAuthor.isEmpty()) {
+                            workKeys.add("AT ".concat(normalizedAuthor).concat(" ").concat(normalizedTitle));
+                        }
                     }
                 }
             }
