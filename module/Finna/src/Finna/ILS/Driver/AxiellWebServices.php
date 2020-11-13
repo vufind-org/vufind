@@ -2186,9 +2186,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'payableOnline' => $payable,
                 'organization' => $debt->organisation ?? ''
             ];
-            if (!empty($debt->organisation)) {
-                $debt->organisation = $debt->organisation;
-            }
             $finesList[] = $fine;
         }
 
