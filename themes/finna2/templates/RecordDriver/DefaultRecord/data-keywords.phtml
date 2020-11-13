@@ -3,7 +3,11 @@
   <div class="truncate-field">
     <?php foreach ($data as $keyword): ?>
       <div class="subjectLine" property="keywords">
-        <a class="backlink" title="<?=$this->escapeHtmlAttr($keyword)?>" href="<?=$this->record($this->driver)->getLink('keyword', $keyword)?>"><?=$this->escapeHtml($keyword) ?></a>
+        <?php if (is_array($keyword)): ?>
+          <a class="backlink" title="<?=$this->escapeHtmlAttr($keyword['term'])?>" href="<?=$this->record($this->driver)->getLink('keyword', $keyword['term'])?>"><?=$this->escapeHtml($keyword['term']) ?></a><?php if (!empty($keyword['label'])): ?> (<?=$this->escapeHtml($keyword['label']) ?>)<?php endif; ?>
+        <?php else: ?>
+          <a class="backlink" title="<?=$this->escapeHtmlAttr($keyword)?>" href="<?=$this->record($this->driver)->getLink('keyword', $keyword)?>"><?=$this->escapeHtml($keyword) ?></a>
+        <?php endif; ?>
       </div>
     <?php endforeach; ?>
   </div>

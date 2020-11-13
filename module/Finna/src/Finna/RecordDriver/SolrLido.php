@@ -385,6 +385,32 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Get an array of classifications for the record.
+     *
+     * @return array
+     */
+    public function getOtherClassifications()
+    {
+        $results = [];
+        foreach ($this->getXmlRecord()->xpath(
+            'lido/descriptiveMetadata/objectClassificationWrap/classificationWrap/'
+            . 'classification'
+        ) as $node) {
+            if (isset($node->term)) {
+                $term = (string)$node->term;
+                $attributes = $node->term->attributes();
+                $label = isset($attributes->label) ? $attributes->label : '';
+                if ($label) {
+                    $results[] = compact('term', 'label');
+                } else {
+                    $results[] = $term;
+                }
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Get the collections of the current record.
      *
      * @return array
