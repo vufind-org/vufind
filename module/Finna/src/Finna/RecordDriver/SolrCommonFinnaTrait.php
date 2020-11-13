@@ -188,4 +188,14 @@ trait SolrCommonFinnaTrait
         return isset($this->fields['local_ids_str_mv'])
             ? $this->fields['local_ids_str_mv'] : [];
     }
+
+    /**
+     * Get the VuFind configuration.
+     *
+     * @return \Laminas\Config\Config
+     */
+    protected function getConfig()
+    {
+        return $this->mainConfig;
+    }
 }

@@ -1095,14 +1095,4 @@ trait SolrFinnaTrait
             );
         }
     }
-
-    /**
-     * Get the VuFind configuration.
-     *
-     * @return \Laminas\Config\Config
-     */
-    protected function getConfig()
-    {
-        return $this->mainConfig;
-    }
 }
