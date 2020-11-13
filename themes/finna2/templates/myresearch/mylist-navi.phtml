@@ -12,42 +12,42 @@
      }
   }
 ?>
-  <h1 class="visible-xs visible-sm"><i class="fa fa-arrow-down pull-left"></i> <?=$this->transEsc('Your Lists')?></h1>
-  <ul id="favorites-collapse" class="dropdown-menu subtabs collapse in mylist-nav" role="presentation">
-    <li role="menuitem" class="favorites-menulist-item">
-      <a href="<?=$this->url('myresearch-favorites')?>?limit=<?=$currentLimit;?>" class="<?=!$activeId ? ' active' : ''?>" aria-current="<?= !$activeId ? 'page' : 'false' ?>">
-        <div class="favorite-list-holder">
-          <div class="pull-left favorite-list-title"><?=$this->transEsc('All Favourites')?></div>
-          <div class="pull-right">(<?=$numOfResources; ?>)</div>
-        </div>
-      </a>
-    </li>
-    <?php foreach ($lists as $list): ?>
-    <?php $active = ($list['id'] === $activeId); ?>
-    <li role="menuitem" class="favorites-menulist-item">
-      <a href="<?= $active ? '#' : $this->url('userList', ['id' => $list['id']])?>?limit=<?=$currentLimit;?>" class="<?=$list && $active ? ' active' : ''?>" aria-current="<?=$active ? 'page' : 'false' ?>">
-        <div class="favorite-list-holder">
-          <div class="pull-left favorite-list-title"><?=$this->escapeHtml($list['title'])?></div>
-          <?php if ($list['public']): ?>
-            <i class="fa fa-public public-favorite-list pull-left"></i>
-          <?php endif; ?>
-          <div class="pull-right">(<?=$list->cnt?>)</div>
-          <?php if ($active): ?>
-            <button class="pull-right remove-favorite-list  remove"><i  class="fa fa-button fa-times"></i></button>
-          <?php endif; ?>
-        </div>
-      </a>
-      <?php if ($active): ?>
-        <?php $url = $this->url('list-page', ['lid' => $list['id']], ['force_canonical' => true]) ?>
-        <?= $this->partial('myresearch/list-visibility.phtml', ['listUrl' => $url, 'public' => $list['public']]); ?>
-      <?php endif; ?>
-    </li>
-    <?php endforeach; ?>
-    <li class="add-new-list-holder favorites-menulist-item">
-      <div class="list-group-item add-new-list">
-        <input type="text" class="new-list-input" placeholder="<?=$this->transEsc('Create a List') ?>">
-        <i class="fa fa-plus-small icon"></i>
+<ul class="dropdown-menu subtabs collapse in" role="presentation">
+  <li><h1 class="visible-xs visible-sm"><i class="fa fa-arrow-down pull-left"></i> <?=$this->transEsc('Your Lists')?></h1></li>
+  <li role="menuitem" class="favorites-menulist-item">
+    <a href="<?=$this->url('myresearch-favorites')?>?limit=<?=$currentLimit;?>" class="<?=!$activeId ? ' active' : ''?>" aria-current="<?= !$activeId ? 'page' : 'false' ?>">
+      <div class="favorite-list-holder">
+        <div class="pull-left favorite-list-title"><?=$this->transEsc('All Favourites')?></div>
+        <div class="pull-right">(<?=$numOfResources;?>)</div>
       </div>
-    </li>
-  </ul>
+    </a>
+  </li>
+  <?php foreach ($lists as $list): ?>
+  <?php $active = ($list['id'] === $activeId); ?>
+  <li role="menuitem" class="favorites-menulist-item">
+    <a href="<?= $active ? '#' : $this->url('userList', ['id' => $list['id']])?>?limit=<?=$currentLimit;?>" class="<?=$list && $active ? ' active' : ''?>" aria-current="<?=$active ? 'page' : 'false' ?>">
+      <div class="favorite-list-holder">
+        <div class="pull-left favorite-list-title"><?=$this->escapeHtml($list['title'])?></div>
+        <?php if ($list['public']): ?>
+          <i class="fa fa-public public-favorite-list pull-left"></i>
+        <?php endif; ?>
+        <div class="pull-right">(<?=$list->cnt?>)</div>
+        <?php if ($active): ?>
+          <button class="pull-right remove-favorite-list remove"><i class="fa fa-button fa-times"></i></button>
+        <?php endif; ?>
+      </div>
+    </a>
+    <?php if ($active): ?>
+      <?php $url = $this->url('list-page', ['lid' => $list['id']], ['force_canonical' => true]) ?>
+      <?= $this->partial('myresearch/list-visibility.phtml', ['listUrl' => $url, 'public' => $list['public']]); ?>
+    <?php endif; ?>
+  </li>
+  <?php endforeach; ?>
+  <li class="add-new-list-holder favorites-menulist-item">
+    <div class="list-group-item add-new-list">
+      <input type="text" class="new-list-input" placeholder="<?=$this->transEsc('Create a List') ?>">
+      <i class="fa fa-plus-small icon"></i>
+    </div>
+  </li>
+</ul>
 <!-- END of: finna - myresearch/mylist-navi.phtml -->

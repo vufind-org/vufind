@@ -189,6 +189,7 @@ $config = [
         'finna-combined-results.js',
         'finna-video-popup.js',
         'finna-image-paginator.js',
+        'finna-menu-movement.js',
         'finna-comments.js',
         'finna-common.js',
         'finna-content-feed.js',
