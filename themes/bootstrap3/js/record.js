@@ -289,6 +289,24 @@ function applyRecordTabHash() {
 
 $(window).on('hashchange', applyRecordTabHash);
 
+function moreLessSubjects() {
+  $('.more-subjects, .less-subjects').off('click');
+  $('.more-subjects').click(function moreSubjects() {
+    $('.subject-hidden').removeClass('hidden');
+    $('#less-subjects').removeClass('hidden');
+    $('#more-subjects').addClass('hidden');
+    return false;
+  });
+
+  $('.less-subjects').click(function lessFacets() {
+    $('.subject-hidden').addClass('hidden');
+    $('#more-subjects').removeClass('hidden');
+    $('#less-subjects').addClass('hidden');
+    return false;
+  });
+}
+
+
 function removeCheckRouteParam() {
   if (window.location.search.indexOf('checkRoute=1') >= 0) {
     var newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
@@ -343,6 +361,7 @@ function recordDocReady() {
     backgroundLoadTab(el.dataset.tab);
   });
 
+  moreLessSubjects();
   registerTabEvents();
   applyRecordTabHash();
 }

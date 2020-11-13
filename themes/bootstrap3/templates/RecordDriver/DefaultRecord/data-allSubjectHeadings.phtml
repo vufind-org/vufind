@@ -1,5 +1,7 @@
-<?php foreach ($data as $field): ?>
-  <div class="subject-line" property="keywords">
+<?php $maxSubjectsLimit = $this->config()->subjectLimit(); ?>
+<?php $c = 0; foreach ($data as $field): ?>
+  <?php $c++; ?>
+  <div class="subject-line<?=($c > $maxSubjectsLimit ? ' subject-hidden hidden' : '' )?>" property="keywords">
     <?php $subject = ''; ?>
     <?php if(count($field) == 1) $field = explode('--', $field[0]); ?>
     <?php $i = 0; foreach ($field as $subfield): ?>
@@ -9,3 +11,15 @@
     <?php endforeach; ?>
   </div>
 <?php endforeach; ?>
+<?php if ($c > $maxSubjectsLimit): ?>
+  <div id="more-subjects" class="subject-line">
+    <a href="#" class="more-subjects">
+      <?=$this->transEsc('more') ?> ...
+    </a>
+  </div>
+  <div id="less-subjects" class="subject-line hidden">
+    <a href="#" class="less-subjects">
+      <?=$this->transEsc('less') ?> ...
+    </a>
+  </div>
+<?php endif; ?>
