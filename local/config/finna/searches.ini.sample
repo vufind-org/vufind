@@ -52,6 +52,7 @@ case_sensitive_ranges = true
 ; See the comments above those sections for details on legal settings.  You may
 ; repeat these lines to load multiple recommendations.
 default_top_recommend[] = TopFacets:ResultsTop
+;default_top_recommend[] = LearningMaterial
 default_side_recommend[] = SideFacetsDeferred:Results:CheckboxFacets
 default_noresults_recommend[] = SwitchType
 default_noresults_recommend[] = SwitchQuery
@@ -306,6 +307,9 @@ author = sort_author
 ;       Headings related to the current search.  [vocabulary] is the vocabulary to
 ;       use for recommendations; default is "lcsh" but other options include "fast",
 ;       "mesh", etc.  See http://tspilot.oclc.org/resources/ for details.
+; LearningMaterial
+;       Recommends trying the Learning Material search tab (if configured) if the
+;       user has selected the Learning Material filter.
 ;
 ; Available modules recommended for use in the "no results" area:
 ;

@@ -1,0 +1,7 @@
+<?php if ($tabUrl = $this->recommend->getTabUrl()): ?>
+<!-- START of: finna - Recommend/LearningMaterial.phtml -->
+<div class="learning-material-recommendation alert alert-info">
+  <?= $this->translate('learning_material_recommendation_html', ['%%tabUrl%%' => $tabUrl]) ?>
+</div>
+<!-- END of: finna - Recommend/LearningMaterial.phtml -->
+<?php endif; ?>
