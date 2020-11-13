@@ -5,7 +5,7 @@
   </div>
 
   <?php $building = "0/{$this->id}/"; ?>
-  <?php $consortiumSearch = $this->url('search-results') . "?&filter[]={$this->buildingFacetOperator}building:\"{$building}\""?>
+  <?php $consortiumSearch = $this->url('search-results', [], ['query' => ['filter' => $this->buildingFacetOperator . 'building:"' . $building . '"']])?>
 
   <div class="consortium-info hide navi-section" id="consortium-info-section">
     <div>

@@ -2,7 +2,7 @@
 <div class="office-search navi-section map-ui" id="consortium-service-point-section">
   <?php if (!empty($this->consortiumInfo)): ?>
     <div>
-        <h2><?=$this->transEsc('organisation_info_navi_service')?></h2>
+      <h2><?=$this->transEsc('organisation_info_navi_service')?></h2>
     </div>
     <div><p class="consortium-notification hide"></p></div>
   <?php endif; ?>
@@ -23,7 +23,7 @@
       <div class="map-ui map-control-buttons" aria-hidden="true">
         <span class="show-map"><a href="#"><?=$this->translate('organisation_info_page_map_show')?></a></span>
         <span class="map-controls hidden">
-          <span class="show-service-point"><a href="#"><?= $this->translate('zoom_center') ?></a>
+          <span class="show-service-point"><a href="#"><?= $this->translate('zoom_center') ?></a></span>
           <span class="show-all"><a href="#"><?=$this->translate('organisation_info_page_map_show_all')?></a></span>
         </span>
       </div>
@@ -51,9 +51,13 @@
   <div class="office-title">
     <h3 class="service-title">Template title</h3>
     <div>
-      <p><span class="office-links address"></span></p>
-      <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a> <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a> <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span></p>
-      <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span>
+      <p>
+        <span class="office-links address"></span>
+        <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a>
+        <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a>
+        <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span>
+      </p>
+      <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span></p>
     </div>
   </div>
   <div class="open-closed-info">
