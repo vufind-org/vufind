@@ -35,12 +35,6 @@
         ]
       );
 
-      // IE-specific stylesheet
-      $this->headLink()->appendStylesheet('ie9-and-lower.css', 'screen', 'lte IE 9');
-      $this->headLink()->appendStylesheet('ie8-and-lower.css', 'screen', 'lt IE 9');
-      $this->headScript()->appendFile('vendor/classList.js', 'text/javascript', ['conditional' => 'lte IE 9']);
-      $this->headScript()->appendFile('vendor/html5shiv.js', 'text/javascript', ['conditional' => 'lt IE 9']);
-      $this->headScript()->appendFile('vendor/respond.js', 'text/javascript', ['conditional' => 'lt IE 9']);
       $finnaSurvey = in_array($this->layout()->templateDir, ['search', 'record']) && $this->finnaSurvey()->isEnabled();
 
       if ($finnaSurvey) {
