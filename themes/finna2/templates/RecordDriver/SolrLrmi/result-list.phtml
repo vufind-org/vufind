@@ -1,15 +1,17 @@
-<!-- START of: finna - RecordDriver/DefaultRecord/result-list.phtml -->
+<!-- START of: finna - RecordDriver/SolrLrmi/result-list.phtml -->
 <?php
   $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
   $img = $this->recordImage($this->record($this->driver));
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  $inL1Results = $this->layout()->templateDir === 'l1';
   $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
   if ($img) {
-    $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]);
+    $thumbnail = $img->render('list', ['small' => ['w' => 158, 'h' => 228], 'medium' => ['w' => 158, 'h' => 228]], 'L1', ['imageClick' => 'open']);
   }
+  $recordType = $this->driver->tryMethod('getRecordType');
 ?>
-<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
+<div class="record-container<?=$recordType?" record-type-$recordType":''?><?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
@@ -41,28 +43,6 @@
         <?php endif; ?>
         <div class="dateyeartype">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
-
-          <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
-            <div class="resultOtherLinks">
-              <?php $prevOtherLinkHeading = ''; ?>
-              <?php foreach ($results as $result): ?>
-                <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('default::link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
-                <?php if (!empty($result['isn'])): ?>
-                  <?php $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
-                  <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
-                    <?=$this->escapeHtml($otherLinkTitle); ?>
-                  </a>
-                <?php elseif (!empty($result['title'])): ?>
-                  <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
-                    <?=$this->escapeHtml($result['title']); ?>
-                  </a>
-                <?php endif; ?>
-                <?php if (!empty($result['author'])): ?>
-                  (<?=$this->escapeHtml($result['author']); ?>)
-                <?php endif; ?>
-              <?php endforeach; ?>
-            </div>
-          <?php endif; ?>
 
           <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', $this->driver->getSummary()); ?>
@@ -122,59 +102,48 @@
                 <?php endforeach; ?>
               </div>
             <?php endif; ?>
-
-            <?php $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
-              <?php foreach ($summInCollection as $collId => $collText): ?>
-                <div>
-                  <b><?=$this->transEsc("in_collection_label")?></b>
-                  <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
-                    <?=$this->escapeHtml($collText)?>
-                  </a>
+            <?php $recordSource = $this->driver->tryMethod('getDataSource'); ?>
+            <?php if ($recordSource): ?>
+            <div class="dedupInformation">
+              <strong><?=$this->transEsc("source_$recordSource", null, $recordSource) ?></strong>
+            </div>
+            <?php endif; ?>
+            <?php if ($inL1Results): ?>
+              <div class="targeted-information truncate-field outer" data-rows="2">
+                <?php if ($levels = $this->driver->getRootEducationalLevels()): ?>
+                  <?php foreach($levels as $level): ?>
+                    <span class="lrmi-topic"><?=$this->transEsc($level)?></span>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+                <?php if ($topics = $this->driver->getTopics()): ?>
+                  <?php foreach($topics as $topic): ?>
+                    <span class="lrmi-topic"><?=$this->transEsc($topic)?></span>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </div>
+              <?php if ($rights = $this->driver->getAccessRestrictionsType()): ?>
+                <div class="material-rights">
+                  <span class="rights-header"><?=$this->transEsc('Usage Rights')?>:</span>
+                  <?= $this->partial('Helpers/copyright-field-value.phtml', ['data' => $rights]) ?>
                 </div>
-              <?php endforeach; ?>
+              <?php endif; ?>
             <?php endif; ?>
           <?php endif; ?>
         </div>
-        <?php if (!$this->driver->isCollection()): ?>
-          <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
-            <?php if (!empty($snippet['caption'])): ?>
-              <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
-            <?php endif; ?>
-            <?php if (!empty($snippet['snippet'])): ?>
-              <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
-            <?php endif; ?>
-          <?php endif; ?>
-        <?php endif; ?>
-
         <?php if ($this->driver->tryMethod('getWorkKeys') && !empty($this->config()->get('config')->Record->display_versions)): ?>
           <div class="record-versions ajax"></div>
         <?php endif; ?>
 
         <?php $recordHelper = $this->record($this->driver); ?>
-        <?=$recordHelper->renderTemplate('holdings.phtml');?>
-        <?=$recordHelper->getOnlineUrls('results');?>
         <?=$recordHelper->getPreviews();?>
         <?=$this->render('list/list-notes.phtml')?>
 
         <div class="clearfix"></div>
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-            <?php /* Saved lists */ ?>
+          <?php /* Saved lists */ ?>
           <div class="savedLists">
             <strong><?=$this->transEsc("Saved in")?>:</strong>
           </div>
-        <?php endif; ?>
-
-        <?php /* Hierarchy tree link */ ?>
-        <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-            <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
-            <div class="hierarchyTreeLink">
-              <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-              <i class="fa fa-sitemap" aria-hidden="true"></i>
-              <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
-                  <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
-              </a>
-            </div>
-            <?php endforeach; ?>
         <?php endif; ?>
 
         <div class="hidden-print add-to-favorite-col">
@@ -220,4 +189,4 @@
     <?php endif; ?>
   </div>
 </div>
-<!-- END of: finna - RecordDriver/DefaultRecord/result-list.phtml -->
+<!-- END of: finna - RecordDriver/SolrLrmi/result-list.phtml -->

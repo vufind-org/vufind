@@ -94,8 +94,9 @@ finna.layout = (function finnaLayout() {
       } else if (self.children().length > 0) {
         // use first child as the height element if available
         var heightElem = self.children().first();
-        if (heightElem.is('div')) {
-          rowHeight[index] = parseFloat(heightElem.height());
+        var outer = self.hasClass('outer');
+        if (heightElem.is('div') || outer) {
+          rowHeight[index] = parseFloat(outer ? heightElem.outerHeight(true) : heightElem.height());
         } else {
           rowHeight[index] = parseFloat(heightElem.css('line-height').replace('px', ''));
         }
@@ -107,12 +108,12 @@ finna.layout = (function finnaLayout() {
       if (self.data('rows')) {
         rowCount = self.data('rows');
       }
-
       // get the line-height of first element to determine each text line height
       truncation[index] = rowHeight[index] * rowCount;
       // truncate only if there's more than one line to hide
       if (self.height() > (truncation[index] + rowHeight[index] + 1)) {
-        self.css('height', truncation[index] - 1 + 'px');
+        var newHeight = truncation[index] - 1;
+        self.css('height', newHeight + 'px');
         var moreLabel = self.data('label') ? self.data('label') : VuFind.translate('show_more');
         var lessLabel = self.data('label') ? self.data('label') : VuFind.translate('show_less');
         self.before('<button type="button" class="less-link-top">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>');

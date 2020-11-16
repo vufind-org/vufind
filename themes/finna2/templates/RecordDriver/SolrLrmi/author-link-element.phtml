@@ -1,0 +1,2 @@
+<?php // No ending line feed ?>
+<a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><?php if (!empty($author['affiliation'])): ?>, <?= $this->escapeHtml($author['affiliation']) ?><?php endif;?></a>

@@ -115,22 +115,19 @@ if ($img):
               <?=!empty($summAuthor) ? '' : ' '?>
               <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
             <?php endif; ?>
-            <?php $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+            <?php if ($classifications = $this->driver->tryMethod('getClassifications')): ?>
               <div class="resultClassification">
-                <?php
-                  $result = '';
-                  $i = 0;
-                  foreach ($classifications as $class => $field) {
-                    $field = array_unique($field);
-                    foreach ($field as $i => $subfield) {
-                      $result = $class . ' ' . $subfield;
+                <?php foreach ($classifications as $class => $field): ?>
+                  <?php if (!empty($field[0])): ?>
+                    <?php
+                      $result = $class . ' ' . $field[0];
                       $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
-                      ?>
-                      <?php if (!$this->translationEmpty($classForTranslation) && $i < 1): ?><a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?></a><br/><?php endif; ?>
-                  <?php
-                    }
-                  }
-                  ?>
+                      if (!$this->translationEmpty($classForTranslation)):
+                    ?>
+                      <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?></a><br/>
+                    <?php endif; ?>
+                  <?php endif; ?>
+                <?php endforeach; ?>
               </div>
             <?php endif; ?>
 
