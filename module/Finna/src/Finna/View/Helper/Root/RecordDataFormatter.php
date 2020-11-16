@@ -114,6 +114,27 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
     }
 
     /**
+     * Filter unnecessary fields from Lrmi records
+     *
+     * @param array $coreFields data to filter
+     *
+     * @return array
+     */
+    public function filterLrmiFields($coreFields)
+    {
+        $filter = [
+            'Archive', 'Item Description', 'Publisher',
+            'Publish date', 'Published', 'Content Description',
+            'Description FWD', 'Organisation', 'Source Collection',
+            'Format', 'Authors', 'Archive Relations'
+        ];
+        foreach ($filter as $key) {
+            unset($coreFields[$key]);
+        }
+        return $coreFields;
+    }
+
+    /**
      * Filter unnecessary fields from EAD records.
      *
      * @param array $coreFields data to filter.

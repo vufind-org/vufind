@@ -30,19 +30,11 @@
     <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
       <div class="recordcover-container">
         <button class="next-image left" type="button"><i class="fa fa-chevron-left"></i><span class="sr-only"><?= $this->transEsc('previous_image') ?></span></button>
-        <?php if (!$this->disableModal): ?>
-          <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
-        <?php else: ?>
-          <span class="image-popup-trigger" data-disable-modal="1">
-        <?php endif; ?>
-        <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-        <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        <div class="paginator-info"><span class="image-index"></span></div>
-        <?php if (!$this->disableModal): ?>
-          </a>
-        <?php else: ?>
-          </span>
-        <?php endif; ?>
+        <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
+          <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
+          <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+          <div class="paginator-info"><span class="image-index"></span></div>
+        </a>
         <span class="hidden-trigger" hidden></span>
         <button class="next-image right" type="button"><i class="fa fa-chevron-right"></i><span class="sr-only"><?= $this->transEsc('next_image') ?></span></button>
       </div>
@@ -77,6 +69,8 @@
         'imagesOnNormal' => $numOfImages['mobile'] ?? 8,
         'imagesOnPopup' => $numOfImages['mobile'] ?? 8,
         'enableImageZoom' => $enableImageZoom,
+        'displayIcon' => $displayIcon,
+        'triggerClick' => $this->imageClick ?? 'modal',
         'maxRows' => 3,
         'iconlabelClass' => "format-" . $this->record($this->driver)->getFormatClass(end($formats)),
         'isList' => $type === 'list' || $type === 'list grid'

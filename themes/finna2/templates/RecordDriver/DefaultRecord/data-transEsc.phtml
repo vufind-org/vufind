@@ -1,9 +1,10 @@
 <?php //Don't add START and END comments ?>
 <?php if (!empty($data)): ?>
   <?php if (is_array($data)): ?>
+    <?php $data = array_unique(array_map([$this, 'transEsc'], $data)); ?>
     <div class="truncate-field" data-rows="5">
       <?php foreach ($data as $field): ?>
-      <?=$this->transEsc($field)?><br/>
+      <?=$field?><br/>
       <?php endforeach; ?>
     </div>
   <?php else: ?>

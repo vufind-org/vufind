@@ -1,10 +1,12 @@
-<!-- START of: finna - RecordTab/usercomments.phtml -->
 <?php
-  $comments = $this->driver->getComments();
+  if ($externalRatingLink = $this->record($this->driver)->getExternalRatingLink()) {
+    echo $externalRatingLink;
+    return;
+  }
   $user = $this->auth()->isLoggedIn();
   $ratings = $this->record($this->driver)->ratingAllowed();
-  $allowCommenting = $user && $this->record($this->driver)->commentingAllowed($user);
 ?>
+<!-- START of: finna - RecordTab/usercomments.phtml -->
 <div class="comment-list">
   <?=$this->render('record/comments-list.phtml', ['driver' => $this->driver])?>
 </div>

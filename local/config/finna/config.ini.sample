@@ -1306,6 +1306,9 @@ ead_external_link_template[narc] = "http://www.narc.fi:8080/VakkaWWW/Selaus.acti
 ead_document_order_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_checkout.php?id={id}"
 ead_usage_permission_request_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_askpermission.php?id={id}"
 
+; External link used in lrmi records, materialId is the id of web resource, &lang={lang} for language specific sites
+; lrmi_external_link_template[source] = "https://webpage.fi/{materialId}"
+
 ; Filtering regexp's for record URLs
 url_blocklist[] = '/btj\.com\/btjcgi\/arvo\/get_add_info\.cgi\?type=(PRES|IMAGE)/'
 url_blocklist[] = '/data\.kirjavalitys\.fi\/data\/servlets\/ProductRequestServlet/'

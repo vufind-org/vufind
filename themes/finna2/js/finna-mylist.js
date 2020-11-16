@@ -620,10 +620,11 @@ finna.myList = (function finnaMyList() {
       initEditableMarkdownField(editField, function onMarkdownEditDone(markdown) {
         var row = editField.closest('.myresearch-row');
         var id = row.find('.hiddenId').val();
+        var source = row.find('.hiddenSource').val();
         var listId = getActiveListId();
 
         updateListResource(
-          {'id': id, 'listId': listId, 'notes': markdown},
+          {'id': id, 'source': source, 'listId': listId, 'notes': markdown},
           editField.find('> div')
         );
       });

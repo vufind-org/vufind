@@ -8,7 +8,7 @@
   <?= $this->record($this->driver)->renderTemplate(
     'record-image-paginator.phtml',
     ['images' => $images, 'type' => $type, 'formats' => $formats, 'enableImagePopupZoom' => $enableImagePopupZoom,
-     'numOfImages' => $numOfImages ?? null
+     'numOfImages' => $numOfImages ?? null, 'displayIcon' => $displayIcon ?? false
     ]
   ); ?>
   </div>
@@ -18,9 +18,9 @@
       <?php $rights = $image['rights']; ?>
       <div class="image-details-container<?=$ind > 0 ? ' hidden' : '' ?> text-left" data-img-index="<?=$ind ?>">
         <?php if ($this->record($this->driver)->allowRecordImageDownload()): ?>
-          <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
+          <?= $this->record($this->driver)->renderTemplate('image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
         <?php endif; ?>
-      <?= $this->context($this)->renderInContext('RecordDriver/DefaultRecord/image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights, 'truncateLicense' => $ind === 0]); ?>
+      <?= $this->record($this->driver)->renderTemplate('image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights, 'truncateLicense' => $ind === 0]); ?>
       </div>
       <?php $ind++; ?>
     <?php endforeach; ?>

@@ -117,8 +117,12 @@ class EditListResource extends \VuFind\AjaxHandler\AbstractBase
         }
 
         list($source, $id) = explode('.', $listParams['id'], 2);
-        $map = ['pci' => 'Primo', 'eds' => 'Eds', 'summon' => 'Summon'];
-        $source = $map[$source] ?? DEFAULT_SEARCH_BACKEND;
+        if (!empty($listParams['source'])) {
+            $source = $listParams['source'];
+        } else {
+            $map = ['pci' => 'Primo', 'eds' => 'Eds', 'summon' => 'Summon'];
+            $source = $map[$source] ?? DEFAULT_SEARCH_BACKEND;
+        }
 
         $listId = $listParams['listId'];
         $notes = $listParams['notes'];

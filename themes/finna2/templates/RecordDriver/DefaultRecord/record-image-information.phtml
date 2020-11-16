@@ -8,7 +8,7 @@
     <?php if ($img): ?>
       <?=$img->renderImage(
         'record', $localSizes,
-        ['disableModal' => $this->disableModal ?? null, 'imageRightsLabel' => $this->imageRightsLabel ?? null, 'numOfImages' => $numOfImages ?? null]
+        ['imageClick' => $this->imageClick ?? 'modal', 'imageRightsLabel' => $this->imageRightsLabel ?? null, 'numOfImages' => $numOfImages ?? null]
       ) ?>
     <?php endif;?>
     <?php /* Display qrcode if appropriate: */ ?>

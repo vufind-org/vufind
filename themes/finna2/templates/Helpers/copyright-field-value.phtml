@@ -1,0 +1,11 @@
+<!-- START of: finna - Helpers/copyright-field-value.phtml -->
+<span class="rights-icons">
+  <?=$this->partial('Helpers/copyright-icons.phtml', ['copyright' => $data['copyrights']]);?>
+  <span class="rights-text"><?= $this->escapeHtml($data['copyrights']); ?></span>
+</span>
+<?php if ($data['link']): ?>
+  <span class="rights-link">
+    <a href="<?= $this->escapeHtmlAttr($data['link']); ?>" target="_blank"><?= $this->transEsc('usage_meaning')?></a>
+  </span>
+<?php endif; ?>
+<!-- END of: finna - Helpers/copyright-field-value.phtml -->

@@ -1,0 +1,134 @@
+<!-- START of: finna - RecordDriver/SolrLrmi/core.phtml -->
+<?php
+  $rights = $this->driver->getAccessRestrictionsType($this->layout()->userLang);
+  $summary = $this->driver->getSummary();
+  $externalLink = $this->driver->getExternalLink();
+  $materials = $this->driver->getMaterials($this->layout()->userLang);
+  $dateCreated = $this->driver->getDateCreated();
+  $dateModified = $this->driver->getDateModified();
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  $formats = $this->driver->getFormats();
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment?>">
+    <?=$this->record($this->driver)->renderTemplate('record-image-information.phtml', ['img' => $img, 'displayIcon' => true, 'source' => 'L1', 'imageClick' => 'none']);?>
+    <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
+  </div>
+  <?php $thumbnail = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <h1 property="name" class="record-title visible-xs"><?=$this->escapeHtml($this->driver->getShortTitle())?><?php if ($subtitle = $this->driver->getSubtitle()): ?>&nbsp;: <?=$this->escapeHtml($subtitle) ?><?php endif; ?></h1>
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
+  <div class="media-body record-information">
+    <h1 property="name" class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getShortTitle())?><?php if ($subtitle = $this->driver->getSubtitle()): ?>&nbsp;: <?=$this->escapeHtml($subtitle) ?><?php endif; ?></h1>
+    <?php if (!empty($formats)): ?>
+      <span class="recordFormat"><?=$this->record($this->driver)->getFormatList()?></span>
+    <?php endif; ?>
+    <div class="record-core-metadata">
+      <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>
+        <div class="truncate-field recordAuthors">
+          <span property="author">
+            <?php foreach ($results as $index => $author): ?>
+              <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><?php if (!empty($author['affiliation'])): ?>, <?= $this->escapeHtml($author['affiliation']) ?><?php endif;?></a>
+            <?php endforeach; ?>
+          </span>
+        </div>
+        <div class="date-created date-modified">
+          <span><?= $dateCreated ? $this->transEsc('Created') . ': ' . $dateCreated : '';?><?= $dateCreated && $dateModified ? ', ' : ''?><?= $dateModified ? $this->transEsc('modified') . ': ' . $dateModified : '';?></span>
+        </div>
+      <?php endif; ?>
+      <?php if (!empty($materials)): ?>
+        <div class="learning-material">
+          <h3><?= $this->transEsc('Contents'); ?></h3>
+          <div class="recordURLs local-available-online-record">
+            <ul class="truncate-field outer" data-rows="4">
+              <?php
+                $externalLinkText = $this->translate('external_link');
+                $externalLinkAdditionalInfo
+                  = $this->record($this->driver)->getExternalLinkAdditionalInfo();
+                $linkedFormats = $this->driver->getDownloadableFileFormats();
+              ?>
+              <?php foreach ($materials as $material): ?>
+                <?php $title = $this->escapeHtml($material['title']); ?>
+                <?php $isHtml = ('html' === $material['format']); ?>
+                <?php $filesize = $this->fileSize($material['filesize']); ?>
+                <li class="fulltextField">
+                  <?php if (in_array($material['format'], $linkedFormats)): ?>
+                    <a href="<?= $this->escapeHtmlAttr($this->proxyUrl($material['url'])) ?>"
+                      aria-label="<?= $this->escapeHtmlAttr($externalLinkText) ?>" target="_blank">
+                      <i class="fa <?= $isHtml ? 'fa-external-link' : 'fa-download' ?>"></i>
+                      <?= $title ?>
+                    </a>
+                    (<?= $isHtml
+                      ? $this->escapeHtml($externalLinkText)
+                      : $this->escapeHtml($material['format'] . ($filesize ? (', ' . $filesize) : ''))
+                    ?>)
+                  <?php elseif ($externalLink): ?>
+                    <a href="<?= $externalLink ?>" aria-label="<?= $this->escapeHtmlAttr($externalLinkText) ?>"
+                      target="_blank"><i class="fa fa-external-link"></i><?= $title ?></a>
+                    <?= $externalLinkAdditionalInfo ?>
+                  <?php else: ?>
+                    <?= $title ?>
+                  <?php endif; ?>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        </div>
+      <?php endif; ?>
+      <?= $this->record($this->driver)->getMaterialDisclaimer() ?>
+      <?php if (!empty($summary)): ?>
+        <div class="material-description">
+          <?= $this->escapeHtml(implode('<br>', $summary)); ?>
+        </div>
+      <?php endif; ?>
+      <?/* Display Main Details */?>
+      <?php
+        $formatter = $this->recordDataFormatter();
+        $filteredFields = $formatter->filterLrmiFields($formatter->getDefaults('core'));
+        $coreFields = $formatter->getGroupedData($driver, $formatter->getGroupedFields([
+            ['lines' => [
+              'Educational Role',
+              'Educational Level',
+              'Learning Resource Type',
+              'Educational Subject',
+              'Objective and Content',
+              'Subjects',
+              'Language',
+            ]]
+        ], $filteredFields));
+      ?>
+      <?php if ($rights || !empty($coreFields)): ?>
+        <table class="table table-finna-record record-details record-field-groups">
+          <?php if ($rights): ?>
+            <?= $this->record($this->driver)->renderTemplate('core-field-group-fields.phtml',
+              ['data' => [[
+                'label' => 'Image Rights',
+                'value' => $this->partial('Helpers/copyright-field-value.phtml', ['data' => $rights])
+              ]]]);
+            ?>
+          <?php endif; ?>
+          <?=$this->record($this->driver)->renderTemplate('core-field-groups.phtml', ['data' => $coreFields]);?>
+        </table>
+      <?php endif; ?>
+      <?/* End Main Details */?>
+    </div>
+
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists" id="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($template = $this->content()->findTemplateForLng("content/Additions/record-post-metadata")): ?>
+      <div>
+        <?=$this->render($template)?>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+<!-- END of: finna - RecordDriver/SolrLrmi/core.phtml -->
