@@ -92,11 +92,11 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     /**
      * Should we limit the number of subjects displayed on the full record?
      *
-     * @return int or float (INF)
+     * @return int
      */
     public function subjectLimit()
     {
         $subjectLimit = $this->get('config')->Site->subjectLimit;
-        return $subjectLimit ? (int)$subjectLimit : INF;
+        return $subjectLimit ? (int)$subjectLimit : PHP_INT_MAX;
     }
 }
