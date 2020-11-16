@@ -174,11 +174,11 @@ content[] = FacetList:L1
 
 [Results]
 usage_rights_str_mv = "Usage Rights"
-educational_audience_str_mv = "Kohderyhmä"
-educational_level_str_mv = "Koulutusaste"
-educational_material_type_str_mv = "Oppimateriaalin tyyppi"
-educational_subject_str_mv = "Oppiaine/ tutkinto/ tieteenala"
-educational_aim_str_mv = "Tavoite ja sisältöalue"
+educational_audience_str_mv = "Educational Role"
+educational_level_str_mv = "Educational Level"
+educational_material_type_str_mv = "Learning Resource Type"
+educational_subject_str_mv = "Educational Subject"
+educational_aim_str_mv = "Objective and Content"
 topic_facet = Topic
 author_facet = Author
 language = Language
