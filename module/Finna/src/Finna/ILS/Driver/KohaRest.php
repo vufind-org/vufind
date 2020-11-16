@@ -931,8 +931,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 if (empty($result['data'])) {
                     return [];
                 }
-                $notes = $result['data']['availability']['notes'];
-                $included = $notes['Item::PickupLocations']['to_libraries'];
+                $notes = $result['data']['availability']['notes'] ?? [];
+                $included = $notes['Item::PickupLocations']['to_libraries'] ?? [];
             } else {
                 $result = $this->makeRequest(
                     [
@@ -950,8 +950,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 if (empty($result['data'])) {
                     return [];
                 }
-                $notes = $result['data']['availability']['notes'];
-                $included = $notes['Biblio::PickupLocations']['to_libraries'];
+                $notes = $result['data']['availability']['notes'] ?? [];
+                $included = $notes['Biblio::PickupLocations']['to_libraries'] ?? [];
             }
         }
 
