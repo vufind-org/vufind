@@ -201,7 +201,7 @@
     </div>
     <div class="search-tooltip">
       <?php if (!$browse && !$mainPage && $advSearch): ?>
-        <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced <?=($module === 'record') ? 'visible-lg' : 'hidden-xs'?>"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
+        <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced <?=($module === 'record') ? 'visible-lg' : 'hidden-xs'?>"><i class="fa fa-search-adv" aria-hidden="true"></i><?=$this->transEsc("Advanced Search")?></a>
       <?php endif; ?>
       <?php
         $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'summon' => 'summon'];
@@ -212,8 +212,8 @@
 
         if (isset($tooltipClass) && isset($tooltipText)):
       ?>
-        <button aria-label="<?= $this->transEsc('Search Tips') ?>" class="tooltip-button <?=$tooltipClass?> pull-right hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($tooltipText)?>">
-          <i class="fa fa-question-circle-big"></i>
+        <button aria-label="<?= $this->transEsc('Search Tips') ?>" class="tooltip-button <?=$tooltipClass?> hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($tooltipText)?>">
+          <i class="fa fa-question-circle-big" aria-hidden="true"></i>
         </button>
       <?php endif; ?>
     </div>
