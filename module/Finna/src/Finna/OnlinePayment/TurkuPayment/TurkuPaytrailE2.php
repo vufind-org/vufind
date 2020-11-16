@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2014-2018.
+ * Copyright (C) The National Library of Finland 2014-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -156,13 +156,12 @@ class TurkuPaytrailE2 extends PaytrailE2
     public function addProduct($name, $code, $quantity, $unitPrice, $vatPercent,
         $type
     ) {
-        $index = count($this->products);
         // For some reason the E2 interface does not allow alphanumeric item codes
         if ($code) {
             $name = "$code $name";
         }
         $name = preg_replace(
-            '/[^\pL-0-9- "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
+            '/[^\pL0-9 "\',()\[\]{}*\/+\-_,.:&!?@#$£=*;~]+/u', ' ', $name
         );
         $this->products[] = [
             "title" => substr($name, 0, 255),
