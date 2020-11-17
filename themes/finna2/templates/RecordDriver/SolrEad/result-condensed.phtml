@@ -30,6 +30,7 @@
       </h2>
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
+        <?=$this->render('record/labels.phtml', ['labels' => $this->driver->getRecordLabels(), 'driver' => $this->driver]); ?>
         <div class="resultHierarchyLinks">
           <?php // The funky comparison below is due to Laminas translator not supporting empty values (see ExtendedIniReader) ?>
           <?php if (!$this->translationEmpty('Archive Repository')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><?php endif; ?>

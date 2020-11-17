@@ -6,11 +6,13 @@
     $audioUrls = [];
     $otherUrls = [];
     foreach ($urls as $url){
+      $type = $url['type'] ?? null;
       if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLink()->getEmbeddedVideo($url['url']) == 'data-embed-iframe'){
         array_push($videoUrls, $url);
       } elseif (!empty($url['embed']) && $url['embed'] == 'audio') {
         array_push($audioUrls, $url);
-      } else {
+      } elseif ($type !== 'image') {
+        // Filter away image-urls since they are displayed via image-paginator
         array_push($otherUrls, $url);
       }
     }
@@ -35,7 +37,7 @@
       <?=$this->record($this->driver)->renderTemplate('record-audio-player.phtml', ['audioUrls' => $audioUrls]);?>
     <?php endif; ?>
 
-    <?php if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+    <?php if ($this->resolver('record/record-organisation-menu.phtml') && in_array($this->driver->getSourceIdentifier(), ['Solr', 'R2'])): ?>
       <div class="organisation-menu">
           <?=$this->render('record/record-organisation-menu.phtml') ?>
       </div>
@@ -54,6 +56,7 @@
   <?php endif; ?>
   <div class="media-body record-information">
       <h1 property="name" class="record-title hidden-xs"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
+      <?= $this->R2()->register($this->driver)?>
       <?php if ($serviceURLs = $this->driver->getServiceURLs()): ?>
         <div class="recordURLs">
           <?php foreach ($serviceURLs as $current): ?>
@@ -101,11 +104,15 @@
         $coreFields = $driver->getRecordFormat() === 'ead3'
             ? $formatter->filterEAD3Fields($coreFields)
             : $formatter->filterEADFields($coreFields);
-        $coreFields = $formatter->getData($driver, $coreFields);
+        $coreFieldGroups = $formatter->getGroupedData($driver, $formatter->getGroupedFields([
+          ['label' => 'Context',
+           'lines' => ['Archive Origination', 'Archive', 'Archive Series']
+          ]], $coreFields));
+
       ?>
-      <?php if (!empty($coreFields)): ?>
-        <table class="table table-finna-record record-details record-details-more">
-          <?=$this->record($this->driver)->renderTemplate('core-fields.phtml', ['coreFields' => $coreFields]);?>
+      <?php if (!empty($coreFieldGroups)): ?>
+        <table class="table table-finna-record record-details record-details-more record-field-groups">
+          <?=$this->record($this->driver)->renderTemplate('core-field-groups.phtml', ['data' => $coreFieldGroups]);?>
         </table>
         <button class="btn show-details-button hidden"><?=$this->transEsc('show_more_details');?> <i class="fa fa-arrow-down"></i></button>
         <button class="btn hide-details-button hidden"><?=$this->transEsc('show_less_details');?> <i class="fa fa-arrow-up"></i></button>

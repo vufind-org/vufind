@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="record record-row missing">
+    <?= $this->flashmessages() ?>
+    <?php if ($this->warning): ?>
+      <div class="alert alert-danger"><?= $this->transEsc($this->warning)?></div>
+    <?php endif ?>
+    <?php if (!$this->hasAccess): ?>
+      <?= $this->R2()->register(null) ?>
+    <?php endif ?>
+  </div>
+</div>

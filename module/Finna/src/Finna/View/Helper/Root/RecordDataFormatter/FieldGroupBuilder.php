@@ -107,7 +107,9 @@ class FieldGroupBuilder
             $groupLines = [];
             $pos = 0;
             foreach ($group['lines'] as $key) {
-                $groupLine = $lines[$key];
+                if (!($groupLine = $lines[$key] ?? null)) {
+                    continue;
+                }
                 $pos += 100;
                 $groupLine['pos'] = $pos;
                 $groupLines[$key] = $groupLine;
