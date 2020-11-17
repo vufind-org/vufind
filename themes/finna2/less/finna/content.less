@@ -9,6 +9,7 @@
 }
 
 // Content page styles
+
 .main.template-dir-content.template-name-content,
 .main.template-dir-feedcontent.template-name-content {
     & .odd-fluid {
@@ -25,6 +26,9 @@
             text-transform: uppercase;
             background-color: #13aebe;
             color: #fff;
+        }
+        & img {
+            border: 1px solid @gray-lighter;
         }
         & .organisation-list-header {
             font-weight: bold;
@@ -68,27 +72,6 @@
             clear: both;
         }
     }
-    .finna-info-left{
-        width: 33.3%;
-        float: left;
-        padding-right: 15px;
-        @media(max-width: @screen-md){
-            width: 100%
-        }
-        & .finna-screenshot {
-            padding: 10px;
-            background: #fff;
-            border: 1px solid @gray-lighter;
-        } 
-    }
-    .finna-info-right {
-        width: 66.6%;
-        float: left;
-        padding-left: 15px;
-        @media(max-width: @screen-md){
-            width: 100%
-        }
-    }
 }
 
 //== CONTENT PAGES
@@ -126,5 +109,28 @@ ul.nav-tabs.help-tabs {
         padding-left: 5px;
         padding-right: 5px;
         line-height: 1 !important;
+    }
+}
+
+.finna-aboutfinna-panel {
+    border: 1px solid @gray-lighter;
+    background: @gray-ultralight;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.finna-aboutfinna-nav {
+    > li {
+        display: inline-block;
+        padding-bottom: 0.5em;
+        > a {
+            color: @brand-primary;
+            border: 1px solid @brand-primary;
+            padding: 0.5em;        
+            &:hover,
+            &:focus {
+                color: #fff;
+                background: @brand-primary;
+            }
+        }
     }
 }

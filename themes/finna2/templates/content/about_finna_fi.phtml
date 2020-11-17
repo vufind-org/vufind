@@ -1,72 +1,39 @@
 <!-- START of: finna - content/about_finna_fi.phtml -->
-<?php $this->headTitle($this->translate('Mikä Finna on?')); $this->content()->setHeading($this->translate('Mikä Finna on?'));  ?>
-  <h2>Finna.fi</h2>
-<div class="container-fluid">
-  <div class="finna-info-left">
-    <a href="https://www.finna.fi"><img class="finna-screenshot" src="<?=$this->imageLink('finnafi.jpg')?>" alt="<?=$this->escapeHtmlAttr($this->translate('screenshot_alt_text', ['%%siteurl%%' => 'finna.fi'])); ?>" /></a>
-    <p>&nbsp;</p>
-  </div>
-  <div class="finna-info-right">
-    <p><a href="https://www.finna.fi">Finna.fi</a> tuo <a href="https://www.finna.fi/Content/organisations">Suomen museoiden, kirjastojen ja arkistojen</a> aineistot kaikkien saataville.
-    </p>
-    <p>Pääset selaamaan ja lukemaan <a href="https://www.finna.fi/Search/Results?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=online_boolean%3A1')?>">verkossa saatavilla</a> olevia aineistoja.
-    </p>
-    <p>Voit myös mm. <a href="https://www.finna.fi/MyResearch/Home">uusia lainoja ja tehdä varauksia</a> eri kirjastojen aineistoihin yhdestä ja samasta paikasta.
-    </p>
-    <p>Löydät finna.fi:stä samalla haulla kaikille avoimet aineistot, jotka mukana olevat organisaatiot tarjoavat.
-    </p>
-  </div>
-</div>
-</div>
-</div>
-</div>
-<div class="container-fluid odd-fluid">
-  <div class="container">
-    <div class="page-content">
-      <a id="organisation-views"></a>
-      <h2>Muut Finna-hakupalvelut</h2>
-      <p>Finna on hakupalvelujen kokonaisuus, johon kuuluu monia sivustoja valtakunnallisen finna.fi:n lisäksi. Organisaatiokohtaiset sivustot ovat rajattuja pääasiassa yhden organisaation aineistoihin.
-      </p>
-      <ul class="list-bullets">
-        <li><a href="#publiclib"><?=$this->translate('Public Libraries') ?></a></li>
-        <li><a href="#archives"><?=$this->translate('Archives') ?></a></li>
-        <li><a href="#museums"><?=$this->translate('Museums') ?></a></li>
-        <li><a href="#polylib"><?=$this->translate('Polytechnic Libraries') ?></a></li>
-        <li><a href="#univlib"><?=$this->translate('University Libraries') ?></a></li>
-        <li><a href="#jointlib"><?=$this->translate('Joint libraries') ?></a></li>
-        <li><a href="#speciallib"><?=$this->translate('Special libraries') ?></a></li>
-        <li><a href="#regionallib"><?=$this->translate('Regional views') ?></a></li>
-      </ul>
+
+<?php $this->headTitle($this->translate('Finna - hakupalvelujen kokonaisuus')); $this->content()->setHeading($this->translate('Finna - hakupalvelujen kokonaisuus'));  ?>
+<p>Finna on koti Suomen miljoonille kulttuuri- ja tiedeaineistoille.</p>
+<p>Ainutlaatuisia sisältöjään Finnaan tuovat sadat kotimaiset toimijat, kuten arkistot, kirjastot ja museot.</p>
+<p>Kansalliskirjasto ylläpitää ja kehittää Finna-palvelua jatkuvasti yhteistyössä arkistojen, kirjastojen, museoiden ja muiden yhteistyökumppaneiden kanssa.</p>
+<p>Tavoitteenamme on tehdä tiedon löytämisestä ja käyttämisestä sekä uuden oppimisesta mahdollisimman helppoa ja turvallista.</p>
+<h2>Mitä eroa Finna.fi:llä ja muilla Finna-hakupalveluilla?</h2>
+<p>Finna rakentuu aineistot yhteenkokoavasta Finna.fi:stä ja sadoista muista Finna-hakupalveluista.</p>
+<div class="finna-aboutfinna-panel panel ">
+    <div class="panel-body">
+        <h3><a href="https://www.finna.fi">Finna.fi</a></h3>
+        <p>Finna.fi:stä löydät kaikkien Finnassa mukana olevien toimijoiden aineistot yhdestä paikasta.</p>
+        <?php if ($template = $this->content()->findTemplateForLng("content/about_finnafi")): ?>
+            <p><a class="btn btn-primary" href="<?=$this->url('content-page', ['page' => 'about_finnafi'])?>">Lue lisää Finna.fi:stä</a></p>
+        <?php endif; ?>
     </div>
-    <?=$this->render('content/about_finna_sites.phtml') ?>
-  </div>
 </div>
-<div class="container-fluid">
-  <div class="container">
-    <div class="page-content">
-      <p>&nbsp;</p>
-      <h2>Tietoa Finnasta</h2>
-      <h3>Käyttöoikeudet</h3>
-      <p>Finnan luettelointitieto on vapaasti kaikkien käytössä, mutta Finnassa näkyviin digitaalisiin kuviin, takakansiteksteihin ja Finnasta linkattuihin digitaalisiin sisältöihin ja kuvailutietoihin voi liittyä lakiin tai sopimuksiin perustuvia rajoituksia. <a href="https://www.finna.fi/Content/terms#terms">Lue lisätietoa käyttöoikeuksista.</a>
-      </p>
-      <h3>Finna-API</h3>
-      <p>Finna.fi-palvelun avoin rajapinta <a href="https://api.finna.fi/">api.finna.fi</a> tarjoaa kirjastojen, arkistojen ja museoiden tuottamaa kuvailutietoa vapaasti hyödynnettäväksi. Rajapinta sisältää myös linkit <a href="https://www.finna.fi/">finna.fi-palvelun</a> kautta tarjottaviin kuviin ja muihin aineistoihin, joiden käyttöä saattaa koskea rajoituksia.
-      </p>
-      <h3>Finnan kehittäminen</h3>
-      <p>Finna on palvelu, jota kehitetään vaiheittain sitä mukaa, kun uusia organisaatioita liittyy mukaan. Finnan beta-versio avattiin joulukuussa 2012 ja ensimmäinen versio lokakuussa 2013. Vaikka et siis ehkä vielä löydä hakemaasi tietoa Finnasta, se saattaa tulla sinne tulevaisuudessa.
-      </p>
-      <h3>Finnan vastuutahot</h3>
-      <p>Kansalliskirjasto vastaa Finnan kehittämisestä ja ylläpidosta, mutta palvelua kehitetään yhdessä Finnan yhteistyökumppanien kanssa. Finnan sisällöistä vastaavat palveluun osallistuvat <a href="https://www.finna.fi/Content/organisations">arkistot, kirjastot ja museot.</a> Finna on syntynyt osana opetus- ja kulttuuriministeriön Kansallinen digitaalinen kirjasto -hanketta (2008–2017).
-      </p>
-      <h3>Finnan ohjelmisto</h3>
-      <p>Finna on toteutettu VuFind- ja muilla avoimen lähdekoodin ohjelmistoilla, ja sen lähdekoodi on kaikkien halukkaiden hyödynnettävissä.
-      </p>
-      <p>&nbsp;</p>
+<div class="finna-aboutfinna-panel panel">
+    <div class="panel-body">
+        <h3>Muut Finna-hakupalvelut</h3>
+        <p>Muut Finna-hakupalvelut keskittyvät tiettyjen aineiston tarjoajien aineistoihin.</p>
+        <p>Esimerkiksi arkistojen, kirjastojen ja museoiden omissa hakupalveluissa voit tutustua erilaisiin poimintoihin tiettyjen aineistojen tarjoajien kokoelmista. Korkeakoulujen omat Finna-hakupalvelut tarjoavat opiskelijoilleen ja henkilökunnalleen avoimien aineistojen lisäksi lisensoituja e-aineistoja.</p>
+        <p>Alla olevasta listasta näet, keillä on oma Finna-hakupalvelu.</p>
+        <ul class="finna-aboutfinna-nav nav">
+            <li><a href="#archives"><?=$this->translate('Archives') ?></a></li>
+            <li><a href="#museums"><?=$this->translate('Museums') ?></a></li>
+            <li><a href="#polylib"><?=$this->translate('Polytechnic Libraries') ?></a></li>
+            <li><a href="#speciallib"><?=$this->translate('Special libraries') ?></a></li>
+            <li><a href="#jointlib"><?=$this->translate('Joint libraries') ?></a></li>
+            <li><a href="#publiclib"><?=$this->translate('Public Libraries') ?></a></li>
+            <li><a href="#univlib"><?=$this->translate('University Libraries') ?></a></li>
+            <li><a href="#regionallib"><?=$this->translate('Regional views') ?></a></li>
+        </ul>
+        <?=$this->render('content/about_finna_sites.phtml') ?>
     </div>
-  </div>
 </div>
-<div class="container-fluid odd-fluid">
-  <div class="container">
-    <div>
-    <!-- open closed divs for valid HTML -->
+
 <!-- END of: finna - content/about_finna_fi.phtml -->
