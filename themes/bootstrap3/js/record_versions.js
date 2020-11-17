@@ -16,11 +16,13 @@ VuFind.register('recordVersions', function recordVersions() {
       $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
       var $item = $(this).parents('.result');
       var id = $item.find('.hiddenId')[0].value;
+      var source = $item.find('.hiddenSource')[0].value;
       $.getJSON(
         VuFind.path + '/AJAX/JSON',
         {
           method: 'getRecordVersions',
-          id: id
+          id: id,
+          source: source
         }
       )
         .done(function onGetVersionsDone(response) {

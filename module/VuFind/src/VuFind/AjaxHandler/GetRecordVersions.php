@@ -93,8 +93,9 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     {
         $this->disableSessionWrites(); // avoid session write timing bug
 
-        $id = $params->fromPost('id', $params->fromQuery('id'));
-        $driver = $this->recordLoader->load($id);
+        $id = $params->fromPost('id') ?: $params->fromQuery('id');
+        $source = $params->fromPost('source') ?: $params->fromQuery('source');
+        $driver = $this->recordLoader->load($id, $source);
         $tabs = $this->tabManager->getTabsForRecord($driver);
         $full = true;
 
