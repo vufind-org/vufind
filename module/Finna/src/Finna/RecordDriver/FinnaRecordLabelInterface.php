@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\RecordDriver;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -43,4 +45,6 @@ interface FinnaRecordLabelInterface
     const OPEN_ACCESS = 'open_access';
 
     const PEER_REVIEWED = 'peer_reviewed';
+
+    const R2_RESTRICTED_METADATA_AVAILABLE = 'r2_restricted_metadata_available';
 }

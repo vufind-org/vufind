@@ -1,0 +1,11 @@
+<?php
+  $tooltip = "record_label_tooltip_{$this->label}";
+  if ($this->R2()->isRegistered()) {
+    $tooltip .= '_registered';
+  }
+  $tooltip .= '_html';
+  if (!$this->translationEmpty($tooltip)) {
+      $replace = ['%%register%%' => $this->url('r2feedback-form', ['id' => 'R2Register']), '%%terms%%' => $this->url('myresearch-r2accessrights')];
+      echo $this->translate($tooltip, $replace);
+  }
+?>

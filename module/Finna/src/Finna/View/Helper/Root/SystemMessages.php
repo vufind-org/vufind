@@ -29,6 +29,7 @@
 namespace Finna\View\Helper\Root;
 
 use Laminas\Config\Config;
+use Laminas\Session\Container;
 
 /**
  * Helper class for system messages
@@ -60,15 +61,32 @@ class SystemMessages extends \Laminas\View\Helper\AbstractHelper
     protected $localConfig;
 
     /**
+     * Session container
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
+     * Session container name.
+     *
+     * @var string
+     */
+    const SESSION_NAME = 'SystemMessages';
+
+    /**
      * Constructor
      *
-     * @param Config $coreConfig  Configuration
-     * @param Config $localConfig Local configuration
+     * @param Config    $coreConfig  Configuration
+     * @param Config    $localConfig Local configuration
+     * @param Container $session     Session container
      */
-    public function __construct(Config $coreConfig, Config $localConfig)
-    {
+    public function __construct(
+        Config $coreConfig, Config $localConfig, Container $session
+    ) {
         $this->coreConfig = $coreConfig;
         $this->localConfig = $localConfig;
+        $this->session = $session;
     }
 
     /**
@@ -107,6 +125,11 @@ class SystemMessages extends \Laminas\View\Helper\AbstractHelper
 
         // Run all messages through translator for back-compat
         $messages = array_map([$this->translator, 'translate'], $messages);
+
+        // Add messages from session
+        foreach (($this->session['messages'] ?? []) as $key => $replace) {
+            $messages[] = $this->translate($key, $replace);
+        }
 
         return $messages;
     }

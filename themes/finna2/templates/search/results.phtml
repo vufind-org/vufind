@@ -134,7 +134,7 @@
   <?php $filters = ob_get_contents() ?>
   <?php ob_end_clean(); ?>
 <?php endif; ?>
-
+<?= $this->R2()->registeredInfo(null, ['hide_info' => true, 'show_register_hint' => true]) ?>
 <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
   <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
     <?=$this->recommend($current, 'top', $index)?>

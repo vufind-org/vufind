@@ -1,0 +1,11 @@
+<?php if ($this->warning): ?>
+  <div class="alert alert-danger"><?= $this->translate($this->warning) ?></div>
+<?php endif ?>
+<div class="r2-restricted-record-registered alert alert-info" role="status">
+  <div><i class="fa fa-research-open"></i></div>
+  <div><?=$this->translate('R2_restricted_registered_usage_html', ['%%usage%%' => $this->transEsc($this->usagePurpose)])?>
+    <?php if ($this->showInfo):?>
+      <br><?=$this->translate('R2_restricted_registered_access')?>
+    <?php endif ?>
+  </div>
+</div>

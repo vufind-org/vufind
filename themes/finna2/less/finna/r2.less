@@ -1,0 +1,129 @@
+.r2-restricted-registered-info {
+  display: inline-flex;
+  fa-research {
+    margin-right: 20px;
+    font-size: 55px;
+    color: @brand-primary;
+  }
+}
+.r2-restricted-info {
+  display: inline-flex;
+  .icon {
+    max-width: 45px;
+    width: 45px;
+    .fa-research {
+      color: @brand-primary;
+    }
+  }
+  &.home .icon{
+    width: initial;
+    max-width: initial;
+    margin-right: 20px;
+  }
+}
+.r2-restricted-hint {
+  box-shadow: 1px 5px 6px -3px rgba(0, 0, 0, 0.32);
+  display: inline-block;
+  color: #2B2B2B;
+  margin-bottom: 15px;
+}
+
+
+.r2-restricted-record-registered {
+  white-space: break-spaces;
+  color: #2B2B2B;
+  a {
+      text-decoration: underline;
+      color: initial;
+  }
+  display: inline-flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 10px;
+  margin-left: 10px;
+  box-shadow: 1px 5px 6px -3px rgba(0, 0, 0, 0.32);
+  .fa {
+    color: @brand-primary;
+    font-size: 2.4em;
+    margin-right: 10px;
+  }
+}
+.template-dir-search.template-name-results {
+  .r2-restricted-record-registered {
+    margin-left: 0;
+    margin-bottom: 15px;
+    .fa {
+      color: @brand-primary;
+    }
+  }
+}
+
+.r2-restricted-record-register {
+  color: #2B2B2B;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 1px 5px 6px -3px rgba(0, 0, 0, 0.32);
+  display: inline-flex;
+  h5 {
+    margin-top: 0;
+  }
+  .metadata {
+    margin-bottom: 10px;
+  }
+  .r2-register,
+  .register {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    margin-top: 10px;
+    .register-btn {
+
+      margin-right: 2em;
+    }
+    p {
+      margin-bottom: 0;
+    }
+  }
+  ol {
+    margin-bottom: 0;
+    padding-left: 1em;
+    line-height: 1.4em;
+    li {
+      list-style-type: decimal;
+    }
+  }
+  .r2-restricted-content {
+     margin-right: 30px;
+  }
+}
+@media (max-width: @screen-sm-min) {
+  .r2-restricted-record-register {
+    .r2-restricted-info {
+      float: left;
+    }
+    .r2-restricted-content {
+      margin-top: 0;
+    }
+  }
+}
+
+.btn.btn-r2-register {
+  display: inline-flex;
+  align-items: center;
+  .fa {
+    margin-right: 10px;
+  }
+}
+
+.r2-result-restricted-info {
+  margin-bottom: 5px;
+  display: inline-block;
+}
+.alert.r2-change-usage-purpose {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  .fa {
+    margin-right: 5px;
+  }
+}

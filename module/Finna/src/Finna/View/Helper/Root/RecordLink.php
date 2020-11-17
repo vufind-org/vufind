@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2017-2018.
+ * Copyright (C) The National Library of Finland 2017-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @package  View_Helpers
  * @author   Anna Niku <anna.niku@gofore.com>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -35,6 +36,7 @@ namespace Finna\View\Helper\Root;
  * @package  View_Helpers
  * @author   Anna Niku <anna.niku@gofore.com>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -84,7 +86,7 @@ class RecordLink extends \VuFind\View\Helper\Root\RecordLink
     public function getEmbeddedVideoUrl($url)
     {
         $parts = parse_url($url);
-        if (false === $parts) {
+        if (!$parts || !isset($parts['host'])) {
             return '';
         }
         $embedUrl = '';

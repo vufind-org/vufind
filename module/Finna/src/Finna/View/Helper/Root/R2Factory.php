@@ -1,10 +1,10 @@
 <?php
 /**
- * System messages helper factory.
+ * R2 restricted Solr search helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2018.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -31,15 +31,15 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * System messages helper factory.
+ * R2 restricted Solr search helper factory..
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemMessagesFactory implements FactoryInterface
+class R2Factory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,14 +61,13 @@ class SystemMessagesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+
+        $r2 = $container->get(\Finna\Service\R2SupportService::class);
+        $rems = $container->get(\Finna\Service\RemsService::class);
+        $user = $container->get('VuFind\Auth\Manager')->isLoggedIn();
         return new $requestedName(
-            $config->get('config'),
-            $config->get('system'),
-            new \Laminas\Session\Container(
-                SystemMessages::SESSION_NAME,
-                $container->get(\Laminas\Session\SessionManager::class)
-            )
+            $r2->isEnabled(), $user ?: null,
+            (false !== $user) && $r2->isAuthenticated(), $rems
         );
     }
 }

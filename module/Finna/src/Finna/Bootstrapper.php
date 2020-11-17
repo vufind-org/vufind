@@ -335,6 +335,46 @@ class Bootstrapper
     }
 
     /**
+     * Set up REMS session expiration warning listener.
+     *
+     * @return void
+     */
+    protected function initRemsSessionExpirationWarningListener()
+    {
+        if (!$this->isR2Enabled()) {
+            return;
+        }
+        $sm = $this->event->getApplication()->getServiceManager();
+        $callback = function ($event) use ($sm) {
+            $session = new \Laminas\Session\Container(
+                \Finna\View\Helper\Root\SystemMessages::SESSION_NAME,
+                $sm->get(\Laminas\Session\SessionManager::class)
+            );
+            $messages = $session['messages'] ?? [];
+
+            $key = 'R2_session_expiring';
+            unset($session->messages[$key]);
+
+            $expirationTime
+                = $sm->get(\Finna\Service\RemsService::class)
+                ->getSessionExpirationTime();
+            if ($expirationTime) {
+                // Add warning to session variable.
+                // The message is displayed by SystemMessages
+                $format = 'H:i';
+                $time = $sm->get(\VuFind\Date\Converter::class)
+                    ->convertToDisplayDateAndTime(
+                        $format, date($format, $expirationTime->getTimeStamp())
+                    );
+                $messages[$key] = ['%%expire%%' => $time];
+                $session->messages = $messages;
+            }
+        };
+
+        $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
      * Check if R2 search is enabled.
      *
      * @return bool
