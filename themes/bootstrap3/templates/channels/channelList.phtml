@@ -3,7 +3,6 @@
   $this->headLink()->appendStylesheet('vendor/slick-theme.css');
   $this->headScript()->appendFile('vendor/slick.min.js');
   $this->headScript()->appendFile('channels.js');
-  $this->headScript()->appendFile('vendor/jquery.dotdotdot.min.js');
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',
@@ -65,7 +64,7 @@
           <div class="thumb">
             <img <?=$index < 6 ? "src" : "data-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"/>
           </div>
-          <?=$this->escapeHtml($item['title'])?>
+          <p class="channel-record-title"><?=$this->escapeHtml($item['title'])?></p>
         </a>
       <?php endforeach; ?>
     </div>
