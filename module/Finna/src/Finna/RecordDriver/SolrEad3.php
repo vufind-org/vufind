@@ -5,7 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2012-2019.
+ * Copyright (C) The National Library of Finland 2012-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -47,6 +47,62 @@ namespace Finna\RecordDriver;
  */
 class SolrEad3 extends SolrEad
 {
+    // Image types
+    const IMAGE_MEDIUM = 'medium';
+    const IMAGE_LARGE = 'large';
+    const IMAGE_FULLRES = 'fullres';
+    const IMAGE_OCR = 'ocr';
+
+    // Image type map
+    const IMAGE_MAP = [
+        'Bittikartta - Fullres - Jakelukappale' => self::IMAGE_FULLRES,
+        'Bittikartta - Pikkukuva - Jakelukappale' => self::IMAGE_MEDIUM,
+        'OCR-data - Alto - Jakelukappale' => self::IMAGE_OCR
+    ];
+
+    // Altformavail labels
+    const ALTFORM_LOCATION = 'location';
+    const ALTFORM_TYPE = 'type';
+    const ALTFORM_DIGITAL_TYPE = 'digitalType';
+    const ALTFORM_FORMAT = 'format';
+    const ALTFORM_ACCESS = 'access';
+    const ALTFORM_ONLINE = 'online';
+
+    // Altformavail label map
+    const ALTFORM_MAP = [
+        'Tietopalvelun tarjoamispaikka' => self::ALTFORM_LOCATION,
+        'Tekninen tyyppi' => self::ALTFORM_TYPE,
+        'Digitaalisen ilmentymän tyyppi' => self::ALTFORM_DIGITAL_TYPE,
+        'Tallennusalusta' => self::ALTFORM_FORMAT,
+        'Digitaalisen aineiston tiedostomuoto' => self::ALTFORM_FORMAT,
+        'Ilmentym&#xE4;n kuntoon perustuva k&#xE4;ytt&#xF6;rajoitus'
+            => self::ALTFORM_ACCESS,
+        'Internet - ei fyysistä toimipaikkaa' => self::ALTFORM_ONLINE
+    ];
+
+    // Accessrestrict types
+    const ACCESS_RESTRICT_TYPES = [
+        'general',
+        'ahaa:KR5', 'ahaa:KR7', 'ahaa:KR9', 'ahaa:KR4', 'ahaa:KR3', 'ahaa:KR1'
+    ];
+
+    // Relation types
+    const RELATION_CONTINUED_FROM = 'continued-from';
+    const RELATION_PART_OF = 'part-of';
+    const RELATION_CONTAINS = 'contains';
+    const RELATION_SEE_ALSO = 'see-also';
+
+    // Relation type map
+    const RELATION_MAP = [
+        'On jatkoa' => self::RELATION_CONTINUED_FROM,
+        'Sisältyy' => self::RELATION_PART_OF,
+        'Sisältää' => self::RELATION_CONTAINS,
+        'Katso myös' => self::RELATION_SEE_ALSO
+    ];
+
+    // Linktitle attribute for a daoset->dao image
+    const DAO_LINK_TITLE_IMAGE = 'Kuva/Aukeama';
+
     /**
      * Get the institutions holding the record.
      *
@@ -105,17 +161,24 @@ class SolrEad3 extends SolrEad
         $url = '';
         $record = $this->getXmlRecord();
         foreach ($record->did->xpath('//daoset/dao') as $node) {
-            $url = (string)$node->attributes()->href;
-            $desc = $node->attributes()->linktitle ?? $url;
+            $attr = $node->attributes();
+            // Discard image urls
+            if (isset($attr->linktitle)
+                && strpos((string)$attr->linktitle, self::DAO_LINK_TITLE_IMAGE) === 0
+                || ! $attr->href
+            ) {
+                continue;
+            }
+            $url = (string)$attr->href;
+            $desc = $attr->linktitle ?? $url;
             if (!$this->urlBlocked($url, $desc)) {
                 $urls[] = [
                     'url' => $url,
-                    'desc' => $desc
+                    'desc' => (string)$desc
                 ];
             }
         }
-        $urls = $this->checkForAudioUrls($urls);
-        return $urls;
+        return $this->resolveUrlTypes($urls);
     }
 
     /**
@@ -197,7 +260,6 @@ class SolrEad3 extends SolrEad
             }
             $result[] = [
                'id' => (string)$node->attributes()->identifier,
-               'type' => 'author-id',
                'role' => $role,
                'name' => $name[0]
             ];
@@ -207,66 +269,89 @@ class SolrEad3 extends SolrEad
     }
 
     /**
-     * Get location info to be used in LoacationsEad3-record page tab.
+     * Get location info to be used in ExternalData-record page tab.
+     *
+     * @param string $id If defined, return only the item with the given id
      *
      * @return array
      */
-    public function getLocations()
+    public function getAlternativeItems($id = null)
     {
         $xml = $this->getXmlRecord();
         if (!isset($xml->altformavail->altformavail)) {
             return [];
         }
 
-        $result = [];
+        // Collect daoset > dao ids. This list is used to separate non-online
+        // altformavail items.
+        $onlineIds = [];
+        if (isset($xml->did->daoset)) {
+            foreach ($xml->did->daoset as $daoset) {
+                if (isset($daoset->descriptivenote->p)) {
+                    $onlineIds[] = (string)$daoset->descriptivenote->p;
+                }
+            }
+        }
+
+        $onlineTypes = array_keys(
+            array_filter(
+                self::ALTFORM_MAP,
+                function ($label, $type) {
+                    return $type === self::ALTFORM_ONLINE;
+                }, ARRAY_FILTER_USE_BOTH
+            )
+        );
+
+        //$onlineType = 'Internet - ei fyysistä toimipaikkaa';
+        $results = [];
         foreach ($xml->altformavail->altformavail as $altform) {
-            $id = (string)$altform->attributes()->id;
-            $owner = $label = $serviceLocation = $itemType = null;
-            foreach ($altform->list->defitem as $defitem) {
-                $type = $defitem->label;
+            $itemId = (string)$altform->attributes()->id;
+            if ($id && $id !== $itemId) {
+                continue;
+            }
+            $result = ['id' => $itemId, 'online' => in_array($itemId, $onlineIds)];
+            $owner = null;
+            foreach ($altform->list->defitem ?? [] as $defitem) {
+                $type = self::ALTFORM_MAP[(string)$defitem->label] ?? null;
+                if (!$type) {
+                    continue;
+                }
                 $val = (string)$defitem->item;
                 switch ($type) {
-                case 'Tallennusalusta':
-                    $label = $val;
+                case self::ALTFORM_LOCATION:
+                    $result['location'] = $val;
+                    if (in_array($val, $onlineTypes)) {
+                        $result['online'] = true;
+                    } else {
+                        $result['service'] = true;
+                    }
                     break;
-                case 'Säilyttävä toimipiste':
-                    $owner = $val;
+                case self::ALTFORM_TYPE:
+                    $result['type'] = $val;
                     break;
-                case 'Tietopalvelun tarjoamispaikka':
-                    $serviceLocation = $val;
+                case self::ALTFORM_DIGITAL_TYPE:
+                    $result['digitalType'] = $val;
                     break;
-                case 'Tekninen tyyppi':
-                    $itemType = $val;
+                case self::ALTFORM_FORMAT:
+                    $result['format'] = $val;
+                    break;
+                case self::ALTFORM_ACCESS:
+                    $result['accessRestriction'] = $val;
                     break;
                 }
             }
-
-            if (!$owner) {
-                $owner = $serviceLocation;
+            if ($id) {
+                return $result;
             }
-
-            if (!$id || !$owner || !$label || $itemType !== 'Analoginen') {
-                continue;
-            }
-
-            if (!isset($result[$owner]['items'])) {
-                $result[$owner] = [
-                    'providesService' =>
-                        $serviceLocation === $owner ? true : $serviceLocation,
-                    'items' => []
-                ];
-            }
-
-            $result[$owner]['items'][] = compact('label', 'id');
+            $results[] = $result;
         }
-
-        return $result;
+        return $results;
     }
 
     /**
      * Get unit ids
      *
-     * @return string[]
+     * @return array
      */
     public function getUnitIds()
     {
@@ -286,8 +371,10 @@ class SolrEad3 extends SolrEad
             if (!$label || !$val) {
                 continue;
             }
-            $label = $this->translate("Unit ID:$label");
-            $ids[$label] = $val;
+            $ids[] = [
+                'data' => $val,
+                'detail' => $this->translate("Unit ID:$label", [], $label)
+            ];
         }
 
         return $ids;
@@ -372,6 +459,20 @@ class SolrEad3 extends SolrEad
     }
 
     /**
+     * Get external data (images, physical items).
+     *
+     * @return array
+     */
+    public function getExternalData()
+    {
+        return [
+            'fullResImages' => $this->getFullResImages(),
+            'OCRImages' => $this->getOCRImages(),
+            'physicalItems' => $this->getPhysicalItems()
+        ];
+    }
+
+    /**
      * Return an array of image URLs associated with this record with keys:
      * - urls        Image URLs
      *   - small     Small image (mandatory)
@@ -383,36 +484,81 @@ class SolrEad3 extends SolrEad
      *   - description Human readable description (array)
      *   - link        Link to copyright info
      *
-     * @param string $language Language for copyright information
+     * @param string $language   Language for copyright information
+     * @param bool   $includePdf Whether to include first PDF file when no image
+     * links are found
      *
      * @return array
      */
-    public function getAllImages($language = 'fi')
-    {
-        $result = [];
-
+    public function getAllImages(
+        $language = 'fi', $includePdf = false
+    ) {
+        $result = $images = [];
         $xml = $this->getXmlRecord();
-        if (isset($xml->did->daoset->dao)) {
-            foreach ($xml->did->daoset->dao as $dao) {
-                $urls = [];
-                $attr = $dao->attributes();
-                // TODO properly detect image urls
-                if (! isset($attr->linktitle)
-                    || strpos((string)$attr->linktitle, 'Kuva/Aukeama') !== 0
-                    || ! $attr->href
-                ) {
+        if (isset($xml->did->daoset)) {
+            foreach ($xml->did->daoset as $daoset) {
+                if (!isset($daoset->dao)) {
                     continue;
                 }
+                $attr = $daoset->attributes();
+                $localtype = (string)($attr->localtype ?? null);
+                $size = self::IMAGE_MAP[$localtype] ?? self::IMAGE_FULLRES;
+                $size = $size === self::IMAGE_FULLRES ? self::IMAGE_LARGE : $size;
+                if (!isset($images[$size])) {
+                    $image[$size] = [];
+                }
 
-                $href = (string)$attr->href;
-                $result[] = [
-                    'urls' => ['small' => $href, 'medium' => $href],
-                    'description' => (string)$attr->linktitle,
-                    'rights' => null
+                $descId = isset($daoset->descriptivenote->p)
+                    ? (string)$daoset->descriptivenote->p : null;
+
+                foreach ($daoset->dao as $dao) {
+                    // Loop daosets and collect URLs for different sizes
+                    $urls = [];
+                    $attr = $dao->attributes();
+                    if (! isset($attr->linktitle)
+                        || strpos(
+                            (string)$attr->linktitle, self::DAO_LINK_TITLE_IMAGE
+                        ) !== 0
+                        || ! $attr->href
+                    ) {
+                        continue;
+                    }
+                    $href = (string)$attr->href;
+                    if ($this->urlBlocked($href) || !$this->isUrlLoadable($href)) {
+                        continue;
+                    }
+                    $images[$size][] = [
+                        'description' => (string)$attr->linktitle,
+                        'rights' => null,
+                        'url' => $href,
+                        'descId' => $descId,
+                        'sort' => (string)$attr->label
+                    ];
+                }
+            }
+
+            if (empty($images)) {
+                return [];
+            }
+
+            foreach ($images as $size => &$sizeImages) {
+                $this->sortImageUrls($sizeImages);
+            }
+
+            foreach ($images['large'] ?? $images['medium'] as $id => $img) {
+                $large = $images['large'][$id] ?? null;
+                $medium = $images['medium'][$id] ?? null;
+
+                $data = $img;
+                $data['urls'] = [
+                    'small' => $medium['url'] ?? $large['url'] ?? null,
+                    'medium' => $medium['url'] ?? $large['url'] ?? null,
+                    'large' => $large['url'] ?? $medium['url'] ?? null,
                 ];
+
+                $result[] = $data;
             }
         }
-
         return $result;
     }
 
@@ -481,30 +627,32 @@ class SolrEad3 extends SolrEad
     public function getExtendedAccessRestrictions()
     {
         $xml = $this->getXmlRecord();
-        if (!isset($xml->accessrestrict)) {
+        if (!isset($xml->accessrestrict->accessrestrict)) {
             return [];
         }
         $restrictions = [];
-        $types = [
-            'general',
-            'ahaa:KR5', 'ahaa:KR7', 'ahaa:KR9', 'ahaa:KR4', 'ahaa:KR3', 'ahaa:KR1'
-        ];
-        foreach ($types as $type) {
+        foreach (self::ACCESS_RESTRICT_TYPES as $type) {
             $restrictions[$type] = [];
         }
-        foreach ($xml->accessrestrict as $access) {
-            $attr = $access->attributes();
-            if (! isset($attr->encodinganalog)) {
-                $restrictions['general']
-                    = $this->getDisplayLabel($access, 'p', true);
-            } else {
-                $type = (string)$attr->encodinganalog;
-                if (in_array($type, $types)) {
-                    $label = $type === 'ahaa:KR7'
-                        ? $this->getDisplayLabel($access->p->name, 'part', true)
-                        : $this->getDisplayLabel($access, 'p', true);
-                    if ($label) {
-                        $restrictions[$type] = $label;
+        foreach ($xml->accessrestrict->accessrestrict as $accessNode) {
+            if (!isset($accessNode->accessrestrict)) {
+                continue;
+            }
+            foreach ($accessNode->accessrestrict as $access) {
+                $attr = $access->attributes();
+                if (! isset($attr->encodinganalog)) {
+                    $restrictions['general']
+                        = $this->getDisplayLabel($access, 'p', true);
+                } else {
+                    $type = (string)$attr->encodinganalog;
+                    if (in_array($type, self::ACCESS_RESTRICT_TYPES)) {
+                        $label = $type === 'ahaa:KR7'
+                            ? $this->getDisplayLabel(
+                                $access->p->name, 'part', true
+                            ) : $this->getDisplayLabel($access, 'p');
+                        if ($label) {
+                            $restrictions[$type] = $label;
+                        }
                     }
                 }
             }
@@ -620,9 +768,9 @@ class SolrEad3 extends SolrEad
     /**
      * Get the unitdate field.
      *
-     * @return string
+     * @return array
      */
-    public function getUnitDate()
+    public function getUnitDates()
     {
         $unitdate = parent::getUnitDate();
 
@@ -630,16 +778,16 @@ class SolrEad3 extends SolrEad
         if (!isset($record->did->unittitle)) {
             return $unitdate;
         }
-        foreach ($record->did->unittitle as $title) {
-            $attributes = $title->attributes();
-            if (! isset($attributes->encodinganalog)
-                || (string)$attributes->encodinganalog !== 'ahaa:AI55'
-            ) {
-                continue;
+        $result = [];
+        foreach ($record->did->unitdate as $date) {
+            $attr = $date->attributes();
+            if ($desc = $attr->normal ?? null) {
+                $desc = $attr->label ?? null;
             }
-            return sprintf('%s (%s)', $unitdate, (string)$title);
+            $date = (string)$date;
+            $result[] = ['data' => (string)$date, 'detail' => (string)$desc];
         }
-        return $unitdate;
+        return $result;
     }
 
     /**
@@ -676,13 +824,6 @@ class SolrEad3 extends SolrEad
             return [];
         }
 
-        $relationMap = [
-            'On jatkoa' => 'continued-from',
-            'Sisältyy' => 'part-of',
-            'Sisältää' => 'contains',
-            'Katso myös' => 'see-also'
-        ];
-
         $relations = [];
         foreach ($record->relations->relation as $relation) {
             $attr = $relation->attributes();
@@ -696,17 +837,16 @@ class SolrEad3 extends SolrEad
             ) {
                 continue;
             }
-            $role = (string)$attr->arcrole;
-            if (!isset($relationMap[$role])) {
+            $role = self::RELATION_MAP[(string)$attr->arcrole] ?? null;
+            if (!$role) {
                 continue;
             }
-            $role = $relationMap[$role];
             if (!isset($relations[$role])) {
                 $relations[$role] = [];
             }
-            $relations[$role][] = (string)$attr->href;
+            // Use a wildcard since the id is prefixed with hierarchy_parent_id
+            $relations[$role][] = ['wildcard' => '*' . (string)$attr->href];
         }
-
         return $relations;
     }
 
@@ -719,6 +859,128 @@ class SolrEad3 extends SolrEad
     public function hasRelatedRecords()
     {
         return !empty($this->getRelatedRecords());
+    }
+
+    /**
+     * Get fullresolution images.
+     *
+     * @return array
+     */
+    protected function getFullResImages()
+    {
+        $images = $this->getAllImages();
+        $items = [];
+        foreach ($images as $img) {
+            $items[]
+                = ['label' => $img['description'], 'url' => $img['urls']['large']];
+        }
+        $info = [];
+
+        if (isset($images[0]['descId'])) {
+            $altItem = $this->getAlternativeItems($images[0]['descId']);
+            if (isset($altItem['format'])) {
+                $info[] = $altItem['format'];
+            }
+        }
+
+        $items = $items ? compact('info', 'items') : [];
+        return $items;
+    }
+
+    /**
+     * Get OCR images.
+     *
+     * @return array
+     */
+    protected function getOCRImages()
+    {
+        $items = [];
+        $xml = $this->getXmlRecord();
+        $descId = null;
+        if (isset($xml->did->daoset)) {
+            foreach ($xml->did->daoset as $daoset) {
+                if (!isset($daoset->dao)) {
+                    continue;
+                }
+                $attr = $daoset->attributes();
+                $localtype = (string)$attr->localtype ?? null;
+                if ($localtype !== self::IMAGE_OCR) {
+                    continue;
+                }
+                if (isset($daoset->descriptivenote->p)) {
+                    $descId = (string)$daoset->descriptivenote->p;
+                }
+
+                foreach ($daoset->dao as $idx => $dao) {
+                    $attr = $dao->attributes();
+                    if (! isset($attr->linktitle)
+                        || strpos((string)$attr->linktitle, 'Kuva/Aukeama') !== 0
+                        || ! $attr->href
+                    ) {
+                        continue;
+                    }
+                    $href = (string)$attr->href;
+                    $desc = (string)$attr->linktitle;
+                    $sort = (string)$attr->label;
+                    $items[] = [
+                        'label' => linktitle, $desc, 'url' => $href, 'sort' => $sort
+                    ];
+                }
+            }
+        }
+
+        $this->sortImageUrls($items);
+
+        $info = [];
+        if ($descId) {
+            $altItem = $this->getAlternativeItems($descId);
+            if ($format = $altItem['format'] ?? null) {
+                $info[] = $format;
+            }
+        }
+
+        return !empty($items) ? compact('info', 'items') : [];
+    }
+
+    /**
+     * Sort an array of image URLs in place.
+     *
+     * @param array  $urls  URLs
+     * @param string $field Field to use for sorting.
+     * The field value is casted to int before sorting.
+     *
+     * @return void
+     */
+    protected function sortImageUrls(&$urls, $field = 'sort')
+    {
+        usort(
+            $urls, function ($a, $b) use ($field) {
+                $f1 = (int)$a[$field];
+                $f2 = (int)$b[$field];
+                if ($f1 === $f2) {
+                    return 0;
+                } elseif ($f1 < $f2) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        );
+    }
+
+    /**
+     * Return physical items.
+     *
+     * @return array
+     */
+    protected function getPhysicalItems()
+    {
+        return array_filter(
+            $this->getAlternativeItems(),
+            function ($item) {
+                return empty($item['online']) && !empty($item['location']);
+            }
+        );
     }
 
     /**

@@ -5,7 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2012-2017.
+ * Copyright (C) The National Library of Finland 2012-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,7 +45,7 @@ namespace Finna\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrEad extends \VuFind\RecordDriver\SolrDefault
+class SolrEad extends SolrDefault
     implements \Laminas\Log\LoggerAwareInterface
 {
     use SolrFinnaTrait;
@@ -128,11 +128,13 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      *   - description Human readable description (array)
      *   - link        Link to copyright info
      *
-     * @param string $language Language for copyright information
+     * @param string $language   Language for copyright information
+     * @param bool   $includePdf Whether to include first PDF file when no image
+     * links are found
      *
      * @return array
      */
-    public function getAllImages($language = 'fi')
+    public function getAllImages($language = 'fi', $includePdf = true)
     {
         $result = [];
         // All images have same rights..
@@ -508,7 +510,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 ];
             }
         }
-        $urls = $this->checkForAudioUrls($urls);
+        $urls = $this->resolveUrlTypes($urls);
         return $urls;
     }
 
