@@ -1,0 +1,24 @@
+<div role="table" class="external-data <?= $this->escapeHtmlAttr($this->type) ?>" aria-label="<?= $this->escapeHtmlAttr($this->translate("external_data_tab_{$this->type}", [], $this->type))?>">
+  <div role="row" class="tbl-col headers"><span role="columnheader"><?= $this->transEsc("external_data_tab_{$this->type}", [], $this->type)?></span></div>
+  <?php if ($info = $data['info'] ?? null): ?>
+    <div role="row" class="tbl-row info">
+      <div role="cell">
+        <span><?=$this->translate('More Information')?></span>
+        <ul>
+          <?php foreach ($info as $infoItem): ?>
+            <li><?= $this->escapeHtml($infoItem) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    </div>
+  <?php endif; ?>
+  <div role="rowgroup" class="items">
+    <?php foreach ($data['items'] as $item): ?>
+      <div role="row" class="tbl-row">
+        <div role="cell">
+          <a target="_blank" href="<?=$this->escapeHtmlAttr($item['url'])?>" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($item['label'])?></a>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+</div>

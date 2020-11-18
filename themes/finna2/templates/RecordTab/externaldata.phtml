@@ -1,0 +1,39 @@
+<?php
+$data = $this->driver->getExternalData();
+$fullResImages = $data['fullResImages'] ?? null;
+$OCRImages = $data['OCRImages'] ?? null;
+$physicalItems = $data['physicalItems'] ?? null;
+?>
+<?php if (!$fullResImages && !$OCRImages): ?>
+  <?= $this->translate('external_data_not_digitized_html', ['%%url%%' => $this->recordLink()->getActionUrl($this->driver, 'Feedback')]) ?>
+  <?php return; ?>
+<?php endif ?>
+
+<?php if ($fullResImages): ?>
+  <?= $this->partial('RecordTab/external_data_table.phtml', ['type' => 'fullres_images', 'data' => $fullResImages]); ?>
+<?php endif; ?>
+
+<?php if ($OCRImages): ?>
+  <?= $this->partial('RecordTab/external_data_table.phtml', ['type' => 'ocr', 'data' => $OCRImages]); ?>
+<?php endif; ?>
+
+
+<?php if ($physicalItems): ?>
+  <div role="table" class="external-data physical-items" aria-label="<?= $this->escapeHtmlAttr($this->translate('external_data_tab_physical_items'))?>">
+    <div role="row" class="tbl-row headers">
+      <div role="cell" class="tbl-cell tbl-left"><span role="columnheader"><?= $this->transEsc('external_data_tab_physical_item')?></span></div>
+      <div role="cell" class="tbl-cell tbl-right"><span role="columnheader"><?= $this->transEsc('external_data_tab_physical_location')?></span></div>
+    </div>
+    <?php foreach ($physicalItems as $item): ?>
+      <div role="row" class="tbl-row">
+        <div class="tbl-cell tbl-left" role="cell"><?=$this->escapeHtml($item['type'])?></div>
+        <div class="tbl-cell tbl-right location" role="cell">
+          <span class="location-name"><?=$this->escapeHtml($item['location'])?></span>
+          <?php if (!empty($item['service'])): ?>
+            <span class="service alert alert-info"><?= $this->transEsc('external_data_tab_physical_service')?></span>
+          <?php endif; ?>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>

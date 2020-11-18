@@ -66,7 +66,7 @@ tabs[Details] = StaffViewArray
 defaultTab = null
 
 [Finna\RecordDriver\SolrEad3]
-tabs[LocationsEad3] = LocationsEad3
+tabs[ExternalData] = ExternalData
 tabs[HierarchyTree] = HierarchyTree
 tabs[UserComments] = UserComments
 tabs[Reviews] = Reviews

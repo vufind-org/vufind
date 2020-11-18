@@ -46,15 +46,15 @@ use Laminas\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Factory for LocationsEad3 tab plugin.
+     * Factory for ExternalData tab plugin.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return LocationsEad3
+     * @return ExternalData
      */
-    public static function getLocationsEad3(ServiceManager $sm)
+    public static function getExternalData(ServiceManager $sm)
     {
-        return new LocationsEad3();
+        return new ExternalData();
     }
 
     /**
