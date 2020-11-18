@@ -1,0 +1,179 @@
+; ----------------------------------------------
+; General settings for R2 restricted Solr search
+; ----------------------------------------------
+[R2]
+enabled = false
+apiUser =
+apiKey =
+
+[Index]
+url             =
+default_core    =
+
+[Http]
+
+; ---------------------
+; Search settings
+; ---------------------
+
+; This section contains global settings affecting search behavior.
+[General]
+default_handler      = AllFields    ; Search handler to use if none is specified
+default_sort         = "relevance,id asc"
+empty_search_relevance_override = "last_indexed desc,id asc"
+default_view         = list
+view_options_icons   = true
+default_limit        = 20
+default_limit_grid   = 50
+default_limit_condensed = 100
+limit_options        = 20,50,100
+case_sensitive_bools = true
+case_sensitive_ranges = true
+
+default_noresults_recommend[] = SwitchType
+default_noresults_recommend[] = SwitchQuery
+default_noresults_recommend[] = SpellingSuggestions
+default_side_recommend[] = SideFacetsDeferred:Results:CheckboxFacets:R2
+
+highlighting = true
+highlighting_fields = "author,author2,author_additional,author_fuller,container_title,contents,culture,description,dewey-full,edition,era,genre,geographic,institution,isbn,issn,language,lccn,material,measurements,publication_place_txt_mv,publisher,series,series2,title,title_alt,title_full,title_new,title_old,topic"
+
+snippets = true
+retain_filters_by_default = true
+
+hide_component_parts = true
+result_limit = 100000
+
+[Cache]
+type = File
+
+[Basic_Searches]
+AllFields           = "All Fields"
+Title               = Title
+;JournalTitle        = "Journal Title"
+Author              = Author
+Subject             = Subject
+CallNumber          = "Call Number"
+ISN                 = "ISBN/ISSN"
+;Coordinate        = Coordinates
+tag                 = Tag
+
+[Advanced_Searches]
+AllFields           = adv_search_all
+Title               = adv_search_title
+;JournalTitle        = adv_search_journaltitle
+Author              = adv_search_author
+Subject             = adv_search_subject
+CallNumber          = adv_search_callnumber
+ISN                 = adv_search_isn
+publisher           = adv_search_publisher
+Series              = adv_search_series
+year                = adv_search_year
+toc                 = adv_search_toc
+;Coordinate        = Coordinates
+
+[Sorting]
+relevance = sort_relevance
+year = sort_year
+year asc = "sort_year asc"
+callnumber-sort = sort_callnumber
+;dewey-sort = sort_callnumber
+author = sort_author
+title = sort_title
+
+[DefaultSortingByType]
+CallNumber = callnumber-sort
+
+[SideRecommendations]
+;Subject[]          = SideFacets
+;Subject[]          = OpenLibrarySubjectsDeferred:lookfor:5:true:topic,place,person,time
+
+[TopRecommendations]
+Author[]            = AuthorFacets
+Author[]            = SpellingSuggestions
+;Author[]           = WorldCatIdentities
+CallNumber[]        = "TopFacets:ResultsTop"
+
+[NoResultsRecommendations]
+CallNumber[] = SwitchQuery::wildcard:truncatechar
+CallNumber[] = RemoveFilters
+;CallNumber[] = AlphaBrowseLink:lcc
+
+[RSS]
+sort = "last_indexed desc"
+
+[Snippet_Captions]
+author2 = "Other Authors"
+contents = "Table of Contents"
+topic = "Subjects"
+container_title = "Journal Title"
+
+[StripFields]
+
+[Views]
+list = List
+grid = Grid
+condensed = Condensed
+
+[HiddenFilters]
+;institution = "MyInstitution"
+
+[RawHiddenFilters]
+;0 = "format:\"Book\" OR format:\"Journal\""
+;1 = "language:\"English\" OR language:\"French\""
+
+[ConditionalHiddenFilters]
+;0 = "-conditionalFilter.MyUniversity|format:Book"
+;1 = "conditionalFilter.MyUniversity|format:Article"
+
+[Records]
+;deduplication = true
+;sources = alli,testsrc
+
+[MoreLikeThis]
+;useMoreLikeThisHandler = true
+;params = "qf=title,title_short,callnumber-label,topic,language,author,publishDate mintf=1 mindf=1";
+;count = 5
+
+[Autocomplete]
+enabled = true
+default_handler = R2
+
+[Record]
+;related[] = "RecordDriverRelatedDeferred"
+
+
+; ---------------------
+; Facet settings
+; ---------------------
+
+[Results]
+;sector_str_mv      = Sector
+;institution        = Institution
+building           = Organisation
+;building_sub_str_mv = Department
+format             = Format
+;format_ext_str_mv  = Format
+
+; Use callnumber-first for LC call numbers, dewey-hundreds for Dewey Decimal:
+;callnumber-first    = "Call Number"
+;dewey-hundreds      = "Call Number"
+;hierarchy_top_title = Collections
+author_facet        = Author
+;author2_id_str_mv = Author
+;author2_id_role_str_mv = Author role
+language            = Language
+;original_lng_str_mv = original_work_language
+;subtitle_lng_str_mv = subtitle_language
+main_date_str       = "Year"
+search_daterange_mv = "Main Year"
+;major_genre_str_mv  = "Major Genre"
+;genre_facet         = Genre
+;era_facet           = Era
+geographic_facet    = Region
+;publishDate         = "adv_search_year"  ; share year string w/advanced search page
+topic_facet         = Topic
+usage_rights_str_mv = "Usage Rights"
+hierarchy_parent_title = component_part_is_part_of
+first_indexed       = "New Items in Index"
+;category_str_mv     = category_facet_heading
