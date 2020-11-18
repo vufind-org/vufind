@@ -121,7 +121,7 @@
                   <?php endforeach; ?>
                 <?php endif; ?>
               </div>
-              <?php if ($rights = $this->driver->getAccessRestrictionsType()): ?>
+              <?php if ($rights = $this->driver->getAccessRestrictionsType($this->layout()->userLang)): ?>
                 <div class="material-rights">
                   <span class="rights-header"><?=$this->transEsc('Usage Rights')?>:</span>
                   <?= $this->partial('Helpers/copyright-field-value.phtml', ['data' => $rights]) ?>
