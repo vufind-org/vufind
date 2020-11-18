@@ -299,7 +299,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
         $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));
-        $this->assertEquals(86, substr_count($marc21Xml, '<subfield '));
+        $this->assertEquals(87, substr_count($marc21Xml, '<subfield '));
         $rdfXml = $obj->getRDFXML();
         $this->assertStringContainsString(
             '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
@@ -314,6 +314,39 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $this->assertStringContainsString(
             '<identifier type="isbn">978-3-16-148410-0</identifier>',
             $rdfXml
+        );
+    }
+
+    /**
+     * Test methods in MarcReaderTrait.
+     *
+     * @return void
+     */
+    public function testMarcReaderTrait()
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->will($this->returnValue($record));
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getFieldArray');
+        $getFieldArray->setAccessible(true);
+        $this->assertEquals(
+            ['Author, Test (1800-)'],
+            $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
+        );
+
+        $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
+        $getSubfieldArray->setAccessible(true);
+        $this->assertEquals(
+            ['Author, Test (1800-)'],
+            $getSubfieldArray
+                ->invokeArgs($obj, [$record->getField('100'), ['a', 'd']])
         );
     }
 }

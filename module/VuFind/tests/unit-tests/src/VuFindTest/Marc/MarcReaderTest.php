@@ -60,6 +60,11 @@ class MarcReaderTest extends \VuFindTest\Unit\TestCase
             '021122s2020    en            000 0 eng d', $reader->getField('008')
         );
 
+        $field = $reader->getField('100');
+        foreach ($field['subfields'] as $subfield) {
+            $this->assertTrue(is_string($subfield['code']));
+        }
+
         $field = $reader->getField('245');
         $this->assertTrue(is_array($field));
         $this->assertEquals(0, $field['i1']);
