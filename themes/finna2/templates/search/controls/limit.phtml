@@ -2,21 +2,21 @@
 <?php $limitList = $this->params->getLimitList(); ?>
 <?php if (count($limitList) > 1): ?>
 <div class="limit-option-container">
-  <span class="hidden-sm hidden-xs hidden-md button-label"><?=$this->transEsc('Results per page')?></span>
+  <span class="hidden-sm hidden-xs hidden-md button-label" id="limit-label"><?=$this->transEsc('Results per page')?></span>
   <span class="sr-only hidden-lg hidden-md"><?=$this->transEsc('Results per page')?></span>
   <div class="sort-button">
     <div class="dropdown">
       <?php foreach ($limitList as $limitVal => $limitData): ?>
         <?php if ($limitData['selected']): ?>
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-label="<?=$this->transEsc('Results per page') . ': ' . $this->transEsc($limitData['desc'])?>">
           <span><?=$this->transEsc($limitData['desc'])?></span> <i class="fa fa-arrow-down"></i>
         </a>
         <?php endif; ?>
       <?php endforeach; ?>
-      <ul class="dropdown-menu" role="menu">
+      <ul class="dropdown-menu" role="menu" aria-labelledby="limit-label">
         <?php foreach ($limitList as $limitVal => $limitData): ?>
-        <li role="menuitem">
-          <a href="<?=$this->results->getUrlQuery()->setLimit($limitVal)?>"><?=$this->transEsc($limitData['desc'])?></a>
+        <li>
+          <a href="<?=$this->results->getUrlQuery()->setLimit($limitVal)?>" role="menuitem" aria-label="<?=$this->transEsc('Results per page') . ': ' . $this->transEsc($limitData['desc'])?>"><?=$this->transEsc($limitData['desc'])?></a>
         <?php endforeach; ?>
         </li>
       </ul>
