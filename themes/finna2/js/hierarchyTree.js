@@ -1,6 +1,6 @@
 /*global VuFind */
 
-var hierarchyID, recordID, htmlID, hierarchyContext;
+var hierarchyID, recordID, hierarchySource, htmlID, hierarchyContext;
 
 /* Utility functions */
 function htmlEncodeId(id) {
@@ -27,7 +27,7 @@ function html_entity_decode(string) {
 
 function getRecord(id) {
   $.ajax({
-    url: VuFind.path + '/Hierarchy/GetRecord?' + $.param({id: id}),
+    url: VuFind.path + '/Hierarchy/GetRecord?' + $.param({id: id, hierarchySource: hierarchySource}),
     dataType: 'html'
   })
     .done(function getRecordDone(response) {
@@ -75,6 +75,7 @@ function doTreeSearch() {
       url: VuFind.path + '/Hierarchy/SearchTree?' + $.param({
         lookfor: keyword,
         hierarchyID: hierarchyID,
+        hierarchySource: hierarchySource,
         type: $("#treeSearchType").val()
       }) + "&format=true"
     })
@@ -129,6 +130,7 @@ function buildTreeWithXml(cb) {
       hierarchyID: hierarchyID,
       id: recordID,
       context: hierarchyContext,
+      hierarchySource: hierarchySource,
       mode: 'Tree'
     }
   })
@@ -155,7 +157,10 @@ $(document).ready(function hierarchyTreeReady() {
 
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
-  recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
+  recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value || 'Solr';
+  hierarchySource = $("#hierarchyTree").find(".hiddenRecordSource");
+  hierarchySource = hierarchySource.length ? hierarchySource[0].value : 'Solr';
+
   htmlID = htmlEncodeId(recordID);
   hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
@@ -216,7 +221,8 @@ $(document).ready(function hierarchyTreeReady() {
             url: VuFind.path + '/Hierarchy/GetTreeJSON',
             data: {
               hierarchyID: hierarchyID,
-              id: recordID
+              id: recordID,
+              hierarchySource: hierarchySource
             },
             statusCode: {
               200: function jsTree200Status(json /*, status, request*/) {

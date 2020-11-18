@@ -24,6 +24,9 @@
             break;
         case 'authority':
             $this->searchClassId = 'SolrAuth';
+           break;
+        case 'r2search':
+            $this->searchClassId = 'R2';
             break;
         default:
             $config = $this->config()->get('config');
@@ -60,13 +63,14 @@
          || ($module === 'eds' && $action === 'search' && $this->searchType != 'advanced')
          || ($module === 'summon' && $action === 'search' && $this->searchType != 'advanced')
          || ($module == 'combined' && $action == 'results')
+         || ($module === 'r2search' && $action === 'results' && $this->searchType != 'advanced')
          || ($module === 'l1' && $action === 'results')
       ) {
          $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
          $this->layout()->searchTabs = $searchTabs;
       }
     }
-    $mainPage = $action === 'home' && in_array($module, ['combined', 'primo', 'search', 'eds', 'summon', 'authority']);
+    $mainPage = $action === 'home' && in_array($module, ['combined', 'primo', 'search', 'r2search', 'eds', 'summon', 'authority']);
 ?>
 <?php if ($this->searchType != 'advanced'): ?>
   <?php
@@ -204,7 +208,7 @@
         <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced <?=($module === 'record') ? 'visible-lg' : 'hidden-xs'?>"><i class="fa fa-search-adv" aria-hidden="true"></i><?=$this->transEsc("Advanced Search")?></a>
       <?php endif; ?>
       <?php
-        $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'summon' => 'summon'];
+        $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'r2search' => 'R2', 'summon' => 'summon'];
         if (isset($searchTypes[$module]) && !$this->translationEmpty('tooltip_' . $searchTypes[$module] . '_search_html')) {
           $tooltipClass = 'tooltip-search-' . $searchTypes[$module];
           $tooltipText = $this->translate('tooltip_' . $searchTypes[$module] . '_search_html');
@@ -223,8 +227,7 @@
           <?php if ($advSearch): ?>
           <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
           <?php endif; ?>
-
-          <?php if ($browse || $this->searchClassId != 'Solr'): ?>
+          <?php if ($browse || !in_array($this->searchClassId, ['Solr', 'R2'])): ?>
           <a href="<?=$this->url('home');?>" class="btn btn-link btn-basic"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
           <?php endif; ?>
 

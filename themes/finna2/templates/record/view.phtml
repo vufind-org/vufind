@@ -74,11 +74,12 @@
       $this->layout()->userLang, $params
   );
   $noImage = empty($images[0]['urls']['medium']) && empty($images[0]['urls']['large']);
-  $largeImageLayout = !$noImage && in_array($this->driver->tryMethod('getRecordFormat'), ['lido', 'forward', 'ead', 'forwardAuthority']);
+  $largeImageLayout = !$noImage && in_array($this->driver->tryMethod('getRecordFormat'), ['lido', 'forward', 'ead', 'ead3', 'forwardAuthority']);
 ?>
 </div>
 <div class="container">
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?> record-row <?= $largeImageLayout ? 'large-image-layout' : '' ?>">
+  <?= $this->R2()->registeredInfo($this->driver) ?>
   <div>
       <?=$this->record($this->driver)->getToolbar()?>
   </div>
@@ -93,7 +94,7 @@
   </div>
 
   <?php ob_start(); ?>
-    <?php if ($this->resolver('record/record-organisation-menu.phtml') && in_array($this->driver->getSourceIdentifier(), ['Solr', 'SolrAuth', 'L1'])): ?>
+    <?php if ($this->resolver('record/record-organisation-menu.phtml') && in_array($this->driver->getSourceIdentifier(), ['Solr', 'SolrAuth', 'L1', 'R2'])): ?>
       <div class="organisation-menu">
           <?=$this->render('record/record-organisation-menu.phtml') ?>
       </div>

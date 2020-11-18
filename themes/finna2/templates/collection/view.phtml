@@ -54,6 +54,7 @@
 <div class="container">
 <?php endif; ?>
 <div class="record record-row">
+  <?= $this->R2()->registeredInfo($this->driver) ?>
   <div>
     <?=$this->record($this->driver)->getToolbar()?>
   </div>
@@ -62,6 +63,7 @@
   <div class="record-main mainbody left">
     <?=$this->flashmessages()?>
     <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
+    <?= $this->R2()->register($this->driver)?>
     <?php $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
        <div class="recordFormat collection-format">
          <?=$this->record($this->driver)->getFormatList()?><br/>
@@ -85,7 +87,7 @@
     <?/* End Main Details */?>
   </div>
   <?php ob_start(); ?>
-    <?php if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getSourceIdentifier() == 'Solr'): ?>
+    <?php if ($this->resolver('record/record-organisation-menu.phtml') && in_array($this->driver->getSourceIdentifier(), ['Solr', 'R2'])): ?>
       <div class="organisation-menu">
           <?=$this->render('record/record-organisation-menu.phtml') ?>
       </div>

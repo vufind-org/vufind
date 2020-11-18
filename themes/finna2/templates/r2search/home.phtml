@@ -1,0 +1,29 @@
+<!-- START of: finna - r2/home.phtml -->
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('R2_search_title'));
+  // Disable top search box -- this page has a special layout.
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'R2';
+  }
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+
+  $this->layout()->breadcrumbs = false;
+  $this->layout()->logosection = true;
+  $this->layout()->ignoreHiddenFilterMemory = true;
+?>
+<!--  Begin home.phtml and close page container for extra styling  -->
+</div>
+<div class="container-fluid r2-home">
+  <?php if ($template = $this->content()->findTemplateForLng('r2/home-1')): ?>
+    <?=$this->render($template)?>
+  <?php endif; ?>
+</div>
+<!-- reopen container -->
+<div class="container">
+<!-- END of: finna - r2/home.phtml -->
