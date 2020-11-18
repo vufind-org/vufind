@@ -384,6 +384,13 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     public function getContainerTitle()
     {
         $result = parent::getContainerTitle();
+        if (!$result) {
+            foreach ($this->getMarcReader()->getFields('773') as $field) {
+                if ($result = $this->getSubfield($field, 't')) {
+                    break;
+                }
+            }
+        }
         return $this->stripTrailingPunctuation($result, '\.-');
     }
 
