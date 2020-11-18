@@ -1,16 +1,12 @@
 <?php
 echo $this->record($this->driver)->getExportFormat('endnote');
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo "%A $author\n";
+foreach ($this->driver->tryMethod('getNonPresenterAuthors', [], []) as $author) {
+    echo "A% {$author['name']}\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "%E $current\n";
-    }
+foreach ($this->driver->tryMethod('getPresenterAuthors', [], []) as $author) {
+    echo "E% {$author['name']}\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');

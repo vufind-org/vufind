@@ -61,19 +61,12 @@ if (!empty($containerTitle)) {
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthorForSearch');
-if (empty($author)) {
-    $author = $this->driver->tryMethod('getPrimaryAuthor');
-}
-if (!empty($author)) {
-    echo "A1 $author\n";
+foreach ($this->driver->tryMethod('getNonPresenterAuthors', [], []) as $author) {
+    echo "A1 {$author['name']}\n";
 }
 
-$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors', [true]);
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "A1 $current\n";
-    }
+foreach ($this->driver->tryMethod('getPresenterAuthors', [], []) as $author) {
+    echo "A2 {$author['name']}\n";
 }
 
 $languages = $this->driver->tryMethod('getLanguages');
