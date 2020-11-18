@@ -93,6 +93,7 @@ class RecordController extends \VuFind\Controller\RecordController
             $config->NormalizationPreview->url,
             \Laminas\Http\Request::METHOD_POST
         );
+        $client->setOptions(['useragent' => 'FinnaRecordPreview VuFind']);
         $client->setParameterPost(
             ['data' => $data, 'format' => $format, 'source' => $source]
         );
@@ -720,6 +721,7 @@ class RecordController extends \VuFind\Controller\RecordController
             $config->NormalizationPreview->url,
             \Laminas\Http\Request::METHOD_POST
         );
+        $client->setOptions(['useragent' => 'FinnaRecordPreview VuFind']);
         $client->setParameterPost(
             ['func' => 'get_sources']
         );

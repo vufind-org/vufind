@@ -140,6 +140,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
 
         // Get URL
         $client = $this->httpService->createClient($url);
+        $client->setOptions(['useragent' => 'FinnaPopularSearches VuFind']);
         $client->setParameterGet($params);
         $result = $client->send();
         if (!$result->isSuccess()) {

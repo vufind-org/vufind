@@ -170,6 +170,11 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase
                     ];
                     $url = 'https://api.finna.fi/v1/search?';
                     $client = $this->httpService->createClient($url);
+                    $client->setOptions(
+                        [
+                            'useragent' => 'FinnaOrganisationInfo VuFind'
+                        ]
+                    );
                     $client->setParameterGet($params);
                     $result = $client->send();
                     if (!$result->isSuccess()) {

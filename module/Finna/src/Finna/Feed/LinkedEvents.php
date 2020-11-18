@@ -166,6 +166,7 @@ class LinkedEvents implements \VuFindHttp\HttpServiceAwareInterface,
             }
         }
         $client = $this->httpService->createClient($url);
+        $client->setOptions(['useragent' => 'VuFind']);
         $result = $client->send();
         if (!$result->isSuccess()) {
             $this->logError('LinkedEvents API request failed, url: ' . $url);

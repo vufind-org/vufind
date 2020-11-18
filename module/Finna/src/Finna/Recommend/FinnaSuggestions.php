@@ -221,7 +221,7 @@ class FinnaSuggestions implements
         $client->setOptions(
             [
                 'timeout' => 30,
-                'useragent' => 'VuFind'
+                'useragent' => 'FinnaSuggestions VuFind'
             ]
         );
         $client->getRequest()->getHeaders()->addHeaderLine(

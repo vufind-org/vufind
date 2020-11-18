@@ -271,6 +271,7 @@ class Feed implements \VuFind\I18n\Translator\TranslatorAwareInterface,
             ? $this->mainConfig->Content->feedcachetime : 10;
 
         $httpClient = $this->httpService->createClient();
+        $httpClient->setOptions(['useragent' => 'VuFind']);
         $httpClient->setOptions(['timeout' => 30]);
         Reader::setHttpClient($httpClient);
 

@@ -637,6 +637,7 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
             $client = $this->httpService->createClient(
                 $url, \Laminas\Http\Request::METHOD_GET, 10
             );
+            $client->setOptions(['useragent' => 'VuFind']);
             $result = $client->send();
             if ($result->isSuccess()) {
                 if ($result->getStatusCode() != 200) {

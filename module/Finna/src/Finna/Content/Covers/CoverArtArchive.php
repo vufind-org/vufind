@@ -87,7 +87,9 @@ class CoverArtArchive extends \VuFind\Content\AbstractCover
             $mbids = $driver->tryMethod('getMusicBrainzIdentifiers') ?? [];
             foreach ($mbids as $mbid) {
                 $url = 'https://coverartarchive.org/release/' . urlencode($mbid);
-                $result = $this->httpService->createClient($url)->send();
+                $client = $this->httpService->createClient($url);
+                $client->setOptions(['useragent' => 'VuFind']);
+                $result = $client->send();
                 if ($result->isSuccess()) {
                     $data = json_decode($result->getBody(), true);
                     if (!empty($data['images'])) {
