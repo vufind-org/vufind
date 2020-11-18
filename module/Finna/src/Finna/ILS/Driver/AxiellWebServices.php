@@ -272,6 +272,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     ];
 
     /**
+     * Titlelist cache time mappings in minutes
+     *
+     * @var array
+     */
+    protected $titleListCacheSettings = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -433,6 +440,14 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 ?? $this->config['messagingBlackLists']['dueDateAlert']
                 ?? ''
             );
+        $this->titleListCacheSettings
+            = $this->config['titleListCacheSettings']['settings'] ??
+            [
+                'new' => 15,
+                'lastreturned' => 15,
+                'mostborrowed' => 480,
+                'mostrequested' => 240
+            ];
     }
 
     /**
@@ -1582,7 +1597,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         if ($function === 'getTitleList') {
             if (isset($this->config['Catalog']['catalogueaurora_wsdl'])) {
                 $functionConfig = [
-                    'enabled' => true
+                    'enabled' => true,
+                    'cacheSettings' => $this->titleListCacheSettings
                 ];
             }
         }

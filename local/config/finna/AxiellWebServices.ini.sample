@@ -200,3 +200,10 @@ nonPayable[] = '/^Muu maksu/'
 method = driver
 options[1] = loan_history_forever
 options[0] = loan_history_never
+
+; How long should the titlelist be cached in minutes
+;[titleListCacheSettings]
+;settings[new] => 15,
+;settings[lastreturned] => 15,
+;settings[mostborrowed] => 480,
+;settings[mostrequested] => 240

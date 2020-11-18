@@ -491,9 +491,14 @@ EOT;
             if ($xcalContent && $allowXcal) {
                 $xpathItem = $xpath->query('//item')->item($cnt);
                 foreach ($xcalContent as $setting) {
-                    $xcal = $xpath
+                    $item = $xpath
                         ->query('.//*[local-name()="' . $setting . '"]', $xpathItem)
-                        ->item(0)->nodeValue;
+                        ->item(0);
+
+                    if (!is_object($item)) {
+                        continue;
+                    }
+                    $xcal = $item->nodeValue;
                     if (!empty($xcal)) {
                         if ($setting === 'featured') {
                             if (!empty($imgLink = $this->extractImage($xcal))) {
