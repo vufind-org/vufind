@@ -20,6 +20,7 @@ JS;
     echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $setupJS, 'SET');
   }
 ?>
+<?php if ($this->modal): ?><h2></h2><?php endif; ?>
 <div>
   <div class="<?= $this->modal ? '' : 'page-content'?> feed-content" data-feed="<?=$this->escapeHtmlAttr($this->feed)?>" data-element="<?=$this->escapeHtmlAttr($this->element)?>" data-feed-url="<?=$this->escapeHtmlAttr($this->feedUrl)?>">
 
