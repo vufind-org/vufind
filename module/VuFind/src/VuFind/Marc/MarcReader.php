@@ -175,7 +175,7 @@ class MarcReader
                     continue;
                 }
                 $subfields[] = [
-                    'code' => key($subfield),
+                    'code' => (string)key($subfield),
                     'data' => current($subfield),
                 ];
             }
