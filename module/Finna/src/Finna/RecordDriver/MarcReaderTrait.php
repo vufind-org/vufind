@@ -83,13 +83,6 @@ trait MarcReaderTrait
      */
     protected function getAllSubfields(array $field): array
     {
-        $result = [];
-        foreach ($field['subfields'] as $subfield) {
-            $result[] = [
-                'code' => key($subfield),
-                'data' => trim(current($subfield)),
-            ];
-        }
-        return $result;
+        return $field['subfields'];
     }
 }
