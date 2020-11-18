@@ -192,24 +192,24 @@
         <?=$this->render('search/browse-header.phtml', ['browse' => $browse])?>
       <?php endif; ?>
       <div class="search-controls">
-            <div class="control-container text-right hidden-print">
-            <?php if (!$browse): ?>
-                <?=$this->render('search/controls/view.phtml')?>
-                <?=$this->render('search/controls/sort.phtml')?>
-                <?=$this->render('search/controls/limit.phtml')?>
-            <?php endif; ?>
-            </div>
-              <?php $resultsStr = $this->translate(
-                  'showing_results_of_html',
-                  [
-                      '%%start%%' => $this->results->getStartRecord(),
-                      '%%end%%' => $this->results->getEndRecord(),
-                      '%%total%%' => $this->localizedNumber($recordTotal)
-                  ]
-              );?>
-            <div class="pagination-container">
-                <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
-            </div>
+        <?php $resultsStr = $this->translate(
+                'showing_results_of_html',
+                [
+                  '%%start%%' => $this->results->getStartRecord(),
+                  '%%end%%' => $this->results->getEndRecord(),
+                  '%%total%%' => $this->localizedNumber($recordTotal)
+                ]
+        );?>
+        <div class="pagination-container">
+          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
+        </div>
+        <div class="control-container text-right hidden-print">
+          <?php if (!$browse): ?>
+            <?=$this->render('search/controls/sort.phtml')?>
+            <?=$this->render('search/controls/limit.phtml')?>
+            <?=$this->render('search/controls/view.phtml')?>
+          <?php endif; ?>
+        </div>
       </div>
     <?php endif; ?>
     <?php if ($this->results->getResultTotal() > 0): ?>
