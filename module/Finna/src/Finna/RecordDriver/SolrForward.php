@@ -1473,6 +1473,16 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return archive films
+     *
+     * @return string
+     */
+    public function getArchiveFilms()
+    {
+        return $this->getProductionEventAttribute('elokuva-arkistoaineisto');
+    }
+
+    /**
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
