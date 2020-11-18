@@ -29,6 +29,7 @@
           <li><a href="<?=$currentSource['moreinfoLink']?>"><?=$this->transEsc('More information about organisation')?></a></li>
         <?php endif; ?>
           <?php if ($this->organisationInfo() && $organisationInfoId = $this->driver->getOrganisationInfoId()): ?><li class="organisation-page-link" data-organisation="<?=$this->escapeHtmlAttr($organisationInfoId)?>" data-organisation-name="<?=$this->escapeHtmlAttr($currentSourceTranslated)?>" data-organisation-sector="<?=$this->escapeHtmlAttr($sector)?>"></li><?php endif; ?>
+          <li class="feedback-record"><?=$this->transEsc('material_questions_feedback')?></li>
           <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Feedback')?>" data-lightbox class="btn btn-primary feedback-record"><?=$this->transEsc('Send feedback on record')?></a></li>
         </ul>
       </li>
