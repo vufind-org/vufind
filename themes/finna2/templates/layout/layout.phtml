@@ -4,7 +4,7 @@
 <?php $currentTabClass = $this->layout()->currentTabId ? ' tab-' . preg_replace('/[^a-z0-9]/', '', strtolower($this->layout()->currentTabId)) : '' ?>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
-    <?$this->headThemeResources()?>
+    <?php $this->headThemeResources() ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?php // Turn off automatic telephone number detection on iOS ?>
