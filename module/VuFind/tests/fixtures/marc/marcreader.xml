@@ -9,6 +9,7 @@
   <controlfield tag="008">021122s2020    en            000 0 eng d</controlfield>
   <datafield tag="100" ind1="0" ind2="0">
     <subfield code="a">Author, Test</subfield>
+    <subfield code="0">(TEST)123</subfield>
   </datafield>
   <datafield tag="245" ind1="0" ind2="4">
     <subfield code="a">The Foo:</subfield>
