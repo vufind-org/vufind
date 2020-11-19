@@ -315,9 +315,7 @@ class SolrLrmi extends SolrQdc
             $format = trim((string)($attr['format'] ?? ''));
             if ($format && in_array($format, $images)) {
                 $url = (string)$desc;
-                if (!$this->urlBlocked($url)
-                    && $this->isUrlLoadable($url, $uniqueId)
-                ) {
+                if ($this->isUrlLoadable($url, $uniqueId)) {
                     $result[] = [
                         'urls' => [
                             'small' => $url,
@@ -336,18 +334,16 @@ class SolrLrmi extends SolrQdc
             foreach ($materials as $material) {
                 if ($material['format'] === 'pdf') {
                     $url = $material['url'];
-                    if (!$this->urlBlocked($url)) {
-                        $result[] = [
-                            'urls' => [
-                                'small' => $url,
-                                'medium' => $url,
-                                'large' => $url
-                            ],
-                            'description' => '',
-                            'rights' => []
-                        ];
-                        break;
-                    }
+                    $result[] = [
+                        'urls' => [
+                            'small' => $url,
+                            'medium' => $url,
+                            'large' => $url
+                        ],
+                        'description' => '',
+                        'rights' => []
+                    ];
+                    break;
                 }
             }
         }

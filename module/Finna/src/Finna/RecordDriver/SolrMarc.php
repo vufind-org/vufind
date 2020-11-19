@@ -196,7 +196,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $pdf = 'application/pdf' === $type || preg_match('/\.pdf$/i', $address);
 
             if (($image || $pdf) && $this->urlAllowed($address)
-                && !$this->urlBlocked($address)
                 && ($pdf || $this->isUrlLoadable($address, $this->getUniqueID()))
             ) {
                 $urls[$image ? 'images' : 'pdfs'][] = [
