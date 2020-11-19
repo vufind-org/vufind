@@ -555,7 +555,7 @@ class RecordDataFormatterFactory
             ]
         );
         $setTemplateLine(
-            'Filming Date', 'getFilmingDate', 'data-escapeHtml.phtml',
+            'Filming Date', 'getFilmingDate', 'data-forwardFields.phtml',
             [
                 'context' => ['class' => 'record-filming-date']
             ]
