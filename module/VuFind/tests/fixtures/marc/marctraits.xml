@@ -58,6 +58,7 @@
         <datafield tag="100" ind1="1" ind2=" ">
             <subfield code="a">Author, Test</subfield>
             <subfield code="d">(1800-)</subfield>
+            <subfield code="0">(TEST)789</subfield>
         </datafield>
         <datafield tag="110" ind1="2" ind2=" ">
             <subfield code="a">Testcorp</subfield>

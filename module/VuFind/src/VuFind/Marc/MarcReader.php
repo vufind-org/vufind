@@ -152,7 +152,7 @@ class MarcReader
      * for control fields
      *
      * @param string $fieldTag      The MARC field tag to get
-     * @param array  $subfieldCodes The MARC subfield codes to get, or empty for all
+     * @param array  $subfieldCodes The MARC subfield codes to get, or empty for all.
      * Ignored for control fields.
      *
      * @return array
@@ -175,7 +175,7 @@ class MarcReader
                     continue;
                 }
                 $subfields[] = [
-                    'code' => key($subfield),
+                    'code' => (string)key($subfield),
                     'data' => current($subfield),
                 ];
             }
