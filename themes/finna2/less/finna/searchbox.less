@@ -7,6 +7,9 @@
   .searchbox-home,
   .searchbox-authority-home,
   .searchbox-authority-search {
+    .search-tooltip {
+      width: 30%;
+    }
     .btn.btn-link {
       background: @background-color;
       border-radius: @border-radius-small;
@@ -148,6 +151,9 @@
     align-items: center;
     padding-left: 30px; 
     padding-right: 15px;
+    @media (min-width: @screen-sm) {
+      height: 50px;
+    }
   }
   a {
     color: @finna-search-link-color;
