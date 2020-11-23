@@ -161,7 +161,7 @@
         $openUrl = $this->openUrl($driver, 'results');
         $openUrlActive = $openUrl->isActive();
         ?>
-        <?=$this->render('record/labels.phtml', ['labels' => $this->driver->getRecordLabels()]); ?>
+        <?=$this->render('record/labels.phtml', ['driver' => $this->driver]); ?>
         <div>
             <?=$this->record($this->driver)->getOnlineUrls('results')?>
         </div>

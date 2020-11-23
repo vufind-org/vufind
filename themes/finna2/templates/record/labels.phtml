@@ -1,13 +1,19 @@
-<?php if (!empty($labels)): ?>
-  <ul class="record-labels">
-    <?php foreach ($labels as $label): ?>
-      <?php if ($this->driver): ?>
-        <?php ob_start(); ?>
-          <?= $this->record($this->driver)->renderTemplate("recordlabel-tooltip-{$label}.phtml", ['label' => $label]) ?>
-          <?php $tooltip = ob_get_contents() ?>
-        <?php ob_end_clean(); ?>
-      <?php endif ?>
-      <li class="label iconlabel <?=str_replace('_', '-', $label)?><?= $tooltip ? ' with-tooltip' : '' ?>"<?= $tooltip ? (' data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->escapeHtmlAttr($tooltip) . '"') : '' ?>><?=$this->transEsc($label)?></li>
-    <?php endforeach; ?>
-  </ul>
-<?php endif; ?>
+<?php
+  // Back-compatibility check for driver
+  $labels = isset($this->driver) ? $this->driver->getRecordLabels() : '';
+  if (empty($labels)) {
+    return;
+  }
+?>
+<ul class="record-labels">
+  <?php foreach ($labels as $label): ?>
+    <?php
+      try {
+        $tooltip = $this->record($this->driver)->renderTemplate("recordlabel-tooltip-{$label}.phtml", ['label' => $label]);
+      } catch (\RuntimeException $e) {
+        $tooltip = '';
+      }
+    ?>
+    <li class="label iconlabel <?=str_replace('_', '-', $label)?><?= $tooltip ? ' with-tooltip' : '' ?>"<?= $tooltip ? (' data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->escapeHtmlAttr($tooltip) . '"') : '' ?>><?=$this->transEsc($label)?></li>
+  <?php endforeach; ?>
+</ul>

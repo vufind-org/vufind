@@ -20,7 +20,7 @@
     </div>
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
 
-    <?=$this->render('record/labels.phtml', ['labels' => $this->driver->getRecordLabels()]); ?>
+    <?=$this->render('record/labels.phtml', ['driver' => $this->driver]); ?>
 
     <?php
       $openUrl = $this->openUrl($this->driver, 'record');

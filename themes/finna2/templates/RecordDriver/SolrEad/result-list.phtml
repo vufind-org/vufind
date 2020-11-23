@@ -43,7 +43,7 @@ if ($img):
         </div>
         <div class="dateyeartype">
           <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?> <?=$this->record($this->driver)->getSourceIdElement() ?></div>
-          <?=$this->render('record/labels.phtml', ['labels' => $this->driver->getRecordLabels(), 'driver' => $this->driver]); ?>
+          <?=$this->render('record/labels.phtml', ['driver' => $this->driver]); ?>
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <div class="truncate-field" data-rows="1">
               <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
