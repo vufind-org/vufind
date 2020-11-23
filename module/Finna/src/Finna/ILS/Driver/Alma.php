@@ -786,10 +786,17 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 }
             }
             $phone['preferred'] = 'true';
+            $phoneNumberOk = false;
             foreach ($details as $key => $value) {
                 if (isset($phoneMapping[$key])) {
+                    if ('' !== $value) {
+                        $phoneNumberOk = true;
+                    }
                     $phone->addChild($phoneMapping[$key], $value);
                 }
+            }
+            if (!$phoneNumberOk) {
+                unset($phone[0]);
             }
         }
 
