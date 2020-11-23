@@ -849,6 +849,35 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         // Remove user roles as they are the exception that Alma handles differently.
         unset($userData->user_roles);
 
+        // Remove duplicate inactive barcodes... Alma may report the same barcode as
+        // active and inactive, but won't accept that in update.
+        if ($identifiers = $userData->user_identifiers) {
+            $activeBarcodes = [];
+            foreach ($identifiers->user_identifier as $identifier) {
+                if ('BARCODE' === (string)$identifier->id_type
+                    && 'ACTIVE' === (string)$identifier->status
+                ) {
+                    $activeBarcodes[] = (string)$identifier->value;
+                }
+            }
+            do {
+                $removed = false;
+                foreach ($identifiers->user_identifier as $identifier) {
+                    if ('BARCODE' === (string)$identifier->id_type
+                        && 'INACTIVE' === (string)$identifier->status
+                    ) {
+                        if (in_array((string)$identifier->value, $activeBarcodes)) {
+                            unset($identifier[0]);
+                            // Removal would mess with foreach, so break out and
+                            // start over
+                            $removed = true;
+                            break;
+                        }
+                    }
+                }
+            } while ($removed);
+        }
+
         // Update user in Alma
         $queryParams = '';
         if ($overrideFields) {
