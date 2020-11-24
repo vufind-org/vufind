@@ -512,8 +512,6 @@ class SolrEad3 extends SolrEad
                     ? (string)$daoset->descriptivenote->p : null;
 
                 foreach ($daoset->dao as $dao) {
-                    // Loop daosets and collect URLs for different sizes
-                    $urls = [];
                     $attr = $dao->attributes();
                     if (! isset($attr->linktitle)
                         || strpos(
