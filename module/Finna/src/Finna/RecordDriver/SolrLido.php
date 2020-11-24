@@ -226,13 +226,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             foreach ($resourceSet->resourceRepresentation as $representation) {
                 $linkResource = $representation->linkResource;
                 $url = (string)$linkResource;
-                if (!$this->isUrlLoadable($url, $this->getUniqueID())) {
+                if (empty($url)) {
                     continue;
                 }
                 $attributes = $representation->attributes();
-                if (empty((string)$linkResource)) {
-                    continue;
-                }
                 if (!empty($this->undisplayableFileFormats)
                     && isset($linkResource->attributes()->formatResource)
                     && $attributes->type !== 'image_original'
@@ -246,6 +243,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     if ($formatDisallowed) {
                         continue;
                     }
+                }
+
+                if (!$this->isUrlLoadable($url, $this->getUniqueID())) {
+                    continue;
                 }
 
                 $size = '';

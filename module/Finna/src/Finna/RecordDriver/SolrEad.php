@@ -144,9 +144,6 @@ class SolrEad extends SolrDefault
             foreach ($daogrp->daoloc as $daoloc) {
                 $attributes = $daoloc->attributes();
                 $url = (string)$attributes->href;
-                if (!$this->isUrlLoadable($url, $this->getUniqueID())) {
-                    continue;
-                }
                 $role = (string)$attributes->role;
                 $size = '';
                 switch ($role) {
@@ -160,9 +157,10 @@ class SolrEad extends SolrDefault
                     $size = 'large';
                     break;
                 }
-                if (!$size) {
+                if (!$size || !$this->isUrlLoadable($url, $this->getUniqueID())) {
                     continue;
                 }
+
                 $urls[$size] = $url;
             }
             if (empty($urls)) {
