@@ -78,7 +78,8 @@
     <?=$locationText?>
   <?php endif; ?>
 </h3>
-<table class="table table-striped">
+<?php $maxItemsLimit = $this->config()->itemLimit(); ?>
+<table class="table table-striped truncate-field" data-rows="<?=$maxItemsLimit?>" data-more-label="<?=$this->transEsc('show_more_items')?>" data-less-label="<?=$this->transEsc('show_less_items')?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>

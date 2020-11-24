@@ -289,24 +289,6 @@ function applyRecordTabHash() {
 
 $(window).on('hashchange', applyRecordTabHash);
 
-function moreLessSubjects() {
-  $('.more-subjects, .less-subjects').off('click');
-  $('.more-subjects').click(function moreSubjects() {
-    $('.subject-hidden').removeClass('hidden');
-    $('#less-subjects').removeClass('hidden');
-    $('#more-subjects').addClass('hidden');
-    return false;
-  });
-
-  $('.less-subjects').click(function lessFacets() {
-    $('.subject-hidden').addClass('hidden');
-    $('#more-subjects').removeClass('hidden');
-    $('#less-subjects').addClass('hidden');
-    return false;
-  });
-}
-
-
 function removeCheckRouteParam() {
   if (window.location.search.indexOf('checkRoute=1') >= 0) {
     var newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
@@ -314,6 +296,58 @@ function removeCheckRouteParam() {
       window.history.replaceState({}, '', newHref);
     }
   }
+}
+
+function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
+  var holder = typeof _holder === 'undefined' ? $(document) : $(_holder);
+  var target = $(_target);
+  var targetElemName = target.prop('tagName').toLowerCase();
+  var rowCount = holder.data('rows');
+  var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
+  var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
+  var topToggle = holder.data('top-toggle') ? Number(holder.data('top-toggle')) : Infinity;
+
+  holder.each(function parseHolder() {
+    var self = $(this);
+    var numRows = self.find(target).length || 0;
+    // Truncate only if there's more than one line to hide
+    var shouldTruncate = rowCount < numRows || false;
+    self.find(target).each(function hideRows(i) {
+      if(i > rowCount - 1 && shouldTruncate) {
+        $(this).hide();
+        $(this).addClass('truncate-toggle');
+      }
+    });
+
+    if (shouldTruncate) {
+      var btn = '<button type="button" class="more-link btn btn-link">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn btn-link">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+      var btnLessTop = '<button type="button" class="less-link-top btn btn-link">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+      var btnWrapper = $('<' + targetElemName + ' class="more-less-btn-wrapper"></' + targetElemName + '>');
+      var btnWrapperBtm = btnWrapper.clone().append(_fill(btn));
+      var btnWrapperTop = btnWrapper.clone().append(_fill(btnLessTop));
+      $(btnWrapperBtm).appendTo(self);
+      $(btnWrapperTop).prependTo(self);
+
+      self.find('.less-link').hide();
+      self.find('.less-link-top').hide();
+
+      self.find('.less-link, .less-link-top').click(function onClickLessLink(/*event*/) {
+        self.find('.less-link, .less-link-top').hide();
+        self.find('.more-link').show();
+        self.find('.truncate-toggle').toggle();
+      });
+
+      self.find('.more-link').click(function onClickMoreLink(/*event*/) {
+        $(this).hide();
+        self.find('.less-link').show();
+        if (numRows > topToggle) {
+          self.find('.less-link-top').show();
+        }
+        self.find('.truncate-toggle').toggle();
+      });
+    }
+    self.trigger('truncate-done', [self]);
+  });
 }
 
 function recordDocReady() {
@@ -361,7 +395,8 @@ function recordDocReady() {
     backgroundLoadTab(el.dataset.tab);
   });
 
-  moreLessSubjects();
+  initTruncate('.truncate-subjects', $('.subject-line'));
+  initTruncate('table.truncate-field', $('tr[typeof="Offer"]'), function(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
   applyRecordTabHash();
 }
