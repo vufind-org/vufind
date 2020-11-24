@@ -456,6 +456,7 @@ class Loader extends \VuFind\Cover\Loader
                 $this->debug("Failed to retrieve image from $url");
                 return false;
             }
+            $this->addHostSuccess($host);
         } catch (\Exception $e) {
             $this->logError(
                 "Exception trying to load '$url' (record: " . ($this->id ?: '-')
