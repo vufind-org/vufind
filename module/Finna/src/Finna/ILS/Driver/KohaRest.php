@@ -1213,7 +1213,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
                 $filter = $this->config['Holdings']['serial_subscription_filter']
                     ?? '';
                 $yearFilter = 'current+1' === $filter;
-                foreach ($serialsResult['subscriptions'] as $subscription) {
+                foreach ($serialsResult['data']['subscriptions'] as $subscription) {
                     $i++;
                     $seqs = [];
                     $latestReceived = 0;
