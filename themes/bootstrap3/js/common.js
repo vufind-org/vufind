@@ -417,13 +417,14 @@ $(document).ready(function commonDocReady() {
 
   // Print
   var url = window.location.href;
-  if (url.indexOf('?' + 'print' + '=') !== -1 || url.indexOf('&' + 'print' + '=') !== -1) {
+  if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
     $(document).ajaxStop(function triggerPrint() {
       // Print dialogs cause problems during testing, so disable them
       // when the "test mode" cookie is set. This should never happen
       // under normal usage outside of the Phing startup process.
       if (document.cookie.indexOf('VuFindTestSuiteRunning=') === -1) {
+        window.addEventListener("afterprint", function goBackAfterPrint() { history.back(); }, { once: true });
         window.print();
       } else {
         console.log("Printing disabled due to test mode."); // eslint-disable-line no-console

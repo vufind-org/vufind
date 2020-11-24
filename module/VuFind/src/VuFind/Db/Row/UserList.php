@@ -30,6 +30,7 @@ namespace VuFind\Db\Row;
 use Laminas\Session\Container;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
+use VuFind\Tags;
 
 /**
  * Row Definition for user_list
@@ -52,13 +53,22 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     protected $session = null;
 
     /**
+     * Tag parser.
+     *
+     * @var Tags
+     */
+    protected $tagParser;
+
+    /**
      * Constructor
      *
-     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
-     * @param Container                   $session Session container
+     * @param \Laminas\Db\Adapter\Adapter $adapter   Database adapter
+     * @param Tags                        $tagParser Tag parser
+     * @param Container                   $session   Session container
      */
-    public function __construct($adapter, Container $session = null)
+    public function __construct($adapter, Tags $tagParser, Container $session = null)
     {
+        $this->tagParser = $tagParser;
         $this->session = $session;
         parent::__construct('id', 'user_list', $adapter);
     }
@@ -79,11 +89,11 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Get an array of tags associated with this list.
+     * Get an array of resource tags associated with this list.
      *
      * @return array
      */
-    public function getTags()
+    public function getResourceTags()
     {
         $table = $this->getDbTable('User');
         $user = $table->select(['id' => $this->user_id])->current();
@@ -91,6 +101,33 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             return [];
         }
         return $user->getTags(null, $this->id);
+    }
+
+    /**
+     * Get an array of resource tags associated with this list.
+     *
+     * @deprecated Deprecated, use getResourceTags.
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->getResourceTags();
+    }
+
+    /**
+     * Get an array of tags assigned to this list.
+     *
+     * @return array
+     */
+    public function getListTags()
+    {
+        $table = $this->getDbTable('User');
+        $user = $table->select(['id' => $this->user_id])->current();
+        if (empty($user)) {
+            return [];
+        }
+        return $user->getListTags($this->id, $this->user_id);
     }
 
     /**
@@ -110,7 +147,37 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $this->description = $request->get('desc');
         $this->public = $request->get('public');
         $this->save($user);
+
+        if (null !== ($tags = $request->get('tags'))) {
+            $linker = $this->getDbTable('resourcetags');
+            $linker->destroyListLinks($this->id, $user->id);
+            foreach ($this->tagParser->parse($tags) as $tag) {
+                $this->addListTag($tag, $user);
+            }
+        }
+
         return $this->id;
+    }
+
+    /**
+     * Add a tag to the list.
+     *
+     * @param string              $tagText The tag to save.
+     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     *
+     * @return void
+     */
+    public function addListTag($tagText, $user)
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tags = $this->getDbTable('tags');
+            $tag = $tags->getByText($tagText);
+            $linker = $this->getDbTable('resourcetags');
+            $linker->createLink(
+                null, $tag->id, $user->id, $this->id
+            );
+        }
     }
 
     /**
@@ -192,7 +259,9 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
         // Remove Resource (related tags are also removed implicitly)
         $userResourceTable = $this->getDbTable('UserResource');
-        $userResourceTable->destroyLinks($resourceIDs, $this->user_id, $this->id);
+        $userResourceTable->destroyLinks(
+            $resourceIDs, $this->user_id, $this->id
+        );
     }
 
     /**
@@ -223,6 +292,10 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         // Remove user_resource and resource_tags rows:
         $userResource = $this->getDbTable('UserResource');
         $userResource->destroyLinks(null, $this->user_id, $this->id);
+
+        // Remove resource_tags rows for list tags:
+        $linker = $this->getDbTable('resourcetags');
+        $linker->destroyListLinks($this->id, $user->id);
 
         // Remove the list itself:
         return parent::delete();

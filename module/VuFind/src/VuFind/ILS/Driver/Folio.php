@@ -417,6 +417,36 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Gets the location name from the /locations endpoint and sets
+     * the display name to discoveryDisplayName,  name, or code
+     * based on whichever is available first in that order.
+     *
+     * @param string $locationId ID of a location from the
+     * /holdings-storage/holdings endpoint
+     *
+     * @return string
+     */
+    protected function getLocationName($locationId)
+    {
+        $locationName = '';
+        if (!empty($locationId)) {
+            $locationResponse = $this->makeRequest(
+                'GET',
+                '/locations/' . $locationId
+            );
+            $location = json_decode($locationResponse->getBody());
+            if (!empty($location->discoveryDisplayName)) {
+                $locationName = $location->discoveryDisplayName;
+            } elseif (!empty($location->name)) {
+                $locationName = $location->name;
+            } elseif (!empty($location->code)) {
+                $locationName = $location->code;
+            }
+        }
+        return $locationName;
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -432,7 +462,7 @@ class Folio extends AbstractAPI implements
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
-                . '" and discoverySuppress==false)'
+                . '" NOT discoverySuppress==true)'
         ];
         $holdingResponse = $this->makeRequest(
             'GET',
@@ -442,29 +472,46 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
-            $locationName = '';
-            if (!empty($holding->permanentLocationId)) {
-                $locationResponse = $this->makeRequest(
-                    'GET',
-                    '/locations/' . $holding->permanentLocationId
-                );
-                $location = json_decode($locationResponse->getBody());
-                $locationName = $location->name;
-            }
+            $locationId = $holding->permanentLocationId;
+            $locationName = $this->getLocationName($locationId);
 
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
-                    . '" and discoverySuppress==false)'
+                    . '" NOT discoverySuppress==true)'
             ];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
-                return $note->note ?? '';
+                return !($note->staffOnly ?? false)
+                    && !empty($note->note) ? $note->note : '';
             };
+            $textFormatter = function ($supplement) {
+                $format = '%s %s';
+                $supStat = $supplement->statement;
+                $supNote = $supplement->note;
+                $statement = trim(sprintf($format, $supStat, $supNote));
+                return $statement ?? '';
+            };
+            $holdingNotes = array_filter(
+                array_map($notesFormatter, $holding->notes ?? [])
+            );
+            $hasHoldingNotes = !empty(implode($holdingNotes));
+            $holdingsStatements = array_map(
+                $textFormatter,
+                $holding->holdingsStatements ?? []
+            );
+            $holdingsSupplements = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForSupplements ?? []
+            );
+            $holdingsIndexes = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForIndexes ?? []
+            );
             foreach ($itemBody->items as $item) {
-                if ($item->discoverySuppress ?? false) {
-                    continue;
-                }
+                $itemNotes = array_filter(
+                    array_map($notesFormatter, $item->notes ?? [])
+                );
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -474,7 +521,11 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'is_holdable' => $this->isHoldable($locationName),
-                    'notes' => array_map($notesFormatter, $item->notes ?? []),
+                    'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
+                    'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
+                    'issues' => $holdingsStatements,
+                    'supplements' => $holdingsSupplements,
+                    'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',

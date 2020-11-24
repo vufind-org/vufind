@@ -57,6 +57,13 @@ class DOI implements RecommendInterface
     protected $prefix;
 
     /**
+     * Are we configured to redirect to the resolver when a full match is found?
+     *
+     * @var bool
+     */
+    protected $redirectFullMatch = true;
+
+    /**
      * Does the DOI in $match exactly match the user's query?
      *
      * @var bool
@@ -72,7 +79,17 @@ class DOI implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        $this->prefix = $settings;
+        // Find the last colon in the configuration that is not part of a URL:
+        $breakPoint = strrpos($settings, ':');
+        if ($breakPoint && substr($settings, $breakPoint + 1, 2) !== '//') {
+            $prefix = substr($settings, 0, $breakPoint);
+            $redirect = substr($settings, $breakPoint + 1);
+        } else {
+            $prefix = $settings;
+            $redirect = true;       // no redirect setting; use default
+        }
+        $this->prefix = $prefix;
+        $this->redirectFullMatch = ($redirect && strtolower($redirect) !== 'false');
     }
 
     /**
@@ -137,5 +154,15 @@ class DOI implements RecommendInterface
     public function isFullMatch()
     {
         return $this->exact;
+    }
+
+    /**
+     * Are we configured to redirect to the resolver when a full match is found?
+     *
+     * @return bool
+     */
+    public function redirectFullMatch()
+    {
+        return $this->redirectFullMatch;
     }
 }

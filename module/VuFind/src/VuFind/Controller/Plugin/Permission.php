@@ -86,6 +86,19 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
     }
 
     /**
+     * Check if a permission is authorized, returning a boolean value without
+     * applying any additional behavior.
+     *
+     * @param string $permission Permission to check
+     *
+     * @return bool
+     */
+    public function isAuthorized($permission)
+    {
+        return $this->permissionManager->isAuthorized($permission);
+    }
+
+    /**
      * Check if a permission is denied; if so, throw an exception or return an
      * error response as configured in permissionBehavior.ini.
      *

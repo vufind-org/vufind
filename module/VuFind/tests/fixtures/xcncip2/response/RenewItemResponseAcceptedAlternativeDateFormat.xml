@@ -1,0 +1,23 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<NCIPMessage xmlns="http://www.niso.org/2008/ncip">
+    <RenewItemResponse>
+        <ItemId>
+            <ItemIdentifierType>Barcode</ItemIdentifierType>
+            <ItemIdentifierValue>421170101658</ItemIdentifierValue>
+        </ItemId>
+        <UserId>
+            <AgencyId>SOG504</AgencyId>
+            <UserIdentifierType>Institution Id Number</UserIdentifierType>
+            <UserIdentifierValue>19404</UserIdentifierValue>
+        </UserId>
+        <DateDue>2020-08-31T23:59:59.999+02:00</DateDue>
+        <ItemOptionalFields>
+            <DateDue>2020-08-31T23:59:59.999+02:00</DateDue>
+        </ItemOptionalFields>
+        <UserOptionalFields/>
+    </RenewItemResponse>
+</NCIPMessage>

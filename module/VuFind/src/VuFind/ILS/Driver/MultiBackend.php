@@ -936,7 +936,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         );
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
+            $holdDetails = $this->stripIdPrefixes(
+                $holdDetails, $source, ['id', 'item_id', 'cat_username']
+            );
             return $driver->getCancelHoldDetails($holdDetails);
         }
         throw new ILSException('No suitable backend driver found');
@@ -1552,7 +1554,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     $value, $source, $modifyFields
                 );
             } else {
-                if (!is_numeric($key)
+                if (!ctype_digit((string)$key)
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
@@ -1593,7 +1595,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 );
             } else {
                 $prefixLen = strlen($source) + 1;
-                if ((!is_array($data) || in_array($key, $modifyFields))
+                if ((!is_array($data)
+                    || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);

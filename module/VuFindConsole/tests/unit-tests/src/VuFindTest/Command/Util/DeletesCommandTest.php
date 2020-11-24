@@ -41,6 +41,8 @@ use VuFindConsole\Command\Util\DeletesCommand;
  */
 class DeletesCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Get mock Solr writer.
      *
@@ -101,7 +103,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('Solr'), $this->equalTo(['rec1', 'rec2', 'rec3']));
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
-        $fixture = __DIR__ . '/../../../../../fixtures/deletes';
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
         $commandTester->execute(
             [
                 'filename' => $fixture,
