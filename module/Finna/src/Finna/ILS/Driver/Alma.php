@@ -286,6 +286,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     : false;
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
+                if ($description = (string)$itemLoan->description) {
+                    $loan['title'] .= " $description";
+                }
                 $loan['item_id'] = (string)$itemLoan->loan_id;
                 $loan['institution_name']
                     = $this->getTranslatableString($itemLoan->library);
