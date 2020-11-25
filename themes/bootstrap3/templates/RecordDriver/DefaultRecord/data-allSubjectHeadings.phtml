@@ -1,5 +1,5 @@
 <?php $maxSubjectsLimit = $this->config()->subjectLimit(); ?>
-<?php $truncateDiv = '<div class="truncate-subjects" data-rows="%s" data-more-label ="%s" data-less-label="%s" data-top-toggle="30">'; ?>
+<?php $truncateDiv = '<div class="truncate-subjects" data-rows="%s" data-more-label ="%s" data-less-label="%s">'; ?>
 <?=sprintf($truncateDiv, $maxSubjectsLimit, $this->transEsc('show_more_subjects'), $this->transEsc('show_less_subjects'));?>
   <?php foreach ($data as $field): ?>
     <div class="subject-line" property="keywords">

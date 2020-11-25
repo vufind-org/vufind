@@ -305,7 +305,6 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
   var rowCount = holder.data('rows');
   var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
   var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
-  var topToggle = holder.data('top-toggle') ? Number(holder.data('top-toggle')) : Infinity;
 
   holder.each(function parseHolder() {
     var self = $(this);
@@ -313,36 +312,33 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
     // Truncate only if there's more than one line to hide
     var shouldTruncate = rowCount < numRows || false;
     self.find(target).each(function hideRows(i) {
-      if(i > rowCount - 1 && shouldTruncate) {
+      var truncateAfter = rowCount - 1;
+      if (i == truncateAfter) {
+        $(this).addClass('truncate-after');
+      }
+      if(i > truncateAfter && shouldTruncate) {
         $(this).hide();
         $(this).addClass('truncate-toggle');
       }
     });
 
     if (shouldTruncate) {
-      var btn = '<button type="button" class="more-link btn btn-link">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn btn-link">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
-      var btnLessTop = '<button type="button" class="less-link-top btn btn-link">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+      var btn = '<button type="button" class="more-link btn">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
       var btnWrapper = $('<' + targetElemName + ' class="more-less-btn-wrapper"></' + targetElemName + '>');
       var btnWrapperBtm = btnWrapper.clone().append(_fill(btn));
-      var btnWrapperTop = btnWrapper.clone().append(_fill(btnLessTop));
-      $(btnWrapperBtm).appendTo(self);
-      $(btnWrapperTop).prependTo(self);
+      $(btnWrapperBtm).insertAfter(self.find('.truncate-after'));
 
       self.find('.less-link').hide();
-      self.find('.less-link-top').hide();
 
-      self.find('.less-link, .less-link-top').click(function onClickLessLink(/*event*/) {
-        self.find('.less-link, .less-link-top').hide();
-        self.find('.more-link').show();
+      self.find('.less-link').click(function onClickLessLink(/*event*/) {
+        $(this).hide();
+        $(this).prev('.more-link').show();
         self.find('.truncate-toggle').toggle();
       });
 
       self.find('.more-link').click(function onClickMoreLink(/*event*/) {
         $(this).hide();
-        self.find('.less-link').show();
-        if (numRows > topToggle) {
-          self.find('.less-link-top').show();
-        }
+        $(this).next('.less-link').show();
         self.find('.truncate-toggle').toggle();
       });
     }
