@@ -43,12 +43,20 @@ namespace Finna\RecordDriver;
 trait UrlCheckTrait
 {
     /**
-     * A simple runtime cache for results to avoid multiple lookups during the same
-     * script execution.
+     * A simple runtime cache for results to avoid multiple url lookups during the
+     * same script execution.
      *
      * @var array
      */
-    protected $urlCheckResultCache = [];
+    protected static $urlCheckResultCache = [];
+
+    /**
+     * A simple runtime cache for results to avoid multiple host lookups during the
+     * same script execution.
+     *
+     * @var array
+     */
+    protected static $hostCheckResultCache = [];
 
     /**
      * Check if the given URL is loadable according to configured rules
@@ -65,13 +73,13 @@ trait UrlCheckTrait
             return false;
         }
 
-        if (isset($this->urlCheckResultCache[$url])) {
-            return $this->urlCheckResultCache[$url];
+        if (isset(self::$urlCheckResultCache[$url])) {
+            return self::$urlCheckResultCache[$url];
         }
 
         $scheme = parse_url($url, PHP_URL_SCHEME);
         if (!in_array($scheme, ['http', 'https'])) {
-            return $this->urlCheckResultCache[$url] = false;
+            return self::$urlCheckResultCache[$url] = false;
         }
 
         $config = $this->getConfig();
@@ -94,7 +102,7 @@ trait UrlCheckTrait
 
         // Return if nothing to check
         if (!$allowedList && !$disallowedList) {
-            return $this->urlCheckResultCache[$url] = true;
+            return self::$urlCheckResultCache[$url] = true;
         }
 
         $host = mb_strtolower(parse_url($url, PHP_URL_HOST), 'UTF-8');
@@ -102,49 +110,51 @@ trait UrlCheckTrait
             $id = 'n/a';
         }
 
-        $result = $this->checkHostAllowedByFilters(
-            $id,
-            $url,
-            $host,
-            $disallowedList,
-            $disallowedMode,
-            $allowedList,
-            $allowedMode
-        );
-        if (!$result) {
-            return $this->urlCheckResultCache[$url] = false;
-        }
-
-        // Check IPv4 address against list of disallowed hosts
-        $ipv4 = $this->getIPv4Address($host);
-        if ($ipv4 && $ipv4 !== $host) {
+        if (!isset(self::$hostCheckResultCache[$host])) {
             $result = $this->checkHostAllowedByFilters(
                 $id,
                 $url,
-                $ipv4,
+                $host,
                 $disallowedList,
-                $disallowedMode
+                $disallowedMode,
+                $allowedList,
+                $allowedMode
             );
-            if (!$result) {
-                return $this->urlCheckResultCache[$url] = false;
+
+            if ($result) {
+                // Check IPv4 address against list of disallowed hosts
+                $ipv4 = $this->getIPv4Address($host);
+                if ($ipv4 && $ipv4 !== $host) {
+                    $result = $this->checkHostAllowedByFilters(
+                        $id,
+                        $url,
+                        $ipv4,
+                        $disallowedList,
+                        $disallowedMode
+                    );
+                }
             }
-        }
-        // Check IPv6 address against list of disallowed hosts
-        $ipv6 = $this->getIPv6Address($host);
-        if ($ipv6 && $ipv6 !== $host) {
-            $result = $this->checkHostAllowedByFilters(
-                $id,
-                $url,
-                $ipv6,
-                $disallowedList,
-                $disallowedMode
-            );
-            if (!$result) {
-                return $this->urlCheckResultCache[$url] = false;
+
+            if ($result) {
+                // Check IPv6 address against list of disallowed hosts
+                $ipv6 = $this->getIPv6Address($host);
+                if ($ipv6 && $ipv6 !== $host) {
+                    $result = $this->checkHostAllowedByFilters(
+                        $id,
+                        $url,
+                        $ipv6,
+                        $disallowedList,
+                        $disallowedMode
+                    );
+                }
             }
+
+            self::$hostCheckResultCache[$host] = $result;
+        } else {
+            $result = self::$hostCheckResultCache[$host];
         }
 
-        return $this->urlCheckResultCache[$url] = true;
+        return self::$urlCheckResultCache[$url] = $result;
     }
 
     /**

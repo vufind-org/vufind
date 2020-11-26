@@ -134,11 +134,11 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $config = [
             'Record' => [
                 'disallowed_external_hosts' => [
-                    '127.0.0.1',
+                    '127.0.0.2',
                 ],
                 'disallowed_external_hosts_mode' => 'report',
                 'allowed_external_hosts' => [
-                    '127.0.0.1',
+                    '127.0.0.2',
                     'imageserver',
                 ]
             ]
@@ -152,7 +152,7 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
             ->willReturn(new \Laminas\Config\Config($config));
         $loader->expects($this->once())->method('logWarning')
             ->with(
-                'URL check: http://127.0.0.1/img would be blocked (record foo.bar)'
+                'URL check: http://127.0.0.2/img would be blocked (record foo.bar)'
             )
             ->willReturn('');
         $loader->expects($this->any())->method('getIPv4Address')
@@ -160,8 +160,8 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $loader->expects($this->any())->method('getIPv6Address')
             ->willReturn('');
 
-        $this->assertTrue($loader->check('http://127.0.0.1/img', 'foo.bar'));
-        $this->assertFalse($loader->check('http://image/img', 'foo.bar'));
+        $this->assertTrue($loader->check('http://127.0.0.2/img', 'foo.bar'));
+        $this->assertFalse($loader->check('http://image2/img', 'foo.bar'));
         $this->assertTrue($loader->check('http://imageserver/img', 'foo.bar'));
     }
 
@@ -175,7 +175,7 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $config = [
             'Record' => [
                 'disallowed_external_hosts' => [
-                    '127.0.0.1',
+                    '127.0.0.3',
                 ],
                 'allowed_external_hosts' => [
                     'imageserver',
@@ -192,7 +192,7 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
             ->willReturn(new \Laminas\Config\Config($config));
         $loader->expects($this->once())->method('logWarning')
             ->with(
-                'URL check: http://image/img would not be allowed (record foo.bar)'
+                'URL check: http://image3/img would not be allowed (record foo.bar)'
             )
             ->willReturn('');
         $loader->expects($this->any())->method('getIPv4Address')
@@ -200,8 +200,8 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $loader->expects($this->any())->method('getIPv6Address')
             ->willReturn('');
 
-        $this->assertFalse($loader->check('http://127.0.0.1/img', 'foo.bar'));
-        $this->assertTrue($loader->check('http://image/img', 'foo.bar'));
+        $this->assertFalse($loader->check('http://127.0.0.3/img', 'foo.bar'));
+        $this->assertTrue($loader->check('http://image3/img', 'foo.bar'));
         $this->assertTrue($loader->check('http://imageserver/img', 'foo.bar'));
     }
 
@@ -215,11 +215,11 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $config = [
             'Record' => [
                 'disallowed_external_hosts' => [
-                    '127.0.0.1',
+                    '127.0.0.4',
                 ],
                 'disallowed_external_hosts_mode' => 'enforce-report',
                 'allowed_external_hosts' => [
-                    '127.0.0.1',
+                    '127.0.0.4',
                     'imageserver',
                 ]
             ]
@@ -232,15 +232,15 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $loader->expects($this->any())->method('getConfig')
             ->willReturn(new \Laminas\Config\Config($config));
         $loader->expects($this->once())->method('logWarning')
-            ->with('URL check: http://127.0.0.1/img blocked (record n/a)')
+            ->with('URL check: http://127.0.0.4/img blocked (record n/a)')
             ->willReturn('');
         $loader->expects($this->any())->method('getIPv4Address')
             ->willReturn('');
         $loader->expects($this->any())->method('getIPv6Address')
             ->willReturn('');
 
-        $this->assertFalse($loader->check('http://127.0.0.1/img'));
-        $this->assertFalse($loader->check('http://image/img'));
+        $this->assertFalse($loader->check('http://127.0.0.4/img'));
+        $this->assertFalse($loader->check('http://image4/img'));
         $this->assertTrue($loader->check('http://imageserver/img'));
     }
 
@@ -254,7 +254,7 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $config = [
             'Record' => [
                 'disallowed_external_hosts' => [
-                    '127.0.0.1',
+                    '127.0.0.5',
                 ],
                 'allowed_external_hosts' => [
                     'imageserver',
@@ -270,15 +270,15 @@ class UrlCheckTraitTest extends \VuFindTest\Unit\TestCase
         $loader->expects($this->any())->method('getConfig')
             ->willReturn(new \Laminas\Config\Config($config));
         $loader->expects($this->once())->method('logWarning')
-            ->with('URL check: http://image/img not allowed (record n/a)')
+            ->with('URL check: http://image5/img not allowed (record n/a)')
             ->willReturn('');
         $loader->expects($this->any())->method('getIPv4Address')
             ->willReturn('');
         $loader->expects($this->any())->method('getIPv6Address')
             ->willReturn('');
 
-        $this->assertFalse($loader->check('http://127.0.0.1/img'));
-        $this->assertFalse($loader->check('http://image/img'));
+        $this->assertFalse($loader->check('http://127.0.0.5/img'));
+        $this->assertFalse($loader->check('http://image5/img'));
         $this->assertTrue($loader->check('http://imageserver/img'));
     }
 }
