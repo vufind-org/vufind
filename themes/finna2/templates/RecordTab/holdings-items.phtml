@@ -73,7 +73,11 @@
         <?php else: ?>
           <?php if ($row['availability']): ?>
             <?php /* Begin Available Items (Holds) */ ?>
-            <span class="text-success"><i class="fa fa-ok" aria-hidden="true"></i> <?=$this->transEsc(isset($row['availabilityInfo']['displayText']) ? 'status_' . $row['availabilityInfo']['displayText'] : 'Available')?><link property="availability" href="http://schema.org/InStock" /></span>
+            <span class="text-success">
+              <i class="fa fa-ok" aria-hidden="true"></i>
+              <?=isset($row['availabilityInfo']['displayText']) ? $this->transEsc('status_' . $row['availabilityInfo']['displayText'], [], $row['availabilityInfo']['displayText']) : $this->transEsc('Available')?>
+              <link property="availability" href="http://schema.org/InStock" />
+            </span>
             <?php if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
               &ndash;&nbsp;<span class="small"><?=$this->translate('status_requests_html', ['%%count%%' => $this->escapeHtml($row['requests_placed'])])?></span>
             <?php endif; ?>

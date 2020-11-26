@@ -207,6 +207,15 @@ indexes = "868az"
 ; Set to false to disable title hold button in holdings tab
 ;display_title_hold_in_holdings = false
 
+; Optional mappings from location types to item statuses. These mappings override any
+; other item statuses. The value consists of two colon-separated values:
+; - Status string that can be translated using the status_ prefix (translation key
+;   for the example would be status_staff_use).
+; - General availability status (available or unavailable) that affects how the
+;   status is displayed. If this part is omitted, the availability is determined from
+;   the item information.
+;locationTypeItemStatus['UNAVAIL'] = "staff_use:unavailable"
+
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.
 ;enabled = true

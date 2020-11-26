@@ -28,6 +28,7 @@
 namespace Finna\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -93,6 +94,13 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     ];
 
     /**
+     * Mappings from location type to item status. Overrides any other item status.
+     *
+     * @var array
+     */
+    protected $locationTypeToItemStatus = [];
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -132,6 +140,11 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $this->feeTypeMappings = array_merge(
                 $this->feeTypeMappings, $this->config['FeeTypeMappings']
             );
+        }
+
+        if (!empty($this->config['Holdings']['locationTypeItemStatus'])) {
+            $this->locationTypeToItemStatus
+                = $this->config['Holdings']['locationTypeItemStatus'];
         }
     }
 
@@ -2232,16 +2245,37 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     ? $this->parseDate((string)$item->item_data->due_date) : null;
                 if ($duedate && 'Item not in place' === $status) {
                     $status = 'Checked Out';
-                }
-
-                $itemNotes = !empty($item->item_data->public_note)
-                    ? [(string)$item->item_data->public_note] : null;
-
-                if ($processType && 'LOAN' !== $processType) {
+                } elseif ($processType && 'LOAN' !== $processType) {
                     $status = $this->getTranslatableStatusString(
                         $item->item_data->process_type
                     );
                 }
+                $available = null;
+                $statusDisplayText = null;
+                $locationType = $this->getItemLocationType($item);
+                if ($locationType
+                    && isset($this->locationTypeToItemStatus[$locationType])
+                ) {
+                    $parts = explode(
+                        ':',
+                        $this->locationTypeToItemStatus[$locationType]
+                    );
+                    $statusDisplayText
+                        = $status = new TranslatableString($parts[0], $parts[0]);
+                    if (isset($parts[1])) {
+                        $available = 'unavailable' !== $parts[1];
+                    }
+                }
+
+                if (null === $available) {
+                    $available = $this->getAvailabilityFromItem($item);
+                }
+                if ($available) {
+                    ++$availableItems;
+                }
+
+                $itemNotes = !empty($item->item_data->public_note)
+                    ? [(string)$item->item_data->public_note] : null;
 
                 $description = null;
                 $number = null;
@@ -2257,10 +2291,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     } elseif (!$itemHolds) {
                         $addLink = false;
                     }
-                }
-                $available = $this->getAvailabilityFromItem($item);
-                if ($available) {
-                    ++$availableItems;
                 }
 
                 $items[] = [
@@ -2286,7 +2316,10 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     // For Alma title-level hold requests
                     'description' => $description ?? null,
                     'detailsGroupKey' => $holdingId ? "$holdingId||||" : '',
-                    'sort' => $sort++
+                    'sort' => $sort++,
+                    'availabilityInfo' => [
+                        'displayText' => $statusDisplayText ?? null
+                    ],
                 ];
             }
         }
@@ -2433,16 +2466,40 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     }
 
     /**
-     * Get the external name of a location
+     * Get location type for an item
      *
-     * @param string $library  Library
-     * @param string $location Location
+     * @param SimpleXMLElement $item Item
      *
      * @return string
      */
-    protected function getLocationExternalName($library, $location)
+    protected function getItemLocationType($item)
     {
-        $cacheId = 'alma|locations|' . $library;
+        // Yes, temporary location is in holding data while permanent location is in
+        // item data.
+        if ('true' === (string)$item->holding_data->in_temp_location) {
+            $library = $item->holding_data->temp_library
+                ?: $item->item_data->library;
+            $location = $item->holding_data->temp_location
+                ?: $item->item_data->location;
+        } else {
+            $library = $item->item_data->library;
+            $location = $item->item_data->location;
+        }
+        $locations = $this->getLocations((string)$library);
+
+        return $locations[(string)$location]['type'] ?? '';
+    }
+
+    /**
+     * Get the locations for a library
+     *
+     * @param string $library Library
+     *
+     * @return array
+     */
+    protected function getLocations($library)
+    {
+        $cacheId = 'alma|locations2|' . $library;
         $locations = $this->getCachedData($cacheId);
 
         if (null === $locations) {
@@ -2453,14 +2510,43 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             foreach ($xml as $entry) {
                 $locations[(string)$entry->code] = [
                     'name' => (string)$entry->name,
-                    'externalName' => (string)$entry->external_name
+                    'externalName' => (string)$entry->external_name,
+                    'type' => (string)$entry->type,
                 ];
             }
             $this->putCachedData($cacheId, $locations, 3600);
         }
+        return $locations;
+    }
+
+    /**
+     * Get the external name of a location
+     *
+     * @param string $library  Library
+     * @param string $location Location
+     *
+     * @return string
+     */
+    protected function getLocationExternalName($library, $location)
+    {
+        $locations = $this->getLocations($library);
         return !empty($locations[$location]['externalName'])
             ? $locations[$location]['externalName']
             : ($locations[$location]['name'] ?? null);
+    }
+
+    /**
+     * Get type of a location
+     *
+     * @param string $library  Library
+     * @param string $location Location
+     *
+     * @return string
+     */
+    protected function getLocationType($library, $location)
+    {
+        $locations = $this->getLocations($library);
+        return $locations[$location]['type'] ?? '';
     }
 
     /**
