@@ -556,6 +556,18 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Show permanent link for the current record.
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function permalinkAction()
+    {
+        $view = $this->createViewModel();
+        $view->setTemplate('record/permalink');
+        return $view;
+    }
+
+    /**
      * Export the record
      *
      * @return mixed
