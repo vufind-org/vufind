@@ -1828,10 +1828,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     public function getCollectiveUniformTitle()
     {
         $results = [];
-        foreach ($this->getMarcReader()->getFields('243') as $field) {
-            if ($fields = $this->getFieldArray($field, ['a', 'k'])) {
-                $results[] = $this->stripTrailingPunctuation(implode(' ', $fields));
-            }
+        if ($fields = $this->getFieldArray('243', ['a', 'k'])) {
+            $results[] = $this->stripTrailingPunctuation(implode(' ', $fields));
         }
         return $results;
     }
