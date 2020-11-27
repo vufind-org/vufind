@@ -1532,7 +1532,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // valid JSON that the caller can handle
         $decodedResult = json_decode($result, true);
         if (empty($request['errors']) && !$response->isSuccess()
-            && (null === $decodedResult || !empty($decodedResult['error']))
+            && (null === $decodedResult || !empty($decodedResult['error'])
+            || !empty($decodedResult['errors']))
         ) {
             $params = $method == 'GET'
                 ? $client->getRequest()->getQuery()->toString()
