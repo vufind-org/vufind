@@ -194,7 +194,8 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             && $this->methodSupported($driver, 'getTitleList', [$params])
         ) {
             $results = $driver->getTitleList($params);
-            return $this->addIdPrefixes($results, $source);
+            $results['records'] = $this->addIdPrefixes($results['records'], $source);
+            return $results;
         }
         throw new ILSException('No suitable backend driver found');
     }
