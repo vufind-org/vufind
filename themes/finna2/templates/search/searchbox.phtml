@@ -203,24 +203,22 @@
       <?php endif; ?>
     </form>
     </div>
-    <div class="search-tooltip">
-      <?php if (!$browse && !$mainPage && $advSearch): ?>
+    <div class="search-tooltip"><?php
+      // There should not be any whitespace in this div if it is empty.
+      if (!$browse && !$mainPage && $advSearch): ?>
         <a href="<?=$this->url($advSearch)?>" class="btn btn-link btn-advanced <?=($module === 'record') ? 'visible-lg' : 'hidden-xs'?>"><i class="fa fa-search-adv" aria-hidden="true"></i><?=$this->transEsc("Advanced Search")?></a>
-      <?php endif; ?>
-      <?php
+      <?php endif; ?><?php
         $searchTypes = ['search' => 'local', 'primo' => 'pci', 'eds' => 'eds', 'r2search' => 'R2', 'summon' => 'summon'];
         if (isset($searchTypes[$module]) && !$this->translationEmpty('tooltip_' . $searchTypes[$module] . '_search_html')) {
           $tooltipClass = 'tooltip-search-' . $searchTypes[$module];
           $tooltipText = $this->translate('tooltip_' . $searchTypes[$module] . '_search_html');
         }
-
         if (isset($tooltipClass) && isset($tooltipText)):
       ?>
         <button aria-label="<?= $this->transEsc('Search Tips') ?>" class="tooltip-button <?=$tooltipClass?> hidden-xs" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->escapeHtmlAttr($tooltipText)?>">
           <i class="fa fa-question-circle-big" aria-hidden="true"></i>
         </button>
-      <?php endif; ?>
-    </div>
+    <?php endif; ?></div>
     <?php if ($module != 'record' && $module != 'collection'): ?>
       <?php if ($browse || $mainPage || ($module === 'authority' && $action === 'search')): ?>
         <div class="search-links">
