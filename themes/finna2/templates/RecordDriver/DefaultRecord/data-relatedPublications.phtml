@@ -1,0 +1,10 @@
+<?php //Don't add START and END comments ?>
+<?php if (!empty($data)): ?>
+  <div class="truncate-field">
+    <?php foreach ($data as $publication): ?>
+      <div class="related-publications">
+        <?=$this->escapeHtml($publication['title'])?><?php if (!empty($publication['label'])): ?> (<?=$this->escapeHtml($publication['label'])?>)<?php endif; ?>
+      </div>
+    <?php endforeach; ?> 
+  </div>
+<?php endif; ?>
