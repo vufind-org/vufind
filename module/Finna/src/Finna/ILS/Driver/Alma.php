@@ -2250,20 +2250,23 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $item->item_data->process_type
                     );
                 }
+
                 $available = null;
                 $statusDisplayText = null;
-                $locationType = $this->getItemLocationType($item);
-                if ($locationType
-                    && isset($this->locationTypeToItemStatus[$locationType])
-                ) {
-                    $parts = explode(
-                        ':',
-                        $this->locationTypeToItemStatus[$locationType]
-                    );
-                    $statusDisplayText
-                        = $status = new TranslatableString($parts[0], $parts[0]);
-                    if (isset($parts[1])) {
-                        $available = 'unavailable' !== $parts[1];
+                if ($this->locationTypeToItemStatus) {
+                    $locationType = $this->getItemLocationType($item);
+                    if ($locationType
+                        && isset($this->locationTypeToItemStatus[$locationType])
+                    ) {
+                        $parts = explode(
+                            ':',
+                            $this->locationTypeToItemStatus[$locationType]
+                        );
+                        $statusDisplayText = $status
+                            = new TranslatableString($parts[0], $parts[0]);
+                        if (isset($parts[1])) {
+                            $available = 'unavailable' !== $parts[1];
+                        }
                     }
                 }
 
@@ -2485,9 +2488,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $library = $item->item_data->library;
             $location = $item->item_data->location;
         }
-        $locations = $this->getLocations((string)$library);
-
-        return $locations[(string)$location]['type'] ?? '';
+        return $this->getLocationType((string)$library, (string)$location);
     }
 
     /**
@@ -2599,17 +2600,47 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         if ($mmsId !== (string)$bib->mms_id) {
                             continue;
                         }
-                        $avail = $this->getMarcSubfield($field, 'e');
+                        $available = null;
+                        $statusDisplayText = null;
+                        $location = $this->getMarcSubfield($field, 'j');
+                        if ($this->locationTypeToItemStatus) {
+                            $library = $this->getMarcSubfield($field, 'b');
+                            $type = $this->getLocationType($library, $location);
+                            if ($type
+                                && isset($this->locationTypeToItemStatus[$type])
+                            ) {
+                                $parts = explode(
+                                    ':',
+                                    $this->locationTypeToItemStatus[$type]
+                                );
+                                $statusDisplayText
+                                    = new TranslatableString($parts[0], $parts[0]);
+                                if (isset($parts[1])) {
+                                    $available = 'unavailable' !== $parts[1];
+                                }
+                            }
+                        }
+
+                        if (null === $available) {
+                            $availStr
+                                = strtolower($this->getMarcSubfield($field, 'e'));
+                            $available = 'available' === $availStr;
+                        }
+
                         $item = $tmpl;
-                        $item['availability'] = strtolower($avail) === 'available';
-                        $item['location_code'] = $this->getMarcSubfield($field, 'j');
+                        $item['availability'] = $available;
+                        $item['location_code'] = $location;
                         $item['location'] = $this->getTranslatableStringForCode(
-                            $item['location_code'],
+                            $location,
                             $this->getMarcSubfield($field, 'c')
                         );
                         $item['callnumber'] = $this->getMarcSubfield($field, 'd');
                         $item['sort'] = $sort++;
                         $item['externalInterfaceUrl'] = $externalInterfaceUrl;
+                        if ($statusDisplayText) {
+                            $item['availabilityInfo']['displayText']
+                                = $statusDisplayText;
+                        }
                         $status[] = $item;
                     }
                     // Electronic
