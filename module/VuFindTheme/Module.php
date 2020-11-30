@@ -89,8 +89,8 @@ class Module
     {
         return [
             'factories' => [
-                View\Helper\HeadThemeResources::class =>
-                    View\Helper\HeadThemeResourcesFactory::class,
+                View\Helper\ThemeResources::class =>
+                    View\Helper\ThemeResourcesFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\HeadLink::class =>
                     View\Helper\PipelineInjectorFactory::class,
@@ -106,7 +106,7 @@ class Module
                     View\Helper\TemplatePathFactory::class,
             ],
             'aliases' => [
-                'headThemeResources' => View\Helper\HeadThemeResources::class,
+                'themeResources' => View\Helper\ThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
                 \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
                 \Laminas\View\Helper\HeadScript::class =>

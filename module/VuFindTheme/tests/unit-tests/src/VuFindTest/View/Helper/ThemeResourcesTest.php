@@ -1,6 +1,6 @@
 <?php
 /**
- * HeadThemeResources view helper Test Class
+ * ThemeResources view helper Test Class
  *
  * PHP version 7
  *
@@ -28,10 +28,10 @@
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\ResourceContainer;
-use VuFindTheme\View\Helper\HeadThemeResources;
+use VuFindTheme\View\Helper\ThemeResources;
 
 /**
- * HeadThemeResources view helper Test Class
+ * ThemeResources view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -39,7 +39,7 @@ use VuFindTheme\View\Helper\HeadThemeResources;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
+class ThemeResourcesTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Test the helper.
@@ -48,7 +48,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     public function testHelper()
     {
-        $helper = new HeadThemeResources($this->getResourceContainer());
+        $helper = new ThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
         $helper->__invoke();
     }
@@ -60,7 +60,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     public function testConfigParsing()
     {
-        $helper = new HeadThemeResources($this->getResourceContainer());
+        $helper = new ThemeResources($this->getResourceContainer());
         $tests = [
             'foo:bar:baz' => ['foo', 'bar', 'baz'],
             'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']

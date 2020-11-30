@@ -1,6 +1,6 @@
 <?php
 /**
- * View helper for loading theme-related resources in the header.
+ * View helper for loading theme-related resources.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFindTheme\View\Helper;
 
 /**
- * View helper for loading theme-related resources in the header.
+ * View helper for loading theme-related resources.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -36,7 +36,7 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
+class ThemeResources extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Theme resource container
@@ -56,37 +56,23 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Set up header items based on contents of theme resource container.
+     * Set up items based on contents of theme resource container.
+     *
+     * @param string $position Position for the items to be inserted
+     * ('header' or 'footer')
      *
      * @return void
      */
-    public function __invoke()
+    public function __invoke($position)
     {
-        // Add various types of content to the header:
-        $this->addMetaTags();
-        $this->addLinks();
-        $this->addScripts();
-    }
-
-    /**
-     * Given a colon-delimited configuration string, break it apart, making sure
-     * that URLs in the first position are not inappropriately split.
-     *
-     * @param string $current Setting to parse
-     *
-     * @return array
-     */
-    protected function parseSetting($current)
-    {
-        $parts = explode(':', $current);
-        // Special case: don't explode URLs:
-        if (($parts[0] === 'http' || $parts[0] === 'https')
-            && '//' === substr($parts[1], 0, 2)
-        ) {
-            $protocol = array_shift($parts);
-            $parts[0] = $protocol . ':' . $parts[0];
+        if (!isset($position) || $position == 'header') {
+            $this->addMetaTags();
+            $this->addLinks();
+            $this->addScripts('header');
         }
-        return $parts;
+        if (!isset($position) || $position == 'footer') {
+            return $this->addScripts('footer');
+        }
     }
 
     /**
@@ -122,7 +108,7 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = $this->parseSetting($current);
+            $parts = $this->container->parseSetting($current);
             // Special case for media with paretheses
             // ie. (min-width: 768px)
             if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
@@ -139,7 +125,7 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
         // Compile and load LESS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $parts = $this->parseSetting($current);
+            $parts = $this->container->parseSetting($current);
             $headLink()->forcePrependStylesheet(
                 $headLink()->addLessStylesheet(trim($parts[0])),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
@@ -161,22 +147,36 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Add scripts to header.
+     * Add scripts to header or footer.
      *
-     * @return void
+     * @param string $position 'header' or 'footer'.
+     *
+     * @return string|null
      */
-    protected function addScripts()
+    protected function addScripts($position)
     {
         // Load Javascript (same ordering considerations as CSS, above):
-        $headScript = $this->getView()->plugin('headScript');
-        foreach (array_reverse($this->container->getJs()) as $current) {
-            $parts = $this->parseSetting($current);
-            $headScript()->forcePrependFile(
-                trim($parts[0]),
-                'text/javascript',
-                isset($parts[1])
-                ? ['conditional' => trim($parts[1])] : []
-            );
+        $js = array_reverse($this->container->getJs($position));
+        if ($position == 'header') {
+            $headScript = $this->getView()->plugin('headScript');
+            foreach ($js as $current) {
+                $headScript()->forcePrependFile(
+                    $current['file'],
+                    'text/javascript',
+                    $current['conditional'] ?? []
+                );
+            }
+        } elseif ($position == 'footer') {
+            $scripts = '';
+            foreach ($js as $current) {
+                // not sure if this call is correct, there seems to be lots of overhead
+                // no matter if setFile, appendFile, or prependFile is used
+                $scripts .= $this->getView()->plugin('inlineScript')->setFile($current['file'],
+                                'text/javascript',
+                                $current['conditional'] ?? []
+                );
+            }
+            return $scripts;
         }
     }
 }

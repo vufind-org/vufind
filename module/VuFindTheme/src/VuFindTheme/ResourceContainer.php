@@ -133,8 +133,32 @@ class ResourceContainer
             $js = [$js];
         }
         foreach ($js as $current) {
-            $this->js[] = $current;
+            $this->addJsEntry($current);
         }
+    }
+
+    /**
+     * Helper function for adding a Javascript file.
+     *
+     * @param string|array $jsEntry Entry to add, either as string with path
+     * or array with additional properties.
+     */
+    protected function addJsEntry($jsEntry) {
+        if (!is_array($jsEntry)) {
+            $parts = $this->parseSetting($jsEntry);
+            if (count($parts) == 1) {
+                $jsEntry = ['file' => $jsEntry];
+            } else {
+                $jsEntry = [
+                    'file' => $parts[0],
+                    'conditional' => trim($parts[1]),
+                ];
+            }
+        }
+        if (!isset($jsEntry['position'])) {
+            $jsEntry['position'] = 'header';
+        }
+        $this->js[] = $jsEntry;
     }
 
     /**
@@ -160,11 +184,46 @@ class ResourceContainer
     /**
      * Get Javascript files.
      *
+     * @param string $position Position where the files should be inserted
+     * (allowed values are 'header' or 'footer').
+     *
      * @return array
      */
-    public function getJs()
+    public function getJs(string $position=null)
     {
-        return array_unique($this->js);
+        $this->js = array_unique($this->js, SORT_REGULAR);
+        if (!isset($position)) {
+            return $this->js;
+        } else {
+            $js = [];
+            foreach ($this->js as $jsFile) {
+                if ($jsFile['position'] == $position) {
+                    $js[] = $jsFile;
+                }
+            }
+            return $js;
+        }
+    }
+
+    /**
+     * Given a colon-delimited configuration string, break it apart, making sure
+     * that URLs in the first position are not inappropriately split.
+     *
+     * @param string $current Setting to parse
+     *
+     * @return array
+     */
+    public function parseSetting($current)
+    {
+        $parts = explode(':', $current);
+        // Special case: don't explode URLs:
+        if (($parts[0] === 'http' || $parts[0] === 'https')
+            && '//' === substr($parts[1], 0, 2)
+        ) {
+            $protocol = array_shift($parts);
+            $parts[0] = $protocol . ':' . $parts[0];
+        }
+        return $parts;
     }
 
     /**
