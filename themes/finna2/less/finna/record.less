@@ -207,6 +207,9 @@ a.authority {
   .smaller-image-sidebar {
     display: none;
   }
+  .sidebar .organisation-menu {
+    display: none
+  }
   @media(max-width: @screen-md-max){
     .mainbody.record-tabs {
       width: 100%;
@@ -621,19 +624,6 @@ a.authority {
   }
 }
 
-.sidebar .recordProvidedBy .record-organisation {
-  & img.consortium-logo {
-    margin: 8px 0 12px;
-  }
-  & li.organisation-page-link {
-    padding-top: 5px;
-  }
-  & li.material-questions-feedback {
-    font-weight: bold;
-    padding-top: 10px
-  }
-}
-
 .nav-pills {
   padding: 0px;
   margin: 0px;
@@ -757,4 +747,48 @@ a.authority {
 }
 .rights-text {
   color: @brand-primary;
+}
+
+// Material provided by
+
+.recordProvidedBy {
+  .record-organisation {
+    img.consortium-logo {
+      margin: 8px 0 12px;
+    }
+    li.organisation-page-link {
+      padding-top: 5px;
+    }
+    li.material-questions-feedback {
+      font-weight: bold;
+      padding-top: 10px
+    }
+  }
+}
+
+.sidebar .recordProvidedBy {
+  border-top: none;
+  margin-top: 0px;
+  .record-type.organisations {
+    padding: 15px;
+    font-size: 1em;
+    margin-bottom: 0;
+  }
+  .record-organisation-box {
+    border: @sidebar-border;
+    margin-bottom: 1em;
+  }
+}
+
+.record-main .recordProvidedBy {
+  &:extend(.sidebar .recordProvidedBy all);
+  h2:extend(.sidebar > h2) {};
+  @media (min-width: @screen-sm-min) {
+    max-width: 300px;
+  }
+}  
+
+// Record feedback
+.feedback-record {
+  margin-top: 1em;
 }

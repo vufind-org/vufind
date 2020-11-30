@@ -45,6 +45,13 @@
   margin-left: -1px;
 }
 
+.sidebar {
+  margin-bottom: 30px;
+  @media (max-width: @screen-xs-max) {
+    clear: both;
+  }
+}
+
 .sidebar :not(.recordProvidedBy) h1,
 .sidebar > h1,
 .sidebar :not(.recordProvidedBy) h2,
@@ -140,15 +147,6 @@ button.list-group-item {
   }
 }
 
-.sidebar .recordProvidedBy {
-  border-top: none;
-  margin-top: 0px;
-}
-
-.feedback-record {
-  margin-top: 1em;
-}
-
 .similar-records,
 .related-records,
 .similar-records, .work-expressions {
@@ -216,21 +214,5 @@ button.list-group-item {
     padding: 6px 10px;
     border-bottom-left-radius: 0px;
     border-top-left-radius: 0px;
-  }
-}
-
-.sidebar {
-  margin-bottom: 30px;
-  @media (max-width: @screen-xs-max) {
-    clear: both;
-  }
-  .record-type.organisations {
-    padding: 15px;
-    font-size: 1em;
-    margin-bottom: 0;
-  }
-  .record-organisation-box {
-    border: @sidebar-border;
-    margin-bottom: 1em;
   }
 }
