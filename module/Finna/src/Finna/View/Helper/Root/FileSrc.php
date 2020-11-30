@@ -41,13 +41,14 @@ class FileSrc extends ThemeSrc
     /**
      * Check if resource is found in theme 'files' directory.
      *
-     * @param string $path Path (starting from 'files' directory).
+     * @param string $path           Path (starting from 'files' directory)
+     * @param bool   $returnAbsolute Whether to return absolute file system path
      *
      * @return string
      */
-    public function __invoke($path)
+    public function __invoke($path, $returnAbsolute = false)
     {
-        if ($url = $this->fileFromCurrentTheme('files/' . $path)) {
+        if ($url = $this->fileFromCurrentTheme('files/' . $path, $returnAbsolute)) {
             return $url;
         }
 
