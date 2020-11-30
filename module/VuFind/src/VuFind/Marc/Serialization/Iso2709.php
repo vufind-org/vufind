@@ -94,22 +94,25 @@ class Iso2709 implements SerializationInterface
                 );
             }
 
-            if (strstr($tagData, self::SUBFIELD_INDICATOR)) {
+            if (ctype_digit($tag) && $tag < 10) {
+                $fields[$tag][] = $tagData;
+            } else {
                 $newField = [
-                    'i1' => $tagData[0],
-                    'i2' => $tagData[1]
+                    'i1' => $tagData[0] ?? ' ',
+                    'i2' => $tagData[1] ?? ' '
                 ];
                 $subfields = explode(
                     self::SUBFIELD_INDICATOR, substr($tagData, 3)
                 );
                 foreach ($subfields as $subfield) {
+                    if ('' === $subfield) {
+                        continue;
+                    }
                     $newField['s'][] = [
                         (string)$subfield[0] => substr($subfield, 1)
                     ];
                 }
                 $fields[$tag][] = $newField;
-            } else {
-                $fields[$tag][] = $tagData;
             }
 
             $offset += 12;
