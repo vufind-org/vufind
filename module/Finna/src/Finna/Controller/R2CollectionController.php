@@ -1,6 +1,6 @@
 <?php
 /**
- * R2 aspect of the Search Multi-class (Options)
+ * Restricted Solr (R2) Collection Controller
  *
  * PHP version 7
  *
@@ -20,53 +20,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search_Solr
+ * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     http://vufind.org   Main Site
  */
-namespace Finna\Search\R2;
+namespace Finna\Controller;
 
 /**
- * R2 Search Options
+ * Restricted Solr (R2) Collection Controller
  *
  * @category VuFind
- * @package  Search_Solr
+ * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     http://vufind.org   Main Site
  */
-class Options extends \Finna\Search\Solr\Options
+class R2collectionController extends CollectionController
 {
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->mainIni = $this->searchIni = $this->facetsIni = 'R2';
-        parent::__construct($configLoader);
-    }
+    use \Finna\Controller\R2ControllerTrait;
+    use \Finna\Controller\R2RecordControllerTrait;
 
     /**
-     * Return the route name for the search results action.
+     * Type of record to display
      *
-     * @return string
+     * @var string
      */
-    public function getSearchAction()
-    {
-        return 'r2-results';
-    }
-
-    /**
-     * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
-     *
-     * @return string|bool
-     */
-    public function getAdvancedSearchAction()
-    {
-        return 'r2-advanced';
-    }
+    protected $searchClassId = 'R2';
 }
