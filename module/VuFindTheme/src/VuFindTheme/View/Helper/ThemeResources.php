@@ -164,7 +164,7 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
                 $headScript()->forcePrependFile(
                     $current['file'],
                     'text/javascript',
-                    $current['conditional'] ?? []
+                    $current['attributes'] ?? []
                 );
             }
             return null;
@@ -176,7 +176,7 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
                 $scripts .= $this->getView()->plugin('inlineScript')->setFile(
                         $current['file'],
                         'text/javascript',
-                        $current['conditional'] ?? []
+                        $current['attributes'] ?? []
                 );
             }
             return $scripts;

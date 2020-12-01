@@ -151,7 +151,7 @@ class ResourceContainer
             } else {
                 $jsEntry = [
                     'file' => $parts[0],
-                    'conditional' => trim($parts[1]),
+                    'attributes' => ['conditional' => trim($parts[1])],
                 ];
             }
         }
