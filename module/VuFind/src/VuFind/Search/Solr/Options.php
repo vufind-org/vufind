@@ -122,8 +122,8 @@ class Options extends \VuFind\Search\Base\Options
                 ->toArray();
         }
         if (isset($searchSettings->General->display_versions)) {
-            $this->displayRecordVersions =
-                $searchSettings->General->display_versions;
+            $this->displayRecordVersions
+                = $searchSettings->General->display_versions;
         }
 
         // Result limit:
