@@ -218,7 +218,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter   Date converter object
-     * @param Callable               $sessionFactory  Factory function returning
+     * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
      * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
      */
