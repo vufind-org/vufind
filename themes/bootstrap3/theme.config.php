@@ -11,14 +11,14 @@ return [
         'flex-fallback.css::lt IE 10', // flex polyfill
     ],
     'js' => [
-        'vendor/jquery.min.js',
-        'vendor/bootstrap.min.js',
-        'vendor/bootstrap-accessibility.min.js',
-        'vendor/validator.min.js',
-        'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
-        'lib/autocomplete.js',
-        'common.js',
-        'lightbox.js',
+        ['file' => 'vendor/jquery.min.js', 'priority' => 100],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 200],
+        ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 300],
+        ['file' => 'vendor/validator.min.js', 'priority' => 400],
+        ['file' => 'lib/form-attr-polyfill.js', 'priority' => 500], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
+        ['file' => 'lib/autocomplete.js', 'priority' => 600],
+        ['file' => 'common.js', 'priority' => 700],
+        ['file' => 'lightbox.js', 'priority' => 800],
     ],
     'less' => [
         'active' => false,
