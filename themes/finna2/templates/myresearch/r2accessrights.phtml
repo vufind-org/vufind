@@ -1,0 +1,55 @@
+<!-- START of: finna - myresearch/r2accessrights.phtml -->
+<?php
+  // Set up page title:
+  $this->headTitle($this->translate('R2_accessrights_title'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('R2AccessRights') . '</li>';
+?>
+
+<!-- Leftside navigationbar -->
+<?= $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'r2-accessrights']); ?>
+
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
+  <div class="clearfix mylist-header hidden-print">
+    <div>
+      <?=$this->flashmessages()?>
+    </div>
+    <div class="useraccount-header">
+      <h2><?=$this->transEsc('R2_accessrights_title')?></h2>
+    </div>
+    <?php if ($this->error): ?>
+      <div class="alert alert-danger"><?=$this->transEsc('R2_rems_connect_error')?></div>
+    <?php else: ?>
+      <?php if ($this->hasAccess): ?>
+        <table class="table useraccount-table">
+          <tbody>
+            <tr class="headers">
+              <th><?=$this->transEsc('R2_your_accessrights')?></th>
+              <th><?=$this->transEsc('R2_session_usage_purpose')?></th>
+            </tr>
+            <tr class="myresearch-row">
+              <td><?=$this->translate('R2_accessrights_info_html')?></td>
+              <td>
+                <p><?=$this->translate($this->usagePurpose)?></p>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <p><strong><?=$this->transEsc('R2_termsofuse_title')?></strong></p>
+                <p><?=$this->translate('R2_termsofuse_content_html')?></p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-info r2-change-usage-purpose" role="status">
+          <div><i class="fa fa-info3 fa-lg"></i></div>
+          <div><?= $this->translate('R2_change_usage_purpose_html', ['%%url%%' => $this->url('myresearch-logout')])?></div>
+        </div>
+      <?php else: ?>
+        <?= $this->R2()->register(null, ['ignoreCache' => true, 'instructions' => 'R2_restricted_register_instructions_myresearch_html', 'hideInfo' => true, 'note' => 'R2_accessrights_register'])?>
+      <?php endif; ?>
+    <?php endif; ?>
+  </div>
+</div>
+<!-- END of: finna - myresearch/r2accessrights.phtml -->

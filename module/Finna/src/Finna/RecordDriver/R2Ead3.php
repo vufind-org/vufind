@@ -114,7 +114,9 @@ class R2Ead3 extends SolrEad3
         }
         $labels = [];
         if ($this->hasRestrictedMetadata()) {
-            $labels[] = FinnaRecordLabelInterface::R2_RESTRICTED_METADATA_AVAILABLE;
+            $labels[] = $this->isRestrictedMetadataIncluded()
+                      ? FinnaRecordLabelInterface::R2_RESTRICTED_METADATA_INCLUDED
+                      : FinnaRecordLabelInterface::R2_RESTRICTED_METADATA_AVAILABLE;
         }
         return $labels;
     }

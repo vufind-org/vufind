@@ -1,0 +1,70 @@
+<?php
+// A driver-specific template may pass in format overrides; check for these before going to the driver itself:
+$formats = $this->slot('endnote-formats')->get($this->driver->tryMethod('getFormats'));
+$format = '';
+$subformat = '';
+if (is_array($formats) && !empty($formats[0])) {
+    $parts = explode('/', !empty($formats[1]) ? $formats[1] : $formats[0]);
+    if (isset($parts[1])) {
+        $format = $parts[1];
+    }
+    if (isset($parts[2])) {
+        $subformat = $parts[2];
+    }
+}
+// Default to Book, otherwise some data may be considered invalid
+$endnoteFormat = 'Book';
+switch ($format) {
+case 'Book':
+    switch ($subformat) {
+    case 'BookSection':
+        $endnoteFormat = 'Book Section';
+        break;
+    case 'eBook':
+    case 'eBookSection':
+        $endnoteFormat = 'Electronic Book';
+    }
+    break;
+case 'WorkOfArt':
+    $endnoteFormat = 'Artwork';
+    break;
+case 'Sound':
+    $endnoteFormat = 'Audiovisual Material';
+    break;
+case 'Video':
+    if ($subformat == 'MotionPicture') {
+        $endnoteFormat = 'Film or Broadcast';
+    } else {
+        $endnoteFormat = 'Audiovisual Material';
+    }
+    break;
+case 'Other':
+    if ($subformat == 'Software') {
+        $endnoteFormat = 'Computer Program';
+    } elseif ($subformat == 'ConferenceProceeding') {
+        $endnoteFormat = 'Conference Proceedings';
+    }
+    break;
+case 'Journal':
+    if ($subformat == 'eArticle' || $subformat == 'eSerial' || $subformat == 'eJournal') {
+        $endnoteFormat = 'Electronic Article';
+    } elseif ($subformat == 'Newspaper') {
+        $endnoteFormat = 'Newspaper Article';
+    } else {
+        $endnoteFormat = 'Journal Article';
+    }
+    break;
+case 'Map':
+    $endnoteFormat = 'Map';
+    break;
+case 'Database':
+    if ($subformat == 'ResearchReport') {
+        $endnoteFormat = 'Report';
+    }
+    break;
+case 'Thesis':
+    $endnoteFormat = 'Thesis';
+    break;
+}
+
+echo "%0 $endnoteFormat\n";

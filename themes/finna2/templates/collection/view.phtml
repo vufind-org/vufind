@@ -63,7 +63,7 @@
   <div class="record-main mainbody left">
     <?=$this->flashmessages()?>
     <h2 class="collection-title"><?=$this->driver->getTitle();?></h2>
-    <?= $this->R2()->register($this->driver)?>
+    <?= $this->R2()->register($this->driver, ['brief' => true])?>
     <?php $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
        <div class="recordFormat collection-format">
          <?=$this->record($this->driver)->getFormatList()?><br/>

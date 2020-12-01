@@ -71,8 +71,7 @@ class RemsService implements
 
     // REMS API user types
     const TYPE_ADMIN = 0;
-    const TYPE_APPROVER = 1;
-    const TYPE_USER = 2;
+    const TYPE_USER = 1;
 
     // Events
     const EVENT_USER_REGISTERED = 'event-user-registered';
@@ -279,7 +278,7 @@ class RemsService implements
         $blocklist = $this->sendRequest(
             'blacklist',
             ['user' => $this->getUserId(), 'resource' => $this->getResourceItemId()],
-            'GET', RemsService::TYPE_APPROVER, null, false
+            'GET', RemsService::TYPE_ADMIN, null, false
         );
         if (!empty($blocklist)) {
             $addedAt = $blocklist[0]['blacklist/added-at'];
@@ -311,7 +310,7 @@ class RemsService implements
             return $this->sendRequest(
                 'entitlements',
                 ['user' => $userId, 'resource' => $this->getResourceItemId()],
-                'GET', RemsService::TYPE_APPROVER, null, false
+                'GET', RemsService::TYPE_USER, null, false
             );
         } catch (\Exception $e) {
             return [];
@@ -521,8 +520,7 @@ class RemsService implements
                     'comment' => 'ULOSKIRJAUTUMINEN'
                 ];
                 $this->sendRequest(
-                    'applications/close',
-                    [], 'POST', RemsService::TYPE_APPROVER,
+                    'applications/close', [], 'POST', RemsService::TYPE_ADMIN,
                     json_encode($params), $requireRegistration
                 );
             }
@@ -559,7 +557,7 @@ class RemsService implements
      *
      * @return void
      */
-    public function setAccessStatusFromConnector($status)
+    public function setAccessStatusFromConnector(?string $status)
     {
         switch ($status) {
         case 'ok':
@@ -651,7 +649,7 @@ class RemsService implements
     protected function getApplication($id, $throw = false)
     {
         return $this->sendRequest(
-            "applications/$id/raw", [], 'GET', RemsService::TYPE_APPROVER,
+            "applications/$id/raw", [], 'GET', RemsService::TYPE_ADMIN,
             null, false, $throw
         );
     }
@@ -762,9 +760,6 @@ class RemsService implements
         switch ($apiUser) {
         case RemsService::TYPE_USER:
             $userId = $this->getUserId();
-            break;
-        case RemsService::TYPE_APPROVER:
-            $userId = $this->config->General->apiApproverUser;
             break;
         case RemsService::TYPE_ADMIN:
             $userId = $this->config->General->apiAdminUser;

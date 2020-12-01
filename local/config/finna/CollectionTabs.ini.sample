@@ -12,3 +12,10 @@ tabs[HierarchyTree] = CollectionHierarchyTree
 tabs[UserComments] = UserComments
 tabs[Details] = StaffViewArray
 defaultTab = null
+
+[Finna\RecordDriver\R2Ead3]
+tabs[R2CollectionList] = R2CollectionList
+tabs[HierarchyTree] = CollectionHierarchyTree
+tabs[UserComments] = UserComments
+tabs[Details] = StaffViewArray
+defaultTab = null

@@ -71,20 +71,30 @@ class R2 extends \Laminas\View\Helper\AbstractHelper
     protected $rems;
 
     /**
+     * Blocklist email
+     *
+     * @var string
+     */
+    protected $blocklistEmail;
+
+    /**
      * Constructor
      *
-     * @param bool        $enabled       Is R2 enabled?
-     * @param User|null   $user          Current user
-     * @param bool        $authenticated Is user authenticated to use R2?
-     * @param RemsService $rems          RemsService
+     * @param bool        $enabled        Is R2 enabled?
+     * @param User|null   $user           Current user
+     * @param bool        $authenticated  Is user authenticated to use R2?
+     * @param RemsService $rems           RemsService
+     * @param string      $blocklistEmail Email address for blocklist inquiries
      */
     public function __construct(
-        bool $enabled, ?User $user, bool $authenticated, RemsService $rems
+        bool $enabled, ?User $user, bool $authenticated, RemsService $rems,
+        string $blocklistEmail
     ) {
         $this->enabled = $enabled;
         $this->user = $user;
         $this->authenticated = $authenticated;
         $this->rems = $rems;
+        $this->blocklistEmail = $blocklistEmail;
     }
 
     /**
@@ -208,15 +218,14 @@ class R2 extends \Laminas\View\Helper\AbstractHelper
             $blocklisted = $registered = $sessionClosed = false;
             $blocklistedDate = null;
             try {
-                if ($this->rems->hasUserAccess(
-                    $params['ignoreCache'] ?? false, true
-                )
-                ) {
+                $ignoreCache = $params['ignoreCache'] ?? false;
+                if ($this->rems->hasUserAccess($ignoreCache, true)) {
                     // Already registered
                     return null;
                 } else {
                     $blocklisted
-                        = $this->user ? $this->rems->isUserBlocklisted() : false;
+                        = $this->user ? $this->rems->isUserBlocklisted($ignoreCache)
+                        : false;
                     if ($blocklisted) {
                         $dateTime = $this->getView()->plugin('dateTime');
                         try {
@@ -226,7 +235,7 @@ class R2 extends \Laminas\View\Helper\AbstractHelper
                         } catch (\Exception $e) {
                         }
                     }
-                    $status = $this->rems->getAccessPermission();
+                    $status = $this->rems->getAccessPermission($ignoreCache);
                     $sessionClosed = in_array(
                         $status,
                         [RemsService::STATUS_EXPIRED, RemsService::STATUS_REVOKED]
@@ -249,10 +258,21 @@ class R2 extends \Laminas\View\Helper\AbstractHelper
                 $name .= $this->user->lastname;
             }
 
+            $brief = (bool)($params['brief'] ?? false);
+            if ($this->user) {
+                $instructions
+                    = 'R2_restricted_register_instructions'
+                    . (!$brief ? '_long' : '') . '_html';
+            } else {
+                $instructions
+                    = 'R2_restricted_login_instructions'
+                    . (!$brief ? '_long' : '') . '_html';
+            }
+
             $params = [
                 'note' => $params['note'] ?? null,
                 'warning' => $sessionClosed ? 'R2_session_expired_title' : null,
-                'instructions' => $params['instructions'] ?? null,
+                'instructions' => $instructions,
                 'showInfo' => !($params['hideInfo'] ?? false),
                 'weakLogin' => $this->user && !$this->authenticated,
                 'user' => $this->user,
@@ -261,6 +281,7 @@ class R2 extends \Laminas\View\Helper\AbstractHelper
                 'collection' => $driver ? $driver->isCollection() : false,
                 'blocklisted' => $blocklisted,
                 'blocklistedDate' => $blocklistedDate,
+                'blocklistedEmail' => $this->blocklistEmail,
                 'formId' => 'R2Register',
             ];
 

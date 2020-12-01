@@ -242,15 +242,6 @@ class Connector extends \VuFindSearch\Backend\Solr\Connector
             )
         );
 
-        if ($this->rems) {
-            $this->debug(
-                sprintf(
-                    '=> R2 access status: %s',
-                    $this->rems->getAccessPermission()
-                )
-            );
-        }
-
         $this->debug(
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
         );
@@ -269,10 +260,10 @@ class Connector extends \VuFindSearch\Backend\Solr\Connector
         if ($this->rems) {
             $headers = $response->getHeaders();
             if ($accessStatus = $headers->get('x-user-access-status')) {
-                $this->rems->setAccessStatusFromConnector(
-                    $accessStatus->getFieldValue()
-                );
+                $accessStatus = $accessStatus->getFieldValue();
             }
+            $this->rems->setAccessStatusFromConnector($accessStatus);
+
             if ($this->username) {
                 $blocklisted = null;
                 if ($blocklistedAt = $headers->get('x-user-blacklisted')) {
@@ -293,6 +284,13 @@ class Connector extends \VuFindSearch\Backend\Solr\Connector
                     $type, (bool)$headers->get($header)
                 );
             }
+
+            $this->debug(
+                sprintf(
+                    '=> R2 access status: %s',
+                    $this->rems->getAccessPermission()
+                )
+            );
         }
 
         if (!$response->isSuccess()) {

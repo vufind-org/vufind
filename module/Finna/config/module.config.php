@@ -324,6 +324,7 @@ $config = [
             'Finna\Feed\Feed' => 'Finna\Feed\FeedFactory',
             'Finna\Feed\LinkedEvents' => 'Finna\Feed\LinkedEventsFactory',
             'Finna\Form\Form' => 'Finna\Form\FormFactory',
+            'Finna\Form\R2Form' => 'Finna\Form\FormFactory',
             'Finna\ILS\Connection' => 'VuFind\ILS\ConnectionFactory',
             'Finna\LocationService\LocationService' => 'Finna\LocationService\LocationServiceFactory',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
@@ -839,6 +840,7 @@ $config = [
                     'Finna\RecordTab\AuthorityRecordsTopic' => 'Finna\RecordTab\AuthorityRecordsFactory',
                     'Finna\RecordTab\ExternalData' => 'Finna\RecordTab\Factory::getExternalData',
                     'Finna\RecordTab\Map' => 'Finna\RecordTab\Factory::getMap',
+                    'Finna\RecordTab\R2CollectionList' => 'VuFind\RecordTab\CollectionListFactory',
                     'Finna\RecordTab\UserComments' => 'Finna\RecordTab\Factory::getUserComments',
                     'Finna\RecordTab\Versions' => 'Finna\RecordTab\VersionsFactory',
                 ],
@@ -850,6 +852,7 @@ $config = [
                     'authorityrecordstopic' => 'Finna\RecordTab\AuthorityRecordsTopic',
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
                     'externaldata' => 'Finna\RecordTab\ExternalData',
+                    'r2collectionlist' => 'Finna\RecordTab\R2CollectionList',
                     'versions' => 'Finna\RecordTab\Versions',
 
                     // Overrides:
@@ -871,6 +874,23 @@ $config = [
                     'workexpressions' => 'Finna\Related\WorkExpressions',
                 ]
             ],
+            'hierarchy_driver' => [
+                'factories' => [
+                    'Finna\Hierarchy\Driver\HierarchyR2' => 'VuFind\Hierarchy\Driver\ConfigurationBasedFactory'
+                ],
+                'aliases' => [
+                    'R2' => 'Finna\Hierarchy\Driver\HierarchyR2'
+                ]
+            ],
+            'hierarchy_treedatasource' => [
+                'aliases' => [
+                    'R2' => 'Finna\Hierarchy\TreeDataSource\R2'
+                ],
+                'factories' => [
+                    'Finna\Hierarchy\TreeDataSource\R2' => 'Finna\Hierarchy\TreeDataSource\R2Factory'
+                ]
+
+            ]
         ],
     ],
 
@@ -916,6 +936,7 @@ $staticRoutes = [
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
     'MyResearch/SaveCustomOrder', 'MyResearch/PurgeHistoricLoans',
+    'MyResearch/R2AccessRights',
     'OrganisationInfo/Home',
     'PCI/Home', 'PCI/Search', 'PCI/Record',
     'R2/Home', 'R2/Results', 'R2/Advanced',

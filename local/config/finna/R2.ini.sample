@@ -148,32 +148,15 @@ default_handler = R2
 ; ---------------------
 
 [Results]
-;sector_str_mv      = Sector
-;institution        = Institution
-building           = Organisation
-;building_sub_str_mv = Department
-format             = Format
-;format_ext_str_mv  = Format
-
-; Use callnumber-first for LC call numbers, dewey-hundreds for Dewey Decimal:
-;callnumber-first    = "Call Number"
-;dewey-hundreds      = "Call Number"
-;hierarchy_top_title = Collections
-author_facet        = Author
-;author2_id_str_mv = Author
-;author2_id_role_str_mv = Author role
-language            = Language
-;original_lng_str_mv = original_work_language
-;subtitle_lng_str_mv = subtitle_language
-main_date_str       = "Year"
-search_daterange_mv = "Main Year"
-;major_genre_str_mv  = "Major Genre"
-;genre_facet         = Genre
-;era_facet           = Era
-geographic_facet    = Region
-;publishDate         = "adv_search_year"  ; share year string w/advanced search page
-topic_facet         = Topic
 usage_rights_str_mv = "Usage Rights"
-hierarchy_parent_title = component_part_is_part_of
-first_indexed       = "New Items in Index"
-;category_str_mv     = category_facet_heading
+format_ext_str_mv = "Format"
+author_facet = "Author"
+topic_facet = "Topic"
+geographic_facet = "Region"
+search_daterange_mv = "Main Year"
+era_facet = "Era"
+language = "Language"
+hierarchy_parent_title = "component_part_is_part_of"
+sector_str_mv = "Sector"
+building = "Organisation"
+first_indexed = "New Items in Index"

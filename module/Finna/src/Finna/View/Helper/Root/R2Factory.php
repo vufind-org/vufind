@@ -65,9 +65,12 @@ class R2Factory implements FactoryInterface
         $r2 = $container->get(\Finna\Service\R2SupportService::class);
         $rems = $container->get(\Finna\Service\RemsService::class);
         $user = $container->get('VuFind\Auth\Manager')->isLoggedIn();
+        $conf = $container->get(\VuFind\Config\PluginManager::class);
+        $blocklistEmail = $conf->get('Rems')->General->blocklistEmail
+            ?? $conf->get('config')->Site->email;
         return new $requestedName(
             $r2->isEnabled(), $user ?: null,
-            (false !== $user) && $r2->isAuthenticated(), $rems
+            (false !== $user) && $r2->isAuthenticated(), $rems, $blocklistEmail
         );
     }
 }

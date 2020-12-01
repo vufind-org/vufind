@@ -122,13 +122,8 @@ class AuthenticationListener
             $params = $event->getParam('params');
             $context = $event->getParam('context');
             $this->connector->setUsername(null);
-            // Attempt to retrieve restricted metadata from the backend
-            // when the user is successfuly registered to REMS
-            if ($this->r2SupportService->isAuthenticated()
-                && $this->rems->isUserRegisteredDuringSession()
-                && $this->rems->hasUserAccess()
-            ) {
-                // Registered. Pass the username to connector in order to
+            if ($this->r2SupportService->isAuthenticated()) {
+                // Pass the username to connector in order to
                 // request the index to return restricted metadata.
                 $this->connector->setUsername(
                     urlencode($this->rems->getUserId())

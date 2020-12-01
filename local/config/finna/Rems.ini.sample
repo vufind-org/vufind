@@ -4,7 +4,6 @@
 apiUrl = 
 apiKey = 
 apiAdminUser =
-apiApproverUser =
 
 ; REMS catalog item id
 catalogItem = 
@@ -17,6 +16,9 @@ sessionMaxAge = 480
 ; Show warning X minutes before session expires.
 sessionExpirationWarning = 15
 
+; Email address for blocklist inquiries
+blocklistEmail =
+
 [RegistrationForm]
 id =
 
@@ -28,3 +30,4 @@ field[usage_purpose] = purposeofuse
 field[age] = age
 field[license] = agreeterms
 field[user_id] = idnum
+
