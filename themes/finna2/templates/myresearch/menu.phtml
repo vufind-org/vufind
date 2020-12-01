@@ -6,6 +6,7 @@
     $capabilityParams = $patron ? ['patron' => $patron] : [];
     $showLibraryTabs = $this->ils()->loginAvailable();
     $ilsOffline = 'ils-none' === $this->ils()->getOfflineMode();
+    $r2SearchEnabled = $this->R2()->isAvailable();
     $listOpen = $this->active == 'favorites' || substr($this->active, 0, 4) == 'list';
     $activeToLower = strtolower($this->active ?? '');
     //Get the data for vertical menu to show lists on correct site
@@ -62,7 +63,14 @@
       ];
     }
 
-    $nonLibraryItems = [
+    $nonLibraryItems = [];
+    if ($r2SearchEnabled) {
+        $nonLibraryItems['r2-accessrights'] = [
+            'url' => 'myresearch-r2accessrights',
+            'translation' => 'R2_accessrights_menu_heading'
+        ];
+    }
+    $nonLibraryItems += [
       'profile' => [
         'url' => 'myresearch-profile',
         'translation' => 'Profile',
@@ -86,9 +94,11 @@
         'desktopOnly' => true
       ]
     ];
+
     $menuListItems = array_merge($menuListItems, $nonLibraryItems);
 
     $desktopList = [
+      'r2-accessrights',
       'checkedout',
       'historicloans',
       'holds',

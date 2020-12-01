@@ -149,6 +149,17 @@
                   <span class="profile-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
                 </a>
               </li>
+              <?php if ($this->R2()->isAvailable()): ?>
+                <?php $registered = $this->R2()->isRegistered(); ?>
+                <li>
+                  <a role="menuitem" href="<?=$this->url('myresearch-r2accessrights')?>">
+                    <?=$this->transEsc($registered ? 'R2_accessrights_title' : 'R2_menu_heading_register')?>
+                    <?php if (!$registered): ?>
+                      <i class="fa fa-research pull-right" aria-hidden="true"></i>
+                    <?php endif; ?>
+                  </a>
+                </li>
+              <?php endif; ?>
               <li>
                 <a role="menuitem" href="<?=$this->url('search-history')?>?require_login">
                   <?=$this->transEsc('history_saved_searches')?>

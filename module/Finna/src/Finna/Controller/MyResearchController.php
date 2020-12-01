@@ -365,6 +365,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
             if ($list) {
                 $this->rememberCurrentSearchUrl();
+
+                $r2 = $this->serviceLocator->get(
+                    \Finna\Service\R2SupportService::class
+                );
+                if ($r2->isEnabled()) {
+                    $table = $this->getTable('Resource');
+                    if ($table->doesListIncludeRecordsFromSource(
+                        $user->id, $list->id, 'R2'
+                    )
+                    ) {
+                        $this->flashMessenger()
+                            ->addMessage('R2_mylist_restricted', 'info');
+                    }
+                }
             } else {
                 $memory  = $this->serviceLocator->get(\VuFind\Search\Memory::class);
                 $memory->rememberSearch(
@@ -946,6 +960,30 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $this->handleOnlinePayment($patron, $view->fines, $view);
         }
         return $view;
+    }
+
+    /**
+     * R2 search access rights.
+     *
+     * @return mixed
+     */
+    public function r2AccessRightsAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        $rems = $this->serviceLocator->get('Finna\Service\RemsService');
+        $error = false;
+        $hasAccess = $usagePurpose = null;
+        try {
+            $hasAccess = $rems->hasUserAccess(true);
+            $usagePurpose = $rems->getUsagePurpose();
+        } catch (\Exception $e) {
+            $error = true;
+        }
+        return $this->createViewModel(compact('error', 'hasAccess', 'usagePurpose'));
     }
 
     /**

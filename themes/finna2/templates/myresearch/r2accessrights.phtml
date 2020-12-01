@@ -47,7 +47,7 @@
           <div><?= $this->translate('R2_change_usage_purpose_html', ['%%url%%' => $this->url('myresearch-logout')])?></div>
         </div>
       <?php else: ?>
-        <?= $this->R2()->register(null, ['ignoreCache' => true, 'instructions' => 'R2_restricted_register_instructions_myresearch_html', 'hideInfo' => true, 'note' => 'R2_accessrights_register'])?>
+        <?= $this->R2()->register(null, ['ignoreCache' => true, 'hideInfo' => true, 'note' => 'R2_accessrights_register'])?>
       <?php endif; ?>
     <?php endif; ?>
   </div>

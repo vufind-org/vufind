@@ -935,6 +935,7 @@ $staticRoutes = [
     'LibraryCards/ResetPassword',
     'LocationService/Modal',
     'MetaLib/Home', 'MetaLib/Search', 'MetaLib/Advanced',
+    'MyResearch/R2AccessRights',
     'MyResearch/SaveCustomOrder', 'MyResearch/PurgeHistoricLoans',
     'MyResearch/R2AccessRights',
     'OrganisationInfo/Home',

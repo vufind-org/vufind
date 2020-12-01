@@ -125,6 +125,39 @@ class Resource extends \VuFind\Db\Table\Resource
     }
 
     /**
+     * Check whether the list includes records from the given source (backend).
+     *
+     * @param string $user   ID of user owning favorite list
+     * @param string $list   ID of list
+     * @param string $source Source
+     *
+     * @return bool
+     */
+    public function doesListIncludeRecordsFromSource($user, $list, $source)
+    {
+        $select = $this->sql->select();
+        $select->columns(
+            [
+                'records' => new Expression(
+                    'COUNT(?)', ['resource.id']
+                )
+            ]
+        );
+        $select->join(
+            ['ur' => 'user_resource'], 'resource.id = ur.resource_id', []
+        );
+        $select->where->equalTo('ur.user_id', $user);
+        $select->where->equalTo('ur.list_id', $list);
+        $select->where->equalTo('resource.source', $source);
+
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+
+        $row = (array)$result->current();
+        return $row['records'] > 0;
+    }
+
+    /**
      * Apply a sort parameter to a query on the resource table.
      *
      * @param \Laminas\Db\Sql\Select $query Query to modify
