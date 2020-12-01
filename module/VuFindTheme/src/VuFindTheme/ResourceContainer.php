@@ -195,13 +195,9 @@ class ResourceContainer
         if (!isset($position)) {
             return $this->js;
         } else {
-            $js = [];
-            foreach ($this->js as $jsFile) {
-                if ($jsFile['position'] == $position) {
-                    $js[] = $jsFile;
-                }
-            }
-            return $js;
+            return array_filter($this->js, function ($jsFile) use ($position) {
+                return $jsFile['position'] == $position;
+            });
         }
     }
 

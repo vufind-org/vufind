@@ -61,16 +61,17 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
      * @param string $position Position for the items to be inserted
      * ('header' or 'footer')
      *
-     * @return void
+     * @return string|null
      */
     public function __invoke($position)
     {
-        if (!isset($position) || $position == 'header') {
+        if ($position == 'header') {
             $this->addMetaTags();
             $this->addLinks();
             $this->addScripts('header');
+            return null;
         }
-        if (!isset($position) || $position == 'footer') {
+        if ($position == 'footer') {
             return $this->addScripts('footer');
         }
     }
@@ -166,14 +167,16 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
                     $current['conditional'] ?? []
                 );
             }
+            return null;
         } elseif ($position == 'footer') {
             $scripts = '';
             foreach ($js as $current) {
                 // not sure if this call is correct, there seems to be lots of overhead
                 // no matter if setFile, appendFile, or prependFile is used
-                $scripts .= $this->getView()->plugin('inlineScript')->setFile($current['file'],
-                                'text/javascript',
-                                $current['conditional'] ?? []
+                $scripts .= $this->getView()->plugin('inlineScript')->setFile(
+                        $current['file'],
+                        'text/javascript',
+                        $current['conditional'] ?? []
                 );
             }
             return $scripts;
