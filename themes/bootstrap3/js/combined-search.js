@@ -1,4 +1,4 @@
-/*global VuFind, checkSaveStatuses */
+/*global VuFind, checkSaveStatuses, setupQRCodeLinks */
 VuFind.combinedSearch = (function CombinedSearch() {
   var init = function init(container, url) {
     container.load(url, '', function containerLoad(responseText) {
@@ -8,6 +8,7 @@ VuFind.combinedSearch = (function CombinedSearch() {
         VuFind.openurl.init(container);
         VuFind.itemStatuses.init(container);
         checkSaveStatuses(container);
+        setupQRCodeLinks(container);
       }
     });
   };
