@@ -155,6 +155,6 @@ class VuFindWorkKeys
         if (!empty($excludeRegEx)) {
             $normalized = preg_replace($excludeRegEx, '', $normalized);
         }
-        return strtolower($normalized);
+        return substr(strtolower($normalized), 0, 255);
     }
 }
