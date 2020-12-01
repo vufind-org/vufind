@@ -158,7 +158,52 @@ class ResourceContainer
         if (!isset($jsEntry['position'])) {
             $jsEntry['position'] = 'header';
         }
-        $this->js[] = $jsEntry;
+
+        $this->insertEntry($jsEntry, $this->js);
+    }
+
+    /**
+     * Helper function to insert an entry to an array,
+     * also considering prioroty and dependancy, if existing.
+     *
+     * @param array $entry The entry to insert.
+     * @param array $array The array into which the entry shall be inserted.
+     */
+    protected function insertEntry($entry, &$array) {
+        if (isset($entry['priority']) || isset($entry['dependency'])) {
+            for ($i=0; $i<count($array);++$i) {
+                if (isset($entry['priority'])) {
+                    $currentPriority = $array[$i]['priority'] ?? null;
+                    if (!isset($currentPriority) || $currentPriority > $entry['priority']) {
+                        $this->insertEntryAtPosition($entry, $i, $array);
+                        return;
+                    }
+                } elseif (isset($entry['dependency'])) {
+                    if ($entry['dependency'] == $array[$i]['file']) {
+                        $this->insertEntryAtPosition($entry, $i+1, $array);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Insert at end if either no priority/dependency is given
+        // or no other element has been found
+        $array[] = $entry;
+    }
+
+    /**
+     * Helper function to insert an element into an array
+     * at a certain position.
+     *
+     * @param array $entry  The entry to be inserted.
+     * @param int $position The position to insert the entry.
+     * @param array &$array The array in which the entry shall be inserted.
+     */
+    protected function insertEntryAtPosition($entry, $position, &$array) {
+        $elementsBefore = array_slice($array, 0, $position);
+        $elementsAfter = array_slice($array, $position);
+        $array = array_merge($elementsBefore, [$entry], $elementsAfter);
     }
 
     /**
