@@ -75,7 +75,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var bool
      */
-    protected $displayRecordVersions;
+    protected $displayRecordVersions = true;
 
     /**
      * Constructor
@@ -121,8 +121,10 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
-        $this->displayRecordVersions
-            = !empty($searchSettings->General->display_versions);
+        if (isset($searchSettings->General->display_versions)) {
+            $this->displayRecordVersions =
+                $searchSettings->General->display_versions;
+        }
 
         // Result limit:
         if (isset($searchSettings->General->result_limit)) {
