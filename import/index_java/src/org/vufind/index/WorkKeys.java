@@ -122,6 +122,7 @@ public class WorkKeys
         if (!excludeRegEx.isBlank()) {
             normalized = normalized.replaceAll(excludeRegEx, "");
         }
-        return normalized.toLowerCase().substring(0, 255);
+        int length = normalized.length();
+        return normalized.toLowerCase().substring(0, length > 255 ? 255 : length);
     }
 }
