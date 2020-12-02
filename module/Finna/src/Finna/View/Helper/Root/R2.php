@@ -268,10 +268,11 @@ class R2 extends \Laminas\View\Helper\AbstractHelper
                     = 'R2_restricted_login_instructions'
                     . (!$brief ? '_long' : '') . '_html';
             }
-
+            $warning
+                = $sessionClosed && $this->rems->isUserRegisteredDuringSession();
             $params = [
                 'note' => $params['note'] ?? null,
-                'warning' => $sessionClosed ? 'R2_session_expired_title' : null,
+                'warning' => $warning ? 'R2_session_expired_title' : null,
                 'instructions' => $instructions,
                 'showInfo' => !($params['hideInfo'] ?? false),
                 'weakLogin' => $this->user && !$this->authenticated,

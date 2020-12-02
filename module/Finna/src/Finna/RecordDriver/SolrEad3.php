@@ -1153,22 +1153,4 @@ class SolrEad3 extends SolrEad
 
         return $roleMap[$role] ?? $fallback;
     }
-
-    /**
-     * Returns an array of 0 or more record label constants, or null if labels
-     * are not enabled in configuration.
-     *
-     * @return array|null
-     */
-    public function getRecordLabels()
-    {
-        if (!$this->getRecordLabelsEnabled()) {
-            return null;
-        }
-        $labels = [];
-        if ($this->hasRestrictedMetadata()) {
-            $labels[] = FinnaRecordLabelInterface::R2_RESTRICTED_METADATA_AVAILABLE;
-        }
-        return $labels;
-    }
 }

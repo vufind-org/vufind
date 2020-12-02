@@ -59,7 +59,13 @@ class RemsService implements
     const STATUS_EXPIRED = 'expired';
 
     // Session keys
+
+    // Has the user registered during the current session
+    const SESSION_REGISTRATION_SUBMITTED = 'registration-submitted';
+
+    // Is the user currently registered
     const SESSION_IS_REMS_REGISTERED = 'is-rems-user';
+    // Current access info
     const SESSION_ACCESS_STATUS = 'access-status';
     const SESSION_BLOCKLISTED = 'blocklisted';
     const SESSION_USAGE_PURPOSE = 'usage-purpose';
@@ -170,7 +176,7 @@ class RemsService implements
     public function isUserRegisteredDuringSession($checkEntitlements = false)
     {
         if (!$checkEntitlements
-            && $this->session->{RemsService::SESSION_IS_REMS_REGISTERED}
+            && $this->session->{RemsService::SESSION_REGISTRATION_SUBMITTED}
         ) {
             // Registered during session
             return true;
@@ -441,7 +447,8 @@ class RemsService implements
             $params, 'POST', RemsService::TYPE_USER, null, false
         );
 
-        $this->session->{RemsService::SESSION_IS_REMS_REGISTERED} = true;
+        $this->session->{RemsService::SESSION_REGISTRATION_SUBMITTED}
+            = $this->session->{RemsService::SESSION_IS_REMS_REGISTERED} = true;
         $this->session->{RemsService::SESSION_USER_REGISTERED_TIME} = time();
         $this->session->{RemsService::SESSION_USAGE_PURPOSE}
             = $formParams['usage_purpose_text'];
@@ -830,6 +837,7 @@ class RemsService implements
         $this->session->{self::SESSION_ACCESS_STATUS} = null;
         $this->session->{self::SESSION_BLOCKLISTED} = null;
         $this->session->{self::SESSION_USAGE_PURPOSE} = null;
+        $this->session->{self::SESSION_REGISTRATION_SUBMITTED} = null;
         $this->session->{self::SESSION_IS_REMS_REGISTERED} = null;
         $this->session->{self::SESSION_USER_REGISTERED_TIME} = null;
         $this->session->{self::SESSION_DAILY_LIMIT_EXCEEDED} = null;
