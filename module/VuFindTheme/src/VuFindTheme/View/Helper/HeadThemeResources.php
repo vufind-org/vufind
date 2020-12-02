@@ -41,16 +41,16 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     /**
      * Set up items based on contents of theme resource container.
      *
-     * @param string $position Position for the items to be inserted
-     * ('header' or 'footer')
-     *
      * @deprecated Deprecated, use ThemeResources.
      *
      * @return void
      */
     public function __invoke()
     {
-        trigger_error('Deprecated headThemeResources view helper called; check configuration.');
+        trigger_error(
+            'Deprecated headThemeResources view helper called; ' .
+            'check configuration.'
+        );
         $this->view->plugin('themeResources')('header');
     }
 }

@@ -171,12 +171,13 @@ class ThemeResources extends \Laminas\View\Helper\AbstractHelper
         } elseif ($position == 'footer') {
             $scripts = '';
             foreach ($js as $current) {
-                // not sure if this call is correct, there seems to be lots of overhead
-                // no matter if setFile, appendFile, or prependFile is used
+                // not sure if this call is correct, there seems to be
+                // lots of overhead, no matter if setFile, appendFile,
+                // or prependFile is used
                 $scripts .= $this->getView()->plugin('inlineScript')->setFile(
-                        $current['file'],
-                        'text/javascript',
-                        $current['attributes'] ?? []
+                    $current['file'],
+                    'text/javascript',
+                    $current['attributes'] ?? []
                 );
             }
             return $scripts;

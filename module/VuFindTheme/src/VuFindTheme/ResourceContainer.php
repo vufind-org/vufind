@@ -147,8 +147,11 @@ class ResourceContainer
      *
      * @param string|array $jsEntry Entry to add, either as string with path
      * or array with additional properties.
+     *
+     * @return void
      */
-    protected function addJsEntry($jsEntry) {
+    protected function addJsEntry($jsEntry)
+    {
         if (!is_array($jsEntry)) {
             $parts = $this->parseSetting($jsEntry);
             if (count($parts) == 1) {
@@ -173,13 +176,18 @@ class ResourceContainer
      *
      * @param array $entry The entry to insert.
      * @param array $array The array into which the entry shall be inserted.
+     *
+     * @return void
      */
-    protected function insertEntry($entry, &$array) {
+    protected function insertEntry($entry, &$array)
+    {
         if (isset($entry['priority']) || isset($entry['dependency'])) {
             for ($i=0; $i<count($array);++$i) {
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
-                    if (!isset($currentPriority) || $currentPriority > $entry['priority']) {
+                    if (!isset($currentPriority)
+                        || $currentPriority > $entry['priority']
+                    ) {
                         $this->insertEntryAtPosition($entry, $i, $array);
                         return;
                     }
@@ -201,11 +209,14 @@ class ResourceContainer
      * Helper function to insert an element into an array
      * at a certain position.
      *
-     * @param array $entry  The entry to be inserted.
-     * @param int $position The position to insert the entry.
-     * @param array &$array The array in which the entry shall be inserted.
+     * @param array $entry    The entry to be inserted.
+     * @param int   $position The position to insert the entry.
+     * @param array $array    The array in which the entry shall be inserted.
+     *
+     * @return void
      */
-    protected function insertEntryAtPosition($entry, $position, &$array) {
+    protected function insertEntryAtPosition($entry, $position, &$array)
+    {
         $elementsBefore = array_slice($array, 0, $position);
         $elementsAfter = array_slice($array, $position);
         $array = array_merge($elementsBefore, [$entry], $elementsAfter);
@@ -245,9 +256,11 @@ class ResourceContainer
         if (!isset($position)) {
             return $this->js;
         } else {
-            return array_filter($this->js, function ($jsFile) use ($position) {
-                return $jsFile['position'] == $position;
-            });
+            return array_filter(
+                $this->js, function ($jsFile) use ($position) {
+                    return $jsFile['position'] == $position;
+                }
+            );
         }
     }
 
