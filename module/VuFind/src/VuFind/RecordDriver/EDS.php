@@ -464,9 +464,7 @@ class EDS extends DefaultRecord
             'BibRecord/BibRelationships/HasContributorRelationships/*/'
                 . 'PersonEntity/Name/NameFull'
         );
-        return array_unique(array_filter($authors, function ($a) {
-            return !empty($a);
-        }));
+        return array_unique(array_filter($authors));
     }
 
     /**
