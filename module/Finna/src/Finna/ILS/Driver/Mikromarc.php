@@ -91,6 +91,30 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
+     * Mappings for request groups
+     *
+     * @var array
+     */
+    protected $requestGroups = [
+        'normal' => 'EntireUnitBranch',
+        'regional' => 'CooperatingUnits'
+    ];
+
+    /**
+     * Default request group
+     *
+     * @var string
+     */
+    protected $defaultRequestGroup = 'normal';
+
+    /**
+     * Are request groups enabled
+     *
+     * @var boolean
+     */
+    protected $requestGroupsEnabled = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -120,9 +144,16 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             = isset($this->config['Holds']['defaultPickUpLocation'])
             ? $this->config['Holds']['defaultPickUpLocation']
             : '';
-        if ($this->defaultPickUpLocation === 'user-selected') {
-            $this->defaultPickUpLocation = false;
-        }
+
+        $this->requestGroupsEnabled
+            = isset($this->config['Holds']['extraHoldFields'])
+        && in_array(
+            'requestGroup',
+            explode(':', $this->config['Holds']['extraHoldFields'])
+        );
+        $this->defaultRequestGroup
+            = isset($this->config['Holds']['defaultRequestGroup'])
+            ? $this->config['Holds']['defaultRequestGroup'] : '';
     }
 
     /**
@@ -651,7 +682,11 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                     || $entry['ServiceCode'] === 'ReservationNoticeSent')
                         ? true : false,
                 'requestId' => $entry['Id'],
-                'frozen' => !$entry['ResActiveToday']
+                'frozen' => !$entry['ResActiveToday'],
+                'requestGroup' => $this->requestGroupsEnabled &&
+                    isset($entry['Scope']) ?
+                    "mikromarc_" . $this->getRequestGroupKey($entry['Scope'])
+                    : '',
             ];
             if (!empty($entry['MarcRecordTitle'])) {
                 $hold['title'] = $entry['MarcRecordTitle'];
@@ -748,6 +783,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $pickUpLocation = !empty($holdDetails['pickUpLocation'])
             ? $holdDetails['pickUpLocation'] : $this->defaultPickUpLocation;
         $itemId = $holdDetails['item_id'] ?? false;
+        $scope = $this->requestGroups[
+            $holdDetails['requestGroupId'] ?? 'regional'
+        ];
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
@@ -756,7 +794,8 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $request = [
             'BorrowerId' =>  $patron['id'],
             'MarcId' => $holdDetails['id'],
-            'DeliverAtUnitId' => $pickUpLocation
+            'DeliverAtUnitId' => $pickUpLocation,
+            'Scope' => $scope
         ];
         list($code, $result) = $this->makeRequest(
             ['odata', 'BorrowerReservations', 'Default.Create'],
@@ -768,6 +807,19 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             return $this->holdError($code, $result);
         }
         return ['success' => true];
+    }
+
+    /**
+     * Get request group key with a value from mapping array
+     *
+     * @param string $value Value to get the key for
+     *
+     * @return string
+     */
+    protected function getRequestGroupKey(string $value): string
+    {
+        $found = array_search($value, $this->requestGroups);
+        return $found ?: $value;
     }
 
     /**
@@ -1465,6 +1517,54 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         return $checkRequired(
             $config['registrationParams'], $registrationParams, $throwException
         );
+    }
+
+    /**
+     * Get request groups
+     *
+     * @param integer $bibId       BIB ID
+     * @param array   $patronId    Patron information returned by the patronLogin
+     * method.
+     * @param array   $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return array
+     */
+    public function getRequestGroups(
+        int $bibId, array $patronId, array $holdDetails = null
+    ): array {
+        return [
+            [
+                'id'   => 'normal',
+                'name' => 'mikromarc_normal'
+            ],
+            [
+                'id'   => 'regional',
+                'name' => 'mikromarc_regional'
+            ]
+        ];
+    }
+
+    /**
+     * Get Default Request Group
+     *
+     * Returns the default request group
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.
+     * May be used to limit the request group options or may be ignored.
+     *
+     * @return string       The default request group for the patron.
+     */
+    public function getDefaultRequestGroup(
+        array $patron = [], array $holdDetails = null
+    ): string {
+        return $this->defaultRequestGroup;
     }
 
     /**
