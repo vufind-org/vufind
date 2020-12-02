@@ -182,7 +182,7 @@ class ResourceContainer
     protected function insertEntry($entry, &$array)
     {
         if (isset($entry['priority']) || isset($entry['dependency'])) {
-            for ($i=0; $i<count($array);++$i) {
+            for ($i=0; $i < count($array);++$i) {
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
                     if (!isset($currentPriority)
@@ -193,7 +193,7 @@ class ResourceContainer
                     }
                 } elseif (isset($entry['dependency'])) {
                     if ($entry['dependency'] == $array[$i]['file']) {
-                        $this->insertEntryAtPosition($entry, $i+1, $array);
+                        $this->insertEntryAtPosition($entry, $i + 1, $array);
                         return;
                     }
                 }
