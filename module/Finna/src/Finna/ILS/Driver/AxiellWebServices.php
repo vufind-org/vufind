@@ -363,8 +363,8 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         }
 
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation'] : false;
+            = $this->config['Holds']['defaultPickUpLocation'] ?? false;
+
         if ($this->defaultPickUpLocation == '0') {
             $this->defaultPickUpLocation = false;
         }
@@ -374,14 +374,13 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             ? explode(':', $this->config['Holds']['excludePickUpLocations']) : [];
 
         $this->defaultRequestGroup
-            = isset($this->config['Holds']['defaultRequestGroup'])
-            ? $this->config['Holds']['defaultRequestGroup'] : false;
+            = $this->config['Holds']['defaultRequestGroup'] ?? false;
+
         if ($this->defaultRequestGroup === 'user-selected') {
             $this->defaultRequestGroup = false;
         }
 
-        $this->regionalHold = isset($this->config['Holds']['regionalHold'])
-          ? $this->config['Holds']['regionalHold'] : false;
+        $this->regionalHold = $this->config['Holds']['regionalHold'] ?? false;
 
         $this->requestGroupsEnabled
             = isset($this->config['Holds']['extraHoldFields'])
@@ -391,21 +390,17 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         );
 
         $this->singleReservationQueue
-            = isset($this->config['Holds']['singleReservationQueue'])
-            ? $this->config['Holds']['singleReservationQueue'] : false;
+            = $this->config['Holds']['singleReservationQueue'] ?? false;
 
-        if (isset($this->config['Debug']['durationLogPrefix'])) {
-            $this->durationLogPrefix = $this->config['Debug']['durationLogPrefix'];
-        }
+        $this->durationLogPrefix = $this->config['Debug']['durationLogPrefix'] ?? '';
 
         if (isset($this->config['Debug']['verbose'])) {
             $this->verbose = $this->config['Debug']['verbose'];
             $this->soapOptions['trace'] = true;
         }
 
-        if (isset($this->config['Debug']['log'])) {
-            $this->logFile = $this->config['Debug']['log'];
-        }
+        $this->logFile = $this->config['Debug']['log'] ?? '';
+
         $this->holdingsOrganisationOrder
             = isset($this->config['Holdings']['holdingsOrganisationOrder'])
             ? explode(':', $this->config['Holdings']['holdingsOrganisationOrder'])
@@ -500,7 +495,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
      *
      * @throws ILSException
      *
-     * @return array Array of the patron's fines on success
+     * @return array Array of locations
      */
     public function getPickUpLocations($user, $holdDetails)
     {
@@ -1033,8 +1028,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 foreach ($holdingsBranch as $branch) {
                     $branchName = $branch->value;
                     $branchId = $branch->id;
-                    $reservableId = isset($branch->reservable)
-                        ? $branch->reservable : '';
+                    $reservableId = $branch->reservable ?? '';
                     $holdable = $branch->reservationButtonStatus == 'reservationOk';
                     $departments = $this->objectToArray($branch->holdings->holding);
 
@@ -1043,20 +1037,15 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         $dueDate = isset($department->firstLoanDueDate)
                             ? $this->formatDate($department->firstLoanDueDate) : '';
                         $departmentName = $department->department;
-                        $locationName = isset($department->location)
-                            ? $department->location : '';
+                        $locationName = $department->location ?? '';
 
                         if (!empty($locationName)) {
                             $departmentName = "{$departmentName}, $locationName";
                         }
 
-                        $nofAvailableForLoan
-                            = isset($department->nofAvailableForLoan)
-                            ? $department->nofAvailableForLoan : 0;
-                        $nofTotal = isset($department->nofTotal)
-                            ? $department->nofTotal : 0;
-                        $nofOrdered = isset($department->nofOrdered)
-                            ? $department->nofOrdered : 0;
+                        $nofAvailableForLoan = $department->nofAvailableForLoan ?? 0;
+                        $nofTotal = $department->nofTotal ?? 0;
+                        $nofOrdered = $department->nofOrdered ?? 0;
 
                         // Group journals by issue number
                         if ($journalInfo) {
@@ -1125,13 +1114,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                         $availabilityInfo = [
                             'available' => $nofAvailableForLoan,
                             'displayText' => $status,
-                            'reservations' => isset($branch->nofReservations)
-                                ? $branch->nofReservations : 0,
+                            'reservations' => $branch->nofReservations ?? 0,
                             'ordered' => $nofOrdered,
                             'total' => $nofTotal,
                         ];
-                        $callnumber = isset($department->shelfMark)
-                            ? ($department->shelfMark) : '';
+                        $callnumber = $department->shelfMark ?? '';
 
                         $holding = [
                             'id' => $id,
@@ -1451,8 +1438,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
             foreach ($infoServices as $service) {
                 $methods = [];
                 $serviceType = $service->serviceType;
-                $numOfDays = isset($service->nofDays->value)
-                    ? $service->nofDays->value : 'none';
+                $numOfDays = $service->nofDays->value ?? 'none';
                 $active = $service->isActive === 'yes';
 
                 $sendMethods = $this->objectToArray($service->sendMethods);
@@ -2402,11 +2388,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                 'item_id' => '',
                 'requestId' => $reservation->id,
                 'volume' =>
-                   isset($reservation->catalogueRecord->volume)
-                       ? $reservation->catalogueRecord->volume : '',
+                   $reservation->catalogueRecord->volume ?? '',
                 'publication_year' =>
-                   isset($reservation->catalogueRecord->publicationYear)
-                       ? $reservation->catalogueRecord->publicationYear : '',
+                   $reservation->catalogueRecord->publicationYear ?? '',
                 'requestGroup' =>
                    isset($reservation->reservationType)
                    && $this->requestGroupsEnabled
