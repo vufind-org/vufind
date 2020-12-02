@@ -130,10 +130,15 @@ class ResourceContainer
     public function addJs($js)
     {
         if (!is_array($js) && !is_a($js, 'Traversable')) {
-            $js = [$js];
-        }
-        foreach ($js as $current) {
-            $this->addJsEntry($current);
+            $this->addJsEntry($js);
+        } elseif (isset($js['file'])) {
+            $this->addJsEntry($js);
+        } elseif (isset($js[0])) {
+            foreach ($js as $current) {
+                $this->addJsEntry($current);
+            }
+        } else {
+            trigger_error("Invalid JS entry format: " . print_r($js, true));
         }
     }
 

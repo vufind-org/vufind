@@ -80,10 +80,19 @@ class ThemeResourceContainerTest extends Unit\TestCase
     public function testJs()
     {
         $container = new ResourceContainer();
-        $container->addJs(['a', 'b', 'c']);
-        $container->addJs('c');
-        $container->addJs('d');
-        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getJs()));
+        $container->addJs('a');
+        $container->addJs(['b', 'c']);
+        $container->addJs(['file' => 'd']);
+        $container->addJs('a');
+        $container->addJs(['file' => 'a']);
+        $container->addJs(['file' => 'd', 'position' => 'header']);
+
+        $expectedResult = [['file' => 'a', 'position' => 'header'],
+                           ['file' => 'b', 'position' => 'header'],
+                           ['file' => 'c', 'position' => 'header'],
+                           ['file' => 'd', 'position' => 'header'],
+                        ];
+        $this->assertEquals($container->getJs(), $expectedResult);
     }
 
     /**

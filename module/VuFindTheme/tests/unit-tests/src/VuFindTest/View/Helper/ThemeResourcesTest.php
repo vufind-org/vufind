@@ -50,7 +50,8 @@ class ThemeResourcesTest extends \VuFindTest\Unit\TestCase
     {
         $helper = new ThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
-        $helper->__invoke();
+        $helper->__invoke('header');
+        $helper->__invoke('footer');
     }
 
     /**
@@ -60,14 +61,13 @@ class ThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     public function testConfigParsing()
     {
-        $helper = new ThemeResources($this->getResourceContainer());
         $tests = [
             'foo:bar:baz' => ['foo', 'bar', 'baz'],
             'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
         ];
         foreach ($tests as $test => $expected) {
             $this->assertEquals(
-                $expected, $this->callMethod($helper, 'parseSetting', [$test])
+                $expected, $this->callMethod($this->getResourceContainer(), 'parseSetting', [$test])
             );
         }
     }
