@@ -167,7 +167,9 @@ class ResourceContainer
             $jsEntry['position'] = 'header';
         }
 
-        $this->insertEntry($jsEntry, $this->js);
+        if (!in_array($jsEntry, $this->js, true)) {
+            $this->insertEntry($jsEntry, $this->js);
+        }
     }
 
     /**
@@ -252,7 +254,6 @@ class ResourceContainer
      */
     public function getJs(string $position=null)
     {
-        $this->js = array_unique($this->js, SORT_REGULAR);
         if (!isset($position)) {
             return $this->js;
         } else {

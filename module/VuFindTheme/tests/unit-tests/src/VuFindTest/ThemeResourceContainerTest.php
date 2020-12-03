@@ -86,11 +86,15 @@ class ThemeResourceContainerTest extends Unit\TestCase
         $container->addJs('a');
         $container->addJs(['file' => 'a']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
+        $container->addJs('http://foo/bar:lt IE 7');
 
         $expectedResult = [['file' => 'a', 'position' => 'header'],
                            ['file' => 'b', 'position' => 'header'],
                            ['file' => 'c', 'position' => 'header'],
                            ['file' => 'd', 'position' => 'header'],
+                           ['file' => 'http://foo/bar',
+                            'position' => 'header',
+                            'attributes' => ['conditional' => 'lt IE 7']],
                         ];
         $this->assertEquals($container->getJs(), $expectedResult);
     }
