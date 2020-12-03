@@ -174,7 +174,7 @@ class ResourceContainer
 
     /**
      * Helper function to insert an entry to an array,
-     * also considering prioroty and dependancy, if existing.
+     * also considering priority and dependency, if existing.
      *
      * @param array $entry The entry to insert.
      * @param array $array The array into which the entry shall be inserted.
