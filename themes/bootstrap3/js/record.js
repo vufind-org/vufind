@@ -305,6 +305,7 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
   var rowCount = holder.data('rows');
   var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
   var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
+  var btnSize = holder.data('btn-size') ? ` ${holder.data('btn-size')}` : '';
 
   holder.each(function parseHolder() {
     var self = $(this);
@@ -323,7 +324,7 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
     });
 
     if (shouldTruncate) {
-      var btn = '<button type="button" class="more-link btn">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+      var btn = '<button type="button" class="more-link btn' + btnSize + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
       var btnWrapper = $('<' + targetElemName + ' class="more-less-btn-wrapper"></' + targetElemName + '>');
       var btnWrapperBtm = btnWrapper.clone().append(_fill(btn));
       $(btnWrapperBtm).insertAfter(self.find('.truncate-after'));
