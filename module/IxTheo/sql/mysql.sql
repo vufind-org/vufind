@@ -9,7 +9,7 @@ CREATE TABLE ixtheo_journal_subscriptions (
     journal_control_number_or_bundle_name VARCHAR(255) NOT NULL,
     max_last_modification_time DATETIME NOT NULL,
     CONSTRAINT `ixtheo_journal_subscriptions_ibfk_1` FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id,journal_control_number)
+    PRIMARY KEY (user_id,journal_control_number_or_bundle_name)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE ixtheo_pda_subscriptions (
@@ -19,7 +19,6 @@ CREATE TABLE ixtheo_pda_subscriptions (
     book_year VARCHAR(32) NOT NULL,
     book_ppn VARCHAR(10) NOT NULL,
     book_isbn VARCHAR(13) NOT NULL,
-    FOREIGN KEY (id) REFERENCES user(id),
     CONSTRAINT `ixtheo_pda_subscriptions_ibfk_1` FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE,
     PRIMARY KEY (id, book_ppn)
 ) DEFAULT CHARSET=utf8;
@@ -33,7 +32,6 @@ CREATE TABLE ixtheo_user (
     country VARCHAR(255),
     language VARCHAR(20),
     can_use_tad BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (id) REFERENCES user(id),
     CONSTRAINT `ixtheo_user_ibfk_1` FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
