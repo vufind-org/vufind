@@ -13,7 +13,7 @@
 
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
-<form class="form-edit-card" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off">
+<form class="form-edit-card" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off" data-clear-account-cache>
   <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
   <div class="form-group">
     <label class="control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
