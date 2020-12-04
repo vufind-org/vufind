@@ -120,7 +120,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             );
             foreach ($values as $i => $value) {
                 $parts = explode('=', $value, 2);
-                $idx = $parts[1] ?? $i;
+                $idx = is_numeric($parts[1] ?? null) ? $parts[1] : $i;
                 $this->holdingsLocationOrder[$parts[0]] = $idx;
             }
         }
