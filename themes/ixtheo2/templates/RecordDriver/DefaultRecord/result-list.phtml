@@ -75,11 +75,11 @@
             <?php if (!empty($corporation)): ?>
               <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>">
                 <?php
-                //$summCorporation = $this->driver->getHighlightedAuthor();
-                $summCorporation = "";
-                echo !empty($summCorporation)
-                  ? $this->highlight($summCorporation)
-                  : $this->escapeHtml($corporation);
+                  //$summCorporation = $this->driver->getHighlightedAuthor();
+                  $summCorporation = "";
+                  echo !empty($summCorporation)
+                    ? $this->highlight($summCorporation)
+                    : $this->escapeHtml($corporation);
                 ?>
               </a>
             <?php endif; ?>
