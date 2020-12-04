@@ -343,6 +343,7 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
         self.find('.truncate-toggle').toggle();
       });
     }
+    self.addClass('truncate-done');
     self.trigger('truncate-done', [self]);
   });
 }
