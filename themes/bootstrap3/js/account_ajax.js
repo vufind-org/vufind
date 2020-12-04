@@ -50,12 +50,16 @@ VuFind.register('account', function Account() {
     var accountStatus = ICON_LEVELS.NONE;
     for (var sub in _submodules) {
       if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
+        var status = _getStatus(sub);
+        if (status === INACTIVE) {
+          continue;
+        }
         var $element = $(_submodules[sub].selector);
-        if (!$element) {
+        if ($element.length === 0) {
+          // This could happen if the DOM is changed dynamically
           _statuses[sub] = INACTIVE;
           continue;
         }
-        var status = _getStatus(sub);
         if (status === MISSING) {
           $element.addClass('hidden');
         } else {
