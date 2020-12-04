@@ -73,13 +73,15 @@
             <?php // Handle corporation information... ?>
             <?php $corporation = implode($this->driver->getCorporation(), " ") ?>
             <?php if (!empty($corporation)): ?>
-               <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?
+              <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>">
+                <?php
                 //$summCorporation = $this->driver->getHighlightedAuthor();
                 $summCorporation = "";
                 echo !empty($summCorporation)
                   ? $this->highlight($summCorporation)
                   : $this->escapeHtml($corporation);
-               ?></a>
+                ?>
+              </a>
             <?php endif; ?>
           <?php endif; ?>
           <?php // Handle superior data according to Issue 131 / Rule 5 ?>
