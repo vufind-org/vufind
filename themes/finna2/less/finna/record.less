@@ -221,9 +221,13 @@ a.authority {
   display: flex;
   align-items: center;
   font-size: 1em;
+  position: relative;
   .fa.fa-download {
     margin-right: 4px;
     color: @brand-primary;
+  }
+  .dropdown {
+    position: initial;
   }
   .image-dimensions, .image-size {
     font-size: 0.8em;
@@ -236,8 +240,8 @@ a.authority {
     color: @gray-light;
   }
   .dropdown-menu.download {
-    @media(max-width: @screen-xs) {
-      left: -20%;
+    @media(max-width:@screen-xs) {
+      left: -4%;
     }
     border-radius: 5px;
     padding: 2px 6px;
@@ -246,6 +250,7 @@ a.authority {
       > a {
         border-radius: 0;
         padding: 2px 6px;
+        white-space: initial;
       }
     }
   }

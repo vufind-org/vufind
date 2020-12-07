@@ -13,39 +13,26 @@
                 </button>
                 <ul class="dropdown-menu download" aira-labelledby="downloadMenu-<?=$index?>">
                     <?php if (isset($urls['large'])): ?>
-                        <li class="display-image"><a href="<?=$this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank"><?=$this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
+                        <li class="display-image"><a href="<?=$this->escapeHtmlAttr($urls['large']['url'] ?? $urls['large'])?>" download target="_blank" rel="nofollow"><?=$this->transEsc('display_image') ?> <span class="image-dimensions"></span> jpg</a></li>
                     <?php endif; ?>
-                    <?php foreach ($hiRes as $size => $img): ?>
-                        <?php foreach ($img as $key => $info): ?>
-                            <?php
-                                $data = $info['data'];
-                                $imageSize = '';
-                                if (isset($data['size'])) {
-                                    $converted = '';
-                                    $convertedTo = '';
-                                    switch ($data['size']['unit']) {
-                                    case 'tavua':
-                                    case 'bytes':
-                                        $bytes = (int)$data['size']['value'];
-                                        if (($converted = number_format($bytes / 1024 / 1024, 2)) > 1) {
-                                            $convertedTo = 'MB';
-                                        } else {
-                                            $converted = number_format($bytes / 1024, 2);
-                                            $convertedTo = 'KB';
-                                        }
-                                        $imageSize = "($converted $convertedTo)";
-                                        break;
+                    <?php if (!$this->userAgent()->isBot()): ?>
+                        <?php foreach ($hiRes as $size => $img): ?>
+                            <?php foreach ($img as $key => $info): ?>
+                                <?php
+                                    $data = $info['data'];
+                                    $imageSize = !empty($data['size']['value']) ? $this->fileSize(preg_replace("/[^0-9]/", "", $data['size']['value'])) : '';
+                                    $dimensions = '';
+                                    if (!empty($data['width']) && !empty($data['height'])) {
+                                        $cleanWidth = preg_replace("/[^0-9]/", "", $data['width']['value']);
+                                        $cleanHeight = preg_replace("/[^0-9]/", "", $data['height']['value']);
+                                        $dimensions = "($cleanWidth x $cleanHeight px)";
                                     }
-                                }
-                                $dimensions = '';
-                                if (isset($data['width']) && isset($data['height'])) {
-                                    $dimensions = "({$data['width']['value']} x {$data['height']['value']} px)";
-                                }
-                                $downloadName = str_replace('.', '-', $this->driver->getUniqueID()) . '-' . ($info['resourceID'] ?? $index) . '-' . $size;
-                            ?>
-                            <li><a download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('cover-download', [], ['query' => $info['params']]))?>"> <?=$this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$dimensions?></span> <span class="image-size"><?=$imageSize?></span>  <?=$key?></a></li>
+                                    $downloadName = str_replace('.', '-', $this->driver->getUniqueID()) . '-' . ($info['resourceID'] ?? $index) . '-' . $size;
+                                ?>
+                                <li><a download="<?=$downloadName?>" href="<?=$this->escapeHtmlAttr($this->url('cover-download', [], ['query' => $info['params']]))?>" rel="nofollow"> <?=$this->transEsc('high_resolution_image')?> <span class="image-dimensions"><?=$dimensions?></span> <span class="image-size"><?=$imageSize?></span>  <?=$key?></a></li>
+                            <?php endforeach; ?>
                         <?php endforeach; ?>
-                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </ul>
             </div>
         <?php else: ?>
@@ -54,12 +41,12 @@
                     $recordImage = $this->recordImage($this->record($this->driver));
                     $originalImage = $recordImage->getMasterImage($index);
                 ?>
-                <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" download>
+                <a target="_blank" href="<?=$this->escapeHtmlAttr($originalImage) ?>" rel="nofollow" download>
                     <i aria-hidden="true" class="fa fa-download"></i>
                     <span><?=$this->transEsc('Download the image') ?></span>
                 </a>
                 <span class="image-dimensions"></span>
-              </div>
+            </div>
         <?php endif; ?>
     <?php elseif (!isset($rights['copyright']) && !isset($rights['description'])): ?>
         <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
