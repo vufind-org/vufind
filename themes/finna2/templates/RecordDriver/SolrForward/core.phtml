@@ -232,11 +232,13 @@
         $coreFieldGroups = $formatter->getGroupedData($driver, $formatter->getGroupedFields([
           ['lines' => ['Genre', 'Age Limit', 'Actors', 'Secondary Authors']],
           ['label' => 'Production Information',
-            'lines' => ['Production', 'Production Costs', 'Funding', 'Published'],
+            'lines' => ['Production', 'Production Costs', 'Funding', 'Published', 'Original Work'],
             'options' => ['context' => ['class' => 'field-group-production']]],
           ['label' => 'Distribution Information',
             'lines' => ['Distribution', 'Premiere Night', 'Premiere Theaters',
-              'Film Copies', 'Other Screenings', 'Broadcasting Dates'],
+              'Film Copies', 'Other Screenings', 'Broadcasting Dates', 'Awards',
+              'Film Festivals', 'Foreign Distribution'
+            ],
             'options' => ['context' => ['class' => 'field-group-distribution']]],
           ['label' => 'Filming Locations',
             'lines' => ['Exterior Images', 'Interior Images', 'Studios',
