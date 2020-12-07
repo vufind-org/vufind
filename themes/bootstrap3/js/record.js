@@ -407,8 +407,8 @@ function recordDocReady() {
     backgroundLoadTab(el.dataset.tab);
   });
 
-  initTruncate('.truncate-subjects', $('.subject-line'));
-  initTruncate('table.truncate-field', $('tr[typeof="Offer"]'), function(m) { return '<td colspan="2">' + m + '</td>'; });
+  initTruncate('.truncate-subjects', '.subject-line');
+  initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
   applyRecordTabHash();
 }
