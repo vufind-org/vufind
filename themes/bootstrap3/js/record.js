@@ -313,6 +313,7 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
   holder.each(function parseHolder() {
     var self = $(this);
     var numRows = self.find(target).length || 0;
+    var hasTopToggle = numRows > topToggle;
     // Truncate only if there's more than one line to hide
     var shouldTruncate = rowCount < numRows || false;
     self.find(target).each(function hideRows(i) {
@@ -334,7 +335,9 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
       var btnWrapperTop = btnWrapper.clone().append(_fill(btnLessTop));
 
       // Attach show/hide buttons to the top and bottom or display in place
-      $(btnWrapperTop).prependTo(self);
+      if (hasTopToggle) {
+        $(btnWrapperTop).prependTo(self);
+      }
       if(inPlaceToggle) {
         $(btnWrapperBtm).insertAfter(self.find('.truncate-after'));
       } else {
@@ -352,7 +355,7 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
       self.find('.more-link').click(function onClickMoreLink(/*event*/) {
         $(this).hide();
         self.find('.less-link').show();
-        if (numRows > topToggle) {
+        if (hasTopToggle) {
           self.find('.less-link-top').show();
         }
         self.find('.truncate-toggle').toggle();
@@ -408,6 +411,7 @@ function recordDocReady() {
     backgroundLoadTab(el.dataset.tab);
   });
 
+  initTruncate('.sidebar .list-group', 'li.list-group-item');
   initTruncate('.truncate-subjects', '.subject-line');
   initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
