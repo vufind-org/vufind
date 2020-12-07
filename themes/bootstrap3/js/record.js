@@ -306,6 +306,8 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
   var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
   var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
   var btnSize = holder.data('btn-size') ? ` ${holder.data('btn-size')}` : '';
+  var topToggle = holder.data('top-toggle') || Infinity;
+  var inPlaceToggle = holder.data('in-place-toggle') || false;
 
   holder.each(function parseHolder() {
     var self = $(this);
@@ -325,21 +327,33 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
 
     if (shouldTruncate) {
       var btn = '<button type="button" class="more-link btn' + btnSize + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
+      var btnLessTop = '<button type="button" class="less-link-top btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
       var btnWrapper = $('<' + targetElemName + ' class="more-less-btn-wrapper"></' + targetElemName + '>');
       var btnWrapperBtm = btnWrapper.clone().append(_fill(btn));
-      $(btnWrapperBtm).insertAfter(self.find('.truncate-after'));
+      var btnWrapperTop = btnWrapper.clone().append(_fill(btnLessTop));
 
-      self.find('.less-link').hide();
+      // Attach show/hide buttons to the top and bottom or display in place
+      $(btnWrapperTop).prependTo(self);
+      if(inPlaceToggle) {
+        $(btnWrapperBtm).insertAfter(self.find('.truncate-after'));
+      } else {
+        $(btnWrapperBtm).appendTo(self);
+      }
 
-      self.find('.less-link').click(function onClickLessLink(/*event*/) {
-        $(this).hide();
-        $(this).prev('.more-link').show();
+      self.find('.less-link, .less-link-top').hide();
+
+      self.find('.less-link, .less-link-top').click(function onClickLessLink(/*event*/) {
+        self.find('.less-link, .less-link-top').hide();
+        self.find('.more-link').show();
         self.find('.truncate-toggle').toggle();
       });
 
       self.find('.more-link').click(function onClickMoreLink(/*event*/) {
         $(this).hide();
-        $(this).next('.less-link').show();
+        self.find('.less-link').show();
+        if (numRows > topToggle) {
+          self.find('.less-link-top').show();
+        }
         self.find('.truncate-toggle').toggle();
       });
     }
