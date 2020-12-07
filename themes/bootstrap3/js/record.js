@@ -302,7 +302,7 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
   var holder = typeof _holder === 'undefined' ? $(document) : $(_holder);
   var target = $(_target);
   var targetElemName = target.prop('tagName').toLowerCase();
-  var rowCount = holder.data('rows');
+  var rowCount = holder.data('rows') || 3;
   var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
   var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
   var btnSize = holder.data('btn-size') ? ` ${holder.data('btn-size')}` : '';
