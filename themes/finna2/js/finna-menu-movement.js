@@ -138,8 +138,10 @@ FinnaMovement.prototype.checkKey = function checkKey(e) {
     }
     break;
   case _.keys.space:
-    _.openSubmenu();
-    e.preventDefault();
+    if (!_.menuElements[_.offset].input.is('input')) {
+      _.openSubmenu();
+      e.preventDefault();
+    }
     break;
   }
 };
