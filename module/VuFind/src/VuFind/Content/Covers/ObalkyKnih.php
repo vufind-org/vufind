@@ -103,4 +103,29 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
         }
         return $imageUrl;
     }
+
+    /**
+     * Get cover metadata for a particular API key and set of IDs (or empty array).
+     *
+     * @param string $key  API key
+     * @param string $size Size of image to load (small/medium/large)
+     * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object, 'issn' pointing to a string and 'oclc' pointing
+     * to an OCLC number string)
+     *
+     * @return array Array with keys: url, backlink_url, backlink_text
+     */
+    public function getMetadata(?string $key, string $size, array $ids)
+    {
+        $url = $this->getUrl($key, $size, $ids);
+        if ($url) {
+            $data = $this->service->getData($ids);
+            return [
+                'url' => $url,
+                'backlink_url' => $data->backlink_url ?? '',
+                'backlink_text' => 'ObálkyKnih.cz'
+            ];
+        }
+        return [];
+    }
 }

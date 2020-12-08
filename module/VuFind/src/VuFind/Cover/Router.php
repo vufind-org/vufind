@@ -86,6 +86,32 @@ class Router implements \Laminas\Log\LoggerAwareInterface
     public function getUrl(RecordDriver $driver, $size = 'small',
         $resolveDynamic = true, $testLoadImage = false
     ) {
+        $metadata = $this->getMetadata(
+            $driver, $size, $resolveDynamic, $testLoadImage
+        );
+        if ($metadata && $metadata['url']) {
+            return $metadata['url'];
+        }
+        return $metadata;
+    }
+
+    /**
+     * Generate a thumbnail metadata (return false if unsupported; return null to
+     * indicate that a subsequent AJAX check is needed).
+     *
+     * @param RecordDriver $driver         Record driver
+     * @param string       $size           Size of thumbnail (small, medium or large;
+     * small is default).
+     * @param bool         $resolveDynamic Should we resolve dynamic cover data into
+     * a URL (true) or simply return false (false)?
+     * @param bool         $testLoadImage  If true the function will try to load the
+     * cover image in advance and returns false in case no image could be loaded
+     *
+     * @return false|array|null
+     */
+    public function getMetadata(RecordDriver $driver, $size = 'small',
+        $resolveDynamic = true, $testLoadImage = false
+    ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
 
@@ -101,7 +127,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
             $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
         } else {
-            return $thumb;
+            return ['url' => $thumb];
         }
 
         $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
@@ -115,10 +141,10 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 if ($handler['handler']->supports($ids)
                     && $handler['handler']->useDirectUrls()
                 ) {
-                    $nextDirectUrl = $handler['handler']
-                        ->getUrl($handler['key'], $size, $ids);
-                    if ($nextDirectUrl !== false) {
-                        $directUrl = $nextDirectUrl;
+                    $nextMetadata = $handler['handler']
+                        ->getMetadata($handler['key'], $size, $ids);
+                    if ($nextMetadata !== false) {
+                        $metadata = $nextMetadata;
                         break;
                     }
                 }
@@ -130,8 +156,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
         }
 
-        if (isset($directUrl)) {
-            return $directUrl;
+        if (isset($metadata)) {
+            return $metadata;
         } elseif (isset($dynamicUrl)) {
             if ($testLoadImage) {
                 $this->coverLoader->loadImage($settings);
@@ -139,7 +165,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                     return false;
                 }
             }
-            return $dynamicUrl;
+            return ['url' => $dynamicUrl];
         }
 
         return false;

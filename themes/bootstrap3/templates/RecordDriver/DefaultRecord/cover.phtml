@@ -10,6 +10,9 @@
     <div class="spinner"><i class="fa fa-spinner fa-spin"></i> <?=$this->translate('Loading')?>...</div>
     <div class="cover-container">
       <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-recordsource="<?=$this->escapeHtmlAttr($driver->getSourceIdentifier())?>" data-recordid="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" data-coversize="<?=$this->escapeHtmlAttr($size)?>" class="recordcover ajax" alt="<?=$this->escapeHtmlAttr($alt); ?>" />
+      <p class="cover-source">
+          <?=$this->translate('cover_source_label')?>: <a href="" class="cover-backlink" target="_blank"></a>
+      </p>
     </div>
   </div>
 <?php endif; ?>

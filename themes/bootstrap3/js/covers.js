@@ -10,6 +10,12 @@ function loadCoverByElement(data, element) {
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
       container.children().not("img").hide();
+      if (typeof response.data.backlink_text !== 'undefined' && typeof response.data.backlink_url !== 'undefined') {
+        var link = element.find('.cover-backlink');
+        link.html(response.data.backlink_text);
+        link.attr("href", response.data.backlink_url);
+        element.find('.cover-source').show();
+      }
     } else {
       img.remove();
       if (typeof response.data.html !== 'undefined') {
