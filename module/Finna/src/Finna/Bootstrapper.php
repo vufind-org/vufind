@@ -131,6 +131,7 @@ class Bootstrapper
                 || ($controller == 'eds' && $action == 'search')
                 || ($controller == 'edsrecord')
                 || ($controller == 'search' && $action == 'blended')
+                || ($controller == 'cover' && $action == 'download')
             ) {
                 $response = $event->getResponse();
                 $response->setStatusCode(403);
