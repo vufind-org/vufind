@@ -58,6 +58,17 @@ class SolrLrmi extends SolrQdc
     ];
 
     /**
+     * File formats that can be used as preview images when converted to PDF.
+     * The formats are prioritized according to their position in the array.
+     *
+     * @var array
+     */
+    protected $previewableConvertedFileFormats = [
+        'pdf', 'pptx', 'ppt', 'odp', 'docx', 'doc',
+        'odt', 'rtf', 'txt', 'png', 'jpg', 'html'
+    ];
+
+    /**
      * Usage rights map
      *
      * @var array
@@ -329,23 +340,38 @@ class SolrLrmi extends SolrQdc
             }
         }
 
-        // Attempt to find a PDF file to be converted to a coverimage
+        // Attempt to find a PDF file to be converted to a coverimage.
+        $pdfUrl = null;
         if ($includePdf && empty($result) && $materials = $this->getMaterials()) {
+            $currentPriority = null;
+            $prioritized = array_flip($this->previewableConvertedFileFormats);
             foreach ($materials as $material) {
-                if ($material['format'] === 'pdf') {
-                    $url = $material['url'];
-                    $result[] = [
-                        'urls' => [
-                            'small' => $url,
-                            'medium' => $url,
-                            'large' => $url
-                        ],
-                        'description' => '',
-                        'rights' => []
-                    ];
-                    break;
+                $format = $material['format'];
+                if (isset($prioritized[$format])) {
+                    $priority = $prioritized[$format];
+                    if (!$currentPriority || $priority < $currentPriority) {
+                        $url = $format === 'pdf'
+                            ? ($material['url'] ?? null)
+                            : ($material['pdfUrl'] ?? null);
+                        if ($url) {
+                            $pdfUrl = $url;
+                            $currentPriority = $priority;
+                        }
+                    }
+                    if ($priority === 0) {
+                        break;
+                    }
                 }
             }
+        }
+
+        if ($pdfUrl) {
+            $result[] = [
+                'urls' => [
+                    'small' => $pdfUrl, 'medium' => $pdfUrl, 'large' => $pdfUrl
+                ],
+                'description' => '', 'rights' => []
+            ];
         }
 
         return $result;
@@ -354,6 +380,7 @@ class SolrLrmi extends SolrQdc
     /**
      * Return array of materials with keys:
      * -url: download link for allowed file types, otherwise empty
+     * -pdfUrl: PDF version of material
      * -title: material title
      * -format: material format
      * -filesize: material file size in bytes
@@ -373,14 +400,25 @@ class SolrLrmi extends SolrQdc
                     ? 'html'
                     : $this->getFileFormat((string)$material->url);
 
-                $url = $this->isDownloadableFileFormat($format)
-                    ? (string)$material->url : '';
+                $url = $pdfUrl = null;
+                foreach ($material->url as $materialUrl) {
+                    $materialUrlFormat = $materialUrl->attributes()->format;
+                    if ((string)$materialUrlFormat === 'application/pdf') {
+                        // PDF version of material
+                        $pdfUrl = (string)$materialUrl;
+                    } elseif (!$url) {
+                        // Material in original format
+                        $url = $this->isDownloadableFileFormat($format)
+                            ? (string)$materialUrl : '';
+                    }
+                }
+
                 $titles = $this->getMaterialTitles($material->name, $locale);
                 $title = $titles[$locale] ?? $titles['default'];
                 $position = (int)$material->position ?? 0;
                 $filesize = (string)$material->filesize ?? null;
                 $materials[] = compact(
-                    'url', 'title', 'format', 'filesize', 'position'
+                    'url', 'pdfUrl', 'title', 'format', 'filesize', 'position'
                 );
             }
         }
