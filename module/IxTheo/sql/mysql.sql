@@ -39,7 +39,6 @@ CREATE TABLE ixtheo_user (
     country VARCHAR(255),
     language VARCHAR(20),
     can_use_tad BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (id) REFERENCES user(id),
     CONSTRAINT `ixtheo_user_ibfk_1` FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;

@@ -30,6 +30,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     protected $container;
 
     protected $selected_fulltext_types;
+    protected $hasFulltextMatch;
 
     public function setContainer(ContainerInterface $container)
     {
@@ -493,12 +494,15 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $this->fields['zdb_number'] : '';
     }
 
-    /** Check whether a record is potentially available for PDA
+    /**
+     * Check whether a record is available for PDA
+     * - Default false
+     * - implemented differently in IxTheo and KrimDok, so should be overridden there
      *
      * @return bool
      */
-    public function isPotentiallyPDA() {
-        return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
+    public function isAvailableForPDA() {
+        return false;
     }
 
     public function isSuperiorWork() {
@@ -630,9 +634,5 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function isHybrid() {
         return isset($this->fields['is_hybrid']) && $this->fields['is_hybrid'] == true;
-    }
-
-    public function showAvailabilityInTuebingen() {
-        return $this->isAvailableInTuebingen() && !empty($this->getLocalSignatures());
     }
 }
