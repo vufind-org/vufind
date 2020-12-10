@@ -99,15 +99,17 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      * @param array  $context Variables needed for rendering template; these will
      * be temporarily added to the global view context, then reverted after the
      * template is rendered (default = record driver only).
+     * @param bool   $throw   If true (default), an exception is thrown if the
+     * template is not found. Otherwise an empty string is returned.
      *
      * @return string
      */
-    public function renderTemplate($name, $context = null)
+    public function renderTemplate($name, $context = null, $throw = true)
     {
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
         return $this->renderClassTemplate(
-            $template, $className, $context ?? ['driver' => $this->driver]
+            $template, $className, $context ?? ['driver' => $this->driver], $throw
         );
     }
 
