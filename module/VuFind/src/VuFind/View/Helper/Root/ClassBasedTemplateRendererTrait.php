@@ -112,18 +112,15 @@ trait ClassBasedTemplateRendererTrait
 
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);
-        if (!$classTemplate) {
-            if ($throw) {
-                throw new RuntimeException(
-                    'Cannot find '
-                    . $this->getTemplateWithClass($template, '[brief class name]')
-                    . " for class $className or any of its parent classes"
-                );
-            }
-            return '';
+        if (!$classTemplate && $throw) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
         }
 
-        $html = $view->render($classTemplate);
+        $html = $classTemplate ? $view->render($classTemplate) : '';
 
         // Restore the original context before returning the result:
         $contextHelper($view)->restore($oldContext);
