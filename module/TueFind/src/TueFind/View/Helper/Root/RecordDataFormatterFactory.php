@@ -115,7 +115,7 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
 
     protected function addVolumesAndArticles(&$spec) {
         $spec->setTemplateLine(
-            'Volumes / Articles', 'hasInferiorWorks', 'data-volumes_articles.phtml'
+            'Volumes / Articles', 'isRealSuperiorWork', 'data-volumes_articles.phtml'
         );
     }
 }
