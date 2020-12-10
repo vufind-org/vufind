@@ -509,7 +509,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return (isset($this->fields['is_superior_work'])) ? $this->fields['is_superior_work'] : false;
     }
 
-    public function hasInferiorWorks() {
+    public function hasInferiorWorksInCurrentSubsystem() {
         if (!isset($this->fields['superior_work_subsystems']))
             return false;
 
