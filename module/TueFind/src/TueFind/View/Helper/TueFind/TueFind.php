@@ -353,6 +353,28 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
         return false;
     }
+
+    /**
+      * Derive textual description of TueFind Subsystem
+      * @return string
+      */
+    public function getTueFindSubtype() {
+        $instance = $this->getTueFindInstance();
+        $instance = preg_replace('/\d+$/', "", $instance);
+        switch ($instance) {
+            case 'ixtheo':
+                return 'IXT';
+            case 'bibstudies':
+                return 'BIB';
+            case 'churchlaw':
+                return 'CAN';
+            case 'relbib':
+                return 'REL';
+            case 'krimdok':
+               return 'KRI';
+        }
+        throw new \Exception('can't determine TueFind subsystem type for "' + $instance + '"!');
+    }
     
     /**
       * Derive the German FID denomination
