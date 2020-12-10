@@ -8,7 +8,7 @@
       <?php foreach ($events as $event): ?>
         <?php if ($event != $events[0]): ?><br/><?php endif; ?>
         <?php if (!empty($event['name'])): ?><?=$this->escapeHtml($event['name'])?><br/><?php endif; ?>
-        <?php if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><?php elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('undated')?><?php endif; ?>
+        <?php if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><?php endif; ?>
         <?php if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><?php endif; ?>
         <?php if (!empty($event['materials'])): ?>
           <?=implode('<br/>', array_map([$this, 'escapeHtml'], $event['materials']))?><br/>
