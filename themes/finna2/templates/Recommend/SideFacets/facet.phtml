@@ -9,13 +9,13 @@
     $geographicFacet = $this->recommend->getGeographicFacet();
   }
   $newItemsFacets = $this->recommend->getNewItemsFacets();
-  $module = $this->layout()->templateDir;
+  $backendId = $results->getBackendId();
   $facet = $this->facet;
   $cluster = $this->cluster;
 
   $plotFrom = null;
   $daterangeFacetField = null;
-  if (null === $module || in_array($module, ['search', 'primo'])) {
+  if (in_array($backendId, ['Solr', 'Primo'])) {
     $options = $results->getOptions();
     if (is_callable([$options, 'getDateRangeSearchField'])) {
         $daterangeFacetField = $options->getDateRangeSearchField();
@@ -65,7 +65,7 @@
       'searchParams' => $searchParams,
       'baseParams' => $formParams,
       'type' => $type,
-      'backend' => (null === $module || $module == 'search') ? 'Solr' : $module,
+      'backend' => $backendId,
       'daterangeFacet' => $daterangeFacetField,
       'plotFrom' => $plotFrom,
       'plotImmediately' => !in_array($facet, $collapsedFacets) ? 'true' : 'false'
