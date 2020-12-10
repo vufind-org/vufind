@@ -514,7 +514,8 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             return false;
 
         $subsystems = $this->fields['superior_work_subsystems'];
-        return in_array($this->getTueFindSubtype(), $subsystems, true);
+        return in_array($this->container->get('ViewHelperManager')->get('tuefind')->getTueFindSubtype(),
+                        $subsystems, true);
     }
 
     public function isSubscribable() {
