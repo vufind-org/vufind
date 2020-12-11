@@ -206,6 +206,41 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
     public function extractSearchTerms($query)
     {
         $result = parent::extractsearchTerms($query);
-        return str_word_count($result) <= $this->maxSpellcheckWords ? $result : '';
+        $result = $this->normalizeWildcards($result);
+        return str_word_count($result) <= $this->maxSpellcheckWords
+            ? $result : '';
+    }
+
+    /**
+     * Normalize wildcards in a query.
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeWildcards($input)
+    {
+        $result = parent::normalizeWildcards($input);
+
+        // Remove wildcards from beginning and end of string and when not part of a
+        // range ([* TO *])
+        $result = preg_replace(
+            '/(^|[:\(]|[^\w\[\*]+?)[\*\?]+($|[^\]\*])/u',
+            '$1$2',
+            $result
+        );
+
+        /* TODO: will we need this?
+        // Remove wildcards when preceded by only one or two characters
+        $words = preg_split('/\s+/', $result);
+        $fixed = [];
+        foreach ($words as $word) {
+            $word = preg_replace('/^(\w{1,2})[\*\?]+/u', '$1', $word);
+            $fixed[] = $word;
+        }
+        $result = implode(' ', $fixed);
+        */
+
+        return $result;
     }
 }
