@@ -363,7 +363,6 @@ function initTruncate(_holder, _target, _fill) {
       });
     }
     holder.addClass('truncate-done');
-    holder.trigger('truncate-done', [holder]);
   });
 }
 
