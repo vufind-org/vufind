@@ -305,11 +305,11 @@ function initTruncate(_holder, _target, _fill) {
 
     var fill = typeof _fill === 'undefined' ? function(m) { return m } : _fill;
     var targetElemName = target.length && target.prop('tagName').toLowerCase();
-    var targetClass = target.length ? ` ${target.prop('class')}` : '';
+    var targetClass = target.length ? ' ' + target.prop('class') : '';
     var rowCount = holder.data('rows') || 3;
     var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
     var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
-    var btnSize = holder.data('btn-size') ? ` ${holder.data('btn-size')}` : '';
+    var btnSize = holder.data('btn-size') ? ' ' + holder.data('btn-size') : '';
     var topToggle = holder.data('top-toggle') || Infinity;
     var inPlaceToggle = holder.data('in-place-toggle') || false;
 
