@@ -88,20 +88,4 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->get('config')->Content->ajaxcovers ?? false;
     }
-
-    /**
-     * Get advanced search limits that override the natural sorting to
-     * display at the top.
-     *
-     * @param string $limit advanced search limit
-     *
-     * @return array
-     */
-    public function topLimits($limit)
-    {
-        $limits = $this->get('facets')->Advanced_Settings->limit;
-        $limitConf = $limits && $limits->get($limit) ?
-            preg_replace('/\s+/', '', $limits->get($limit)) : '';
-        return explode(',', $limitConf);
-    }
 }

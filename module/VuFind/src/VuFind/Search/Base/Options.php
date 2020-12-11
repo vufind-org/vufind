@@ -982,4 +982,21 @@ abstract class Options implements TranslatorAwareInterface
         $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
             ?? $this->autocompleteAutoSubmit;
     }
+
+    /**
+     * Get advanced search limits that override the natural sorting to
+     * display at the top.
+     *
+     * @param string $limit advanced search limit
+     *
+     * @return array
+     */
+    public function topLimits($limit)
+    {
+        $facetSettings = $this->configLoader->get($this->getFacetsIni());
+        $limits = $facetSettings->Advanced_Settings->limit;
+        $limitConf = $limits && $limits->get($limit) ?
+            preg_replace('/\s+/', '', $limits->get($limit)) : '';
+        return explode(',', $limitConf);
+    }
 }
