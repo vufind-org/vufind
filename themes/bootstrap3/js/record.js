@@ -298,30 +298,31 @@ function removeCheckRouteParam() {
   }
 }
 
-function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
-  var holder = typeof _holder === 'undefined' ? $(document) : $(_holder);
-  var target = $(_target);
-  var targetElemName = target.length && target.prop('tagName').toLowerCase();
-  var targetClass = target.length ? ` ${target.prop('class')}` : '';
-  var rowCount = holder.data('rows') || 3;
-  var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
-  var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
-  var btnSize = holder.data('btn-size') ? ` ${holder.data('btn-size')}` : '';
-  var topToggle = holder.data('top-toggle') || Infinity;
-  var inPlaceToggle = holder.data('in-place-toggle') || false;
+function initTruncate(_holder, _target, _fill) {
+  $(_holder).each(function truncate() {
+    var holder = $(this);
+    var target = holder.find(_target);
 
-  holder.each(function parseHolder() {
-    var self = $(this);
-    var numRows = self.find(target).length || 0;
+    var fill = typeof _fill === 'undefined' ? function(m) { return m } : _fill;
+    var targetElemName = target.length && target.prop('tagName').toLowerCase();
+    var targetClass = target.length ? ` ${target.prop('class')}` : '';
+    var rowCount = holder.data('rows') || 3;
+    var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
+    var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
+    var btnSize = holder.data('btn-size') ? ` ${holder.data('btn-size')}` : '';
+    var topToggle = holder.data('top-toggle') || Infinity;
+    var inPlaceToggle = holder.data('in-place-toggle') || false;
+
+    var numRows = holder.find(target).length || 0;
     var hasTopToggle = numRows > topToggle;
     // Truncate only if there's more than one line to hide
     var shouldTruncate = rowCount < numRows || false;
-    self.find(target).each(function hideRows(i) {
-      var truncateAfter = rowCount - 1;
+    var truncateAfter = rowCount - 1;
+    target.each(function hideRows(i) {
       if (i == truncateAfter) {
         $(this).addClass('truncate-after');
       }
-      if(i > truncateAfter && shouldTruncate) {
+      if (i > truncateAfter && shouldTruncate) {
         $(this).hide();
         $(this).addClass('truncate-toggle');
       }
@@ -331,38 +332,38 @@ function initTruncate(_holder, _target, _fill = function(m) { return m } ) {
       var btn = '<button type="button" class="more-link btn' + btnSize + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
       var btnLessTop = '<button type="button" class="less-link-top btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
       var btnWrapper = $('<' + targetElemName + ' class="more-less-btn-wrapper' + targetClass + '"></' + targetElemName + '>');
-      var btnWrapperBtm = btnWrapper.clone().append(_fill(btn));
-      var btnWrapperTop = btnWrapper.clone().append(_fill(btnLessTop));
+      var btnWrapperBtm = btnWrapper.clone().append(fill(btn));
+      var btnWrapperTop = btnWrapper.clone().append(fill(btnLessTop));
 
       // Attach show/hide buttons to the top and bottom or display in place
       if (hasTopToggle) {
-        $(btnWrapperTop).prependTo(self);
+        $(btnWrapperTop).prependTo(holder);
       }
       if(inPlaceToggle) {
-        $(btnWrapperBtm).insertAfter(self.find('.truncate-after'));
+        $(btnWrapperBtm).insertAfter(holder.find('.truncate-after'));
       } else {
-        $(btnWrapperBtm).appendTo(self);
+        $(btnWrapperBtm).appendTo(holder);
       }
 
-      self.find('.less-link, .less-link-top').hide();
+      holder.find('.less-link, .less-link-top').hide();
 
-      self.find('.less-link, .less-link-top').click(function onClickLessLink(/*event*/) {
-        self.find('.less-link, .less-link-top').hide();
-        self.find('.more-link').show();
-        self.find('.truncate-toggle').toggle();
+      holder.find('.less-link, .less-link-top').click(function onClickLessLink(/*event*/) {
+        holder.find('.less-link, .less-link-top').hide();
+        holder.find('.more-link').show();
+        holder.find('.truncate-toggle').toggle();
       });
 
-      self.find('.more-link').click(function onClickMoreLink(/*event*/) {
+      holder.find('.more-link').click(function onClickMoreLink(/*event*/) {
         $(this).hide();
-        self.find('.less-link').show();
+        holder.find('.less-link').show();
         if (hasTopToggle) {
-          self.find('.less-link-top').show();
+          holder.find('.less-link-top').show();
         }
-        self.find('.truncate-toggle').toggle();
+        holder.find('.truncate-toggle').toggle();
       });
     }
-    self.addClass('truncate-done');
-    self.trigger('truncate-done', [self]);
+    holder.addClass('truncate-done');
+    holder.trigger('truncate-done', [holder]);
   });
 }
 
