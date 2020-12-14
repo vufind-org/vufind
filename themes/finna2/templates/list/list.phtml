@@ -42,7 +42,7 @@ $this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1
         <?=$this->render('search/controls/sort.phtml')?>
         <?=$this->render('search/controls/limit.phtml')?>
       </div>
-      <div>
+      <div class="save-list-wrapper">
         <a class="btn btn-primary btn-sm btn-block" data-lightbox role="button" href="<?= $this->url('list-save', [ 'id' => $list->id ]) ?>"><?=$this->transEsc('import_favorites_from_list')?></a>
       </div>
     </div>
