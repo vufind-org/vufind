@@ -1,18 +1,20 @@
 <!-- START of: finna - Helpers/copyright-icons.phtml -->
 <?php
   $displayIcons = [
-    'CCBY' => ['cc', 'by'],
-    'CCBYSA' => ['cc', 'by', 'sa'],
-    'CCBYND' => ['cc', 'by', 'nd'],
-    'CCBYNC' => ['cc', 'by', 'nc-eu'],
-    'CCBYNCSA' => ['cc', 'by', 'nc-eu', 'sa'],
-    'CCBYNCND' => ['cc', 'by','nc-eu', 'nd']
+    'CCBY' => ['cc-cc', 'cc-by'],
+    'CCBYSA' => ['cc-cc', 'cc-by', 'cc-sa'],
+    'CCBYND' => ['cc-cc', 'cc-by', 'cc-nd'],
+    'CCBYNC' => ['cc-cc', 'cc-by', 'cc-nc-eu'],
+    'CCBYNCSA' => ['cc-cc', 'cc-by', 'cc-nc-eu', 'cc-sa',],
+    'CCBYNCND' => ['cc-cc', 'cc-by','cc-nc-eu', 'cc-nd'],
+    'INC' => ['rs-inc'],
+    'CNE' => ['rs-other']
   ];
   $key = strtoupper(preg_replace('/[^A-Za-z]/', '', $this->copyright));
 ?>
 <?php if (isset($displayIcons[$key])): ?>
   <?php foreach ($displayIcons[$key] as $icon): ?>
-    <i class="iconlabel cc-<?=$icon ?>" aria-hidden="true"></i>
+    <i class="iconlabel <?=$icon ?>" aria-hidden="true"></i>
   <?php endforeach; ?>
 <?php endif; ?>
 <!-- END of: finna - Helpers/copyright-icons.phtml -->

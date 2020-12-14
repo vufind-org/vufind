@@ -133,13 +133,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAccessRestrictionsType($language)
     {
-        $rights = $this->getXmlRecord()->xpath(
+        $rightsNodes = $this->getXmlRecord()->xpath(
             'lido/administrativeMetadata/resourceWrap/resourceSet/rightsResource/'
             . 'rightsType'
         );
-        if ($rights) {
-            $rights = $rights[0];
 
+        foreach ($rightsNodes as $rights) {
             if ($conceptID = $rights->xpath('conceptID')) {
                 $conceptID = $conceptID[0];
                 $attributes = $conceptID->attributes();
@@ -196,17 +195,20 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             // Process rights first since we may need to duplicate them if there
             // are multiple images in the set (non-standard)
             $rights = [];
-            if (!empty($resourceSet->rightsResource->rightsType->conceptID)) {
-                $conceptID = $resourceSet->rightsResource->rightsType
-                    ->conceptID;
-                $type = strtolower((string)$conceptID->attributes()->type);
-                if ($type == 'copyright') {
-                    $rights['copyright'] = (string)$conceptID;
-                    $link = $this->getRightsLink(
-                        $rights['copyright'], $language
-                    );
-                    if ($link) {
-                        $rights['link'] = $link;
+            if (isset($resourceSet->rightsResource)) {
+                foreach ($resourceSet->rightsResource as $rightsResource) {
+                    if (!empty($rightsResource->rightsType->conceptID)) {
+                        $conceptID = $rightsResource->rightsType->conceptID;
+                        $type = strtolower((string)$conceptID->attributes()->type);
+                        if ($type == 'copyright') {
+                            $rights['copyright'] = (string)$conceptID;
+                            $link = $this->getRightsLink(
+                                strtoupper($rights['copyright']), $language
+                            );
+                            if ($link) {
+                                $rights['link'] = $link;
+                            }
+                        }
                     }
                 }
             }
