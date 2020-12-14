@@ -55,7 +55,7 @@ default_top_recommend[] = TopFacets:ResultsTop
 ;default_top_recommend[] = LearningMaterial
 default_side_recommend[] = SideFacetsDeferred:Results:CheckboxFacets
 default_noresults_recommend[] = SwitchType
-default_noresults_recommend[] = SwitchQuery
+default_noresults_recommend[] = SwitchQuery:Solr:wildcard
 default_noresults_recommend[] = SpellingSuggestions
 ;default_noresults_recommend[] = "FinnaSuggestionsDeferred:api.finna.fi/api/v1/search?lookfor=%%lookfor%%:finna.fi/Search/Results?lookfor=%%lookfor%%&lng=%%lng%%"
 
