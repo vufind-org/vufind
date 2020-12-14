@@ -922,6 +922,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
+        // Check if we have an item id:
+        if (empty($data['item_id'])) {
+            return false;
+        }
+
         $result = $this->makeRequest(
             [
                 'path' => [
