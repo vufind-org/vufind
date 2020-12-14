@@ -192,12 +192,12 @@ class ResourceContainer
                     if (!isset($currentPriority)
                         || $currentPriority > $entry['priority']
                     ) {
-                        $this->insertEntryAtPosition($entry, $i, $array);
+                        array_splice($entry, $i, 0, $array);
                         return;
                     }
                 } elseif (isset($entry['dependency'])) {
                     if ($entry['dependency'] == $array[$i]['file']) {
-                        $this->insertEntryAtPosition($entry, $i + 1, $array);
+                        array_splice($entry, $i + 1, 0, $array);
                         return;
                     }
                 }
@@ -207,23 +207,6 @@ class ResourceContainer
         // Insert at end if either no priority/dependency is given
         // or no other element has been found
         $array[] = $entry;
-    }
-
-    /**
-     * Helper function to insert an element into an array
-     * at a certain position.
-     *
-     * @param array $entry    The entry to be inserted.
-     * @param int   $position The position to insert the entry.
-     * @param array $array    The array in which the entry shall be inserted.
-     *
-     * @return void
-     */
-    protected function insertEntryAtPosition($entry, $position, &$array)
-    {
-        $elementsBefore = array_slice($array, 0, $position);
-        $elementsAfter = array_slice($array, $position);
-        $array = array_merge($elementsBefore, [$entry], $elementsAfter);
     }
 
     /**
