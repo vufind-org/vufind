@@ -87,6 +87,7 @@ class ThemeResourceContainerTest extends Unit\TestCase
         $container->addJs(['file' => 'a']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
         $container->addJs('http://foo/bar:lt IE 7');
+        $container->addJs([]);
 
         $expectedResult = [['file' => 'a', 'position' => 'header'],
                            ['file' => 'b', 'position' => 'header'],

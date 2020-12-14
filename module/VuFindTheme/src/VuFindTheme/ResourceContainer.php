@@ -137,6 +137,8 @@ class ResourceContainer
             foreach ($js as $current) {
                 $this->addJsEntry($current);
             }
+        } elseif ($js == []) {
+            return;
         } else {
             trigger_error("Invalid JS entry format: " . print_r($js, true));
         }
