@@ -185,7 +185,7 @@ class ResourceContainer
      */
     protected function insertEntry($entry, &$array)
     {
-        if (isset($entry['priority']) || isset($entry['dependency'])) {
+        if (isset($entry['priority']) || isset($entry['load_after'])) {
             for ($i=0; $i < count($array);++$i) {
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
@@ -195,8 +195,8 @@ class ResourceContainer
                         array_splice($entry, $i, 0, $array);
                         return;
                     }
-                } elseif (isset($entry['dependency'])) {
-                    if ($entry['dependency'] == $array[$i]['file']) {
+                } elseif (isset($entry['load_after'])) {
+                    if ($entry['load_after'] == $array[$i]['file']) {
                         array_splice($entry, $i + 1, 0, $array);
                         return;
                     }
