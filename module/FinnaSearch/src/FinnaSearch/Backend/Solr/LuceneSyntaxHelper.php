@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2017.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -223,10 +223,17 @@ class LuceneSyntaxHelper extends \VuFindSearch\Backend\Solr\LuceneSyntaxHelper
         $result = parent::normalizeWildcards($input);
 
         // Remove wildcards from beginning and end of string and when not part of a
-        // range ([* TO *])
-        $result = preg_replace(
-            '/(^|[:\(]|[^\w\[\*]+?)[\*\?]+($|[^\]\*])/u',
-            '$1$2',
+        // range ([* TO *]) or an any value field (field:*)
+        $result = preg_replace_callback(
+            '/(^|[:\(]|[^\w\[\*]+?)([\*\?]+)($|[^\]\*])/u',
+            function ($matches) {
+                if (':' === $matches[1] && '*' === $matches[2]
+                    && ('' === $matches[3] || strncmp(' ', $matches[3], 1) === 0)
+                ) {
+                    return ':*' . $matches[3];
+                }
+                return $matches[1] . $matches[3];
+            },
             $result
         );
 

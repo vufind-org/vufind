@@ -69,6 +69,9 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
             ['bar:[* TO *]', 'bar:[* TO *]'],
             ['foo:*bar', 'foo:bar'],
             ['foo:(*bar)', 'foo:(bar)'],
+            ['bar:*', 'bar:*'],
+            ['bar:* foo', 'bar:* foo'],
+            ['bar:*baz foo', 'bar:baz foo'],
         ];
         // @codingStandardsIgnoreEnd
 
