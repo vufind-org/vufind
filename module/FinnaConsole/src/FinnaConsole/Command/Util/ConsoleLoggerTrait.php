@@ -140,7 +140,7 @@ trait ConsoleLoggerTrait
      */
     protected function msg($msg, $verbose = 0)
     {
-        $msg = '[' . getmypid() . "] $msg";
+        $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";
         if (null === $this->output) {
             file_put_contents('php://stdout', "$msg\n", FILE_APPEND);
         } else {
