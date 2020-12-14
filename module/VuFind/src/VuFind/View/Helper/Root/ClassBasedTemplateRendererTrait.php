@@ -66,13 +66,12 @@ trait ClassBasedTemplateRendererTrait
      * (or null if $className is already the top level; used for recursion only).
      *
      * @return string
-     * @throws RuntimeException
      */
     protected function resolveClassTemplate($template, $className,
         ResolverInterface $resolver, $topClassName = null
     ) {
         // If the template resolves, return it:
-        $templateWithClass = sprintf($template, $this->getBriefClass($className));
+        $templateWithClass = $this->getTemplateWithClass($template, $className);
         if ($resolver->resolve($templateWithClass)) {
             return $templateWithClass;
         }
@@ -81,11 +80,7 @@ trait ClassBasedTemplateRendererTrait
         // template from a parent class:
         $parentClass = get_parent_class($className);
         if (empty($parentClass)) {
-            // No more parent classes left to try?  Throw an exception!
-            throw new RuntimeException(
-                'Cannot find ' . $templateWithClass . ' template for class: '
-                . ($topClassName ?? $className)
-            );
+            return '';
         }
 
         // Recurse until we find a template or run out of parents...
@@ -101,19 +96,31 @@ trait ClassBasedTemplateRendererTrait
      * @param string $template  Template path (with %s as class name placeholder)
      * @param string $className Name of class to apply to template.
      * @param array  $context   Context for rendering template
+     * @param bool   $throw     If true (default), an exception is thrown if the
+     * template is not found. Otherwise an empty string is returned.
      *
      * @return string
      * @throws RuntimeException
      */
-    protected function renderClassTemplate($template, $className, $context = [])
-    {
+    protected function renderClassTemplate($template, $className, $context = [],
+        $throw = true
+    ) {
         // Set up the needed context in the view:
         $view = $this->getView();
         $contextHelper = $view->plugin('context');
         $oldContext = $contextHelper($view)->apply($context);
 
         // Find and render the template:
-        $html = $view->render($this->getCachedClassTemplate($template, $className));
+        $classTemplate = $this->getCachedClassTemplate($template, $className);
+        if (!$classTemplate && $throw) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
+        }
+
+        $html = $classTemplate ? $view->render($classTemplate) : '';
 
         // Restore the original context before returning the result:
         $contextHelper($view)->restore($oldContext);
@@ -128,7 +135,6 @@ trait ClassBasedTemplateRendererTrait
      * @param string $className Name of class to apply to template.
      *
      * @return string
-     * @throws RuntimeException
      */
     protected function getCachedClassTemplate($template, $className)
     {
@@ -152,5 +158,18 @@ trait ClassBasedTemplateRendererTrait
     {
         $classParts = explode('\\', $className);
         return array_pop($classParts);
+    }
+
+    /**
+     * Helper to put the template path and class name together
+     *
+     * @param string $template  Template path (with %s as class name placeholder)
+     * @param string $className Class name to abbreviate
+     *
+     * @return string
+     */
+    protected function getTemplateWithClass(string $template, string $className
+    ): string {
+        return sprintf($template, $this->getBriefClass($className));
     }
 }

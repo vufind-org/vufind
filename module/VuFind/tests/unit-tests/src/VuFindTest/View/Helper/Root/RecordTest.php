@@ -61,7 +61,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testMissingTemplate()
     {
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
-        $this->expectExceptionMessage('Cannot find RecordDriver/AbstractBase/core.phtml template for class: VuFind\\RecordDriver\\SolrMarc');
+        $this->expectExceptionMessage('Cannot find RecordDriver/[brief class name]/core.phtml for class VuFind\\RecordDriver\\SolrMarc or any of its parent classes');
 
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $record->getView()->resolver()->expects($this->at(0))->method('resolve')
@@ -70,6 +70,21 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getView()->expects($this->any())->method('render')
             ->will($this->throwException(new RuntimeException('boom')));
         $record->getCoreMetadata();
+    }
+
+    /**
+     * Test attempting to display a template that does not exist without throwing an
+     * exception.
+     *
+     * @return void
+     */
+    public function testMissingTemplateWithoutException()
+    {
+        $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
+        $this->assertEquals(
+            '',
+            $record->renderTemplate('foo', [], false)
+        );
     }
 
     /**
