@@ -202,6 +202,12 @@ class ResourceContainer
                     }
                 }
             }
+
+            if (isset($entry['load_after'])) {
+                throw new \Exception(
+                    'Dependency not found: ' . $entry['load_after']
+                );
+            }
         }
 
         // Insert at end if either no priority/dependency is given
