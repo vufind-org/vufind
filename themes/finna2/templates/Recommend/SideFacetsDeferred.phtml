@@ -73,7 +73,9 @@
     if (is_callable([$options, 'getDateRangeSearchField'])) {
         $daterangeFacetField = $options->getDateRangeSearchField();
     }
-    $dateRangeFilter = $params->getDateRangeFilter();
+    if (is_callable([$params, 'getDateRangeFilter'])) {
+      $dateRangeFilter = $params->getDateRangeFilter();
+    }
   }
 ?>
 <?=$this->context($this)->renderInContext('Recommend/SideFacets/filter-list.phtml', [

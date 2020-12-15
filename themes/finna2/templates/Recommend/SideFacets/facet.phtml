@@ -1,6 +1,7 @@
 <!-- START of: finna - Recommend/SideFacets/facet.phtml -->
 <?php
   $this->results = $results = $this->recommend->getResults();
+  $params = $results->getParams();
   $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions();
   $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
   $collapsedFacets = $this->recommend->getCollapsedFacets();
@@ -18,9 +19,11 @@
   if (in_array($backendId, ['Solr', 'Primo'])) {
     $options = $results->getOptions();
     if (is_callable([$options, 'getDateRangeSearchField'])) {
-        $daterangeFacetField = $options->getDateRangeSearchField();
+      $daterangeFacetField = $options->getDateRangeSearchField();
     }
-    $dateRangeFilter = $params->getDateRangeFilter();
+    if (is_callable([$params, 'getDateRangeFilter'])) {
+      $dateRangeFilter = $params->getDateRangeFilter();
+    }
   }
   $sideFacetSet = $this->recommend->getFacetSet();
   $rangeFacets = $this->recommend->getAllRangeFacets();

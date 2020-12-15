@@ -73,7 +73,8 @@ class SearchController extends \VuFind\Controller\SearchController
         ];
 
         if ($view->saved
-            && $filter = $view->saved->getParams()->getDateRangeFilter()
+            && is_callable([$view->saved->getParams(), 'getDateRangeFilter'])
+            && ($filter = $view->saved->getParams()->getDateRangeFilter())
         ) {
             $filter = $params->parseDateRangeFilter($filter['value']);
             if (isset($filter['from']) && isset($filter['to'])) {
