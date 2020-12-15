@@ -2405,7 +2405,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                     $this->createMock(\VuFindSearch\Service::class),
                     function () use ($session) {
                         return $session;
-                    }
+                    },
+                    $this->createMock(\VuFind\Http\PhpEnvironment\Request::class)
                 ]
             )->getMock();
     }
