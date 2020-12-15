@@ -8,11 +8,7 @@
 <ul class="record-labels">
   <?php foreach ($labels as $label): ?>
     <?php
-      try {
-        $tooltip = $this->record($this->driver)->renderTemplate("recordlabel-tooltip-{$label}.phtml", ['label' => $label]);
-      } catch (\RuntimeException $e) {
-        $tooltip = '';
-      }
+      $tooltip = $this->record($this->driver)->renderTemplate("recordlabel-tooltip-{$label}.phtml", ['label' => $label], false);
     ?>
     <li class="label iconlabel <?=str_replace('_', '-', $label)?><?= $tooltip ? ' with-tooltip' : '' ?>"<?= $tooltip ? (' data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->escapeHtmlAttr($tooltip) . '"') : '' ?>><?=$this->transEsc($label)?></li>
   <?php endforeach; ?>
