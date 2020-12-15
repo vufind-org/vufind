@@ -303,7 +303,7 @@ function initTruncate(_holder, _target, _fill) {
     var holder = $(this);
     var target = holder.find(_target);
 
-    var fill = typeof _fill === 'undefined' ? function(m) { return m } : _fill;
+    var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
     var targetElemName = target.length && target.prop('tagName').toLowerCase();
     var targetClass = target.length ? ' ' + target.prop('class') : '';
     var rowCount = holder.data('rows') || 3;
@@ -319,7 +319,7 @@ function initTruncate(_holder, _target, _fill) {
     var shouldTruncate = rowCount < numRows || false;
     var truncateAfter = rowCount - 1;
     target.each(function hideRows(i) {
-      if (i == truncateAfter) {
+      if (i === truncateAfter) {
         $(this).addClass('truncate-after');
       }
       if (i > truncateAfter && shouldTruncate) {
@@ -339,7 +339,7 @@ function initTruncate(_holder, _target, _fill) {
       if (hasTopToggle) {
         $(btnWrapperTop).prependTo(holder);
       }
-      if(inPlaceToggle) {
+      if (inPlaceToggle) {
         $(btnWrapperBtm).insertAfter(holder.find('.truncate-after'));
       } else {
         $(btnWrapperBtm).appendTo(holder);
@@ -412,7 +412,7 @@ function recordDocReady() {
   });
 
   initTruncate('.truncate-subjects', '.subject-line');
-  initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function(m) { return '<td colspan="2">' + m + '</td>'; });
+  initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
   applyRecordTabHash();
 }
