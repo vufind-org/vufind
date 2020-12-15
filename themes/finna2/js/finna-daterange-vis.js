@@ -343,7 +343,7 @@ finna.dateRangeVis = (function finnaDateRangeVis() {
         }
       }
 
-      var isSolr = backend === 'solr';
+      var isSolr = backend === 'Solr';
       var type = null;
       if (isSolr) {
         var typeElement = form.find('input[type=radio][name=type]:checked');
