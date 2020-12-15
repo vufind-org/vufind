@@ -373,7 +373,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
             case 'krimdok':
                return 'KRI';
         }
-        throw new \Exception('can't determine TueFind subsystem type for "' + $instance + '"!');
+        throw new \Exception('can't determine TueFind subsystem type for "' . $instance . '"!');
     }
     
     /**
