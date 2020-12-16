@@ -89,10 +89,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         $metadata = $this->getMetadata(
             $driver, $size, $resolveDynamic, $testLoadImage
         );
-        if ($metadata && $metadata['url']) {
-            return $metadata['url'];
-        }
-        return $metadata;
+        return $metadata['url'] ?? $metadata;
     }
 
     /**
