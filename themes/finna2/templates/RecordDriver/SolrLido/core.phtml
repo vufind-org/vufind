@@ -2,9 +2,6 @@
 <?php
   $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
   $img = $this->recordImage($this->record($this->driver));
-  $images = $img->getAllImagesAsCoverLinks(
-      $this->layout()->userLang, $params
-  );
 
   $urls = $this->record($this->driver)->getLinkDetails();
   if (!empty($urls)){
@@ -43,7 +40,7 @@
         <?=$this->render('record/record-organisation-menu.phtml') ?>
       </div>
     <?php endif; ?>
-    
+
     <?=$this->record($this->driver)->renderTemplate('record-post-thumbnail.phtml');?>
   </div>
 <?php

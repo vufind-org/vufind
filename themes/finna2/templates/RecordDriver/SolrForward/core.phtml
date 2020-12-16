@@ -26,9 +26,6 @@
 
   $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
   $img = $this->recordImage($this->record($this->driver));
-  $images = $img->getAllImagesAsCoverLinks(
-      $this->layout()->userLang, $params
-  );
 
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
