@@ -991,10 +991,10 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function topLimits($limit)
+    public function limitOrderOverride($limit)
     {
         $facetSettings = $this->configLoader->get($this->getFacetsIni());
-        $limits = $facetSettings->Advanced_Settings->limit;
+        $limits = $facetSettings->Advanced_Settings->limitOrderOverride;
         $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?
             $facetSettings->Advanced_Settings->limitDelimiter : '::';
         $limitConf = $limits && $limits->get($limit) ?

@@ -20,7 +20,7 @@
               // the top if they appear in the config; we'll use this data
               // along with the foreach below to display facet options in the
               // correct order.
-              $conf = $this->options->topLimits($field);
+              $conf = $this->options->limitOrderOverride($field);
               $sorted = [];
               $filtered = [];
               foreach ($list['list'] as $i => $value) {
