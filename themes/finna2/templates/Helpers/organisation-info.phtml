@@ -21,9 +21,9 @@
     <div class="<?=$this->showDetails ? 'info-col ' : ''?>info">
       <div class="organisation-dropdown-holder">
         <div class="organisation dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><input type="hidden"><span></span><i class="fa fa-arrow-down"></i></a>
-            <ul class="dropdown-menu" role="menu">
-            </ul>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><input type="hidden"><span class="sr-only"><?=$this->transEsc('organisation_info_selected_service_point')?></span><span></span><i class="fa fa-arrow-down"></i></a>
+          <ul class="dropdown-menu" role="menu" aria-label="<?=$this->escapeHtmlAttr($this->translate('organisation_info_select_service_point'))?>">
+          </ul>
         </div>
       </div>
       <span class="is-open open info-element"><?=$this->translate('organisation_info_is_open')?></span>

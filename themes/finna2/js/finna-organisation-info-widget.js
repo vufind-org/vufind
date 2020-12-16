@@ -365,7 +365,7 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     var id = input.val();
     var name = holder.find('.organisation ul.dropdown-menu li input[value="' + id + '"]').parent('li').text();
 
-    toggle.find('span').text(name);
+    toggle.find('span:not(.sr-only)').text(name);
     showDetails(id, name, false);
 
     if (disable) {
