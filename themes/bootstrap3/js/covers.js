@@ -10,7 +10,7 @@ function loadCoverByElement(data, element) {
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
       container.children().not("img").hide();
-      if (typeof response.data.backlink_text !== 'undefined') {
+      if (typeof response.data.backlink_text !== 'undefined' && element.parents().is('.template-dir-record')) {
         var link = element.find('.cover-backlink');
         var span = element.find('.cover-source-text');
         if (typeof response.data.backlink_url !== 'undefined') {
