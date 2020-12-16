@@ -4,6 +4,7 @@ function loadCoverByElement(data, element) {
   var img = element.find('img');
   var spinner = element.children('div.spinner');
   var container = element.children('div.cover-container');
+  var source = element.children('.cover-source');
   function coverCallback(response) {
     spinner.hide();
     container.show();
@@ -25,6 +26,7 @@ function loadCoverByElement(data, element) {
       }
     } else {
       img.remove();
+      source.remove();
       if (typeof response.data.html !== 'undefined') {
         container.html(response.data.html);
       } else {
