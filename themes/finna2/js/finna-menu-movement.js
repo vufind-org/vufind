@@ -9,7 +9,6 @@ function FinnaMovement (element) {
   var _ = this;
   _.menuRootElement = $(element);
   _.menuElements = [];
-  _.isHorizontal = _.menuRootElement.hasClass('horizontal');
   _.setChildData();
   _.keys = {
     up: 38,
@@ -18,9 +17,7 @@ function FinnaMovement (element) {
     right: 39,
     space: 32
   };
-  _.offset = 0;
-  _.offsetCache = -1;
-  _.childOffset = -1;
+  _.indexCache = -1;
   _.setEvents();
 }
 
@@ -33,24 +30,9 @@ FinnaMovement.prototype.setEvents = function setEvents() {
     _.setChildData();
     _.setFocusTo();
   });
-  _.menuRootElement.on('focusout', function setFocusOut(e) {
-    if (!$.contains(_.menuRootElement[0], e.relatedTarget)) {
-      _.reset();
-    }
-  });
   _.menuRootElement.on('keydown', function detectKeyPress(e) {
     _.checkKey(e);
   });
-};
-
-/**
- * Reset the internal pointers of movement handler
- */
-FinnaMovement.prototype.reset = function reset() {
-  var _ = this;
-  _.offsetCache = _.offset;
-  _.offset = 0;
-  _.childOffset = -1;
 };
 
 /**
@@ -58,12 +40,10 @@ FinnaMovement.prototype.reset = function reset() {
  */
 FinnaMovement.prototype.setFocusTo = function setFocusTo() {
   var _ = this;
-  if (_.offsetCache !== -1) {
-    _.offset = _.calculateOffset(_.offsetCache, _.menuElements, 0);
-    _.offsetCache = -1;
+  if (_.indexCache !== -1) {
+    var element = _.getMenuItem(0, _.indexCache);
+    element.focus();
   }
-  
-  _.menuElements[_.offset].input.focus();
 };
 
 /** 
@@ -79,21 +59,11 @@ FinnaMovement.prototype.setChildData = function setChildData() {
   var nodes = _.menuRootElement[0].querySelectorAll(FOCUSABLE_ELEMENTS);
   var children = [].slice.apply(nodes);
   var formedObjects = [];
-  var oldObj;
-  children.forEach(function testEach(element) {
-    var obj = {input: $(element), children: [], parent: undefined};
-    obj.input.attr('tabindex', (i++ === 0) ? '0' : '-1');
-    if (typeof oldObj !== 'undefined' && _.isHorizontal) {
-      if ($.contains(oldObj.parent[0], obj.input[0])) {
-        oldObj.children.push(obj);
-        return;
-      }
-    }
-    if (obj.input.is('a') && _.isHorizontal) {
-      obj.parent = obj.input.parent();
-      oldObj = obj;
-    }
-    formedObjects.push(obj);
+  children.forEach(function createElement(element) {
+    var input = $(element);
+    input.attr('tabindex', (i === 0) ? '0' : '-1');
+    input.data('index', i++);
+    formedObjects.push(input);
   });
   _.menuElements = formedObjects;
 };
@@ -106,42 +76,21 @@ FinnaMovement.prototype.checkKey = function checkKey(e) {
   var code = (e.keyCode ? e.keyCode : e.which);
   switch (code) {
   case _.keys.up:
-    if (_.isHorizontal) {
-      _.moveSubmenu(-1);
-    } else {
-      _.moveMainmenu(-1);
-    }
-    e.preventDefault();
-    break;
-  case _.keys.right:
-    if (_.isHorizontal) {
-      _.moveMainmenu(1);
-      e.preventDefault();
-    } else {
-      _.openSubmenu();
-    }
-    break;
-  case _.keys.down:
-    if (_.isHorizontal) {
-      _.moveSubmenu(1);
-    } else {
-      _.moveMainmenu(1);
-    }
+    _.moveMainmenu(-1);
     e.preventDefault();
     break;
   case _.keys.left:
-    if (_.isHorizontal) {
-      _.moveMainmenu(-1);
+  case _.keys.right:
+  case _.keys.space:
+    var element = _.getMenuItem(0);
+    if (!element.is('input')) {
+      element.trigger('togglesubmenu');
       e.preventDefault();
-    } else {
-      _.openSubmenu();
     }
     break;
-  case _.keys.space:
-    if (!_.menuElements[_.offset].input.is('input')) {
-      _.openSubmenu();
-      e.preventDefault();
-    }
+  case _.keys.down:
+    _.moveMainmenu(1);
+    e.preventDefault();
     break;
   }
 };
@@ -154,67 +103,33 @@ FinnaMovement.prototype.checkKey = function checkKey(e) {
  */
 FinnaMovement.prototype.moveMainmenu = function moveMainmenu(dir) {
   var _ = this;
-  _.childOffset = -1;
-  _.offset = _.calculateOffset(_.offset, _.menuElements, dir);
-  var current = _.menuElements[_.offset];
-  if (current.input.is(':hidden')) {
+  var element = _.getMenuItem(dir);
+  if (element.is(':hidden')) {
     _.moveMainmenu(dir);
   } else {
-    current.input.focus();
+    element.focus();
   }
 };
 
 /**
- * Try to trigger submenu open call
- */
-FinnaMovement.prototype.openSubmenu = function openSubmenu() {
-  var _ = this;
-  if (_.childOffset > -1) {
-    return;
-  }
-  _.menuElements[_.offset].input.trigger('togglesubmenu');
-};
-
-/**
- * Move the cursor in the level 2 menu elements, adjusted by direction
+ * Function to fetch wanted element from menuElement with dir. Optionally you can use cacheIndex to 
+ * get certain element
  * 
- * @param {int} dir
+ * @param {int} direction
+ * @param {int} cacheIndex
  */
-FinnaMovement.prototype.moveSubmenu = function moveSubmenu(dir) {
+FinnaMovement.prototype.getMenuItem = function getMenuItem(direction, cacheIndex) {
   var _ = this;
-  var current = _.menuElements[_.offset];
+  var currentIndex = cacheIndex || $(':focus').data('index');
+  var newIndex = +currentIndex + direction;
 
-  if (current.input.hasClass('collapsed')) {
-    _.openSubmenu();
+  if (newIndex > _.menuElements.length - 1) {
+    newIndex = 0;
+  } else if (newIndex < 0) {
+    newIndex = _.menuElements.length - 1;
   }
-
-  if (current.children.length === 0) {
-    return;
-  }
-
-  if (current.children.length) {
-    _.childOffset = _.calculateOffset(_.childOffset, current.children, dir);
-    current.children[_.childOffset].input.focus();
-  }
-};
-
-/**
- * Function to calculate desired index, given the old offset, array of elements and dir
- * 
- * @param {int} offset
- * @param {Array} elements
- * @param {int} dir
- */
-FinnaMovement.prototype.calculateOffset = function calculateOffset(offset, elements, dir) {
-  var tmp = offset;
-  if (tmp + dir > elements.length - 1) {
-    tmp = 0;
-  } else if (tmp + dir < 0) {
-    tmp = elements.length - 1;
-  } else {
-    tmp += dir;
-  }
-  return tmp;
+  _.indexCache = newIndex;
+  return _.menuElements[newIndex];
 };
 
 finna.finnaMovement = (function finnaMovement() {
