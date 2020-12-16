@@ -10,10 +10,17 @@ function loadCoverByElement(data, element) {
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
       container.children().not("img").hide();
-      if (typeof response.data.backlink_text !== 'undefined' && typeof response.data.backlink_url !== 'undefined') {
+      if (typeof response.data.backlink_text !== 'undefined') {
         var link = element.find('.cover-backlink');
-        link.html(response.data.backlink_text);
-        link.attr("href", response.data.backlink_url);
+        var span = element.find('.cover-source-text');
+        if (typeof response.data.backlink_url !== 'undefined') {
+          link.html(response.data.backlink_text);
+          link.attr("href", response.data.backlink_url);
+          span.remove();
+        } else {
+          span.html(response.data.backlink_text);
+          link.remove();
+        }
         element.find('.cover-source').show();
       }
     } else {
