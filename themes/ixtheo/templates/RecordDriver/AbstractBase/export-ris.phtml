@@ -4,8 +4,10 @@ $marc = $this->driver->tryMethod('getMarcRecord');
 if (is_object($marc)) {
     $marcPhdField = $marc->getField('502');
     $marcProceedingsField = $marc->getField('711');
+    $isDefinitelyAMonograph = $marc->getBibliographicLevel() == 'M';
 } else {
     $marcPhdField = $marcProceedingsField = false;
+    $isDefinitelyAMonograph = false;
 }
 $journalTitle = $this->driver->tryMethod('getContainerTitle');
 $formats = $this->driver->tryMethod('getFormats');
@@ -13,6 +15,8 @@ if ($marcProceedingsField) {
     $format = 'CONF';
 } elseif ($marcPhdField) {
     $format = 'THES';
+} elseif ($isDefinitelyAMonograph) {
+    $format = 'BOOK';
 } elseif (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
     // Possibly the superior work is a book although all the above criteria match
     $superior_formats = $this->driver->tryMethod('getSuperiorFormats');
