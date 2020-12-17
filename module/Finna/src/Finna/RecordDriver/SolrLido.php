@@ -391,6 +391,15 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 }
             }
 
+            // Trim resulting strings
+            array_walk_recursive(
+                $result,
+                function (&$current) {
+                    if (is_string($current)) {
+                        $current = trim($current);
+                    }
+                }
+            );
             $results[] = $result;
         }
         return $this->cachedImages = $results;
