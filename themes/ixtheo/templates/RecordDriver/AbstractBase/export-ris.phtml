@@ -4,7 +4,7 @@ $marc = $this->driver->tryMethod('getMarcRecord');
 if (is_object($marc)) {
     $marcPhdField = $marc->getField('502');
     $marcProceedingsField = $marc->getField('711');
-    $isDefinitelyAMonograph = $marc->getBibliographicLevel() == 'M';
+    $isDefinitelyAMonograph = $this->getBibliographicLevel() == 'M';
 } else {
     $marcPhdField = $marcProceedingsField = false;
     $isDefinitelyAMonograph = false;
