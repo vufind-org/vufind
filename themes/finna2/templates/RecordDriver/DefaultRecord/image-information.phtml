@@ -1,0 +1,72 @@
+<!-- START of: finna - RecordDriver/DefaultRecord/image-information.phtml -->
+<?php
+  $elements = [
+    'id' => 'image_identifier',
+    'type' => 'image_resource_type',
+    'relationTypes' => 'image_relation_type',
+    'dateTaken' => 'image_date_taken',
+    'perspectives' => 'image_perspective'
+  ];
+  // Make sure we have something to display
+  $rights = $this->image['rights'] ?? [];
+  if (empty($rights['rightsHolders']) && empty($rights['creditLine'])
+    && empty(array_intersect_key(array_filter($this->image), $elements))
+  ) {
+    return;
+  }
+?>
+<div class="image-details">
+  <button class="toggle-image-information collapsed" data-toggle="collapse" data-target="#image_details_<?=$this->index?>" aria-expanded="false" aria-controls="image_details_<?=$this->index?>">
+    <span class="show-image-information"><i class="fa fa-arrow-down" aria-hidden="true"></i> <?=$this->transEsc($this->showButtonText ?? 'Show Image Information')?></span>
+    <span class="hide-image-information"><i class="fa fa-arrow-up" aria-hidden="true"></i> <?=$this->transEsc($this->hideButtonText ?? 'Hide Image Information')?></span>
+  </button>
+  <div id="image_details_<?=$this->index?>" class="collapse">
+    <table class="table-condensed">
+      <?php if (!empty($this->image['identifier'])): ?>
+        <tr>
+          <th><?=$this->transEsc('image_identifier')?></th>
+          <td><?=$this->transEsc($this->image['identifier'])?></td>
+        </tr>
+      <?php endif; ?>
+      <?php if (!empty($rights['rightsHolders'])): ?>
+        <tr>
+          <th><?=$this->transEsc('image_rights_holders')?></th>
+          <td>
+            <?php $i = 0; ?>
+            <?php foreach ($rights['rightsHolders'] as $rightsHolder): ?>
+              <?php if (++$i > 1): ?><br><?php endif; ?>
+              <?php if (!empty($rightsHolder['link'])): ?>
+                <a href="<?=$this->escapeHtmlAttr($rightsHolder['link'])?>" target="_blank">
+                  <?=$this->escapeHtml($rightsHolder['name'])?>
+                </a>
+              <?php else: ?>
+                <?=$this->escapeHtml($rightsHolder['name'])?>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          </td>
+        </tr>
+      <?php endif; ?>
+      <?php foreach ($elements as $field => $translation): ?>
+        <?php if (!empty($this->image[$field])): ?>
+          <tr>
+            <th><?=$this->transEsc($translation)?></th>
+            <td>
+              <?=implode('<br>', array_map([$this, 'transEsc'], (array)$this->image[$field]))?>
+            </td>
+          </tr>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    </table>
+  </div>
+  <?php if (isset($descriptions)): ?>
+    <div class="copyright<?=$this->truncateLicense ? ' truncate-field' : ''?>">
+      <?php foreach ($descriptions as $item): ?>
+        <p><?=$this->transEsc($item)?></p>
+      <?php endforeach ?>
+    </div>
+  <?php endif; ?>
+  <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+    <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See terms and conditions') ?></a></p>
+  <?php endif; ?>
+</div>
+<!-- END of: finna - RecordDriver/DefaultRecord/image-information.phtml -->

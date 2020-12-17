@@ -20,7 +20,8 @@
         <?php if ($this->record($this->driver)->allowRecordImageDownload()): ?>
           <?= $this->record($this->driver)->renderTemplate('image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
         <?php endif; ?>
-      <?= $this->record($this->driver)->renderTemplate('image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights, 'truncateLicense' => $ind === 0]); ?>
+        <?= $this->record($this->driver)->renderTemplate('image-information.phtml', ['index' => $ind, 'image' => $image]); ?>
+        <?= $this->record($this->driver)->renderTemplate('image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights, 'truncateLicense' => $ind === 0]); ?>
       </div>
       <?php $ind++; ?>
     <?php endforeach; ?>

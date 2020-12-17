@@ -14,6 +14,13 @@
       $originalImageData = $recordImage->getMasterImageWithInfo($ind);
       $originalImage = $originalImageData['url'] ?? false;
       $desc = isset($img['description']) && !empty($img['description']) ? $img['description'] : $this->transEsc('Cover Image');
+      $creditLine = $img['rights']['creditLine'] ?? '';
+      if ($creditLine && !empty($img['rights']['copyright'])) {
+        if (substr($creditLine, -1) !== '.') {
+          $creditLine .= '.';
+        }
+        $creditLine .= ' ' . $img['rights']['copyright'];
+      }
       $obj = [
         'small' => $img['urls']['small'],
         'medium' => $img['urls']['medium'],
@@ -21,6 +28,7 @@
         'index' => $ind++,
         'alt' => $desc,
         'description' => $img['description'],
+        'creditLine' => $creditLine,
         'title' => $this->transEsc('Image') . ' ' . $ind
       ];
       $paginatedLinks[] = $obj;
@@ -32,8 +40,13 @@
         <button class="next-image left" type="button"><i class="fa fa-chevron-left"></i><span class="sr-only"><?= $this->transEsc('previous_image') ?></span></button>
         <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
           <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-          <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <div class="paginator-info"><span class="image-index"></span></div>
+          <div class="image-credit-container">
+            <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+            <?php if ('list' !== $type): ?>
+              <div class="image-credit-line hidden" aria-label="<?=$this->escapeHtmlAttr($this->translate('Credits'))?>"></div>
+            <?php endif; ?>
+          </div>
         </a>
         <span class="hidden-trigger" hidden></span>
         <button class="next-image right" type="button"><i class="fa fa-chevron-right"></i><span class="sr-only"><?= $this->transEsc('next_image') ?></span></button>

@@ -5,7 +5,7 @@
             max-width: 800px;
         }
     }
-    
+
     &.videoplayer-only {
         background: initial;
         box-shadow: none;
@@ -263,7 +263,7 @@
                 width: 100%;
                 position: absolute;
                 bottom: 0;
-                background-image: 
+                background-image:
                     repeating-linear-gradient(
                     -45deg,
                     #adadad,
@@ -311,6 +311,9 @@
                 display: none;
             }
         }
+        .image-credit-line {
+            z-index: 1001;
+        }
     }
 
     .image-information-holder {
@@ -318,7 +321,7 @@
         @media (min-width: @screen-sm-min) {
             max-width: 400px;
             border-left: 1px solid #ccc;
-        } 
+        }
         display: flex;
         flex-flow: column;
         justify-content: space-between;
@@ -368,11 +371,11 @@
             font-weight: 500;
             margin-top: -10px;
         }
-        
+
         .author-and-dates p {
             margin: 0;
         }
-    
+
         &.marc .building {
             display:none;
         }
@@ -383,16 +386,16 @@
             margin-top: 0px;
             margin-bottom: 10px;
         }
-    
+
         .building {
             margin-top: 0;
         }
-    
+
         .summary {
             margin: 10px 0px;
             color: rgb(90, 90, 90);
             min-width: 200px;
-            line-height: 1.6em; 
+            line-height: 1.6em;
             &.loading {
                 max-height: 100px;
                 overflow: hidden;
@@ -411,11 +414,11 @@
             color: @gray-light;
             font-size: .8em;
         }
-    
+
         .image-info .record-index {
             display: none;
         }
-    
+
         .image-rights {
             text-align: left;
             padding: 5px 0;
@@ -423,7 +426,7 @@
             border-top: 1px solid  @gray-lighter;
             color: @text-color;
             margin-right: 0;
-    
+
             .rights span {
                 font-weight: bold;
             }
@@ -432,7 +435,7 @@
             }
             i {
                 padding-right: 2px;
-            }    
+            }
             .less-link {
                 display: none;
                 margin-left: 0;
@@ -441,7 +444,7 @@
                 a:after {
                     background-position: 2px -2270px;
                 }
-            }       
+            }
         }
     }
 }
@@ -505,7 +508,7 @@
         .summary {
             padding: 5px 20px 0px;
             text-align: left;
-        }    
+        }
         .image-rights {
             padding: 10px 0px;
             margin: 0px 20px 10px;
@@ -560,6 +563,6 @@
                 }
             }
         }
-        
+
     }
 }

@@ -840,12 +840,6 @@ class RecordDataFormatterFactory
             'Date', 'getUnitDates', 'data-lines-with-detail.phtml'
         );
         $setTemplateLine(
-            'Photo Info', 'getPhotoInfo', 'data-escapeHtml.phtml',
-            [
-                'context' => ['class' => 'record-photoinfo']
-            ]
-        );
-        $setTemplateLine(
             'Source of Acquisition', 'getAcquisitionSource', 'data-escapeHtml.phtml',
             [
                 'context' => ['class' => 'recordAcquisition']

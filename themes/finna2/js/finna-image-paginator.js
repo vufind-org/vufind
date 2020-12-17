@@ -64,6 +64,7 @@ finna.imagePaginator = (function imagePaginator() {
     _.moreBtn = null;
     _.lessBtn = null;
     _.pagerInfo = null;
+    _.creditLine = null;
     _.leftBtn = null;
     _.rightBtn = null;
     _.leftBrowseBtn = null;
@@ -169,10 +170,12 @@ finna.imagePaginator = (function imagePaginator() {
         _.pagerInfo = covers.find('.paginator-info');
       } else {
         _.pagerInfo = _.trigger.find('.paginator-info');
+        _.creditLine = _.trigger.find('.image-credit-line');
       }
     } else {
       var mfpContainer = $('.finna-popup.content');
       _.pagerInfo = mfpContainer.find('.paginator-info');
+      _.creditLine = mfpContainer.find('.image-credit-line');
       _.leftBrowseBtn = mfpContainer.find('.next-image.left');
       _.rightBrowseBtn = mfpContainer.find('.next-image.right');
     }
@@ -278,6 +281,7 @@ finna.imagePaginator = (function imagePaginator() {
     _.setCanvasElement('noZoom');
     _.setCurrentVisuals();
     _.setPagerInfo(true);
+    _.setCreditLine(image.data('credit-line'));
     if (typeof _.settings.onlyImage === 'undefined' || _.settings.onlyImage === false) {
       _.loadImageInformation();
     }
@@ -301,6 +305,7 @@ finna.imagePaginator = (function imagePaginator() {
 
     _.setCanvasElement('leaflet');
     _.setPagerInfo(true);
+    _.setCreditLine(image.data('credit-line'));
     _.setCurrentVisuals();
 
     _.leafletHolder.eachLayer(function removeLayers(layer) {
@@ -479,6 +484,21 @@ finna.imagePaginator = (function imagePaginator() {
   };
 
   /**
+   * Function to update the credit line
+   */
+  FinnaPaginator.prototype.setCreditLine = function setCreditLine(credits) {
+    var _ = this;
+    if (null !== _.creditLine) {
+      if (credits) {
+        _.creditLine.text(credits);
+        _.creditLine.removeClass('hidden');
+      } else {
+        _.creditLine.addClass('hidden');
+      }
+    }
+  };
+
+  /**
    * Function to create the track which holds the smaller images. Also determines if is called from popup so a new track can be created
    *
    * @param {HTMLElement} popupTrackArea
@@ -577,6 +597,7 @@ finna.imagePaginator = (function imagePaginator() {
       }
     }
     _.imageDetail.html(imagePopup.data('description'));
+    _.setCreditLine(imagePopup.data('credit-line'));
 
     img.unveil(100, function handleLoading() {
       $(this).on('load', function handleImage() {
@@ -794,6 +815,7 @@ finna.imagePaginator = (function imagePaginator() {
       'index': image.index,
       'data-largest': image.largest,
       'data-description': image.description,
+      'data-credit-line': image.creditLine,
       'href': (!_.isList && _.settings.enableImageZoom) ? image.largest : image.medium,
       'data-alt': image.alt
     });
@@ -997,10 +1019,10 @@ finna.imagePaginator = (function imagePaginator() {
     var _ = this;
     return _.imageHolder.find('a[index="' + index + '"]');
   };
-  
+
   /**
    * Function to add callbacks after document is fully loaded
-   * 
+   *
    * @param callback function to add
    */
   FinnaPaginator.prototype.addDocumentLoadCallback = function addDocumentLoadCallback(callback) {

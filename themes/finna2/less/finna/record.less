@@ -160,6 +160,18 @@ a.authority {
   margin-bottom: 20px;
 }
 
+.image-details {
+  table {
+    margin-left: 20px;
+  }
+  .toggle-image-information.collapsed .hide-image-information {
+    display: none;
+  }
+  .toggle-image-information:not(.collapsed) .show-image-information {
+    display: none;
+  }
+}
+
 .authoritybox,
 .large-image-layout.record {
   .media-left,
@@ -180,7 +192,7 @@ a.authority {
         .paginator-info {
           position: absolute;
           right: 10px;
-          bottom: 0px;
+          top: 0px;
           color: black;
           .image-index {
             background-color: #d6d6d6;
@@ -254,6 +266,20 @@ a.authority {
       }
     }
   }
+}
+
+.image-credit-container {
+  display: inline-block;
+  position: relative;
+}
+.image-credit-line {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: white;
+  background-color: black;
+  padding: 2px 4px 2px 4px;
+  font-size: 0.9em;
 }
 
 .recordcover-image-detail {
@@ -464,19 +490,25 @@ a.authority {
   font-size: 1.05em;
   margin-bottom: 10px;
 }
-.show-details-button, .hide-details-button {
+.show-details-button, .hide-details-button, .toggle-image-information {
   margin-top: 5px;
   margin-bottom: 5px;
   cursor: pointer;
   padding-left: 0;
   background: @body-bg;
   color: @link-color;
-  width: 100%;
   text-transform: uppercase;
-  font-size: .9em;
   &:hover, &:focus {
     color: @link-color;
   }
+}
+.show-details-button, .hide-details-button {
+  width: 100%;
+  font-size: .9em;
+}
+.toggle-image-information {
+  border: 0;
+  font-weight: 600;
 }
 
 .show-details
@@ -791,7 +823,7 @@ a.authority {
   @media (min-width: @screen-sm-min) {
     max-width: 300px;
   }
-}  
+}
 
 // Record feedback
 .feedback-record {

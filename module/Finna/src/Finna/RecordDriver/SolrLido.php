@@ -172,18 +172,25 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      *   - copyright   Copyright (e.g. 'CC BY 4.0') (optional)
      *   - description Human readable description (array)
      *   - link        Link to copyright info
+     *   - rightsHolders Rights holders
+     *   - creditLine  Credit line
+     * - identifier  Image identifier
+     * - type        Image type
+     * - relationTypes Image relationships with the object
+     * - dateTaken   Photo date taken
+     * - perspectives Image perspectives
      *
-     * @param string $language Language for copyright information
+     * @param string $language Language for textual information
      *
      * @return array
      */
-    public function getAllImages($language = 'fi')
+    public function getAllImages($language = null)
     {
         if (null !== $this->cachedImages) {
             return $this->cachedImages;
         }
 
-        $result = [];
+        $results = [];
         $defaultRights = $this->getImageRights($language, true);
         foreach ($this->getXmlRecord()->xpath(
             '/lidoWrap/lido/administrativeMetadata/'
@@ -195,23 +202,44 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             // Process rights first since we may need to duplicate them if there
             // are multiple images in the set (non-standard)
             $rights = [];
-            if (isset($resourceSet->rightsResource)) {
-                foreach ($resourceSet->rightsResource as $rightsResource) {
-                    if (!empty($rightsResource->rightsType->conceptID)) {
-                        $conceptID = $rightsResource->rightsType->conceptID;
-                        $type = strtolower((string)$conceptID->attributes()->type);
-                        if ($type == 'copyright') {
-                            $rights['copyright'] = (string)$conceptID;
-                            $link = $this->getRightsLink(
-                                strtoupper($rights['copyright']), $language
-                            );
-                            if ($link) {
-                                $rights['link'] = $link;
-                            }
+            foreach ($resourceSet->rightsResource ?? [] as $rightsResource) {
+                if (!empty($rightsResource->rightsType->conceptID)) {
+                    $conceptID = $rightsResource->rightsType->conceptID;
+                    $type = strtolower((string)$conceptID->attributes()->type);
+                    if ($type == 'copyright') {
+                        $rights['copyright'] = (string)$conceptID;
+                        $link = $this->getRightsLink(
+                            strtoupper($rights['copyright']), $language
+                        );
+                        if ($link) {
+                            $rights['link'] = $link;
                         }
                     }
                 }
+
+                foreach ($rightsResource->rightsHolder ?? [] as $holder) {
+                    if (empty($holder->legalBodyName->appellationValue)) {
+                        continue;
+                    }
+                    $rightsHolder = [
+                        'name' => (string)$holder->legalBodyName->appellationValue
+                    ];
+
+                    if (!empty($holder->legalBodyWeblink)) {
+                        $rightsHolder['link']
+                            = (string)$holder->legalBodyWeblink;
+                    }
+                    $rights['rightsHolders'][] = $rightsHolder;
+                }
+
+                if (!empty($rightsResource->creditLine)) {
+                    $rights['creditLine'] = (string)$this->getLanguageSpecificItem(
+                        $rightsResource->creditLine,
+                        $language
+                    );
+                }
             }
+
             if (!empty($resourceSet->rightsResource->rightsType->term)) {
                 $term = (string)$this->getLanguageSpecificItem(
                     $resourceSet->rightsResource->rightsType->term, $language
@@ -317,14 +345,55 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $urls['medium'] = $urls['small']
                     ?? $urls['large'];
             }
-            $result[] = [
+
+            $result = [
                 'urls' => $urls,
                 'description' => '',
                 'rights' => $rights,
                 'highResolution' => $highResolution
             ];
+
+            if (!empty($resourceSet->resourceID)) {
+                $result['identifier'] = (string)$resourceSet->resourceID;
+            }
+            if (!empty($resourceSet->resourceType->term)) {
+                $result['type'] = (string)$this->getLanguageSpecificItem(
+                    $resourceSet->resourceType->term,
+                    $language
+                );
+            }
+            foreach ($resourceSet->resourceRelType ?? [] as $relType) {
+                if (!empty($relType->term)) {
+                    $result['relationTypes'][]
+                        = (string)$this->getLanguageSpecificItem(
+                            $relType->term,
+                            $language
+                        );
+                }
+            }
+            if (!empty($resourceSet->resourceDescription)) {
+                $result['description'] = (string)$this->getLanguageSpecificItem(
+                    $resourceSet->resourceDescription,
+                    $language
+                );
+            }
+            if (!empty($resourceSet->resourceDateTaken->displayDate)) {
+                $result['dateTaken']
+                    = (string)$resourceSet->resourceDateTaken->displayDate;
+            }
+            foreach ($resourceSet->resourcePerspective ?? [] as $perspective) {
+                if (!empty($perspective->term)) {
+                    $result['perspectives'][]
+                        = (string)$this->getLanguageSpecificItem(
+                            $perspective->term,
+                            $language
+                        );
+                }
+            }
+
+            $results[] = $result;
         }
-        return $this->cachedImages = $result;
+        return $this->cachedImages = $results;
     }
 
     /**
@@ -1079,29 +1148,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $result = $element;
         }
         return $result;
-    }
-
-    /**
-     * Get the photographer information if availabe
-     *
-     * @return string Photographer's name and / or time when picture taken.
-     */
-    public function getPhotoInfo()
-    {
-        $time = $photographer = '';
-        foreach ($this->getXmlRecord()->xpath(
-            'lido/administrativeMetadata/resourceWrap/resourceSet'
-        ) as $nodes) {
-            $resourceTerm = (string)$nodes->resourceType->term;
-            if (strpos($resourceTerm, 'alokuva')) {
-                $photographer = !empty($nodes->resourceDescription)
-                 ? (string)$nodes->resourceDescription : '';
-                $time = !empty($nodes->resourceDateTaken->displayDate)
-                 ? (string)$nodes->resourceDateTaken->displayDate : '';
-            }
-        }
-        return !empty($time) ?
-        $photographer . ' ' . $time : $photographer;
     }
 
     /**
