@@ -997,8 +997,7 @@ abstract class Options implements TranslatorAwareInterface
         $limits = $facetSettings->Advanced_Settings->limitOrderOverride;
         $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?
             $facetSettings->Advanced_Settings->limitDelimiter : '::';
-        $limitConf = $limits && $limits->get($limit) ?
-            preg_replace('/\s+/', '', $limits->get($limit)) : '';
-        return explode($delimiter, $limitConf);
+        $limitConf = $limits ? $limits->get($limit) : '';
+        return array_map('trim', explode($delimiter, $limitConf));
     }
 }
