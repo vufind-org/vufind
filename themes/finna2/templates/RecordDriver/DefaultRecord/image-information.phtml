@@ -1,7 +1,6 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/image-information.phtml -->
 <?php
-  $elements = [
-    'id' => 'image_identifier',
+  $arrayElements = [
     'type' => 'image_resource_type',
     'relationTypes' => 'image_relation_type',
     'dateTaken' => 'image_date_taken',
@@ -9,8 +8,8 @@
   ];
   // Make sure we have something to display
   $rights = $this->image['rights'] ?? [];
-  if (empty($rights['rightsHolders']) && empty($rights['creditLine'])
-    && empty(array_intersect_key(array_filter($this->image), $elements))
+  if (empty($rights['rightsHolders']) && empty($image['identifier'])
+    && empty(array_intersect_key(array_filter($this->image), $arrayElements))
   ) {
     return;
   }
@@ -46,7 +45,7 @@
           </td>
         </tr>
       <?php endif; ?>
-      <?php foreach ($elements as $field => $translation): ?>
+      <?php foreach ($arrayElements as $field => $translation): ?>
         <?php if (!empty($this->image[$field])): ?>
           <tr>
             <th><?=$this->transEsc($translation)?></th>
