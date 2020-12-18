@@ -57,15 +57,5 @@
       <?php endforeach; ?>
     </table>
   </div>
-  <?php if (isset($descriptions)): ?>
-    <div class="copyright<?=$this->truncateLicense ? ' truncate-field' : ''?>">
-      <?php foreach ($descriptions as $item): ?>
-        <p><?=$this->transEsc($item)?></p>
-      <?php endforeach ?>
-    </div>
-  <?php endif; ?>
-  <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-    <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See terms and conditions') ?></a></p>
-  <?php endif; ?>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/image-information.phtml -->

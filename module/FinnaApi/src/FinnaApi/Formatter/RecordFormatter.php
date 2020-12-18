@@ -79,10 +79,8 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
             $lang, [], false, false
         );
         foreach ($images as &$image) {
-            if (empty($image['rights'])) {
-                $image['rights'] = [
-                    'copyright' => $translate('Image Rights Default')
-                ];
+            if (empty($image['rights']['copyright'])) {
+                $image['rights']['copyright'] = $translate('Image Rights Default');
             }
         }
         return $images;

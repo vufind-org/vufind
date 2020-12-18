@@ -1,6 +1,6 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/image-rights.phtml -->
 <div class="access-rights">
-  <?php if (isset($rights) && !empty($rights)): ?>
+  <?php if (!empty($rights['copyright']) || !empty($rights['description'])): ?>
     <?php
       $descriptions = $rights['description'] ?? [];
     ?>
@@ -30,6 +30,7 @@
     </div>
   <?php endif; ?>
   <?php if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
+    <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
     <p><a href="<?= $this->url('content-page', ['page' => 'terms']) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See terms and conditions') ?></a></p>
   <?php endif; ?>
 </div>

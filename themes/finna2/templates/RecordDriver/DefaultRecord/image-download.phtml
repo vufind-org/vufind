@@ -1,6 +1,6 @@
 <!-- START of Finna - RecordDriver/DefaultRecord/image-download.phtml -->
 <div class="image-link">
-    <?php if (isset($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
+    <?php if (!empty($rights['copyright']) && $rights['copyright'] !== $this->transEsc('usage_F')): ?>
         <?php
             $urls = $image['urls'];
             $links = [];
@@ -48,8 +48,6 @@
                 <span class="image-dimensions"></span>
             </div>
         <?php endif; ?>
-    <?php elseif (!isset($rights['copyright']) && !isset($rights['description'])): ?>
-        <p class="image-rights-default"><?=$this->transEsc('Image Rights Default') ?></p>
     <?php endif; ?>
 </div>
 <!-- END of Finna - RecordDriver/DefaultRecord/image-download.phtml -->
