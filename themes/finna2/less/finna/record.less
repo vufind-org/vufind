@@ -237,7 +237,10 @@ a.authority {
   position: relative;
   .fa.fa-download {
     margin-right: 4px;
-    color: @brand-primary;
+    color: @action-link-color;
+    &:hover, &:focus {
+      color: @action-link-color;
+    }
   }
   .dropdown {
     position: initial;
@@ -497,19 +500,23 @@ a.authority {
   cursor: pointer;
   padding-left: 0;
   background: @body-bg;
-  color: @link-color;
   text-transform: uppercase;
-  &:hover, &:focus {
-    color: @link-color;
-  }
 }
 .show-details-button, .hide-details-button {
   width: 100%;
   font-size: .9em;
+  color: @link-color;
+  &:hover, &:focus {
+    color: @link-color;
+  }
 }
 .toggle-image-information {
   border: 0;
   font-weight: 600;
+  color: @action-link-color;
+  &:hover, &:focus {
+    color: @action-link-color;
+  }
 }
 
 .show-details
@@ -606,7 +613,7 @@ a.authority {
     color: @action-link-color;
     &:hover {
       text-decoration: none;
-      color: @link-color;
+      color: @action-link-color;
     }
   }
   .image-dimensions {
