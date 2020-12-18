@@ -147,14 +147,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 ) {
                     $data = [];
 
-                    $copyright = (string)$conceptID;
-                    $data['copyright'] = $copyright;
+                    $copyright = trim((string)$conceptID);
+                    if ($copyright) {
+                        $data['copyright'] = $copyright;
 
-                    $copyright = strtoupper($copyright);
-                    if ($link = $this->getRightsLink($copyright, $language)) {
-                        $data['link'] = $link;
+                        $copyright = strtoupper($copyright);
+                        if ($link = $this->getRightsLink($copyright, $language)) {
+                            $data['link'] = $link;
+                        }
+                        return $data;
                     }
-                    return $data;
                 }
             }
         }
@@ -206,7 +208,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 if (!empty($rightsResource->rightsType->conceptID)) {
                     $conceptID = $rightsResource->rightsType->conceptID;
                     $type = strtolower((string)$conceptID->attributes()->type);
-                    if ($type == 'copyright') {
+                    if ($type === 'copyright' && trim((string)$conceptID)) {
                         $rights['copyright'] = (string)$conceptID;
                         $link = $this->getRightsLink(
                             strtoupper($rights['copyright']), $language
@@ -812,7 +814,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $rights['description'] = $description;
         }
 
-        return isset($rights['copyright']) || isset($rights['description'])
+        return !empty($rights['copyright']) || !empty($rights['description'])
             ? $rights : false
         ;
     }
