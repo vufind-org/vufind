@@ -36,7 +36,7 @@
               <?php if (++$i > 1): ?><br><?php endif; ?>
               <?php if (!empty($rightsHolder['link'])): ?>
                 <a href="<?=$this->escapeHtmlAttr($rightsHolder['link'])?>" target="_blank">
-                  <?=$this->escapeHtml($rightsHolder['name'])?>
+                  <i class="fa fa-external-link" aria-hidden="true"></i> <?=$this->escapeHtml($rightsHolder['name'])?>
                 </a>
               <?php else: ?>
                 <?=$this->escapeHtml($rightsHolder['name'])?>
