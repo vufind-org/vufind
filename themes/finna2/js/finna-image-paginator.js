@@ -580,8 +580,11 @@ finna.imagePaginator = (function imagePaginator() {
             $('.large-image-sidebar').addClass('visible-xs visible-sm');
           });
         }
-      } else if (_.trigger.hasClass('no-image')) {
-        _.trigger.removeClass('no-image');
+      } else {
+        if (_.trigger.hasClass('no-image')) {
+          _.trigger.removeClass('no-image');
+        }
+        _.setCreditLine(imagePopup.data('credit-line'));
       }
     }
 
@@ -597,10 +600,10 @@ finna.imagePaginator = (function imagePaginator() {
       }
     }
     _.imageDetail.html(imagePopup.data('description'));
-    _.setCreditLine(imagePopup.data('credit-line'));
+    _.setCreditLine('');
 
     img.unveil(100, function handleLoading() {
-      $(this).on('load', function handleImage() {
+      $(this).off('load').on('load', function handleImage() {
         setImageProperties(this);
       });
     });
