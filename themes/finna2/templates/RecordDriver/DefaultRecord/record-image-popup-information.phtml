@@ -47,7 +47,9 @@
   <div class="building">
     <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>
   </div>
-  <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-circle-right"></i> <span><?=$this->transEsc('To the record') ?></span></a></div>
+  <div class="popup-link-buttons">
+    <div class="record-link"><a href="<?=$this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-circle-right"></i> <span><?=$this->transEsc('To the record') ?></span></a></div>
+  </div>
   <div class="summary loading">
     <div data-rows="6" class="truncate-field">
     <?php if ($recordType == 'marc'): ?>
