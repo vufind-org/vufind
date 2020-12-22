@@ -257,7 +257,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $highResolution = [];
             foreach ($resourceSet->resourceRepresentation as $representation) {
                 $linkResource = $representation->linkResource;
-                $url = (string)$linkResource;
+                $url = trim((string)$linkResource);
                 if (empty($url)) {
                     continue;
                 }
