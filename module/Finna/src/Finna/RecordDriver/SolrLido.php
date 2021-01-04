@@ -734,12 +734,14 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         foreach ($this->getXmlRecord()->xpath(
             'lido/descriptiveMetadata/objectClassificationWrap'
         ) as $node) {
+            if (!isset($node->objectWorkTypeWrap->objectWorkType->term)) {
+                continue;
+            }
             $term = (string)$node->objectWorkTypeWrap->objectWorkType->term;
-            if ($term == 'rakennetun ympäristön kohde') {
-                foreach ($node->classificationWrap->classification
+            if ($term === 'rakennetun ympäristön kohde') {
+                foreach ($node->classificationWrap->classification ?? []
                     as $classificationNode
                 ) {
-                    $type = null;
                     $attributes = $classificationNode->attributes();
                     $type = isset($attributes->type) ? $attributes->type : '';
                     if ($type) {
@@ -749,17 +751,18 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                         $results[] = (string)$classificationNode->term;
                     }
                 }
-            } elseif ($term == 'arkeologinen kohde') {
-                foreach ($node->classificationWrap->classification->term
+            } elseif ($term === 'arkeologinen kohde') {
+                foreach ($node->classificationWrap->classification ?? []
                     as $classificationNode
                 ) {
-                    $label = null;
-                    $attributes = $classificationNode->attributes();
-                    $label = isset($attributes->label) ? $attributes->label : '';
-                    if ($label) {
-                        $results[] = (string)$classificationNode . " ($label)";
-                    } else {
-                        $results[] = (string)$classificationNode;
+                    foreach ($classificationNode->term as $term) {
+                        $attributes = $term->attributes();
+                        $label = isset($attributes->label) ? $attributes->label : '';
+                        if ($label) {
+                            $results[] = (string)$term . " ($label)";
+                        } else {
+                            $results[] = (string)$term;
+                        }
                     }
                 }
             }
