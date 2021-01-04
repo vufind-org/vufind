@@ -510,13 +510,15 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             . 'classification'
         ) as $node) {
             if (isset($node->term)) {
-                $term = (string)$node->term;
-                $attributes = $node->term->attributes();
-                $label = isset($attributes->label) ? $attributes->label : '';
-                if ($label) {
-                    $results[] = compact('term', 'label');
-                } else {
-                    $results[] = $term;
+                $term = trim((string)$node->term);
+                if ('' !== $term) {
+                    $attributes = $node->term->attributes();
+                    $label = isset($attributes->label) ? $attributes->label : '';
+                    if ($label) {
+                        $results[] = compact('term', 'label');
+                    } else {
+                        $results[] = $term;
+                    }
                 }
             }
         }
