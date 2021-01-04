@@ -1148,20 +1148,24 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $languages[] = substr($language, 0, 2);
             }
         }
-        $result = null;
         foreach ($languages as $lng) {
             foreach ($element as $item) {
                 $attrs = $item->attributes();
                 if (!empty($attrs->lang) && (string)$attrs->lang == $lng) {
-                    $result = (string)$item;
-                    break 2;
+                    if ('' !== trim((string)$item)) {
+                        return $item;
+                    }
                 }
             }
         }
-        if (null === $result) {
-            $result = $element;
+        // Return first non-empty item if available
+        foreach ($element as $item) {
+            if ('' !== trim((string)$item)) {
+                return $item;
+            }
         }
-        return $result;
+
+        return $element;
     }
 
     /**
