@@ -88,7 +88,7 @@
             <?php endif; ?>
             </td>
             <td class="text-left hidden-xs">
-              <div class="cover-image">
+              <div aria-hidden="true" class="cover-image">
                 <?php if ($summThumb = $this->record($resource)->getThumbnail()): ?>
                   <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
                 <?php else: ?>

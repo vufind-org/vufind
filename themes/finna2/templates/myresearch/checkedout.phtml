@@ -124,7 +124,7 @@
             </td>
             <?php endif; ?>
             <td class="text-center hidden-xs">
-              <div class="cover-image">
+              <div aria-hidden="true" class="cover-image">
                 <?php if ($summThumb = $this->record($resource)->getThumbnail()): ?>
                   <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
                 <?php else: ?>
