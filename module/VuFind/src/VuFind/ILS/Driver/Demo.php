@@ -82,9 +82,9 @@ class Demo extends AbstractBase
     protected $sessionFactory;
 
     /**
-     * HTTP Request object.
+     * HTTP Request object (if available).
      *
-     * @var HttpRequest
+     * @var ?HttpRequest
      */
     protected $request;
 
@@ -131,10 +131,10 @@ class Demo extends AbstractBase
      * @param callable               $sessionFactory Factory function returning
      * SessionContainer object for fake data to simulate consistency and reduce Solr
      * hits
-     * @param HttpRequest            $request        HTTP request object
+     * @param HttpRequest            $request        HTTP request object (optional)
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss, $sessionFactory, HttpRequest $request
+        SearchService $ss, $sessionFactory, HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -585,7 +585,8 @@ class Demo extends AbstractBase
             $this->session[$selectedPatron] = $factory($selectedPatron);
         }
         $result = $this->session[$selectedPatron];
-        if ($this->request->getQuery('clear_demo')) {
+        // Special case: check for clear_demo request parameter to reset:
+        if ($this->request && $this->request->getQuery('clear_demo')) {
             $result->exchangeArray([]);
         }
         return $result;
