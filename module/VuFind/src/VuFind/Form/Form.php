@@ -397,7 +397,8 @@ class Form extends \Laminas\Form\Form implements
     protected function getFormElementSettingFields()
     {
         return [
-            'required', 'help', 'value', 'inputType', 'group', 'placeholder'
+            'required', 'requireOne', 'help', 'value', 'inputType', 'group',
+            'placeholder'
         ];
     }
 
@@ -758,7 +759,10 @@ class Form extends \Laminas\Form\Form implements
         ];
 
         foreach ($this->getElements() as $el) {
-            $required = ($el['required'] ?? false) === true;
+            $required = $el['type'] === 'checkbox'
+               ? $el['required'] ?? $el['requireOne'] ?? false
+               : $el['required'] ?? false;
+
             $fieldValidators = [];
             if ($required) {
                 $fieldValidators[] = $validators['notEmpty'];
