@@ -305,10 +305,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
 
                 if (!$size) {
                     if ($urls) {
-                        // We already have URL's, store them in the results first.
-                        // This shouldn't happen unless there are multiple images
-                        // without type in the same set.
-                        $result[] = [
+                        // We already have URL's, store them in the final results
+                        // first. This shouldn't happen unless there are multiple
+                        // images without type in the same set.
+                        $results[] = [
                             'urls' => $urls,
                             'description' => '',
                             'rights' => $rights
