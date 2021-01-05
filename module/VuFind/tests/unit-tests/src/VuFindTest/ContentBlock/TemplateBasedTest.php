@@ -38,6 +38,8 @@ namespace VuFindTest\ContentBlock;
  */
 class TemplateBasedTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test basic functionality of .phtml content block.
      *
@@ -63,7 +65,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicMarkdownFunctionality()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../../../VuFindTheme/tests/unit-tests/fixtures/themes');
+        $fixturePath = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
         $file = $fixturePath . '/parent/templates/page-locator-test/page4.md';
         $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
             ->disableOriginalConstructor()

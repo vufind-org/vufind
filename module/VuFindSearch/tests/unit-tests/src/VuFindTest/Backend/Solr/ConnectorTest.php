@@ -48,6 +48,8 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  */
 class ConnectorTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Current response.
      *
@@ -176,11 +178,8 @@ class ConnectorTest extends TestCase
     protected function createConnector($fixture = null)
     {
         if ($fixture) {
-            $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-            }
-            $this->response = file_get_contents($file);
+            $this->response
+                = $this->getFixture("solr/response/$fixture", 'VuFindSearch');
         }
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);

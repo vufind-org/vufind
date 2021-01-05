@@ -288,6 +288,19 @@ class AbstractSearch extends AbstractBase
      */
     public function resultsAction()
     {
+        return $this->getSearchResultsView();
+    }
+
+    /**
+     * Perform a search and send results to a results view
+     *
+     * @param callable $setupCallback Optional setup callback that overrides the
+     * default one
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    protected function getSearchResultsView($setupCallback = null)
+    {
         $view = $this->createViewModel();
 
         // Handle saved search requests:
@@ -306,7 +319,8 @@ class AbstractSearch extends AbstractBase
             ->retrieveLastSetting($this->searchClassId, 'view');
         try {
             $view->results = $results = $runner->run(
-                $request, $this->searchClassId, $this->getSearchSetupCallback(),
+                $request, $this->searchClassId,
+                $setupCallback ?: $this->getSearchSetupCallback(),
                 $lastView
             );
         } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {

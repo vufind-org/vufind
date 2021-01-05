@@ -120,7 +120,7 @@ class Demo extends AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param SearchService          $ss             Search service
-     * @param Callable               $sessionFactory Factory function returning
+     * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
      * fake data to simulate consistency and reduce Solr hits
      */

@@ -148,11 +148,11 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         ];
 
         // Initialize cache manager.
-        if (isset($configArray['PolicyCache']['type'])
+        if (isset($this->config['PolicyCache']['type'])
             && $this->cacheManager
         ) {
             $this->policyCache = $this->cacheManager
-                ->getCache($configArray['PolicyCache']['type']);
+                ->getCache($this->config['PolicyCache']['type']);
         }
     }
 

@@ -374,7 +374,7 @@ class Bootstrapper
             if ($exception instanceof \VuFind\Exception\HttpStatusInterface) {
                 $response = $e->getResponse();
                 if (!$response) {
-                    $response = new HttpResponse();
+                    $response = new \Laminas\Http\Response();
                     $e->setResponse($response);
                 }
                 $response->setStatusCode($exception->getHttpStatus());

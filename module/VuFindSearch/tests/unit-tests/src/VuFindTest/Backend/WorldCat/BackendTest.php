@@ -44,6 +44,8 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -133,11 +135,9 @@ class BackendTest extends TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/worldcat/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return unserialize(file_get_contents($file));
+        return unserialize(
+            $this->getFixture("worldcat/response/$fixture", 'VuFindSearch')
+        );
     }
 
     /**

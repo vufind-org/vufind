@@ -28,8 +28,8 @@
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\VuFind\Exception;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
@@ -45,6 +45,8 @@ use VuFindHttp\HttpServiceAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
+    const HOLDINGS_LINE_NUMBER = 40;
+
     use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -181,7 +183,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param Callable               $sessionFactory Factory function returning
+     * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
@@ -291,7 +293,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     public function getStatus($id)
     {
-        return $this->getItemStatusesForBib($id);
+        return $this->getItemStatusesForBib($id, false);
     }
 
     /**
@@ -308,7 +310,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getItemStatusesForBib($id);
+            $items[] = $this->getItemStatusesForBib($id, false);
         }
         return $items;
     }
@@ -1093,7 +1095,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 throw new DateException('Result should be numeric');
             }
         } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.');
+            throw new ILSException('Problem parsing required by date.', 0, $e);
         }
 
         if (time() > $checkTime) {
@@ -1427,7 +1429,19 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Send request and retrieve response
         $startTime = microtime(true);
-        $response = $client->setMethod($method)->send();
+        try {
+            $response = $client->setMethod($method)->send();
+        } catch (\Exception $e) {
+            $params = $method == 'GET'
+                ? $client->getRequest()->getQuery()->toString()
+                : $client->getRequest()->getPost()->toString();
+            $this->error(
+                "$method request for '$apiUrl' with params '$params' and contents '"
+                . $client->getRequest()->getContent() . "' caused exception: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with Sierra REST API.', 0, $e);
+        }
         // If we get a 401, we need to renew the access token and try again
         if ($response->getStatusCode() == 401) {
             if (!$this->renewAccessToken($patron)) {
@@ -1509,7 +1523,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // Send request and retrieve response
         $startTime = microtime(true);
-        $response = $client->setMethod('POST')->send();
+        try {
+            $response = $client->setMethod('POST')->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "POST request for '$apiUrl' caused exception: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with Sierra REST API.', 0, $e);
+        }
+
         if (!$response->isSuccess()) {
             $this->error(
                 "POST request for '$apiUrl' with contents '"
@@ -1557,7 +1580,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         // First request the login form to get the hidden fields and cookies
         $client = $this->createHttpClient($apiUrl);
-        $response = $client->send();
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->error(
+                "GET request for '$apiUrl' caused exception: "
+                . $e->getMessage()
+            );
+            throw new ILSException('Problem with Sierra REST API.', 0, $e);
+        }
+
         $doc = new \DOMDocument();
         if (!@$doc->loadHTML($response->getBody())) {
             $this->error('Could not parse the III CAS login form');
@@ -1707,19 +1739,20 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id The record id to retrieve the holdings for
+     * @param string $id            The record id to retrieve the holdings for
+     * @param bool   $checkHoldings Whether to check holdings records
      *
      * @return array An associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    protected function getItemStatusesForBib($id)
+    protected function getItemStatusesForBib($id, $checkHoldings)
     {
         // If we need to look at bib call numbers, retrieve varFields:
         $bibFields = empty($this->config['CallNumber']['bib_fields'])
             ? 'bibLevel' : 'bibLevel,varFields';
         $bib = $this->getBibRecord($id, $bibFields);
         $holdingsData = [];
-        if ($this->apiVersion >= 5.1) {
+        if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
                 ['v5', 'holdings'],
                 [
@@ -1733,8 +1766,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if (!empty($holdingsResult['entries'])) {
                 foreach ($holdingsResult['entries'] as $entry) {
                     $location = '';
-                    foreach ($entry['fixedFields'] as $field) {
-                        if ('LOCATION' === $field['label']) {
+                    foreach ($entry['fixedFields'] as $code => $field) {
+                        if ($code === static::HOLDINGS_LINE_NUMBER
+                            || $field['label'] === 'LOCATION'
+                        ) {
                             $location = $field['value'];
                             break;
                         }
