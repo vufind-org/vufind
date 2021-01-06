@@ -68,7 +68,7 @@ trait MarcReaderTrait
                     break;
                 }
             }
-var_dump($preferredMarcField);
+
             $marc = trim($this->fields[$preferredMarcField]);
 
             // check if we are dealing with MARCXML
