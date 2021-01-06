@@ -58,7 +58,12 @@ trait MarcReaderTrait
     public function getMarcRecord()
     {
         if (null === $this->lazyMarcRecord) {
-            $marc = trim($this->fields['fullrecord']);
+            // Get preferred MARC field from config, if it is set and is existing:
+            $marcField = (isset($this->mainConfig->Record->preferredMarcField)
+                    && array_key_exists($this->mainConfig->Record->preferredMarcField, $this->fields))
+                ? $this->mainConfig->Record->preferredMarcField : 'fullrecord';
+
+            $marc = trim($this->fields[$marcField]);
 
             // check if we are dealing with MARCXML
             if (substr($marc, 0, 1) == '<') {
