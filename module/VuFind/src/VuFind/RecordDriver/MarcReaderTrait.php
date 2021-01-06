@@ -59,7 +59,8 @@ trait MarcReaderTrait
     {
         if (null === $this->lazyMarcRecord) {
             // Get preferred MARC field from config, if it is set and is existing
-            $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields ?? 'fullrecord';
+            $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
+                ?? 'fullrecord';
             $preferredMarcFieldArray = explode(',', $preferredMarcFields);
             $preferredMarcField = 'fullrecord';
             foreach ($preferredMarcFieldArray as $testField) {
