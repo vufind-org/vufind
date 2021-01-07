@@ -382,5 +382,56 @@ class FormTest extends \VuFindTest\Unit\TestCase
         // One OK and one invalid option
         $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
         $this->assertTrue($form->isValid());
+
+
+        // Test checkbox with a single options that is required
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId('TestCheckboxWithOneOptionThatIsRequired');
+
+        // No options
+        $form->setData(['checkbox' => []]);
+        $this->assertFalse($form->isValid());
+
+        // One invalid option
+        $form->setData(['checkbox' => ['invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option
+        $form->setData(['checkbox' => ['option-1']]);
+        $this->assertTrue($form->isValid());
+
+        // One OK and one invalid option
+        $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+
+        // Test checkbox with a single options that is required,
+        // configured with requireOne
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId(
+            'TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne'
+        );
+
+        // No options
+        $form->setData(['checkbox' => []]);
+        $this->assertFalse($form->isValid());
+
+        // One invalid option
+        $form->setData(['checkbox' => ['invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option
+        $form->setData(['checkbox' => ['option-1']]);
+        $this->assertTrue($form->isValid());
+
+        // One OK and one invalid option
+        $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+        $this->assertTrue($form->isValid());
     }
 }
