@@ -509,6 +509,15 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return (isset($this->fields['is_superior_work'])) ? $this->fields['is_superior_work'] : false;
     }
 
+    public function hasInferiorWorksInCurrentSubsystem() {
+        if (!isset($this->fields['superior_work_subsystems']))
+            return false;
+
+        $subsystems = $this->fields['superior_work_subsystems'];
+        return in_array($this->container->get('ViewHelperManager')->get('tuefind')->getTueFindSubtype(),
+                        $subsystems, true);
+    }
+
     public function isSubscribable() {
         return (isset($this->fields['is_subscribable'])) ? $this->fields['is_subscribable'] : false;
     }

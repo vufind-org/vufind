@@ -178,10 +178,6 @@ class SolrMarc extends SolrDefault
         return ($this->isSuperiorWork() && in_array('Subscription Bundle', $this->getFormats()));
     }
 
-    public function isRealSuperiorWork() {
-        return ($this->isSuperiorWork() && !$this->isSubscriptionBundle());
-    }
-
     public function workIsTADCandidate() {
         return ($this->isArticle() || $this->isArticleCollection()) && $this->isPrintedWork() && $this->isTADTagged();
     }
