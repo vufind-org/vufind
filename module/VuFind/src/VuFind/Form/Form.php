@@ -30,6 +30,8 @@ namespace VuFind\Form;
 use Laminas\InputFilter\InputFilter;
 use Laminas\Validator\EmailAddress;
 use Laminas\Validator\NotEmpty;
+use Laminas\Validator\Identical;
+use Laminas\Validator\Callback;
 use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
 
@@ -759,14 +761,41 @@ class Form extends \Laminas\Form\Form implements
         ];
 
         foreach ($this->getElements() as $el) {
-            $required = $el['type'] === 'checkbox'
-               ? $el['required'] ?? $el['requireOne'] ?? false
-               : $el['required'] ?? false;
+            $isCheckbox = $el['type'] === 'checkbox';
+            $required = $el['required']
+                ?? ($isCheckbox && ($el['requireOne'] ?? false));
+            $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
 
             $fieldValidators = [];
-            if ($required) {
+            if ($required || $requireOne) {
                 $fieldValidators[] = $validators['notEmpty'];
             }
+            if ($isCheckbox) {
+                if ($requireOne) {
+                    $fieldValidators[] = [
+                        'name' => Callback::class,
+                        'options' => [
+                            'callback' => function ($value, $context) use ($el) {
+                                return
+                                    !empty(array_intersect($el['options'], $value));
+                            }
+                         ]
+                    ];
+                } else if ($required) {
+                    $fieldValidators[] = [
+                        'name' => Identical::class,
+                        'options' => [
+                            'message' => [
+                                Identical::MISSING_TOKEN
+                                => $this->getValidationMessage('empty')
+                            ],
+                            'strict' => true,
+                            'token' => array_values($el['options'])
+                        ]
+                    ];
+                }
+            }
+
             if ($el['type'] === 'email') {
                 $fieldValidators[] = $validators['email'];
             }
