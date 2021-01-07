@@ -192,4 +192,28 @@ class RecordCollectionTest extends TestCase
         $this->assertTrue(in_array($r2, $final));
         $this->assertTrue(in_array($r3, $final));
     }
+
+    /**
+     * Test that the object handles offsets properly.
+     *
+     * @return void
+     */
+    public function testAdd()
+    {
+        $coll = new RecordCollection(
+            [
+                'response' => ['numFound' => 10, 'start' => 5]
+            ]
+        );
+        $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
+        $coll->add($record);
+        for ($i = 0; $i < 4; $i++) {
+            $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
+        }
+        $this->assertEquals(5, $coll->count());
+        $coll->add($record);
+        $this->assertEquals(5, $coll->count());
+        $coll->add($record, false);
+        $this->assertEquals(6, $coll->count());
+    }
 }

@@ -421,7 +421,7 @@ class SideFacets extends AbstractFacets
      */
     protected function getRangeFacets($property)
     {
-        $filters = $this->results->getParams()->getFilters();
+        $filters = $this->results->getParams()->getRawFilters();
         $result = [];
         if (isset($this->$property) && is_array($this->$property)) {
             foreach ($this->$property as $current) {

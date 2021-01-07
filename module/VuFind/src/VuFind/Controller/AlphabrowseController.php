@@ -160,7 +160,7 @@ class AlphabrowseController extends AbstractBase
             $highlight_row = $rows_before;
             // special case: match row is < rows_before (i.e. at beginning of list)
             if ($startRow_adj < $rows_before) {
-                $highlight_row =  $startRow_adj;
+                $highlight_row = $startRow_adj;
             }
             // special case: we've gone past the end
             // only the rows_before records will have been returned

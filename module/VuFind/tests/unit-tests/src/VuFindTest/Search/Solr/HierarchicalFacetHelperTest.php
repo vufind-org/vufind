@@ -43,6 +43,11 @@ use VuFindTest\Unit\TestCase;
  */
 class HierarchicalFacetHelperTest extends TestCase
 {
+    /**
+     * Test input data.
+     *
+     * @var array
+     */
     protected $facetList = [
         [
             'value' => '0/Book/',
@@ -113,9 +118,39 @@ class HierarchicalFacetHelperTest extends TestCase
     }
 
     /**
-     * Tests for sortFacetList (top level only)
+     * Tests for sortFacetList (default/count sort -- at present these should
+     * make no changes to the input data and can thus both be tested in a single
+     * test method).
+     *
+     * @return void
      */
-    public function testSortFacetListTopLevel()
+    public function testSortFacetListDefault()
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList);
+        $this->assertEquals($facetList[0]['value'], '0/Book/');
+        $this->assertEquals($facetList[1]['value'], '0/AV/');
+        $this->assertEquals($facetList[2]['value'], '0/Audio/');
+        $this->assertEquals($facetList[3]['value'], '1/Book/BookPart/');
+        $this->assertEquals($facetList[4]['value'], '1/Book/Section/');
+        $this->assertEquals($facetList[5]['value'], '1/Audio/Spoken/');
+        $this->assertEquals($facetList[6]['value'], '1/Audio/Music/');
+        $this->helper->sortFacetList($facetList, 'count');
+        $this->assertEquals($facetList[0]['value'], '0/Book/');
+        $this->assertEquals($facetList[1]['value'], '0/AV/');
+        $this->assertEquals($facetList[2]['value'], '0/Audio/');
+        $this->assertEquals($facetList[3]['value'], '1/Book/BookPart/');
+        $this->assertEquals($facetList[4]['value'], '1/Book/Section/');
+        $this->assertEquals($facetList[5]['value'], '1/Audio/Spoken/');
+        $this->assertEquals($facetList[6]['value'], '1/Audio/Music/');
+    }
+
+    /**
+     * Tests for sortFacetList (top level only, specified with boolean)
+     *
+     * @return void
+     */
+    public function testSortFacetListTopLevelBooleanTrue()
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList, true);
@@ -129,9 +164,29 @@ class HierarchicalFacetHelperTest extends TestCase
     }
 
     /**
-     * Tests for sortFacetList (all levels)
+     * Tests for sortFacetList (top level only, specified with string)
+     *
+     * @return void
      */
-    public function testSortFacetListAllLevels()
+    public function testSortFacetListTopLevelStringConfig()
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList, 'top');
+        $this->assertEquals($facetList[0]['value'], '0/AV/');
+        $this->assertEquals($facetList[1]['value'], '0/Book/');
+        $this->assertEquals($facetList[2]['value'], '0/Audio/');
+        $this->assertEquals($facetList[3]['value'], '1/Book/BookPart/');
+        $this->assertEquals($facetList[4]['value'], '1/Book/Section/');
+        $this->assertEquals($facetList[5]['value'], '1/Audio/Spoken/');
+        $this->assertEquals($facetList[6]['value'], '1/Audio/Music/');
+    }
+
+    /**
+     * Tests for sortFacetList (all levels, specified with boolean)
+     *
+     * @return void
+     */
+    public function testSortFacetListAllLevelsBooleanFalse()
     {
         $facetList = $this->facetList;
         $this->helper->sortFacetList($facetList, false);
@@ -145,7 +200,27 @@ class HierarchicalFacetHelperTest extends TestCase
     }
 
     /**
+     * Tests for sortFacetList (all levels, specified with string)
+     *
+     * @return void
+     */
+    public function testSortFacetListAllLevelsStringConfig()
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList, 'all');
+        $this->assertEquals($facetList[0]['value'], '0/AV/');
+        $this->assertEquals($facetList[1]['value'], '0/Book/');
+        $this->assertEquals($facetList[2]['value'], '0/Audio/');
+        $this->assertEquals($facetList[3]['value'], '1/Book/BookPart/');
+        $this->assertEquals($facetList[4]['value'], '1/Book/Section/');
+        $this->assertEquals($facetList[5]['value'], '1/Audio/Music/');
+        $this->assertEquals($facetList[6]['value'], '1/Audio/Spoken/');
+    }
+
+    /**
      * Tests for buildFacetArray
+     *
+     * @return void
      */
     public function testBuildFacetArray()
     {
@@ -183,6 +258,8 @@ class HierarchicalFacetHelperTest extends TestCase
 
     /**
      * Tests for flattenFacetHierarchy
+     *
+     * @return void
      */
     public function testFlattenFacetHierarchy()
     {
@@ -202,6 +279,8 @@ class HierarchicalFacetHelperTest extends TestCase
 
     /**
      * Tests for formatDisplayText
+     *
+     * @return void
      */
     public function testFormatDisplayText()
     {

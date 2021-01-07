@@ -238,7 +238,7 @@ class AlmaController extends AbstractBase
                 $user->username = $username;
                 $user->firstname = $firstname;
                 $user->lastname = $lastname;
-                $user->email = $email;
+                $user->updateEmail($email);
                 $user->cat_id = $primaryId;
                 $user->cat_username = $username;
 

@@ -535,7 +535,7 @@ class EDS extends DefaultRecord
     {
         $groupsToReplace = ['au','su'];
         if (in_array($group, $groupsToReplace)) {
-            $br =  '/<br \/>/';
+            $br = '/<br \/>/';
             $comma = ', ';
             return preg_replace($br, $comma, $data);
         }
@@ -568,5 +568,22 @@ class EDS extends DefaultRecord
     {
         // EDS is not export-friendly; disable all formats.
         return true;
+    }
+
+    /**
+     * Return the first valid DOI found in the record (false if none).
+     *
+     * @return mixed
+     */
+    public function getCleanDOI()
+    {
+        if (isset($this->fields['Items'])) {
+            foreach ($this->fields['Items'] as $item) {
+                if ('DOI' == $item['Name']) {
+                    return $item['Data'];
+                }
+            }
+        }
+        return false;
     }
 }

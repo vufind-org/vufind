@@ -58,17 +58,27 @@ class ILS extends AbstractBase
     protected $catalog = null;
 
     /**
-     * Set the ILS connection for this object.
+     * Email Authenticator
+     *
+     * @var EmailAuthenticator
+     */
+    protected $emailAuthenticator;
+
+    /**
+     * Constructor
      *
      * @param \VuFind\ILS\Connection    $connection    ILS connection to set
      * @param \VuFind\ILS\Authenticator $authenticator ILS authenticator
+     * @param EmailAuthenticator        $emailAuth     Email authenticator
      */
     public function __construct(
         \VuFind\ILS\Connection $connection,
-        \VuFind\Auth\ILSAuthenticator $authenticator
+        \VuFind\Auth\ILSAuthenticator $authenticator,
+        EmailAuthenticator $emailAuth = null
     ) {
         $this->setCatalog($connection);
         $this->authenticator = $authenticator;
+        $this->emailAuthenticator = $emailAuth;
     }
 
     /**
@@ -107,27 +117,9 @@ class ILS extends AbstractBase
     {
         $username = trim($request->getPost()->get('username'));
         $password = trim($request->getPost()->get('password'));
-        if ($username == '' || $password == '') {
-            throw new AuthException('authentication_error_blank');
-        }
+        $loginMethod = $this->getILSLoginMethod();
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin($username, $password);
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Did the patron successfully log in?
-        if ($patron) {
-            return $this->processILSUser($patron);
-        }
-
-        // If we got this far, we have a problem:
-        throw new AuthException('authentication_error_invalid');
+        return $this->handleLogin($username, $password, $loginMethod);
     }
 
     /**
@@ -209,6 +201,88 @@ class ILS extends AbstractBase
     }
 
     /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return string
+     */
+    public function getILSLoginMethod($target = '')
+    {
+        $config = $this->getCatalog()->checkFunction(
+            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
+        );
+        return $config['loginMethod'] ?? 'password';
+    }
+
+    /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        return (null !== $this->emailAuthenticator
+            && $this->emailAuthenticator->isValidLoginRequest($request))
+                ? 'Email' : false;
+    }
+
+    /**
+     * Handle the actual login with the ILS.
+     *
+     * @param string $username    User name
+     * @param string $password    Password
+     * @param string $loginMethod Login method
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User Processed User object.
+     */
+    protected function handleLogin($username, $password, $loginMethod)
+    {
+        if ($username == '' || ('password' === $loginMethod && $password == '')) {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        // Connect to catalog:
+        try {
+            $patron = $this->getCatalog()->patronLogin($username, $password);
+        } catch (AuthException $e) {
+            // Pass Auth exceptions through
+            throw $e;
+        } catch (\Exception $e) {
+            throw new AuthException('authentication_error_technical');
+        }
+
+        // Did the patron successfully log in?
+        if ('email' === $loginMethod) {
+            if (null === $this->emailAuthenticator) {
+                throw new \Exception('Email authenticator not set');
+            }
+            if ($patron) {
+                $class = get_class($this);
+                if ($p = strrpos($class, '\\')) {
+                    $class = substr($class, $p + 1);
+                }
+                $this->emailAuthenticator->sendAuthenticationLink(
+                    $patron['email'],
+                    $patron,
+                    ['auth_method' => $class]
+                );
+            }
+            // Don't reveal the result
+            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
+        }
+        if ($patron) {
+            return $this->processILSUser($patron);
+        }
+
+        // If we got this far, we have a problem:
+        throw new AuthException('authentication_error_invalid');
+    }
+
+    /**
      * Update the database using details from the ILS, then return the User object.
      *
      * @param array $info User details returned by ILS driver.
@@ -241,10 +315,11 @@ class ILS extends AbstractBase
         $user->password = '';
 
         // Update user information based on ILS data:
-        $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
+        $fields = ['firstname', 'lastname', 'major', 'college'];
         foreach ($fields as $field) {
             $user->$field = $info[$field] ?? ' ';
         }
+        $user->updateEmail($info['email'] ?? '');
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(

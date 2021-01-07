@@ -27,6 +27,7 @@
  */
 namespace VuFindTheme;
 
+use Zend\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
@@ -64,7 +65,11 @@ class Module
     public function getServiceConfig()
     {
         return [
+            'aliases' => [
+                ZendInjectTemplateListener::class => InjectTemplateListener::class,
+            ],
             'factories' => [
+                InjectTemplateListener::class => InvokableFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,

@@ -121,7 +121,7 @@ class Facebook extends AbstractBase implements
             $user->lastname = $details->last_name;
         }
         if (isset($details->email)) {
-            $user->email = $details->email;
+            $user->updateEmail($details->email);
         }
 
         // Save and return the user object:

@@ -53,7 +53,7 @@
             <?php foreach ($summInCollection as $collId => $collText): ?>
               <div>
                 <b><?=$this->transEsc("in_collection_label")?></b>
-                <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
               </div>

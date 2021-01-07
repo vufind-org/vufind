@@ -28,7 +28,9 @@
  */
 namespace VuFind\Controller;
 
+use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -51,11 +53,12 @@ class AbstractBase extends AbstractActionController
 {
     /**
      * Permission that must be granted to access this module (false for no
-     * restriction)
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
      *
      * @var string|bool
      */
-    protected $accessPermission = false;
+    protected $accessPermission = null;
 
     /**
      * Behavior when access is denied (used unless overridden through
@@ -106,6 +109,43 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Getter for access permission.
+     *
+     * @return string|bool
+     */
+    public function getAccessPermission()
+    {
+        return $this->accessPermission;
+    }
+
+    /**
+     * Getter for access permission.
+     *
+     * @param string $ap Permission to require for access to the controller (false
+     * for no requirement)
+     *
+     * @return void
+     */
+    public function setAccessPermission($ap)
+    {
+        $this->accessPermission = empty($ap) ? false : $ap;
+    }
+
+    /**
+     * Get request object
+     *
+     * @return HttpRequest
+     */
+    public function getRequest()
+    {
+        if (!$this->request) {
+            $this->request = new HttpRequest();
+        }
+
+        return $this->request;
+    }
+
+    /**
      * Register the default events for this controller
      *
      * @return void
@@ -132,10 +172,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        $layout = $this->params()
-            ->fromPost('layout', $this->params()->fromQuery('layout', false));
-        if ('lightbox' === $layout) {
+        if ($this->inLightbox()) {
             $this->layout()->setTemplate('layout/lightbox');
+            $params['inLightbox'] = true;
         }
         return new ViewModel($params);
     }
@@ -331,14 +370,32 @@ class AbstractBase extends AbstractActionController
                 $username = "$target.$username";
             }
             try {
-                $patron = $ilsAuth->newCatalogLogin($username, $password);
+                if ('email' === $this->getILSLoginMethod($target)) {
+                    $routeMatch = $this->getEvent()->getRouteMatch();
+                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
+                        : 'myresearch-profile';
+                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $this->flashMessenger()
+                        ->addSuccessMessage('email_login_link_sent');
+                } else {
+                    $patron = $ilsAuth->newCatalogLogin($username, $password);
 
-                // If login failed, store a warning message:
-                if (!$patron) {
-                    $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                    // If login failed, store a warning message:
+                    if (!$patron) {
+                        $this->flashMessenger()
+                            ->addErrorMessage('Invalid Patron Login');
+                    }
                 }
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+            }
+        } elseif ('ILS' === $this->params()->fromQuery('auth_method', false)
+            && ($hash = $this->params()->fromQuery('hash', false))
+        ) {
+            try {
+                $patron = $ilsAuth->processEmailLoginHash($hash);
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             try {
@@ -678,5 +735,59 @@ class AbstractBase extends AbstractActionController
     protected function getRecordTabManager()
     {
         return $this->serviceLocator->get(\VuFind\RecordTab\TabManager::class);
+    }
+
+    /**
+     * Are we currently in a lightbox context?
+     *
+     * @return bool
+     */
+    protected function inLightbox()
+    {
+        return
+            $this->params()->fromPost(
+                'layout', $this->params()->fromQuery('layout', false)
+            ) === 'lightbox'
+            || 'layout/lightbox' == $this->layout()->getTemplate();
+    }
+
+    /**
+     * What login method does the ILS use (password, email, vufind)
+     *
+     * @param string $target Login target (MultiILS only)
+     *
+     * @return string
+     */
+    protected function getILSLoginMethod($target = '')
+    {
+        $config = $this->getILS()->checkFunction(
+            'patronLogin', ['patron' => ['cat_username' => "$target.login"]]
+        );
+        return $config['loginMethod'] ?? 'password';
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form
+     *
+     * @return array
+     */
+    protected function getILSLoginSettings()
+    {
+        $targets = null;
+        $defaultTarget = null;
+        $loginMethod = null;
+        $loginMethods = [];
+        // Connect to the ILS and check if multiple target support is available:
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $targets = $catalog->getLoginDrivers();
+            $defaultTarget = $catalog->getDefaultLoginDriver();
+            foreach ($targets as $t) {
+                $loginMethods[$t] = $this->getILSLoginMethod($t);
+            }
+        } else {
+            $loginMethod = $this->getILSLoginMethod();
+        }
+        return compact('targets', 'defaultTarget', 'loginMethod', 'loginMethods');
     }
 }

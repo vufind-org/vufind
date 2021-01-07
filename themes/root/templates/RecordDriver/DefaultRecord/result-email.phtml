@@ -1,0 +1,46 @@
+<?php
+  $authors = $this->driver->getPrimaryAuthors();
+  $title = $this->driver->getTitle();
+  $journalTitle = $this->driver->getContainerTitle();
+  $publicationDate = $this->driver->getPublicationDates();
+  $isbn = $this->driver->tryMethod('getISBNs');
+  $issn = $this->driver->tryMethod('getISSNs');
+  $collection = $this->driver->getContainingCollections();
+  $containerTitle = $this->driver->getContainerTitle();
+  $containerReference = $this->driver->getContainerReference();
+  $formats = $this->driver->getFormats();
+  $format = end($formats);
+  $url = $this->recordLink()->getUrl($this->driver);
+  // NOTE: use $info['baseUrl'] instead of serverUrl view helper when this template is
+  // rendered by scheduled alerts console action.
+  $url = isset($info['baseUrl']) ? ($info['baseUrl'] . $url) : $this->serverUrl($url);
+?>
+
+<?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
+<?php if (!empty($authors)): ?>
+<?= PHP_EOL . $this->translate('by') . ': ' . $authors[0]; ?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+<?php endif; ?>
+<?php if (!empty($publicationDate)): ?>
+<?= PHP_EOL . $this->translate('Published') . ': ' . $publicationDate[0]; ?>
+<?php endif; ?>
+<?php if (!empty($journalTitle)): ?>
+<?= PHP_EOL . $this->translate('Published in') . ": $journalTitle"; ?>
+<?php endif; ?>
+<?php if (!empty($isbn)): ?>
+<?= PHP_EOL . $this->translate('ISBN') . ': ' . implode(', ', $isbn); ?>
+<?php endif; ?>
+<?php if (!empty($issn)): ?>
+<?= PHP_EOL . $this->translate('ISSN') . ': ' . implode(', ', $issn); ?>
+<?php endif; ?>
+<?php if (!empty($collection)): ?>
+<?php foreach ($collection as $collId => $collText): ?>
+<?= PHP_EOL . $this->translate("in_collection_label") . ' ' . $collText; ?>
+<?php endforeach; ?>
+<?php elseif (!empty($containerTitle)): ?>
+<?= PHP_EOL . $this->translate('component_is_part_of') . ": $containerTitle" . !empty($containerReference) ? " $containerReference" : '' ?>
+<?php endif; ?>
+<?php if (!empty($format)): ?>
+<?= PHP_EOL . $this->translate($format) ?>
+<?php endif; ?>
+
+<?= $this->translate('View Full Record') . ": $url"; ?>

@@ -393,16 +393,11 @@ class VuFind
      */
     public static function xmlAsText($in)
     {
-        // Ensure that $in is an array:
-        if (!is_array($in)) {
-            $in = [$in];
-        }
-
         // Start building return value:
         $text = '';
 
         // Extract all text:
-        foreach ($in as $current) {
+        foreach ((array)$in as $current) {
             // Convert DOMElement to SimpleXML:
             $xml = simplexml_import_dom($current);
 
@@ -427,12 +422,7 @@ class VuFind
      */
     public static function removeTagAndReturnXMLasText($in, $tag)
     {
-        // Ensure that $in is an array:
-        if (!is_array($in)) {
-            $in = [$in];
-        }
-
-        foreach ($in as $current) {
+        foreach ((array)$in as $current) {
             $matches = $current->getElementsByTagName($tag);
             foreach ($matches as $match) {
                 $current->removeChild($match);

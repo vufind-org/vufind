@@ -30,6 +30,7 @@ namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
+use Zend\Config\Config;
 
 /**
  * DefaultRecord Record Driver Test Class
@@ -384,13 +385,51 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test citation behavior.
+     *
+     * @return void
+     */
+    public function testCitationBehavior()
+    {
+        // The DefaultRecord driver should have some supported formats:
+        $driver = $this->getDriver();
+        $supported = $this->callMethod($driver, 'getSupportedCitationFormats');
+        $this->assertNotEmpty($supported);
+
+        // By default, all supported formats should be enabled:
+        $this->assertEquals($supported, $driver->getCitationFormats());
+
+        // Data table (citation_formats config, expected result):
+        $tests = [
+            // No results:
+            [false, []],
+            ['false', []],
+            // All results:
+            [true, $supported],
+            ['true', $supported],
+            // Filtered results:
+            ['MLA,foo', ['MLA']],
+            ['bar ,     APA,MLA', ['APA', 'MLA']],
+        ];
+        foreach ($tests as $current) {
+            list($input, $output) = $current;
+            $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+            $this->assertEquals(
+                $output,
+                array_values($this->getDriver([], $cfg)->getCitationFormats())
+            );
+        }
+    }
+
+    /**
      * Get a record driver with fake data.
      *
-     * @param array $overrides Fixture fields to override.
+     * @param array  $overrides  Fixture fields to override.
+     * @param Config $mainConfig Main configuration (optional).
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = [], Config $mainConfig = null)
     {
         $fixture = json_decode(
             file_get_contents(
@@ -401,7 +440,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
             true
         );
 
-        $record = new DefaultRecord();
+        $record = new DefaultRecord($mainConfig);
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

@@ -69,7 +69,7 @@ CREATE INDEX resource_tags_list_id_idx ON resource_tags (list_id);
 DROP TABLE IF EXISTS "search";
 
 CREATE TABLE search (
-id SERIAL,
+id BIGSERIAL,
 user_id int NOT NULL DEFAULT '0',
 session_id varchar(128),
 folder_id int DEFAULT NULL,
@@ -78,11 +78,16 @@ title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
 checksum int DEFAULT NULL,
+notification_frequency int NOT NULL DEFAULT '0',
+last_notification_sent timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+notification_base_url varchar(255) NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);
 CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
+CREATE INDEX notification_frequency_idx ON search (notification_frequency);
+CREATE INDEX notification_base_url_idx ON search (notification_base_url);
 
 -- --------------------------------------------------------
 
@@ -131,6 +136,8 @@ firstname varchar(50) NOT NULL DEFAULT '',
 lastname varchar(50) NOT NULL DEFAULT '',
 email varchar(255) NOT NULL DEFAULT '',
 email_verified timestamp DEFAULT NULL,
+pending_email varchar(255) NOT NULL DEFAULT '',
+user_provided_email boolean NOT NULL DEFAULT '0',
 cat_id varchar(255) DEFAULT NULL,
 cat_username varchar(50) DEFAULT NULL,
 cat_password varchar(70) DEFAULT NULL,
@@ -142,6 +149,7 @@ created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 verify_hash varchar(42) NOT NULL DEFAULT '',
 last_login timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 auth_method varchar(50) DEFAULT NULL,
+last_language varchar(30) NOT NULL DEFAULT '',
 PRIMARY KEY (id),
 UNIQUE (username),
 UNIQUE (cat_id)
@@ -199,7 +207,7 @@ CREATE INDEX user_resource_list_id_idx ON user_resource (list_id);
 DROP TABLE IF EXISTS "session";
 
 CREATE TABLE session (
-id SERIAL,
+id BIGSERIAL,
 session_id varchar(128),
 data text,
 last_used int NOT NULL default 0,
@@ -216,7 +224,7 @@ CREATE INDEX last_used_idx on session(last_used);
 DROP TABLE IF EXISTS "external_session";
 
 CREATE TABLE external_session (
-id SERIAL,
+id BIGSERIAL,
 session_id varchar(128) NOT NULL,
 external_session_id varchar(255) NOT NULL,
 created timestamp NOT NULL default '1970-01-01 00:00:00',
@@ -297,6 +305,24 @@ CONSTRAINT user_card_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELE
 );
 CREATE INDEX user_card_cat_username_idx ON user_card (cat_username);
 CREATE INDEX user_card_user_id_idx ON user_card (user_id);
+
+--
+-- Table structure for table auth_hash
+--
+
+DROP TABLE IF EXISTS "auth_hash";
+
+CREATE TABLE auth_hash (
+id BIGSERIAL,
+session_id varchar(128),
+hash varchar(255),
+type varchar(50),
+data text,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (id),
+UNIQUE (hash, type)
+);
+CREATE INDEX auth_hash_created_idx on auth_hash(created);
 
 -- --------------------------------------------------------
 

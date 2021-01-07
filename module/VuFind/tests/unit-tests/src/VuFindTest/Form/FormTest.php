@@ -53,7 +53,9 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
         $this->assertEquals([], $form->getElements());
-        $this->assertEquals([null, null], $form->getRecipient());
+        $this->assertEquals(
+            [['email' => null, 'name' => null]], $form->getRecipient()
+        );
         $this->assertNull($form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
@@ -79,7 +81,9 @@ class FormTest extends \VuFindTest\Unit\TestCase
             'email_subject' => 'subject',
         ];
         $form = new Form(new YamlReader(), $defaults);
-        $this->assertEquals(['me', 'me@example.com'], $form->getRecipient());
+        $this->assertEquals(
+            [['name' => 'me', 'email' => 'me@example.com']], $form->getRecipient()
+        );
         $this->assertEquals('subject', $form->getEmailSubject([]));
     }
 
@@ -140,7 +144,9 @@ class FormTest extends \VuFindTest\Unit\TestCase
             ],
             $form->getElements()
         );
-        $this->assertEquals([null, null], $form->getRecipient());
+        $this->assertEquals(
+            [['email' => null, 'name' => null]], $form->getRecipient()
+        );
         $this->assertEquals('Send us your feedback!', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));

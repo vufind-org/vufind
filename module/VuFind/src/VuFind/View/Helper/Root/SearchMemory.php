@@ -116,6 +116,22 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
+     * Get the URL to edit the last search.
+     *
+     * @param string $searchClassId Search class
+     * @param string $action        Action to take
+     * @param mixed  $value         Value for action
+     *
+     * @return string
+     */
+    public function getEditLink($searchClassId, $action, $value)
+    {
+        $query = compact('searchClassId') + [$action => $value];
+        $url = $this->getView()->plugin('url');
+        return $url('search-editmemory', [], compact('query'));
+    }
+
+    /**
      * Retrieve the parameters of the last search by the search class
      *
      * @param string $searchClassId Search class

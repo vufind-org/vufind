@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+use VuFind\Exception\AuthInProgress as AuthInProgressException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -50,22 +51,24 @@ use Zend\View\Model\ViewModel;
 class MyResearchController extends AbstractBase
 {
     /**
+     * Permission that must be granted to access this module (false for no
+     * restriction, null to use configured default (which is usually the same
+     * as false)).
+     *
+     * For this controller, we default to false rather than null because
+     * we don't want a default setting to override the controller's accessibility
+     * and break the login process!
+     *
+     * @var string|bool
+     */
+    protected $accessPermission = false;
+
+    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
      */
     protected $paginationHelper = null;
-
-    /**
-     * Are we currently in a lightbox context?
-     *
-     * @return bool
-     */
-    protected function inLightbox()
-    {
-        return $this->getRequest()->getQuery('layout', 'no') === 'lightbox'
-            || 'layout/lightbox' == $this->layout()->getTemplate();
-    }
 
     /**
      * Construct an HTTP 205 (refresh) response. Useful for reporting success
@@ -90,6 +93,10 @@ class MyResearchController extends AbstractBase
     protected function processAuthenticationException(AuthException $e)
     {
         $msg = $e->getMessage();
+        if ($e instanceof AuthInProgressException) {
+            $this->flashMessenger()->addSuccessMessage($msg);
+            return;
+        }
         if ($e instanceof AuthEmailNotVerifiedException) {
             $this->sendFirstVerificationEmail($e->user);
             if ($msg == 'authentication_error_email_not_verified_html') {
@@ -320,7 +327,11 @@ class MyResearchController extends AbstractBase
                 : $this->redirect()->toRoute('home');
         }
         $this->clearFollowupUrl();
-        $this->setFollowupUrlToReferer();
+        // Set followup only if we're not in lightbox since it has the short-circuit
+        // for reloading current page:
+        if (!$this->inLightbox()) {
+            $this->setFollowupUrlToReferer();
+        }
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
@@ -387,6 +398,9 @@ class MyResearchController extends AbstractBase
             throw new ForbiddenException('Access denied.');
         }
         $row->saved = $saved ? 1 : 0;
+        if (!$saved) {
+            $row->notification_frequency = 0;
+        }
         $row->user_id = $userId;
         $row->save();
     }
@@ -402,6 +416,43 @@ class MyResearchController extends AbstractBase
             'user_verification',
             $this->serviceLocator->get(\Zend\Session\SessionManager::class)
         );
+    }
+
+    /**
+     * Support method for savesearchAction() -- schedule a search.
+     *
+     * @param \VuFind\Db\Row\User $user     Logged-in user object
+     * @param int                 $schedule Requested schedule setting
+     * @param int                 $sid      Search ID to schedule
+     *
+     * @return mixed
+     */
+    protected function scheduleSearch($user, $schedule, $sid)
+    {
+        // Fail if scheduled searches are disabled.
+        $scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        if (!isset($scheduleOptions[$schedule])) {
+            throw new ForbiddenException('Illegal schedule option: ' . $schedule);
+        }
+        $search = $this->getTable('Search');
+        $baseurl = rtrim($this->getServerUrl('home'), '/');
+        $searchCriteria = ['id' => $sid, 'user_id' => $user->id, 'saved' => 1];
+        $savedRow = $search->select($searchCriteria)->current();
+        // If we didn't find an already-saved row, let's save and retry:
+        if (!$savedRow) {
+            $this->setSavedFlagSecurely($sid, true, $user->id);
+            $savedRow = $search->select($searchCriteria)->current();
+        }
+        if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
+            // By default, a first scheduled email will be sent because the database
+            // last notification date will be initialized to a past date. If we don't
+            // want that to happen, we need to set it to a more appropriate date:
+            $savedRow->last_notification_sent = date('Y-m-d H:i:s');
+        }
+        $savedRow->setSchedule($schedule, $baseurl);
+        return $this->redirect()->toRoute('search-history');
     }
 
     /**
@@ -421,6 +472,13 @@ class MyResearchController extends AbstractBase
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
+        }
+
+        // Check for schedule-related parameters and process them first:
+        $schedule = $this->params()->fromQuery('schedule', false);
+        $sid = $this->params()->fromQuery('searchid', false);
+        if ($schedule !== false && $sid !== false) {
+            return $this->scheduleSearch($user, $schedule, $sid);
         }
 
         // Check for the save / delete parameters and process them appropriately:
@@ -542,13 +600,8 @@ class MyResearchController extends AbstractBase
      */
     public function catalogloginAction()
     {
-        // Connect to the ILS and check if multiple target support is available:
-        $targets = null;
-        $catalog = $this->getILS();
-        if ($catalog->checkCapability('getLoginDrivers')) {
-            $targets = $catalog->getLoginDrivers();
-        }
-        return $this->createViewModel(['targets' => $targets]);
+        $loginSettings = $this->getILSLoginSettings();
+        return $this->createViewModel($loginSettings);
     }
 
     /**
@@ -980,9 +1033,17 @@ class MyResearchController extends AbstractBase
     {
         if ($this->params()->fromQuery('reverify')) {
             $table = $this->getTable('User');
+            // Case 1: new user:
             $user = $table
                 ->getByUsername($this->getUserVerificationContainer()->user, false);
-            $this->sendVerificationEmail($user);
+            // Case 2: pending email change:
+            if (!$user) {
+                $user = $this->getUser();
+                if (!empty($user->pending_email)) {
+                    $change = true;
+                }
+            }
+            $this->sendVerificationEmail($user, $change ?? false);
         } else {
             $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
@@ -1569,13 +1630,46 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send a verify email message.
+     * When a request to change a user's email address has been received, we should
+     * send a notification to the old email address for the user's information.
      *
      * @param \VuFind\Db\Row\User $user User object we're recovering
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendVerificationEmail($user)
+    protected function sendChangeNotificationEmail($user)
+    {
+        $config = $this->getConfig();
+        $renderer = $this->getViewRenderer();
+        // Custom template for emails (text-only)
+        $message = $renderer->render(
+            'Email/notify-email-change.phtml',
+            [
+                'library' => $config->Site->title,
+                'url' => $this->getServerUrl('home'),
+                'email' => $config->Site->email,
+            ]
+        );
+        // If the user is setting up a new account, use the main email
+        // address; if they have a pending address change, use that.
+        $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
+            $user->email,
+            $config->Site->email,
+            $this->translate('change_notification_email_subject'),
+            $message
+        );
+    }
+
+    /**
+     * Send a verify email message.
+     *
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param bool                $change Is the user changing their email (true)
+     * or setting up a new account (false).
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendVerificationEmail($user, $change = false)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1586,7 +1680,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($user->verify_hash);
             $recoveryInterval = $this->getConfig()->Authentication->recover_interval
                 ?? 60;
-            if (time() - $hashtime < $recoveryInterval) {
+            if (time() - $hashtime < $recoveryInterval && !$change) {
                 $this->flashMessenger()
                     ->addMessage('verification_too_soon', 'error');
             } else {
@@ -1607,14 +1701,25 @@ class MyResearchController extends AbstractBase
                                 . $user->verify_hash . '&auth_method=' . $method
                         ]
                     );
+                    // If the user is setting up a new account, use the main email
+                    // address; if they have a pending address change, use that.
+                    $to = empty($user->pending_email)
+                        ? $user->email : $user->pending_email;
                     $this->serviceLocator->get('VuFind\Mailer\Mailer')->send(
-                        $user->email,
+                        $to,
                         $config->Site->email,
                         $this->translate('verification_email_subject'),
                         $message
                     );
-                    $this->flashMessenger()
-                        ->addMessage('verification_email_sent', 'info');
+                    $flashMessage = $change
+                        ? 'verification_email_change_sent'
+                        : 'verification_email_sent';
+                    $this->flashMessenger()->addMessage($flashMessage, 'info');
+                    // If this is an email change, send a notification to the old
+                    // email address as well.
+                    if ($change) {
+                        $this->sendChangeNotificationEmail($user);
+                    }
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
                 }
@@ -1689,6 +1794,11 @@ class MyResearchController extends AbstractBase
                 $user = $table->getByVerifyHash($hash);
                 // If the hash is valid, store validation in DB and forward to login
                 if (null != $user) {
+                    // Apply pending email address change, if applicable:
+                    if (!empty($user->pending_email)) {
+                        $user->updateEmail($user->pending_email, true);
+                        $user->pending_email = '';
+                    }
                     $user->saveEmailVerified();
                     $this->setUpAuthenticationFromRequest();
 
@@ -1789,9 +1899,82 @@ class MyResearchController extends AbstractBase
         $user->updateHash();
         // Login
         $this->getAuthManager()->login($this->request);
-        // Go to favorites
+        // Return to account home
         $this->flashMessenger()->addMessage('new_password_success', 'success');
         return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
+     * Handling submission of a new email for a user.
+     *
+     * @return view
+     */
+    public function changeEmailAction()
+    {
+        // Always check that we are logged in and function is enabled first:
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        if (!$this->getAuthManager()->supportsEmailChange()) {
+            $this->flashMessenger()->addMessage('change_email_disabled', 'error');
+            return $this->redirect()->toRoute('home');
+        }
+        $view = $this->createViewModel($this->params()->fromPost());
+        // Display email
+        $user = $this->getUser();
+        $view->email = $user->email;
+        // Identification
+        $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
+        // Special case: form was submitted:
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            // Do CSRF check
+            $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+            // Update email
+            $validator = new \Zend\Validator\EmailAddress();
+            $email = $this->params()->fromPost('email', '');
+            try {
+                if (!$validator->isValid($email)) {
+                    throw new AuthException('Email address is invalid');
+                }
+                $this->getAuthManager()->updateEmail($user, $email);
+                // If we have a pending change, we need to send a verification email:
+                if (!empty($user->pending_email)) {
+                    $this->sendVerificationEmail($user, true);
+                } else {
+                    $this->flashMessenger()
+                        ->addMessage('new_email_success', 'success');
+                }
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                return $view;
+            }
+            // Return to account home
+            return $this->redirect()->toRoute('myresearch-home');
+        } elseif ($this->getConfig()->Authentication->verify_email ?? false) {
+            $this->flashMessenger()
+                ->addMessage('change_email_verification_reminder', 'info');
+        }
+        if (!empty($user->pending_email)) {
+            $url = $this->url()->fromRoute('myresearch-emailnotverified')
+                . '?reverify=true';
+            $this->flashMessenger()->addMessage(
+                [
+                    'html' => true,
+                    'msg' => 'email_change_pending_html',
+                    'tokens' => [
+                        '%%pending%%' => $user->pending_email,
+                        '%%url%%' => $url,
+                    ],
+                ],
+                'info'
+            );
+        }
+        return $view;
     }
 
     /**
@@ -1892,6 +2075,44 @@ class MyResearchController extends AbstractBase
             );
         } elseif ($this->formWasSubmitted('reset')) {
             return $this->redirect()->toRoute('myresearch-profile');
+        }
+        return $view;
+    }
+
+    /**
+     * Unsubscribe a scheduled alert for a saved search.
+     *
+     * @return mixed
+     */
+    public function unsubscribeAction()
+    {
+        $id = $this->params()->fromQuery('id', false);
+        $key = $this->params()->fromQuery('key', false);
+        $type = $this->params()->fromQuery('type', 'alert');
+        if ($id === false || $key === false) {
+            throw new \Exception('Missing parameters.');
+        }
+        $view = $this->createViewModel();
+        if ($this->params()->fromQuery('confirm', false) == 1) {
+            if ($type == 'alert') {
+                $search
+                    = $this->getTable('Search')->select(['id' => $id])->current();
+                if (!$search) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $user = $this->getTable('User')->getById($search->user_id);
+                $secret = $search->getUnsubscribeSecret(
+                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class), $user
+                );
+                if ($key !== $secret) {
+                    throw new \Exception('Invalid parameters.');
+                }
+                $search->setSchedule(0);
+                $view->success = true;
+            }
+        } else {
+            $view->unsubscribeUrl
+                = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
     }

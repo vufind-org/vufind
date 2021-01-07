@@ -51,7 +51,7 @@ class QueryGroup extends AbstractQuery
     /**
      * Name of the handler to be used if the query group is reduced.
      *
-     * @see VuFindSearch\Backend\Solr\QueryBuilder::reduceQueryGroup()
+     * @see \VuFindSearch\Backend\Solr\QueryBuilder::reduceQueryGroup()
      *
      * @var string
      *

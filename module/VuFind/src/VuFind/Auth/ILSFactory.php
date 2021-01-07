@@ -62,7 +62,8 @@ class IlsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\ILS\Connection::class),
-            $container->get(ILSAuthenticator::class)
+            $container->get(ILSAuthenticator::class),
+            $container->get(EmailAuthenticator::class)
         );
     }
 }

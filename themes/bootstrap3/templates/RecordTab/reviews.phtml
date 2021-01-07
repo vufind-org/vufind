@@ -8,7 +8,7 @@
 <?php if (count($reviews) > 0): ?>
   <?php foreach ($reviews as $provider => $list): ?>
     <?php foreach ($list as $review): ?>
-      <?php if (isset($review['Summary']) && !empty($review['Summary'])): ?>
+      <?php if (!empty($review['Summary'])): ?>
         <p>
           <?php if (isset($review['Rating'])): ?>
             <img src="<?=$this->imageLink($review['Rating'] . '.gif')?>" alt="<?=$review['Rating']?>/5 Stars"/>
@@ -19,7 +19,7 @@
       <?php if (isset($review['Source'])): ?><strong><?=$this->transEsc('Review by')?> <?=$review['Source']?></strong><?php endif; ?>
       <p class="summary">
         <?=$review['Content'] ?? ''?>
-        <?php if ((!isset($review['Content']) || empty($review['Content'])) && isset($review['ReviewURL'])): ?>
+        <?php if (empty($review['Content']) && isset($review['ReviewURL'])): ?>
           <a target="new" href="<?=$this->escapeHtmlAttr($review['ReviewURL'])?>"><?=$this->transEsc('Read the full review online...')?></a>
         <?php endif; ?>
       </p>

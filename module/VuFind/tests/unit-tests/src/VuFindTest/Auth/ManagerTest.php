@@ -250,6 +250,24 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test supportsEmailChange
+     *
+     * @return void
+     */
+    public function testSupportsEmailChange()
+    {
+        // Most common case -- no:
+        $this->assertFalse($this->getManager()->supportsEmailChange());
+
+        // Less common case -- yes:
+        $pm = $this->getMockPluginManager();
+        $config = ['Authentication' => ['change_email' => true]];
+        $this->assertTrue($this->getManager($config, null, null, $pm)->supportsEmailChange());
+        $config = ['Authentication' => ['change_email' => false]];
+        $this->assertFalse($this->getManager($config, null, null, $pm)->supportsEmailChange());
+    }
+
+    /**
      * Test supportsPasswordChange
      *
      * @return void
@@ -262,9 +280,11 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('supportsPasswordChange')->will($this->returnValue(true));
+        $db->expects($this->any())->method('supportsPasswordChange')->will($this->returnValue(true));
         $config = ['Authentication' => ['change_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsPasswordChange());
+        $config = ['Authentication' => ['change_password' => false]];
+        $this->assertFalse($this->getManager($config, null, null, $pm)->supportsPasswordChange());
     }
 
     /**
@@ -564,6 +584,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $mockDb->expects($this->any())->method('needsCsrfCheck')
+            ->will($this->returnValue(true));
         $mockMulti = $this->getMockBuilder(\VuFind\Auth\MultiILS::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -602,6 +624,9 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $post = new \Zend\Stdlib\Parameters();
         $mock->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
+        $get = new \Zend\Stdlib\Parameters();
+        $mock->expects($this->any())->method('getQuery')
+            ->will($this->returnValue($get));
         return $mock;
     }
 }

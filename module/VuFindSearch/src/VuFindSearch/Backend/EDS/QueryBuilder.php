@@ -118,7 +118,7 @@ class QueryBuilder
      */
     protected function queryGroupToArray(QueryGroup $query)
     {
-        $groups =  [];
+        $groups = [];
         foreach ($query->getQueries() as $params) {
             // Advanced Search
             if ($params instanceof QueryGroup) {

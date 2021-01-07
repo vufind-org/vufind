@@ -46,7 +46,7 @@
     </div>
   </div>
   <div class="media-body info-col">
-    <h3 property="name"><?=$this->driver->getTitle()?></h3>
+    <h1 property="name"><?=$this->driver->getTitle()?></h1>
 
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
@@ -104,6 +104,10 @@
           </a>
         </span>
       <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php $doi = $this->doi($this->driver, 'record'); if ($doi->isActive()): ?>
+        <div><?=$doi->renderTemplate()?></div>
     <?php endif; ?>
     </div>
   </div>

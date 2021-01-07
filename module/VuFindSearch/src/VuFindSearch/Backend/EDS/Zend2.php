@@ -77,18 +77,8 @@ class Zend2 extends Base implements LoggerAwareInterface
      * conjunction with the EDS API
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
-     *      <li>authtoken - Authentication to use for calls to the API. If using IP
-     * Authentication, this is not needed.</li>
-     *      <li>username -  EBSCO username for account setup for usage with the EDS
-     * API. This is only required for institutions using UID Authentication </li>
-     *      <li>password - EBSCO password for account setup for usage with the EDS
-     * API. This is only required for institutions using UID Authentication </li>
-     *      <li>orgid - Organization making calls to the EDS API </li>
-     *      <li>sessiontoken - SessionToken this call is associated with, is one
-     * exists. If not, the a profile value must be present </li>
-     *      <li>profile - EBSCO profile to use for calls to the API. </li>
-     *      <li>isguest - is the user a guest. This needs to be present if there
-     * is no session token present</li>
+     *      <li>orgid - Organization making calls to the EDS API</li>
+     *      <li>timeout - HTTP timeout value (default = 120)</li>
      *    </ul>
      * @param Zend2HttpClient $client   Zend2 HTTP client object (optional)
      */
@@ -96,7 +86,7 @@ class Zend2 extends Base implements LoggerAwareInterface
     {
         parent::__construct($settings);
         $this->client = is_object($client) ? $client : new Zend2HttpClient();
-        $this->client->setOptions(['timeout' => 120]);
+        $this->client->setOptions(['timeout' => $settings['timeout'] ?? 120]);
         $adapter = new CurlAdapter();
         $adapter->setOptions(
             [

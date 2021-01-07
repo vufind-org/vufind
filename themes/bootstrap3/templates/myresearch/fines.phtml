@@ -38,7 +38,7 @@
           $tableData['Title'][] = $title;
           $tableData['Checked Out'][] = $this->escapeHtml($record['checkout'] ?? '');
           $tableData['Due Date'][] = $this->escapeHtml($record['duedate'] ?? '');
-          $tableData['Fine'][] = $this->escapeHtml($record['fine'] ?? '');
+          $tableData['Fine'][] = $this->transEsc($record['fine'] ?? '');
           $tableData['Fine Date'][] = $this->escapeHtml($record['createdate'] ?? '');
           $tableData['Fee'][] = isset($record['amount'])
               ? $this->safeMoneyFormat($record['amount'] / 100.00) : '';

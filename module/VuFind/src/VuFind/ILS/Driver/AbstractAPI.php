@@ -27,10 +27,11 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\BadRequest as BadRequest;
-use VuFind\Exception\Forbidden as Forbidden;
+use VuFind\Exception\BadConfig;
+use VuFind\Exception\BadRequest;
+use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\RecordMissing as RecordMissing;
+use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
 use Zend\Log\LoggerAwareInterface;
 
@@ -149,7 +150,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * @param array $config Configuration array (usually loaded from a VuFind .ini
      * file whose name corresponds with the driver class name).
      *
-     * @throws ILSException if base url excluded
+     * @throws BadConfig if base url excluded
      * @return void
      */
     public function setConfig($config)
@@ -157,7 +158,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         parent::setConfig($config);
         // Base URL required for API drivers
         if (!isset($config['API']['base_url'])) {
-            throw new ILSException('API Driver configured without base url.');
+            throw new BadConfig('API Driver configured without base url.');
         }
     }
 }

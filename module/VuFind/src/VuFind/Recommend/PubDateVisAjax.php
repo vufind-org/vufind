@@ -134,7 +134,7 @@ class PubDateVisAjax implements RecommendInterface
             return [];
         }
         return $this->processDateFacets(
-            $this->searchObject->getParams()->getFilters()
+            $this->searchObject->getParams()->getRawFilters()
         );
     }
 

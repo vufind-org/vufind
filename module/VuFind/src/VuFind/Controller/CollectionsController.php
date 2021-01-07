@@ -189,7 +189,7 @@ class CollectionsController extends AbstractBase
         foreach ($result as $rkey => $collection) {
             list($name, $id) = explode($delimiter, $collection['value'], 2);
             $result[$rkey]['displayText'] = $name;
-            $result[$rkey]['value'] =  $id;
+            $result[$rkey]['value'] = $id;
         }
 
         // Sort the $results and get the position of the from string once sorted
