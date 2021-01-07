@@ -28,10 +28,10 @@
 namespace VuFind\Form;
 
 use Laminas\InputFilter\InputFilter;
-use Laminas\Validator\EmailAddress;
-use Laminas\Validator\NotEmpty;
-use Laminas\Validator\Identical;
 use Laminas\Validator\Callback;
+use Laminas\Validator\EmailAddress;
+use Laminas\Validator\Identical;
+use Laminas\Validator\NotEmpty;
 use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
 
@@ -781,7 +781,7 @@ class Form extends \Laminas\Form\Form implements
                             }
                          ]
                     ];
-                } else if ($required) {
+                } elseif ($required) {
                     $fieldValidators[] = [
                         'name' => Identical::class,
                         'options' => [

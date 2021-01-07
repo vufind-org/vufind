@@ -304,7 +304,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
             ['option-1' => 'option-1', 'option-2' => 'option-2'],
             $el['options']
         );
-
     }
 
     /**
@@ -322,7 +321,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $mock->expects($this->any())->method('get')
             ->with($this->equalTo('FeedbackForms.yaml'))
             ->will($this->returnValue($config));
-
 
         // Test checkbox with all options required
         $form = new Form(
@@ -350,7 +348,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
         // Both required options and one invalid
         $form->setData(['checkbox' => ['option-1', 'option-2', 'invalid-option']]);
         $this->assertFalse($form->isValid());
-
 
         // Test checkbox with one required option
         $form = new Form(
@@ -383,7 +380,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
         $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
         $this->assertTrue($form->isValid());
 
-
         // Test checkbox with a single options that is required
         $form = new Form(
             $mock,
@@ -406,7 +402,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
         // One OK and one invalid option
         $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
         $this->assertFalse($form->isValid());
-
 
         // Test checkbox with a single options that is required,
         // configured with requireOne
