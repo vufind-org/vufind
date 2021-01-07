@@ -29,7 +29,6 @@ class PluginManager extends \VuFind\RecordDriver\PluginManager {
 
         $this->addOverride('delegators', SolrMarc::class, IlsAwareDelegatorFactory::class);
 
-        $this->addOverride('factories', SolrAuth::class, SolrDefaultWithoutSearchServiceFactory::class);
         $this->addOverride('factories', SolrAuthDefault::class, SolrDefaultWithoutSearchServiceFactory::class);
         $this->addOverride('factories', SolrAuthMarc::class, SolrDefaultWithoutSearchServiceFactory::class);
         $this->addOverride('factories', SolrDefault::class, SolrDefaultFactory::class);

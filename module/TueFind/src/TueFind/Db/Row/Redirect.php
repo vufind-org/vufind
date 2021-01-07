@@ -11,6 +11,6 @@ class Redirect extends \VuFind\Db\Row\RowGateway
      */
     public function __construct($adapter)
     {
-        parent::__construct(null, 'tuefind_redirect', $adapter);
+        parent::__construct(['url', 'timestamp'], 'tuefind_redirect', $adapter);
     }
 }

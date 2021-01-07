@@ -223,7 +223,7 @@ class Citation extends \VuFind\View\Helper\Root\Citation implements \VuFind\I18n
             $formatter = new \IntlDateFormatter($this->getTranslatorLocale(),
                              \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
             if ($formatter === null)
-                 throw new InvalidConfigException(intl_get_error_message());
+                 throw new \Exception(intl_get_error_message());
             $mla['localizedDate'] = $formatter->format(new \DateTime());
             $mla['yearPageSeparator'] = $yearPageSeparator;
             $mla['usePagePrefix'] = $usePagePrefix;

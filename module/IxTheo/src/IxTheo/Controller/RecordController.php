@@ -89,6 +89,7 @@ class RecordController extends \TueFind\Controller\RecordController
             return $this->forceLogin();
         }
         $post = $this->getRequest()->getPost()->toArray();
+        $data = [];
         $results = $this->loadRecord()->pdaSubscribe($post, $user, $data);
         if ($results == null) {
             return $this->createViewModel();

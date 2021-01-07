@@ -11,6 +11,7 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
 
 class BlockLoader extends \VuFind\ContentBlock\BlockLoader
 {
+    protected $request;
 
     public function __construct(OptionsManager $om, ConfigManager $cm,
         BlockManager $bm, Request $request

@@ -23,6 +23,9 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
             $image = $this->getImageFromEntity($entity);
             return $this->generateResponse($image);
         } else {
+            if (!isset($parameters['search']))
+                throw new \VuFind\Exception\BadRequest('Invalid request parameters.');
+
             $searches = $parameters['search'];
             if (!is_array($searches))
                 $searches = [$searches];

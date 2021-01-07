@@ -72,7 +72,7 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
 
 
     public function getSubscriptionBundlesTitles() {
-        $runner = $this->sm->getServiceLocator()->get('VuFind\SearchRunner');
+        $runner = $this->container->get('VuFind\SearchRunner');
         $request = new \Zend\Stdlib\Parameters([ 'lookfor' => 'format:"Subscription Bundle"' ]);
         $subscription_bundles = $runner->run($request)->getResults();
         $html = $this->getView()->render('myresearch/subscription_bundles.phtml',

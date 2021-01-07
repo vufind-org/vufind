@@ -18,7 +18,9 @@
  */
 
 namespace TueFind\RecordDriver;
+
 use Interop\Container\ContainerInterface;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 
 class SolrDefault extends \VuFind\RecordDriver\SolrMarc
@@ -28,6 +30,7 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     protected $container;
 
     protected $selected_fulltext_types;
+    protected $hasFulltextMatch;
 
     public function setContainer(ContainerInterface $container)
     {
@@ -274,6 +277,14 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return isset($this->fields['is_open_access']) && ($this->fields['is_open_access'] == 'open-access');
     }
 
+    /**
+     * @return string
+     */
+    public function getPageRange()
+    {
+        return isset($this->fields['page_range']) ? $this->fields['page_range'] : '';
+    }
+
     public function getSubitoURL() {
         // Suppress Subito links for open access items:
         if ($this->isOpenAccess())
@@ -307,19 +318,19 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
                 if ((!empty($isbn) || !empty($issn)) && !empty($title) && !empty($authors) && !empty($page_range)
                     && (!empty($volume) || !empty($issue)) && !empty($year))
                 {
-                    $title = $this->escapeHtml($title);
+                    $title = urlencode($title);
                     $author_list = "";
                     foreach ($authors as $author) {
                         if (!empty($author_list))
                             $author_list .= "%3B";
-                        $author_list .= $this->escapeHtml($author);
+                        $author_list .= urlencode($author);
                     }
-                    $page_range = $this->escapeHtml($page_range);
+                    $page_range = urlencode($page_range);
 
-                    $volume_and_or_issue = $this->escapeHtml($volume);
+                    $volume_and_or_issue = urlencode($volume);
                     if (!empty($volume_and_or_issue))
                         $volume_and_or_issue .= "%2F";
-                    $volume_and_or_issue .= $this->escapeHtml($issue);
+                    $volume_and_or_issue .= urlencode($issue);
 
                     return $base_url . (!empty($isbn) ? "&SB=" . $isbn : "&SS=" . $issn) . "&ATI=" . $title . "&AAU="
                         . $author_list . "&PG=" . $page_range . "&APY=" . $year . "&VOL=" . $volume_and_or_issue;
@@ -483,8 +494,28 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
             $this->fields['zdb_number'] : '';
     }
 
+    /**
+     * Check whether a record is available for PDA
+     * - Default false
+     * - implemented differently in IxTheo and KrimDok, so should be overridden there
+     *
+     * @return bool
+     */
+    public function isAvailableForPDA() {
+        return false;
+    }
+
     public function isSuperiorWork() {
         return (isset($this->fields['is_superior_work'])) ? $this->fields['is_superior_work'] : false;
+    }
+
+    public function hasInferiorWorksInCurrentSubsystem() {
+        if (!isset($this->fields['superior_work_subsystems']))
+            return false;
+
+        $subsystems = $this->fields['superior_work_subsystems'];
+        return in_array($this->container->get('ViewHelperManager')->get('tuefind')->getTueFindSubtype(),
+                        $subsystems, true);
     }
 
     public function isSubscribable() {
@@ -612,9 +643,5 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function isHybrid() {
         return isset($this->fields['is_hybrid']) && $this->fields['is_hybrid'] == true;
-    }
-
-    public function showAvailabilityInTuebingen() {
-        return $this->isAvailableInTuebingen() && !empty($this->getLocalSignatures());
     }
 }
