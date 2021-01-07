@@ -37,7 +37,7 @@
               // Order filtered items according to how they appear in the config.
               $filterKeys = array_flip($conf);
               uasort($filtered, function ($a, $b) use ($filterKeys) {
-                return $filterKeys[$a] > $filterKeys[$b] ? 1 : -1;
+                return $filterKeys[$a] <=> $filterKeys[$b];
               });
 
               // Combine filtered and sorted arrays so that the items in the config

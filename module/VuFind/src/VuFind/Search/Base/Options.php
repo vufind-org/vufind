@@ -994,9 +994,8 @@ abstract class Options implements TranslatorAwareInterface
     public function limitOrderOverride($limit)
     {
         $facetSettings = $this->configLoader->get($this->getFacetsIni());
-        $limits = $facetSettings->Advanced_Settings->limitOrderOverride;
-        $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?
-            $facetSettings->Advanced_Settings->limitDelimiter : '::';
+        $limits = $facetSettings->Advanced_Settings->limitOrderOverride ?? null;
+        $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
         $limitConf = $limits ? $limits->get($limit) : '';
         return array_map('trim', explode($delimiter, $limitConf));
     }
