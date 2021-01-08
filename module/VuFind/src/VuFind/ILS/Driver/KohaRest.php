@@ -404,6 +404,67 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Get Departments
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = dept. name.
+     */
+    public function getDepartments()
+    {
+        $result = $this->makeRequest('v1/contrib/kohasuomi/departments');
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        $departments = [];
+        foreach ($result['data'] as $department) {
+            $departments[$department['authorised_value']] = $department['lib_opac'];
+        }
+        return $departments;
+    }
+
+    /**
+     * Get Instructors
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getInstructors()
+    {
+        $result = $this->makeRequest('v1/contrib/kohasuomi/instructors');
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        $instructors = [];
+        foreach ($result['data'] as $instructor) {
+            $name = trim(
+                ($instructor['firstname'] ?? '') . ' '
+                . ($instructor['surname'] ?? '')
+            );
+            $instructors[$instructor['patron_id']] = $name;
+        }
+        return $instructors;
+    }
+
+    /**
+     * Get Courses
+     *
+     * @throws ILSException
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getCourses()
+    {
+        $result = $this->makeRequest('v1/contrib/kohasuomi/courses');
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        $courses = [];
+        foreach ($result['data'] as $course) {
+            $courses[$course['course_id']] = $course['course_name'];
+        }
+        return $courses;
+    }
+
+    /**
      * Find Reserves
      *
      * Obtain information on course reserves.
@@ -412,13 +473,42 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $inst   ID from getInstructors (empty string to match all)
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
-     * @return mixed An array of associative arrays representing reserve items.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ILSException
+     * @return array An array of associative arrays representing reserve items.
      */
     public function findReserves($course, $inst, $dept)
     {
-        return [];
+        $params = [];
+        if ('' !== $course) {
+            $params['course_id'] = $course;
+        }
+        if ('' !== $inst) {
+            $params['patron_id'] = $inst;
+        }
+        if ('' !== $dept) {
+            $params['department'] = $dept;
+        }
+
+        $result = $this->makeRequest(
+            [
+                'path' => 'v1/contrib/kohasuomi/coursereserves',
+                'query' => $params
+            ]
+        );
+        if (200 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+
+        $reserves = [];
+        foreach ($result['data'] as $reserve) {
+            $reserves[] = [
+                'BIB_ID' => $reserve['biblio_id'],
+                'COURSE_ID' => $reserve['course_id'],
+                'DEPARTMENT_ID' => $reserve['course_department'],
+                'INSTRUCTOR_ID' => $reserve['patron_id'],
+            ];
+        }
+        return $reserves;
     }
 
     /**
