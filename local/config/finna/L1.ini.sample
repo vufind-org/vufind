@@ -23,7 +23,7 @@ simple = false
 skip_numeric = true
 
 [Record]
-next_prev_navigation = false
+next_prev_navigation = true
 ;related[] = Similar
 
 ; ---------- searches.ini settings ----------
@@ -207,8 +207,6 @@ hierarchical[] = educational_level_str_mv
 hierarchicalFacetSortOptions[building] = top
 hierarchicalFacetDisplayStyles[format] = full
 hierarchicalFacetSeparators[format] = " > "
-
-hierarchicalFacetSortOptions[educational_level_str_mv] = all
 
 [CheckboxFacets]
 ;edition:1st* = "First Edition"

@@ -156,9 +156,16 @@
 .search-tab-tip {
   background-color: @search-tab-tip-bg;
   box-shadow: 2px 2px 4px #888888;
+  margin-bottom: 24px;
   padding: 5px;
   position: relative;
   p {
     margin: 2px;
+  }
+  @media (min-width: @screen-sm-min) {
+    margin-bottom: 12px;
+  }
+  @media (min-width: @screen-md-min) {
+    margin-bottom: 0;
   }
 }
