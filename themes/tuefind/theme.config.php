@@ -9,7 +9,6 @@ return [
             'TueFind\View\Helper\Root\SearchTabs' => 'VuFind\View\Helper\Root\SearchTabsFactory',
             'TueFind\View\Helper\Bootstrap3\Recaptcha' => 'TueFind\View\Helper\Bootstrap3\RecaptchaFactory',
             'TueFind\View\Helper\TueFind\Authority' => 'TueFind\View\Helper\TueFind\AuthorityFactory',
-            'TueFind\View\Helper\TueFind\Metadata' => 'TueFind\View\Helper\TueFind\MetadataFactory',
             'TueFind\View\Helper\TueFind\TueFind' => 'TueFind\View\Helper\TueFind\Factory',
         ],
         'aliases' => [
@@ -17,7 +16,6 @@ return [
             'helptext' => 'TueFind\View\Helper\Root\HelpText',
             'helpText' => 'TueFind\View\Helper\Root\HelpText',
             'HelpText' => 'TueFind\View\Helper\Root\HelpText',
-            'metadata' => 'TueFind\View\Helper\TueFind\Metadata',
             'piwik' => 'TueFind\View\Helper\Root\Piwik',
             'recaptcha' => 'TueFind\View\Helper\Bootstrap3\Recaptcha',
             'recordDataFormatter' => 'TueFind\View\Helper\Root\RecordDataFormatter',
