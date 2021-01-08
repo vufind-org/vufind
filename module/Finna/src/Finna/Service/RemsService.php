@@ -670,12 +670,21 @@ class RemsService implements
      */
     protected function getApplications($statuses = [])
     {
-        // Fetching applications by query doesn't work with REMS api.
-        // Therefore fetch all and filter by status manually.
         try {
+            $params = [];
+            if ($statuses) {
+                $statuses = array_map(
+                    function ($status) {
+                        return "state:$status";
+                    },
+                    $statuses
+                );
+                $params['query'] = implode(' OR ', $statuses);
+            }
+
             $result = $this->sendRequest(
-                'my-applications',
-                [], 'GET', RemsService::TYPE_USER, null, false
+                'my-applications', $params, 'GET',
+                RemsService::TYPE_USER, null, false
             );
         } catch (\Exception $e) {
             return [];
@@ -683,22 +692,6 @@ class RemsService implements
 
         if (empty($result)) {
             return [];
-        }
-
-        if ($statuses) {
-            $statuses = array_map(
-                function ($status) {
-                    return "application.state/$status";
-                },
-                $statuses
-            );
-
-            $result = array_filter(
-                $result,
-                function ($application) use ($statuses) {
-                    return in_array($application['application/state'], $statuses);
-                }
-            );
         }
 
         return array_map(
