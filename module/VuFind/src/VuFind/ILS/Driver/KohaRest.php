@@ -77,7 +77,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
 
@@ -220,10 +220,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param \VuFind\Date\Converter $dateConverter   Date converter object
      * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
-     * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
+     * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, SafeMoneyFormat $safeMoneyFormat
+        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -2422,11 +2422,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         case 'Patron::Debt':
         case 'Patron::DebtGuarantees':
             $count = isset($details['current_outstanding'])
-                ? $this->safeMoneyFormat->__invoke($details['current_outstanding'])
-                : '-';
+                ? $this->formatMoney($details['current_outstanding']) : '-';
             $limit = isset($details['max_outstanding'])
-                ? $this->safeMoneyFormat->__invoke($details['max_outstanding'])
-                : '-';
+                ? $this->formatMoney($details['max_outstanding']) : '-';
             $params = [
                 '%%blockCount%%' => $count,
                 '%%blockLimit%%' => $limit,
@@ -2434,5 +2432,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             break;
         }
         return $this->translate($this->patronStatusMappings[$reason] ?? '', $params);
+    }
+
+    /**
+     * Helper function for formatting currency
+     *
+     * @param $amount Number to format
+     *
+     * @return string
+     */
+    protected function formatMoney($amount)
+    {
+        if (null === $this->safeMoneyFormat) {
+            throw new \Exception('SafeMoneyFormat helper not available');
+        }
+        return ($this->safeMoneyFormat)($amount);
     }
 }
