@@ -10,6 +10,8 @@
   $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
   $options = $this->searchOptions($this->searchClassId);
   $hasDefaultsApplied = $params->hasDefaultsApplied();
+  $checkboxFilters = $params->getCheckboxFacets();
+  $filterList = $params->getFilterList(true);
   $filterCount = $this->searchbox()->getFilterCount($checkboxFilters, $filterList);
 
   // Determine whether the only filters applied are the default ones; this controls
