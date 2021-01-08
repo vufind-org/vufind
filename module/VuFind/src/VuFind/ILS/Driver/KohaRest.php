@@ -77,16 +77,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
-
-    /**
-     * Money formatting view helper
-     *
-     * @var SafeMoneyFormat
-     */
-    protected $safeMoneyFormat;
 
     /**
      * Session cache
@@ -94,6 +87,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
+
+    /**
+     * Factory function for constructing the SafeMoneyFormat helper on demand.
+     *
+     * @var callable
+     */
+    protected $safeMoneyFormatFactory;
+
+    /**
+     * Money formatting view helper
+     *
+     * @var SafeMoneyFormat
+     */
+    protected $safeMoneyFormat = null;
 
     /**
      * Default pickup location
@@ -217,17 +224,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $dateConverter   Date converter object
-     * @param callable               $sessionFactory  Factory function returning
+     * @param \VuFind\Date\Converter $dateConverter    Date converter object
+     * @param callable               $sessionFactory   Factory function returning
      * SessionContainer object
-     * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
+     * @param callable               $safeMoneyFactory Factory function returning the
+     * Money formatting view helper
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, SafeMoneyFormat $safeMoneyFormat
+        $sessionFactory, callable $safeMoneyFactory
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
-        $this->safeMoneyFormat = $safeMoneyFormat;
+        $this->safeMoneyFormatFactory = $safeMoneyFactory;
     }
 
     /**
@@ -2512,11 +2520,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         case 'Patron::Debt':
         case 'Patron::DebtGuarantees':
             $count = isset($details['current_outstanding'])
-                ? $this->safeMoneyFormat->__invoke($details['current_outstanding'])
-                : '-';
+                ? $this->formatMoney($details['current_outstanding']) : '-';
             $limit = isset($details['max_outstanding'])
-                ? $this->safeMoneyFormat->__invoke($details['max_outstanding'])
-                : '-';
+                ? $this->formatMoney($details['max_outstanding']) : '-';
             $params = [
                 '%%blockCount%%' => $count,
                 '%%blockLimit%%' => $limit,
@@ -2524,5 +2530,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             break;
         }
         return $this->translate($this->patronStatusMappings[$reason] ?? '', $params);
+    }
+
+    /**
+     * Helper function for formatting currency
+     *
+     * @param $amount Number to format
+     *
+     * @return string
+     */
+    protected function formatMoney($amount)
+    {
+        if (null === $this->safeMoneyFormat) {
+            $this->safeMoneyFormat = ($this->safeMoneyFormatFactory)();
+        }
+        return ($this->safeMoneyFormat)($amount);
     }
 }
