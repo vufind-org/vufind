@@ -762,9 +762,8 @@ class Form extends \Laminas\Form\Form implements
 
         foreach ($this->getElements() as $el) {
             $isCheckbox = $el['type'] === 'checkbox';
-            $required = $el['required']
-                ?? ($isCheckbox && ($el['requireOne'] ?? false));
             $requireOne = $isCheckbox && ($el['requireOne'] ?? false);
+            $required = $el['required'] ?? $requireOne;
 
             $fieldValidators = [];
             if ($required || $requireOne) {
