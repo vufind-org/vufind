@@ -159,14 +159,12 @@
     <div class="record-accordions">
       <?php foreach ($this->tabs as $accordion => $obj): ?>
         <?php
-          // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
           $accordion_classes = [
             'accordion',
             'accordion-' . strtolower($accordion)
           ];
           if (0 === strcasecmp($this->activeTab, $accordion)) {
-            $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
             if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
               $accordion_classes[] = 'active';
             }
