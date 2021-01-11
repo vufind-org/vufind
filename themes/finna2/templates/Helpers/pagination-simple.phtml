@@ -4,7 +4,7 @@
     <li><?php if (isset($this->previous)): ?>
       <?php $newParams = $this->params; $newParams['page'] = $this->previous; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-        <span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-alt-left"></i>
+        <span class="sr-only"><?=$this->transEsc('page_prev')?></span><i class="fa fa-arrow-alt-left"></i>
       </a>
     <?php endif; ?>
     </li>
@@ -20,7 +20,7 @@
     <li<?php if (isset($this->next)): ?>>
       <?php $newParams = $this->params; $newParams['page'] = $this->next; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-        <span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-alt-right"></i>
+        <span class="sr-only"><?=$this->transEsc('page_next')?></span><i class="fa fa-arrow-alt-right"></i>
       </a>
     <?php endif; ?>
     </li>

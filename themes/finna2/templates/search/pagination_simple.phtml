@@ -3,7 +3,7 @@
   <ul class="paginationSimple">
     <li>
     <?php if (isset($this->previous)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-alt-left"></i></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('page_prev')?></span><i class="fa fa-arrow-alt-left"></i></a></li>
     <?php endif; ?>
     <li class="pagination-text">
       <?=$this->label ?: $this->translate(
@@ -15,7 +15,7 @@
       );?>
     </li>
     <?php if (isset($this->next)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-alt-right"></i></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('page_next')?></span><i class="fa fa-arrow-alt-right"></i></a></li>
     <?php endif; ?>
   </ul>
 <?php endif; ?>
