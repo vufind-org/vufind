@@ -104,7 +104,6 @@
           <i class="fa fa-external-link"></i> DESC
           <span class="online-source">SOURCE</span>
         </a>
-        <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
       </div>
       <?php if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <div class="truncate-field">
