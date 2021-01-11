@@ -1,6 +1,6 @@
 <!-- START of: finna - navibar.phtml -->
 <?php $account = $this->auth()->getManager(); ?>
-<div role="navigation" class="finna-navbar">
+<div role="navigation" aria-label="<?=$this->transEsc('Main Navigation')?>" class="finna-navbar">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-collapse" aria-label="<?=$this->escapeHtmlAttr($this->translate('Main Navigation')) ?>" aria-expanded="false">
       <i class="fa fa-bars" aria-hidden="true"></i>

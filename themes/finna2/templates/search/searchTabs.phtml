@@ -4,7 +4,7 @@
   $module = $this->layout()->templateDir;
 ?>
 <?php if (!$isManyTabs): ?>
-  <div class="tabs-table">
+  <div role="navigation" aria-label="<?=$this->transEsc('Search Tabs')?>" class="tabs-table">
 <?php endif; ?>
 <?php if (!empty($searchTabs)): ?>
   <?php
@@ -19,7 +19,7 @@
       <?php foreach ($searchTabs as $tab): ?>
         <?php if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
         <li class="<?=$tab['selected'] ? 'active' : 'hidden-print'?>">
-          <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+          <a <?=$tab['selected'] ? 'aria-current="page"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
           <?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName !== 'advanced'): ?>
             <?php
               $tooltip = [

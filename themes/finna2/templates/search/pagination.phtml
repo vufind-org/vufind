@@ -1,7 +1,7 @@
 <!-- START of: finna - search/pagination.phtml -->
 <?php if ($this->pageCount && (isset($this->previous) || isset($this->next))): ?>
-
-  <ul class="pagination hidden-print" aria-label="<?=$this->transEsc('pagination_label')?>">
+<nav aria-label="<?=$this->transEsc('pagination_label')?>">
+  <ul class="pagination hidden-print">
     <?php if (isset($this->previous)): ?>
       <li role="none" class="pagination-button">
         <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First')?></span></a>
@@ -15,7 +15,7 @@
         <?php if ($page != $this->current): ?>
           <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
         <?php else: ?>
-          <li class="active"><span><?=$page?></span></li>
+          <li class="active" aria-current="true"><span><?=$page?></span></li>
         <?php endif; ?>
       <?php endforeach; ?>
     <?php endif; ?>
@@ -28,5 +28,6 @@
       </li>
     <?php endif; ?>
   </ul>
+</nav>
 <?php endif; ?>
 <!-- END of: finna - search/pagination.phtml -->
