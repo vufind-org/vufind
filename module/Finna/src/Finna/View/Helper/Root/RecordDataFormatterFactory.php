@@ -450,10 +450,12 @@ class RecordDataFormatterFactory
             ]
         );
         $setTemplateLine(
-            'Classification',
+            'Other Classifications',
             'getOtherClassifications', 'data-keywords.phtml',
             [
-                'context' => ['class' => 'recordClassifications']
+                'context' => [
+                    'class' => 'recordClassifications', 'title' => 'Classification'
+                ]
             ]
         );
         $setTemplateLine(
