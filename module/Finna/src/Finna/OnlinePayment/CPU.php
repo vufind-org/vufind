@@ -87,7 +87,10 @@ class CPU extends BaseHandler
             . "&{$statusParam}=1";
 
         $payment = new \Cpu_Client_Payment($orderNumber);
-        $payment->Email = $user->email;
+        $email = trim($user->email);
+        if ($email) {
+            $payment->Email = $email;
+        }
         $lastname = $user->lastname;
         if (!empty($user->firstname)) {
             $payment->FirstName = $user->firstname;
