@@ -67,6 +67,12 @@ class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
         // Search for an item known to have other versions in test data:
         $page = $this->performSearch('id:0001732009-0', null, $path);
 
+        // Confirm that "other versions" link exists:
+        $this->assertEquals(
+            'Show other versions (3)',
+            $this->findCss($page, 'div.record-versions a')->getText()
+        );
+
         // Click on the "other versions" link:
         $this->clickCss($page, 'div.record-versions a');
         $this->snooze();
@@ -108,6 +114,42 @@ class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
     public function testVersionsInSearch2()
     {
         $this->runVersionsTest('/Search2');
+    }
+
+    /**
+     * Confirm that links operate differently when the record versions tab is
+     * disabled but other version settings are enabled.
+     *
+     * @return void
+     */
+    public function testDisabledVersionsTab()
+    {
+        // Disable versions tab:
+        $extraConfigs['RecordTabs']['VuFind\RecordDriver\SolrMarc'] = [
+            'tabs[Versions]' => false
+        ];
+        $this->changeConfigs($extraConfigs);
+        // Search for an item known to have other versions in test data:
+        $page = $this->performSearch('id:0001732009-0', null, '/Search');
+
+        // Confirm that "all versions" link exists:
+        $this->assertEquals(
+            'Show all versions (4)',
+            $this->findCss($page, 'div.record-versions a')->getText()
+        );
+
+        // Click on the "all versions" link:
+        $this->clickCss($page, 'div.record-versions a');
+        $this->snooze();
+
+        // Confirm that we have jumped directly to the "show all versions" screen
+        // and that all four versions are now visible in the versions display:
+        $this->assertEquals(
+            'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
+            $this->findCss($page, 'ul.breadcrumb li.active')->getText()
+        );
+        $results = $page->findAll('css', '.result');
+        $this->assertEquals(4, count($results));
     }
 
     /**
