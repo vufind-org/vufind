@@ -38,7 +38,7 @@
     <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
       <div class="recordcover-container">
         <button class="next-image left" type="button"><i class="fa fa-chevron-left"></i><span class="sr-only"><?= $this->transEsc('previous_image') ?></span></button>
-        <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>#image">
+        <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>">
           <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
           <div class="paginator-info"><span class="image-index"></span></div>
           <div class="image-credit-container">
