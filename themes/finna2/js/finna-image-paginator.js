@@ -1024,13 +1024,18 @@ finna.imagePaginator = (function imagePaginator() {
   };
 
   /**
-   * Function to add callbacks after document is fully loaded
+   * Function to add callbacks after document is fully loaded or immediately, if the document is already
+   * loaded
    *
    * @param callback function to add
    */
   FinnaPaginator.prototype.addDocumentLoadCallback = function addDocumentLoadCallback(callback) {
     var _ = this;
-    _.onDocumentLoadCallbacks.push(callback);
+    if (jQuery.isReady) {
+      callback();
+    } else {
+      _.onDocumentLoadCallbacks.push(callback);
+    }
   };
 
   /**
