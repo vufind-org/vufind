@@ -21,7 +21,7 @@
         </div>
         <div class="information"><p class="information-text"><?=$this->transEsc('advanced_search_information_text_range')?></p></div>
         <?php if ($current['type'] == 'date'): ?>
-        <div class="slider-container">
+        <div aria-hidden="true" class="slider-container">
           <label for="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider" class="sr-only"><?=$this->transEsc('year_slider');?></label>
           <input type="text" id="<?=$escField?><?=$this->escapeHtmlAttr($current['type'])?>Slider">
         </div>
