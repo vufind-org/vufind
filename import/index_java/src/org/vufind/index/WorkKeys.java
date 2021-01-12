@@ -27,6 +27,7 @@ import com.ibm.icu.text.Transliterator;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -37,6 +38,11 @@ import java.util.regex.Pattern;
  */
 public class WorkKeys
 {
+    /**
+     * Cache for Transliterator instances to avoid having to recreate them
+     */
+    Hashtable<String, Transliterator> transliterators = new Hashtable<String, Transliterator>();
+
     /**
      * Get all work identification keys for the record.
      *
@@ -61,8 +67,16 @@ public class WorkKeys
     ) {
         Set<String> workKeys = new LinkedHashSet<String>();
 
-        final Transliterator transliterator = transliterationRules.isEmpty() ? null
-            : Transliterator.createFromRules("workkeys", transliterationRules, Transliterator.FORWARD);
+        if (!transliterationRules.isEmpty()) {
+            if (!this.transliterators.containsKey(transliterationRules)) {
+                this.transliterators.put(
+                    transliterationRules,
+                    Transliterator.createFromRules("workkeys", transliterationRules, Transliterator.FORWARD)
+                );
+            }
+        }
+        final Transliterator transliterator = transliterationRules.isEmpty()
+            ? null : this.transliterators.get(transliterationRules);
 
         // Uniform title
         final Set<String> uniformTitles = FieldSpecTools.getFieldsByTagList(record, uniformTitleTagList);
