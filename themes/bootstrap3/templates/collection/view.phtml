@@ -18,10 +18,11 @@
   // Set up breadcrumbs:
   $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
   if (!empty($lastSearch)) {
-    $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+      $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  } else {
+      $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
   }
-  $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
-     . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
+  $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
@@ -42,7 +43,7 @@
       <div class="record-tabs">
         <ul class="nav nav-tabs">
           <?php foreach ($this->tabs as $tab => $obj): ?>
-            <?php // add current tab to breadcrumbs if applicable:
+            <?php
               $desc = $obj->getDescription();
               $tab_classes = [];
               if (0 === strcasecmp($this->activeTab, $tab)) {
@@ -50,7 +51,6 @@
                   $tab_classes[] = 'active';
                 }
                 $tab_classes[] = 'initiallyActive';
-                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
                 $activeTabObj = $obj;
               }
               if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
