@@ -14,7 +14,7 @@
     <h3><?=$this->transEsc('delete_account_confirm'); ?></h3>
     <p><?=$this->translate('delete_account_description_html'); ?></p>
     <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" />
-    <input id="delete-account-cancel" class="btn btn-primary" type="submit" name="reset" data-dismiss="modal" value="<?=$this->transEsc('confirm_dialog_no'); ?>"/>
-    <input id="delete-account-submit" class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('confirm_dialog_yes'); ?>"/>
+    <input id="delete-account-cancel" class="btn btn-primary" type="submit" name="reset" data-dismiss="modal" value="<?=$this->transEscAttr('confirm_dialog_no'); ?>"/>
+    <input id="delete-account-submit" class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('confirm_dialog_yes'); ?>"/>
   </form>
 <?php endif; ?>
