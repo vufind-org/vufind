@@ -52,7 +52,11 @@
   <?php endif; ?>
 
   <div class="btn-group">
-    <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card')?></a>
+    <?php if($this->shibboleth): ?>
+      <a href="<?=$this->url('librarycards-connectnewshibbolethcard') ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card')?></a>
+    <?php else: ?>
+      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card')?></a>
+    <?php endif;?>
   </div>
 </div>
 

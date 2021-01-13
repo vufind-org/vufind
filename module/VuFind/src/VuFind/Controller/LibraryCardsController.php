@@ -81,7 +81,9 @@ class LibraryCardsController extends AbstractBase
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
-                'multipleTargets' => $catalog->checkCapability('getLoginDrivers')
+                'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
+                'shibboleth' => ($this->getAuthManager()
+                    ->getAuthMethod() == 'Shibboleth')
             ]
         );
     }
@@ -140,6 +142,8 @@ class LibraryCardsController extends AbstractBase
                 'defaultTarget' => $loginSettings['defaultTarget'],
                 'loginMethod' => $loginSettings['loginMethod'],
                 'loginMethods' => $loginSettings['loginMethods'],
+                'shibboleth' => ($this->getAuthManager()->getAuthMethod()
+                    == 'Shibboleth')
             ]
         );
     }
@@ -241,6 +245,35 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
+     * Redirects to Shibboleth authentication to connect a new library card
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectNewShibbolethCardAction()
+    {
+        $url = $this->getServerUrl('librarycards-connectshibbolethcard');
+        $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
+        return $this->redirect()->toUrl($redirectUrl);
+    }
+
+    /**
+     * Connects a new library card for shibboleth authenticated user
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectShibbolethCardAction()
+    {
+        $user = $this->getUser();
+        try {
+            $this->getAuthManager()->connectUser($this->getRequest(), $user);
+        } catch (\Exception $ex) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($ex->getMessage());
+        }
+        return $this->redirect()->toUrl('/LibraryCards/Home');
+    }
+
+    /**
      * Process the "edit library card" submission.
      *
      * @param \VuFind\Db\Row\User $user Logged in user
@@ -254,9 +287,10 @@ class LibraryCardsController extends AbstractBase
         $target = $this->params()->fromPost('target', '');
         $username = $this->params()->fromPost('username', '');
         $password = $this->params()->fromPost('password', '');
+        $rename = $this->params()->fromPost('rename', 'false') == 'true';
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
 
-        if (!$username) {
+        if (!$username && !$rename) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_blank', 'error');
             return false;
@@ -266,9 +300,14 @@ class LibraryCardsController extends AbstractBase
             $username = "$target.$username";
         }
 
+        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
+        if ($rename) {
+            $card->card_name = $cardName;
+            $card->save();
+            return $this->redirect()->toRoute('librarycards-home');
+        }
         // Check the credentials if the username is changed or a new password is
         // entered:
-        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
         if ($card->cat_username !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);

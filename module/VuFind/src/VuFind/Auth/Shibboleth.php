@@ -332,6 +332,31 @@ class Shibboleth extends AbstractBase
     }
 
     /**
+     * Connect user authenticated by shibboleth to library card.
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
+     * containing account credentials.
+     * @param \VuFind\Db\Row\User                  $connectingUser Connect newly
+     * created library card to this user.
+     *
+     * @return void
+     */
+    public function connectUser($request, $connectingUser)
+    {
+        $entityId = $this->getCurrentEntityId($request);
+        $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
+        $username = $shib['prefix'] . '.' . $this->getAttribute(
+            $request,
+            $shib['cat_username']
+        );
+        $password = $shib['cat_password'] ?? null;
+        $connectingUser->saveLibraryCard(
+            null, $shib['prefix'],
+            $username, $password
+        );
+    }
+
+    /**
      * Return configuration loader
      *
      * @return ConfigurationLoaderInterface configuration loader
