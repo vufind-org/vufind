@@ -614,8 +614,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     protected function capitalizeTitle($str)
     {
-        $exceptions = ['a', 'an', 'the', 'against', 'between', 'in', 'of',
-            'to', 'and', 'but', 'for', 'nor', 'or', 'so', 'yet', 'to'];
+        $exceptions = [
+            'a', 'about', 'above', 'across', 'after', 'against', 'along', 'among',
+            'an', 'and', 'around', 'as', 'at', 'before', 'behind', 'below',
+            'beneath', 'beside', 'between', 'beyond', 'but', 'by', 'despite', 'down',
+            'during', 'except', 'for', 'from', 'from', 'in', 'inside', 'into',
+            'like', 'near', 'nor', 'of', 'off', 'on', 'onto', 'opposite', 'or',
+            'out', 'outside', 'over', 'past', 'round', 'since', 'so', 'than', 'the',
+            'through', 'to', 'towards', 'under', 'underneath', 'unlike', 'until',
+            'up', 'upon', 'via', 'with', 'within', 'without', 'yet',
+        ];
 
         $words = explode(' ', $str);
         $newwords = [];
