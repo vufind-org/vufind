@@ -210,16 +210,11 @@ trait ILSFinna
         $user->password = '';
 
         // Update user information based on ILS data:
-        $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
+        $fields = ['firstname', 'lastname', 'major', 'college'];
         foreach ($fields as $field) {
-            // Special case: don't override existing email address:
-            if ($field == 'email') {
-                if (isset($user->email) && trim($user->email) != '') {
-                    continue;
-                }
-            }
             $user->$field = $info[$field] ?? ' ';
         }
+        $user->updateEmail($info['email'] ?? '');
 
         // Set home library if not already set
         if (!empty($info['home_library']) && empty($user->home_library)) {
