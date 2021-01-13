@@ -42,10 +42,8 @@
 
     <!-- IxTheo: Subscribe button -->
     <?php if ($this->driver->isSubscribable()):?>
-      <?php if ($this->IxTheo()->isRecordSubscribed($this->driver)): ?>
+      <?php if ($this->IxTheo()->isRecordSubscribed($this->driver) || $this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
         <li><a class="subscribe-record toolbar-btn btn-type-unsubscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Unsubscribe')?></a></li>
-      <?php elseif ($this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
-        <li><a class="subscribe-record toolbar-btn btn-type-unsubscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" disabled><?=$this->transEsc('Unsubscribe via profile settings')?></a></li>
       <?php else: ?>
         <li><a class="subscribe-record toolbar-btn btn-type-subscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Subscribe')?></a></li>
       <?php endif; ?>
