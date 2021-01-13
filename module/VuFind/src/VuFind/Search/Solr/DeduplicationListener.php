@@ -9,7 +9,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013.
+ * Copyright (C) The National Library of Finland 2013-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -137,7 +137,8 @@ class DeduplicationListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             $context = $event->getParam('context');
-            if ($params && in_array($context, ['search', 'similar', 'getids'])) {
+            $contexts = ['search', 'similar', 'getids', 'workExpressions'];
+            if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
                 if ($this->enabled && 'getids' !== $context
@@ -186,7 +187,8 @@ class DeduplicationListener
             return $event;
         }
         $context = $event->getParam('context');
-        if ($this->enabled && ($context == 'search' || $context == 'similar')) {
+        $contexts = ['search', 'similar', 'workExpressions'];
+        if ($this->enabled && in_array($context, $contexts)) {
             $this->fetchLocalRecords($event);
         }
         return $event;

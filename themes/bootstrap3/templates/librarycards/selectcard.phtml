@@ -21,7 +21,7 @@
           <option value="<?=$this->escapeHtmlAttr($card->id)?>"<?=strcasecmp($card->cat_username, $this->user->cat_username) == 0 ? ' selected="selected"' : ''?>><?=$display ?></option>
         <?php endforeach; ?>
       </select>
-      <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEsc("Set")?>" /></noscript>
+      <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEscAttr("Set")?>" /></noscript>
     </form>
   <?php endif; ?>
 <?php endif; ?>
