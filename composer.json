@@ -103,7 +103,7 @@
         }
     },
     "scripts": {
-        "phing-install-dependencies": "phing installsolr installicu4j installswaggerui",
+        "phing-install-dependencies": "phing installsolr installswaggerui",
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies"
     }

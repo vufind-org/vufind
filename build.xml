@@ -31,7 +31,6 @@
   <property name="solr_version" value="7.7.3" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.0.0-alpha.4" />
-  <property name="icu4j_version" value="68.2" />
 
   <property name="version" value="7.0.2" />
 
@@ -248,18 +247,6 @@
         </replaceregexp>
       </filterchain>
     </reflexive>
-  </target>
-
-  <target name="installicu4j" description="Install ICU4J for Import">
-    <!-- download from GitHub if not already present in the lib dir -->
-    <php expression="str_replace('.', '_', '${icu4j_version}')" returnProperty="icu4j_version_underscore" />
-    <if>
-      <not><available file="${srcdir}/import/lib/icu4j-${icu4j_version_underscore}.jar" /></not>
-      <then>
-        <php expression="str_replace('.', '-', '${icu4j_version}')" returnProperty="icu4j_version_dash" />
-        <httpget url="https://github.com/unicode-org/icu/releases/download/release-${icu4j_version_dash}/icu4j-${icu4j_version_underscore}.jar" dir="${srcdir}/import/lib" followRedirects="true" />
-      </then>
-    </if>
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
