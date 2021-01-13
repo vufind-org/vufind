@@ -90,7 +90,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // Build author list:
         $authors = (array)$driver->tryMethod('getPrimaryAuthors');
         if (empty($authors)) {
-            $authors = (array)$driver->tryMethod('getCorporateAuthors');
+            // Corporate authors are more likely to have inappropriate trailing
+            // punctuation; strip it off:
+            $trimmer = function ($str) {
+                return rtrim($str, '.');
+            };
+            $authors = array_map(
+                $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
+            );
         }
         $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
         if (!empty($secondary)) {
