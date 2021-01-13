@@ -63,7 +63,7 @@ class Backend extends AbstractBackend
     /**
      * Limit for records per query in a batch retrieval.
      *
-     * @var pageSize
+     * @var int
      */
     protected $pageSize = 100;
 

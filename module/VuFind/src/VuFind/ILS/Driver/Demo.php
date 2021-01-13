@@ -34,6 +34,7 @@
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
+use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
@@ -81,6 +82,13 @@ class Demo extends AbstractBase
     protected $sessionFactory;
 
     /**
+     * HTTP Request object (if available).
+     *
+     * @var ?HttpRequest
+     */
+    protected $request;
+
+    /**
      * Should we return bib IDs in MyResearch responses?
      *
      * @var bool
@@ -120,12 +128,13 @@ class Demo extends AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param SearchService          $ss             Search service
-     * @param Callable               $sessionFactory Factory function returning
-     * SessionContainer object
-     * fake data to simulate consistency and reduce Solr hits
+     * @param callable               $sessionFactory Factory function returning
+     * SessionContainer object for fake data to simulate consistency and reduce Solr
+     * hits
+     * @param HttpRequest            $request        HTTP request object (optional)
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss, $sessionFactory
+        SearchService $ss, $sessionFactory, HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -133,6 +142,7 @@ class Demo extends AbstractBase
             throw new \Exception('Invalid session factory passed to constructor.');
         }
         $this->sessionFactory = $sessionFactory;
+        $this->request = $request;
     }
 
     /**
@@ -574,7 +584,12 @@ class Demo extends AbstractBase
             $factory = $this->sessionFactory;
             $this->session[$selectedPatron] = $factory($selectedPatron);
         }
-        return $this->session[$selectedPatron];
+        $result = $this->session[$selectedPatron];
+        // Special case: check for clear_demo request parameter to reset:
+        if ($this->request && $this->request->getQuery('clear_demo')) {
+            $result->exchangeArray([]);
+        }
+        return $result;
     }
 
     /**

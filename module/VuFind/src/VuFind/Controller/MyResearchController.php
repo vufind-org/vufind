@@ -1199,7 +1199,9 @@ class MyResearchController extends AbstractBase
             // Do nothing; if we're unable to load information about pickup
             // locations, they are not supported and we should ignore them.
         }
+
         $view->recordList = $recordList;
+        $view->accountStatus = $this->collectRequestAccountStats($recordList);
         return $view;
     }
 
@@ -1264,7 +1266,9 @@ class MyResearchController extends AbstractBase
             // Do nothing; if we're unable to load information about pickup
             // locations, they are not supported and we should ignore them.
         }
+
         $view->recordList = $recordList;
+        $view->accountStatus = $this->collectRequestAccountStats($recordList);
         return $view;
     }
 
@@ -1323,6 +1327,7 @@ class MyResearchController extends AbstractBase
         }
 
         $view->recordList = $recordList;
+        $view->accountStatus = $this->collectRequestAccountStats($recordList);
         return $view;
     }
 
@@ -1379,6 +1384,20 @@ class MyResearchController extends AbstractBase
             $pageEnd = $result['count'];
         }
 
+        // If the results are not paged in the ILS, collect up to date stats for ajax
+        // account notifications:
+        if ((!$pageOptions['ilsPaging'] || !$paginator)
+            && !empty($this->getConfig()->Authentication->enableAjax)
+        ) {
+            $accountStatus = [
+                'ok' => 0,
+                'warn' => 0,
+                'overdue' => 0
+            ];
+        } else {
+            $accountStatus = null;
+        }
+
         $transactions = $hiddenTransactions = [];
         foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
@@ -1390,6 +1409,20 @@ class MyResearchController extends AbstractBase
             ) {
                 // Enable renewal form if necessary:
                 $renewForm = true;
+            }
+
+            if (null !== $accountStatus) {
+                switch ($current['dueStatus'] ?? '') {
+                case 'due':
+                    $accountStatus['warn']++;
+                    break;
+                case 'overdue':
+                    $accountStatus['overdue']++;
+                    break;
+                default:
+                    $accountStatus['ok']++;
+                    break;
+                }
             }
 
             // Build record driver (only for the current visible page):
@@ -1409,7 +1442,8 @@ class MyResearchController extends AbstractBase
         return $this->createViewModel(
             compact(
                 'transactions', 'renewForm', 'renewResult', 'paginator', 'ilsPaging',
-                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'params'
+                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'params',
+                'accountStatus'
             )
         );
     }
@@ -1505,6 +1539,7 @@ class MyResearchController extends AbstractBase
         // Get fine details:
         $result = $catalog->getMyFines($patron);
         $fines = [];
+        $totalDue = 0;
         foreach ($result as $row) {
             // Attempt to look up and inject title:
             try {
@@ -1524,10 +1559,20 @@ class MyResearchController extends AbstractBase
             if (!isset($row['title'])) {
                 $row['title'] = null;
             }
+            $totalDue += $row['balance'] ?? 0;
             $fines[] = $row;
         }
 
-        return $this->createViewModel(['fines' => $fines]);
+        // Collect up to date stats for ajax account notifications:
+        if (!empty($this->getConfig()->Authentication->enableAjax)) {
+            $accountStatus = [
+                'total' => $totalDue / 100.00
+            ];
+        } else {
+            $accountStatus = null;
+        }
+
+        return $this->createViewModel(compact('fines', 'accountStatus'));
     }
 
     /**
@@ -1545,7 +1590,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send account recovery email
      *
-     * @return View object
+     * @return mixed
      */
     public function recoverAction()
     {
@@ -1752,7 +1797,7 @@ class MyResearchController extends AbstractBase
     /**
      * Receive a hash and display the new password form if it's valid
      *
-     * @return view
+     * @return mixed
      */
     public function verifyAction()
     {
@@ -1795,7 +1840,7 @@ class MyResearchController extends AbstractBase
     /**
      * Receive a hash and display the new password form if it's valid
      *
-     * @return view
+     * @return mixed
      */
     public function verifyEmailAction()
     {
@@ -1856,7 +1901,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handling submission of a new password for a user.
      *
-     * @return view
+     * @return mixed
      */
     public function newPasswordAction()
     {
@@ -1929,7 +1974,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handling submission of a new email for a user.
      *
-     * @return view
+     * @return mixed
      */
     public function changeEmailAction()
     {
@@ -2002,7 +2047,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handling submission of a new password for a user.
      *
-     * @return view
+     * @return mixed
      */
     public function changePasswordAction()
     {
@@ -2162,5 +2207,35 @@ class MyResearchController extends AbstractBase
         $check = $this->serviceLocator
             ->get(\VuFind\Config\AccountCapabilities::class);
         return $check->getListTagSetting() === 'enabled';
+    }
+
+    /**
+     * Collect up to date status information for ajax account notifications.
+     *
+     * @param array $records Records for holds, ILL requests or storage retrieval
+     * requests
+     *
+     * @return array
+     */
+    protected function collectRequestAccountStats(array $records): ?array
+    {
+        // Collect up to date stats for ajax account notifications:
+        if (empty($this->getConfig()->Authentication->enableAjax)) {
+            return null;
+        }
+        $accountStatus = [
+            'available' => 0,
+            'in_transit' => 0
+        ];
+        foreach ($records as $record) {
+            $request = $record->getExtraDetail('ils_details');
+            if ($request['available'] ?? false) {
+                $accountStatus['available']++;
+            }
+            if ($request['in_transit'] ?? false) {
+                $accountStatus['in_transit']++;
+            }
+        }
+        return $accountStatus;
     }
 }
