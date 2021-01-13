@@ -373,9 +373,9 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
             case 'krimdok':
                return 'KRI';
         }
-        throw new \Exception('can't determine TueFind subsystem type for "' + $instance + '"!');
+        throw new \Exception('can\'t determine TueFind subsystem type for "' . $instance . '"!');
     }
-
+    
     /**
       * Derive the German FID denomination
       * @return string or false of no matching value could be found

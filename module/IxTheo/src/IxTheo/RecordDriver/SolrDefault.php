@@ -339,6 +339,10 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $bible_references;
     }
 
+    public function getBundleIds(): array {
+        return $this->fields['bundle_id'] ?? [];
+    }
+
     public function isAvailableForPDA() {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
     }

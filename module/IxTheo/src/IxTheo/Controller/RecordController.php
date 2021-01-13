@@ -1,7 +1,6 @@
 <?php
 
 namespace IxTheo\Controller;
-use Zend\Mail\Address;
 
 class RecordController extends \TueFind\Controller\RecordController
 {
@@ -55,7 +54,17 @@ class RecordController extends \TueFind\Controller\RecordController
             'page' => 'SubscriptionInfoText'
         ));
 
-        return $this->createViewModel(["subscription" => !($table->findExisting($userId, $recordId)), "infoText" => $infoText]);
+        $subscribed = boolval($table->findExisting($userId, $recordId));
+        $bundles = [];
+        foreach($driver->getBundleIds() as $bundle) {
+            if (boolval($table->findExisting($userId, $bundle))) {
+                $bundles[] = $bundle;
+            }
+        }
+
+        return $this->createViewModel(["subscribed" => $subscribed,
+                                       "bundles" => $bundles,
+                                       "infoText" => $infoText]);
     }
 
     function getUserData($userId) {

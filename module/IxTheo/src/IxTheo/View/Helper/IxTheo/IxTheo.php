@@ -82,12 +82,14 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
 
 
     /**
-     * Helper to decide whether to show unsubscribe button
-     * - Never show "unsubscribe" when user is not logged in.
+     * Helper to decide whether a record id subscribed or not
+     * (can be used for titles or bundles)
+     *
+     * - Also returns false if user is not logged in.
      * - Use getAll per user + cache result for better performance
      *   if a lot of items are shown at once (e.g. check search result items)
      */
-    public function isRecordSubscribed($driver) {
+    protected function isRecordIdSubscribed($recordId) {
         $user = $this->container->get(\VuFind\Auth\Manager::class)->isLoggedIn();
         if (!$user)
             return false;
@@ -100,11 +102,25 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
         }
 
         foreach ($this->cachedSubscriptions as $subscription) {
-            if ($subscription->journal_control_number_or_bundle_name == $driver->getUniqueId())
+            if ($subscription->journal_control_number_or_bundle_name == $recordId)
                 return true;
         }
 
         return false;
     }
 
+
+    public function isRecordSubscribed($driver): bool {
+        return $this->isRecordIdSubscribed($driver->getUniqueId());
+    }
+
+
+    public function isRecordSubscribedViaBundle(\IxTheo\RecordDriver\SolrDefault $driver, &$subscribedBundleIds=[]): bool {
+        $bundleIds = $driver->getBundleIds();
+        foreach ($bundleIds as $bundleId) {
+            if ($this->isRecordIdSubscribed($bundleId))
+                $subscribedBundleIds[] = $bundleId;
+        }
+        return count($subscribedBundleIds) > 0;
+    }
 }
