@@ -203,7 +203,7 @@
         <div class="pagination-container">
           <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results, 'label' => $resultsStr])?>
         </div>
-        <div role="complementary" aria-label="<?=$this->transEsc('Search Controls');?>" class="control-container text-right hidden-print">
+        <div class="control-container text-right hidden-print">
           <?php if (!$browse): ?>
             <?=$this->render('search/controls/sort.phtml')?>
             <?=$this->render('search/controls/limit.phtml')?>
@@ -241,7 +241,7 @@
   <?php /* End Main Listing */ ?>
 
   <?php /* Narrow Search Options */ ?>
-  <div role="complementary" aria-labelledby="side-facet-caption" id="sidebar" class="<?=$recordTotal < 1 ? "empty-list" : $this->layoutClass('sidebar')?>">
+  <div id="sidebar" class="<?=$recordTotal < 1 ? "empty-list" : $this->layoutClass('sidebar')?>">
     <?php $messageAdded = false; ?>
     <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
       <?=$this->recommend($current, 'side', $index)?>
@@ -275,7 +275,7 @@
 <?php if (!$browse): ?>
 <div class="container-fluid searchtools-background">
   <div class="container">
-    <div role="complementary" aria-label="<?=$this->transEsc('Search Tools')?>" class="searchtools hidden-print">
+    <div class="searchtools hidden-print">
       <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
 
       <a href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
