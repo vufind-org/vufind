@@ -68,3 +68,41 @@ forms:
           - option-1
           - option-2
         label: checkbox2
+
+  TestCheckboxWithAllOptionsRequired:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+          - option-2
+        label: checkbox
+        required: true
+
+  TestCheckboxWithOneOptionRequired:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+          - option-2
+        label: checkbox
+        requireOne: true
+
+  TestCheckboxWithOneOptionThatIsRequired:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+        label: checkbox
+        required: true
+
+  TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne:
+    fields:
+      - name: checkbox
+        type: checkbox
+        options:
+          - option-1
+        label: checkbox
+        requireOne: true

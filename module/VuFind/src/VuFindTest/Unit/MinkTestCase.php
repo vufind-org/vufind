@@ -342,13 +342,14 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @param string $query   Search term(s)
      * @param string $handler Search type (optional)
+     * @param string $path    Path to use as search starting point (optional)
      *
      * @return \Behat\Mink\Element\Element
      */
-    protected function performSearch($query, $handler = null)
+    protected function performSearch($query, $handler = null, $path = '/Search')
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $session->visit($this->getVuFindUrl() . $path);
         $page = $session->getPage();
         $this->findCss($page, '#searchForm_lookfor')->setValue($query);
         if ($handler) {

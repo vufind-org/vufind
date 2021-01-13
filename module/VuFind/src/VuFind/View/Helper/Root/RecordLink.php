@@ -245,6 +245,32 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Return search URL for all versions
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return string
+     */
+    public function getVersionsSearchUrl($driver)
+    {
+        $route = $this->getVersionsActionForSource($driver->getSourceIdentifier());
+        if (false === $route) {
+            return '';
+        }
+
+        $urlParams = [
+            'id' => $driver->getUniqueID(),
+            'keys' => $driver->tryMethod('getWorkKeys', [], [])
+        ];
+
+        $urlHelper = $this->getView()->plugin('url');
+        $url = $urlHelper($route, [], ['query' => $urlParams]);
+        // Make sure everything is properly HTML encoded:
+        $escaper = $this->getView()->plugin('escapehtml');
+        return $escaper($url);
+    }
+
+    /**
      * Given a record source ID, return the route name for searching its backend.
      *
      * @param string $source Record source identifier.
@@ -255,5 +281,19 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
         return $optionsHelper->__invoke($source)->getSearchAction();
+    }
+
+    /**
+     * Given a record source ID, return the route name for version search with its
+     * backend.
+     *
+     * @param string $source Record source identifier.
+     *
+     * @return string|bool
+     */
+    protected function getVersionsActionForSource($source)
+    {
+        $optionsHelper = $this->getView()->plugin('searchOptions');
+        return $optionsHelper->__invoke($source)->getVersionsAction();
     }
 }
