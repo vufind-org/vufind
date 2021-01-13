@@ -797,6 +797,17 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Return the route name for the versions search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
+    {
+        return false;
+    }
+
+    /**
      * Does this search option support the cart/book bag?
      *
      * @return bool
