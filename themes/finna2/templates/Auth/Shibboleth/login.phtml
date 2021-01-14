@@ -4,7 +4,7 @@
 <div>
   <div class="login-col shibboleth-login">
     <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" data-lightbox-ignore>
-      <img src="<?=$this->imageLink('haka_login_vaaka_lg.png') ?>" alt="<?=$this->escapeHtmlAttr($this->translate("Haka Login")) ?>">
+      <img src="<?=$this->imageLink('haka_login_vaaka_lg.png') ?>" alt="<?=$this->transEscAttr("Haka Login") ?>">
       <span class="sr-only"><?=$this->transEsc('Institutional Login')?></span>
     </a>
   </div>

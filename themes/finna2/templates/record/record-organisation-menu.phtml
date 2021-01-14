@@ -40,7 +40,7 @@
         <div class="truncate-field other-organisation-links" data-rows="5">
         <?php foreach ($mergedData['records'] as $current): ?>
           <?php if ($current['source'] != $currentSource) : ?>
-          <a href="<?=$this->recordLink()->getUrl($current['id']) ?>" title="<?=$this->escapeHtmlAttr($this->translate("source_{$current['source']}", null, $current['source'])) ?>">
+          <a href="<?=$this->recordLink()->getUrl($current['id']) ?>" title="<?=$this->transEscAttr("source_{$current['source']}", null, $current['source']) ?>">
             <?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?>
           </a>
           <?php endif; ?>

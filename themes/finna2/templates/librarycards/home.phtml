@@ -60,7 +60,7 @@
                 <?php if ($barcode !== $username): ?>
                   <p><?=$this->escapeHtml($username)?></p>
                 <?php endif; ?>
-                <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($barcode) ?>" title="<?=$this->escapeHtmlAttr($this->translate('show_barcode_title'))?>">
+                <a href="<?=$this->url('barcode-show') ?>?code=<?=$this->escapeHtmlAttr($barcode) ?>" title="<?=$this->transEscAttr('show_barcode_title')?>">
                   <?php if (strcasecmp($record['cat_username'], $user->cat_username) === 0 && ($barcodeImg = $this->barcode()->createPng($barcode, 2, 60))): ?>
                     <div class="librarycard-barcode">
                       <img src="data:image/png;base64,<?=$barcodeImg?>" alt="">

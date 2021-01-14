@@ -57,7 +57,7 @@
       <?php if ($serviceURLs = $this->driver->getServiceURLs()): ?>
         <div class="recordURLs">
           <?php foreach ($serviceURLs as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], null, $this->translate($current['desc'])))?></a>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], null, $this->translate($current['desc'])))?></a>
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
@@ -66,7 +66,7 @@
         <div class="recordURLs local-available-online-record">
           <div class="truncate-field">
           <?php foreach ($otherUrls as $url): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" target="_blank" aria-label="<?=$this->escapeHtmlAttr($this->translate('external_online_link'))?>"
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url']))?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"
                 <?php if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>
               >
                 <i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $url['desc'], null, $url['desc']))?>

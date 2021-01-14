@@ -22,7 +22,7 @@
       <div class="organisation-dropdown-holder">
         <div class="organisation dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><input type="hidden"><span class="sr-only"><?=$this->transEsc('organisation_info_selected_service_point')?></span><span></span><i class="fa fa-arrow-down"></i></a>
-          <ul class="dropdown-menu" role="menu" aria-label="<?=$this->escapeHtmlAttr($this->translate('organisation_info_select_service_point'))?>">
+          <ul class="dropdown-menu" role="menu" aria-label="<?=$this->transEscAttr('organisation_info_select_service_point')?>">
           </ul>
         </div>
       </div>
@@ -31,9 +31,9 @@
 <?php endif ?>
       <div class="info schedules">
         <div class="week-navi-holder">
-          <i class="fa fa-arrow-left prev-week week-navi" data-dir="-1" tabindex="0" aria-label="<?= $this->escapeHtmlAttr($this->translate('organisation_info_previous_week'))?>"></i>
+          <i class="fa fa-arrow-left prev-week week-navi" data-dir="-1" tabindex="0" aria-label="<?= $this->transEscAttr('organisation_info_previous_week')?>"></i>
           <span class="week-text"><?=$this->translate('organisation_info_schedule_week')?> <span class="num"></span></span>
-          <i class="fa fa-arrow-right next-week week-navi" data-dir="+1" tabindex="0" aria-label="<?= $this->escapeHtmlAttr($this->translate('organisation_info_next_week'))?>"></i>
+          <i class="fa fa-arrow-right next-week week-navi" data-dir="+1" tabindex="0" aria-label="<?= $this->transEscAttr('organisation_info_next_week')?>"></i>
         </div>
         <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
 
@@ -64,7 +64,7 @@
 <?php if ($widget && $this->showDetails): ?>
     </div>
     <div class="details details-col">
-      <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details" aria-label="<?= $this->escapeHtmlAttr($this->translate('organisation_info_more_info')) ?>"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
+      <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details" aria-label="<?= $this->transEscAttr('organisation_info_more_info') ?>"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
       <div class="contact-links">
         <span class="email info-element"><span class="btn btn-open-widget emails" tabindex="0" data-placement="bottom" data-html="true" data-original-title=""><i class="fa fa-at" aria-hidden="true"></i><span class="sr-only"><?=$this->transEsc('organisation_info_email') ?></span></span></span>
         <span class="btn btn-open-widget phone info-element" tabindex="0" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title=""><i class="fa fa-phone-square" aria-hidden="true"></i><span class="sr-only"><?=$this->transEsc('organisation_info_phone_numbers') ?></span></span>

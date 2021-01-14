@@ -10,9 +10,9 @@
     <div class="flex-item">
       <form class="form-inline searchbox-office office-search-notifications map-ui">
         <div class="input-group">
-          <input id="office-search" class="form-control" type="text" placeholder="" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>" />
+          <input id="office-search" class="form-control" type="text" placeholder="" aria-label="<?=$this->transEscAttr('Search')?>" />
           <span class="input-group-btn">
-            <button type="button" class="btn btn-primary btn-office-search" aria-label="<?=$this->escapeHtmlAttr($this->translate('Search'))?>"><i class="fa fa-search"></i></button>
+            <button type="button" class="btn btn-primary btn-office-search" aria-label="<?=$this->transEscAttr('Search')?>"><i class="fa fa-search"></i></button>
           </span>
           <div class="notification"><?=$this->transEsc('organisation_info_location_not_available');?></div>
         </div>

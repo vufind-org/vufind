@@ -38,14 +38,14 @@
 <hr>
 <div class="footer-container">
   <div class="footer-column">
-    <a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>" title="<?=$this->escapeHtmlAttr($this->translate('About Finna'))?>">
+    <a href="<?=$this->url('content-page', ['page' => 'about_finna'])?>" title="<?=$this->transEscAttr('About Finna')?>">
       <img src="<?=$this->imageLink('powered-by-finna_' . $this->layout()->userLang . '-black.png')?>" alt=""/>
       <span class="sr-only"><?=$this->transEsc('About Finna')?></span>
     </a>
     <br><br>
   </div>
   <div class="footer-column">
-    <a href="https://vufind.org/" title="<?=$this->escapeHtmlAttr($this->translate('About VuFind'))?>">
+    <a href="https://vufind.org/" title="<?=$this->transEscAttr('About VuFind')?>">
       <img src="<?=$this->imageLink('vufind-logo-black.png')?>" alt=""/>
       <span class="sr-only"><?=$this->transEsc('About VuFind')?></span>
     </a>

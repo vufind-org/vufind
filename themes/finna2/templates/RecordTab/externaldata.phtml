@@ -18,7 +18,7 @@ $physicalItems = $data['physicalItems'] ?? null;
 
 
 <?php if ($physicalItems): ?>
-  <div role="table" class="external-data physical-items" aria-label="<?= $this->escapeHtmlAttr($this->translate('external_data_tab_physical_items'))?>">
+  <div role="table" class="external-data physical-items" aria-label="<?= $this->transEscAttr('external_data_tab_physical_items')?>">
     <div role="row" class="tbl-row headers">
       <div role="cell" class="tbl-cell tbl-left"><span role="columnheader"><?= $this->transEsc('external_data_tab_physical_item')?></span></div>
       <div role="cell" class="tbl-cell tbl-right"><span role="columnheader"><?= $this->transEsc('external_data_tab_physical_location')?></span></div>

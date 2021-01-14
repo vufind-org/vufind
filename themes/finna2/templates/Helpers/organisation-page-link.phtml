@@ -1,6 +1,6 @@
 <?php if ($this->logo): ?>
 <a href="<?=$this->url?>">
-  <img src="<?=$this->logo?>" class="consortium-logo" alt="" title="<?=$this->escapeHtmlAttr($this->translate($this->label))?>"/>
+  <img src="<?=$this->logo?>" class="consortium-logo" alt="" title="<?=$this->transEscAttr($this->label)?>"/>
   <span class="sr-only"><?=$this->transEsc($this->label)?></span>
 </a>
 <?php endif ?>

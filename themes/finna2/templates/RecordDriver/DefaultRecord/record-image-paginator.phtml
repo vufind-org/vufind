@@ -44,7 +44,7 @@
           <div class="image-credit-container">
             <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <?php if ('list' !== $type): ?>
-              <div class="image-credit-line hidden" aria-label="<?=$this->escapeHtmlAttr($this->translate('Credits'))?>"></div>
+              <div class="image-credit-line hidden" aria-label="<?=$this->transEscAttr('Credits')?>"></div>
             <?php endif; ?>
           </div>
         </a>

@@ -33,7 +33,7 @@ $that = $this;
               $institutions = $record->getInstitutions();
             ?>
             <li data-id="<?= $this->escapeHtmlAttr($record->getUniqueID())?>" <?= $ind === $activeInd ? ' class="active"' : ''?>>
-                <a><i class="fa fa-authority-<?=$this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0]))?>" aria-label="<?=$this->escapeHtmlAttr($this->translate($formats[0])) ?>"></i> <?=$this->escapeHtml($record->getTitle())?></a>
+                <a><i class="fa fa-authority-<?=$this->escapeHtmlAttr($this->record($record)->getFormatClass($formats[0]))?>" aria-label="<?=$this->transEscAttr($formats[0]) ?>"></i> <?=$this->escapeHtml($record->getTitle())?></a>
             </li>
           <?php endforeach; ?>
           <li class="spinner hide" aria-hidden="true"><i class="fa fa-spin fa-spinner"></i></li>

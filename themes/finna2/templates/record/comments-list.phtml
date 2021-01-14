@@ -51,7 +51,7 @@
     <div class="comment-inappropriate<?= $reported ? '-reported' : ''?> text-right">
       <small>
         <?php if (!$reported): ?>
-          <a title="<?=$this->escapeHtmlAttr($this->translate('Report inappropriate')) ?>" href="<?=$this->url('comments-inappropriate', ['id' => $comment->id]) ?>" data-lightbox><?=$this->translate('Report inappropriate')?></a>
+          <a title="<?=$this->transEscAttr('Report inappropriate') ?>" href="<?=$this->url('comments-inappropriate', ['id' => $comment->id]) ?>" data-lightbox><?=$this->translate('Report inappropriate')?></a>
         <?php else: ?>
           <?=$this->translate('Reported inappropriate'); ?>
         <?php endif; ?>

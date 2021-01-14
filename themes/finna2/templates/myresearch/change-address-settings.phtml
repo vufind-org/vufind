@@ -90,7 +90,7 @@
           </label>
         <?php elseif ('pin4' === $data['type']): ?>
           <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
-          <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="password" data-minlength="4" data-minlength-error="<?=$this->escapeHtmlAttr($this->translate('password_minimum_length', ['%%minlength%%' => 4]))?>" maxlength="4" pattern="\d+" value="" class="form-control"<?=$data['required'] ? ' required' : ''?>>
+          <input id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" type="password" data-minlength="4" data-minlength-error="<?=$this->transEscAttr('password_minimum_length', ['%%minlength%%' => 4])?>" maxlength="4" pattern="\d+" value="" class="form-control"<?=$data['required'] ? ' required' : ''?>>
           <div class="help-block"><?=$this->transEsc('password_only_numeric') ?></div>
         <?php else: ?>
           <label class="control-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>

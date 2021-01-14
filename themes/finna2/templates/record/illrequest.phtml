@@ -47,7 +47,7 @@
         </select>
       <?php else: ?>
         <?php $lib = $this->pickupLibraries[0]; ?>
-        <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->escapeHtmlAttr($this->translate('library_' . $lib['name'], null, $lib['name']))?>" />
+        <input type="text" class="form-control" size="40" readonly="readonly" value="<?=$this->transEscAttr('library_' . $lib['name'], null, $lib['name'])?>" />
         <input type="hidden" id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" value="<?=$this->escapeHtmlAttr($lib['id'])?>" />
       <?php endif; ?>
     </div>

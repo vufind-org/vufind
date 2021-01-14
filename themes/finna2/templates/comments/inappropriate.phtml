@@ -9,7 +9,7 @@
     <ul>
       <?php $reasons = [1, 2, 3, 4, 6, 5]; ?>
       <?php foreach ($reasons as $i): ?>
-      <li><label for="inapp<?=$i?>"><input id="inapp<?=$i?>" type="radio" name="reason" <?= $i == 1 ? 'checked="checked"' : ''?> value="<?=$this->escapeHtmlAttr($this->translate('inappropriate_reason_' . $i))?>" /> <?=$this->translate('inappropriate_reason_' . $i)?></label></li>
+      <li><label for="inapp<?=$i?>"><input id="inapp<?=$i?>" type="radio" name="reason" <?= $i == 1 ? 'checked="checked"' : ''?> value="<?=$this->transEscAttr('inappropriate_reason_' . $i)?>" /> <?=$this->translate('inappropriate_reason_' . $i)?></label></li>
       <?php endforeach; ?>
     </ul>
   </div>
