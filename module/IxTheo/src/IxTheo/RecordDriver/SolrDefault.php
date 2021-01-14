@@ -236,7 +236,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         45 => "Job",
         46 => "Ps",
         47 => "Prov",
-        48 => "Ecc1",
+        48 => "Eccl",
         49 => "Song",
         50 => "Isa",
         51 => "Jer",
