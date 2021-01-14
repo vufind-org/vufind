@@ -232,7 +232,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         41 => "2 Chr",
         42 => "Ezra",
         43 => "Neh",
-        44 => "Eth1",
+        44 => "Esth",
         45 => "Job",
         46 => "Ps",
         47 => "Prov",
