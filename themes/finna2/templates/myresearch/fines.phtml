@@ -216,4 +216,6 @@
     'SET'
   ); ?>
 <?php endif; ?>
+
+<?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'fines', 'accountStatus' => $this->accountStatus]); ?>
 <!-- END of: finna - myresearch/fines.phtml -->

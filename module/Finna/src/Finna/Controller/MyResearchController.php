@@ -221,6 +221,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $sortList = $pageOptions['sortList'];
         }
 
+        // If the results are not paged in the ILS, collect up to date stats for ajax
+        // account notifications:
+        if ((!$pageOptions['ilsPaging'] || !$paginator)
+            && !empty($this->getConfig()->Authentication->enableAjax)
+        ) {
+            $accountStatus = [
+                'ok' => 0,
+                'warn' => 0,
+                'overdue' => 0
+            ];
+        } else {
+            $accountStatus = null;
+        }
+
         $transactions = $hiddenTransactions = [];
         foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
@@ -232,6 +246,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             ) {
                 // Enable renewal form if necessary:
                 $renewForm = true;
+            }
+
+            if (null !== $accountStatus) {
+                switch ($current['dueStatus'] ?? '') {
+                case 'due':
+                    $accountStatus['warn']++;
+                    break;
+                case 'overdue':
+                    $accountStatus['overdue']++;
+                    break;
+                default:
+                    $accountStatus['ok']++;
+                    break;
+                }
             }
 
             // Build record driver (only for the current visible page):
@@ -274,8 +302,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $ilsPaging = $pageOptions['ilsPaging'];
         $view = $this->createViewModel(
             compact(
-                'transactions', 'renewForm', 'renewResult', 'paginator', 'params',
-                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'ilsPaging'
+                'transactions', 'renewForm', 'renewResult', 'paginator', 'ilsPaging',
+                'hiddenTransactions', 'displayItemBarcode', 'sortList', 'params',
+                'accountStatus'
             )
         );
 
