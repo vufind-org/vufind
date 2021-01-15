@@ -68,7 +68,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         }
 
         // Check if required attributes match up:
-        foreach ($this->getRequiredAttributes() as $key => $value) {
+        foreach ($this->getRequiredAttributes($shib) as $key => $value) {
             $attrValue = $this->getServerParam($request, $key);
             if (!preg_match('/' . $value . '/', $attrValue)) {
                 $this->debug(
@@ -87,11 +87,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
         $catPassword = null;
 
         // Has the user configured attributes to use for populating the user table?
-        $attribsToCheck = [
-            'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
-            'college', 'major', 'home_library'
-        ];
-        foreach ($attribsToCheck as $attribute) {
+        foreach ($this->attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
                 $value = $this->getServerParam($request, $shib->$attribute);
                 if ($attribute != 'cat_password') {
@@ -138,22 +134,7 @@ class Shibboleth extends \VuFind\Auth\Shibboleth
             }
         }
 
-        // Add session id mapping to external_session table for single logout support
-        if (isset($shib->session_id)) {
-            $shibSessionId = $this->getServerParam($request, $shib->session_id);
-            if (null !== $shibSessionId) {
-                $localSessionId = $this->sessionManager->getId();
-                $externalSession = $this->getDbTableManager()
-                    ->get('ExternalSession');
-                $externalSession->addSessionMapping(
-                    $localSessionId, $shibSessionId
-                );
-                $this->debug(
-                    "Cached Shibboleth session id '$shibSessionId' for local session"
-                    . " '$localSessionId'"
-                );
-            }
-        }
+        $this->storeShibbolethSession($request);
 
         // Save and return the user object:
         $user->save();
