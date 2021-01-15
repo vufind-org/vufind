@@ -67,14 +67,14 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container("KohaRest_$namespace", $manager);
         };
-        // Create safeMoneyFormat helper on demand to avoid hard dependency on themes
-        // (which otherwise could cause problems for command line tools that use the
-        // ILS driver when the theme system is not active).
-        $safeMoneyFormatFactory = function () use ($container) {
-            return $container->get('ViewHelperManager')->get('safeMoneyFormat');
-        };
+        // Create safeMoneyFormat helper conditionally to avoid hard dependency on
+        // themes (which otherwise could cause problems for command line tools that
+        // use the ILS driver when the theme system is not active).
+        $helperManager = $container->get('ViewHelperManager');
+        $safeMoneyFormat = $helperManager->has('safeMoneyFormat')
+            ? $helperManager->get('safeMoneyFormat') : null;
         return parent::__invoke(
-            $container, $requestedName, [$sessionFactory, $safeMoneyFormatFactory]
+            $container, $requestedName, [$sessionFactory, $safeMoneyFormat]
         );
     }
 }

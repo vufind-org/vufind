@@ -89,18 +89,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sessionCache;
 
     /**
-     * Factory function for constructing the SafeMoneyFormat helper on demand.
-     *
-     * @var callable
-     */
-    protected $safeMoneyFormatFactory;
-
-    /**
      * Money formatting view helper
      *
      * @var SafeMoneyFormat
      */
-    protected $safeMoneyFormat = null;
+    protected $safeMoneyFormat;
 
     /**
      * Default pickup location
@@ -224,18 +217,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $dateConverter    Date converter object
-     * @param callable               $sessionFactory   Factory function returning
+     * @param \VuFind\Date\Converter $dateConverter   Date converter object
+     * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
-     * @param callable               $safeMoneyFactory Factory function returning the
-     * Money formatting view helper
+     * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, callable $safeMoneyFactory
+        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
-        $this->safeMoneyFormatFactory = $safeMoneyFactory;
+        $this->safeMoneyFormat = $safeMoneyFormat;
     }
 
     /**
@@ -2542,7 +2534,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function formatMoney($amount)
     {
         if (null === $this->safeMoneyFormat) {
-            $this->safeMoneyFormat = ($this->safeMoneyFormatFactory)();
+            throw new \Exception('SafeMoneyFormat helper not available');
         }
         return ($this->safeMoneyFormat)($amount);
     }
