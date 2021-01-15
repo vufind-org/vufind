@@ -84,7 +84,7 @@
         "friendsofphp/php-cs-fixer": "2.16.4",
         "phploc/phploc": "5.0.0",
         "phpmd/phpmd": "2.8.2",
-        "phpunit/phpunit": "8.5.8",
+        "phpunit/phpunit": "8.5.13",
         "sebastian/phpcpd": "4.1.0",
         "squizlabs/php_codesniffer": "3.5.5",
         "dmore/chrome-mink-driver": "^2.7"
