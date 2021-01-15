@@ -108,21 +108,12 @@ class ExternalSession extends Gateway
      *
      * @param Select $select  Select clause
      * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    ) {
+    protected function expirationCallback($select, $daysOld)
+    {
         $expireDate = date('Y-m-d', time() - $daysOld * 24 * 60 * 60);
-        $where = $select->where->lessThan('created', $expireDate);
-        if (null !== $idFrom) {
-            $where->and->greaterThanOrEqualTo('id', $idFrom);
-        }
-        if (null !== $idTo) {
-            $where->and->lessThanOrEqualTo('id', $idTo);
-        }
+        $select->where->lessThan('created', $expireDate);
     }
 }
