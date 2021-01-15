@@ -68,7 +68,7 @@ trait ExpirationTrait
         // Determine the expiration parameters:
         $lastId = $limit ? $this->getExpiredBatchLastId($daysOld, $limit) : null;
         $callback = function ($select) use ($daysOld, $lastId) {
-            $this->expirationCallback($select, $daysOld, $lastId);
+            $this->expirationCallback($select, $daysOld);
             if (null !== $lastId) {
                 $select->where->and->lessThanOrEqualTo('id', $lastId);
             }
