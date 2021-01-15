@@ -45,6 +45,9 @@ retain_filters_by_default = true
 ;default_filters[] = "institution:MyInstitution"
 ;default_filters[] = "(format:Book AND institution:MyInstitution)"
 
+;display_versions = true
+;versions_filter = "same_source"
+
 [Records]
 ; Boolean value indicating if deduplication is enabled. Defaults to false.
 deduplication = true

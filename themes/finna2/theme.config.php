@@ -184,6 +184,7 @@ $config = [
         'keep_alive.js',
         'openurl.js',
         'record.js',
+        'record_versions.js',
         'requests.js',
         'finna-polyfill.js',
         'finna.js',

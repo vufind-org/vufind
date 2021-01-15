@@ -1378,12 +1378,6 @@ allowed_url_schemes[] = 'maps'
 ; Whether to embed video in the record page.
 ;embedVideo = true
 
-; Whether the "versions" link and record tab are enabled. Default is false.
-; Other valid values are:
-; true or "all"            - display all versions across active data sources
-; "same_source"            - display only versions from the same data source
-;display_versions = true
-
 ; Record redirection rules for record IDs that should be redirected to the records new version.
 ; Each entry consists of the following elements (delimited by '###'):
 ; 1. Regular expression that receives the record ID (<source>.<id>) and should capture <id>.

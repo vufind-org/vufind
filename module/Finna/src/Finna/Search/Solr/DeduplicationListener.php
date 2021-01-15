@@ -93,14 +93,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
                 }
             }
         }
-        if ($event->getParam('context') === 'workExpressions') {
-            // Handle workExpressions like similar records in the upstream code
-            $event->setParam('context', 'similar');
-            $result = parent::onSearchPre($event);
-            $event->setParam('context', 'workExpressions');
-        } else {
-            $result = parent::onSearchPre($event);
-        }
+        $result = parent::onSearchPre($event);
         $this->enabled = $saveEnabled;
         return $result;
     }
@@ -130,14 +123,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             }
         }
 
-        if ($event->getParam('context') === 'workExpressions') {
-            // Handle workExpressions like similar records in the upstream code
-            $event->setParam('context', 'similar');
-            $result = parent::onSearchPost($event);
-            $event->setParam('context', 'workExpressions');
-        } else {
-            $result = parent::onSearchPost($event);
-        }
+        $result = parent::onSearchPost($event);
         $this->enabled = $saveEnabled;
         return $result;
     }

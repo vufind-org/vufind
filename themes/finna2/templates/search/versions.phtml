@@ -1,0 +1,36 @@
+<?php
+  // Set up versions-specific details:
+  $title = $this->translate('Versions');
+  if ($this->driver) {
+    $title .= ' - ' . $this->driver->getBreadcrumb();
+  }
+  $this->slot('head-title')->set($title);
+  $this->slot('search-heading')->set('');
+  $this->slot('empty-message')->set(
+    $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->transEsc('Versions')])
+  );
+
+  // Call the standard search template:
+  echo $this->render('search/results.phtml');
+
+  // Override searchbox:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/versions-searchbox.phtml',
+      [
+        'searchType' => 'basic',
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchClassId' => $this->params->getSearchClassId(),
+        'selectedShards' => $this->params->getSelectedShards(),
+      ]
+  );
+
+  // Override breadcrumbs:
+  $titleLink = '';
+  if ($this->driver) {
+    $titleLink .= ' - <a href="' . $this->escapeHtmlAttr($this->recordLink()->getUrl($this->driver)) . '">' . $this->driver->getBreadcrumb() . '</a>';
+  }
+
+  $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Versions') . $titleLink . '</li>';
+
+  $this->layout()->advSearchHeader = '<div class="container"><div class="finna-main-header"><h1 class="search-result-header">' . $this->transEsc('Versions') . $titleLink . '</h1></div></div>';
+?>

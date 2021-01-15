@@ -150,7 +150,7 @@ class SolrExtensionsListener
         if ($backend === $this->backend) {
             $this->addDataSourceFilter($event);
             $context = $event->getParam('context');
-            if (in_array($context, ['search', 'getids'])) {
+            if (in_array($context, ['search', 'getids', 'workExpressions'])) {
                 $this->addHiddenComponentPartFilter($event);
                 $this->handleAvailabilityFilters($event);
             }

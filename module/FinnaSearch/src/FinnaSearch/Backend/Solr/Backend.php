@@ -29,7 +29,6 @@
  */
 namespace FinnaSearch\Backend\Solr;
 
-use FinnaSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionInterface;
@@ -45,7 +44,6 @@ use VuFindSearch\Response\RecordCollectionInterface;
  * @link     https://vufind.org
  */
 class Backend extends \VuFindSearch\Backend\Solr\Backend
-    implements WorkExpressionsInterface
 {
     /**
      * Perform a search and return record collection.
@@ -122,19 +120,11 @@ class Backend extends \VuFindSearch\Backend\Solr\Backend
     {
         $params = $defaultParams ? clone $defaultParams
             : new \VuFindSearch\ParamBag();
-        $this->injectResponseWriter($params);
-        $query = [];
-        foreach ($workKeys as $key) {
-            $key = addcslashes($key, '+-&|!(){}[]^"~*?:\\/');
-            $query[] = "work_keys_str_mv:(\"$key\")";
+
+        if (!$params->hasParam('sort')) {
+            $params->add('sort', 'main_date_str desc, title_sort asc');
         }
-        $params->set('q', implode(' OR ', $query));
-        $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
-        $params->add('rows', 100);
-        $params->add('sort', 'main_date_str desc, title_sort asc');
-        $response = $this->connector->search($params);
-        $collection = $this->createRecordCollection($response);
-        $this->injectSourceIdentifier($collection);
-        return $collection;
+
+        return parent::workExpressions($id, $workKeys, $params);
     }
 }

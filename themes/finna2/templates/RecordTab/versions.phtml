@@ -2,15 +2,11 @@
 <?php
   $results = $this->driver->tryMethod('getVersions', [false, 20]);
   $view = 'list';
+  $this->render('search/results-scripts.phtml', ['displayVersions' => true]);
 ?>
 <div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">
-  <div class="search-controls">
-    <div class="control-container text-right hidden-print">
-      <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLink()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <i class="fa fa-arrow-right" aria-hidden="true"></i><?=$this->transEsc('other_versions_search_link')?>
-      </a>
-    </div>
-    <div class="pagination-container">
+  <nav class="search-header hidden-print">
+    <div class="search-stats">
       <?=$this->translate(
         'showing_results_of_html', [
           '%%start%%' => 1,
@@ -20,7 +16,12 @@
       );
       ?>
     </div>
-  </div>
+    <div class="search-controls">
+      <a class="more-link" href="<?=$this->recordLink()->getVersionsSearchUrl($this->driver)?>" rel="nofollow">
+        <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+      </a>
+    </div>
+  </nav>
   <?php $recordNumber = $results->getOffset(); ?>
   <?php foreach ($results as $current): ?>
     <div id="result<?=++$recordNumber ?>" class="result clearfix<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
@@ -28,18 +29,22 @@
       <?=$this->record($current)->getSearchResult($view)?>
     </div>
   <?php endforeach; ?>
+  <div class="search-tools hidden-print">
+    <div class="search-controls">
+      <a class="more-link" href="<?=$this->recordLink()->getVersionsSearchUrl($this->driver)?>" rel="nofollow">
+        <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+      </a>
+    </div>
+  </div>
 </div>
 
 <?php
-$translations = json_encode(
-  [
-    'qrcode_hide' => $this->translate('qrcode_hide'),
-    'qrcode_show' => $this->translate('qrcode_show'),
-  ]
-);
+// Add any translations added when processing the search results:
+$translations = $this->jsTranslations()->getJSON();
+// Use combinedSearch.initResultScripts to avoid duplicating the list of scripts
+// required for results loaded via AJAX:
 $script = <<<JS
 VuFind.addTranslations($translations);
-finna.common.initQrCodeLink($('.results'));
 finna.combinedResults.init($('.results'));
 JS;
 ?>

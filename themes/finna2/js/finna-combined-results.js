@@ -5,7 +5,7 @@ finna.combinedResults = (function finnaCombinedResults() {
       finna.layout.initTruncate();
       finna.openUrl.initLinks(container);
       VuFind.itemStatuses.check(container);
-      finna.record.initRecordVersions(container);
+      VuFind.recordVersions.init(container);
       VuFind.lightbox.bind(container);
       VuFind.cart.init(container);
       checkSaveStatuses(container);

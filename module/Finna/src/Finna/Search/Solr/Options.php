@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2016.
+ * Copyright (C) The National Library of Finland 2015-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -58,6 +58,15 @@ class Options extends \VuFind\Search\Solr\Options
     protected $dateRangeVis = '';
 
     /**
+     * Whether to display record versions
+     *
+     * Finna: keep it false by default for now
+     *
+     * @var bool
+     */
+    protected $displayRecordVersions = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -69,6 +78,16 @@ class Options extends \VuFind\Search\Solr\Options
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->SpecialFacets->dateRangeVis)) {
             $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis;
+        }
+
+        // Back-compatibility for display_versions setting in config.ini:
+        $searchSettings = $configLoader->get($this->searchIni);
+        if (!isset($searchSettings->General->display_versions)) {
+            $config = $configLoader->get($this->mainIni);
+            if (isset($config->Record->display_versions)) {
+                $this->displayRecordVersions
+                    = (bool)$config->Record->display_versions;
+            }
         }
     }
 

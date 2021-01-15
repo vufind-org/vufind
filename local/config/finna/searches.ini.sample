@@ -86,6 +86,14 @@ hide_component_parts = true
 ; Maximum result to display
 result_limit = 100000
 
+; Whether the "versions" (FRBR) link and record tab are enabled. Default is true.
+;display_versions = true
+
+; Whether to filter the "versions" (FRBR). Only valid option at the moment is
+; 'same_source', which means that other versions are only displayed from the same
+; data source. By default all versions are displayed.
+;versions_filter = 'same_source'
+
 [Cache]
 ; This controls whether the parsed searchspecs.yaml file will be stored to
 ; improve search performance; legal options are APC (use APC cache), File (store
@@ -167,6 +175,7 @@ last_indexed desc,id asc = sort_last_indexed
 ; using the default_sort setting in the [General] section above.
 [DefaultSortingByType]
 CallNumber = callnumber
+WorkKeys = "main_date_str desc"
 
 ; These settings control which fields are available to sort on in the collections
 ; module.
@@ -345,6 +354,8 @@ author = sort_author
 ;Author[]           = WorldCatIdentities
 ;Subject[]          = WorldCatTerms
 ;Author[]            = WikipediaDeferred:Author
+; Do not show top recommendations for the Versions (WorkKeys) search by default
+WorkKeys[]          = false
 
 [NoResultsRecommendations]
 

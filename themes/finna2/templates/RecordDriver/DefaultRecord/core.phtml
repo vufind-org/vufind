@@ -80,7 +80,7 @@
     <?php if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
       <div class="record-uniform-titles">
         <?php foreach ($uniformTitles as $uniformTitle): ?>
-          <?php if (!empty($this->config()->get('config')->Record->display_versions)): ?>
+          <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
             <a href="<?=$this->escapeHtmlAttr($this->recordLink()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
               <?=$this->escapeHtml($uniformTitle) ?>
             </a>

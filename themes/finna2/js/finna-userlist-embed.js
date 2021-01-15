@@ -50,7 +50,7 @@ finna.userListEmbed = (function userListEmbed() {
               finna.videoPopup.initVideoPopup(resultsContainer);
               VuFind.itemStatuses.check(resultsContainer);
               finna.itemStatus.initDedupRecordSelection(resultsContainer);
-              finna.record.initRecordVersions(resultsContainer);
+              VuFind.recordVersions.init(resultsContainer);
               VuFind.lightbox.bind(resultsContainer);
               VuFind.cart.init(resultsContainer);
               $.fn.finnaPopup.reIndex();

@@ -28,6 +28,8 @@
  */
 namespace Finna\RecordDriver;
 
+use VuFind\RecordDriver\Feature\VersionAwareInterface;
+
 /**
  * Additional functionality for Finna Solr records.
  *
@@ -866,16 +868,6 @@ trait SolrFinnaTrait
     }
 
     /**
-     * Get work identification keys
-     *
-     * @return array
-     */
-    public function getWorkKeys()
-    {
-        return $this->fields['work_keys_str_mv'] ?? [];
-    }
-
-    /**
      * A helper function that merges an array of JSON-encoded URLs
      *
      * @param array $urlArray Array of JSON-encoded URL attributes
@@ -1057,6 +1049,9 @@ trait SolrFinnaTrait
     /**
      * Return count of other versions available
      *
+     * Finna: Like VersionAwareTrait's getOtherVersionCount, but adds the call to
+     * addVersionsFilters.
+     *
      * @return int
      */
     public function getOtherVersionCount()
@@ -1065,14 +1060,19 @@ trait SolrFinnaTrait
             return false;
         }
 
-        if (!($workKeys = $this->getWorkKeys())) {
-            return false;
-        }
-
         if (!isset($this->otherVersionsCount)) {
+            if (!($workKeys = $this->tryMethod('getWorkKeys'))) {
+                if (!($this instanceof VersionAwareInterface)) {
+                    throw new \Exception(
+                        'VersionAwareTrait requires VersionAwareInterface'
+                    );
+                }
+                return false;
+            }
+
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', 0);
-            $this->addFilters($params);
+            $this->addVersionsFilters($params);
             $results = $this->searchService->workExpressions(
                 $this->getSourceIdentifier(),
                 $this->getUniqueID(),
@@ -1087,12 +1087,16 @@ trait SolrFinnaTrait
     /**
      * Retrieve versions as a search result
      *
+     * Finna: Like VersionAwareTrait's getVersions, but adds the call to
+     * addVersionsFilters.
+     *
      * @param bool $includeSelf Whether to include this record
      * @param int  $count       Maximum number of records to display
+     * @param int  $offset      Start position (0-based)
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function getVersions($includeSelf = false, $count = 20)
+    public function getVersions($includeSelf = false, $count = 20, $offset = 0)
     {
         if (null === $this->searchService) {
             return false;
@@ -1104,8 +1108,9 @@ trait SolrFinnaTrait
 
         if (!isset($this->otherVersions)) {
             $params = new \VuFindSearch\ParamBag();
-            $params->add('rows', min($count, 100));
-            $this->addFilters($params);
+            $params->add('rows', $count);
+            $params->add('start', $offset);
+            $this->addVersionsFilters($params);
             $this->otherVersions = $this->searchService->workExpressions(
                 $this->getSourceIdentifier(),
                 $includeSelf ? '' : $this->getUniqueID(),
@@ -1128,15 +1133,17 @@ trait SolrFinnaTrait
     }
 
     /**
-     * Add filters to params
+     * Add versions search filters to params
      *
      * @param \VuFindSearch\ParamBag $paramBag Params
      *
      * @return void
      */
-    protected function addFilters(\VuFindSearch\ParamBag $paramBag)
+    protected function addVersionsFilters(\VuFindSearch\ParamBag $paramBag)
     {
-        $filterConf = $this->mainConfig->Record->display_versions ?? "all";
+        // Back-compatibility with the setting in config.ini:
+        $filterConf = $this->searchSettings['General']['versions_filter']
+            ?? $this->mainConfig->Record->display_versions ?? 'all';
         if ('same_source' === $filterConf) {
             // Add source filter
             $paramBag->add(

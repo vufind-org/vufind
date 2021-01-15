@@ -364,45 +364,7 @@ finna.record = (function finnaRecord() {
   }
 
   function initRecordVersions(_holder) {
-    var holder = typeof _holder === 'undefined' ? $(document) : _holder;
-
-    holder.find('.record-versions.ajax').each(function checkVersions() {
-      $(this).one('inview', function onInView() {
-        var $elem = $(this);
-        if ($elem.hasClass('loaded')) {
-          return;
-        }
-        $elem.addClass('loaded');
-        $elem.addClass('loading');
-        $elem.removeClass('hidden');
-        $elem.append('<span class="js-load">' + VuFind.translate('loading') + '...</span>');
-        var $item = $(this).parents('.record-container');
-        if ($item.length === 0) {
-          return;
-        }
-        var id = $item.find('.hiddenId')[0].value;
-        $.getJSON(
-          VuFind.path + '/AJAX/JSON',
-          {
-            method: 'getRecordVersions',
-            id: id
-          }
-        )
-          .done(function onGetVersionsDone(response) {
-            if (response.data.length > 0) {
-              $elem.html(response.data);
-            } else {
-              $elem.text('');
-            }
-            $elem.removeClass('loading');
-          })
-          .fail(function onGetVersionsFail() {
-            $elem.text(VuFind.translate('error_occurred'));
-            $elem.removeClass('loading');
-          });
-      });
-
-    });
+    VuFind.recordVersions.init(_holder);
   }
 
   function init() {
@@ -415,7 +377,6 @@ finna.record = (function finnaRecord() {
     $(window).on('hashchange', applyRecordAccordionHash);
     loadSimilarRecords();
     loadRecordDriverRelatedRecords();
-    initRecordVersions();
     finna.authority.initAuthorityResultInfo();
   }
 
