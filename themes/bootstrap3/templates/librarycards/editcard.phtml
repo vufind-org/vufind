@@ -41,11 +41,11 @@
   <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
     <div class="form-group">
       <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
-      <input id="login_password" type="password" name="password" value="" placeholder="<?=!empty($this->card->id) ? $this->escapeHtmlAttr($this->translate('library_card_edit_password_placeholder')) : ''?>" class="form-control"/>
+      <input id="login_password" type="password" name="password" value="" placeholder="<?=!empty($this->card->id) ? $this->transEscAttr('library_card_edit_password_placeholder') : ''?>" class="form-control"/>
     </div>
   <?php endif; ?>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>"/>
   </div>
 </form>
 

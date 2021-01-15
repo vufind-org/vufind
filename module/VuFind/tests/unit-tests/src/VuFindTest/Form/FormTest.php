@@ -305,4 +305,128 @@ class FormTest extends \VuFindTest\Unit\TestCase
             $el['options']
         );
     }
+
+    /**
+     * Test checkbox element validators.
+     *
+     * @return void
+     */
+    public function testCheckboxValidators()
+    {
+        $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
+        $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+        $mock->expects($this->any())->method('get')
+            ->with($this->equalTo('FeedbackForms.yaml'))
+            ->will($this->returnValue($config));
+
+        // Test checkbox with all options required
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId('TestCheckboxWithAllOptionsRequired');
+
+        // No options
+        $form->setData(['checkbox' => []]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option, another missing
+        $form->setData(['checkbox' => ['option-1']]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option, another invalid
+        $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // Both required options
+        $form->setData(['checkbox' => ['option-1', 'option-2']]);
+        $this->assertTrue($form->isValid());
+
+        // Both required options and one invalid
+        $form->setData(['checkbox' => ['option-1', 'option-2', 'invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // Test checkbox with one required option
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId('TestCheckboxWithOneOptionRequired');
+
+        // No options
+        $form->setData(['checkbox' => []]);
+        $this->assertFalse($form->isValid());
+
+        // One invalid option
+        $form->setData(['checkbox' => ['invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option
+        $form->setData(['checkbox' => ['option-1']]);
+        $this->assertTrue($form->isValid());
+
+        // One OK options
+        $form->setData(['checkbox' => ['option-2']]);
+        $this->assertTrue($form->isValid());
+
+        // Both options OK
+        $form->setData(['checkbox' => ['option-1', 'option-2']]);
+        $this->assertTrue($form->isValid());
+
+        // One OK and one invalid option
+        $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+        $this->assertTrue($form->isValid());
+
+        // Test checkbox with a single options that is required
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId('TestCheckboxWithOneOptionThatIsRequired');
+
+        // No options
+        $form->setData(['checkbox' => []]);
+        $this->assertFalse($form->isValid());
+
+        // One invalid option
+        $form->setData(['checkbox' => ['invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option
+        $form->setData(['checkbox' => ['option-1']]);
+        $this->assertTrue($form->isValid());
+
+        // One OK and one invalid option
+        $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // Test checkbox with a single options that is required,
+        // configured with requireOne
+        $form = new Form(
+            $mock,
+            $this->createMock(\Laminas\View\HelperPluginManager::class)
+        );
+        $form->setFormId(
+            'TestCheckboxWithOneOptionThatIsRequiredConfiguredWithRequireOne'
+        );
+
+        // No options
+        $form->setData(['checkbox' => []]);
+        $this->assertFalse($form->isValid());
+
+        // One invalid option
+        $form->setData(['checkbox' => ['invalid-option']]);
+        $this->assertFalse($form->isValid());
+
+        // One OK option
+        $form->setData(['checkbox' => ['option-1']]);
+        $this->assertTrue($form->isValid());
+
+        // One OK and one invalid option
+        $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
+        $this->assertTrue($form->isValid());
+    }
 }

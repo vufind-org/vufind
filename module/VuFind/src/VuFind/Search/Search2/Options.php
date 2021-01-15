@@ -62,6 +62,16 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
+     * Return the route name for the versions search action or false if disabled.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
+    {
+        return $this->displayRecordVersions ? 'search2-versions' : false;
+    }
+
+    /**
      * Return the route name for the search results action.
      *
      * @return string
