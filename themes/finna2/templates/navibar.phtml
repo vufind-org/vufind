@@ -79,19 +79,21 @@
           <?=$this->render($template)?>
         <?php endif; ?>
       </ul>
-      <ul role="menubar" class="nav navbar-nav lang" aria-label="<?=$this->transEscAttr('select_language')?>">
-        <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-          <?php $i = 1;?>
-          <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-            <?php if ($this->layout()->userLang != $langCode): ?>
-              <li class="lang">
-                <a role="menuitem" class="preserve-anchor" lang="<?=$this->escapeHtmlAttr($langCode)?>" href="<?=$this->escapeHtmlAttr($this->navibar()->getLanguageUrl($langCode))?>"><?=$this->displayLanguageOption($langName)?></a>
-              </li>
-              <?php $i++; ?>
-            <?php endif ?>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </ul>
+      <div role="navigation" aria-label="<?=$this->transEscAttr('select_language')?>">
+        <ul class="nav navbar-nav lang">
+          <?php if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+            <?php $i = 1;?>
+            <?php foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+              <?php if ($this->layout()->userLang != $langCode): ?>
+                <li class="lang">
+                  <a class="preserve-anchor" lang="<?=$this->escapeHtmlAttr($langCode)?>" href="<?=$this->escapeHtmlAttr($this->navibar()->getLanguageUrl($langCode))?>"><?=$this->displayLanguageOption($langName)?></a>
+                </li>
+                <?php $i++; ?>
+              <?php endif ?>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </ul>
+      </div>
     <?php //hide login if unavailable ?>
     <?php if (is_object($account) && $account->loginEnabled()): ?>
       <?php $user = $account->isLoggedIn(); ?>
