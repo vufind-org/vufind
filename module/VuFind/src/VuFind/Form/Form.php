@@ -776,7 +776,12 @@ class Form extends \Laminas\Form\Form implements
                         'options' => [
                             'callback' => function ($value, $context) use ($el) {
                                 return
-                                    !empty(array_intersect($el['options'], $value));
+                                    !empty(
+                                        array_intersect(
+                                            array_keys($el['options']),
+                                            $value
+                                        )
+                                    );
                             }
                          ]
                     ];
@@ -789,7 +794,7 @@ class Form extends \Laminas\Form\Form implements
                                 => $this->getValidationMessage('empty')
                             ],
                             'strict' => true,
-                            'token' => array_values($el['options'])
+                            'token' => array_keys($el['options'])
                         ]
                     ];
                 }
