@@ -356,7 +356,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
             $this->assertFalse($form->isValid());
         }
 
-
         // Test checkbox with one required option
         $ids = [
             'TestCheckboxWithOneOptionRequired',  // options with value
@@ -395,7 +394,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
             $this->assertTrue($form->isValid());
         }
 
-
         // Test checkbox with a single options that is required
         $ids = [
             // options with value
@@ -427,7 +425,6 @@ class FormTest extends \VuFindTest\Unit\TestCase
             $form->setData(['checkbox' => ['option-1', 'invalid-option']]);
             $this->assertFalse($form->isValid());
         }
-
 
         // Test checkbox with a single options that is required,
         // configured with requireOne
