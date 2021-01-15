@@ -394,14 +394,13 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      *
      * This is responsible for authenticating a patron against the catalog.
      *
-     * @param string      $username  The patron user id or barcode
-     * @param string      $password  The patron password
-     * @param string|null $secondary Optional secondary login field
+     * @param string $username The patron user id or barcode
+     * @param string $password The patron password
      *
      * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($username, $password, $secondary = null)
+    public function patronLogin($username, $password)
     {
         $cacheKey = "patron|$username|$password";
         $item = $this->getCachedData($cacheKey);
@@ -415,9 +414,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         }
         $driver = $this->getDriver($source);
         if ($driver) {
-            $patron = $driver->patronLogin(
-                $this->getLocalId($username), $password, $secondary
-            );
+            $patron = $driver->patronLogin($this->getLocalId($username), $password);
             $patron = $this->addIdPrefixes($patron, $source);
             if (is_array($patron)) {
                 $patron['source'] = $source;

@@ -454,16 +454,7 @@ trait VoyagerFinna
      */
     public function getConfig($function, $params = null)
     {
-        if ($function == 'patronLogin') {
-            if (!empty($this->config['Catalog']['secondary_login_field'])) {
-                list(, $label) = explode(
-                    ':', $this->config['Catalog']['secondary_login_field'], 2
-                );
-                return [
-                    'secondary_login_field_label' => $label
-                ];
-            }
-        } elseif ($function == 'onlinePayment'
+        if ($function == 'onlinePayment'
             && isset($this->config['OnlinePayment'])
         ) {
             $functionConfig = $this->config['OnlinePayment'];
@@ -726,15 +717,14 @@ trait VoyagerFinna
      *
      * This is responsible for authenticating a patron against the catalog.
      *
-     * @param string $barcode   The patron barcode
-     * @param string $login     The patron's last name or PIN (depending on config)
-     * @param string $secondary Optional secondary login field (if enabled)
+     * @param string $barcode The patron barcode
+     * @param string $login   The patron's last name or PIN (depending on config)
      *
      * @throws ILSException
-     * @return mixed            Associative array of patron info on successful login,
+     * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-    public function patronLogin($barcode, $login, $secondary = null)
+    public function patronLogin($barcode, $login)
     {
         // First check that the login is not blocked
         if (!empty($this->config['Catalog']['login_password_blocklist'])
@@ -760,17 +750,6 @@ trait VoyagerFinna
                 '/[^\w]/', '', $this->config['Catalog']['fallback_login_field']
             ) : '';
 
-        if (!empty($this->config['Catalog']['secondary_login_field'])
-            && $secondary !== null
-        ) {
-            list($secondaryLoginField) = explode(
-                ':', $this->config['Catalog']['secondary_login_field'], 2
-            );
-            $secondaryLoginField = preg_replace('/[^\w]/', '', $secondaryLoginField);
-        } else {
-            $secondaryLoginField = '';
-        }
-
         // Turns out it's difficult and inefficient to handle the mismatching
         // character sets of the Voyager database in the query (in theory something
         // like
@@ -781,10 +760,6 @@ trait VoyagerFinna
 
         $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, " .
                "PATRON.{$login_field} as LOGIN";
-
-        if ($secondaryLoginField) {
-            $sql .= ", PATRON.{$secondaryLoginField} as SECONDARY_LOGIN";
-        }
 
         if ($fallback_login_field) {
             $sql .= ", PATRON.{$fallback_login_field} as FALLBACK_LOGIN";
@@ -810,22 +785,11 @@ trait VoyagerFinna
         try {
             $bindBarcode = strtolower(utf8_decode($barcode));
             $compareLogin = mb_strtolower($login, 'UTF-8');
-            $compareSecondaryLogin = mb_strtolower($secondary, 'UTF-8');
 
             $sqlStmt = $this->executeSQL($sql, [':barcode' => $bindBarcode]);
             // For some reason barcode is not unique, so evaluate all resulting
             // rows just to be safe
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                // If enabled, verify secondary login field first
-                if ($secondaryLoginField && $row['SECONDARY_LOGIN']) {
-                    $secondaryLoginLower = mb_strtolower(
-                        utf8_encode($row['SECONDARY_LOGIN']), 'UTF-8'
-                    );
-                    if ($compareSecondaryLogin != $secondaryLoginLower) {
-                        continue;
-                    }
-                }
-
                 $success = false;
                 if (null !== $row['LOGIN']) {
                     // User has a primary login so it needs to match
@@ -833,23 +797,7 @@ trait VoyagerFinna
                     $success = $primary == $compareLogin
                         || $primary == $this->sanitizePIN($compareLogin);
                 } else {
-                    // No primary login so check fallback login field. Two
-                    // possibilities:
-                    // 1.) Secondary login field is enabled and the same as fallback
-                    // field and no login was given -- no further checks needed
-                    // 2.) No secondary or different field so the fallback has to
-                    // match
-
-                    $success = $secondaryLoginField
-                        && $secondaryLoginField == $fallback_login_field
-                        && $compareLogin == '';
-
-                    if (!$success && $fallback_login_field) {
-                        $fallback = mb_strtolower(
-                            utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8'
-                        );
-                        $success = $fallback == $compareLogin;
-                    }
+                    $success = false;
                 }
 
                 if ($success) {

@@ -41,31 +41,6 @@ use VuFind\Exception\Auth as AuthException;
 trait ILSFinna
 {
     /**
-     * Get secondary login field label (if any)
-     *
-     * @param string $target Login target (MultiILS)
-     *
-     * @return string
-     */
-    public function getSecondaryLoginFieldLabel($target)
-    {
-        $catalog = $this->getCatalog();
-        $check = $catalog->checkCapability(
-            'getConfig', ['cat_username' => "$target.login"]
-        );
-        if (!$check) {
-            return '';
-        }
-        $config = $this->getCatalog()->getConfig(
-            'patronLogin', ['cat_username' => "$target.login"]
-        );
-        if (!empty($config['secondary_login_field_label'])) {
-            return $config['secondary_login_field_label'];
-        }
-        return '';
-    }
-
-    /**
      * Check if ILS supports password recovery
      *
      * @param string $target Login target (MultiILS)
@@ -112,59 +87,17 @@ trait ILSFinna
     /**
      * Handle the actual login with the ILS.
      *
-     * @param string $username          User name
-     * @param string $password          Password
-     * @param string $loginMethod       Login method
-     * @param string $secondaryUsername Secondary user name
+     * @param string $username    User name
+     * @param string $password    Password
+     * @param string $loginMethod Login method
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Processed User object.
      */
-    protected function handleLogin($username, $password, $loginMethod,
-        $secondaryUsername = ''
-    ) {
+    protected function handleLogin($username, $password, $loginMethod)
+    {
         $username = str_replace(' ', '', $username);
-        if ($username == '' || ('password' === $loginMethod && $password == '')) {
-            throw new AuthException('authentication_error_blank');
-        }
-
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin(
-                $username, $password, $secondaryUsername
-            );
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Did the patron successfully log in?
-        if ('email' === $loginMethod) {
-            if (null === $this->emailAuthenticator) {
-                throw new \Exception('Email authenticator not set');
-            }
-            if ($patron) {
-                $class = get_class($this);
-                if ($p = strrpos($class, '\\')) {
-                    $class = substr($class, $p + 1);
-                }
-                $this->emailAuthenticator->sendAuthenticationLink(
-                    $patron['email'],
-                    $patron,
-                    ['auth_method' => $class]
-                );
-            }
-            // Don't reveal the result
-            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
-        }
-        if ($patron) {
-            return $this->processILSUser($patron);
-        }
-
-        // If we got this far, we have a problem:
-        throw new AuthException('authentication_error_invalid');
+        return parent::handleLogin($username, $password, $loginMethod);
     }
 
     /**

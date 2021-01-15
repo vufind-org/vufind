@@ -438,20 +438,8 @@ finna.layout = (function finnaLayout() {
     holder.find('select.jumpMenuUrl').unbind('change').change(function onChangeJumpMenuUrl(e) { window.location.href = $(e.target).val(); });
   }
 
-  function initSecondaryLoginField(labels, idPrefix) {
-    var searchPrefix = idPrefix ? '#' + idPrefix : '#';
-    $(searchPrefix + 'target').change(function onChangeLoginTarget() {
-      var target = $(searchPrefix + 'target').val();
-      var field = $(searchPrefix + 'secondary_username');
-      if ((typeof labels[target] === 'undefined') || labels[target] === '') {
-        field.val('');
-        field.closest('.form-group').hide();
-      } else {
-        var group = field.closest('.form-group');
-        group.find('label').text(labels[target] + ':');
-        group.show();
-      }
-    }).change();
+  function initSecondaryLoginField() {
+    // This function exists for back-compatibility only
   }
 
   function initILSPasswordRecoveryLink(links, idPrefix) {

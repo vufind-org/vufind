@@ -54,16 +54,14 @@ class Manager extends \VuFind\Auth\Manager
     /**
      * Get secondary login field label (if any)
      *
+     * This method only exists for back-compatibility
+     *
      * @param string $target Login target (only for MultiILS)
      *
      * @return string|false
      */
     public function getSecondaryLoginFieldLabel($target = '')
     {
-        $auth = $this->getAuth();
-        if (is_callable([$auth, 'getSecondaryLoginFieldLabel'])) {
-            return $auth->getSecondaryLoginFieldLabel($target);
-        }
         return false;
     }
 

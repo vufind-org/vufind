@@ -30,8 +30,6 @@
  */
 namespace Finna\Auth;
 
-use VuFind\Exception\Auth as AuthException;
-
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *
@@ -46,32 +44,4 @@ use VuFind\Exception\Auth as AuthException;
 class MultiILS extends \VuFind\Auth\MultiILS
 {
     use ILSFinna;
-
-    /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
-     *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
-     *
-     * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
-     */
-    public function authenticate($request)
-    {
-        $username = trim($request->getPost()->get('username'));
-        $password = trim($request->getPost()->get('password'));
-        $target = trim($request->getPost()->get('target'));
-        $loginMethod = $this->getILSLoginMethod($target);
-
-        // We should have target either separately or already embedded into username
-        if ($target) {
-            $username = "$target.$username";
-        }
-
-        // Check for a secondary username
-        $secondaryUsername = trim($request->getPost()->get('secondary_username'));
-
-        return $this
-            ->handleLogin($username, $password, $loginMethod, $secondaryUsername);
-    }
 }

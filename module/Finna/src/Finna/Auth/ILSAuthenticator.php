@@ -46,19 +46,18 @@ class ILSAuthenticator extends \VuFind\Auth\ILSAuthenticator
     /**
      * Attempt to log in the user to the ILS, and save credentials if it works.
      *
-     * @param string $username          Catalog username
-     * @param string $password          Catalog password
-     * @param string $secondaryUsername Secondary user name
+     * @param string $username Catalog username
+     * @param string $password Catalog password
      *
      * Returns associative array of patron data on success, false on failure.
      *
      * @return array|bool
      */
-    public function newCatalogLogin($username, $password, $secondaryUsername = '')
+    public function newCatalogLogin($username, $password)
     {
         try {
             $result = $this->catalog->patronLogin(
-                $username, $password, $secondaryUsername
+                $username, $password
             );
         } catch (ILSException $e) {
             return false;

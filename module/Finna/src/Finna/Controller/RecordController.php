@@ -41,7 +41,6 @@ use VuFindSearch\ParamBag;
 class RecordController extends \VuFind\Controller\RecordController
 {
     use FinnaRecordControllerTrait;
-    use CatalogLoginTrait;
 
     /**
      * Create record feedback form and send feedback to correct recipient.

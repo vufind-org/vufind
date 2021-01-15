@@ -47,12 +47,6 @@
       <?php endif; ?>
       <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
     </div>
-    <?php if ($this->secondaryLoginFieldLabel || $this->targets !== null): ?>
-    <div class="form-group">
-      <label class="control-label" for="login_secondary_username"><?=$this->transEsc($this->secondaryLoginFieldLabel) ?>:</label>
-      <input id="login_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->secondaryUsername)?>" class="form-control"/>
-    </div>
-    <?php endif; ?>
     <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
       <div class="form-group">
         <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
@@ -81,16 +75,9 @@
 
 <?php
   if ($this->targets !== null) {
-      $labels = [];
-      foreach ($this->secondaryLoginFieldLabels as $target => $label) {
-        $labels[] = '"' . addslashes($target) . '": "' . ($label ? addslashes($this->translate($label)) : '') . '"';
-      }
-
-      $labels = implode(', ', $labels);
       $methods = json_encode($this->loginMethods);
       $script = <<<EOT
   setupMultiILSLoginFields($methods, 'login_');
-  finna.layout.initSecondaryLoginField({{$labels}}, 'login_');
 EOT;
 
       // Inline the script for lightbox compatibility

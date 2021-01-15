@@ -30,8 +30,6 @@
  */
 namespace Finna\Auth;
 
-use VuFind\Exception\Auth as AuthException;
-
 /**
  * ILS authentication module.
  *
@@ -46,27 +44,4 @@ use VuFind\Exception\Auth as AuthException;
 class ILS extends \VuFind\Auth\ILS
 {
     use ILSFinna;
-
-    /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
-     *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
-     *
-     * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
-     */
-    public function authenticate($request)
-    {
-        $username = trim($request->getPost()->get('username'));
-        $username = str_replace(' ', '', $username);
-        $password = trim($request->getPost()->get('password'));
-        $loginMethod = $this->getILSLoginMethod();
-
-        // Check for a secondary username
-        $secondaryUsername = trim($request->getPost()->get('secondary_username'));
-
-        return $this
-            ->handleLogin($username, $password, $loginMethod, $secondaryUsername);
-    }
 }

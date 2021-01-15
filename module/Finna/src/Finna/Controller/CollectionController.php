@@ -40,8 +40,6 @@ namespace Finna\Controller;
  */
 class CollectionController extends \VuFind\Controller\CollectionController
 {
-    use CatalogLoginTrait;
-
     /**
      * Display a particular tab.
      *

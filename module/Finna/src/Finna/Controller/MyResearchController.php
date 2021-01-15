@@ -52,7 +52,6 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
     use FinnaOnlinePaymentControllerTrait;
-    use CatalogLoginTrait;
 
     /**
      * Catalog Login Action

@@ -113,10 +113,6 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
                 'id' => $target,
                 'name' => $this->translate("source_$target", null, $target)
             ];
-            if (!empty($config['secondary_login_field_label'])) {
-                $backend['secondary_login_field_label']
-                    = $this->translate($config['secondary_login_field_label']);
-            }
             $backends[] = $backend;
         }
 
@@ -153,9 +149,6 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
         $password = trim(
             $request->getPost('password', $request->getQuery('password'))
         );
-        $secondary = trim(
-            $request->getPost('secondary', $request->getQuery('secondary'))
-        );
 
         if (empty($username) || empty($password)) {
             return $this->output(
@@ -189,7 +182,7 @@ class AuthApiController extends \VuFindApi\Controller\ApiController
         }
 
         try {
-            $result = $catalog->patronLogin($username, $password, $secondary);
+            $result = $catalog->patronLogin($username, $password);
         } catch (ILSException $e) {
             $this->logError(
                 "$target login ILS exception: " . $e->getMessage()

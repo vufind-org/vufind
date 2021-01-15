@@ -58,10 +58,6 @@
       <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control"/>
     </div>
     <div class="form-group">
-      <label class="control-label" for="profile_cat_secondary_username"></label>
-      <input id="profile_cat_secondary_username" type="text" name="cat_secondary_username" value="" class="form-control"/>
-    </div>
-    <div class="form-group">
       <label class="control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
       <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control"/>
     </div>
@@ -84,29 +80,9 @@
 <?php endif; ?>
 
 <?php
-  $labels = [];
-  $originalMethod = $manager->getAuthMethod();
-  if (in_array('MultiILS', $options)) {
-    $manager->setAuthMethod('MultiILS');
-  } else {
-    $manager->setAuthMethod('ILS');
-  }
-  $labels = [];
-  if (null !== $this->targets) {
-    foreach ($this->targets as $target) {
-      $label = $manager->getSecondaryLoginFieldLabel($target);
-      $labels[$target] = $label ? $this->translate($label) : '';
-    }
-  }
-
-  $manager->setAuthMethod($originalMethod);
-
-  $labels = json_encode($labels);
   $methods = json_encode($this->loginMethods);
-
   $script = <<<EOT
   setupMultiILSLoginFields($methods, 'profile_cat_');
-  finna.layout.initSecondaryLoginField($labels, 'profile_cat_');
 EOT;
 
   // Inline the script for lightbox compatibility

@@ -18,10 +18,6 @@
       <div><strong><?=$this->transEsc("source_$currentTarget", null, $currentTarget)?></strong></div>
     <?php endif; ?>
   </div>
-  <div class="form-group">
-    <label class="control-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username"></label>
-    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_secondary_username" type="text" name="secondary_username" value="<?=$this->escapeHtmlAttr($this->request->get('secondary_username'))?>" class="form-control"/>
-  </div>
 
   <div class="form-group">
     <label class="control-label password-login" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
@@ -36,19 +32,14 @@
 </div>
 
 <?php
-  $labels = [];
   $methods = [];
   foreach ($authManager->getLoginTargets() as $target) {
-    $label = $authManager->getSecondaryLoginFieldLabel($target);
-    $labels[$target] = $label ? addslashes($this->translate($label)) : '';
     $methods[$target] = $authManager->getILSLoginMethod($target);
   }
 
-  $labels = json_encode($labels);
   $methods = json_encode($methods);
   $script = <<<EOT
   setupMultiILSLoginFields($methods, 'login_{$topClass}_');
-  finna.layout.initSecondaryLoginField($labels, 'login_{$topClass}_');
 EOT;
 
   // Inline the script for lightbox compatibility
