@@ -82,18 +82,18 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sessionFactory;
 
     /**
-     * Session cache
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $sessionCache;
-
-    /**
      * Money formatting view helper
      *
      * @var SafeMoneyFormat
      */
     protected $safeMoneyFormat;
+
+    /**
+     * Session cache
+     *
+     * @var \Laminas\Session\Container
+     */
+    protected $sessionCache;
 
     /**
      * Default pickup location
@@ -220,7 +220,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param \VuFind\Date\Converter $dateConverter   Date converter object
      * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
-     * @param SafeMoneyFormat        $safeMoneyFormat Money formatting view helper
+     * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
         $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
