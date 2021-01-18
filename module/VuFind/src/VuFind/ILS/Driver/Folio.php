@@ -413,7 +413,7 @@ class Folio extends AbstractAPI implements
     protected function isHoldable($locationId)
     {
         return !in_array(
-            $locationName,
+            $locationId,
             (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
         );
     }
@@ -432,6 +432,7 @@ class Folio extends AbstractAPI implements
     {
         $cacheKey = 'locationMap';
         $locationMap = $this->getCachedData($cacheKey);
+        //die(var_dump($locationMap));
         if (null === $locationMap) {
             $locationMap = [];
             foreach ($this->getPagedResults(
@@ -461,7 +462,26 @@ class Folio extends AbstractAPI implements
     protected function getLocationName($locationId)
     {
         $locationMap = $this->getLocations();
-        return $locationMap[$locationId] ?? '';
+        $locationName = '';
+        if (array_key_exists($locationId, $locationMap)) {
+            $locationName = $locationMap[$locationId];
+        } else {
+            // if key is not found in cache, the location could have
+            // been added before the cache expired so check again
+            $locationResponse = $this->makeRequest(
+                'GET', '/locations/' . $locationId
+            );
+            if ($locationResponse->isSuccess()) {
+                $json = json_decode($locationResponse->getBody());
+                if (!empty($json->discoveryDisplayName)) {
+                    $locationName = $locJson->discoveryDisplayName;
+                } else {
+                    $locationName = $json->name;
+                }
+            }
+        }
+
+        return $locationName;
     }
 
 
