@@ -1,8 +1,8 @@
 <!-- START of: finna - search/advanced/multiselect.phtml -->
 <div class="facet">
   <div class="solr-adv-filter <?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>-container">
-    <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>"><?=$this->transEsc($this->list['label'])?>:</label>
-    <select class="finna-multiselect init" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>" name="filter[]"  multiple="multiple">
+    <label id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>"><?=$this->transEsc($this->list['label'])?>:</label>
+    <select class="finna-multiselect init" aria-labelledby="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>" name="filter[]"  multiple="multiple">
       <?php if (is_array($this->hierarchicalFacets) && in_array($this->field, $this->hierarchicalFacets)): ?>
         <?php foreach ($this->list['list'] as $key => $value): ?>
           <?php
@@ -18,7 +18,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
     </select>
-    <input class="finna-multiselect search form-control" type="text" placeholder="<?= $this->transEsc('search_placeholder') ?>">
+    <input aria-labelledby="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $this->field))?>" class="finna-multiselect search form-control" type="text" placeholder="<?= $this->transEsc('search_placeholder') ?>">
     <ul aria-multiselectable="true" role="listbox" aria-label="<?= $this->transEsc('Add filter') . ' ' . $this->transEsc($this->list['label']) ?>" tabindex="0" class="finna-multiselect done" aria-activedescendant=""></ul>
     <button type="button" class="finna-multiselect clear btn btn-link"><?= $this->transEsc('Clear Selections') ?></button> 
   </div>

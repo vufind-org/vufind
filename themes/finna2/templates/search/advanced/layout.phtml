@@ -80,7 +80,7 @@
 ?>
 
 <?=$this->flashmessages()?>
-<form role="search" name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
+<form role="search" aria-label="<?=$this->transEscAttr("Advanced Search")?>" name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
   <?php foreach ($hiddenFilters as $key => $filter): ?>
     <?php foreach ($filter as $value): ?>
       <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
@@ -110,6 +110,7 @@
       <input type="hidden" name="sort" value="relevance">
 
       <?php /* An empty div. This is the target for the javascript that builds this screen */ ?>
+      <h3 id="adv-search-groups-header" class="sr-only"><?=$this->transEsc("search_groups")?></h3>
       <div id="groupPlaceHolder" class="hidden pull-left">
         <button type="button" class="btn btn-primary"><i class="fa fa-plus-small" aria-hidden="true"></i> <?= $this->transEsc('add_search_group') ?></button>
       </div>
@@ -134,7 +135,7 @@
               <div id="new_group_template">
             <?php endif; ?>
             <div id="group<?=$group ?>" class="adv-group well">
-              <h3><?=$msgSearchGroup?></h3>
+              <h4><?=$msgSearchGroup?></h4>
               <div class="adv-search-group">
                 <div class="adv-group-match match">
                   <label class="search_bool"><?=$msgSearchMatch?>:</label>
