@@ -272,7 +272,8 @@ $holdingsLink = $this->recordLink()->getUrl($driver);
 $disableTitleHold = isset($summary['holdable']) && !$summary['holdable'];
 
 if (!$disableTitleHold
-  && ($this->holdings()->showSearchResultsTitleHold() || !empty($holdingsConfig['display_title_hold_in_results']))
+  && $this->holdings()->showSearchResultsTitleHold()
+  && (!isset($holdingsConfig['display_title_hold_in_results']) || $holdingsConfig['display_title_hold_in_results'])
   && $driver && $driver->tryMethod('getHoldsAllowed')
 ) {
     $account = $this->auth()->getManager();
