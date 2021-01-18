@@ -50,6 +50,7 @@ class Folio extends AbstractAPI implements
         logWarning as warning;
         logError as error;
     }
+
     use \VuFind\ILS\Driver\CacheTrait;
 
     /**
@@ -409,7 +410,7 @@ class Folio extends AbstractAPI implements
      *
      * @return bool
      */
-    protected function isHoldable($locationName)
+    protected function isHoldable($locationId)
     {
         return !in_array(
             $locationName,
@@ -427,25 +428,42 @@ class Folio extends AbstractAPI implements
      *
      * @return string
      */
-    protected function getLocationName($locationId)
+    protected function getLocations()
     {
-        $locationName = '';
-        if (!empty($locationId)) {
-            $locationResponse = $this->makeRequest(
-                'GET',
-                '/locations/' . $locationId
-            );
-            $location = json_decode($locationResponse->getBody());
-            if (!empty($location->discoveryDisplayName)) {
-                $locationName = $location->discoveryDisplayName;
-            } elseif (!empty($location->name)) {
-                $locationName = $location->name;
-            } elseif (!empty($location->code)) {
-                $locationName = $location->code;
+        $cacheKey = 'locationMap';
+        $locationMap = $this->getCachedData($cacheKey);
+        if (null === $locationMap) {
+            $locationMap = [];
+            foreach ($this->getPagedResults(
+                'locations', '/locations'
+            ) as $location) {
+                // https://github.com/folio-org/mod-inventory-storage/blob/master/ramls/location.json
+                if (!empty($location->discoveryDisplayName)) {
+                    // discoveryDisplayName is optional
+                    $locationMap[$location->id] = $location->discoveryDisplayName;
+                } else {
+                    // name is required
+                    $locationMap[$location->id] = $location->name;
+                }
             }
         }
-        return $locationName;
+        return $locationMap;
     }
+
+
+    /**
+     * Get Inventory Location Name
+     *
+     * @param string $locationId UUID of item location
+     *
+     * @return string $locationName display name of location
+     */
+    protected function getLocationName($locationId)
+    {
+        $locationMap = $this->getLocations();
+        return $locationMap[$locationId] ?? '';
+    }
+
 
     /**
      * This method queries the ILS for holding information.
@@ -473,9 +491,6 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
-            $locationId = $holding->permanentLocationId;
-            $locationName = $this->getLocationName($locationId);
-
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
                     . '" NOT discoverySuppress==true)'
@@ -513,6 +528,8 @@ class Folio extends AbstractAPI implements
                 $itemNotes = array_filter(
                     array_map($notesFormatter, $item->notes ?? [])
                 );
+                $locationId = $item->effectiveLocationId;
+                $locationName = $this->getLocationName($locationId);
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -521,7 +538,7 @@ class Folio extends AbstractAPI implements
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
-                    'is_holdable' => $this->isHoldable($locationName),
+                    'is_holdable' => $this->isHoldable($locationId),
                     'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
                     'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
                     'issues' => $holdingsStatements,
