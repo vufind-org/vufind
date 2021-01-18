@@ -23,6 +23,7 @@ $config = [
             'Finna\View\Helper\Root\FileSrc' => 'Finna\View\Helper\Root\HelperWithThemeInfoFactory',
             'Finna\View\Helper\Root\FinnaSurvey' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'Finna\View\Helper\Root\Followup' => 'Finna\View\Helper\Root\FollowupFactory',
+            'Finna\View\Helper\Root\HtmlAttributes' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\HtmlElement' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'Finna\View\Helper\Root\HeadTitle' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
             'Finna\View\Helper\Root\Holdings' => 'Finna\View\Helper\Root\HelperWithMainConfigFactory',
@@ -89,6 +90,7 @@ $config = [
             'holdings' => 'Finna\View\Helper\Root\Holdings',
             // For back-compatibility
             'holdingsSettings' => 'Finna\View\Helper\Root\Holdings',
+            'htmlAttributes' => 'Finna\View\Helper\Root\HtmlAttributes',
             'htmlElement' => 'Finna\View\Helper\Root\HtmlElement',
             //use root highlight so search results use span instead of mark
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
