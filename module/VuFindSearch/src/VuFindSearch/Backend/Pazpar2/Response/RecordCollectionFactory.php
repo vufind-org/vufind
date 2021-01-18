@@ -93,7 +93,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $response['total'], $response['offset']
         );
         foreach ($response['records'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc));
+            $collection->add(call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
     }

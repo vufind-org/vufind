@@ -180,6 +180,7 @@ $config = [
             'VuFind\Db\Table\PluginManager' => 'TueFind\Db\Table\PluginManager',
             'VuFind\Form\Form' => 'TueFind\Form\Form',
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
+            'VuFind\MetadataVocabulary\PluginManager' => 'TueFind\MetadataVocabulary\PluginManager',
             'VuFind\Recaptcha' => 'TueFind\Service\ReCaptcha',
             'VuFind\RecommendPluginManager' => 'TueFind\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'TueFind\Recommend\PluginManager',

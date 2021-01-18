@@ -49,6 +49,10 @@ class Printms extends AbstractHelper
      */
     public function __invoke($ms)
     {
+        // If we can't do the math, don't bother formatting the value:
+        if (!is_numeric($ms)) {
+            return $ms;
+        }
         $seconds = floor($ms / 1000);
         $ms = ($ms % 1000);
 

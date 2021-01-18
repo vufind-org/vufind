@@ -112,7 +112,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
         $this->processedParams = implode(':', $settings);
 
         // Collect the best possible search term(s):
-        $this->subject =  $request->get($this->requestParam);
+        $this->subject = $request->get($this->requestParam);
         if (empty($this->subject) && is_object($params)) {
             $this->subject = $params->getQuery()->getAllTerms();
         }

@@ -1,7 +1,8 @@
 <?php
     // Set default value if necessary:
     if (!isset($this->searchClassId)) {
-        $this->searchClassId = 'Solr';
+        $config = $this->config()->get('config');
+        $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
     }
 
     // Load search actions and settings (if any):
@@ -35,11 +36,12 @@
         $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
+    $showFilters = $filterDetails && (isset($results) || $options->getRetainFilterSetting());
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
   <div class="navbar-form navbar-left flip">
-    <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'hiddenFilters' => $hiddenFilters]); ?>
+    <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
     <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
@@ -51,7 +53,11 @@
         'search/filters.phtml',
         [
           'params' => $params ?? null,
-          'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+          'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+          'filterList' => $showFilters ? $filterList : [],
+          'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+          'searchClassId' => $this->searchClassId,
+          'searchType' => $this->searchType,
         ]
       );?>
     <?php if (!empty($tabs)): ?></div><?php endif; ?>
@@ -162,8 +168,13 @@
       'search/filters.phtml',
       [
         'params' => $params ?? null,
-        'urlQuery' => isset($results) ? $results->getUrlQuery() : null
+        'urlQuery' => isset($results) ? $results->getUrlQuery() : null,
+        'filterList' => $showFilters ? $filterList : [],
+        'checkboxFilters' => $showFilters ? $checkboxFilters : [],
+        'searchClassId' => $this->searchClassId,
+        'searchType' => $this->searchType,
       ]
     );?>
   </form>
 <?php endif; ?>
+

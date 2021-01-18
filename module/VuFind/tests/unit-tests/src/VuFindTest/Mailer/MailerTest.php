@@ -27,7 +27,9 @@
  */
 namespace VuFindTest\Mailer;
 
+use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFindTest\Container\MockContainer;
 use Zend\Mail\Address;
 use Zend\Mail\AddressList;
 
@@ -42,6 +44,43 @@ use Zend\Mail\AddressList;
  */
 class MailerTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Test that the factory configures the object correctly.
+     *
+     * @return void
+     */
+    public function testFactoryConfiguration()
+    {
+        $config = new \Zend\Config\Config(
+            [
+                'Mail' => [
+                    'host' => 'vufindtest.localhost',
+                    'port' => 123,
+                    'connection_time_limit' => 600,
+                    'name' => 'foo',
+                    'username' => 'vufinduser',
+                    'password' => 'vufindpass',
+                ]
+            ]
+        );
+        $cm = new MockContainer($this);
+        $cm->set('config', $config);
+        $sm = new MockContainer($this);
+        $sm->set(\VuFind\Config\PluginManager::class, $cm);
+        $factory = new MailerFactory();
+        $mailer = $factory($sm, Mailer::class);
+        $options = $mailer->getTransport()->getOptions();
+        $this->assertEquals('vufindtest.localhost', $options->getHost());
+        $this->assertEquals('foo', $options->getName());
+        $this->assertEquals(123, $options->getPort());
+        $this->assertEquals(600, $options->getConnectionTimeLimit());
+        $this->assertEquals('login', $options->getConnectionClass());
+        $this->assertEquals(
+            ['username' => 'vufinduser', 'password' => 'vufindpass'],
+            $options->getConnectionConfig()
+        );
+    }
+
     /**
      * Test sending an email.
      *
@@ -146,6 +185,52 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $mailer = new Mailer($transport);
         $mailer->setFromAddressOverride('no-reply@example.com');
         $mailer->send('to@example.com', $address, 'subject', 'body');
+    }
+
+    /**
+     * Test sending an email using an explicitly set reply-to address.
+     *
+     * @return void
+     */
+    public function testSendWithReplyTo()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
+                && '<me@example.com>' == $fromString
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('me@example.com');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', $address, 'subject', 'body', null, 'reply-to@example.com');
+    }
+
+    /**
+     * Test sending an email using a from address override
+     * and an explicitly set reply-to address.
+     *
+     * @return void
+     */
+    public function testSendWithFromOverrideAndReplyTo()
+    {
+        $callback = function ($message) {
+            $fromString = $message->getFrom()->current()->toString();
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
+                && 'me <no-reply@example.com>' == $fromString
+                && 'body' == $message->getBody()
+                && 'subject' == $message->getSubject();
+        };
+        $transport = $this->createMock(\Zend\Mail\Transport\TransportInterface::class);
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $address = new Address('me@example.com');
+        $mailer = new Mailer($transport);
+        $mailer->setFromAddressOverride('no-reply@example.com');
+        $mailer->send('to@example.com', $address, 'subject', 'body', null, 'reply-to@example.com');
     }
 
     /**
@@ -327,6 +412,19 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $transport->expects($this->once())->method('send')->with($this->callback($callback));
         $mailer = new Mailer($transport);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+    }
+
+    /**
+     * Test connection reset
+     *
+     * @return void
+     */
+    public function testResetConnection()
+    {
+        $transport = $this->createMock(\Zend\Mail\Transport\Smtp::class);
+        $transport->expects($this->once())->method('disconnect');
+        $mailer = new Mailer($transport);
+        $mailer->resetConnection();
     }
 }
 

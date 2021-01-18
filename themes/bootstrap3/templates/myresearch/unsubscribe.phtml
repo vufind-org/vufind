@@ -1,0 +1,17 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('unsubscribe_confirmation'));
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="content unsubscribe">
+    <?php if ($this->success == true): ?>
+      <p><?=$this->translate('unsubscribe_successful'); ?></p>
+    <?php else: ?>
+      <p><?= $this->translate('unsubscribe_confirmation'); ?></p>
+      <p>
+        <a class="btn btn-primary" href="<?= $this->escapeHtml($this->unsubscribeUrl); ?>"><?= $this->translate('confirm_dialog_yes'); ?></a>
+        <a class="btn btn-primary" href="<?= $this->url('home'); ?>"><?= $this->translate('confirm_dialog_no'); ?></a>
+      </p>
+    <?php endif; ?>
+  </div>
+</div>

@@ -42,6 +42,22 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
+     * Get a mock record router.
+     *
+     * @return \VuFind\Record\Router
+     */
+    protected function getMockRecordRouter()
+    {
+        $mock = $this->getMockBuilder(\VuFind\Record\Router::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getActionRouteDetails'])
+            ->getMock();
+        $mock->expects($this->any())->method('getActionRouteDetails')
+            ->will($this->returnValue(['route' => 'home', 'params' => []]));
+        return $mock;
+    }
+
+    /**
      * Get view helpers needed by test.
      *
      * @return array
@@ -59,7 +75,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
-            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockBuilder(\VuFind\Record\Router::class)->disableOriginalConstructor()->getMock()),
+            'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockRecordRouter()),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($this->getServiceManager())),
             'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),

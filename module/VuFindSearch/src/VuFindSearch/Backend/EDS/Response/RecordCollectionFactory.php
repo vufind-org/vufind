@@ -98,7 +98,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             ?? $response['Records'] ?? [];
 
         foreach ($records as $record) {
-            $collection->add(call_user_func($this->recordFactory, $record));
+            $collection->add(call_user_func($this->recordFactory, $record), false);
         }
         return $collection;
     }

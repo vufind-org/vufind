@@ -324,6 +324,34 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
+    }
+
+    /**
+     * Is the configured strategy on the list of legal options?
+     *
+     * @return bool
+     */
+    protected function hasLegalStrategy()
+    {
+        // Do a case-insensitive search of the strategy list:
+        return in_array(
+            strtolower($this->strategy),
+            array_map('strtolower', $this->strategies)
+        );
+    }
+
+    /**
      * Proxy auth method; a helper function to be called like:
      *   return $this->proxyAuthMethod(METHOD, func_get_args());
      *
@@ -340,7 +368,7 @@ class ChoiceAuth extends AbstractBase
             return false;
         }
 
-        if (!in_array($this->strategy, $this->strategies)) {
+        if (!$this->hasLegalStrategy()) {
             throw new InvalidArgumentException("Illegal setting: {$this->strategy}");
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);
@@ -419,5 +447,22 @@ class ChoiceAuth extends AbstractBase
             return false;
         }
         return isset($user) && $user instanceof User;
+    }
+
+    /**
+     * Whether this authentication method needs CSRF checking for the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function needsCsrfCheck($request)
+    {
+        if (!$this->strategy) {
+            return true;
+        }
+        return $this->proxyAuthMethod('needsCsrfCheck', func_get_args());
     }
 }

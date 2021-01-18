@@ -122,6 +122,36 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Whether this authentication method needs CSRF checking for the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function needsCsrfCheck($request)
+    {
+        // Enabled by default
+        return true;
+    }
+
+    /**
+     * Returns any authentication method this request should be delegated to.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object.
+     *
+     * @return string|bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDelegateAuthMethod(\Zend\Http\PhpEnvironment\Request $request)
+    {
+        // No delegate by default
+        return false;
+    }
+
+    /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!

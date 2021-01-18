@@ -1,13 +1,13 @@
-$reduced-font-size: 14px !default;
-$img-path: "../../sandal/images/" !default;
+$reduced-font-size: 14px;
+$img-path: "../../sandal/images/";
 
-$banner-height: 60px !default;
-$banner-height-sm: 40px !default;
-$search-tab-height: 2rem !default;
+$banner-height: 60px;
+$banner-height-sm: 40px;
+$search-tab-height: 2rem;
 
-$result-checkbox-width: 28px !default;
-$result-checkbox-height: 80px !default;
-$result-sm-icon-size: 1.5rem !default;
+$result-checkbox-width: 28px;
+$result-checkbox-height: 80px;
+$result-sm-icon-size: 1.5rem;
 
 /* ------ Mixins ------ */
 @mixin full-width(){ // Break out of the container

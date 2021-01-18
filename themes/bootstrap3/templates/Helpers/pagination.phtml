@@ -4,10 +4,10 @@
     <li<?php if (isset($this->previous)): ?>>
       <?php $newParams = $this->params; $newParams['page'] = $this->previous; ?>
       <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
-        &laquo; <?=$this->translate('Prev')?>
+        <span aria-hidden="true">&laquo;</span> <?=$this->translate('Prev')?>
       </a>
     <?php else: ?>
-       class="disabled"> <span>&laquo; <?=$this->translate('Prev')?></span>
+       class="disabled"> <span><span aria-hidden="true">&laquo;</span> <?=$this->translate('Prev')?></span>
     <?php endif; ?>
     </li>
 
@@ -53,7 +53,7 @@
         <?=$this->translate('Next')?> >
       </a>
     <?php else: ?>
-       class="disabled"> <span><?=$this->translate('Next')?> &raquo;</span>
+       class="disabled"> <span><?=$this->translate('Next')?> <span aria-hidden="true">&raquo;</span></span>
     <?php endif; ?>
     </li>
   </ul>

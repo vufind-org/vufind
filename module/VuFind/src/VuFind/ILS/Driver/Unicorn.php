@@ -1179,10 +1179,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (empty($url)) {
             $url = $this->host;
             if ($this->port) {
-                $url =  "http://" . $url . ":" . $this->port . "/" .
+                $url = "http://" . $url . ":" . $this->port . "/" .
                     $this->search_prog;
             } else {
-                $url =  "http://" . $url . "/" . $this->search_prog;
+                $url = "http://" . $url . "/" . $this->search_prog;
             }
         }
 

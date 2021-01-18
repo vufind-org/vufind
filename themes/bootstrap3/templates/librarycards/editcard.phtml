@@ -1,6 +1,6 @@
 <?php
   // Set up page title:
-  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
+  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : 'Edit Library Card';
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
@@ -30,14 +30,31 @@
   </div>
   <?php endif; ?>
   <div class="form-group">
-    <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+      <label class="control-label password-login" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <?php endif; ?>
+    <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
+      <label class="control-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="login_username"><?=$this->transEsc('Email')?>:</label>
+    <?php endif; ?>
     <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
   </div>
-  <div class="form-group">
-    <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
-    <input id="login_password" type="password" name="password" value="" placeholder="<?=!empty($this->card->id) ? $this->escapeHtmlAttr($this->translate('library_card_edit_password_placeholder')) : ''?>" class="form-control"/>
-  </div>
+  <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+    <div class="form-group">
+      <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
+      <input id="login_password" type="password" name="password" value="" placeholder="<?=!empty($this->card->id) ? $this->escapeHtmlAttr($this->translate('library_card_edit_password_placeholder')) : ''?>" class="form-control"/>
+    </div>
+  <?php endif; ?>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
   </div>
 </form>
+
+<?php
+  if (null !== $targets) {
+    $methods = json_encode($this->loginMethods);
+    $script = "setupMultiILSLoginFields($methods, 'login_');";
+
+    // Inline the script for lightbox compatibility
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  }
+?>

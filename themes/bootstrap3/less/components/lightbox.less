@@ -6,7 +6,7 @@
   right: 0;
   z-index: 2;
   padding: .5rem 1rem;
-  opacity: .7;
+  opacity: 1;
 
   body.rtl & {
     left: 0;
@@ -15,17 +15,19 @@
 }
 @media (min-width: 768px) {
   #modal .modal-content > .close { // Fancy side X button
-    right: -50px;
+    right: -60px;
     font-size: 32pt;
     color: #fff;
+    background-color: rgba(0,0,0,0);
+    border-radius: 6px;
     body.rtl & {
-      left: -50px;
+      left: -60px;
       right: auto;
     }
   }
 }
 
-#modal .modal-content > .close:hover { opacity: 1; }
+#modal .modal-content > .close:hover { background-color: #000; }
 #modal .modal-body h1,
 #modal .modal-body h2 {
   margin-top: 0.3rem;

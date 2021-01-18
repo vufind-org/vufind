@@ -41,6 +41,13 @@ use Interop\Container\ContainerInterface;
 class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
 {
     /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'Solr';
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -72,7 +79,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         $batchSize = isset($config->Index->cursor_batch_size)
             ? $config->Index->cursor_batch_size : 1000;
         $solr = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('Solr')->getConnector();
+            ->get($this->backendId)->getConnector();
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(

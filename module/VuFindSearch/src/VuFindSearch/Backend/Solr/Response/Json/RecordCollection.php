@@ -44,7 +44,7 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Template of deserialized SOLR response.
      *
-     * @see self::__construct()
+     * @see \VuFindSearch\Backend\Solr\Response\Json\RecordCollection::__construct()
      *
      * @var array
      */

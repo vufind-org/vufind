@@ -108,11 +108,7 @@ class GetFacetData extends AbstractBase
             $facets = [];
         } else {
             $facetList = $facets[$facet]['data']['list'];
-
-            if (!empty($sort)) {
-                $this->facetHelper->sortFacetList($facetList, $sort == 'top');
-            }
-
+            $this->facetHelper->sortFacetList($facetList, $sort);
             $facets = $this->facetHelper->buildFacetArray(
                 $facet, $facetList, $results->getUrlQuery(), false
             );

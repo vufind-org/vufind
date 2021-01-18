@@ -485,21 +485,21 @@ class LuceneSyntaxHelper
      */
     protected function normalizeUnquotedText($input)
     {
-        // Freestanding hyphens and slashes can cause problems:
+        // Freestanding hyphens, pluses and slashes can cause problems:
         $lookahead = self::$insideQuotes;
-        // remove freestanding hyphens
+        // remove freestanding hyphens and pluses
         $input = preg_replace(
-            '/(\s+[-]$|\s+[-]\s+|^[-]\s+)' . $lookahead . '/',
+            '/(\s+[+-]+$|\s+[+-]+\s+|^[+-]+\s+)' . $lookahead . '/',
             ' ', $input
         );
         // wrap quotes on standalone slashes
         $input = preg_replace(
-            '/(\s+[\/]\s+)' . $lookahead . '/',
+            '/(\s+[\/]+\s+)' . $lookahead . '/',
             ' "/" ', $input
         );
         // remove trailing and leading slashes
         $input = preg_replace(
-            '/(\s+[\/]$|^[\/]\s+)' . $lookahead . '/',
+            '/(\s+[\/]+$|^[\/]+\s+)' . $lookahead . '/',
             ' ', $input
         );
         // A proximity of 1 is illegal and meaningless -- remove it:
@@ -626,7 +626,7 @@ class LuceneSyntaxHelper
      *
      * @return string
      *
-     * @see self::capitalizeRanges
+     * @see \VuFindSearch\Backend\Solr\LuceneSyntaxHelper::capitalizeRanges()
      *
      * @todo Check possible problem with umlauts/non-ASCII word characters
      */

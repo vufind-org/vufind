@@ -148,7 +148,7 @@ abstract class AbstractFacets implements RecommendInterface
         }
 
         // Which facets are ORed?
-        if (isset($config->Results_Settings->orFacets)) {
+        if (isset($config->$section->orFacets)) {
             $this->orFacets = ($config->$section->orFacets === '*')
                 ? $allFacets
                 : array_map('trim', explode(',', $config->$section->orFacets));

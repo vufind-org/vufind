@@ -158,7 +158,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     public function testCheckValidToken()
     {
         $this->createConnector('check-valid-token');
-        $profile = $this->driver->getMyTransactions(['username' => 'whatever']);
+        $profile = $this->driver->getMyTransactions(['id' => 'whatever']);
         // Check token
         $this->assertEquals('/users', $this->testRequestLog[0]['path']);
         // Move to method call

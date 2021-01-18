@@ -117,7 +117,8 @@ trait HoldsTrait
                 $gatheredDetails, $extraHoldFields, $requestGroups
             );
             $validPickup = $validGroup && $this->holds()->validatePickUpInput(
-                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
+                $gatheredDetails['pickUpLocation'] ?? null,
+                $extraHoldFields, $pickup
             );
             if (!$validGroup) {
                 $this->flashMessenger()
