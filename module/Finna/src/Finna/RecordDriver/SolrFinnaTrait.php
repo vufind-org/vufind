@@ -276,6 +276,16 @@ trait SolrFinnaTrait
     }
 
     /**
+     * Get related places.
+     *
+     * @return array
+     */
+    public function getRelatedPlacesExtended()
+    {
+        return [];
+    }
+
+    /**
      * Get the hierarchy_parent_id(s) associated with this item (empty if none).
      *
      * @return array
@@ -1152,16 +1162,5 @@ trait SolrFinnaTrait
                     . '"'
             );
         }
-    }
-
-    /**
-     * Returns the locale used by translator
-     *
-     * @return string
-     */
-    protected function getLocale()
-    {
-        list($locale) = explode('-', $this->getTranslatorLocale());
-        return $locale;
     }
 }

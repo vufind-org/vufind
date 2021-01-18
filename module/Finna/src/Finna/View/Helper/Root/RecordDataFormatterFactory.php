@@ -913,6 +913,13 @@ class RecordDataFormatterFactory
             ]
         );
         $setTemplateLine(
+            'Related Places', 'getRelatedPlacesExtended',
+            'data-lines-with-detail.phtml',
+            [
+                'context' => ['class' => 'record-related-place']
+            ]
+        );
+        $setTemplateLine(
             'Time Period of Creation', 'getTimePeriodOfCreation',
             'data-escapeHtml.phtml',
             [

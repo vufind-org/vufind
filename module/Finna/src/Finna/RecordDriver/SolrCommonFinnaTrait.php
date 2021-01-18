@@ -219,4 +219,15 @@ trait SolrCommonFinnaTrait
     {
         return $this->mainConfig;
     }
+
+    /**
+     * Returns the locale used by translator
+     *
+     * @return string
+     */
+    protected function getLocale()
+    {
+        list($locale) = explode('-', $this->getTranslatorLocale());
+        return $locale;
+    }
 }
