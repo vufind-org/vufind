@@ -19,7 +19,7 @@
       <?php foreach ($searchTabs as $tab): ?>
         <?php if ($tab['selected']) { $this->layout()->currentTabId = $tab['id']; } ?>
         <li class="<?=$tab['selected'] ? 'active' : 'hidden-print'?>">
-          <a <?=$tab['selected'] ? 'aria-current="page"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+          <a <?=$tab['selected'] ? 'aria-current="true"' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
           <?php if (!$this->translationEmpty('tooltip_' . $tab['label'] . '_html') && $this->layout()->templateName !== 'advanced'): ?>
             <?php
               $tooltip = [
