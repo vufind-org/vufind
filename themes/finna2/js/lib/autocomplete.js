@@ -257,19 +257,19 @@
             term.push(input.val());
             term.push(getSearchHandler(input));
             term.push(getPreserveFiltersMode(input) ? "1" : "0");
-            term.push(getPreserveFiltersMode(input) ? "1" : "0");
             term = term.join('###');
             var cid = input.data('cache-id');
             if (options.cache && typeof $.fn.autocompleteFinna.cache[cid][term] !== "undefined") {
               if ($.fn.autocompleteFinna.cache[cid][term].length === 0) {
                 hide();
               } else {
-                createList($.fn.autocompleteFinna.cache[cid][term], input, element);
+                createList($.fn.autocompleteFinna.cache[cid][term], input);
               }
             } else if (typeof options.handler !== "undefined") {
               xhr = true;
               options.handler(input.val(), function optionsHandler(data) {
                 if (data.length === 0 && options.suggestions) {
+                  $.fn.autocompleteFinna.cache[cid][term] = [];
                   hide();
                 } else {
                   var searcher = extractClassParams(input);
@@ -281,9 +281,9 @@
                   var phrase = "phrase" in searcher ? searcher.phrase : null;
 
                   var response = parseResponse(data, filters, handlers, phrase);
-                  createList(response, input, element);
+                  createList(response, input);
+                  $.fn.autocompleteFinna.cache[cid][term] = response;
                 }
-                $.fn.autocompleteFinna.cache[cid][term] = data;
               });
             }
             input.data('selected', -1);
