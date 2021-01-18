@@ -9,6 +9,9 @@
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">Archives</xsl:param>
     <xsl:param name="urlPrefix">http</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
@@ -144,6 +147,13 @@
                             <xsl:value-of select="." />
                         </field>
                     </xsl:if>
+                </xsl:for-each>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', //dc:title[normalize-space()], php:function('VuFind::stripArticles', string(//dc:title[normalize-space()])), //dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
                 </xsl:for-each>
             </doc>
         </add>

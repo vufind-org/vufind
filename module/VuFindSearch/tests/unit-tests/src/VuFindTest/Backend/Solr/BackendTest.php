@@ -49,6 +49,8 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -84,8 +86,20 @@ class BackendTest extends TestCase
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($resp->getBody()));
-
         $back = new Backend($conn);
+        $this->runRetrieveBatchTests($back);
+    }
+
+    /**
+     * Given a configured backend, run some standard tests (this allows us
+     * to test two different versions of the same scenario.
+     *
+     * @param Backend $back Backend
+     *
+     * @return void
+     */
+    protected function runRetrieveBatchTests($back)
+    {
         $back->setIdentifier('test');
         $coll = $back->retrieveBatch(['12345', '125456', '234547']);
         $this->assertCount(3, $coll);
@@ -99,6 +113,32 @@ class BackendTest extends TestCase
         $rec  = $coll->next();
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('234547', $recs[2]->id);
+    }
+
+    /**
+     * Test retrieving a batch of records, using a non-default page size.
+     *
+     * @return void
+     */
+    public function testRetrieveBatchWithNonDefaultPageSize()
+    {
+        $resp1 = $this->loadResponse('multi-record-part1');
+        $resp2 = $this->loadResponse('multi-record-part2');
+        $resp3 = $this->loadResponse('multi-record-part3');
+        $conn = $this->getConnectorMock(['search']);
+        $conn->expects($this->at(0))
+            ->method('search')
+            ->will($this->returnValue($resp1->getBody()));
+        $conn->expects($this->at(1))
+            ->method('search')
+            ->will($this->returnValue($resp2->getBody()));
+        $conn->expects($this->at(2))
+            ->method('search')
+            ->will($this->returnValue($resp3->getBody()));
+
+        $back = new Backend($conn);
+        $back->setPageSize(1);
+        $this->runRetrieveBatchTests($back);
     }
 
     /**
@@ -372,11 +412,9 @@ class BackendTest extends TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-        }
-        return Response::fromString(file_get_contents($file));
+        return Response::fromString(
+            $this->getFixture("solr/response/$fixture", 'VuFindSearch')
+        );
     }
 
     /**

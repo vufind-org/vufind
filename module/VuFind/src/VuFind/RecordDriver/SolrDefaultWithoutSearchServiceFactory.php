@@ -28,6 +28,9 @@
 namespace VuFind\RecordDriver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for SolrDefault-based record drivers that do not need a search service.

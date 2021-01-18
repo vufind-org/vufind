@@ -273,7 +273,12 @@ class LibraryCardsController extends AbstractBase
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
             $catalog = $this->getILS();
-            $patron = $catalog->patronLogin($username, $password);
+            try {
+                $patron = $catalog->patronLogin($username, $password);
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                return false;
+            }
             if ('password' === $loginMethod && !$patron) {
                 $this->flashMessenger()
                     ->addMessage('authentication_error_invalid', 'error');

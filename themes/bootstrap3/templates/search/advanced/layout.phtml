@@ -105,8 +105,8 @@
                     <div id="new_search_template">
                   <?php endif; ?>
                   <div id="search<?=$group . '_' . $search ?>" class="adv-search">
-                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?php endif; ?> aria-label="<?=$this->transEsc("search_terms")?>">
-                    <select class="adv-term-type form-control" name="type<?=$group ?>[]" aria-label="<?=$this->transEsc("Search type")?>">
+                    <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?php endif; ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
+                    <select class="adv-term-type form-control" name="type<?=$group ?>[]" aria-label="<?=$this->transEscAttr("Search type")?>">
                       <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                         <option value="<?=$this->escapeHtml($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
                       <?php endforeach; ?>

@@ -84,7 +84,7 @@ class Folio extends AbstractAPI implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param Callable               $sessionFactory Factory function returning
+     * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
@@ -418,38 +418,33 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Inventory Locations from cache or API
+     * Gets the location name from the /locations endpoint and sets
+     * the display name to discoveryDisplayName,  name, or code
+     * based on whichever is available first in that order.
      *
-     * @return array $locationMap
-     */
-    protected function getLocations()
-    {
-        $cacheKey = 'locationMap';
-        $locationMap = $this->getCachedData($cacheKey);
-        if (null === $locationMap) {
-            $locationMap = [];
-            foreach ($this->getPagedResults(
-                'locations', '/locations'
-            ) as $location) {
-                $locationMap[$location->id] = $location->name;
-            }
-            $this->putCachedData($cacheKey, $locationMap, 3600);
-
-        }
-        return $locationMap;
-    }
-
-    /**
-     * Get Inventory Location Name
+     * @param string $locationId ID of a location from the
+     * /holdings-storage/holdings endpoint
      *
-     * @param string $locationId UUID of item location
-     *
-     * @return string $locationName display name of location
+     * @return string
      */
     protected function getLocationName($locationId)
     {
-        $locationMap = $this->getLocations();
-        return $locationMap[$locationId] ?? '';
+        $locationName = '';
+        if (!empty($locationId)) {
+            $locationResponse = $this->makeRequest(
+                'GET',
+                '/locations/' . $locationId
+            );
+            $location = json_decode($locationResponse->getBody());
+            if (!empty($location->discoveryDisplayName)) {
+                $locationName = $location->discoveryDisplayName;
+            } elseif (!empty($location->name)) {
+                $locationName = $location->name;
+            } elseif (!empty($location->code)) {
+                $locationName = $location->code;
+            }
+        }
+        return $locationName;
     }
 
     /**
@@ -466,7 +461,10 @@ class Folio extends AbstractAPI implements
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
         $instance = $this->getInstanceByBibId($bibId);
-        $query = ['query' => '(instanceId=="' . $instance->id . '")'];
+        $query = [
+            'query' => '(instanceId=="' . $instance->id
+                . '" NOT discoverySuppress==true)'
+        ];
         $holdingResponse = $this->makeRequest(
             'GET',
             '/holdings-storage/holdings',
@@ -475,18 +473,46 @@ class Folio extends AbstractAPI implements
         $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
         foreach ($holdingBody->holdingsRecords as $holding) {
+            $locationId = $holding->permanentLocationId;
+            $locationName = $this->getLocationName($locationId);
 
-            $query = ['query' => '(holdingsRecordId=="' . $holding->id . '")'];
+            $query = [
+                'query' => '(holdingsRecordId=="' . $holding->id
+                    . '" NOT discoverySuppress==true)'
+            ];
             $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
             $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
-                return $note->note ?? '';
+                return !($note->staffOnly ?? false)
+                    && !empty($note->note) ? $note->note : '';
             };
+            $textFormatter = function ($supplement) {
+                $format = '%s %s';
+                $supStat = $supplement->statement;
+                $supNote = $supplement->note;
+                $statement = trim(sprintf($format, $supStat, $supNote));
+                return $statement ?? '';
+            };
+            $holdingNotes = array_filter(
+                array_map($notesFormatter, $holding->notes ?? [])
+            );
+            $hasHoldingNotes = !empty(implode($holdingNotes));
+            $holdingsStatements = array_map(
+                $textFormatter,
+                $holding->holdingsStatements ?? []
+            );
+            $holdingsSupplements = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForSupplements ?? []
+            );
+            $holdingsIndexes = array_map(
+                $textFormatter,
+                $holding->holdingsStatementsForIndexes ?? []
+            );
             foreach ($itemBody->items as $item) {
-                if ($item->discoverySuppress ?? false) {
-                    continue;
-                }
-                $locationName = $this->getLocationName($item->effectiveLocationId);
+                $itemNotes = array_filter(
+                    array_map($notesFormatter, $item->notes ?? [])
+                );
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -496,7 +522,11 @@ class Folio extends AbstractAPI implements
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
                     'is_holdable' => $this->isHoldable($locationName),
-                    'notes' => array_map($notesFormatter, $item->notes ?? []),
+                    'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
+                    'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
+                    'issues' => $holdingsStatements,
+                    'supplements' => $holdingsSupplements,
+                    'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'reserve' => 'TODO',

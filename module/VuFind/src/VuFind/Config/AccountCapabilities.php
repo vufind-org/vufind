@@ -137,6 +137,19 @@ class AccountCapabilities
     }
 
     /**
+     * Get list tag setting.
+     *
+     * @return string
+     */
+    public function getListTagSetting()
+    {
+        if (!$this->isAccountAvailable()) {
+            return 'disabled';
+        }
+        return $this->config->Social->listTags ?? 'disabled';
+    }
+
+    /**
      * Get SMS setting ('enabled' or 'disabled').
      *
      * @return string

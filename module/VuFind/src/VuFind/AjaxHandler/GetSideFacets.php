@@ -132,6 +132,16 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
+        // Set appropriate query suppression / extra field behavior:
+        $queryHelper = $results->getUrlQuery();
+        $queryHelper->setSuppressQuery((bool)($request['querySuppressed'] ?? false));
+        $extraFields = array_filter(explode(',', $request['extraFields'] ?? ''));
+        foreach ($extraFields as $field) {
+            if (isset($request[$field])) {
+                $queryHelper->setDefaultParameter($field, $request[$field]);
+            }
+        }
+
         $recommend = $results->getRecommendations($configLocation)[0] ?? null;
         if (null === $recommend) {
             return $this->formatResponse(

@@ -876,7 +876,7 @@ class Upgrade
                 }
             }
         }
-        $this->upgradeSpellingSettings('searches.ini', ['CallNumber']);
+        $this->upgradeSpellingSettings('searches.ini', ['CallNumber', 'WorkKeys']);
 
         // save the file
         $this->saveModifiedConfig('searches.ini');

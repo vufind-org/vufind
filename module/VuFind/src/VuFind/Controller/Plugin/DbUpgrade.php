@@ -543,7 +543,7 @@ class DbUpgrade extends AbstractPlugin
         foreach ($expected as $type => $constraints) {
             foreach ($constraints as $constraint) {
                 $matchFound = false;
-                foreach ($actual[$type] as $existing) {
+                foreach ($actual[$type] ?? [] as $existing) {
                     $diffCount = count(
                         array_diff($constraint['fields'], $existing['fields'])
                     ) + count(

@@ -186,17 +186,38 @@ class UrlQueryHelper
     }
 
     /**
-     * Add a parameter to the object.
+     * Set the default value of a parameter, and add that parameter to the object
+     * if it is not already defined.
      *
-     * @param string $name  Name of parameter
-     * @param string $value Value of parameter
+     * @param string $name          Name of parameter
+     * @param string $value         Value of parameter
+     * @param bool   $forceOverride Force an override of the existing value, even if
+     * it was set in the incoming $urlParams in the constructor (defaults to true for
+     * backward compatibility)
      *
      * @return UrlQueryHelper
      */
-    public function setDefaultParameter($name, $value)
+    public function setDefaultParameter($name, $value, $forceOverride = true)
     {
-        $this->urlParams[$name] = $value;
+        // Add the new default to the configuration, and apply it to the query
+        // if no existing value has already been set in this position (or if an
+        // override has been forced).
+        $this->config['defaults'][$name] = $value;
+        if (!isset($this->urlParams[$name]) || $forceOverride) {
+            $this->urlParams[$name] = $value;
+        }
         return $this;
+    }
+
+    /**
+     * Get an array of field names with configured defaults; this is a useful way
+     * to identify custom query parameters added through setDefaultParameter().
+     *
+     * @return array
+     */
+    public function getParamsWithConfiguredDefaults()
+    {
+        return array_keys($this->config['defaults'] ?? []);
     }
 
     /**

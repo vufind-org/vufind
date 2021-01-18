@@ -22,7 +22,7 @@
       </div>
       <?=$this->captcha()->html($this->useCaptcha) ?>
       <div class="form-group">
-        <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEsc('Submit')?>" />
+        <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEscAttr('Submit')?>" />
       </div>
     </form>
   <?php endif; ?>
