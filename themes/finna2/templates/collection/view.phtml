@@ -46,8 +46,7 @@
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
   }
-  $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
-     . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
+  $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
 ?>
 <?php if (!empty($lastSearch)) : ?>
 </div>
@@ -113,7 +112,7 @@
         <?php endif; ?>
         <ul class="recordTabs nav nav-tabs visible-md visible-lg">
           <?php foreach ($this->tabs as $tab => $obj): ?>
-            <?php // add current tab to breadcrumbs if applicable:
+            <?php
               $desc = $obj->getDescription();
               $tabName = preg_replace("/\W/", "-", strtolower($tab));
               $tab_classes = [ 'record-tab', $tabName ];
@@ -122,7 +121,6 @@
                     $tab_classes[] = 'active';
                 }
                 $tab_classes[] = 'initiallyActive';
-                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
                 $activeTabObj = $obj;
               }
               if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
@@ -155,14 +153,12 @@
     <div class="record-accordions">
      <?php foreach ($this->tabs as $accordion => $obj): ?>
        <?php
-         // add current tab to breadcrumbs if applicable:
          $desc = $obj->getDescription();
          $accordion_classes = [
            'accordion',
            'accordion-' . strtolower($accordion)
          ];
          if (0 === strcasecmp($this->activeTab, $accordion)) {
-           $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
            if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
              $accordion_classes[] = 'active';
            }

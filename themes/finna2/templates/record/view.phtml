@@ -135,7 +135,6 @@
                     $tabClasses[] = 'active';
                 }
                 $tabClasses[] = 'initiallyActive';
-                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
                 $activeTabObj = $obj;
               }
               if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }

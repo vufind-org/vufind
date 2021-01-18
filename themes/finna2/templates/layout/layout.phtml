@@ -404,37 +404,36 @@ JS;
         <?=$this->render($template)?>
       <?php endif; ?>
     </section>
-
+    <?php if ((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+      && !empty($this->layout()->breadcrumbs)
+      && $this->layout()->breadcrumbs !== false
+      ): ?>
+      <nav class="breadcrumbs hidden-print" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
+        <div class="container">
+          <ul class="breadcrumb">
+            <?php if (is_array($this->layout()->breadcrumbs)): ?>
+              <?php if (count($this->layout()->breadcrumbs) > 1): ?>
+                <?=$this->render('breadcrumbs/multi.phtml', [
+                    'parents' => $this->layout()->breadcrumbs,
+                    'title' => $this->layout()->title,
+                    'end' => $this->layout()->breadcrumbEnd,
+                    'from' => $this->layout()->from
+                  ]) ?>
+              <?php else: ?>
+                <?=$this->render('breadcrumbs/default.phtml', [
+                    'parents' => $this->layout()->breadcrumbs,
+                    'title' => $this->layout()->title
+                  ]) ?>
+              <?php endif; ?>
+            <?php else: ?>
+              <?=$this->layout()->breadcrumbs ?>
+            <?php endif; ?>
+          </ul>
+        </div>
+      </nav>
+    <?php endif; ?>
     <?php // TODO: get rid of template-dir-* and template-name-* here ?>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?><?=$this->browse ? ' browse' : '' ?><?=$currentTabClass?>">
-    <?php if ((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-            && !empty($this->layout()->breadcrumbs)
-            && $this->layout()->breadcrumbs !== false
-          ): ?>
-            <nav class="breadcrumbs" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
-              <div class="hidden-print">
-                <ul class="breadcrumb">
-                  <?php if (is_array($this->layout()->breadcrumbs)): ?>
-                    <?php if (count($this->layout()->breadcrumbs) > 1): ?>
-                      <?=$this->render('breadcrumbs/multi.phtml', [
-                          'parents' => $this->layout()->breadcrumbs,
-                          'title' => $this->layout()->title,
-                          'end' => $this->layout()->breadcrumbEnd,
-                          'from' => $this->layout()->from
-                        ]) ?>
-                    <?php else: ?>
-                      <?=$this->render('breadcrumbs/default.phtml', [
-                          'parents' => $this->layout()->breadcrumbs,
-                          'title' => $this->layout()->title
-                        ]) ?>
-                    <?php endif; ?>
-                  <?php else: ?>
-                    <?=$this->layout()->breadcrumbs ?>
-                  <?php endif; ?>
-                </ul>
-              </div>
-            </nav>
-      <?php endif; ?>
       <?php if (!empty($this->layout()->advSearchHeader)): ?>
         <?=$this->layout()->advSearchHeader; ?>
       <?php endif; ?>
