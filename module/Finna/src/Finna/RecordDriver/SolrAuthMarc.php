@@ -204,8 +204,15 @@ class SolrAuthMarc extends \VuFind\RecordDriver\SolrAuthMarc
         $result = [];
         foreach (['400', '410'] as $fieldCode) {
             foreach ($this->getMarcReader()->getFields($fieldCode) as $field) {
-                if ($subfield = $this->getSubfield($field, 'a')) {
-                    $data = rtrim($subfield, ', ');
+                if ($matches = $this->getSubfieldArray($field, ['a','b'], false)) {
+                    $matches = array_map(
+                        function ($val) {
+                            return $this->stripTrailingPunctuation($val, '.');
+                        },
+                        $matches
+                    );
+                    $data = implode(', ', $matches);
+
                     $detail = null;
                     if ($date = $this->getSubfield($field, 'd')) {
                         $detail = $date;
