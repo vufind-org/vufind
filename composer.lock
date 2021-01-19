@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38a02b1b4aeb05fbe30e843a8e19bdcd",
+    "content-hash": "a0e1d9c06fd7eb34a3accc44870463d2",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1155,16 +1155,16 @@
         },
         {
             "name": "laminas/laminas-feed",
-            "version": "2.12.2",
+            "version": "2.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-feed.git",
-                "reference": "8a193ac96ebcb3e16b6ee754ac2a889eefacb654"
+                "reference": "3c91415633cb1be6f9d78683d69b7dcbfe6b4012"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-feed/zipball/8a193ac96ebcb3e16b6ee754ac2a889eefacb654",
-                "reference": "8a193ac96ebcb3e16b6ee754ac2a889eefacb654",
+                "url": "https://api.github.com/repos/laminas/laminas-feed/zipball/3c91415633cb1be6f9d78683d69b7dcbfe6b4012",
+                "reference": "3c91415633cb1be6f9d78683d69b7dcbfe6b4012",
                 "shasum": ""
             },
             "require": {
@@ -1218,7 +1218,13 @@
                 "feed",
                 "laminas"
             ],
-            "time": "2020-03-29T12:36:29+00:00"
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2020-08-18T13:45:04+00:00"
         },
         {
             "name": "laminas/laminas-filter",
@@ -3711,16 +3717,16 @@
         },
         {
             "name": "pear/archive_tar",
-            "version": "1.4.11",
+            "version": "1.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/Archive_Tar.git",
-                "reference": "17d355cb7d3c4ff08e5729f29cd7660145208d9d"
+                "reference": "19bb8e95490d3e3ad92fcac95500ca80bdcc7495"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/17d355cb7d3c4ff08e5729f29cd7660145208d9d",
-                "reference": "17d355cb7d3c4ff08e5729f29cd7660145208d9d",
+                "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/19bb8e95490d3e3ad92fcac95500ca80bdcc7495",
+                "reference": "19bb8e95490d3e3ad92fcac95500ca80bdcc7495",
                 "shasum": ""
             },
             "require": {
@@ -3773,7 +3779,17 @@
                 "archive",
                 "tar"
             ],
-            "time": "2020-11-19T22:10:24+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/mrook",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/michielrook",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2021-01-18T19:32:54+00:00"
         },
         {
             "name": "pear/console_getopt",
