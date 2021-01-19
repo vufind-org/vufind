@@ -146,15 +146,24 @@
   }
 }
 
-// Finna breadcrumbs
+/* Finna breadcrumbs */
+
 .breadcrumbs {
-  display: none;
   background-color: @breadcrumb-bg;
+  display: none;
+}
+.breadcrumbs when (@breadcrumbs = true) {
+  display: block;
+}
+.record.record-row when (@breadcrumbs = true) {
+  margin-top: 0;
 }
 .breadcrumb {
   border-radius: 0;
   margin-bottom: 0;
 }
+
+/* End of Finna breadcrumbs */
 
 #my-info-dropdown-menu {
   width: 280px;
