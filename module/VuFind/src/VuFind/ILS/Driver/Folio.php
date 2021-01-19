@@ -425,7 +425,7 @@ class Folio extends AbstractAPI implements
      * Check item location against list of configured locations
      * where holds should be offered
      *
-     * @param string $locationName locationName from getHolding
+     * @param string $locationId locationId from getHolding
      *
      * @return bool
      */
@@ -438,14 +438,12 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Gets the location name from the /locations endpoint and sets
-     * the display name to discoveryDisplayName,  name, or code
-     * based on whichever is available first in that order.
+     * Gets locations from the /locations endpoint and sets
+     * an array of location IDs to display names.
+     * Display names are set from discoveryDisplayName, or name
+     * if discoveryDisplayName is not available.
      *
-     * @param string $locationId ID of a location from the
-     * /holdings-storage/holdings endpoint
-     *
-     * @return string
+     * @return array
      */
     protected function getLocations()
     {
@@ -457,7 +455,6 @@ class Folio extends AbstractAPI implements
             foreach ($this->getPagedResults(
                 'locations', '/locations'
             ) as $location) {
-                // https://github.com/folio-org/mod-inventory-storage/blob/master/ramls/location.json
                 if (!empty($location->discoveryDisplayName)) {
                     // discoveryDisplayName is optional
                     $locationMap[$location->id] = $location->discoveryDisplayName;
