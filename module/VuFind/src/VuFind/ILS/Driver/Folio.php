@@ -51,7 +51,9 @@ class Folio extends AbstractAPI implements
         logError as error;
     }
 
-    use \VuFind\ILS\Driver\CacheTrait;
+    use CacheTrait {
+        getCacheKey as protected getBaseCacheKey;
+    }
 
     /**
      * Authentication tenant (X-Okapi-Tenant)
@@ -157,6 +159,23 @@ class Folio extends AbstractAPI implements
             ' Params: ' . print_r($logParams, true) . '.' .
             ' Headers: ' . print_r($logHeaders, true)
         );
+    }
+
+
+    /**
+     * Add instance-specific context to a cache key suffix (to ensure that
+     * multiple drivers don't accidentally share values in the cache.
+     *
+     * @param string $key Cache key suffix
+     *
+     * @return string
+     */
+    protected function getCacheKey($key = null)
+    {
+        // Override the base class formatting with FOLIO-specific details
+        // to ensure proper caching in a MultiBackend environment.
+        return 'FOLIO-'
+            . md5("{$this->tenant}|$key");
     }
 
     /**
@@ -448,6 +467,7 @@ class Folio extends AbstractAPI implements
                 }
             }
         }
+        $this->putCachedData($cacheKey, $locationMap);
         return $locationMap;
     }
 
