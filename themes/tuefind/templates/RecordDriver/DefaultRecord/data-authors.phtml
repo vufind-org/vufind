@@ -20,7 +20,7 @@ $formattedAuthors = [];
       </a>
       <?php
         // TueFind: Show all author roles
-        if (isset($dataFields['role']))
+        if (!isset($dataFields['role']))
             $dataFields['role'] = $this->driver->getAuthorRoles($author);
 
         // Display additional data using the appropriate translation prefix
