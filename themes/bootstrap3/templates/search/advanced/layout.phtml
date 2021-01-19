@@ -6,11 +6,9 @@
   $this->layout()->searchbox = false;
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>';
-  $lastSearchLink = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
-  $this->layout()->breadcrumbs .= !empty($lastSearchLink)
-    ? $lastSearchLink : $this->transEsc('Search');
-  $this->layout()->breadcrumbs .= '</li> <li class="active">' . $this->transEsc('Advanced') . '</li>';
+  $searchCrumb = $this->searchMemory()->getLastSearchLink($this->transEsc('Search')) ?: $this->transEsc('Search');
+  $this->layout()->breadcrumbs = "<li>$searchCrumb</li> ";
+  $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Advanced') . '</li>';
 
   // Set up saved search details:
   if (isset($this->saved) && is_object($this->saved)) {
