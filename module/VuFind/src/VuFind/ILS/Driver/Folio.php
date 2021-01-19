@@ -161,7 +161,6 @@ class Folio extends AbstractAPI implements
         );
     }
 
-
     /**
      * Add instance-specific context to a cache key suffix (to ensure that
      * multiple drivers don't accidentally share values in the cache.
@@ -454,14 +453,13 @@ class Folio extends AbstractAPI implements
             foreach ($this->getPagedResults(
                 'locations', '/locations'
             ) as $location) {
-                $locationMap[$location->id] 
+                $locationMap[$location->id]
                     = $location->discoveryDisplayName ?? $location->name;
             }
         }
         $this->putCachedData($cacheKey, $locationMap);
         return $locationMap;
     }
-
 
     /**
      * Get Inventory Location Name
@@ -490,7 +488,6 @@ class Folio extends AbstractAPI implements
 
         return $locationName;
     }
-
 
     /**
      * This method queries the ILS for holding information.
