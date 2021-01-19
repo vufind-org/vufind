@@ -425,14 +425,14 @@ class Folio extends AbstractAPI implements
      * Check item location against list of configured locations
      * where holds should be offered
      *
-     * @param string $locationId locationId from getHolding
+     * @param string $locationName locationName from getHolding
      *
      * @return bool
      */
-    protected function isHoldable($locationId)
+    protected function isHoldable($locationName)
     {
         return !in_array(
-            $locationId,
+            $locationName,
             (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
         );
     }
@@ -449,19 +449,13 @@ class Folio extends AbstractAPI implements
     {
         $cacheKey = 'locationMap';
         $locationMap = $this->getCachedData($cacheKey);
-        //die(var_dump($locationMap));
         if (null === $locationMap) {
             $locationMap = [];
             foreach ($this->getPagedResults(
                 'locations', '/locations'
             ) as $location) {
-                if (!empty($location->discoveryDisplayName)) {
-                    // discoveryDisplayName is optional
-                    $locationMap[$location->id] = $location->discoveryDisplayName;
-                } else {
-                    // name is required
-                    $locationMap[$location->id] = $location->name;
-                }
+                $locationMap[$location->id] 
+                    = $location->discoveryDisplayName ?? $location->name;
             }
         }
         $this->putCachedData($cacheKey, $locationMap);
@@ -490,11 +484,7 @@ class Folio extends AbstractAPI implements
             );
             if ($locationResponse->isSuccess()) {
                 $json = json_decode($locationResponse->getBody());
-                if (!empty($json->discoveryDisplayName)) {
-                    $locationName = $locJson->discoveryDisplayName;
-                } else {
-                    $locationName = $json->name;
-                }
+                $locationName = $location->discoveryDisplayName ?? $location->name;
             }
         }
 
@@ -575,7 +565,7 @@ class Folio extends AbstractAPI implements
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
-                    'is_holdable' => $this->isHoldable($locationId),
+                    'is_holdable' => $this->isHoldable($locationName),
                     'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
                     'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
                     'issues' => $holdingsStatements,
