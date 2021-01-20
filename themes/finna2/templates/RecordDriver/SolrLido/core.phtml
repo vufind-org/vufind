@@ -91,7 +91,9 @@
           </div>
         <?php endif; ?>
 
-        <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+        <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
+          <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+        <?php endif; ?>
       </div>
 
       <?php if ($summary): ?>
