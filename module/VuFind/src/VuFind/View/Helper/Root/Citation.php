@@ -684,11 +684,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         ) {
             $i = 0;
             $ellipsis = false;
+            $authorCount = count($this->details['authors']);
             foreach ($this->details['authors'] as $author) {
                 $author = $this->abbreviateName($author);
-                if (($i + 1 == count($this->details['authors']))
-                    && ($i > 0)
-                ) { // Last
+                if (($i + 1 == $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
                     $authorStr .= $ellipsis ? ' ' : '& ';
@@ -699,8 +698,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                         $authorStr .= '. . .';
                         $ellipsis = true;
                     }
-                } elseif (count($this->details['authors']) > 1) {
-                    $authorStr .= $author . ', ';
+                } elseif ($authorCount > 1) {
+                    // If this is the second-to-last author, and we have not found
+                    // any commas yet, we can skip the comma. Otherwise, add one to
+                    // the list. Useful for two-item lists including corporate
+                    // authors as the first entry.
+                    $skipComma = ($i + 2 == $authorCount)
+                        && (strpos($authorStr . $author, ',') === false);
+                    $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
                     $authorStr .= $this->stripPunctuation($author) . '.';
                 }
@@ -777,11 +782,15 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                     $author = $this->cleanNameDates($rawAuthor);
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
-                        $authorStr .= ', ' . $this->translate('and') . ' ' .
-                            $this->reverseName($this->stripPunctuation($author));
+                        // Only add a comma if there are commas already in the
+                        // preceding text. This helps, for example, with cases where
+                        // the first author is a corporate author.
+                        $finalJoin = strpos($authorStr, ',') !== false ? ', ' : ' ';
+                        $authorStr .= $finalJoin . $this->translate('and') . ' '
+                            . $this->reverseName($this->stripPunctuation($author));
                     } elseif ($i > 0) {
-                        $authorStr .= ', ' .
-                            $this->reverseName($this->stripPunctuation($author));
+                        $authorStr .= ', '
+                            . $this->reverseName($this->stripPunctuation($author));
                     } else {
                         // First
                         $authorStr .= $author;
