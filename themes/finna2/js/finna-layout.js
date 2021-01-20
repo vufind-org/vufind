@@ -373,11 +373,21 @@ finna.layout = (function finnaLayout() {
 
     holder.find('.condensed-collapse-toggle').off('click').click(function onClickCollapseToggle(event) {
       if ((event.target.nodeName) !== 'A' && (event.target.nodeName) !== 'MARK') {
-        $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear');
-        $('.fa-arrow-right', this).toggleClass('fa-arrow-down');
         holder = $(this).parent().parent();
         holder.toggleClass('open');
-        if (holder.hasClass('open') && !holder.hasClass('opened')) {
+        var isOpen = holder.hasClass('open');
+
+        var onSlideComplete = !holder.hasClass('opened') ? function onSlideComplete () {
+          holder.find('.recordcover').trigger('unveil');
+        } : null;
+
+        $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear', onSlideComplete);
+
+        var icon = $(this).find('.condensed-body > i');
+        var iconClass = isOpen ? 'fa-arrow-down' : 'fa-arrow-right';
+        icon.removeClass('fa-arrow-right fa-arrow-left').addClass(iconClass);
+
+        if (isOpen && !holder.hasClass('opened')) {
           holder.addClass('opened');
           VuFind.itemStatuses.check(holder);
           finna.itemStatus.initDedupRecordSelection(holder);
