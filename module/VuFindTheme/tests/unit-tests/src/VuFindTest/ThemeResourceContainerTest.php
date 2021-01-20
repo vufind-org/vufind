@@ -97,7 +97,7 @@ class ThemeResourceContainerTest extends Unit\TestCase
                             'position' => 'header',
                             'attributes' => ['conditional' => 'lt IE 7']],
                         ];
-        $this->assertEquals($container->getJs(), $expectedResult);
+        $this->assertEquals($expectedResult, $container->getJs());
     }
 
     /**
