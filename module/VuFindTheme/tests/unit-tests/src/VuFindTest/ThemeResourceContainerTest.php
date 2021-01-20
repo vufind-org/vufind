@@ -108,6 +108,24 @@ class ThemeResourceContainerTest extends Unit\TestCase
     }
 
     /**
+     * Test Exception for priority + load_after in same js entry.
+     *
+     * @return void
+     */
+    public function testJsException()
+    {
+        $jsEntry = ['file' => 'test', 'priority' => 100, 'load_after' => 'a'];
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            'Using "priority" as well as "load_after" in the same entry '
+                . ' is not supported: "' . $jsEntry['file'] . '"'
+        );
+
+        $container = new ResourceContainer();
+        $container->addJs($jsEntry);
+    }
+
+    /**
      * Test Encoding set/get.
      *
      * @return void
