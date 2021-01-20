@@ -375,23 +375,24 @@ finna.layout = (function finnaLayout() {
       if ((event.target.nodeName) !== 'A' && (event.target.nodeName) !== 'MARK') {
         holder = $(this).parent().parent();
         holder.toggleClass('open');
-        var isOpen = holder.hasClass('open');
 
-        var onSlideComplete = !holder.hasClass('opened') ? function onSlideComplete () {
-          holder.find('.recordcover').trigger('unveil');
-        } : null;
+        var onSlideComplete = null;
+        if (holder.hasClass('open') && !holder.hasClass('opened')) {
+          holder.addClass('opened');
+          VuFind.itemStatuses.check(holder);
+          finna.itemStatus.initDedupRecordSelection(holder);
+          onSlideComplete = function handleSlideComplete() {
+            holder.find('.recordcover').trigger('unveil');
+          };
+        }
 
         $(this).nextAll('.condensed-collapse-data').first().slideToggle(120, 'linear', onSlideComplete);
 
         var icon = $(this).find('.condensed-body > i');
-        var iconClass = isOpen ? 'fa-arrow-down' : 'fa-arrow-right';
-        icon.removeClass('fa-arrow-right fa-arrow-left').addClass(iconClass);
-
-        if (isOpen && !holder.hasClass('opened')) {
-          holder.addClass('opened');
-          VuFind.itemStatuses.check(holder);
-          finna.itemStatus.initDedupRecordSelection(holder);
+        if (icon.length === 0) {
+          icon = $(this).find('.condensed-col-title > i');
         }
+        icon.toggleClass('fa-arrow-right').toggleClass('fa-arrow-down');
       }
     });
   }
