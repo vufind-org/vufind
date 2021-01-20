@@ -603,7 +603,6 @@ $config = [
                     'Finna\ILS\Driver\NoILS' => 'VuFind\ILS\Driver\NoILSFactory',
                     'Finna\ILS\Driver\SierraRest' => 'VuFind\ILS\Driver\SierraRestFactory',
                     'Finna\ILS\Driver\Voyager' => '\VuFind\ILS\Driver\DriverWithDateConverterFactory',
-                    'Finna\ILS\Driver\VoyagerRestful' => '\Finna\ILS\Driver\VoyagerRestfulFactory',
                 ],
                 'aliases' => [
                     'axiellwebservices' => 'Finna\ILS\Driver\AxiellWebServices',
@@ -617,7 +616,6 @@ $config = [
                     'VuFind\ILS\Driver\NoILS' => 'Finna\ILS\Driver\NoILS',
                     'VuFind\ILS\Driver\SierraRest' => 'Finna\ILS\Driver\SierraRest',
                     'VuFind\ILS\Driver\Voyager' => 'Finna\ILS\Driver\Voyager',
-                    'VuFind\ILS\Driver\VoyagerRestful' => 'Finna\ILS\Driver\VoyagerRestful',
                 ]
             ],
             'recommend' => [
