@@ -481,7 +481,7 @@ class Folio extends AbstractAPI implements
                 'GET', '/locations/' . $locationId
             );
             if ($locationResponse->isSuccess()) {
-                $json = json_decode($locationResponse->getBody());
+                $location = json_decode($locationResponse->getBody());
                 $locationName = $location->discoveryDisplayName ?? $location->name;
             }
         }
