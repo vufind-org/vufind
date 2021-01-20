@@ -91,9 +91,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $authors = (array)$driver->tryMethod('getPrimaryAuthors');
         if (empty($authors)) {
             // Corporate authors are more likely to have inappropriate trailing
-            // punctuation; strip it off:
+            // punctuation; strip it off, unless the last word is short, like
+            // "Co.", "Ltd.," etc.:
             $trimmer = function ($str) {
-                return rtrim($str, '.');
+                return preg_match('/\s+.{1,3}\.$/', $str)
+                    ? $str : rtrim($str, '.');
             };
             $authors = array_map(
                 $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
