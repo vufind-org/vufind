@@ -81,19 +81,29 @@ class ThemeResourceContainerTest extends Unit\TestCase
     {
         $container = new ResourceContainer();
         $container->addJs('a');
+        $container->addJs(['file' => 'p2', 'priority' => 200]);
         $container->addJs(['b', 'c']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
         $container->addJs('http://foo/bar:lt IE 7');
+        $container->addJs(['file' => 'd1', 'load_after' => 'd']);
+        $container->addJs(['file' => 'p1', 'priority' => 100]);
+        $container->addJs(['file' => 'd2', 'load_after' => 'd1']);
         $container->addJs([]);
 
-        $expectedResult = [['file' => 'a', 'position' => 'header'],
+        $expectedResult = [['file' => 'p1', 'priority' => 100, 'position' => 'header'],
+                           ['file' => 'p2', 'priority' => 200, 'position' => 'header'],
+                           ['file' => 'a', 'position' => 'header'],
                            ['file' => 'b', 'position' => 'header'],
                            ['file' => 'c', 'position' => 'header'],
                            ['file' => 'd', 'position' => 'header'],
+                           ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
+                           ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
                            ['file' => 'http://foo/bar',
                             'position' => 'header',
-                            'attributes' => ['conditional' => 'lt IE 7']],
+                            'attributes' => ['conditional' => 'lt IE 7']
+                           ],
                         ];
+
         $this->assertEquals($expectedResult, $container->getJs());
     }
 

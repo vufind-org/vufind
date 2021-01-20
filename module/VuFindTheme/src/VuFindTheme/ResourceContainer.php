@@ -164,7 +164,13 @@ class ResourceContainer
                     'attributes' => ['conditional' => trim($parts[1])],
                 ];
             }
+        } elseif (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
+            throw new \Exception(
+                'Using "priority" as well as "load_after" in the same entry '
+                . ' is not supported: "' . $jsEntry['file'] . '"'
+            );
         }
+
         if (!isset($jsEntry['position'])) {
             $jsEntry['position'] = 'header';
         }
@@ -199,12 +205,12 @@ class ResourceContainer
                     if (!isset($currentPriority)
                         || $currentPriority > $entry['priority']
                     ) {
-                        array_splice($entry, $i, 0, $array);
+                        array_splice($array, $i, 0, [$entry]);
                         return;
                     }
                 } elseif (isset($entry['load_after'])) {
                     if ($entry['load_after'] == $array[$i]['file']) {
-                        array_splice($entry, $i + 1, 0, $array);
+                        array_splice($array, $i + 1, 0, [$entry]);
                         return;
                     }
                 }
