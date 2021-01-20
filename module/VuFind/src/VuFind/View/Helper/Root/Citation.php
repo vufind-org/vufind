@@ -68,6 +68,25 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected $dateConverter;
 
     /**
+     * List of words to never capitalize when using title case.
+     *
+     * Some words that were considered for this list, but excluded due to their
+     * potential ambiguity: down, near, out, past, round, up
+     *
+     * @var string[]
+     */
+    protected $uncappedWords = [
+        'a', 'about', 'above', 'across', 'after', 'against', 'along', 'among',
+        'an', 'and', 'around', 'as', 'at', 'before', 'behind', 'below',
+        'beneath', 'beside', 'between', 'beyond', 'but', 'by', 'despite',
+        'during', 'except', 'for', 'from', 'from', 'in', 'inside', 'into',
+        'like', 'nor', 'of', 'off', 'on', 'onto', 'opposite', 'or', 'outside',
+        'over', 'since', 'so', 'than', 'the', 'through', 'to', 'towards',
+        'under', 'underneath', 'unlike', 'until', 'upon', 'via', 'with', 'within',
+        'without', 'yet',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $converter Date converter
@@ -623,24 +642,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     protected function capitalizeTitle($str)
     {
-        $exceptions = [
-            'a', 'about', 'above', 'across', 'after', 'against', 'along', 'among',
-            'an', 'and', 'around', 'as', 'at', 'before', 'behind', 'below',
-            'beneath', 'beside', 'between', 'beyond', 'but', 'by', 'despite', 'down',
-            'during', 'except', 'for', 'from', 'from', 'in', 'inside', 'into',
-            'like', 'near', 'nor', 'of', 'off', 'on', 'onto', 'opposite', 'or',
-            'out', 'outside', 'over', 'past', 'round', 'since', 'so', 'than', 'the',
-            'through', 'to', 'towards', 'under', 'underneath', 'unlike', 'until',
-            'up', 'upon', 'via', 'with', 'within', 'without', 'yet',
-        ];
-
         $words = explode(' ', $str);
         $newwords = [];
         $followsColon = false;
         foreach ($words as $word) {
             // Capitalize words unless they are in the exception list...  but even
-            // exceptional words get capitalized if they follow a colon.
-            if (!in_array($word, $exceptions) || $followsColon) {
+            // exceptional words get capitalized if they follow a colon. Note that
+            // we need to strip non-word characters (like punctuation) off of words
+            // in order to reliably look them up in the uncappedWords list.
+            $baseWord = preg_replace('/\W/', '', $word);
+            if (!in_array($baseWord, $this->uncappedWords) || $followsColon) {
                 $word = ucfirst($word);
             }
             array_push($newwords, $word);
