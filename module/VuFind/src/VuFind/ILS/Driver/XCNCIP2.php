@@ -125,6 +125,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $storageRetrievalRequestTypes = ['stack retrieval'];
 
     /**
+     * Are renewals disabled for this driver instance? Defaults to false
+     *
+     * @var bool
+     */
+    protected $disableRenewals = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -164,6 +171,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->agency[$this->config['Catalog']['agency']] = 1;
             }
         }
+        $this->disableRenewals
+            = $this->config['Catalog']['disableRenewals'] ?? false;
     }
 
     /**
@@ -413,7 +422,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'id' => $aggregateId,
             'availability' =>  $this->isAvailable($status),
             'status' => $status,
-            'item_id' => (string)$itemId[0],
+            'item_id' => (string)($itemId[0] ?? ''),
             'bib_id' => $bibId,
             'item_agency_id' => (string)($itemAgencyId[0] ?? ''),
             'location' => $location,
@@ -490,7 +499,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Add the desired data list:
         foreach ($desiredParts as $current) {
             $xml .= '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 htmlspecialchars($current) . '</ns1:ItemElementType>';
         }
@@ -866,9 +875,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:ItemId/ns1:AgencyId'
             );
 
-            $notRenewable = $current->xpath(
-                'ns1:Ext/ns1:RenewalNotPermitted'
-            );
+            $renewable = $this->disableRenewals
+                ? false
+                : empty($current->xpath('ns1:Ext/ns1:RenewalNotPermitted'));
 
             $itemAgencyId = !empty($itemAgencyId) ? (string)$itemAgencyId[0] : null;
             $bibId = !empty($bibId) ? (string)$bibId[0] : null;
@@ -911,7 +920,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'duedate' => $due,
                 'title' => (string)$title[0],
                 'item_id' => $itemId,
-                'renewable' => empty($notRenewable),
+                'renewable' => $renewable,
             ];
         }
 
@@ -1636,6 +1645,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 "success" => false,
                 "item_id" => $itemId,
             ];
+            if ($this->disableRenewals) {
+                $details[$itemId] = $failureReturn;
+                continue;
+            }
             $request = $this->getRenewRequest(
                 $renewDetails['patron']['cat_username'],
                 $renewDetails['patron']['cat_password'], $itemId,
@@ -1867,7 +1880,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->getInitiationHeaderXml($agency) .
             $this->getItemIdXml($agency, $itemId, $idType) .
             '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 'Bibliographic Description</ns1:ItemElementType>' .
         '</ns1:LookupItem></ns1:NCIPMessage>';

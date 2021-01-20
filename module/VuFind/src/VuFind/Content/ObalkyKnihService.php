@@ -106,15 +106,11 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function createCacheKey(array $ids)
     {
-        array_walk(
-            $ids, function (&$value, $key) {
-                if (gettype($value) === 'object') {
-                    $value = $value->get13();
-                }
-                $value = "$key::$value";
-            }
-        );
-        return implode("%%", $ids);
+        $key = $ids['recordid'];
+        $key = !empty($key) ? $key
+            : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
+        $key = !empty($key) ? $key : sha1(json_encode($ids));
+        return $key;
     }
 
     /**

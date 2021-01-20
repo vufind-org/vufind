@@ -3,7 +3,7 @@
   $this->headTitle($this->translate('Book Bag'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
 ?>
 <h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
@@ -18,19 +18,19 @@
         </label>
       </div>
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <button type="submit" class="toolbar-btn btn-type-save" name="saveCart" value="1" title="<?=$this->transEsc('bookbag_save')?>" value="1">
+        <button type="submit" class="toolbar-btn btn-type-save" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
           <?=$this->transEsc('Save')?>
         </button>
       <?php endif; ?>
-      <button type="submit" class="toolbar-btn btn-type-email" name="email" value="1" title="<?=$this->transEsc('bookbag_email')?>" value="1">
+      <button type="submit" class="toolbar-btn btn-type-email" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
         <?=$this->transEsc('Email')?>
       </button>
       <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-        <button type="submit" class="toolbar-btn btn-type-export" name="export" value="1" title="<?=$this->transEsc('bookbag_export')?>" value="1">
+        <button type="submit" class="toolbar-btn btn-type-export" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
           <?=$this->transEsc('Export')?>
         </button>
       <?php endif; ?>
-      <button type="submit" class="toolbar-btn btn-type-print dropdown-toggle" name="print" value="1" title="<?=$this->transEsc('print_selected')?>" value="1">
+      <button type="submit" class="toolbar-btn btn-type-print dropdown-toggle" name="print" value="1" title="<?=$this->transEscAttr('print_selected')?>" value="1">
         <?=$this->transEsc('Print')?>
       </button>
       <div class="btn-group" id="cartDelete">
@@ -38,7 +38,7 @@
           <?=$this->transEsc('Delete')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-          <li><a id="cart-confirm-delete" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-delete" title="<?=$this->transEscAttr('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>
@@ -47,7 +47,7 @@
           <?=$this->transEsc('Empty Book Bag')?>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-          <li><a id="cart-confirm-empty" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li><a id="cart-confirm-empty" title="<?=$this->transEscAttr('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
           <li><a id="cart-refuse-empty"><?=$this->transEsc('confirm_dialog_no')?></a></li>
         </ul>
       </div>

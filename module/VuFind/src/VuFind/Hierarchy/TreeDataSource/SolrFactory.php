@@ -28,6 +28,9 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Solr Hierarchy tree data source plugin factory.
