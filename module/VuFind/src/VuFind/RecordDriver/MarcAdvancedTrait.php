@@ -931,7 +931,7 @@ trait MarcAdvancedTrait
      */
     public function getConsortialIDs()
     {
-        return $this->getFieldArray('035', 'a', true);
+        return $this->getFieldArray('035');
     }
 
     /**

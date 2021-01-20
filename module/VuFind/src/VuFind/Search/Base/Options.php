@@ -797,6 +797,17 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Return the route name for the versions search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
+    {
+        return false;
+    }
+
+    /**
      * Does this search option support the cart/book bag?
      *
      * @return bool
@@ -981,5 +992,22 @@ abstract class Options implements TranslatorAwareInterface
             ?? $this->autocompleteEnabled;
         $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
             ?? $this->autocompleteAutoSubmit;
+    }
+
+    /**
+     * Get advanced search limits that override the natural sorting to
+     * display at the top.
+     *
+     * @param string $limit advanced search limit
+     *
+     * @return array
+     */
+    public function limitOrderOverride($limit)
+    {
+        $facetSettings = $this->configLoader->get($this->getFacetsIni());
+        $limits = $facetSettings->Advanced_Settings->limitOrderOverride ?? null;
+        $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
+        $limitConf = $limits ? $limits->get($limit) : '';
+        return array_map('trim', explode($delimiter, $limitConf));
     }
 }

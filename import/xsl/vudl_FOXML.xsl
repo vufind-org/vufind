@@ -34,23 +34,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
     exclude-result-prefixes="exsl"
     >
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
-    
+
     <xsl:param name="institution"></xsl:param>
     <xsl:param name="collection"></xsl:param>
     <xsl:param name="track_changes"></xsl:param>
     <xsl:param name="solr_core"></xsl:param>
-    
+
     <xsl:param name="fedoraURL"></xsl:param>
     <xsl:param name="fedoraPort"></xsl:param>
-    
+
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
+
     <xsl:template match="/">
-        
-        
-        
+
+
+
         <xsl:variable name="PID" select="//dc:identifier"/>
-        
+
         <xsl:variable name="DC" select="document(concat($fedoraURL, ':', $fedoraPort, '/fedora/objects/', $PID, '/datastreams/DC/content'))"/>
-        
+
         <xsl:variable name="RELS-EXT" select="document(concat($fedoraURL, ':', $fedoraPort, '/fedora/objects/', $PID, '/datastreams/RELS-EXT/content'))"/>
         <!-- <xsl:variable name="modelType" select="substring-after($RELS-EXT//fedora-model:hasModel[last()]/@rdf:resource, 'info:fedora/')"/> -->
         <!--
@@ -58,23 +62,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
         -->
         <!-- -->
         <xsl:variable name="listDatastreams" select="document(concat($fedoraURL, ':', $fedoraPort, '/fedora/objects/', $PID, '/datastreams?format=xml'))"/>
-        
+
         <add>
             <doc>
                 <!-- ID -->
                 <field name="id">
                     <xsl:value-of select="$PID"/>
                 </field>
-		            
+
 		            <xsl:for-each select="$RELS-EXT//fedora-model:hasModel">
     		            <field name="modeltype_str_mv">
     		                <xsl:value-of select="substring-after(./@rdf:resource, 'info:fedora/')"/>
     		            </field>
 		            </xsl:for-each>
-		            
+
 		            <!-- Hierarchy stuff -->
                 <xsl:if test="//foxml:datastream[@ID = 'PARENT-LIST-RAW']">
-                
+
                     <xsl:variable name="PARENT-LIST-RAW" select="document(concat($fedoraURL, ':', $fedoraPort, '/fedora/objects/', $PID, '/datastreams/PARENT-LIST-RAW/content'))"/>
                     <!-- <xsl:variable name="PARENT-LIST" select="document(concat($fedoraURL, '/fedora/objects/', $PID, '/datastreams/PARENT-LIST/content'))"/> -->
                     <!-- -->
@@ -92,14 +96,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                     </xsl:variable>
 
                     <!-- <xsl:copy-of select="$PARENT-LIST"/> -->
-                    
+
                     <field name="hierarchytype"/> <!-- -->
-                    
+
                     <xsl:if test="$RELS-EXT//fedora-model:hasModel[@rdf:resource='info:fedora/vudl-system:FolderCollection']">
                         <field name="is_hierarchy_id"><xsl:value-of select="$PID"/></field>
                         <field name="is_hierarchy_title"><xsl:value-of select="$DC//dc:title[1]"/></field>
                     </xsl:if>
-                    
+
                     <field name="has_order_str">
                         <xsl:choose>
                             <xsl:when test="$listDatastreams//access:datastream[@dsid='STRUCTMAP']">
@@ -110,14 +114,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                             </xsl:otherwise>
                         </xsl:choose>
                     </field>
-                    
+
                     <!-- <xsl:copy-of select="$PARENT-LIST-RAW"/> -->
-                    
+
                     <xsl:for-each select="$PARENT-LIST-RAW//sparql:child[@uri=concat('info:fedora/', $PID)]/parent::*">
-                        
+
                         <!-- <xsl:variable name="parentURI" select="$PARENT-LIST-RAW//sparql:child[@uri=concat('info:fedora/', $PID)]/../sparql:parent/@uri"/> -->
                         <xsl:variable name="parentURI" select="./sparql:parent/@uri"/>
-                        
+
 
                         <xsl:variable name="parentResource" select="document(concat($fedoraURL, '/getParentResource.php?PID=', $PID))"/>
                         <!--
@@ -127,9 +131,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         <xsl:variable name="parentPID" select="substring-after($parentURI, 'info:fedora/')"/>
                         <xsl:variable name="parentLabel" select="./sparql:parentTitle"/>
                         -->
-                        
+
                         <xsl:variable name="realParentPID" select="substring-after($parentURI, 'info:fedora/')"/>
-                        
+
                         <xsl:variable name="parentPID">
                             <xsl:choose>
                                 <xsl:when test="$RELS-EXT//fedora-model:hasModel[@rdf:resource='info:fedora/vudl-system:DataModel']">
@@ -140,7 +144,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:variable>
-                        
+
                         <xsl:variable name="parentLabel">
                             <xsl:choose>
                                 <xsl:when test="$RELS-EXT//fedora-model:hasModel[@rdf:resource='info:fedora/vudl-system:DataModel']">
@@ -151,12 +155,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:variable>
-                        
-                        
+
+
                         <xsl:variable name="parentDatastreams" select="document(concat($fedoraURL, ':', $fedoraPort, '/fedora/objects/', $realParentPID, '/datastreams?format=xml'))"/>
                         <xsl:variable name="parentRELS-EXT" select="document(concat($fedoraURL, ':', $fedoraPort, '/fedora/objects/', $realParentPID, '/datastreams/RELS-EXT/content'))"/>
-                        
-                        
+
+
                         <!-- <xsl:if test="$parentDatastreams//access:datastream[@dsid='STRUCTMAP']"> -->
                         <!-- TODO: this needs to check to see if the parent is a collection -->
                         <!-- <xsl:if test="$RELS-EXT//fedora-model:hasModel[@rdf:resource = 'info:fedora/vudl-system:CollectionModel']"> -->
@@ -185,7 +189,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                               </xsl:choose>
 
                             </xsl:variable>
-                            
+
                             <xsl:variable name="hierarchy_top_title">
                             <xsl:choose>
                               <xsl:when test="$parentPID = 'vudl:3'">
@@ -199,21 +203,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                               </xsl:otherwise>
                             </xsl:choose>
                             </xsl:variable>
-                            
+
                             <field name="hierarchy_top_id">
                               <xsl:value-of select="$hierarchy_top_id"/>
                             </field>
- 
-                            
-                            
-                            
+
+
+
+
                             <field name="hierarchy_top_title">
                               <xsl:value-of select="$hierarchy_top_title"/>
                             </field>
-                            
+
                             <field name="hierarchy_parent_id"><xsl:value-of select="$parentPID"/></field>
                             <field name="hierarchy_parent_title"><xsl:value-of select="$parentLabel"/></field>
-                            
+
                             <!-- -->
                             <field name="hierarchy_sequence">
                                 <!--
@@ -221,7 +225,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                                     <xsl:value-of select="exsl:node-set($parentSTRUCTMAP)//METS:fptr[@FILEID=$PID]/../@ORDER"/>
                                 </xsl:if>
                                 -->
-                                
+
                                 <xsl:choose>
                                     <xsl:when test="exsl:node-set($parentSTRUCTMAP)//METS:fptr[@FILEID=$PID]">
                                         <xsl:value-of select="exsl:node-set($parentSTRUCTMAP)//METS:fptr[@FILEID=$PID]/../@ORDER"/>
@@ -230,9 +234,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                                         <xsl:value-of select="string('0000000000')"/>
                                     </xsl:otherwise>
                                 </xsl:choose>
-                                
+
                             </field>
-                            
+
                             <xsl:if test="position() = 1">
                             <!-- This is what we are collapsing on -->
                             <field name="hierarchy_first_parent_id_str">
@@ -246,7 +250,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                                 </xsl:choose>
                             </field>
                             </xsl:if>
-                            
+
                             <!-- -->
                             <xsl:if test="position() = 1">
                             <field name="hierarchy_sequence_sort_str">
@@ -261,7 +265,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                                 </xsl:choose>
                             </field>
                             </xsl:if>
-                            
+
                             <!--
                             <xsl:if test="position() = 1">
                               <xsl:variable name="sequence_sort_str" select="$parentSTRUCTMAP//METS:fptr[@FILEID=$PID]/../@ORDER"/>
@@ -271,7 +275,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                             </xsl:if>
                             -->
                             <!--
-                            hierarchy_browse 
+                            hierarchy_browse
                             title{{{_ID_}}}id
                             -->
                             <!-- -->
@@ -279,9 +283,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                               <xsl:value-of select="concat($parentLabel, '{{{_ID_}}}', $parentPID)"/>
                             </field>
 
-                            
-                            
-                            <!-- flattens all parents 
+
+
+                            <!-- flattens all parents
                             <xsl:for-each select="$PARENT-LIST-RAW//sparql:result">
                               <xsl:variable name="tempParentURI" select="./sparql:parent/@uri"/>
                               <xsl:variable name="tempParentPID" select="substring-after($tempParentURI, 'info:fedora/')"/>
@@ -292,15 +296,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                               </xsl:if>
                             </xsl:for-each>
                             -->
-                            
+
                         </xsl:if>
-                        
+
                     </xsl:for-each>
-                    
-                    
-                    
+
+
+
                 </xsl:if>
-                
+
                 <!-- CHANGE TRACKING DATES -->
                 <xsl:if test="$track_changes != 0">
                     <field name="first_indexed">
@@ -344,13 +348,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
                 <!-- LANGUAGE -->
                 <xsl:if test="$DC//dc:language">
-                
+
                     <xsl:if test="string-length($DC//dc:language[1]) > 0">
                         <field name="dc_language_str">
                             <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string($DC//dc:language[1])), 'language_map_iso639-1.properties')"/>
                         </field>
                     </xsl:if>
-                    
+
                     <xsl:for-each select="$DC//dc:language">
                         <xsl:if test="string-length() > 0">
                             <field name="language">
@@ -359,16 +363,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
-                
+
                 <!-- Series / dc:relation -->
                 <xsl:if test="$DC//dc:relation">
-                
+
                     <xsl:if test="string-length($DC//dc:relation[1]) > 0">
                         <field name="dc_relation_str">
                             <xsl:value-of select="$DC//dc:relation[1]"/>
                         </field>
                     </xsl:if>
-                    
+
                     <xsl:for-each select="$DC//dc:relation">
                         <xsl:if test="string-length() > 0">
                             <field name="series">
@@ -377,11 +381,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
-                
-                <!-- FORMAT 
+
+                <!-- FORMAT
                 <field name="format">Online</field>
                 -->
-                
+
                 <!-- AUTHOR -->
                 <xsl:if test="$DC//dc:creator">
                     <xsl:for-each select="$DC//dc:creator">
@@ -414,7 +418,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                     <field name="topic_str">
                         <xsl:value-of select="$DC//dc:subject[1]"/>
                     </field>
-                    
+
                     <xsl:for-each select="$DC//dc:subject">
                         <field name="topic"><xsl:value-of select="normalize-space()"/></field>
                     </xsl:for-each>
@@ -426,21 +430,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         <field name="topic_facet"><xsl:value-of select="normalize-space()"/></field>
                     </xsl:for-each>
                 </xsl:if>
-                
+
                 <!-- TOPIC_STR_MV (for autocomplete) -->
                 <xsl:if test="$DC//dc:subject">
                     <xsl:for-each select="$DC//dc:subject">
                         <field name="topic_str_mv"><xsl:value-of select="normalize-space()"/></field>
                     </xsl:for-each>
                 </xsl:if>
-                
+
                 <!-- TITLE -->
                 <xsl:if test="$DC//dc:title[normalize-space()]">
-                
+
                     <field name="dc_title_str">
                         <xsl:value-of select="$DC//dc:title[1]"/>
                     </field>
-                    
+
                     <field name="title">
                         <xsl:value-of select="$DC//dc:title[normalize-space()]"/>
                     </field>
@@ -453,7 +457,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                     <field name="title_sort">
                         <xsl:value-of select="php:function('VuFind::stripArticles', string($DC//dc:title[normalize-space()]))"/>
                     </field>
-                    
+
                     <!-- title_alt / dc:titel[gt 1] -->
                     <xsl:for-each select="$DC//dc:title">
                         <xsl:if test="position() &gt; 1">
@@ -463,8 +467,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
-                
-                
+
+
                 <!-- Format -->
                 <xsl:for-each select="$DC//dc:format">
                     <field name="format">
@@ -478,26 +482,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         <xsl:value-of select="$DC//dc:description[normalize-space()]"/>
                     </field>
                 </xsl:if>
-                
+
                 <!-- PUBLISHER -->
                 <xsl:if test="$DC//dc:publisher[normalize-space()]">
                     <field name="publisher">
                         <xsl:value-of select="$DC//dc:publisher[normalize-space()]"/>
                     </field>
                 </xsl:if>
-                
+
                 <!-- PUBLISHERSTR -->
                 <xsl:if test="$DC//dc:publisher[normalize-space()]">
                     <field name="publisher_str_mv">
                         <xsl:value-of select="$DC//dc:publisher[normalize-space()]"/>
                     </field>
                 </xsl:if>
-                
+
                 <!-- PUBLISHDATE -->
-                
+
                 <xsl:if test="$DC//dc:date[1]">
                     <xsl:variable name="strippedDate" select="substring($DC//dc:date[1], 1, 4)"/>
-                    
+
                     <xsl:if test="number($strippedDate) > 1000">
                         <field name="publishDate">
                             <xsl:value-of select="substring($DC//dc:date[1], 1, 4)"/>
@@ -506,7 +510,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                             <xsl:value-of select="substring($DC//dc:date[1], 1, 4)"/>
                         </field>
                     </xsl:if>
-                    
+
                     <field name="dc_date_str">
                         <xsl:value-of select="$DC//dc:date[1]"/>
                     </field>
@@ -524,7 +528,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         </xsl:if>
                     </field>
                 </xsl:if>
-                
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', $DC//dc:title[normalize-space()], php:function('VuFind::stripArticles', string($DC//dc:title[normalize-space()])), $DC//dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>
@@ -545,5 +555,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
             </parent>
         <!-- </xsl:if> -->
     </xsl:template>
-              
+
 </xsl:stylesheet>
