@@ -82,9 +82,6 @@ class ThemeResourceContainerTest extends Unit\TestCase
         $container = new ResourceContainer();
         $container->addJs('a');
         $container->addJs(['b', 'c']);
-        $container->addJs(['file' => 'd']);
-        $container->addJs('a');
-        $container->addJs(['file' => 'a']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
         $container->addJs('http://foo/bar:lt IE 7');
         $container->addJs([]);

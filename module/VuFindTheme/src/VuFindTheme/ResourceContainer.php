@@ -169,9 +169,16 @@ class ResourceContainer
             $jsEntry['position'] = 'header';
         }
 
-        if (!in_array($jsEntry, $this->js, true)) {
-            $this->insertEntry($jsEntry, $this->js);
+        foreach ($this->js as $existingEntry) {
+            if ($existingEntry['file'] == $jsEntry['file']) {
+                throw new \Exception(
+                    'Overriding an existing dependency is not supported: '
+                    . '"' . $jsEntry['file'] . '"'
+                );
+            }
         }
+
+        $this->insertEntry($jsEntry, $this->js);
     }
 
     /**
