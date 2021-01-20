@@ -143,6 +143,8 @@ enabled = true
 [Loans]
 ; How many loans can be displayed on a single page
 ;max_page_size = 25
+; Whether to display the item type. Default is false.
+;displayItemType = true
 
 [Profile]
 ; The field to display as the phone number. Default is mobile.

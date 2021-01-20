@@ -210,6 +210,11 @@
                   <br />
                 <?php endif; ?>
 
+                <?php if (!empty($ilsDetails['materialType'])): ?>
+                  <strong><?=$this->transEsc('Material Type')?>:</strong> <?=$this->transEsc($ilsDetails['materialType'])?>
+                  <br />
+                <?php endif; ?>
+
                 <?php if (isset($ilsDetails['renew'])): ?>
                   <?php if (isset($ilsDetails['renewLimit']) && $ilsDetails['renewLimit'] >= $ilsDetails['renew']): ?>
                       <strong><?=$this->transEsc('renewals_remaining', ['%%count%%' => $ilsDetails['renewLimit'] - $ilsDetails['renew']]);?></strong>
