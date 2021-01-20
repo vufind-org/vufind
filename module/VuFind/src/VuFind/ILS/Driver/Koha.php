@@ -232,7 +232,7 @@ class Koha extends AbstractBase
                 //Retrieving the location (shelf types)
                 $shelf = $rowItem['LOCATION'];
                 $loc = (null != $shelf)
-                    ? $loc . ": " . $this->locCodes[$shelf]
+                    ? $loc . ": " . ($this->locCodes[$shelf] ?? $shelf)
                     : $loc . ": " . 'Unknown';
 
                 //A default value is stored for null

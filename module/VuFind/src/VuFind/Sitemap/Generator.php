@@ -59,6 +59,13 @@ class Generator
     protected $baseUrl;
 
     /**
+     * Base URL for sitemap
+     *
+     * @var string
+     */
+    protected $baseSitemapUrl;
+
+    /**
      * Settings specifying which backends to index.
      *
      * @var array
@@ -134,6 +141,8 @@ class Generator
         $this->backendManager = $bm;
         $this->baseUrl = $baseUrl;
         $this->config = $config;
+        $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
+            ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
         // Process backend configuration:
         $backendConfig = isset($this->config->Sitemap->index)
@@ -173,6 +182,36 @@ class Generator
             $this->verbose = $newMode;
         }
         return $this->verbose;
+    }
+
+    /**
+     * Get/set base url
+     *
+     * @param string $newUrl New base url
+     *
+     * @return string Current or new base url
+     */
+    public function setBaseUrl($newUrl = null)
+    {
+        if (null !== $newUrl) {
+            $this->baseUrl = $newUrl;
+        }
+        return $this->baseUrl;
+    }
+
+    /**
+     * Get/set base sitemap url
+     *
+     * @param string $newUrl New base sitemap url
+     *
+     * @return string Current or new base sitemap url
+     */
+    public function setBaseSitemapUrl($newUrl = null)
+    {
+        if (null !== $newUrl) {
+            $this->baseSitemapUrl = $newUrl;
+        }
+        return $this->baseSitemapUrl;
     }
 
     /**
@@ -443,7 +482,6 @@ class Generator
     protected function getBaseSitemapIndexUrl()
     {
         // Pick the appropriate base URL based on the configuration files:
-        return empty($this->config->SitemapIndex->baseSitemapUrl)
-            ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
+        return $this->baseSitemapUrl;
     }
 }

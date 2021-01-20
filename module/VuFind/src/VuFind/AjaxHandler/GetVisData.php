@@ -148,7 +148,7 @@ class GetVisData extends AbstractBase
         }
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
-        $filters = $paramsObj->getFilters();
+        $filters = $paramsObj->getRawFilters();
         $rawDateFacets = $params->fromQuery('facetFields');
         $dateFacets = empty($rawDateFacets) ? [] : explode(':', $rawDateFacets);
         $fields = $this->processDateFacets($filters, $dateFacets);

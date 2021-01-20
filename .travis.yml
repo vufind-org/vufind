@@ -4,6 +4,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
 
 env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
@@ -14,6 +15,7 @@ before_script:
   - composer install
   - npm install -g eslint@"<5.0.0"
   - npm install -g jshint@"2.9.6"
+  - npm install
 
 cache:
   directories:
@@ -22,4 +24,4 @@ cache:
     - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun
+  - vendor/bin/phing eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass

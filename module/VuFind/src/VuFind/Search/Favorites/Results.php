@@ -222,7 +222,7 @@ class Results extends BaseResults
      */
     protected function getTagFilters()
     {
-        $filters = $this->getParams()->getFilters();
+        $filters = $this->getParams()->getRawFilters();
         return $filters['tags'] ?? [];
     }
 
@@ -238,7 +238,7 @@ class Results extends BaseResults
         if ($this->list === false) {
             // Check the filters for a list ID, and load the corresponding object
             // if one is found:
-            $filters = $this->getParams()->getFilters();
+            $filters = $this->getParams()->getRawFilters();
             $listId = $filters['lists'][0] ?? null;
             $this->list = (null === $listId)
                 ? null : $this->listTable->getExisting($listId);

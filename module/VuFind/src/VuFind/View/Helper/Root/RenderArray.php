@@ -54,11 +54,14 @@ class RenderArray extends AbstractHelper
     public function __invoke($tpl, $arr, $rows)
     {
         $html = '';
+        $translate = $this->view->plugin('translate');
         foreach ($rows as $label => $key) {
             if (isset($arr[$key])) {
+                $value = $arr[$key] instanceof \VuFind\I18n\TranslatableString
+                    ? $translate($arr[$key]) : $arr[$key];
                 $html .= str_replace(
                     ['%%LABEL%%', '%%VALUE%%'],
-                    [$label, $this->view->escapeHtml($arr[$key])],
+                    [$label, $this->view->escapeHtml($value)],
                     $tpl
                 );
             }

@@ -99,6 +99,8 @@ class CoverController extends \Zend\Mvc\Controller\AbstractActionController
             'upc' => $params()->fromQuery('upc'),
             'recordid' => $params()->fromQuery('recordid'),
             'source' => $params()->fromQuery('source'),
+            'nbn' => $params()->fromQuery('nbn'),
+            'ismn' => $params()->fromQuery('ismn'),
         ];
     }
 

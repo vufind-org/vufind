@@ -136,6 +136,16 @@ class SolrDefault extends DefaultRecord
     }
 
     /**
+     * Get the date this record was first indexed (if set).
+     *
+     * @return string
+     */
+    public function getFirstIndexed()
+    {
+        return $this->fields['first_indexed'] ?? '';
+    }
+
+    /**
      * Get highlighting details from the object.
      *
      * @return array

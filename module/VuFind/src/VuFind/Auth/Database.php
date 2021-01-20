@@ -29,6 +29,7 @@
  */
 namespace VuFind\Auth;
 
+use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -68,7 +69,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -110,7 +111,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function create($request)
     {
@@ -142,7 +143,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function updatePassword($request)
     {
@@ -201,7 +202,7 @@ class Database extends AbstractBase
      * Check if the user's email address has been verified (if necessary) and
      * throws exception if not.
      *
-     * @param \VuFind\Db\Row\User $user User to check
+     * @param User $user User to check
      *
      * @return void
      * @throws AuthEmailNotVerifiedException
@@ -387,14 +388,14 @@ class Database extends AbstractBase
      * @param string[]  $params Parameters returned from collectParamsFromRequest()
      * @param UserTable $table  The VuFind user table
      *
-     * @return \VuFind\Db\Row\User A user row object
+     * @return User A user row object
      */
     protected function createUserFromParams($params, $table)
     {
         $user = $table->createRowForUsername($params['username']);
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
-        $user->email = $params['email'];
+        $user->updateEmail($params['email'], true);
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
             $user->pass_hash = $bcrypt->create($params['password']);

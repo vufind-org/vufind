@@ -283,8 +283,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 //Redirect to resource
                 $url = $result->data->downloadLink;
                 $this->debug("redirecting to: $url");
-                header("Location: $url");
-                exit();
+                return $this->redirect()->toUrl($url);
             }
         } else {
             $this->logWarning("overdrive action not defined: $action");

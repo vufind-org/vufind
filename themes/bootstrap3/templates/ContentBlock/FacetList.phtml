@@ -11,7 +11,7 @@
       <?php if ($isHierarchy = in_array($field, $hierarchicalFacets ?? [])):
           $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
           $this->headScript()->appendFile('facets.js');
-          $sort = $hierarchicalFacetSortOptions[$field] ?? '';
+          $sort = $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? 'all';
           $script = <<<JS
 $(document).ready(function() {
   $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
@@ -29,7 +29,7 @@ JS;
               data-exclude="0"
               data-operator="AND"
               data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
-              data-sort="all">
+              data-sort="<?=$sort?>">
           </div>
         </div>
         <noscript>

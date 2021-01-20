@@ -88,6 +88,11 @@
           <?=$this->transEsc('PDF Full Text')?>
         </a>
       <?php endif; ?>
+
+      <?php /* Links from DOI linker */ ?>
+      <?php $doi = $this->doi($this->driver, 'results'); if ($doi->isActive()):?>
+        <?=$doi->renderTemplate()?>
+      <?php endif; ?>
     </div>
     <div class="result-links hidden-print">
       <?php /* Display qrcode if appropriate: */ ?>

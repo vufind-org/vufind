@@ -66,9 +66,9 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Maximum length of a GET url.
      *
-     * Switches to POST if the SOLR target URL exeeds this length.
+     * Switches to POST if the SOLR target URL exceeds this length.
      *
-     * @see self::query()
+     * @see \VuFindSearch\Backend\Solr\Connector::query()
      *
      * @var int
      */

@@ -234,7 +234,8 @@ class Holds
             'total' => $result['total'],
             'page' => $result['page'],
             'itemLimit' => $result['itemLimit'],
-            'holdings' => $this->formatHoldings($holdings)
+            'holdings' => $this->formatHoldings($holdings),
+            'electronic_holdings' => $result['electronic_holdings'] ?? [],
         ];
     }
 
@@ -280,7 +281,8 @@ class Holds
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
                         if (!$requestsBlocked
-                            && isset($copy['addLink']) && $copy['addLink']
+                            && ($copy['addLink'] ?? false)
+                            && ($copy['is_holdable'] ?? true)
                         ) {
                             $copy['link'] = $this->getRequestDetails(
                                 $copy, $holdConfig['HMACKeys'], 'Hold'
@@ -362,10 +364,7 @@ class Holds
                         }
                         // If a valid holdable status has been set, use it to
                         // determine if a hold link is created
-                        $addlink = isset($copy['is_holdable'])
-                            ? ($addlink && $copy['is_holdable']) : $addlink;
-
-                        if ($addlink) {
+                        if ($addlink && ($copy['is_holdable'] ?? true)) {
                             if ($holdConfig['function'] == "getHoldLink") {
                                 /* Build opac link */
                                 $holdings[$location_key][$copy_key]['link']

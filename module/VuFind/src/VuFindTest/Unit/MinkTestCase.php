@@ -31,6 +31,7 @@ namespace VuFindTest\Unit;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
+use DMore\ChromeDriver\ChromeDriver;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -128,11 +129,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = intval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
-        if ($snoozeMultiplier < 1) {
+        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
-        sleep($secs * $snoozeMultiplier);
+        usleep(1000000 * $secs * $snoozeMultiplier);
     }
 
     /**
@@ -154,8 +155,11 @@ abstract class MinkTestCase extends DbTestCase
      */
     protected function getMinkDriver()
     {
-        $env = getenv('VUFIND_SELENIUM_BROWSER');
-        $browser = $env ? $env : 'firefox';
+        $driver = getenv('VUFIND_MINK_DRIVER') ?? 'selenium';
+        if ($driver === 'chrome') {
+            return new ChromeDriver('http://localhost:9222', null, 'data:;');
+        }
+        $browser = getenv('VUFIND_SELENIUM_BROWSER') ?? 'firefox';
         return new Selenium2Driver($browser);
     }
 
@@ -239,7 +243,7 @@ abstract class MinkTestCase extends DbTestCase
         $session = $this->getMinkSession();
         $session->wait($timeout, "$('$selector').length > 0");
         $result = $page->find('css', $selector);
-        $this->assertTrue(is_object($result));
+        $this->assertTrue(is_object($result), "Selector not found: $selector");
         return $result;
     }
 

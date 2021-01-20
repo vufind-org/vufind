@@ -703,7 +703,7 @@ class OverdriveConnector implements LoggerAwareInterface,
         $checkout = $this->getCheckout($overDriveId, false);
         if (!$checkout) {
             $result->msg
-                = "Could not find a checkout for this resource ID for 
+                = "Could not find a checkout for this resource ID for
             this user.";
             $this->debug("title not checked out.");
             return $result;
@@ -799,6 +799,9 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf->showMyContent
             = strtolower($this->recordConfig->Overdrive->showMyContent);
         $conf->noAccessString = $this->recordConfig->Overdrive->noAccessString;
+        $admin = $this->recordConfig->Overdrive->showOverdriveAdminMenu ?? false;
+        $conf->showOverdriveAdminMenu
+            = (strtolower($admin) === 'false') ? false : $admin;
         $conf->tokenCacheLifetime
             = $this->recordConfig->API->tokenCacheLifetime;
         return $conf;

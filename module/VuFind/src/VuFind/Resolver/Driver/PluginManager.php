@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         '360link' => Threesixtylink::class,
+        'alma' => Alma::class,
         'demo' => Demo::class,
         'ezb' => Ezb::class,
         'sfx' => Sfx::class,
@@ -62,6 +63,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        Alma::class => DriverWithHttpClientFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
         Demo::class => InvokableFactory::class,
         Ezb::class => DriverWithHttpClientFactory::class,

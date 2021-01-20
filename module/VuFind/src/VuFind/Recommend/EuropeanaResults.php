@@ -196,7 +196,7 @@ class EuropeanaResults implements RecommendInterface,
     public function init($params, $request)
     {
         // Collect the best possible search term(s):
-        $this->lookfor =  $request->get('lookfor', '');
+        $this->lookfor = $request->get('lookfor', '');
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }
@@ -233,7 +233,7 @@ class EuropeanaResults implements RecommendInterface,
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
                     'link' => $link,
-                    'enclosure' => $value->getEnclosure()['url']
+                    'enclosure' => $value->getEnclosure()['url'] ?? null
                 ];
             }
             if (count($resultsProcessed) == $this->limit) {

@@ -144,6 +144,7 @@ class QueryBuilder implements QueryBuilderInterface
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
+            $string = $handler->preprocessQueryString($string);
             if (!$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
@@ -331,7 +332,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return string
      *
-     * @see self::reduceQueryGroup()
+     * @see \VuFindSearch\Backend\Solr\QueryBuilder::reduceQueryGroup()
      */
     protected function reduceQueryGroupComponents(AbstractQuery $component)
     {

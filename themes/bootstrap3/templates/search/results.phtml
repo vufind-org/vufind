@@ -17,7 +17,7 @@
         'searchId' => $this->results->getSearchId(),
         'searchClassId' => $this->params->getSearchClassId(),
         'checkboxFilters' => $this->params->getCheckboxFacets(),
-        'filterList' => $this->params->getFilters(),
+        'filterList' => $this->params->getFilterList(true),
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
         'selectedShards' => $this->params->getSelectedShards(),
         'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
@@ -59,7 +59,7 @@
     <?php endforeach; ?>
   <?php endif; ?>
   <?=$this->flashmessages()?>
-  <nav class="search-header hidden-print">
+  <div class="search-header hidden-print">
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
@@ -78,7 +78,7 @@
         <?=$this->render('search/controls/view.phtml')?>
       </div>
     <?php endif; ?>
-  </nav>
+  </div>
   <?php /* End Listing Options */ ?>
 
   <?php if ($recordTotal < 1): ?>

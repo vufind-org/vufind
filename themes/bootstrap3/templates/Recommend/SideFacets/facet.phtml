@@ -28,7 +28,7 @@
       [
         'allowExclude' => $this->recommend->excludeAllowed($facet),
         'title' => $facet,
-        'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? '',
+        'sortOptions' => $hierarchicalFacetSortOptions[$facet] ?? $hierarchicalFacetSortOptions['*'] ?? null,
         'collapsedFacets' => $this->collapsedFacets
       ]
     ); ?>

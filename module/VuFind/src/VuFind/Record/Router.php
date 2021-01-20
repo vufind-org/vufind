@@ -97,7 +97,11 @@ class Router
             $routeConfig = isset($this->config->Collections->route)
                 ? $this->config->Collections->route->toArray() : [];
             $collectionRoutes
-                = array_merge(['record' => 'collection'], $routeConfig);
+                = array_merge(
+                    ['record' => 'collection',
+                     'search2record' => 'search2collection'],
+                    $routeConfig
+                );
             $routeName = $route['route'];
             if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
                 if (!is_object($driver)) {
@@ -144,8 +148,16 @@ class Router
         $routeBase = ($source == DEFAULT_SEARCH_BACKEND)
             ? 'record' : strtolower($source . 'record');
 
+        // Disable path normalization since it can unencode e.g. encoded slashes in
+        // record id's
+        $options = [
+            'normalize_path' => false
+        ];
+
         return [
-            'params' => $params, 'route' => $routeBase . $routeSuffix
+            'params' => $params,
+            'route' => $routeBase . $routeSuffix,
+            'options' => $options
         ];
     }
 

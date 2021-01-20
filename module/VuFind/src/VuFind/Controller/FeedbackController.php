@@ -61,6 +61,10 @@ class FeedbackController extends AbstractBase
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
+        if (!$user && $form->showOnlyForLoggedUsers()) {
+            return $this->forceLogin();
+        }
+
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
         $view->useRecaptcha
             = $this->recaptcha()->active('feedback') && $form->useCaptcha();
@@ -94,16 +98,28 @@ class FeedbackController extends AbstractBase
             $user ? $user->email : null
         );
 
-        list($recipientName, $recipientEmail) = $form->getRecipient();
+        $recipients = $form->getRecipient();
 
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
-        list($success, $errorMsg) = $this->sendEmail(
-            $recipientName, $recipientEmail, $senderName, $senderEmail,
-            $replyToName, $replyToEmail, $emailSubject, $emailMessage
-        );
+        $sendSuccess = true;
+        foreach ($recipients as $recipient) {
+            list($success, $errorMsg) = $this->sendEmail(
+                $recipient['name'], $recipient['email'], $senderName, $senderEmail,
+                $replyToName, $replyToEmail, $emailSubject, $emailMessage
+            );
 
-        $this->showResponse($view, $form, $success, $errorMsg);
+            $sendSuccess = $sendSuccess && $success;
+            if (!$success) {
+                $this->showResponse(
+                    $view, $form, false, $errorMsg
+                );
+            }
+        }
+
+        if ($sendSuccess) {
+            $this->showResponse($view, $form, true);
+        }
 
         return $view;
     }
@@ -149,9 +165,6 @@ class FeedbackController extends AbstractBase
     ) {
         try {
             $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
-            if ($replyToEmail) {
-                $mailer->setFromAddressOverride('');
-            }
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),

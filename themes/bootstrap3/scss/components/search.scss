@@ -1,7 +1,7 @@
 // Thumbnail sizes for media items: search results, list entries, record views
-$thumbnail-width-small:   60px !default;
-$thumbnail-width-medium: 100px !default;
-$thumbnail-width-large:  160px !default;
+$thumbnail-width-small:   60px;
+$thumbnail-width-medium: 100px;
+$thumbnail-width-large:  160px;
 
 // Hide these on mobile
 @media (max-width: 767px) {
@@ -478,6 +478,34 @@ body.rtl {
         flex-shrink: 0;
         margin: 0;
       }
+    }
+  }
+}
+
+.search-schedule-header {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+
+.search-history-table {
+  @extend .table all;
+  @extend .table-striped all;
+}
+table.search-history-table {
+  table-layout: auto;
+
+  tbody > tr > td { vertical-align: middle; }
+}
+
+/* Break early to prevent table overflow */
+@media (max-width: 991px) {
+  .template-dir-search.template-name-history {
+    .mainbody,
+    .sidebar {
+      float: none;
+      width: auto;
+      padding: 0;
     }
   }
 }
