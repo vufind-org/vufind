@@ -136,4 +136,28 @@ trait FinnaSearchControllerTrait
         }
         return $ids;
     }
+
+    /**
+     * Get active recommendation module settings.
+     *
+     * @return array
+     */
+    protected function getActiveRecommendationSettings()
+    {
+        // Enable recommendations unless explicitly told to disable them:
+        $all = ['top', 'results_top', 'side', 'noresults', 'bottom'];
+        $noRecommend = $this->params()->fromQuery('noRecommend', false);
+        if ($noRecommend === 1 || $noRecommend === '1'
+            || $noRecommend === 'true' || $noRecommend === true
+        ) {
+            return [];
+        } elseif ($noRecommend === 0 || $noRecommend === '0'
+            || $noRecommend === 'false' || $noRecommend === false
+        ) {
+            return $all;
+        }
+        return array_diff(
+            $all, array_map('trim', explode(',', strtolower($noRecommend)))
+        );
+    }
 }

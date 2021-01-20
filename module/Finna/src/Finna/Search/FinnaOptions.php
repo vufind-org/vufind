@@ -76,4 +76,34 @@ trait FinnaOptions
         $viewOptionsIcons = $searchSettings->General->view_options_icons ?? false;
         return $viewOptionsIcons ? true : false;
     }
+
+    /**
+     * Adds support for a results_top location for recommendations.
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        $recommend = parent::getRecommendationSettings($handler);
+
+        // Load the necessary settings to determine the appropriate recommendations
+        // module:
+        $searchSettings = $this->configLoader->get($this->getSearchIni());
+
+        if (null !== $handler
+            && isset($searchSettings->ResultsTopRecommendations->$handler)
+        ) {
+            $recommend['results_top'] = $searchSettings->ResultsTopRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['results_top']
+                = isset($searchSettings->General->default_results_top_recommend)
+                ? $searchSettings->General->default_results_top_recommend->toArray()
+                : false;
+        }
+
+        return $recommend;
+    }
 }

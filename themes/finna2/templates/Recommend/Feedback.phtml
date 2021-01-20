@@ -1,0 +1,14 @@
+<?php if ($data = $this->recommend->getTemplateData()): ?>
+  <!-- START of: finna - Recommend/Feedback.phtml -->
+  <div class="recommendation-feedback alert alert-info">
+    <p><?= $question = $this->transEsc(
+      'recommendation_feedback_question', ['%%term%%' => $data['recommendation']]
+    ) ?></p>
+    <a href="<?= $this->url(
+      'feedback-form', ['id' => 'FeedbackRecommendation'], ['query' => ['data' => $data['formData']]]
+    ) ?>" class="btn btn-primary" data-lightbox data-lightbox-title="<?= $question ?>" onclick="$(this).parent().hide()">
+      <?= $this->transEsc('Give Feedback') ?>
+    </a>
+  </div>
+  <!-- END of: finna - Recommend/Feedback.phtml -->
+<?php endif; ?>

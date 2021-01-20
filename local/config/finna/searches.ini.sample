@@ -58,6 +58,8 @@ default_noresults_recommend[] = SwitchType
 default_noresults_recommend[] = SwitchQuery:Solr:wildcard
 default_noresults_recommend[] = SpellingSuggestions
 ;default_noresults_recommend[] = "FinnaSuggestionsDeferred:api.finna.fi/api/v1/search?lookfor=%%lookfor%%:finna.fi/Search/Results?lookfor=%%lookfor%%&lng=%%lng%%"
+;default_results_top_recommend[] = Feedback
+;default_results_top_recommend[] = OntologyDeferred
 
 ; Set this to true in order to highlight keywords from the search query when they
 ; appear in fields displayed in search results.
@@ -339,6 +341,14 @@ author = sort_author
 ;       Recommendations are presented only for basic searches using AllFields handler
 ;       and no filters. URLs are configured without protocol, for example:
 ;       api.finna.fi/Search/Results?querystring
+;
+; Available modules recommended for use in the "results top" area:
+;
+; OntologyDeferred:[ini section]:[ini name]
+;       Provides ontology based recommendations as configured in the specified
+;       section of the specified ini file; if [ini name] is left out, it
+;       defaults to "searches" and if [ini section] is left out, it defaults to
+;       "OntologyModuleRecommendations".
 ;
 ; You can build your own recommendations modules if you wish.  See the developer's
 ; guide here:
@@ -661,3 +671,17 @@ lang[] = "eng"
 ;count = 5
 ; Maximum number of records displayed when clicking the show more link. Default is 30.
 showMoreCount = 30
+
+; This section defines settings for the Ontology Recommendations Module.
+[OntologyModuleRecommendations]
+; Maximum number of API calls to make per search. Leave unset for an unlimited number of API calls.
+;maxApiCalls = 10
+; Maximum number of recommendations to show per search. Leave unset for an unlimited number of recommendations.
+;maxRecommendations = 2
+; Maximum total number for determining if the result set is small. Leave unset to consider all result sets small.
+;maxSmallResultTotal = 40
+; Minimum total number for determining if the result set is large. Leave unset to consider all result sets large.
+;minLargeResultTotal = 400
+; Maximum number of times ontology recommendations can be shown per browser session. Leave unset for an unlimited
+; number of ontology recommendations shown.
+;maxTimesShownPerSession =

@@ -1,0 +1,51 @@
+<?php if ($recs = $this->recommend->getRecommendations()): ?>
+  <!-- START of: finna - Recommend/Ontology.phtml -->
+  <div id="ontology-recommendations" data-search-id="<?= $this->escapeHtmlAttr($this->recommend->getSearchId()) ?>"
+    data-lookfor="<?= $this->escapeHtmlAttr($this->recommend->getLookfor()) ?>">
+    <?php $index = 0; ?>
+    <?php foreach ($recs as $type => $typeRecs): ?>
+      <div class="result-type result-type-<?= $this->escapeHtmlAttr($type) ?>" data-result-type="<?= $this->escapeHtmlAttr($type) ?>">
+      <?php foreach ($typeRecs as $term => $termRecs): ?>
+        <div class="ontology-recommendation alert alert-info">
+          <p><span class="recommendation-label"><?= $this->transEsc('being_tested') ?></span>
+            <?= $this->transEsc('ontology_recommendation_' . $type, ['%%term%%' => $term, '%%results_count%%' => count($termRecs)]) ?>
+          <?php if (1 === count($termRecs)): ?>
+              <?php $index += 1; ?>
+              '<a href="<?= $termRecs[0]['href'] ?>" data-index="<?= $index ?>"><?= $this->escapeHtml($termRecs[0]['label']) ?></a>'
+            </p>
+          <?php else: ?>
+            </p>
+            <ul<?php if (count($termRecs) > 5):?> class="truncate-field" data-rows="1"<?php endif;?>>
+              <?php foreach ($termRecs as $termRec): ?>
+                <?php $index += 1; ?>
+                <li><a href="<?= $termRec['href'] ?>" data-index="<?= $index ?>"><?= $this->escapeHtml($termRec['label']) ?></a></li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+      </div>
+    <?php endforeach; ?>
+  </div>
+  <?php
+    $this->headScript()->appendFile('finna-recommendation-memory.js');
+    $script = <<<EOT
+    $('.ontology-recommendation a').each(function() {
+      $(this).click(function() {
+        var key = $(this).parents('#ontology-recommendations').data('search-id') + '-' + $(this).data('index');
+        var rec = $(this).text();
+        var orig = $(this).parents('#ontology-recommendations').data('lookfor');
+        var recType = $(this).parents('.result-type').data('result-type');
+        var value = finna.recommendationMemory.getDataString('Ontology', rec, orig, recType);
+        finna.common.setCookie(key, value);
+        $(this).attr(
+          'href', 
+          $(this).attr('href') + '&' + finna.recommendationMemory.PARAMETER_NAME + '=' + key
+        );
+      });
+    });
+EOT;
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  ?>
+  <!-- END of: finna - Recommend/Ontology.phtml -->
+<?php endif; ?>
