@@ -122,6 +122,11 @@ class Feedback implements RecommendInterface
         return [
             'recommendation'
                 => $this->recData[RecommendationMemory::RECOMMENDATION],
+            'customVarName'
+                => RecommendationMemory::CUSTOM_VARIABLE_NAME,
+            'customVarValue'
+                => $this->recData[RecommendationMemory::SOURCE_MODULE] . '_'
+                    . $this->recData[RecommendationMemory::RECOMMENDATION_TYPE],
             'formData' => [
                 'source_module'
                     => $this->recData[RecommendationMemory::SOURCE_MODULE],

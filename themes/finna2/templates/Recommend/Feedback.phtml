@@ -10,5 +10,6 @@
       <?= $this->transEsc('Give Feedback') ?>
     </a>
   </div>
+  <?php $this->plugin('piwik')->trackCustomVar($data['customVarName'], $data['customVarValue']); ?>
   <!-- END of: finna - Recommend/Feedback.phtml -->
 <?php endif; ?>

@@ -81,6 +81,11 @@ class RecommendationMemory
     public const RECOMMENDATION_TYPE = 'recType';
 
     /**
+     * Matomo custom variable name for followed recommendations.
+     */
+    public const CUSTOM_VARIABLE_NAME = 'RecommendationFollowed';
+
+    /**
      * Cookie manager.
      *
      * @var CookieManager
