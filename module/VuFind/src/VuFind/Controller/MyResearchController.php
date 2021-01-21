@@ -216,8 +216,7 @@ class MyResearchController extends AbstractBase
         }
 
         $config = $this->getConfig();
-        $page = isset($config->Site->defaultAccountPage)
-            ? $config->Site->defaultAccountPage : 'Favorites';
+        $page = $config->Site->defaultAccountPage ?? 'Favorites';
 
         // Default to search history if favorites are disabled:
         if ($page == 'Favorites' && !$this->listsEnabled()) {
@@ -1643,9 +1642,7 @@ class MyResearchController extends AbstractBase
         } else {
             // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->verify_hash);
-            $recoveryInterval = isset($config->Authentication->recover_interval)
-                ? $config->Authentication->recover_interval
-                : 60;
+            $recoveryInterval = $config->Authentication->recover_interval ?? 60;
             if (time() - $hashtime < $recoveryInterval) {
                 $this->flashMessenger()->addMessage('recovery_too_soon', 'error');
             } else {
@@ -1806,9 +1803,8 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
-                ? $config->Authentication->recover_hash_lifetime
-                : 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime
+                ?? 1209600; // Two weeks
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -1849,9 +1845,8 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
-                ? $config->Authentication->recover_hash_lifetime
-                : 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime
+                ?? 1209600; // Two weeks
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');

@@ -983,9 +983,8 @@ class Params
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
         }
-        return isset($this->extraFacetLabels[$field])
-            ? $this->extraFacetLabels[$field]
-            : ($default ?: 'unrecognized_facet_label');
+        return $this->extraFacetLabels[$field]
+            ?? ($default ?: 'unrecognized_facet_label');
     }
 
     /**

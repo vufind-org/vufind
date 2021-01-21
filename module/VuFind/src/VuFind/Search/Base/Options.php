@@ -386,8 +386,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getLabelForBasicHandler($handler)
     {
-        return isset($this->basicHandlers[$handler])
-            ? $this->basicHandlers[$handler] : false;
+        return $this->basicHandlers[$handler] ?? false;
     }
 
     /**
@@ -665,8 +664,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getTextDomainForTranslatedFacet($field)
     {
-        return isset($this->translatedFacetsTextDomains[$field])
-            ? $this->translatedFacetsTextDomains[$field] : 'default';
+        return $this->translatedFacetsTextDomains[$field] ?? 'default';
     }
 
     /**

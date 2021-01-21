@@ -192,7 +192,7 @@ abstract class AbstractBase
     {
         $titles = $this->getTitlesInHierarchy($record);
         // TODO: handle missing titles more gracefully (title not available?)
-        $title = isset($record->title) ? $record->title : $record->id;
+        $title = $record->title ?? $record->id;
         return null != $parentID && isset($titles[$parentID])
             ? $titles[$parentID] : $title;
     }
