@@ -250,8 +250,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $this->defaultPickUpLocation
-            = $this->config['Holds']['defaultPickUpLocation']
-            ?? '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }

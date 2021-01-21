@@ -171,8 +171,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         // The Authorised Values Category use for locations should default to 'LOC'
         $this->locationAuthorisedValuesCategory
-            = $this->config['Catalog']['locationAuthorisedValuesCategory']
-            ?? 'LOC';
+            = $this->config['Catalog']['locationAuthorisedValuesCategory'] ?? 'LOC';
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -517,8 +516,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => 'checkout desc'
             ];
         }
-        return $this->config[$function]
-            ?? false;
+        return $this->config[$function] ?? false;
     }
 
     /**

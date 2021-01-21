@@ -246,8 +246,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             : ['a', 'b', 'm', 'd'];
 
         $this->defaultPickUpLocation
-            = $this->config['Holds']['defaultPickUpLocation']
-            ?? '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
@@ -1923,8 +1922,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // Get Summary (may be multiple lines)
         $data = $this->extractFieldsFromApiData(
             $holdings,
-            $this->config['Holdings']['summary']
-            ?? 'h'
+            $this->config['Holdings']['summary'] ?? 'h'
         );
         if ($data) {
             $result['summary'] = $data;

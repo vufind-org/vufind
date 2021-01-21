@@ -307,8 +307,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             )
         ) {
             $login    = $this->config['WebServices']['login'];
-            $password = $this->config['WebServices']['password']
-                ?? null;
+            $password = $this->config['WebServices']['password'] ?? null;
         } else {
             $login    = null;
             $password = null;

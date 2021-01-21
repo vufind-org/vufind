@@ -198,8 +198,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         if ($displaySetting == 'msg' && count($list) > 1) {
             return false;
         }
-        return $this->config->Item_Status->callnumber_handler
-            ?? false;
+        return $this->config->Item_Status->callnumber_handler ?? false;
     }
 
     /**

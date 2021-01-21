@@ -251,8 +251,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = (isset($this->config['pickUpLocations']))
             ? $this->config['pickUpLocations'] : false;
         $this->defaultPickUpLocation
-            = $this->config['Holds']['defaultPickUpLocation']
-            ?? '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }

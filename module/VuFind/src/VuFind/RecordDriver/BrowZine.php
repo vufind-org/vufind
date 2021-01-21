@@ -65,8 +65,7 @@ class BrowZine extends DefaultRecord
      */
     public function getTitle()
     {
-        return $this->fields['name']
-            ?? parent::getTitle();
+        return $this->fields['name'] ?? parent::getTitle();
     }
 
     /**

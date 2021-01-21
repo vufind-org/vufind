@@ -78,8 +78,7 @@ class ConfigurationBased extends AbstractBase
      */
     public function getTreeSourceType()
     {
-        return $this->config->HierarchyTree->treeSource
-            ?? 'Solr';
+        return $this->config->HierarchyTree->treeSource ?? 'Solr';
     }
 
     /**

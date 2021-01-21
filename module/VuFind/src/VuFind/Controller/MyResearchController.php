@@ -1642,8 +1642,7 @@ class MyResearchController extends AbstractBase
         } else {
             // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->verify_hash);
-            $recoveryInterval = $config->Authentication->recover_interval
-                ?? 60;
+            $recoveryInterval = $config->Authentication->recover_interval ?? 60;
             if (time() - $hashtime < $recoveryInterval) {
                 $this->flashMessenger()->addMessage('recovery_too_soon', 'error');
             } else {

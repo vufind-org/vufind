@@ -230,8 +230,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         // Searchbox place
         if (!empty($this->placeholders)) {
             return $this->placeholders[$activeSearchClass]
-                ?? ($this->placeholders['default']
-                    ?? null);
+                ?? $this->placeholders['default']
+                ?? null;
         }
         return null;
     }

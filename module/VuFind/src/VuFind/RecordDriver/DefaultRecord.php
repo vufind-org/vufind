@@ -1634,8 +1634,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getDedupData()
     {
-        return $this->fields['dedup_data']
-            ?? [];
+        return $this->fields['dedup_data'] ?? [];
     }
 
     /**

@@ -769,8 +769,7 @@ class AbstractSearch extends AbstractBase
         }
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get($options->getFacetsIni());
-        $limit = $config->Results_Settings->lightboxLimit
-            ?? 50;
+        $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getPartialFieldFacets(
             [$facet], false, $limit, $sort, $page,

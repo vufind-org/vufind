@@ -916,8 +916,7 @@ EOT;
                 // Get Notes
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['notes']
-                    ?? '852z'
+                    $this->config['Holdings']['notes'] ?? '852z'
                 );
                 if ($data) {
                     $marcDetails['notes'] = $data;
@@ -926,8 +925,7 @@ EOT;
                 // Get Summary (may be multiple lines)
                 $data = $this->getMFHDData(
                     $record,
-                    $this->config['Holdings']['summary']
-                    ?? '866a'
+                    $this->config['Holdings']['summary'] ?? '866a'
                 );
                 if ($data) {
                     $marcDetails['summary'] = $data;
@@ -1389,8 +1387,7 @@ EOT;
      */
     protected function pickTransactionStatus($statuses)
     {
-        $regex = $this->config['Loans']['show_statuses']
-            ?? '/lost|missing|claim/i';
+        $regex = $this->config['Loans']['show_statuses'] ?? '/lost|missing|claim/i';
         $retVal = [];
         foreach ($statuses as $status) {
             if (preg_match($regex, $status)) {
@@ -1989,10 +1986,8 @@ EOT;
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
                "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
-        $primaryPhoneType = $this->config['Profile']['primary_phone']
-            ?? 'Primary';
-        $mobilePhoneType = $this->config['Profile']['mobile_phone']
-            ?? 'Mobile';
+        $primaryPhoneType = $this->config['Profile']['primary_phone'] ?? 'Primary';
+        $mobilePhoneType = $this->config['Profile']['mobile_phone'] ?? 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];

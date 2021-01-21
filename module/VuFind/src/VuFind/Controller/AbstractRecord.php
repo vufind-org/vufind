@@ -814,8 +814,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = $config->Item_Status->callnumber_handler
-            ?? false;
+        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

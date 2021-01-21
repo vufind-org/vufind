@@ -127,8 +127,7 @@ class Pazpar2 extends DefaultRecord
      */
     public function getUniqueId()
     {
-        return $this->pz2fields['location']['md-id']
-            ?? $this->pz2fields['recid'];
+        return $this->pz2fields['location']['md-id'] ?? $this->pz2fields['recid'];
     }
 
     /**
