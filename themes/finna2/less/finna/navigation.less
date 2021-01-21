@@ -89,48 +89,6 @@
 // content-navigation-menu
 .main.template-dir-content.template-name-content .content-navigation-menu {
   margin: 20px 0px;
-  h2 {
-    font-size: 1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    background: @facet-header-background;
-    color: @text-color;
-    border-left: 4px solid @action-link-color;
-    padding: 15px;
-    margin-bottom: 5px;
-    margin-top: 0;
-    transition: background 0.2s linear;
-    &:hover {
-      background: @gray-lighter;
-      cursor: pointer;
-    }
-  }
-  @media (min-width:@screen-sm-min) {
-    &.attached {
-      position: fixed;
-      top: 55px;
-    }
-  }
-  @media (min-width:@screen-lg-min) {
-    &.attached {
-      width: 262px;
-    }
-  }
-  @media (min-width:@screen-md-min) {
-    &.attached {
-      top: 0px;
-    }
-  }
-  @media (min-width:@screen-md-min) and (max-width: @screen-md-max) {
-    &.attached {
-      width: 212px;
-    }
-  }
-  @media (min-width:@screen-sm-min) and (max-width: @screen-sm-max) {
-    &.attached {
-      max-width: 22%;
-    }
-  }
 }
 
 &.dropdown-toggle:focus {
