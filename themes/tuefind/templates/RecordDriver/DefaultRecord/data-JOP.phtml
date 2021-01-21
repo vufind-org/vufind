@@ -39,7 +39,7 @@
                 $url_params['date'] = $year;
             $pages = $this->escapeHtml(str_replace(" ", "", $this->driver->getPages()));
             if (!empty($pages))
-                $url_params['pages'] = $pages;
+                $url_params['pages'] = preg_match('/(^\d+$)/', $pages, $match) ? $match[0] . '-' . $match[0] : $pages;
         }
 
         // prepare url_suffix (same for each url)
