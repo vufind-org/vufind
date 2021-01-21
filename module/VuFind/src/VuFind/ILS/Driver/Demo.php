@@ -193,8 +193,7 @@ class Demo extends AbstractBase
         // Method may come in like Class::Method, we just want the Method part
         $parts = explode('::', $method);
         $key = array_pop($parts);
-        $probability = isset($this->failureProbabilities[$key])
-            ? $this->failureProbabilities[$key] : $default;
+        $probability = $this->failureProbabilities[$key] ?? $default;
         return rand(1, 100) <= $probability;
     }
 
@@ -296,8 +295,7 @@ class Demo extends AbstractBase
     protected function getRandomBibIdAndTitle()
     {
         $source = $this->getRecordSource();
-        $query = isset($this->config['Records']['query'])
-            ? $this->config['Records']['query'] : '*:*';
+        $query = $this->config['Records']['query'] ?? '*:*';
         $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
             throw new \Exception("Problem retrieving random record from $source.");
@@ -313,8 +311,7 @@ class Demo extends AbstractBase
      */
     protected function getRecordSource()
     {
-        return isset($this->config['Records']['source'])
-            ? $this->config['Records']['source'] : DEFAULT_SEARCH_BACKEND;
+        return $this->config['Records']['source'] ?? DEFAULT_SEARCH_BACKEND;
     }
 
     /**
@@ -2350,9 +2347,8 @@ class Demo extends AbstractBase
             ];
         }
         if ($function == 'changePassword') {
-            return isset($this->config['changePassword'])
-                ? $this->config['changePassword']
-                : ['minLength' => 4, 'maxLength' => 20];
+            return $this->config['changePassword']
+                ?? ['minLength' => 4, 'maxLength' => 20];
         }
         if ($function == 'getMyTransactionHistory') {
             if (empty($this->config['TransactionHistory']['enabled'])) {

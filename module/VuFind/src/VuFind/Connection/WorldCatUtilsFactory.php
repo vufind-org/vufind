@@ -69,7 +69,7 @@ class WorldCatUtilsFactory implements FactoryInterface
         $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         $ip = $container->get('Request')->getServer()->get('SERVER_ADDR');
         return new $requestedName(
-            isset($config->WorldCat) ? $config->WorldCat : null,
+            $config->WorldCat ?? null,
             $client, true, $ip
         );
     }

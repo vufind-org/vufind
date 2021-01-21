@@ -196,8 +196,8 @@ class AlmaController extends AbstractBase
         if ($method == 'CREATE' || $method == 'UPDATE') {
             // Get username (could e. g. be the barcode)
             $username = null;
-            $userIdentifiers = $requestBodyJson->webhook_user->user->user_identifier
-                               ?? null;
+            $userIdentifiers
+                = $requestBodyJson->webhook_user->user->user_identifier ?? null;
             $idTypeConfig = $this->configAlma->NewUser->idType ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = $userIdentifier->id_type->value ?? null;
@@ -217,8 +217,8 @@ class AlmaController extends AbstractBase
             $firstname = $requestBodyJson->webhook_user->user->first_name ?? null;
             $lastname = $requestBodyJson->webhook_user->user->last_name ?? null;
 
-            $allEmails = $requestBodyJson->webhook_user->user->contact_info->email
-                         ?? null;
+            $allEmails
+                = $requestBodyJson->webhook_user->user->contact_info->email ?? null;
             $email = null;
             foreach ($allEmails as $currentEmail) {
                 $preferred = $currentEmail->preferred ?? false;

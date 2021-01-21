@@ -1268,8 +1268,7 @@ class PAIA extends DAIA
      */
     protected function paiaStatusString($status)
     {
-        return isset(self::$statusStrings[$status])
-            ? self::$statusStrings[$status] : '';
+        return self::$statusStrings[$status] ?? '';
     }
 
     /**

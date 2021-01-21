@@ -145,8 +145,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     protected function parseStatus($status)
     {
-        $statuses = isset($this->config['Statuses'][$status])
-            ? $this->config['Statuses'][$status] : null;
+        $statuses = $this->config['Statuses'][$status] ?? null;
 
         // query the config file for the item status if there are
         // config values, use the configuration otherwise execute the switch

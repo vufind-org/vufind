@@ -436,8 +436,7 @@ class Params extends \VuFind\Search\Base\Params
     public function getQueryIDLimit()
     {
         $config = $this->configLoader->get($this->getOptions()->getMainIni());
-        return isset($config->Index->maxBooleanClauses)
-            ? $config->Index->maxBooleanClauses : 1024;
+        return $config->Index->maxBooleanClauses ?? 1024;
     }
 
     /**

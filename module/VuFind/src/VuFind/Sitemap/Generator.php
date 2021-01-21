@@ -157,8 +157,7 @@ class Generator
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
         // Process backend configuration:
-        $backendConfig = isset($this->config->Sitemap->index)
-            ? $this->config->Sitemap->index : ['Solr,/Record/'];
+        $backendConfig = $this->config->Sitemap->index ?? ['Solr,/Record/'];
         $backendConfig = is_callable([$backendConfig, 'toArray'])
             ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
