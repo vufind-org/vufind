@@ -278,8 +278,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             'chicago' => 'One, Person, and Person Two. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19.',
         ],
         [  // two authors with no comma in first author's name (test no comma before and)
+            // and parenthetical note on second author (test it is removed)
             'raw' => [
-                'SecondaryAuthors' => ['IBM', 'Two, Person, 1970-'],
+                'SecondaryAuthors' => ['IBM', 'Two, Person (Director), 1970-'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,

@@ -194,8 +194,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
 
         // We always want to apply these standard cleanup routines:
         $callables[] = function (string $name): string {
+            // Eliminate parenthetical information:
+            $strippedName = trim(preg_replace('/\s\(.*\)/', '', $name));
+
             // Split the text into words:
-            $parts = explode(' ', $name);
+            $parts = explode(' ', empty($strippedName) ? $name : $strippedName);
 
             // If we have exactly two parts, we should trim any trailing
             // punctuation from the second part (this reduces the odds of
