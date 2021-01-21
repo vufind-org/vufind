@@ -204,8 +204,7 @@ class CombinedController extends AbstractSearch
         $actualMaxColumns = count($combinedResults);
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
-        $placement = $config['Layout']['stack_placement']
-            ?? 'distributed';
+        $placement = $config['Layout']['stack_placement'] ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
