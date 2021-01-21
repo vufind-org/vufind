@@ -456,8 +456,7 @@ class ResultScroller extends AbstractPlugin
             }
 
             // Store total result set size:
-            $retVal['resultTotal']
-                = $this->data->total ?? 0;
+            $retVal['resultTotal'] = $this->data->total ?? 0;
 
             // Set first and last record IDs
             if ($this->data->firstlast) {

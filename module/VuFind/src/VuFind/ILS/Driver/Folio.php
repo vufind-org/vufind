@@ -1373,7 +1373,7 @@ class Folio extends AbstractAPI implements
             'accounts', '/accounts', $query
         ) as $fine) {
             $date = date_create($fine->metadata->createdDate);
-            $title = ($fine->title ?? null);
+            $title = $fine->title ?? null;
             $fines[] = [
                 'id' => $fine->id,
                 'amount' => $fine->amount * 100,
