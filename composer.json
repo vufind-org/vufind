@@ -83,7 +83,7 @@
         "behat/mink-selenium2-driver": "1.4.0",
         "friendsofphp/php-cs-fixer": "2.18.0",
         "phploc/phploc": "5.0.0",
-        "phpmd/phpmd": "2.8.2",
+        "phpmd/phpmd": "2.9.1",
         "phpunit/phpunit": "8.5.14",
         "sebastian/phpcpd": "4.1.0",
         "squizlabs/php_codesniffer": "3.5.8",
