@@ -881,7 +881,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $itemAgencyId = !empty($itemAgencyId) ? (string)$itemAgencyId[0] : null;
             $bibId = !empty($bibId) ? (string)$bibId[0] : null;
-            if ($bibId === null || $itemAgencyId === null) {
+            if ($bibId === null || $itemAgencyId === null || empty($due)) {
                 $itemType = $current->xpath('ns1:ItemId/ns1:ItemIdentifierType');
                 $itemType = !empty($itemType) ? (string)$itemType[0] : null;
                 $itemRequest = $this->getLookupItemRequest($itemId, $itemType);
@@ -911,6 +911,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 );
                 $itemAgencyId = !empty($itemAgencyId)
                     ? (string)$itemAgencyId[0] : null;
+            }
+            if (empty($due)) {
+                $rawDueDate = $itemResponse->xpath(
+                    'ns1:LookupItemResponse/ns1:ItemOptionalFields/' .
+                    'ns1:DateDue'
+                );
+                $due = $this->displayDate(
+                    !empty($rawDueDate) ? (string)$rawDueDate[0] : null
+                );
             }
 
             $retVal[] = [
