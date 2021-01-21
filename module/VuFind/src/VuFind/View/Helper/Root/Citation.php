@@ -456,15 +456,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 $num = '';
             }
             return [$vol, $num, $year];
-        } else {
-            // Right now, we'll assume if day == 1, this is a monthly publication;
-            // that's probably going to result in some bad citations, but it's the
-            // best we can do without writing extra record driver methods.
-            $finalDate = $year
-                . (empty($month) ? '' : ', ' . $month)
-                . (($day > 1) ? ' ' . $day : '');
-            return ['', '', $finalDate];
         }
+        // Right now, we'll assume if day == 1, this is a monthly publication;
+        // that's probably going to result in some bad citations, but it's the
+        // best we can do without writing extra record driver methods.
+        $finalDate = $year
+            . (empty($month) ? '' : ', ' . $month)
+            . (($day > 1) ? ' ' . $day : '');
+        return ['', '', $finalDate];
     }
 
     /**
