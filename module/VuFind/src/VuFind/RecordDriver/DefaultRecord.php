@@ -1722,4 +1722,26 @@ class DefaultRecord extends AbstractBase
         return isset($this->fields['long_lat_label'])
             ? $this->fields['long_lat_label'] : [];
     }
+
+    /**
+     * Get the donor name.
+     *
+     * @return array
+     */
+    public function getDonorName()
+    {
+        return isset($this->fields['donor']) ?
+            $this->fields['donor'] : [];
+    }
+
+    /**
+     * Get the donor code.
+     *
+     * @return array
+     */
+    public function getDonorCode()
+    {
+        return isset($this->fields['donor_code']) ?
+            $this->fields['donor_code'] : [];
+    }
 }
