@@ -772,6 +772,22 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Format an author name for inclusion in an MLA citation (after the primary
+     * name, which gets formatted differently).
+     *
+     * @param string $author Name to reformat.
+     *
+     * @return string
+     */
+    protected function formatSecondaryMLAAuthor($author)
+    {
+        // If there is no comma in the name, we don't need to reverse it and
+        // should leave its punctuation alone (since it was adjusted earlier).
+        return strpos($author, ',') === false
+            ? $author : $this->reverseName($this->stripPunctuation($author));
+    }
+
+    /**
      * Get an array of authors for an MLA or Chicago Style citation.
      *
      * @param int $etAlThreshold The number of authors to abbreviate with 'et al.'
@@ -799,10 +815,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                         // the first author is a corporate author.
                         $finalJoin = strpos($authorStr, ',') !== false ? ', ' : ' ';
                         $authorStr .= $finalJoin . $this->translate('and') . ' '
-                            . $this->reverseName($this->stripPunctuation($author));
+                            . $this->formatSecondaryMLAAuthor($author);
                     } elseif ($i > 0) {
                         $authorStr .= ', '
-                            . $this->reverseName($this->stripPunctuation($author));
+                            . $this->formatSecondaryMLAAuthor($author);
                     } else {
                         // First
                         $authorStr .= $author;
