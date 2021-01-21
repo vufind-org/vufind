@@ -145,8 +145,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $driver = strtolower($options['driver']);
         switch ($driver) {
         case 'mysqli':
-            $options['charset'] = isset($this->config->Database->charset)
-                ? $this->config->Database->charset : 'utf8';
+            $options['charset'] = $this->config->Database->charset ?? 'utf8';
             $options['options'] = ['buffer_results' => true];
             break;
         }

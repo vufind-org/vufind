@@ -56,7 +56,7 @@ class SolrAuthDefault extends SolrDefault
      */
     public function getTitle()
     {
-        return isset($this->fields['heading']) ? $this->fields['heading'] : '';
+        return $this->fields['heading'] ?? '';
     }
 
     /**

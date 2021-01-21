@@ -797,8 +797,7 @@ class Koha extends AbstractBase
                 'default_sort' => 'checkout desc'
             ];
         }
-        return isset($this->config[$function])
-            ? $this->config[$function]
-            : false;
+        return $this->config[$function]
+            ?? false;
     }
 }

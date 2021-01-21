@@ -1858,8 +1858,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function getConfiguredLanguage()
     {
-        return isset($this->config['Catalog']['language'])
-            ? $this->config['Catalog']['language'] : 'en';
+        return $this->config['Catalog']['language'] ?? 'en';
     }
 
     /**
