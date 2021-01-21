@@ -846,7 +846,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $extras = ['<ns1:LoanedItemsDesired/>'];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras
+            $patron['patronAgencyId'], $extras, $patron['id']
         );
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
@@ -943,7 +943,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $extras = ['<ns1:UserFiscalAccountDesired/>'];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras
+            $patron['patronAgencyId'], $extras, $patron['id']
         );
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
@@ -1007,7 +1007,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $extras = ['<ns1:RequestedItemsDesired/>'];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras
+            $patron['patronAgencyId'], $extras, $patron['id']
         );
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
@@ -1109,7 +1109,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras
+            $patron['patronAgencyId'], $extras, $patron['id']
         );
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
@@ -1706,13 +1706,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if ($requestId === null && $itemId === null) {
             throw new ILSException('No identifiers for CancelRequest');
         }
-
         $ret = $this->getNCIPMessageStart() .
             '<ns1:CancelRequestItem>' .
             $this->getInitiationHeaderXml($patronAgency) .
             $this->getAuthenticationInputXml($username, $password);
 
-        $ret .= $this->getUserIdXml($patronAgency, $patronId);
+        $ret .= $this->getUserIdXml($agency, $patronId);
 
         if ($requestId !== null) {
             $ret .=
@@ -1857,7 +1856,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'agencyelementtype/agencyelementtype.scm">' .
                     $elementType .
                 '</ns1:AgencyElementType>';
-        }
+        };
         $ret .= '</ns1:LookupAgency></ns1:NCIPMessage>';
         return $ret;
     }
@@ -1872,9 +1871,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getLookupItemRequest($itemId, $idType = null)
     {
-        $keys = array_keys($this->agency);
-        $agency = $keys[0];
-
+        $agency = $this->determineToAgencyId();
         $ret = $this->getNCIPMessageStart() .
             '<ns1:LookupItem>' .
             $this->getInitiationHeaderXml($agency) .
@@ -1894,8 +1891,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string
      */
-    protected function getInitiationHeaderXml($agency = '')
+    protected function getInitiationHeaderXml($agency = null)
     {
+        $agency = $this->determineToAgencyId($agency);
         if (empty($agency) || empty($this->fromAgency)) {
             return '';
         }
@@ -1994,10 +1992,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getUserIdXml($patronAgency, $patronId = null)
     {
+        $agency = $this->determineToAgencyId($patronAgency);
         if ($patronId !== null) {
             return '<ns1:UserId>' .
                 '<ns1:AgencyId>' .
-                    htmlspecialchars($patronAgency) .
+                    htmlspecialchars($agency) .
                 '</ns1:AgencyId>' .
                 '<ns1:UserIdentifierType>Institution Id Number' .
                 '</ns1:UserIdentifierType>' .
