@@ -683,17 +683,20 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $actors = [];
             if (isset($node->eventActor)) {
                 foreach ($node->eventActor as $actor) {
-                    $appellationValue = isset(
+                    $appellationValue = trim(
                         $actor->actorInRole->actor->nameActorSet->appellationValue
-                    ) ? trim(
-                        $actor->actorInRole->actor->nameActorSet->appellationValue
-                    ) : '';
+                    ) ?? '';
                     if ($appellationValue !== '') {
-                        $role = isset($actor->actorInRole->roleActor->term)
-                            ? $actor->actorInRole->roleActor->term : '';
+                        $role = (string)($actor->actorInRole->roleActor->term ?? '');
+                        $earliestDate = (string)($actor->actorInRole->actor
+                            ->vitalDatesActor->earliestDate ?? '');
+                        $latestDate = (string)($actor->actorInRole->actor
+                            ->vitalDatesActor->latestDate ?? '');
                         $actors[] = [
                             'name' => $appellationValue,
-                            'role' => $role
+                            'role' => $role,
+                            'birth' => $earliestDate,
+                            'death' => $latestDate
                         ];
                     }
                 }
