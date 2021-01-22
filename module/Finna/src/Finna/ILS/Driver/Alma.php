@@ -1276,6 +1276,17 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     {
         $libraries = parent::getPickupLocations($patron, $holdDetails);
 
+        $libraries = array_map(
+            function ($entry) {
+                $entry['locationDisplay'] = $this->getTranslatableStringForCode(
+                    'pickup_location_' . $entry['locationID'],
+                    $entry['locationDisplay']
+                );
+                return $entry;
+            },
+            $libraries
+        );
+
         if ($patron && $holdDetails
             && !empty($this->config['Holds']['pickupLocationRules'])
         ) {
