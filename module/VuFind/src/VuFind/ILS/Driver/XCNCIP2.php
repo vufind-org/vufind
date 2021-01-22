@@ -1864,7 +1864,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'agencyelementtype/agencyelementtype.scm">' .
                     $elementType .
                 '</ns1:AgencyElementType>';
-        };
+        }
         $ret .= '</ns1:LookupAgency></ns1:NCIPMessage>';
         return $ret;
     }
