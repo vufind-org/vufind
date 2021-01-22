@@ -1719,7 +1719,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->getInitiationHeaderXml($patronAgency) .
             $this->getAuthenticationInputXml($username, $password);
 
-        $ret .= $this->getUserIdXml($agency, $patronId);
+        $ret .= $this->getUserIdXml($patronAgency, $patronId);
 
         if ($requestId !== null) {
             $ret .=

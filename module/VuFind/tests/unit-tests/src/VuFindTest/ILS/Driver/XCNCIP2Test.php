@@ -894,6 +894,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'patronAgencyId' => 'Test agency',
+                'id' => "patron_id",
             ]);
             $this->assertEquals(
                 $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
@@ -925,6 +926,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'patronAgencyId' => 'Test agency',
+                'id' => "patron_id",
             ]);
             $this->assertEquals(
                 $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
@@ -954,6 +956,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'patronAgencyId' => 'Test agency',
+                'id' => "patron_id",
             ]);
             $this->assertEquals(
                 $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
@@ -973,8 +976,10 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->mockResponse($test['file']);
             $fines = $this->driver->getMyFines(
                 [
-                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'cat_username' => 'my_login',
+                    'cat_password' => 'my_password',
                     'patronAgencyId' => 'Test agency',
+                    'id' => "patron_id",
                 ]
             );
             $this->assertEquals($test['result'], $fines, 'Fixture file: ' . implode(', ', (array)$test['file']));
@@ -1010,7 +1015,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'patronAgencyId' => 'Test agency',
-             ]);
+                'id' => "patron_id",
+            ]);
             $this->assertEquals($test['result'], $holds, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
     }
@@ -1030,6 +1036,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'cat_username' => 'my_login',
                     'cat_password' => 'my_password',
                     'patronAgencyId' => 'Test agency',
+                    'id' => "patron_id",
                 ]
             );
             $this->assertEquals($test['result'], $profile, 'Fixture file: ' . implode(', ', (array)$test['file']));
@@ -1050,6 +1057,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
                 'patronAgencyId' => 'Test agency',
+                'id' => "patron_id",
             ]);
             $this->assertEquals($test['result'], $storageRetrievals, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
