@@ -602,8 +602,7 @@ trait MarcAdvancedTrait
         $fieldsNames = isset($this->mainConfig->Record->marc_links)
             ? explode(',', $this->mainConfig->Record->marc_links) : [];
         $useVisibilityIndicator
-            = isset($this->mainConfig->Record->marc_links_use_visibility_indicator)
-            ? $this->mainConfig->Record->marc_links_use_visibility_indicator : true;
+            = $this->mainConfig->Record->marc_links_use_visibility_indicator ?? true;
 
         $retVal = [];
         foreach ($fieldsNames as $value) {
@@ -691,9 +690,8 @@ trait MarcAdvancedTrait
             return false;
         }
 
-        $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
-            ? $this->mainConfig->Record->marc_links_link_types
-            : 'id,oclc,dlc,isbn,issn,title';
+        $linkTypeSetting = $this->mainConfig->Record->marc_links_link_types
+            ?? 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $field->getSubfields('w');
 

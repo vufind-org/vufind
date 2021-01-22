@@ -276,8 +276,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         try {
             $client = $this->httpService->createClient($this->url);
             // Set timeout value
-            $timeout = isset($this->config['Catalog']['http_timeout'])
-                ? $this->config['Catalog']['http_timeout'] : 30;
+            $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
             $client->setOptions(['timeout' => $timeout]);
             $client->setRawBody($xml);
             $client->setEncType('application/xml; charset=UTF-8');

@@ -233,8 +233,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             : [];
 
         $this->itemHoldsEnabled
-            = isset($this->config['Holds']['enableItemHolds'])
-            ? $this->config['Holds']['enableItemHolds'] : true;
+            = $this->config['Holds']['enableItemHolds'] ?? true;
 
         $this->itemHoldExcludedItemCodes
             = !empty($this->config['Holds']['item_hold_excluded_item_codes'])
@@ -247,9 +246,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             : ['a', 'b', 'm', 'd'];
 
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
@@ -1299,8 +1296,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'default_sort' => 'checkout desc'
             ];
         }
-        return isset($this->config[$function])
-            ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -1689,8 +1685,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $client = $this->httpService->createClient($url);
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(
             ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
         );
@@ -1927,9 +1922,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // Get Summary (may be multiple lines)
         $data = $this->extractFieldsFromApiData(
             $holdings,
-            isset($this->config['Holdings']['summary'])
-            ? $this->config['Holdings']['summary']
-            : 'h'
+            $this->config['Holdings']['summary'] ?? 'h'
         );
         if ($data) {
             $result['summary'] = $data;
