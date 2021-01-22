@@ -142,8 +142,6 @@ class LibraryCardsController extends AbstractBase
                 'defaultTarget' => $loginSettings['defaultTarget'],
                 'loginMethod' => $loginSettings['loginMethod'],
                 'loginMethods' => $loginSettings['loginMethods'],
-                'shibboleth' => ($this->getAuthManager()->getAuthMethod()
-                    == 'Shibboleth')
             ]
         );
     }
@@ -287,10 +285,9 @@ class LibraryCardsController extends AbstractBase
         $target = $this->params()->fromPost('target', '');
         $username = $this->params()->fromPost('username', '');
         $password = $this->params()->fromPost('password', '');
-        $rename = $this->params()->fromPost('rename', 'false') == 'true';
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
 
-        if (!$username && !$rename) {
+        if (!$username) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_blank', 'error');
             return false;
@@ -300,14 +297,9 @@ class LibraryCardsController extends AbstractBase
             $username = "$target.$username";
         }
 
-        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
-        if ($rename) {
-            $card->card_name = $cardName;
-            $card->save();
-            return $this->redirect()->toRoute('librarycards-home');
-        }
         // Check the credentials if the username is changed or a new password is
         // entered:
+        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
         if ($card->cat_username !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
