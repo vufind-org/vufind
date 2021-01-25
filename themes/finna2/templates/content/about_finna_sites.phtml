@@ -1,411 +1,520 @@
 <!-- START of: finna - content/about_finna_sites.phtml -->
+<?php
+  $groups = [
+    [
+      'id' => 'archives',
+      'heading' => 'Archives',
+      'items' => [
+        [
+          'name' => '0/AALTOARKISTO/',
+          'domain' => 'aaltoarkisto.finna.fi',
+          'image' => 'aaltoarkisto.jpg',
+        ],
+        [
+          'name' => '0/lasipalatsi/',
+          'domain' => 'lasipalatsi.finna.fi',
+          'image' => 'albumitauki.jpg',
+        ],
+        [
+          'name' => '0/KAVI/',
+          'domain' => 'kavi.finna.fi',
+          'image' => 'kavi.jpg',
+        ],
+        [
+          'name' => '0/SLS/',
+          'domain' => 'sls.finna.fi',
+          'image' => 'sls.jpg',
+        ],
+      ]
+    ],
+    [
+      'id' => 'museums',
+      'heading' => 'Museums',
+      'items' => [
+        [
+          'name' => '1/Museovirasto/Arkeologian kuvakokoelma/',
+          'domain' => 'museovirasto.finna.fi/arkeologia',
+          'image' => 'arkeologia.jpg'
+        ],
+        [
+          'name' => '0/ESPOO_KAUPMUS/',
+          'domain' => 'ekm.finna.fi',
+          'image' => 'ekm.jpg'
+        ],
+        [
+          'name' => '0/HKM/',
+          'domain' => 'hkm.finna.fi',
+          'image' => 'hkm.jpg'
+        ],
+        [
+          'name' => '0/HKM/',
+          'domain' => 'hkm.finna.fi/elanto2',
+          'image' => 'hkmelanto.jpg'
+        ],
+        [
+          'name' => '0/HOTELLI- JA RAVINTOLAMUSEO/',
+          'domain' => 'hrm.finna.fi',
+          'image' => 'hrm.jpg'
+        ],
+        [
+          'name' => '0/HYVINKAAMUSEO/',
+          'domain' => 'muistaja.finna.fi/hyvinkaan_kaupunginmuseo',
+          'image' => 'hyvinkaankaupunginmuseo.jpg'
+        ],
+        [
+          'name' => '1/Museovirasto/JOKA Journalistinen kuva-arkisto/',
+          'domain' => 'museovirasto.finna.fi/joka',
+          'image' => 'joka.jpg'
+        ],
+        [
+          'name' => '0/Suomen kansallismuseo/',
+          'domain' => 'suomenkansallismuseo.finna.fi',
+          'image' => 'kansallismuseo.jpg'
+        ],
+        [
+          'name' => '0/KERAVAMUSEO/',
+          'domain' => 'muistaja.finna.fi/keravan_museopalvelut',
+          'image' => 'keravanmuseopalvelut.jpg'
+        ],
+        [
+          'name' => '0/LPRMUSEOT/',
+          'domain' => 'lappeenrannanmuseot.finna.fi',
+          'image' => 'lappeenrannanmuseot.jpg'
+        ],
+        [
+          'name' => 'Museums',
+          'domain' => 'museot.finna.fi',
+          'image' => 'museot.jpg'
+        ],
+        [
+          'name' => '0/Museovirasto/',
+          'domain' => 'museovirasto.finna.fi/',
+          'image' => 'museovirasto.jpg'
+        ],
+        [
+          'name' => '0/MANTSALAMUSEO/',
+          'domain' => 'muistaja.finna.fi/mantsalan_museopalvelut',
+          'image' => 'mantsalanmuseopalvelut.jpg'
+        ],
+        [
+          'name' => '0/NURMIJARVIMUSEO/',
+          'domain' => 'muistaja.finna.fi/nurmijarven_museo',
+          'image' => 'nurmijarvenmuseo.jpg'
+        ],
+        [
+          'name' => '0/RIIHIMAENMUSEO/',
+          'domain' => 'muistaja.finna.fi/riihimaen_kaupunginmuseo',
+          'image' => 'riihimaenmuseo.jpg'
+        ],
+        [
+          'name' => '0/SIIDA/',
+          'domain' => 'siida.finna.fi',
+          'image' => 'siida.jpg'
+        ],
+        [
+          'name' => '0/SATMUSEO/',
+          'domain' => 'satakunnanmuseo.finna.fi',
+          'image' => 'satakunnanmuseo.jpg'
+        ],
+        [
+          'name' => '0/ilmailumuseo/',
+          'domain' => 'ilmailumuseo.finna.fi',
+          'image' => 'ilmailumuseo.jpg'
+        ],
+        [
+          'name' => '0/KELLOMUSEO/',
+          'domain' => 'kellomuseo.finna.fi',
+          'image' => 'kellomuseo.jpg'
+        ],
+        [
+          'name' => '0/HEVOSENKENKA/',
+          'domain' => 'lelumuseohevosenkenka.finna.fi',
+          'image' => 'lelumuseohevosenkenka.jpg'
+        ],
+        [
+          'name' => '0/SRM/',
+          'domain' => 'rautatiemuseo.finna.fi',
+          'image' => 'rautatiemuseo.jpg'
+        ],
+        [
+          'name' => '0/SUM/',
+          'domain' => 'urheilumuseo.finna.fi',
+          'image' => 'sum.jpg'
+        ],
+        [
+          'name' => '0/VANTAA/',
+          'domain' => 'vantaankaupunginmuseo.finna.fi',
+          'image' => 'vantaankaupunginmuseo.jpg'
+        ],
+        [
+          'name' => '0/VARKAUDENMUSEOT/',
+          'domain' => 'piipunjuurella.finna.fi',
+          'image' => 'piipunjuurella.jpg'
+        ],
+      ]
+    ],
+    [
+      'id' => 'polylib',
+      'heading' => 'Polytechnic Libraries',
+      'items' => [
+        [
+          'name' => '0/ARCADA/',
+          'domain' => 'arcada.finna.fi',
+          'image' => 'arcada.jpg'
+        ],
+        [
+          'name' => '0/CENTRIA/',
+          'domain' => 'centria.finna.fi',
+          'image' => 'centria.jpg'
+        ],
+        [
+          'name' => '0/DIAK/',
+          'domain' => 'diak.finna.fi',
+          'image' => 'diak.jpg'
+        ],
+        [
+          'name' => '0/HAAGA-HELIA/',
+          'domain' => 'haagahelia.finna.fi',
+          'image' => 'haagahelia.jpg'
+        ],
+        [
+          'name' => '0/HUMAK/',
+          'domain' => 'humak.finna.fi',
+          'image' => 'humak.jpg'
+        ],
+        [
+          'name' => 'source_HAMK',
+          'domain' => 'hamk.finna.fi',
+          'image' => 'hamk.jpg'
+        ],
+        [
+          'name' => '0/JAMK/',
+          'domain' => 'janet.finna.fi',
+          'image' => 'janet.jpg'
+        ],
+        [
+          'name' => '0/XAMK/',
+          'domain' => 'kaakkuri.finna.fi',
+          'image' => 'kaakkuri.jpg'
+        ],
+        [
+          'name' => '0/KAMK/',
+          'domain' => 'kamk.finna.fi',
+          'image' => 'kamk.jpg'
+        ],
+        [
+          'name' => '0/KARELIA/',
+          'domain' => 'karelia.finna.fi',
+          'image' => 'karelia.jpg'
+        ],
+        [
+          'name' => 'library_luc_lapinamk',
+          'domain' => 'luc.finna.fi/lapinamk',
+          'image' => 'luc_lapinamk.jpg'
+        ],
+        [
+          'name' => '0/LAUREA/',
+          'domain' => 'laurea.finna.fi',
+          'image' => 'laurea.jpg'
+        ],
+        [
+          'name' => '0/METROPOLIA/',
+          'domain' => 'metropolia.finna.fi',
+          'image' => 'metropolia.jpg'
+        ],
+        [
+          'name' => '0/OAMK/',
+          'domain' => 'oamk.finna.fi',
+          'image' => 'oamk.jpg'
+        ],
+        [
+          'name' => '0/SAMK/',
+          'domain' => 'samk.finna.fi',
+          'image' => 'samk.jpg'
+        ],
+        [
+          'name' => '0/SAVONIA/',
+          'domain' => 'savonia.finna.fi',
+          'image' => 'savonia.jpg'
+        ],
+        [
+          'name' => '0/SEAMK/',
+          'domain' => 'seamk.finna.fi',
+          'image' => 'seamk.jpg'
+        ],
+        [
+          'name' => '0/TRITONIA-VAMK/',
+          'domain' => 'tritonia.finna.fi/vamk',
+          'image' => 'vamk.jpg'
+        ],
+        [
+          'name' => '0/TRITONIA-NOVIA/',
+          'domain' => 'tritonia.finna.fi/novia',
+          'image' => 'novia.jpg'
+        ],
+        [
+          'name' => '0/TUAMK/',
+          'domain' => 'turkuamk.finna.fi',
+          'image' => 'turkuamk.jpg'
+        ],
+      ]
+    ],
+    [
+      'id' => 'speciallib',
+      'heading' => 'Special libraries',
+      'items' => [
+        [
+          'name' => '0/EKK/',
+          'domain' => 'eduskunnankirjasto.finna.fi',
+          'image' => 'eduskunnankirjasto.jpg'
+        ],
+        [
+          'name' => '0/FINLIT/',
+          'domain' => 'finlit.finna.fi',
+          'image' => 'finlit.jpg'
+        ],
+        [
+          'name' => '0/STAT/',
+          'domain' => 'tilastokeskus.finna.fi',
+          'image' => 'tilastokeskus.jpg'
+        ],
+        [
+          'name' => '0/NRL/',
+          'domain' => 'vaari.finna.fi',
+          'image' => 'vaari.jpg'
+        ],
+      ]
+    ],
+    [
+      'id' => 'jointlib',
+      'heading' => 'Joint libraries',
+      'items' => [
+        [
+          'name' => '0/LUC/',
+          'domain' => 'luc.finna.fi',
+          'image' => 'luc.jpg'
+        ],
+        [
+          'name' => '0/TRITONIA/',
+          'domain' => 'tritonia.finna.fi',
+          'image' => 'tritonia.jpg'
+        ],
+      ]
+    ],
+    [
+      'id' => 'publiclib',
+      'heading' => 'Public Libraries',
+      'items' => [
+        [
+          'name' => '0/Anders/',
+          'domain' => 'anders.finna.fi',
+          'image' => 'anders.jpg'
+        ],
+        [
+          'name' => '0/Blanka/',
+          'domain' => 'blanka.finna.fi',
+          'image' => 'blanka.jpg'
+        ],
+        [
+          'name' => 'library_eepos',
+          'domain' => 'eepos.finna.fi',
+          'image' => 'eepos.jpg'
+        ],
+        [
+          'name' => '0/Heili/',
+          'domain' => 'heili.finna.fi',
+          'image' => 'heili.jpg'
+        ],
+        [
+          'name' => '0/Helle/',
+          'domain' => 'helle.finna.fi',
+          'image' => 'helle.jpg'
+        ],
+        [
+          'name' => '0/Kainet/',
+          'domain' => 'kainet.finna.fi',
+          'image' => 'kainet.jpg'
+        ],
+        [
+          'name' => '0/Kirkes/',
+          'domain' => 'kirkes.finna.fi',
+          'image' => 'kirkes.jpg'
+        ],
+        [
+          'name' => '0/Keski/',
+          'domain' => 'keski.finna.fi',
+          'image' => 'keski.jpg'
+        ],
+        [
+          'name' => '0/Kuopio/',
+          'domain' => 'kuopio.finna.fi',
+          'image' => 'kuopio.jpg'
+        ],
+        [
+          'name' => '0/Kyyti/',
+          'domain' => 'kyyti.finna.fi',
+          'image' => 'kyyti.jpg'
+        ],
+        [
+          'name' => '0/Lapinkirjasto/',
+          'domain' => 'lapinkirjasto.finna.fi',
+          'image' => 'lapinkirjasto.jpg'
+        ],
+        [
+          'name' => '0/lep/',
+          'domain' => 'leppavirta.finna.fi',
+          'image' => 'leppavirta.jpg'
+        ],
+        [
+          'name' => '0/Lastu/',
+          'domain' => 'lastu.finna.fi',
+          'image' => 'lastu.jpg'
+        ],
+        [
+          'name' => '0/Louna/',
+          'domain' => 'louna.finna.fi',
+          'image' => 'louna.jpg'
+        ],
+        [
+          'name' => '0/Lukki/',
+          'domain' => 'lukki.finna.fi',
+          'image' => 'lukki.jpg'
+        ],
+        [
+          'name' => '0/Lumme/',
+          'domain' => 'lumme.finna.fi',
+          'image' => 'lumme.jpg'
+        ],
+        [
+          'name' => '0/Outi/',
+          'domain' => 'outi.finna.fi',
+          'image' => 'outi.jpg'
+        ],
+        [
+          'name' => '0/Satakirjastot/',
+          'domain' => 'satakirjastot.finna.fi',
+          'image' => 'satakirjastot.jpg'
+        ],
+        [
+          'name' => '0/sii/',
+          'domain' => 'siilinjarvenkirjasto.finna.fi',
+          'image' => 'siilinjarvi.jpg'
+        ],
+        [
+          'name' => '0/Somero/',
+          'domain' => 'somero.finna.fi',
+          'image' => 'somero.jpg'
+        ],
+        [
+          'name' => '0/Sotkamo/',
+          'domain' => 'sotkamo.finna.fi',
+          'image' => 'sotkamo.jpg'
+        ],
+        [
+          'name' => '0/Tiekko/',
+          'domain' => 'tiekko.finna.fi',
+          'image' => 'tiekko.jpg'
+        ],
+        [
+          'name' => '0/Vaarakirjastot/',
+          'domain' => 'vaara.finna.fi',
+          'image' => 'vaara.jpg'
+        ],
+        [
+          'name' => '0/Vaski/',
+          'domain' => 'vaski.finna.fi',
+          'image' => 'vaski.jpg'
+        ],
+      ]
+    ],
+    [
+      'id' => 'univlib',
+      'heading' => 'University Libraries',
+      'items' => [
+        [
+          'name' => '0/AALTO/',
+          'domain' => 'aalto.finna.fi',
+          'image' => 'aalto.jpg'
+        ],
+        [
+          'name' => '0/JYU/',
+          'domain' => 'jyu.finna.fi',
+          'image' => 'jyu.jpg'
+        ],
+        [
+          'name' => '0/NLF/',
+          'domain' => 'kansalliskirjasto.finna.fi',
+          'image' => 'kansalliskirjasto.jpg'
+        ],
+        [
+          'name' => 'library_luc_ulapland',
+          'domain' => 'luc.finna.fi/ulapland',
+          'image' => 'luc_ulapland.jpg'
+        ],
+        [
+          'name' => '0/MPKK/',
+          'domain' => 'mpkk.finna.fi',
+          'image' => 'mpkk.jpg'
+        ],
+        [
+          'name' => '0/OY/',
+          'domain' => 'oula.finna.fi',
+          'image' => 'oula.jpg'
+        ],
+        [
+          'name' => '0/SHH/',
+          'domain' => 'hanken.finna.fi',
+          'image' => 'hanken.jpg'
+        ],
+        [
+          'name' => '0/TAIY/',
+          'domain' => 'uniarts.finna.fi',
+          'image' => 'uniarts.jpg'
+        ],
+        [
+          'name' => '0/TRITONIA-UVA/',
+          'domain' => 'tritonia.finna.fi/uva',
+          'image' => 'uva.jpg'
+        ],
+        [
+          'name' => 'tritonia_abo',
+          'domain' => 'tritonia.finna.fi/abo',
+          'image' => 'tritonia_aboakademi.jpg'
+        ],
+        [
+          'name' => '0/AA/',
+          'domain' => 'abo.finna.fi',
+          'image' => 'abo.jpg'
+        ],
+      ]
+    ],
+    [
+      'id' => 'regionallib',
+      'heading' => 'Regional views',
+      'items' => [
+        [
+          'name' => '0/Jyväskylän kirjastot/',
+          'domain' => 'jyvaskyla.finna.fi',
+          'image' => 'jyvaskyla.jpg'
+        ],
+      ]
+    ]
+  ];
+?>
 
-<div class="organisation-list-group">
-  <h4><a id="archives"><?=$this->transEsc('Archives')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://aaltoarkisto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/aaltoarkisto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'aaltoarkisto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/AALTOARKISTO/')?></p>
-      <p class="organisation-list-url">aaltoarkisto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://lasipalatsi.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/albumitauki.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lasipalatsi.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/lasipalatsi/')?></p>
-      <p class="organisation-list-url">lasipalatsi.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kavi.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kavi.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'sls.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/KAVI/')?></p>
-      <p class="organisation-list-url">kavi.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://sls.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/sls.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'sls.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SLS/')?></p>
-      <p class="organisation-list-url">sls.finna.fi</p></a>
+<?php foreach ($groups as $group): ?>
+  <div class="organisation-list-group">
+    <h4 id="<?=$this->escapeHtmlAttr($group['id'])?>"><?=$this->transEsc($group['heading'])?></h4>
+    <div class="organisation-list-inner-row">
+      <?php foreach ($group['items'] as $current): ?>
+        <div class="organisation-list-item">
+          <a href="https://<?=$this->escapeHtmlAttr($current['domain'])?>"><img src="<?=$this->imageLink('finnafrontpages/' . $current['image'])?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => $current['domain']]); ?>">
+            <p class="organisation-list-header"><?=$this->transEsc($current['name'])?></p>
+            <p class="organisation-list-url"><?=$this->escapeHtml($current['domain'])?></p>
+          </a>
+        </div>
+      <?php endforeach; ?>
     </div>
   </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="museums"><?=$this->transEsc('Museums')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://museovirasto.finna.fi/arkeologia"><img src="<?=$this->imageLink('finnafrontpages/arkeologia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'museovirasto.finna.fi/arkeologia']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('1/Museovirasto/Arkeologian kuvakokoelma/')?></p>
-      <p class="organisation-list-url">museovirasto.finna.fi/arkeologia</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://ekm.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/ekm.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'ekm.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/ESPOO_KAUPMUS/')?></p>
-      <p class="organisation-list-url">ekm.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://hkm.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hkm.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'hkm.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HKM/')?></p>
-      <p class="organisation-list-url">hkm.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://hkm.finna.fi/elanto2"><img src="<?=$this->imageLink('finnafrontpages/hkmelanto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'hkm.finna.fi/elanto2/']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HKM/')?></p>
-      <p class="organisation-list-url">hkm.finna.fi/elanto</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://hrm.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hrm.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'hrm.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HOTELLI- JA RAVINTOLAMUSEO/')?></p>
-      <p class="organisation-list-url">hrm.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://muistaja.finna.fi/hyvinkaan_kaupunginmuseo"><img src="<?=$this->imageLink('finnafrontpages/hyvinkaankaupunginmuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'muistaja.finna.fi/hyvinkaan_kaupunginmuseo']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HYVINKAAMUSEO/')?></p>
-      <p class="organisation-list-url">muistaja.finna.fi/hyvinkaan_kaupunginmuseo</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://museovirasto.finna.fi/joka"><img src="<?=$this->imageLink('finnafrontpages/joka.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'museovirasto.finna.fi/joka']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('1/Museovirasto/JOKA Journalistinen kuva-arkisto/')?></p>
-      <p class="organisation-list-url">museovirasto.finna.fi/joka</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://suomenkansallismuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kansallismuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'suomenkansallismuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Suomen kansallismuseo/')?></p>
-      <p class="organisation-list-url">suomenkansallismuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://muistaja.finna.fi/keravan_museopalvelut"><img src="<?=$this->imageLink('finnafrontpages/keravanmuseopalvelut.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'muistaja.finna.fi/keravan_museopalvelut']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/KERAVAMUSEO/')?></p>
-      <p class="organisation-list-url">muistaja.finna.fi/keravan_museopalvelut</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://lappeenrannanmuseot.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/lappeenrannanmuseot.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lappeenrannanmuseot.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/LPRMUSEOT/')?></p>
-      <p class="organisation-list-url">lappeenrannanmuseot.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://museot.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/museot.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'museot.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('Museums')?></p>
-      <p class="organisation-list-url">museot.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://museovirasto.finna.fi/"><img src="<?=$this->imageLink('finnafrontpages/museovirasto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'museovirasto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Museovirasto/')?></p>
-      <p class="organisation-list-url">museovirasto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://muistaja.finna.fi/mantsalan_museopalvelut"><img src="<?=$this->imageLink('finnafrontpages/mantsalanmuseopalvelut.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'muistaja.finna.fi/mantsalan_museopalvelut']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/MANTSALAMUSEO/')?></p>
-      <p class="organisation-list-url">muistaja.finna.fi/mantsalan_museopalvelut</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://muistaja.finna.fi/nurmijarven_museo"><img src="<?=$this->imageLink('finnafrontpages/nurmijarvenmuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'muistaja.finna.fi/nurmijarven_museo']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/NURMIJARVIMUSEO/')?></p>
-      <p class="organisation-list-url">muistaja.finna.fi/nurmijarven_museo</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://muistaja.finna.fi/riihimaen_kaupunginmuseo"><img src="<?=$this->imageLink('finnafrontpages/riihimaenmuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'muistaja.finna.fi/riihimaen_kaupunginmuseo']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/RIIHIMAENMUSEO/')?></p>
-      <p class="organisation-list-url">muistaja.finna.fi/riihimaen_kaupunginmuseo</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://siida.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/siida.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'siida.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SIIDA/')?></p>
-      <p class="organisation-list-url">siida.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://satakunnanmuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/satakunnanmuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'satakunnanmuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SATMUSEO/')?></p>
-      <p class="organisation-list-url">satakunnanmuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://ilmailumuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/ilmailumuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'ilmailumuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/ilmailumuseo/')?></p>
-      <p class="organisation-list-url">ilmailumuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kellomuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kellomuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kellomuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/KELLOMUSEO/')?></p>
-      <p class="organisation-list-url">kellomuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://lelumuseohevosenkenka.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/lelumuseohevosenkenka.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lelumuseohevosenkenka.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HEVOSENKENKA/')?></p>
-      <p class="organisation-list-url">lelumuseohevosenkenka.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://rautatiemuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/rautatiemuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'rautatiemuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SRM/')?></p>
-      <p class="organisation-list-url">rautatiemuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://urheilumuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/sum.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'urheilumuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SUM/')?></p>
-      <p class="organisation-list-url">urheilumuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://vantaankaupunginmuseo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/vantaankaupunginmuseo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'vantaankaupunginmuseo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/VANTAA/')?></p>
-      <p class="organisation-list-url">vantaankaupunginmuseo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://piipunjuurella.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/piipunjuurella.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'piipunjuurella.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/VARKAUDENMUSEOT/')?></p>
-      <p class="organisation-list-url">piipunjuurella.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="polylib"><?=$this->transEsc('Polytechnic Libraries')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://arcada.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/arcada.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'arcada.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/ARCADA/')?></p>
-      <p class="organisation-list-url">arcada.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://centria.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/centria.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'centria.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/CENTRIA/')?></p>
-      <p class="organisation-list-url">centria.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://diak.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/diak.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'diak.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/DIAK/')?></p>
-      <p class="organisation-list-url">diak.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://haagahelia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/haagahelia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'haagahelia.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HAAGA-HELIA/')?></p>
-      <p class="organisation-list-url">haagahelia.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://humak.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/humak.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'humak.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/HUMAK/')?></p>
-      <p class="organisation-list-url">humak.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://hamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'hamk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('source_HAMK')?></p>
-      <p class="organisation-list-url">hamk.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://janet.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/janet.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'janet.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/JAMK/')?></p>
-      <p class="organisation-list-url">janet.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kaakkuri.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kaakkuri.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kaakkuri.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/XAMK/')?></p>
-      <p class="organisation-list-url">kaakkuri.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kamk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/KAMK/')?></p>
-      <p class="organisation-list-url">kamk.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://karelia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/karelia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'karelia.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/KARELIA/')?></p>
-      <p class="organisation-list-url">karelia.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://luc.finna.fi/lapinamk"><img src="<?=$this->imageLink('finnafrontpages/luc_lapinamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi/lapinamk']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('library_luc_lapinamk')?></p>
-      <p class="organisation-list-url">luc.finna.fi/lapinamk</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://laurea.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/laurea.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'laurea.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/LAUREA/')?></p>
-      <p class="organisation-list-url">laurea.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://metropolia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/metropolia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'metropolia.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/METROPOLIA/')?></p>
-      <p class="organisation-list-url">metropolia.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://oamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/oamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'oamk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/OAMK/')?></p>
-      <p class="organisation-list-url">oamk.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://samk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/samk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'samk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SAMK/')?></p>
-      <p class="organisation-list-url">samk.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://savonia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/savonia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'savonia.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SAVONIA/')?></p>
-      <p class="organisation-list-url">savonia.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://seamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/seamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'seamk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SEAMK/')?></p>
-      <p class="organisation-list-url">seamk.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tritonia.finna.fi/vamk"><img src="<?=$this->imageLink('finnafrontpages/vamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'https://tritonia.finna.fi/vamk/']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA-VAMK/')?></p>
-      <p class="organisation-list-url">tritonia.finna.fi/vamk</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tritonia.finna.fi/novia"><img src="<?=$this->imageLink('finnafrontpages/novia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'https://tritonia.finna.fi/novia/']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA-NOVIA/')?></p>
-      <p class="organisation-list-url">tritonia.finna.fi/novia</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://turkuamk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/turkuamk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'turkuamk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/TUAMK/')?></p>
-      <p class="organisation-list-url">turkuamk.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="speciallib"><?=$this->transEsc('Special libraries')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://eduskunnankirjasto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/eduskunnankirjasto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'eduskunnankirjasto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/EKK/')?></p>
-      <p class="organisation-list-url">eduskunnankirjasto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://finlit.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/finlit.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'finlit.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/FINLIT/')?></p>
-      <p class="organisation-list-url">finlit.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tilastokeskus.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/tilastokeskus.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'tilastokeskus.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/STAT/')?></p>
-      <p class="organisation-list-url">tilastokeskus.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://vaari.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/vaari.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'vaari.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/NRL/')?></p>
-      <p class="organisation-list-url">vaari.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="jointlib"><?=$this->transEsc('Joint libraries')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://luc.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/luc.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/LUC/')?></p>
-      <p class="organisation-list-url">luc.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tritonia.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/tritonia.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'tritonia.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA/')?></p>
-      <p class="organisation-list-url">tritonia.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="publiclib"><?=$this->transEsc('Public Libraries')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://anders.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/anders.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'anders.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Anders/')?></p>
-      <p class="organisation-list-url">anders.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://blanka.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/blanka.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'blanka.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Blanka/')?></p>
-      <p class="organisation-list-url">blanka.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://eepos.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/eepos.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'eepos.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('library_eepos')?></p>
-      <p class="organisation-list-url">eepos.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://heili.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/heili.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'heili.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Heili/')?></p>
-      <p class="organisation-list-url">heili.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://helle.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/helle.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kirkes.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Helle/')?></p>
-      <p class="organisation-list-url">helle.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kainet.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kainet.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kainet.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Kainet/')?></p>
-      <p class="organisation-list-url">kainet.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kirkes.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kirkes.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kirkes.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Kirkes/')?></p>
-      <p class="organisation-list-url">kirkes.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://keski.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/keski.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'keski.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Keski/')?></p>
-      <p class="organisation-list-url">keski.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kuopio.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kuopio.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kuopio.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Kuopio/')?></p>
-      <p class="organisation-list-url">kuopio.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kyyti.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kyyti.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kyyti.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Kyyti/')?></p>
-      <p class="organisation-list-url">kyyti.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://lapinkirjasto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/lapinkirjasto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lapinkirjasto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Lapinkirjasto/')?></p>
-      <p class="organisation-list-url">lapinkirjasto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://leppavirta.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/leppavirta.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lastu.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/lep/')?></p>
-      <p class="organisation-list-url">leppavirta.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://lastu.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/lastu.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lastu.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Lastu/')?></p>
-      <p class="organisation-list-url">lastu.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://louna.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/louna.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lumme.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Louna/')?></p>
-      <p class="organisation-list-url">louna.finna.fi</p></a>
-     </div>
-    <div class="organisation-list-item"> <a href="https://lukki.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/lukki.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lukki.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Lukki/')?></p>
-      <p class="organisation-list-url">lukki.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://lumme.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/lumme.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'lumme.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Lumme/')?></p>
-      <p class="organisation-list-url">lumme.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://outi.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/outi.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'outi.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Outi/')?></p>
-      <p class="organisation-list-url">outi.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://satakirjastot.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/satakirjastot.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'satakirjastot.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Satakirjastot/')?></p>
-      <p class="organisation-list-url">satakirjastot.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://siilinjarvenkirjasto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/siilinjarvi.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'siilinjarvenkirjasto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/sii/')?></p>
-      <p class="organisation-list-url">siilinjarvenkirjasto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://somero.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/somero.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'somero.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Somero/')?></p>
-      <p class="organisation-list-url">somero.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://sotkamo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/sotkamo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'sotkamo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Sotkamo/')?></p>
-      <p class="organisation-list-url">sotkamo.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tiekko.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/tiekko.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'tiekko.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Tiekko/')?></p>
-      <p class="organisation-list-url">tiekko.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://vaara.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/vaara.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'vaara.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Vaarakirjastot/')?></p>
-      <p class="organisation-list-url">vaara.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://vaski.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/vaski.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'vaski.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Vaski/')?></p>
-      <p class="organisation-list-url">vaski.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="univlib"><?=$this->transEsc('University Libraries')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://aalto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/aalto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'aalto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/AALTO/')?></p>
-      <p class="organisation-list-url">aalto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://jyu.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/jyu.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'jyu.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/JYU/')?></p>
-      <p class="organisation-list-url">jyu.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://kansalliskirjasto.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/kansalliskirjasto.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'kansalliskirjasto.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/NLF/')?></p>
-      <p class="organisation-list-url">kansalliskirjasto.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://luc.finna.fi/ulapland"><img src="<?=$this->imageLink('finnafrontpages/luc_ulapland.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'luc.finna.fi/ulapland']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('library_luc_ulapland')?></p>
-      <p class="organisation-list-url">luc.finna.fi/ulapland</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://mpkk.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/mpkk.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'mpkk.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/MPKK/')?></p>
-      <p class="organisation-list-url">mpkk.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://oula.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/oula.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'oula.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/OY/')?></p>
-      <p class="organisation-list-url">oula.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://hanken.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/hanken.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'hanken.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/SHH/')?></p>
-      <p class="organisation-list-url">hanken.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://uniarts.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/uniarts.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'uniarts.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/TAIY/')?></p>
-      <p class="organisation-list-url">uniarts.finna.fi</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tritonia.finna.fi/uva"><img src="<?=$this->imageLink('finnafrontpages/uva.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'tritonia.finna.fi/uva']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/TRITONIA-UVA/')?></p>
-      <p class="organisation-list-url">tritonia.finna.fi/uva</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://tritonia.finna.fi/abo"><img src="<?=$this->imageLink('finnafrontpages/tritonia_aboakademi.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'tritonia.finna.fi/abo']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('tritonia_abo')?></p>
-      <p class="organisation-list-url">tritonia.finna.fi/abo</p></a>
-    </div>
-    <div class="organisation-list-item"> <a href="https://abo.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/abo.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'abo.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/AA/')?></p>
-      <p class="organisation-list-url">abo.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
-<div class="organisation-list-group">
-  <h4><a id="regionallib"><?=$this->transEsc('Regional views')?></a></h4>
-  <div class="organisation-list-inner-row">
-    <div class="organisation-list-item"> <a href="https://jyvaskyla.finna.fi"><img src="<?=$this->imageLink('finnafrontpages/jyvaskyla.jpg')?>" alt="<?=$this->transEscAttr('screenshot_alt_text', ['%%siteurl%%' => 'jyvaskyla.finna.fi']); ?>">
-      <p class="organisation-list-header"><?=$this->transEsc('0/Jyväskylän kirjastot/')?></p>
-      <p class="organisation-list-url">jyvaskyla.finna.fi</p></a>
-    </div>
-  </div>
-</div>
-
+<?php endforeach; ?>
 <!-- END of: finna - content/about_finna_sites.phtml -->
