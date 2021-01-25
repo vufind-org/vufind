@@ -1,7 +1,7 @@
 <!-- START of: finna - RecordDriver/DefaultRecord/external-interface-link.phtml -->
 <div class="external-interface-link">
   <a role="button" class="btn btn-primary" href="<?=$this->escapeHtmlAttr($this->link)?>" target="_blank">
-  <?=$this->transEsc('title_hold_place')?> (<?=$this->transEsc('external_link')?>) <span class="sr-only">(<?=$this->transEsc('Open in a new window')?>)</span>
-  </a>
+    <?=$this->transEsc('external_hold_and_services_link')?> <i class="fa fa-new-window" aria-hidden="true"></i> <span class="sr-only">(<?=$this->transEsc('Open in a new window') . '. ' . $this->transEsc('external_link') . '.'?>)</span>
+  </a> <span class="external-link-desc">(<?=$this->transEsc('external_link')?>)</span>
 </div>
 <!-- END of: finna - RecordDriver/DefaultRecord/external-interface-link.phtml -->
