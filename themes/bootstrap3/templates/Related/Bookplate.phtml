@@ -1,0 +1,5 @@
+<?php $bookplates = $this->related->getBookplates(); ?>
+<?php foreach($bookplates as $bookplate): ?>
+  <img src="<?=$bookplate[1]?>" alt="<?=$bookplate[0]?> bookplate" />
+  <?=$bookplate[0];?>
+<? endforeach; ?>

@@ -88,26 +88,4 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->get('config')->Content->ajaxcovers ?? false;
     }
-
-    /**
-     * Should donor bookplates be displayed?
-     *
-     * @return bool
-     */
-    public function donorBookplatesEnabled()
-    {
-        return $this->get('config')->Content->showDonorBookplates
-          && $this->get('config')->Content->donorBookplateUrl ?? false;
-    }
-
-    /**
-     * Donor bookplate image URL.
-     *
-     * @return string
-     */
-    public function donorBookplatesImageUrl()
-    {
-        return $this->get('config')->Content->donorBookplateUrl
-          ? $this->get('config')->Content->donorBookplateUrl : '';
-    }
 }

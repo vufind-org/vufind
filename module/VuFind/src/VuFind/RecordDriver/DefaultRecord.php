@@ -1728,7 +1728,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getDonorName()
+    public function getBookplateStrings()
     {
         return isset($this->fields['donor']) ?
             $this->fields['donor'] : [];
@@ -1739,7 +1739,7 @@ class DefaultRecord extends AbstractBase
      *
      * @return array
      */
-    public function getDonorCode()
+    public function getBookplateUrls()
     {
         return isset($this->fields['donor_code']) ?
             $this->fields['donor_code'] : [];

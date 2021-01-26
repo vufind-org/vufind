@@ -76,16 +76,6 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <?php $donorNames = $this->driver->getDonorName() ?>
-    <?php $donorCodes = $this->driver->getDonorCode() ?>
-    <?php $hasDonorBookplates = $this->config()->donorBookplatesEnabled() && !empty($donorNames) && !empty($donorCodes) ;?>
-    <?php if($hasDonorBookplates): ?>
-      <? foreach ($donorNames as $i => $donor): ?>
-        <?php $imgUrl = $this->config()->donorBookplatesImageUrl() . strtolower($donorCodes[$i]) . '-full.jpg'; ?>
-        <img src="<?=$imgUrl?>" alt="<?=$donor?> bookplate" />
-        <?=$donor?>
-      <? endforeach; ?>
-    <?php endif; ?>
     <?php foreach ($sidebarList as $current): ?>
       <?=$this->related()->render($current)?>
     <?php endforeach; ?>
