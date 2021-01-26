@@ -74,7 +74,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     {
         if (empty($rangeReferences)) {
             // if no references were found for given query, search for a range which doesn't exist to get no result.
-            $rangeReferences = ["[1970-01-01T00:00:00Z TO 1980-12-31T23:59:59Z]"];
+            $rangeReferences = ["999999999_999999999"];
         }
         $searchString = implode(',', $rangeReferences);
         return $searchString;
