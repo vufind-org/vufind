@@ -89,6 +89,7 @@ class TemplateBased implements ContentBlockInterface
 
         $method = isset($data) ? 'getContextFor' . ucwords($data['renderer'])
             : false;
+
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
             : [];
