@@ -71,19 +71,29 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * List of words to never capitalize when using title case.
      *
      * Some words that were considered for this list, but excluded due to their
-     * potential ambiguity: down, near, out, past, round, up
+     * potential ambiguity: down, near, out, past, up
+     *
+     * Some words that were considered, but excluded because they were five or
+     * more characters in length: about, above, across, after, against, along,
+     * among, around, before, behind, below, beneath, beside, between, beyond,
+     * despite, during, except,  inside, opposite, outside, round, since, through,
+     * towards, under, underneath, unlike, until, within, without
      *
      * @var string[]
      */
     protected $uncappedWords = [
-        'a', 'about', 'above', 'across', 'after', 'against', 'along', 'among',
-        'an', 'and', 'around', 'as', 'at', 'before', 'behind', 'below',
-        'beneath', 'beside', 'between', 'beyond', 'but', 'by', 'despite',
-        'during', 'except', 'for', 'from', 'from', 'in', 'inside', 'into',
-        'like', 'nor', 'of', 'off', 'on', 'onto', 'opposite', 'or', 'outside',
-        'over', 'since', 'so', 'than', 'the', 'through', 'to', 'towards',
-        'under', 'underneath', 'unlike', 'until', 'upon', 'via', 'with', 'within',
-        'without', 'yet',
+        'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'from', 'in',
+        'into', 'like', 'nor', 'of', 'off', 'on', 'onto', 'or', 'over', 'so',
+        'than', 'the', 'to', 'upon', 'via', 'with', 'yet',
+    ];
+
+    /**
+     * List of multi-word phrases to never capitalize when using title case.
+     *
+     * @var string[]
+     */
+    protected $uncappedPhrases = [
+        'even if', 'if only', 'now that', 'on top of'
     ];
 
     /**
@@ -661,7 +671,24 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $followsColon = substr($word, -1) == ':';
         }
 
-        return ucfirst(join(' ', $newwords));
+        // We've dealt with capitalization of words; now we need to deal with
+        // multi-word phrases:
+        $adjustedTitle = ucfirst(join(' ', $newwords));
+        foreach ($this->uncappedPhrases as $phrase) {
+            // We need to cover two cases: the phrase at the start of a title,
+            // and the phrase in the middle of a title:
+            $adjustedTitle = preg_replace(
+                '/^' . $phrase . '\b/i',
+                strtoupper(substr($phrase, 0, 1)) . substr($phrase, 1),
+                $adjustedTitle
+            );
+            $adjustedTitle = preg_replace(
+                '/(.+)\b' . $phrase . '\b/i',
+                '$1' . $phrase,
+                $adjustedTitle
+            );
+        }
+        return $adjustedTitle;
     }
 
     /**
