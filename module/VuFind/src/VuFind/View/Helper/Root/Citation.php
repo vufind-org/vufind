@@ -118,6 +118,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     {
         // Build author list:
         $authors = (array)$driver->tryMethod('getPrimaryAuthors');
+        $corporateAuthors = [];
         if (empty($authors)) {
             // Corporate authors are more likely to have inappropriate trailing
             // punctuation; strip it off, unless the last word is short, like
@@ -126,7 +127,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 return preg_match('/\s+.{1,3}\.$/', $str)
                     ? $str : rtrim($str, '.');
             };
-            $authors = array_map(
+            $corporateAuthors = $authors = array_map(
                 $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
             );
         }
@@ -159,6 +160,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $this->driver = $driver;
         $this->details = [
             'authors' => $this->prepareAuthors($authors),
+            'corporateAuthors' => $this->prepareAuthors($corporateAuthors),
             'title' => trim($title), 'subtitle' => trim($subtitle),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
@@ -728,7 +730,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $ellipsis = false;
             $authorCount = count($this->details['authors']);
             foreach ($this->details['authors'] as $author) {
-                $author = $this->abbreviateName($author);
+                // Do not abbreviate corporate authors:
+                $author = in_array($author, $this->details['corporateAuthors'])
+                    ? $author : $this->abbreviateName($author);
                 if (($i + 1 == $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
@@ -802,6 +806,20 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Format an author name for inclusion as the first name in an MLA citation.
+     *
+     * @param string $author Name to reformat.
+     *
+     * @return string
+     */
+    protected function formatPrimaryMLAAuthor($author)
+    {
+        // Corporate authors should not be reformatted:
+        return in_array($author, $this->details['corporateAuthors'])
+            ? $author : $this->cleanNameDates($author);
+    }
+
+    /**
      * Format an author name for inclusion in an MLA citation (after the primary
      * name, which gets formatted differently).
      *
@@ -834,10 +852,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $i = 0;
             if (count($this->details['authors']) > $etAlThreshold) {
                 $author = $this->details['authors'][0];
-                $authorStr = $this->cleanNameDates($author) . ', et al.';
+                $authorStr = $this->formatPrimaryMLAAuthor($author) . ', et al.';
             } else {
                 foreach ($this->details['authors'] as $rawAuthor) {
-                    $author = $this->cleanNameDates($rawAuthor);
+                    $author = $this->formatPrimaryMLAAuthor($rawAuthor);
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         // Only add a comma if there are commas already in the
