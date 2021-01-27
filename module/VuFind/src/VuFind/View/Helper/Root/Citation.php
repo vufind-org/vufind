@@ -116,8 +116,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($driver)
     {
+        // Store the driver first, since we will need it for prepareAuthors checks.
+        $this->driver = $driver;
+
         // Build author list:
-        $authors = (array)$driver->tryMethod('getPrimaryAuthors');
+        $authors = $this->prepareAuthors(
+            (array)$driver->tryMethod('getPrimaryAuthors')
+        );
         $corporateAuthors = [];
         if (empty($authors)) {
             // Corporate authors are more likely to have inappropriate trailing
@@ -127,11 +132,15 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 return preg_match('/\s+.{1,3}\.$/', $str)
                     ? $str : rtrim($str, '.');
             };
-            $corporateAuthors = $authors = array_map(
-                $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
+            $corporateAuthors = $authors = $this->prepareAuthors(
+                array_map(
+                    $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
+                ), true
             );
         }
-        $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
+        $secondary = $this->prepareAuthors(
+            (array)$driver->tryMethod('getSecondaryAuthors')
+        );
         if (!empty($secondary)) {
             $authors = array_unique(array_merge($authors, $secondary));
         }
@@ -156,11 +165,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
         $edition = $driver->tryMethod('getEdition');
 
-        // Store everything:
-        $this->driver = $driver;
+        // Store all the collected details:
         $this->details = [
-            'authors' => $this->prepareAuthors($authors),
-            'corporateAuthors' => $this->prepareAuthors($corporateAuthors),
+            'authors' => $authors,
+            'corporateAuthors' => $corporateAuthors,
             'title' => trim($title), 'subtitle' => trim($subtitle),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
@@ -177,19 +185,23 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * This support method (used by the main citation() method) attempts to fix
      * any non-compliant names.
      *
-     * @param array $authors Authors to process.
+     * @param array $authors     Authors to process.
+     * @param bool  $isCorporate Is this a list of corporate authors?
      *
      * @return array
      */
-    protected function prepareAuthors($authors)
+    protected function prepareAuthors($authors, $isCorporate = false)
     {
         $callables = [];
 
         // If this data comes from a MARC record, we can probably assume that
-        // anything without a comma is a valid corporate author that should be
+        // anything without a comma is supposed to be formatted that way. We
+        // also know if we have a valid corporate author name that it should be
         // left alone... otherwise, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)) {
+        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+            && !$isCorporate
+        ) {
             $callables[] = function (string $name): string {
                 $name = $this->cleanNameDates($name);
                 if (!strstr($name, ',')) {
@@ -204,23 +216,26 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             };
         }
 
-        // We always want to apply these standard cleanup routines:
-        $callables[] = function (string $name): string {
-            // Eliminate parenthetical information:
-            $strippedName = trim(preg_replace('/\s\(.*\)/', '', $name));
+        // We always want to apply these standard cleanup routines to non-corporate
+        // authors:
+        if (!$isCorporate) {
+            $callables[] = function (string $name): string {
+                // Eliminate parenthetical information:
+                $strippedName = trim(preg_replace('/\s\(.*\)/', '', $name));
 
-            // Split the text into words:
-            $parts = explode(' ', empty($strippedName) ? $name : $strippedName);
+                // Split the text into words:
+                $parts = explode(' ', empty($strippedName) ? $name : $strippedName);
 
-            // If we have exactly two parts, we should trim any trailing
-            // punctuation from the second part (this reduces the odds of
-            // accidentally trimming a "Jr." or "Sr."):
-            if (count($parts) == 2) {
-                $parts[1] = rtrim($parts[1], '.');
-            }
-            // Put the parts back together; eliminate stray commas:
-            return rtrim(implode(' ', $parts), ',');
-        };
+                // If we have exactly two parts, we should trim any trailing
+                // punctuation from the second part (this reduces the odds of
+                // accidentally trimming a "Jr." or "Sr."):
+                if (count($parts) == 2) {
+                    $parts[1] = rtrim($parts[1], '.');
+                }
+                // Put the parts back together; eliminate stray commas:
+                return rtrim(implode(' ', $parts), ',');
+            };
+        }
 
         // Now apply all of the functions we collected to all of the strings:
         return array_map(
