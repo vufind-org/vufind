@@ -1,0 +1,75 @@
+.finna-panel {
+  .panel-heading {
+    padding: 0;
+  }
+  .finna-panel-heading-inner {
+    display: inline-block;
+    width: 100%;
+    padding: @panel-heading-padding;
+  }
+}
+
+.finna-panel-default {
+  border: 0;
+  box-shadow: none;
+  .panel-heading {
+    outline: 1px solid @gray-lighter;
+    box-shadow: 1px 1px 1px 1px @gray-lighter;
+    background-color: @gray-ultralight;
+  }
+  .finna-panel-heading-inner {
+    padding: 10px;
+  }
+  a.finna-panel-heading-inner {
+    &::before {
+      font-family: finnaicons;
+      content: '\e612';
+    }
+    &.collapsed::before {
+      content: '\e613';
+    }
+  }
+  .panel-collapse,
+  > .panel-body {
+    margin-top: 2px;
+    outline: 1px solid @gray-lighter;
+  }
+  .panel-body {
+    padding: 10px;
+  }
+}
+
+.finna-panel-borderless {
+  border: 0;
+  box-shadow: none;
+  .panel-heading {
+    border: 0;
+    font-size: 1.1em;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 3px rgba(1,1,1,0.3);
+    color: @body-bg;
+    background-color: @gray-light;
+  }
+  .finna-panel-heading-inner {
+    padding: 10px;
+  }
+  a.finna-panel-heading-inner {
+    transition: background .15s ease-in-out;
+    &:hover,
+    &:active {
+      background-color: darken(@gray-light, 15%);
+    }
+    &::after {
+      font-family: finnaicons;
+      content: '\e612';
+      float: right;
+    }
+    &.collapsed::after {
+      content: '\e613';
+    }
+  }
+  .panel-body {
+    padding: 10px;
+  }
+}

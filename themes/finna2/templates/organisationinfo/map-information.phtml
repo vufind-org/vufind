@@ -21,10 +21,10 @@
     </div>
     <div class="flex-item map-buttons">
       <div class="map-ui map-control-buttons" aria-hidden="true">
-        <span class="show-map"><a href="#"><?=$this->translate('organisation_info_page_map_show')?></a></span>
+        <span class="show-map"><a href="#"><?=$this->transEsc('organisation_info_page_map_show')?></a></span>
         <span class="map-controls hidden">
-          <span class="show-service-point"><a href="#"><?= $this->translate('zoom_center') ?></a></span>
-          <span class="show-all"><a href="#"><?=$this->translate('organisation_info_page_map_show_all')?></a></span>
+          <span class="show-service-point"><a href="#"><?= $this->transEsc('zoom_center') ?></a></span>
+          <span class="show-all"><a href="#"><?=$this->transEsc('organisation_info_page_map_show_all')?></a></span>
         </span>
       </div>
     </div>
@@ -45,7 +45,7 @@
   </div>
 </div>
 <div class="office-information-loader">
-  <p><i class="fa fa-spinner fa-spin" style="text-align: center;"></i> <?=$this->translate('Loading')?></p>
+  <p><i class="fa fa-spinner fa-spin" style="text-align: center;"></i> <?=$this->transEsc('Loading')?></p>
 </div>
 <div class="office-quick-information info-element hide">
   <div class="office-title">
@@ -53,21 +53,21 @@
     <div>
       <p>
         <span class="office-links address"></span>
-        <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->translate('organisation_info_route')?></a>
-        <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->translate('organisation_info_reserve_computer')?></a>
-        <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->translate('organisation_info_homepage')?></a></span>
+        <a href="#" target="_blank" class="office-links route info-element"><i class="fa fa-bus"></i> <?=$this->transEsc('organisation_info_route')?></a>
+        <a href="" class="office-links reserve-computer info-element"><i class="fa fa-desktop"></i> <?=$this->transEsc('organisation_info_reserve_computer')?></a>
+        <span class="office-links office-website info-element"><a href="#" target="_blank"><i class="fa fa-home"></i> <?=$this->transEsc('organisation_info_homepage')?></a></span>
       </p>
       <p class="office-links email info-element"><i class="fa fa-envelope"></i> <span class="email"></span></p>
     </div>
   </div>
   <div class="open-closed-info">
     <h4 class="open-or-closed">
-      <span class="library-is-open info-element"><?=$this->translate('organisation_info_is_open')?></span>
-      <span class="library-is-closed info-element"><?=$this->translate('organisation_info_is_closed')?></span>
+      <span class="library-is-open info-element"><?=$this->transEsc('organisation_info_is_open')?></span>
+      <span class="library-is-closed info-element"><?=$this->transEsc('organisation_info_is_closed')?></span>
     </h4>
     <p class="time-open info-element">
-      <span class="opening-times"><i class="fa fa-clock-o"></i> <?=$this->translate('organisation_info_open_today')?> <span class="opens"></span> - <span class="closes"></span></span>
-      <span class="hide staff-times">(<?=$this->translate('organisation_info_schedule_staff')?> <span class="hide shift-template"><span class="opens"></span> - <span class="closes"></span></span>)</span>
+      <span class="opening-times"><i class="fa fa-clock-o"></i> <?=$this->transEsc('organisation_info_open_today')?> <span class="opens"></span> - <span class="closes"></span></span>
+      <span class="hide staff-times">(<?=$this->transEsc('organisation_info_schedule_staff')?> <span class="hide shift-template"><span class="opens"></span> - <span class="closes"></span></span>)</span>
     </p>
   </div>
   <div class="social-button info-element"><a aria-label="Facebook" href="#" target="_blank"><i class="fa fa-facebook"></i></a></div>
@@ -78,73 +78,98 @@
 <div class="row office-information info-element">
   <div class="office-row-general">
     <div class="office-col">
-      <div class="finna-panel introduction">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse1"><?=$this->translate('organisation_info_general')?></a>
-        </h4>
-        <div id="collapse1" class="panel-collapse collapse in">
-          <img class="building-image" src="#" alt=""/>
-          <img class="extra-image" src="#" alt=""/>
-          <img class="extra-image-2" src="#" alt=""/>
-          <p class="building-name info-element"></p>
-          <p class="building-year info-element"><?=$this->translate('organisation_info_building_year')?>: <span></span></p>
-          <p class="office-description description-long info-element"></p>
-        </div>
-      </div>
+      <?php ob_start(); ?>
+        <img class="building-image" src="#" alt=""/>
+        <img class="extra-image" src="#" alt=""/>
+        <img class="extra-image-2" src="#" alt=""/>
+        <p class="building-name info-element"></p>
+        <p class="building-year info-element"><?=$this->transEsc('organisation_info_building_year')?>: <span></span></p>
+        <p class="office-description description-long info-element"></p>
+      <?php $content = ob_get_clean(); ?>
+      <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+          'attributes' => ['class' => ['finna-panel-borderless', 'introduction']],
+          'heading' => $this->transEsc('organisation_info_general'),
+          'headingLevel' => 4,
+          'content' => $content,
+          'headingId' => 'heading1',
+          'collapseId' => 'collapse1',
+          'collapsed' => false
+        ]); ?>
     </div>
-
     <div class="office-col opening-times-widget">
-      <div class="finna-panel opening-times-library-information">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse2"><?=$this->translate('organisation_info_schedules')?></a>
-        </h4>
-        <div id="collapse2" class="panel-collapse collapse in">
-          <?=$this->organisationInfo(['id' => $this->id, 'init' => false, 'target' => 'page'])?>
-        </div>
-      </div>
+      <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+          'attributes' => ['class' => ['finna-panel-borderless', 'opening-times-library-information']],
+          'heading' => $this->transEsc('organisation_info_schedules'),
+          'headingLevel' => 4,
+          'content' => $this->organisationInfo(['id' => $this->id, 'init' => false, 'target' => 'page']),
+          'headingId' => 'heading2',
+          'collapseId' => 'collapse2',
+          'collapsed' => false
+        ]); ?>
     </div>
-
     <div class="office-col">
-      <div class="finna-panel contact-details contact-details-rss info-element">
-        <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 4])?>
-      </div>
-      <div class="finna-panel contact-details contact-details-no-rss info-element">
-        <?=$this->partial('Helpers/organisation-info-contacts', ['id' => 5])?>
-      </div>
+      <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+          'attributes' => ['class' => ['finna-panel-borderless', 'contact-details', 'contact-details-rss', 'info-element']],
+          'heading' => $this->transEsc('organisation_info_contact'),
+          'headingLevel' => 4,
+          'content' => $this->partial('Helpers/organisation-info-contacts'),
+          'headingId' => 'heading3',
+          'collapseId' => 'collapse3',
+          'collapsed' => false
+        ]); ?>
+      <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+          'attributes' => ['class' => ['finna-panel-borderless', 'contact-details', 'contact-details-no-rss', 'info-element']],
+          'heading' => $this->transEsc('organisation_info_contact'),
+          'headingLevel' => 4,
+          'content' => $this->partial('Helpers/organisation-info-contacts'),
+          'headingId' => 'heading4',
+          'collapseId' => 'collapse4',
+          'collapsed' => false
+        ]); ?>
     </div>
   </div>
-  <div class="finna-panel services info-element">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" href="#collapse6"><?=$this->translate('organisation_info_services')?></a>
-    </h4>
-    <div id="collapse6" class="panel-collapse collapse in">
-      <h5 class="service-header hardware hidden"><?= $this->transEsc('kirkanta_hardware') ?></h5>
-      <div class="service-list hardware"></div>
-      <h5 class="service-header room hidden"><?= $this->transEsc('kirkanta_rooms') ?></h5>
-      <div class="service-list room"></div>
-      <h5 class="service-header service hidden"><?= $this->transEsc('kirkanta_services') ?></h5>
-      <div class="service-list service"></div>
-      <h5 class="service-header collection hidden"><?= $this->transEsc('Collections') ?></h5>
-      <div class="service-list collection"></div>
-    </div>
-  </div>
+  <?php ob_start(); ?>
+    <h5 class="service-header hardware hidden"><?= $this->transEsc('kirkanta_hardware') ?></h5>
+    <div class="service-list hardware"></div>
+    <h5 class="service-header room hidden"><?= $this->transEsc('kirkanta_rooms') ?></h5>
+    <div class="service-list room"></div>
+    <h5 class="service-header service hidden"><?= $this->transEsc('kirkanta_services') ?></h5>
+    <div class="service-list service"></div>
+    <h5 class="service-header collection hidden"><?= $this->transEsc('Collections') ?></h5>
+    <div class="service-list collection"></div>
+  <?php $content = ob_get_clean(); ?>
+  <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+      'attributes' => ['class' => ['finna-panel-borderless', 'services', 'info-element']],
+      'heading' => $this->transEsc('organisation_info_services'),
+      'headingLevel' => 4,
+      'content' => $content,
+      'headingId' => 'heading5',
+      'collapseId' => 'collapse5',
+      'collapsed' => false
+    ]); ?>
   <div class="organisation-feeds">
-    <div class="finna-panel news-feed-container rss-container info-element">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse7" class="collapsed"><?=$this->translate('organisation_info_rss_news')?></a>
-      </h4>
-      <div id="collapse7" class="panel-collapse collapse">
-        <div class="feed-container news-feed info-element" data-init="0"></div>
-      </div>
-    </div>
-    <div class="finna-panel events-feed-container rss-container info-element">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" href="#collapse8" class="collapsed"><?=$this->translate('organisation_info_rss_events')?></a>
-      </h4>
-      <div id="collapse8" class="panel-collapse collapse">
-        <div class="feed-container events-feed info-element" data-init="0"></div>
-      </div>
-    </div>
+    <?php ob_start(); ?>
+      <div class="feed-container news-feed info-element" data-init="0"></div>
+    <?php $content = ob_get_clean(); ?>
+    <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+        'attributes' => ['class' => ['finna-panel-borderless', 'news-feed-container', 'rss-container', 'info-element']],
+        'heading' => $this->transEsc('organisation_info_rss_news'),
+        'headingLevel' => 4,
+        'content' => $content,
+        'headingId' => 'heading6',
+        'collapseId' => 'collapse6'
+      ]); ?>
+    <?php ob_start(); ?>
+      <div class="feed-container events-feed info-element" data-init="0"></div>
+    <?php $content = ob_get_clean(); ?>
+    <?= $this->render('components/molecules/containers/finna-panel/finna-panel.phtml', [
+        'attributes' => ['class' => ['finna-panel-borderless', 'events-feed-container', 'rss-container', 'info-element']],
+        'heading' => $this->transEsc('organisation_info_rss_events'),
+        'headingLevel' => 4,
+        'content' => $content,
+        'headingId' => 'heading7',
+        'collapseId' => 'collapse7'
+      ]); ?>
   </div>
 </div>
 <!-- END of: finna - organisationinfo/map-information.phtml -->

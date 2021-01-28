@@ -53,7 +53,6 @@
             margin-right: 3px;
         }
         h4 {
-            margin-bottom: 5px;
             @media (max-width: @screen-sm-max) {
                 max-width: 400px;
             }
@@ -108,11 +107,6 @@
         margin-top: 10px;
     }
 }
-
-
-/*  Begin of organisation own information page styles */
-@finna-panel-header-background: @gray-light;
-@finna-panel-header-color: @body-bg;
 
 .main.template-dir-organisationinfo {
     .office-information-loader {
@@ -498,6 +492,17 @@
             display: none;
             .finna-panel {
                 clear: both;
+                margin-bottom: 3px;
+                &.opening-times-library-information {
+                    .panel-title {
+                        @media (max-width: @screen-xs-max) {
+                            max-width: none;
+                        }
+                    }
+                    .panel-body {
+                        padding: 0;
+                    }
+                }
                 p {
                     margin-bottom: 0 !important;
                     padding-bottom: 0;
@@ -515,45 +520,6 @@
                 }
                 .building-year, .building-name {
                     font-size: 0.9em;
-                }
-                &:not(.opening-times-library-information) .panel-collapse {
-                    padding: 0px 6px 0px 10px;
-                    margin-top: 10px;
-                }
-                .collapse.in {
-                    margin-bottom: 10px;
-                }
-                h4.panel-title {
-                    padding: 0px;
-                    margin-bottom: 3px;
-                    text-shadow: 1px 1px 3px rgba(1,1,1,0.3);
-                    text-transform: uppercase;
-                    letter-spacing: .3px;
-                    font-size: 1.1em;
-                    @media (max-width: @screen-xs-max) {
-                        max-width: none;
-                    }
-                    a {
-                        display: block;
-                        padding: 10px;
-                        padding-right: 20px;
-                        background: @finna-panel-header-background;
-                        color: @finna-panel-header-color;
-                        transition: background .15s ease-in-out;
-                        &:hover, &:active {
-                            text-decoration: none;
-                            background: darken(@finna-panel-header-background, 15%);
-                        }
-                        &:after {
-                            font-family: finnaicons;
-                            content: '\e612';
-                            float: right;
-                            right: 20px;
-                        }
-                        &.collapsed:after {
-                            content: '\e613';
-                        }
-                    }
                 }
                 .office-image {
                     margin-top: 10px;
@@ -605,7 +571,10 @@
             }
             .email-contact, .address-contact, .phone-numbers, .mail-address-contact {
                 margin-bottom: 12px;
-                > strong {
+                > span:first-child {
+                    margin-top: 0;
+                    margin-bottom: 0;
+                    font-weight: bold;
                     text-transform: uppercase;
                 }
             }
@@ -744,43 +713,13 @@
                 }
             }
             .organisation-info-panel {
-                background-color: @gray-ultralight;
-                outline: 1px solid @gray-lighter;
-                box-shadow: 1px 1px 1px 1px @gray-lighter;
-            }
-            .organisation-info-panel, #collapse-usage, #collapse-links {
                 width: 70%;
                 float: right;
                 margin-top: 20px;
+                margin-bottom: 0;
                 @media (max-width: @screen-xs-max) {
                     float: none;
                     width: 100%;
-                }
-            }
-            #collapse-usage, #collapse-links {
-                margin-top: 2px;
-                outline: 1px solid @gray-lighter;
-                padding: 10px;
-            }
-            .collapse-usage, .collapse-links {
-                display: block;
-                padding: 10px;
-                &:before {
-                    content: ' ';
-                    border: solid @gray;
-                    border-width: 0 2px 2px 0;
-                    display: inline-block;
-                    padding: 0 5px 5px 0;
-                    transform: rotate(-135deg);
-                    margin-right: 10px;
-                    margin-top: 5px;
-                    margin-bottom: 0px;
-                }
-                &.collapsed {
-                    &:before {
-                        transform: rotate(45deg);
-                        margin-bottom: 2px;
-                    }
                 }
             }
             .consortium-search-usage {
