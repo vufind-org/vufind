@@ -18,9 +18,9 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     const BIBLE_RANGE_HANDLER = 'BibleRangeSearch';
     const CANONES_RANGE_HANDLER = 'CanonesRangeSearch';
     const TIME_RANGE_HANDLER = 'TimeRangeSearch';
-    const BIBLE_RANGE_PARSER = 'bibleDateRangeParser';
-    const CANONES_RANGE_PARSER = 'canonesDateRangeParser';
-    const TIME_RANGE_PARSER = 'timeAspectDateRangeParser';
+    const BIBLE_RANGE_PARSER = 'bibleRangeParser';
+    const CANONES_RANGE_PARSER = 'canonesRangeParser';
+    const TIME_RANGE_PARSER = 'timeAspectRangeParser';
 
 
     public function build(AbstractQuery $query)
@@ -83,10 +83,10 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
 
     private function getBibleReferenceCommand($searchQuery)
     {
-        setlocale(LC_CTYPE, "en_US.UTF-8");
+        setlocale(LC_CTYPE, "de_DE.UTF-8");
         return implode(' ', [
             self::BIBLE_REFERENCE_COMMAND,
-            "--date-query",
+            "--query",
             escapeshellarg($searchQuery),
             self::BIBLE_REFERENCE_COMMAND_PARAMETERS
         ]);
@@ -96,7 +96,7 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     private function getCanonesReferenceCommand($searchQuery) {
         return implode(' ', [
             self::CANONES_REFERENCE_COMMAND,
-            "--date-query",
+            "--query",
             escapeshellarg($searchQuery)
         ]);
     }
@@ -105,7 +105,6 @@ class QueryBuilder extends \TueFindSearch\Backend\Solr\QueryBuilder
     private function getTimeAspectsCommand($searchQuery) {
         return implode(' ', [
             self::TIME_ASPECTS_COMMAND,
-            "--date-query",
             escapeshellarg($searchQuery)
         ]);
     }
