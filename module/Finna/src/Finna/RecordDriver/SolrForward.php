@@ -711,6 +711,16 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
             }
         }
 
+        // Filter out empty sub-arrays
+        foreach ($result as $key => $current) {
+            if (is_array($current)) {
+                $current = array_filter($current);
+            }
+            if (empty($current)) {
+                unset($result[$key]);
+            }
+        }
+
         return $result;
     }
 
