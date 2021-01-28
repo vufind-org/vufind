@@ -504,6 +504,11 @@ class OrganisationInfo implements \VuFind\I18n\Translator\TranslatorAwareInterfa
         ];
 
         if (!empty($buildings)) {
+            foreach ($buildings as $building) {
+                if ('' !== $building && !ctype_digit((string)$building)) {
+                    throw new \Exception('Invalid building: ' . $building);
+                }
+            }
             if (($buildings = implode(',', $buildings)) != '') {
                 $params['id'] = $buildings;
             }
