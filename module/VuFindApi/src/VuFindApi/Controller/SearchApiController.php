@@ -135,6 +135,26 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 $this->defaultRecordFields[] = $fieldName;
             }
         }
+
+        // Load configurations from api.ini:
+        $config = $sm->get(\VuFind\Config\PluginManager::class)->get('api');
+        $settings = $config->Search->toArray();
+
+        // Use the class name to determine whether to use an override section:
+        preg_match('/.*\\\\(.*)ApiController/', get_class($this), $matches);
+        if (!empty($matches[1]) && $matches[1] !== 'Search') {
+            $settings = array_merge($settings, $config->{$matches[1]}->toArray());
+        }
+
+        // Apply all supported configurations:
+        $configKeys = [
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit'
+        ];
+        foreach ($configKeys as $key) {
+            if (isset($settings[$key])) {
+                $this->$key = $settings[$key];
+            }
+        }
     }
 
     /**
