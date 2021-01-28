@@ -71,19 +71,29 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * List of words to never capitalize when using title case.
      *
      * Some words that were considered for this list, but excluded due to their
-     * potential ambiguity: down, near, out, past, round, up
+     * potential ambiguity: down, near, out, past, up
+     *
+     * Some words that were considered, but excluded because they were five or
+     * more characters in length: about, above, across, after, against, along,
+     * among, around, before, behind, below, beneath, beside, between, beyond,
+     * despite, during, except,  inside, opposite, outside, round, since, through,
+     * towards, under, underneath, unlike, until, within, without
      *
      * @var string[]
      */
     protected $uncappedWords = [
-        'a', 'about', 'above', 'across', 'after', 'against', 'along', 'among',
-        'an', 'and', 'around', 'as', 'at', 'before', 'behind', 'below',
-        'beneath', 'beside', 'between', 'beyond', 'but', 'by', 'despite',
-        'during', 'except', 'for', 'from', 'from', 'in', 'inside', 'into',
-        'like', 'nor', 'of', 'off', 'on', 'onto', 'opposite', 'or', 'outside',
-        'over', 'since', 'so', 'than', 'the', 'through', 'to', 'towards',
-        'under', 'underneath', 'unlike', 'until', 'upon', 'via', 'with', 'within',
-        'without', 'yet',
+        'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'from', 'in',
+        'into', 'like', 'nor', 'of', 'off', 'on', 'onto', 'or', 'over', 'so',
+        'than', 'the', 'to', 'upon', 'via', 'with', 'yet',
+    ];
+
+    /**
+     * List of multi-word phrases to never capitalize when using title case.
+     *
+     * @var string[]
+     */
+    protected $uncappedPhrases = [
+        'even if', 'if only', 'now that', 'on top of'
     ];
 
     /**
@@ -106,8 +116,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($driver)
     {
+        // Store the driver first, since we will need it for prepareAuthors checks.
+        $this->driver = $driver;
+
         // Build author list:
-        $authors = (array)$driver->tryMethod('getPrimaryAuthors');
+        $authors = $this->prepareAuthors(
+            (array)$driver->tryMethod('getPrimaryAuthors')
+        );
+        $corporateAuthors = [];
         if (empty($authors)) {
             // Corporate authors are more likely to have inappropriate trailing
             // punctuation; strip it off, unless the last word is short, like
@@ -116,11 +132,15 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                 return preg_match('/\s+.{1,3}\.$/', $str)
                     ? $str : rtrim($str, '.');
             };
-            $authors = array_map(
-                $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
+            $corporateAuthors = $authors = $this->prepareAuthors(
+                array_map(
+                    $trimmer, (array)$driver->tryMethod('getCorporateAuthors')
+                ), true
             );
         }
-        $secondary = (array)$driver->tryMethod('getSecondaryAuthors');
+        $secondary = $this->prepareAuthors(
+            (array)$driver->tryMethod('getSecondaryAuthors')
+        );
         if (!empty($secondary)) {
             $authors = array_unique(array_merge($authors, $secondary));
         }
@@ -145,10 +165,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $pubPlaces = $driver->tryMethod('getPlacesOfPublication');
         $edition = $driver->tryMethod('getEdition');
 
-        // Store everything:
-        $this->driver = $driver;
+        // Store all the collected details:
         $this->details = [
-            'authors' => $this->prepareAuthors($authors),
+            'authors' => $authors,
+            'corporateAuthors' => $corporateAuthors,
             'title' => trim($title), 'subtitle' => trim($subtitle),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
@@ -165,19 +185,23 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * This support method (used by the main citation() method) attempts to fix
      * any non-compliant names.
      *
-     * @param array $authors Authors to process.
+     * @param array $authors     Authors to process.
+     * @param bool  $isCorporate Is this a list of corporate authors?
      *
      * @return array
      */
-    protected function prepareAuthors($authors)
+    protected function prepareAuthors($authors, $isCorporate = false)
     {
         $callables = [];
 
         // If this data comes from a MARC record, we can probably assume that
-        // anything without a comma is a valid corporate author that should be
+        // anything without a comma is supposed to be formatted that way. We
+        // also know if we have a valid corporate author name that it should be
         // left alone... otherwise, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)) {
+        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+            && !$isCorporate
+        ) {
             $callables[] = function (string $name): string {
                 $name = $this->cleanNameDates($name);
                 if (!strstr($name, ',')) {
@@ -192,23 +216,26 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             };
         }
 
-        // We always want to apply these standard cleanup routines:
-        $callables[] = function (string $name): string {
-            // Eliminate parenthetical information:
-            $strippedName = trim(preg_replace('/\s\(.*\)/', '', $name));
+        // We always want to apply these standard cleanup routines to non-corporate
+        // authors:
+        if (!$isCorporate) {
+            $callables[] = function (string $name): string {
+                // Eliminate parenthetical information:
+                $strippedName = trim(preg_replace('/\s\(.*\)/', '', $name));
 
-            // Split the text into words:
-            $parts = explode(' ', empty($strippedName) ? $name : $strippedName);
+                // Split the text into words:
+                $parts = explode(' ', empty($strippedName) ? $name : $strippedName);
 
-            // If we have exactly two parts, we should trim any trailing
-            // punctuation from the second part (this reduces the odds of
-            // accidentally trimming a "Jr." or "Sr."):
-            if (count($parts) == 2) {
-                $parts[1] = rtrim($parts[1], '.');
-            }
-            // Put the parts back together; eliminate stray commas:
-            return rtrim(implode(' ', $parts), ',');
-        };
+                // If we have exactly two parts, we should trim any trailing
+                // punctuation from the second part (this reduces the odds of
+                // accidentally trimming a "Jr." or "Sr."):
+                if (count($parts) == 2) {
+                    $parts[1] = rtrim($parts[1], '.');
+                }
+                // Put the parts back together; eliminate stray commas:
+                return rtrim(implode(' ', $parts), ',');
+            };
+        }
 
         // Now apply all of the functions we collected to all of the strings:
         return array_map(
@@ -654,14 +681,35 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             // in order to reliably look them up in the uncappedWords list.
             $baseWord = preg_replace('/\W/', '', $word);
             if (!in_array($baseWord, $this->uncappedWords) || $followsColon) {
-                $word = ucfirst($word);
+                // Includes special case to properly capitalize words in quotes:
+                $firstChar = substr($word, 0, 1);
+                $word = in_array($firstChar, ['"', "'"])
+                    ? $firstChar . ucfirst(substr($word, 1))
+                    : ucfirst($word);
             }
             array_push($newwords, $word);
 
             $followsColon = substr($word, -1) == ':';
         }
 
-        return ucfirst(join(' ', $newwords));
+        // We've dealt with capitalization of words; now we need to deal with
+        // multi-word phrases:
+        $adjustedTitle = ucfirst(join(' ', $newwords));
+        foreach ($this->uncappedPhrases as $phrase) {
+            // We need to cover two cases: the phrase at the start of a title,
+            // and the phrase in the middle of a title:
+            $adjustedTitle = preg_replace(
+                '/^' . $phrase . '\b/i',
+                strtoupper(substr($phrase, 0, 1)) . substr($phrase, 1),
+                $adjustedTitle
+            );
+            $adjustedTitle = preg_replace(
+                '/(.+)\b' . $phrase . '\b/i',
+                '$1' . $phrase,
+                $adjustedTitle
+            );
+        }
+        return $adjustedTitle;
     }
 
     /**
@@ -701,7 +749,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $ellipsis = false;
             $authorCount = count($this->details['authors']);
             foreach ($this->details['authors'] as $author) {
-                $author = $this->abbreviateName($author);
+                // Do not abbreviate corporate authors:
+                $author = in_array($author, $this->details['corporateAuthors'])
+                    ? $author : $this->abbreviateName($author);
                 if (($i + 1 == $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
                     // an ampersand:
@@ -775,6 +825,20 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Format an author name for inclusion as the first name in an MLA citation.
+     *
+     * @param string $author Name to reformat.
+     *
+     * @return string
+     */
+    protected function formatPrimaryMLAAuthor($author)
+    {
+        // Corporate authors should not be reformatted:
+        return in_array($author, $this->details['corporateAuthors'])
+            ? $author : $this->cleanNameDates($author);
+    }
+
+    /**
      * Format an author name for inclusion in an MLA citation (after the primary
      * name, which gets formatted differently).
      *
@@ -807,10 +871,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             $i = 0;
             if (count($this->details['authors']) > $etAlThreshold) {
                 $author = $this->details['authors'][0];
-                $authorStr = $this->cleanNameDates($author) . ', et al.';
+                $authorStr = $this->formatPrimaryMLAAuthor($author) . ', et al.';
             } else {
                 foreach ($this->details['authors'] as $rawAuthor) {
-                    $author = $this->cleanNameDates($rawAuthor);
+                    $author = $this->formatPrimaryMLAAuthor($rawAuthor);
                     if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         // Only add a comma if there are commas already in the

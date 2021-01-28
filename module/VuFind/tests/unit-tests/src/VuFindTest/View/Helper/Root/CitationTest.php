@@ -76,19 +76,19 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
             'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
-        [  // subtitle embedded in title, and DOI added
+        [  // subtitle embedded in title, with multi-word uncapped phrase, quoted word, and DOI added
             'raw' => [
                 'SecondaryAuthors' => ['Lewis, S.M.'],
-                'Title' => 'Medical-surgical nursing: assessment and management of clinical problems.',
+                'Title' => 'Even if you "test" Medical-surgical nursing: assessment and management of clinical problems on top of crazy capitalization.',
                 'Edition' => '7th ed. /',
                 'PlacesOfPublication' => ['St. Louis, Mo.'],
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007'],
                 'CleanDOI' => 'myDOI',
             ],
-            'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Assessment and management of clinical problems</i> (7th ed.). Mosby Elsevier. https://doi.org/myDOI',
-            'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://dx.doi.org/myDOI.',
+            'apa' => 'Lewis, S. (2007). <i>Even if you &quot;test&quot; Medical-surgical nursing: Assessment and management of clinical problems on top of crazy capitalization</i> (7th ed.). Mosby Elsevier. https://doi.org/myDOI',
+            'mla' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://dx.doi.org/myDOI.',
         ],
         [
             'raw' => [
