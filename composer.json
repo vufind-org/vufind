@@ -10,12 +10,12 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "7.2.9"
+            "php": "7.3.0"
         },
         "process-timeout": 0
     },
     "require": {
-        "php": ">=7.2.9",
+        "php": ">=7.3.0",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.12.1",
