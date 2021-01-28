@@ -104,41 +104,67 @@
           <i class="fa fa-external-link"></i> DESC
           <span class="online-source">SOURCE</span>
         </a>
+        <?php if (!empty($url['part'])): ?>
+          <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?>
+        <?php endif; ?>
       </div>
       <?php if (!empty($urls) || $openUrlActive || !empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-        <div class="truncate-field">
-          <?php if (!empty($otherUrls)): ?>
-            <?php foreach ($otherUrls as $url): ?>
-              <?php
-                $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
-                $icon = 'fa-external-link';
-                if (!empty($url['desc'])) {
-                  $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
-                  if (isset($map[$url['desc']])) {
-                    $icon = $map[$url['desc']];
-                  }
+        <?php if (!empty($otherUrls)): ?>
+          <?php foreach ($otherUrls as $url): ?>
+            <?php
+              $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
+              $icon = 'fa-external-link';
+              if (!empty($url['desc'])) {
+                $map = ['Database Guide' => 'fa-info-database', 'Database Interface' => 'fa-browse-database'];
+                if (isset($map[$url['desc']])) {
+                  $icon = $map[$url['desc']];
                 }
-              ?>
-              <div class="fulltextField">
-                <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>" <?php if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>>
-                  <i class="fa <?=$icon?>"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?>
-                </a>
-                <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-          <?php if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-            <?php foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-              <?php if (in_array($url['url'], $renderedURLs)) { continue; } ?>
+              }
+            ?>
+            <div class="fulltextField">
+              <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>" <?php if (!empty($url['posterUrl'])): ?> data-poster-url="<?= $this->escapeHtmlAttr($url['posterUrl']) ?>"<?php endif; ?>>
+                <i class="fa <?=$icon?>"></i> <?=$this->transEsc('default::link_' . $desc, null, $desc) ?>
+              </a>
+              <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if (!empty($onlineURLs)): ?>
+          <?php
+            $filteredOnlineURLs = array_filter($onlineURLs, function ($url) use ($renderedURLs) {
+              return !in_array($url['url'], $renderedURLs);
+            });
+            foreach ($filteredOnlineURLs as $url) {
+              $renderedURLs[] = $url['url'];
+            }
+          ?>
+          <?php foreach ($filteredOnlineURLs as $url): ?>
+            <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+              <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part'])?><?php endif; ?>
+              <?php if ($url['source']): ?>
+                <span class="online-source">(<?=$this->transEsc('default::source_' . $url['source'], null, $url['source'])?>)</span>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if (!empty($mergedData['urls'])): ?>
+          <?php
+            $filteredMergedURLs = array_filter($mergedData['urls'], function ($url) use ($renderedURLs) {
+              return !in_array($url['url'], $renderedURLs);
+            });
+            $count = count($filteredMergedURLs);
+          ?>
+          <div class="merged-urls-wrapper truncate-field" data-button-class="link-buttons" data-row-height="1" data-button-placement="top" data-label="<?=$this->transEscAttr('links_from_other_organisations', ['%%count%%' => $count])?>">
+            <?php foreach ($filteredMergedURLs as $url): ?>
               <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('default::link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
-                <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part']) ?><?php endif; ?>
+                <?php if (!empty($url['part'])): ?> <span class="coverage"><?=$this->transEsc('default::link_' . $url['part'], null, $url['part'])?><?php endif; ?>
                 <?php if ($url['source']): ?>
-                  <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source']) ?>)</span>
+                  <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('default::source_' . $url['source'], null, $url['source'])?>)</span>
                 <?php endif; ?>
               </div>
             <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
+          </div>
+        <?php endif; ?>
         <?php if ($openUrlActive): ?>
           <?=$openUrl->renderTemplate()?>
         <?php endif; ?>
