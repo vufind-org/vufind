@@ -681,7 +681,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             // in order to reliably look them up in the uncappedWords list.
             $baseWord = preg_replace('/\W/', '', $word);
             if (!in_array($baseWord, $this->uncappedWords) || $followsColon) {
-                $word = ucfirst($word);
+                // Includes special case to properly capitalize words in quotes:
+                $firstChar = substr($word, 0, 1);
+                $word = in_array($firstChar, ['"', "'"])
+                    ? $firstChar . ucfirst(substr($word, 1))
+                    : ucfirst($word);
             }
             array_push($newwords, $word);
 
