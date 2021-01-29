@@ -77,7 +77,11 @@
     }
     $ilsLoginAvailable = $this->ils()->loginAvailable();
     $externalInterfaceUrl = $summary ? ($summary['externalInterfaceUrl'] ?? '') : '';
-    $holdingsConfig = $this->ils()->getConfig('Holdings', [$this->driver->getUniqueId()]);
+    try {
+      $holdingsConfig = $this->ils()->getConfig('Holdings', [$this->driver->getUniqueId()]);
+    } catch (\Exception $e) {
+      $holdingsConfig = [];
+    }
     if (isset($holdingsConfig['display_title_hold_in_holdings']) && !$holdingsConfig['display_title_hold_in_holdings']) {
       $disableTitleHold = true;
     }

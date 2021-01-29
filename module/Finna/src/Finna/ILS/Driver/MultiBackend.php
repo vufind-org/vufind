@@ -70,7 +70,8 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
                 $this->defaultDriver = $driver;
             } elseif ($this->drivers) {
                 // Use first available driver
-                $this->defaultDriver = reset($this->drivers);
+                $drivers = array_keys($this->drivers);
+                $this->defaultDriver = reset($drivers);
             }
         }
     }
