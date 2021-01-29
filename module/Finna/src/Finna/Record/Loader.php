@@ -208,14 +208,11 @@ class Loader extends \VuFind\Record\Loader
             foreach ($this->recordRedirectionRules as $rule) {
                 $data = array_map('trim', explode('###', $rule, 3));
                 if (count($data) === 3) {
-                    list($pattern, $otherIdPrefix, $newDatasource) = $data;
-                    if (preg_match($pattern, $id, $matches)) {
+                    list($pattern, $replacement, $newDatasource) = $data;
+                    $otherId = preg_replace($pattern, $replacement, $id, -1, $count);
+                    if ($count && $otherId) {
                         // Try to find the new record by searching for the redirected
                         // ID in in ctrlnum field (possibly with prefix).
-                        $otherId = $matches[1];
-                        if ($otherIdPrefix) {
-                            $otherId = "($otherIdPrefix)$otherId";
-                        }
                         $newRecord = $this->loadRecordWithIdentifier(
                             $otherId, $newDatasource, 'ctrlnum'
                         );
