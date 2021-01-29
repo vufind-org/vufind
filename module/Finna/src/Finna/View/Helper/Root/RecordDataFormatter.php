@@ -55,18 +55,48 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterMarcFields($coreFields)
     {
-        $filter = [
-            'Actors', 'Contributors', 'Extent', 'Format', 'Organisation',
-            'Published', 'Online Access', 'Original Work', 'Assistants', 'Authors',
-            'Music', 'Press Reviews', 'mainFormat', 'Access Restrictions', 'Edition',
-            'Archive', 'Archive Series', 'Archive Origination', 'Archive Relations',
-            'Item Description FWD', 'Published in', 'Relations', 'Source Collection',
-            'Subjects'
+        $include = [
+            'Access', 'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions Extended', 'Additional Information', 'Age Limit',
+            'Archive Films', 'Aspect Ratio', 'Audience',
+            'Author Notes', 'Available Online', 'Awards',
+            'Bibliography', 'Broadcasting Dates', 'child_records',
+            'Classification', 'Collection', 'Color',
+            'Content Description', 'Copyright Notes', 'Date',
+            'Description FWD', 'Dissertation Note', 'Distribution',
+            'DOI', 'Educational Level', 'Educational Role',
+            'Educational Subject', 'Educational Use', 'Education Programs',
+            'Event Notice', 'Events', 'Exterior Images',
+            'Film Copies', 'Film Festivals', 'Filming Date',
+            'Filming Location Notes', 'Finding Aid', 'First Lyrics',
+            'Foreign Distribution', 'Funding', 'Genre',
+            'Inscriptions', 'Inspection Details', 'Interior Images',
+            'Inventory ID', 'ISBN', 'ISSN',
+            'Item Description', 'Item History', 'Keywords',
+            'Language', 'Language Notes', 'Learning Resource Type',
+            'Location', 'Manufacturer', 'Measurements',
+            'Medium of Performance', 'Methodology', 'New Title',
+            'Notated Music Format', 'Notes', 'Objective and Content',
+            'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID',
+            'Other Links', 'Other Screenings',
+            'Other Titles', 'Physical Description', 'Place of Origin',
+            'Playing Time', 'Premiere Night', 'Premiere Theaters',
+            'Presenters', 'Previous Title', 'Production',
+            'Production Costs', 'Production Credits', 'Projected Publication Date',
+            'Publication Frequency', 'Publications', 'Publication_Place',
+            'Publish date', 'Publisher', 'Publisher or Distributor Number',
+            'Record Links', 'Related Items', 'Related Places',
+            'Scale', 'Secondary Authors', 'Series',
+            'Sound', 'Source of Acquisition', 'Standard Codes',
+            'Studios', 'Subject Actor', 'Subject Date',
+            'Subject Detail', 'Subject Place', 'subjects_extended',
+            'System Format', 'Terms of Use', 'Time Period',
+            'Time Period of Creation', 'Trade Availability Note',
+            'Uncontrolled Title', 'Uniform Title', 'Unit ID', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -78,17 +108,49 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterLidoFields($coreFields)
     {
-        $filter = [
-            'Actors', 'Contributors', 'Extent', 'Published', 'Online Access',
-            'Original Work', 'Assistants', 'Authors', 'Music',
-            'Press Reviews', 'Publisher', 'Access Restrictions', 'Unit ID',
-            'Other Titles', 'Archive', 'Access', 'Item Description FWD',
-            'Publish date', 'Relations', 'Archive Relations', 'Source Collection'
+        $include = [
+            'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions Extended', 'Additional Information',
+            'Age Limit', 'Archive Films',
+            'Archive Origination', 'Archive Series', 'Aspect Ratio',
+            'Audience', 'Author Notes', 'Available Online',
+            'Awards', 'Bibliography', 'Broadcasting Dates',
+            'child_records', 'Classification', 'Collection',
+            'Color', 'Content Description', 'Copyright Notes',
+            'Date', 'Description FWD', 'Dissertation Note',
+            'Distribution', 'DOI', 'Edition',
+            'Educational Level', 'Educational Role', 'Educational Subject',
+            'Educational Use', 'Education Programs', 'Event Notice',
+            'Events', 'Exterior Images', 'Film Copies',
+            'Film Festivals', 'Filming Date', 'Filming Location Notes',
+            'Finding Aid', 'First Lyrics', 'Foreign Distribution',
+            'Format', 'Funding', 'Genre',
+            'Inscriptions', 'Inspection Details', 'Interior Images',
+            'Inventory ID', 'ISBN', 'ISSN',
+            'Item Description', 'Item History', 'Keywords',
+            'Language', 'Language Notes', 'Learning Resource Type',
+            'Location', 'Manufacturer', 'Measurements',
+            'Medium of Performance', 'Methodology', 'New Title',
+            'Notated Music Format', 'Notes', 'Objective and Content',
+            'Organisation', 'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID', 'Other Links',
+            'Other Screenings', 'Physical Description', 'Place of Origin',
+            'Playing Time', 'Premiere Night', 'Premiere Theaters',
+            'Presenters', 'Previous Title', 'Production',
+            'Production Costs', 'Production Credits', 'Projected Publication Date',
+            'Publication Frequency', 'Publications', 'Publication_Place',
+            'Published in', 'Publisher or Distributor Number', 'Record Links',
+            'Related Items', 'Related Places', 'Scale',
+            'Secondary Authors', 'Series', 'Sound',
+            'Source of Acquisition', 'Standard Codes', 'Studios',
+            'Subject Actor', 'Subject Date', 'Subject Detail',
+            'Subject Place', 'Subjects', 'subjects_extended',
+            'System Format', 'Terms of Use', 'Time Period',
+            'Time Period of Creation', 'Trade Availability Note',
+            'Uncontrolled Title', 'Uniform Title', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -100,17 +162,49 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterQDCFields($coreFields)
     {
-        $filter = [
-            'Actors', 'Contributors', 'Extent', 'Format', 'Organisation',
-            'Published', 'Online Access', 'Original Work', 'Assistants', 'Authors',
-            'Music', 'Press Reviews', 'Publisher', 'Access Restrictions',
-            'mainFormat', 'Archive', 'Item Description FWD', 'Publish date',
-            'Relations', 'Archive Relations', 'Source Collection', 'ISBN'
+        $include = [
+            'Access', 'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions Extended', 'Additional Information', 'Age Limit',
+            'Archive Films', 'Archive Origination', 'Archive Series',
+            'Aspect Ratio', 'Audience', 'Author Notes',
+            'Available Online', 'Awards', 'Bibliography',
+            'Broadcasting Dates', 'child_records', 'Classification',
+            'Collection', 'Color', 'Content Description',
+            'Copyright Notes', 'Date', 'Description FWD',
+            'Dissertation Note', 'Distribution', 'DOI',
+            'Edition', 'Educational Level', 'Educational Role',
+            'Educational Subject', 'Educational Use', 'Education Programs',
+            'Event Notice', 'Events', 'Exterior Images',
+            'Film Copies', 'Film Festivals', 'Filming Date',
+            'Filming Location Notes', 'Finding Aid', 'First Lyrics',
+            'Foreign Distribution', 'Funding', 'Genre',
+            'Inscriptions', 'Inspection Details', 'Interior Images',
+            'Inventory ID', 'ISSN', 'Item Description',
+            'Item History', 'Keywords', 'Language',
+            'Language Notes', 'Learning Resource Type', 'Location',
+            'Manufacturer', 'Measurements', 'Medium of Performance',
+            'Methodology', 'New Title', 'Notated Music Format',
+            'Notes', 'Objective and Content', 'original_work_language',
+            'Other Classification', 'Other Classifications', 'Other ID',
+            'Other Links', 'Other Screenings', 'Other Titles',
+            'Physical Description', 'Place of Origin', 'Playing Time',
+            'Premiere Night', 'Premiere Theaters', 'Presenters',
+            'Previous Title', 'Production', 'Production Costs',
+            'Production Credits', 'Projected Publication Date',
+            'Publication Frequency', 'Publications',
+            'Publication_Place', 'Published in',
+            'Publisher or Distributor Number', 'Record Links', 'Related Items',
+            'Related Places', 'Scale', 'Secondary Authors',
+            'Series', 'Sound', 'Source of Acquisition',
+            'Standard Codes', 'Studios', 'Subject Actor',
+            'Subject Date', 'Subject Detail', 'Subject Place',
+            'Subjects', 'subjects_extended', 'System Format',
+            'Terms of Use', 'Time Period', 'Time Period of Creation',
+            'Trade Availability Note', 'Uncontrolled Title', 'Uniform Title',
+            'Unit ID', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -122,16 +216,51 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterLrmiFields($coreFields)
     {
-        $filter = [
-            'Actors', 'Archive', 'Item Description', 'Publisher',
-            'Publish date', 'Published', 'Content Description',
-            'Description FWD', 'Organisation', 'Source Collection',
-            'Format', 'Authors', 'Archive Relations'
+        $include = [
+            'Access', 'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions', 'Access Restrictions Extended',
+            'Additional Information', 'Age Limit',
+            'Archive Films', 'Archive Origination',
+            'Archive Series', 'Aspect Ratio', 'Audience',
+            'Author Notes', 'Available Online', 'Awards',
+            'Bibliography', 'Broadcasting Dates', 'child_records',
+            'Classification', 'Collection', 'Color',
+            'Copyright Notes', 'Date', 'Dissertation Note',
+            'Distribution', 'DOI', 'Edition',
+            'Educational Level', 'Educational Role', 'Educational Subject',
+            'Educational Use', 'Education Programs', 'Event Notice',
+            'Events', 'Extent', 'Exterior Images',
+            'Film Copies', 'Film Festivals', 'Filming Date',
+            'Filming Location Notes', 'Finding Aid', 'First Lyrics',
+            'Foreign Distribution', 'Funding', 'Genre',
+            'Inscriptions', 'Inspection Details', 'Interior Images',
+            'Inventory ID', 'ISBN', 'ISSN',
+            'Item Description FWD', 'Item History', 'Keywords',
+            'Language', 'Language Notes', 'Learning Resource Type',
+            'Location', 'Manufacturer', 'Measurements',
+            'Medium of Performance', 'Methodology', 'Music',
+            'New Title', 'Notated Music Format', 'Notes',
+            'Objective and Content', 'Online Access', 'Original Work',
+            'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID', 'Other Links', 'Other Screenings',
+            'Other Titles', 'Physical Description', 'Place of Origin',
+            'Playing Time', 'Premiere Night', 'Premiere Theaters',
+            'Presenters', 'Press Reviews', 'Previous Title',
+            'Production', 'Production Costs', 'Production Credits',
+            'Projected Publication Date', 'Publication Frequency', 'Publications',
+            'Publication_Place', 'Published in', 'Publisher or Distributor Number',
+            'Record Links', 'Related Items', 'Related Places',
+            'Scale', 'Secondary Authors', 'Series',
+            'Sound', 'Source of Acquisition', 'Standard Codes',
+            'Studios', 'Subject Actor', 'Subject Date',
+            'Subject Detail', 'Subject Place', 'Subjects',
+            'subjects_extended', 'System Format', 'Terms of Use',
+            'Time Period', 'Time Period of Creation', 'Trade Availability Note',
+            'Uncontrolled Title', 'Uniform Title', 'Unit ID',
+            'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -143,17 +272,51 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterEADFields($coreFields)
     {
-        $filter = [
-            'Actors', 'Contributors', 'Organisation', 'Inventory ID',
-            'Online Access', 'Access', 'Item Description FWD',
-            'Physical Description', 'Published in', 'Published', 'Relations',
-            'Archive Relations', 'Series', 'Source Collection'
+        $include = [
+            'Accessibility Feature', 'Accessibility Hazard', 'Access Restrictions',
+            'Access Restrictions Extended', 'Additional Information', 'Age Limit',
+            'Archive', 'Archive Films', 'Archive Origination',
+            'Archive Series', 'Aspect Ratio', 'Audience',
+            'Author Notes', 'Authors', 'Available Online',
+            'Awards', 'Bibliography', 'Broadcasting Dates',
+            'child_records', 'Classification', 'Collection',
+            'Color', 'Content Description', 'Copyright Notes',
+            'Date', 'Description FWD', 'Dissertation Note',
+            'Distribution', 'DOI', 'Edition',
+            'Educational Level', 'Educational Role', 'Educational Subject',
+            'Educational Use', 'Education Programs', 'Event Notice',
+            'Events', 'Extent', 'Exterior Images',
+            'Film Copies', 'Film Festivals', 'Filming Date',
+            'Filming Location Notes', 'Finding Aid', 'First Lyrics',
+            'Foreign Distribution', 'Format', 'Funding',
+            'Genre', 'Inscriptions', 'Inspection Details',
+            'Interior Images', 'ISBN', 'ISSN',
+            'Item Description', 'Item History', 'Keywords',
+            'Language', 'Language Notes', 'Learning Resource Type',
+            'Location', 'Manufacturer', 'Measurements',
+            'Medium of Performance', 'Methodology', 'Music',
+            'New Title', 'Notated Music Format', 'Notes',
+            'Objective and Content', 'Original Work', 'original_work_language',
+            'Other Classification', 'Other Classifications', 'Other ID',
+            'Other Links', 'Other Screenings', 'Other Titles',
+            'Place of Origin', 'Playing Time', 'Premiere Night',
+            'Premiere Theaters', 'Presenters', 'Press Reviews',
+            'Previous Title', 'Production', 'Production Costs',
+            'Production Credits', 'Projected Publication Date',
+            'Publication Frequency', 'Publications',
+            'Publication_Place', 'Publish date',
+            'Publisher', 'Publisher or Distributor Number', 'Record Links',
+            'Related Items', 'Related Places', 'Scale',
+            'Secondary Authors', 'Sound', 'Source of Acquisition',
+            'Standard Codes', 'Studios', 'Subject Actor',
+            'Subject Date', 'Subject Detail', 'Subject Place',
+            'Subjects', 'subjects_extended', 'System Format',
+            'Terms of Use', 'Time Period', 'Time Period of Creation',
+            'Trade Availability Note', 'Uncontrolled Title', 'Uniform Title',
+            'Unit ID', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
 
-        return $coreFields;
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -165,16 +328,50 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterEAD3Fields($coreFields)
     {
-        $filter = [
-            'Actors', 'Access Restrictions', 'Authors', 'Contributors',
-            'Organisation', 'Inventory ID', 'Online Access', 'Access',
-            'Item Description FWD', 'Physical Description', 'Published in',
-            'Published', 'Series', 'Source Collection', 'Unit ID'
+        $include = [
+            'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions Extended', 'Additional Information',
+            'Age Limit', 'Archive', 'Archive Films',
+            'Archive Origination', 'Archive Relations',
+            'Archive Series', 'Aspect Ratio', 'Audience',
+            'Author Notes', 'Available Online', 'Awards',
+            'Bibliography', 'Broadcasting Dates', 'child_records',
+            'Classification', 'Collection', 'Color',
+            'Content Description', 'Copyright Notes', 'Date',
+            'Description FWD', 'Dissertation Note', 'Distribution',
+            'DOI', 'Edition', 'Educational Level',
+            'Educational Role', 'Educational Subject', 'Educational Use',
+            'Education Programs', 'Event Notice', 'Events',
+            'Extent', 'Exterior Images', 'Film Copies',
+            'Film Festivals', 'Filming Date', 'Filming Location Notes',
+            'Finding Aid', 'First Lyrics', 'Foreign Distribution',
+            'Format', 'Funding', 'Genre',
+            'Inscriptions', 'Inspection Details', 'Interior Images',
+            'ISBN', 'ISSN', 'Item Description',
+            'Item History', 'Keywords', 'Language',
+            'Language Notes', 'Learning Resource Type', 'Location',
+            'Manufacturer', 'Measurements', 'Medium of Performance',
+            'Methodology', 'Music', 'New Title',
+            'Notated Music Format', 'Notes', 'Objective and Content',
+            'Original Work', 'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID', 'Other Links',
+            'Other Screenings', 'Other Titles', 'Place of Origin',
+            'Playing Time', 'Premiere Night', 'Premiere Theaters',
+            'Presenters', 'Press Reviews', 'Previous Title',
+            'Production', 'Production Costs', 'Production Credits',
+            'Projected Publication Date', 'Publication Frequency', 'Publications',
+            'Publication_Place', 'Publish date', 'Publisher',
+            'Publisher or Distributor Number', 'Record Links', 'Related Items',
+            'Related Places', 'Scale', 'Secondary Authors',
+            'Sound', 'Source of Acquisition', 'Standard Codes',
+            'Studios', 'Subject Actor', 'Subject Date',
+            'Subject Detail', 'Subject Place', 'Subjects',
+            'subjects_extended', 'System Format', 'Terms of Use',
+            'Time Period', 'Time Period of Creation', 'Trade Availability Note',
+            'Uncontrolled Title', 'Uniform Title', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -186,16 +383,51 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterPrimoFields($coreFields)
     {
-        $filter = [
-            'Actors', 'Contributors', 'Extent', 'Archive', 'Publisher',
-            'Organisation', 'Item Description FWD', 'Published in', 'Published',
-            'Description', 'Format', 'Online Access', 'Relations',
-            'Archive Relations', 'Access Restrictions'
+        $include = [
+            'Access', 'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions Extended', 'Additional Information', 'Age Limit',
+            'Archive Films', 'Archive Origination', 'Archive Series',
+            'Aspect Ratio', 'Audience', 'Author Notes',
+            'Authors', 'Available Online', 'Awards',
+            'Bibliography', 'Broadcasting Dates', 'child_records',
+            'Classification', 'Collection', 'Color',
+            'Content Description', 'Copyright Notes', 'Date',
+            'Description FWD', 'Dissertation Note', 'Distribution',
+            'DOI', 'Edition', 'Educational Level',
+            'Educational Role', 'Educational Subject', 'Educational Use',
+            'Education Programs', 'Event Notice', 'Events',
+            'Exterior Images', 'Film Copies', 'Film Festivals',
+            'Filming Date', 'Filming Location Notes', 'Finding Aid',
+            'First Lyrics', 'Foreign Distribution', 'Funding',
+            'Genre', 'Inscriptions', 'Inspection Details',
+            'Interior Images', 'Inventory ID', 'ISBN',
+            'ISSN', 'Item Description', 'Item History',
+            'Keywords', 'Language', 'Language Notes',
+            'Learning Resource Type', 'Location', 'Manufacturer',
+            'Measurements', 'Medium of Performance', 'Methodology',
+            'Music', 'New Title', 'Notated Music Format',
+            'Notes', 'Objective and Content', 'Original Work',
+            'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID',
+            'Other Links', 'Other Screenings',
+            'Other Titles', 'Physical Description', 'Place of Origin',
+            'Playing Time', 'Premiere Night', 'Premiere Theaters',
+            'Presenters', 'Press Reviews', 'Previous Title',
+            'Production', 'Production Costs', 'Production Credits',
+            'Projected Publication Date', 'Publication Frequency', 'Publications',
+            'Publication_Place', 'Publish date', 'Publisher or Distributor Number',
+            'Record Links', 'Related Items', 'Related Places',
+            'Scale', 'Secondary Authors', 'Series',
+            'Sound', 'Source Collection', 'Source of Acquisition',
+            'Standard Codes', 'Studios', 'Subject Actor',
+            'Subject Date', 'Subject Detail', 'Subject Place',
+            'Subjects', 'subjects_extended', 'System Format',
+            'Terms of Use', 'Time Period', 'Time Period of Creation',
+            'Trade Availability Note', 'Uncontrolled Title', 'Uniform Title',
+            'Unit ID', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -207,16 +439,51 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterForwardFields($coreFields)
     {
-        $filter = [
-            'Publisher','Edition', 'Extent', 'Archive', 'Published in', 'Format',
-            'Other Titles', 'Presenters', 'Organisation', 'Authors',
-            'Access Restrictions', 'Item Description', 'Publisher', 'Relations',
-            'Source Collection', 'Archive Relations'
+        $include = [
+            'Access', 'Accessibility Feature', 'Accessibility Hazard',
+            'Access Restrictions Extended', 'Actors', 'Additional Information',
+            'Age Limit', 'Archive Films', 'Archive Origination',
+            'Archive Series', 'Aspect Ratio', 'Audience',
+            'Author Notes', 'Available Online', 'Awards',
+            'Bibliography', 'Broadcasting Dates', 'child_records',
+            'Classification', 'Collection', 'Color',
+            'Content Description', 'Copyright Notes', 'Date',
+            'Description FWD', 'Dissertation Note', 'Distribution',
+            'DOI', 'Educational Level', 'Educational Role',
+            'Educational Subject', 'Educational Use', 'Education Programs',
+            'Event Notice', 'Events', 'Exterior Images',
+            'Film Copies', 'Film Festivals', 'Filming Date',
+            'Filming Location Notes', 'Finding Aid', 'First Lyrics',
+            'Foreign Distribution', 'Funding', 'Genre',
+            'Inscriptions', 'Inspection Details', 'Interior Images',
+            'Inventory ID', 'ISBN', 'ISSN',
+            'Item Description FWD', 'Item History', 'Keywords',
+            'Language', 'Language Notes', 'Learning Resource Type',
+            'Location', 'Manufacturer', 'Measurements',
+            'Medium of Performance', 'Methodology', 'Music',
+            'New Title', 'Notated Music Format', 'Notes',
+            'Objective and Content', 'Online Access', 'Original Work',
+            'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID',
+            'Other Links', 'Other Screenings',
+            'Physical Description', 'Place of Origin', 'Playing Time',
+            'Premiere Night', 'Premiere Theaters', 'Press Reviews',
+            'Previous Title', 'Production', 'Production Costs',
+            'Production Credits', 'Projected Publication Date',
+            'Publication Frequency', 'Publications',
+            'Publication_Place', 'Publish date',
+            'Published', 'Publisher or Distributor Number', 'Record Links',
+            'Related Items', 'Related Places', 'Scale',
+            'Secondary Authors', 'Series', 'Sound',
+            'Source of Acquisition', 'Standard Codes', 'Studios',
+            'Subject Actor', 'Subject Date', 'Subject Detail',
+            'Subject Place', 'Subjects', 'subjects_extended',
+            'System Format', 'Terms of Use', 'Time Period',
+            'Time Period of Creation', 'Trade Availability Note',
+            'Uncontrolled Title', 'Uniform Title', 'Unit ID', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
-        return $coreFields;
+
+        return array_intersect_key($coreFields, array_flip($include));
     }
 
     /**
@@ -229,20 +496,55 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      */
     public function filterCollectionFields($coreFields, $type = 'ead')
     {
-        $filter = [
-            'Contributors', 'Format', 'Online Access',
-            'Access', 'Item Description FWD', 'Physical Description',
-            'Published in', 'Published', 'Source Collection', 'Archive Relations'
+        $include = [
+            'Accessibility Feature', 'Accessibility Hazard', 'Access Restrictions',
+            'Access Restrictions Extended', 'Actors', 'Additional Information',
+            'Age Limit', 'Archive', 'Archive Films',
+            'Archive Origination', 'Archive Series', 'Aspect Ratio',
+            'Audience', 'Author Notes', 'Authors',
+            'Available Online', 'Awards', 'Bibliography',
+            'Broadcasting Dates', 'child_records', 'Classification',
+            'Collection', 'Color', 'Content Description',
+            'Copyright Notes', 'Date', 'Description FWD',
+            'Dissertation Note', 'Distribution', 'DOI',
+            'Edition', 'Educational Level', 'Educational Role',
+            'Educational Subject', 'Educational Use', 'Education Programs',
+            'Event Notice', 'Events', 'Extent',
+            'Exterior Images', 'Film Copies', 'Film Festivals',
+            'Filming Date', 'Filming Location Notes', 'Finding Aid',
+            'First Lyrics', 'Foreign Distribution', 'Funding',
+            'Genre', 'Inscriptions', 'Inspection Details',
+            'Interior Images', 'Inventory ID', 'ISBN',
+            'ISSN', 'Item Description', 'Item History',
+            'Keywords', 'Language', 'Language Notes',
+            'Learning Resource Type', 'Location', 'Manufacturer',
+            'Measurements', 'Medium of Performance', 'Methodology',
+            'Music', 'New Title', 'Notated Music Format',
+            'Notes', 'Objective and Content', 'Organisation',
+            'Original Work', 'original_work_language', 'Other Classification',
+            'Other Classifications', 'Other ID', 'Other Links',
+            'Other Screenings', 'Other Titles', 'Place of Origin',
+            'Playing Time', 'Premiere Night', 'Premiere Theaters',
+            'Presenters', 'Press Reviews', 'Previous Title',
+            'Production', 'Production Costs', 'Production Credits',
+            'Projected Publication Date', 'Publication Frequency', 'Publications',
+            'Publication_Place', 'Publish date', 'Publisher',
+            'Publisher or Distributor Number', 'Record Links', 'Related Items',
+            'Related Places', 'Scale', 'Secondary Authors',
+            'Series', 'Sound', 'Source of Acquisition',
+            'Standard Codes', 'Studios', 'Subject Actor',
+            'Subject Date', 'Subject Detail', 'Subject Place',
+            'Subjects', 'subjects_extended', 'System Format',
+            'Terms of Use', 'Time Period', 'Time Period of Creation',
+            'Trade Availability Note', 'Uncontrolled Title', 'Uniform Title',
+            'Unit ID', 'Unit IDs'
         ];
-        foreach ($filter as $key) {
-            unset($coreFields[$key]);
-        }
 
-        $coreFields = $type === 'ead'
-            ? $this->filterEADFields($coreFields)
-            : $this->filterEAD3Fields($coreFields);
+        $fields = array_intersect_key($coreFields, array_flip($include));
 
-        return $coreFields;
+        return $type === 'ead' ?
+            $this->filterEADFields($fields) :
+            $this->filterEAD3Fields($fields);
     }
 
     /**
