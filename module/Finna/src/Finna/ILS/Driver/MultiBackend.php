@@ -49,6 +49,33 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     use \VuFind\ILS\Driver\CacheTrait;
 
     /**
+     * Initialize the driver.
+     *
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+
+        if (null === $this->defaultDriver
+            || !isset($this->drivers[$this->defaultDriver])
+        ) {
+            // Try default login driver
+            $driver = $this->getDefaultLoginDriver();
+            if ($driver && isset($this->drivers[$driver])) {
+                $this->defaultDriver = $driver;
+            } elseif ($this->drivers) {
+                // Use first available driver
+                $this->defaultDriver = $this->drivers[0];
+            }
+        }
+    }
+
+    /**
      * Change Password
      *
      * Attempts to change patron password (PIN code)
