@@ -97,8 +97,8 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
         $mock->expects($this->any())->method('translate')
-            ->withConsecutive(['showing_results_of_html', 'default'])
-            ->willReturnConsecutiveValues('Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>');
+            ->withConsecutive(['Results for'], ['showing_results_of_html', 'default'])
+            ->willReturnOnConsecutiveCalls('Results for', 'Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>');
         return $mock;
     }
 
