@@ -433,6 +433,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $notes = $this->getFirstFieldValue('502', ['a', 'b', 'c']);
         if (!$notes) {
             // 509 used in Voyager
+            // TODO: Is this used anymore anywhere?
             $notes = $this->getFirstFieldValue('509', ['a', 'b', 'c']);
         }
         if (!$notes) {

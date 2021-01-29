@@ -586,7 +586,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
     /**
      * Get Default Pick Up Location
      *
-     * Returns the default pick up location set in VoyagerRestful.ini
+     * Returns the default pick up location set in the .ini file
      *
      * @param array $patron      Patron information returned by the patronLogin
      * method.
