@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2015-2020.
+ * Copyright (C) The National Library of Finland 2015-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -71,13 +71,22 @@ class AccountExpirationRemindersFactory implements FactoryInterface
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
         $theme->init();
 
+        if (is_callable([$container, 'setShared'])) {
+            $container->setShared(\VuFind\Mailer\Mailer::class, false);
+        } else {
+            throw new \Exception('Cannot make Mailer non-shared');
+        }
+        $mailerFactory = function () use ($container) {
+            return $container->get(\VuFind\Mailer\Mailer::class);
+        };
+
         return new $requestedName(
             $tableManager->get('User'),
             $tableManager->get('Search'),
             $tableManager->get('Resource'),
             $container->get('ViewRenderer'),
             $configManager->get('datasources'),
-            $container->get(\VuFind\Mailer\Mailer::class),
+            $mailerFactory,
             $container->get(\Laminas\Mvc\I18n\Translator::class),
             $configManager,
             ...($options ?? [])

@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2013-2020.
+ * Copyright (C) The National Library of Finland 2013-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -126,11 +126,18 @@ class DueDateReminders extends AbstractUtilCommand
     protected $viewRenderer;
 
     /**
+     * Mailer factory callable
+     *
+     * @var callable
+     */
+    protected $mailerFactory;
+
+    /**
      * Mailer
      *
      * @var \VuFind\Mailer\Mailer
      */
-    protected $mailer;
+    protected $mailer = null;
 
     /**
      * Translator
@@ -190,7 +197,7 @@ class DueDateReminders extends AbstractUtilCommand
      * @param PhpRenderer                     $renderer             View renderer
      * @param \VuFind\Record\Loader           $recordLoader         Record loader
      * @param \VuFind\Crypt\HMAC              $hmac                 HMAC
-     * @param \VuFind\Mailer\Mailer           $mailer               Mailer
+     * @param callable                        $mailerFactory        Mailer factory
      * @param Translator                      $translator           Translator
      */
     public function __construct(
@@ -202,7 +209,7 @@ class DueDateReminders extends AbstractUtilCommand
         PhpRenderer $renderer,
         \VuFind\Record\Loader $recordLoader,
         \VuFind\Crypt\HMAC $hmac,
-        \VuFind\Mailer\Mailer $mailer,
+        callable $mailerFactory,
         Translator $translator
     ) {
         $this->userTable = $userTable;
@@ -221,7 +228,7 @@ class DueDateReminders extends AbstractUtilCommand
         $this->urlHelper = $renderer->plugin('url');
         $this->recordLoader = $recordLoader;
         $this->hmac = $hmac;
-        $this->mailer = $mailer;
+        $this->mailerFactory = $mailerFactory;
         $this->translator = $translator;
         parent::__construct();
     }
@@ -567,15 +574,28 @@ class DueDateReminders extends AbstractUtilCommand
         $from = $this->currentSiteConfig['Site']['email'];
         try {
             try {
+                if (null === $this->mailer) {
+                    $this->mailer = ($this->mailerFactory)();
+                }
                 $this->mailer->send($to, $from, $subject, $message);
             } catch (\Exception $e) {
-                $this->mailer->resetConnection();
+                $this->warn(
+                    "First SMTP send attempt to user {$user->username}"
+                        . " (id {$user->id}, email '$to') failed, resetting",
+                    ''
+                );
+                try {
+                    $this->mailer->resetConnection();
+                } catch (\Exception $e) {
+                    // Failed to reset connection, create a new mailer
+                    $this->mailer = ($this->mailerFactory)();
+                }
                 $this->mailer->send($to, $from, $subject, $message);
             }
         } catch (\Exception $e) {
             $this->err(
                 "Failed to send due date reminders to user {$user->username}"
-                    . " (id {$user->id})",
+                    . " (id {$user->id}, email '$to')",
                 'Failed to send due date reminders to a user'
             );
             $this->err('   ' . $e->getMessage());
