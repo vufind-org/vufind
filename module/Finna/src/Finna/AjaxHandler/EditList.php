@@ -161,9 +161,14 @@ class EditList extends \VuFind\AjaxHandler\AbstractBase
         $listParams['id'] = $finalId;
 
         if ($this->listTagsEnabled) {
+            $tags = $list->getListTags();
+            $listParams['tags-edit'] = $this->renderer->partial(
+                'myresearch/mylist-tags.phtml',
+                ['tags' => $tags, 'editable' => true]
+            );
             $listParams['tags'] = $this->renderer->partial(
                 'myresearch/mylist-tags.phtml',
-                ['tags' => $list->getListTags()]
+                ['tags' => $tags, 'editable' => false]
             );
         } else {
             unset($listParams['tags']);

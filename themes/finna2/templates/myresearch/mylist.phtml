@@ -56,25 +56,34 @@
           </div>
         </div>
         <?php if ($this->usertags()->getListMode() === 'enabled'): ?>
-          <div class="list-tags collapsed">
-            <div class="toggle" title="<?=$this->transEsc('edit-list-tags')?>">
-              <span><?=$this->transEsc('edit-list-tags')?> </span><i class="fa fa-tag"></i>
+          <?php $listTags = $list->getListTags(); ?>
+          <div class="list-tags">
+            <div class="tags view-tags">
+              <?= $this->partial('mylist-tags.phtml', ['tags' => $listTags, 'editable' => false])?>
             </div>
-            <div class="ui">
-              <p class="info"><i class="fa fa-info"></i> <?=$this->transEsc('add-list-tag-note')?></p>
-              <form>
-                <fieldset>
-                  <legend></legend>
-                  <div class="add-new">
-                    <input type="text" class="new-tag" name="new-tag" value="" aria-required="true" required aria-label="<?= $this->transEsc('list-tags-info')?>" placeholder="<?= $this->transEsc('list-tags-info')?>"/>
-                    <button type="submit" class="btn btn-primary "><?=$this->transEsc('Save')?></button>
-                    <div><i class="fa fa-spin fa-spinner hide"></i></div>
-                  </div>
-                  <div class="tags">
-                    <?= $this->partial('mylist-tags.phtml', ['tags' => $list->getListTags()])?>
-                  </div>
-                </fieldset>
-              </form>
+
+            <div class="edit-tags">
+              <div class="toggle" title="<?=$this->transEscAttr('edit-list-tags')?>">
+                <span><?=$this->transEsc('edit-list-tags')?> </span><i aria-hidden="true" class="fa fa-tag"></i>
+              </div>
+              <div class="ui">
+                <p class="info"><i aria-hidden="true" class="fa fa-info"></i> <?=$this->transEsc('add-list-tag-note')?></p>
+                <form>
+                  <fieldset>
+                    <legend></legend>
+                    <div class="add-new">
+                      <input type="text" class="new-tag" name="new-tag" value="" aria-required="true" required aria-label="<?= $this->transEscAttr('list-tags-info')?>" placeholder="<?= $this->transEscAttr('list-tags-info')?>"/>
+                      <button type="submit" class="btn btn-primary "><?=$this->transEsc('Save')?></button>
+                      <div><i aria-hidden="true" class="fa fa-spin fa-spinner hide"></i></div>
+                    </div>
+                    <div class="tags editable">
+                      <div class="tag-list">
+                        <?= $this->partial('mylist-tags.phtml', ['tags' => $listTags, 'editable' => true])?>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
             </div>
           </div>
         <?php endif ?>

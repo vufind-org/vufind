@@ -189,7 +189,7 @@ finna.myList = (function finnaMyList() {
         listParams.desc = description;
       }
 
-      var tags = $('.list-tags .tags .tag .text');
+      var tags = $('.list-tags .edit-tags .tags .tag .text');
       var listTags = [];
       if (tags.length) {
         tags.each(function extractTag(ind, tag) {
@@ -340,7 +340,8 @@ finna.myList = (function finnaMyList() {
   var initListTagComponent;
 
   function listTagsChanged(data) {
-    $('.list-tags .tags').html(data.tags);
+    $('.list-tags .edit-tags .tags').html(data['tags-edit']);
+    $('.list-tags .view-tags').html(data.tags);
     $('.list-tags .new-tag').val('');
     $('.list-tags form fieldset').attr('disabled', false);
     $('.list-tags .fa-spinner').hide();
@@ -352,13 +353,13 @@ finna.myList = (function finnaMyList() {
       updateList({}, listTagsChanged, 'add-tag');
       return false;
     });
-    $('.list-tags .tags .tag .delete-tag').unbind('click').on('click', function onDeleteTag(/*event*/) {
+    $('.list-tags .edit-tags .tags .tag .delete-tag').unbind('click').on('click', function onDeleteTag(/*event*/) {
       $('.list-tags form fieldset').attr('disabled', 'disabled');
       $(this).closest('.tag').remove();
       updateList({}, listTagsChanged, 'delete-tag');
     });
     $('.list-tags .toggle').unbind('click').on('click', function onToggleTags(/*event*/) {
-      $('.list-tags').toggleClass('collapsed');
+      $('.list-tags').toggleClass('editable');
     });
   };
 
