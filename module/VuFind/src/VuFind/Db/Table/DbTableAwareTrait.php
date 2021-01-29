@@ -27,6 +27,8 @@
  */
 namespace VuFind\Db\Table;
 
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+
 /**
  * Default implementation of DbTableAwareInterface.
  *
@@ -62,11 +64,11 @@ trait DbTableAwareTrait
     /**
      * Set the table plugin manager.
      *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
+     * @param PsrContainerInterface $manager Plugin manager
      *
      * @return void
      */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
+    public function setDbTableManager(PsrContainerInterface $manager)
     {
         $this->tableManager = $manager;
     }

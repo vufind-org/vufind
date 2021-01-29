@@ -27,6 +27,8 @@
  */
 namespace VuFind\Db\Table;
 
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+
 /**
  * Marker interface for classes that depend on the \VuFind\Db\Table\PluginManager
  *
@@ -49,9 +51,9 @@ interface DbTableAwareInterface
     /**
      * Set the plugin manager.
      *
-     * @param PluginManager $manager Plugin manager
+     * @param PsrContainerInterface $manager Plugin manager
      *
      * @return void
      */
-    public function setDbTableManager(PluginManager $manager);
+    public function setDbTableManager(PsrContainerInterface $manager);
 }
