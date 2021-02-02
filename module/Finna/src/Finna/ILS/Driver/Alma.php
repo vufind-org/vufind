@@ -1295,6 +1295,26 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $libraries
         );
 
+        $libs2str = function ($libraries) {
+            $result = [];
+            foreach ($libraries as $library) {
+                $result[] = '    ' . $library['locationID'] . '='
+                    . $library['locationDisplay'];
+            }
+            return implode("\n", $result);
+        };
+
+        $items2str = function ($items) {
+            $result = [];
+            foreach ($items as $item) {
+                $result[] = '    lib: ' . $item['lib'] . ', loc: ' . $item['loc'] .
+                    ', policy: ' . $item['policy'];
+            }
+            return implode("\n", $result);
+        };
+
+        $this->debug("Considering pickup locations:\n" . $libs2str($libraries));
+
         if ($patron && $holdDetails
             && !empty($this->config['Holds']['pickupLocationRules'])
         ) {
@@ -1373,10 +1393,17 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             $libraryFilter = null;
             $work = false;
             $home = false;
+            $this->debug("All items:\n" . $items2str($allItems));
+            $this->debug("Available items:\n" . $items2str($availableItems));
+            $this->debug("Unavailable items:\n" . $items2str($unavailableItems));
+            $this->debug("Patron group: $patronGroup");
+            $this->debug("Request level: $level");
+
             foreach ($rules as $rule) {
                 if (!empty($rule['level'])
                     && !$this->compareRuleWithArray($rule['level'], (array)$level)
                 ) {
+                    $this->debug('No match: rule level: ' . $rule['_str']);
                     continue;
                 }
 
@@ -1389,6 +1416,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $allItems
                     )
                 ) {
+                    $this->debug('No match: loc, lib, policy: ' . $rule['_str']);
                     continue;
                 }
                 if ((!empty($rule['avail']) || !empty($rule['availlib'])
@@ -1400,6 +1428,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $availableItems
                     )
                 ) {
+                    $this->debug(
+                        'No match: avail, availlib, availpolicy: ' . $rule['_str']
+                    );
                     continue;
                 }
                 if ((!empty($rule['unavail']) || !empty($rule['unavaillib'])
@@ -1411,6 +1442,10 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $unavailableItems
                     )
                 ) {
+                    $this->debug(
+                        'No match: unavail, unavaillib, unavailpolicy: '
+                        . $rule['_str']
+                    );
                     continue;
                 }
 
@@ -1419,6 +1454,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         $rule['group'], (array)$patronGroup
                     );
                     if (!$match) {
+                        $this->debug('No match: group: ' . $rule['_str']);
                         continue;
                     }
                 }
@@ -1428,6 +1464,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     $libraryFilter = [];
                 }
                 $libraryFilter = array_merge($libraryFilter, $rule['pickup'] ?? []);
+
+                $this->debug('Rule match: ' . $rule['_str']);
 
                 if (!empty($rule['home'])) {
                     $home = !empty($profile['homeAddress'])
@@ -1443,6 +1481,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 }
 
                 if (in_array('stop', $rule['match'] ?? [])) {
+                    $this->debug('Stop further processing: ' . print_r($rule, true));
                     break;
                 }
             }
@@ -1478,6 +1517,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     ];
                 }
             }
+
+            $this->debug("Filtered pickup locations:\n" . $libs2str($libraries));
         }
 
         $cachedPickups[$cacheKey] = $libraries;
@@ -2828,6 +2869,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                         array_map('trim', str_getcsv($value, ',', "'"))
                     );
                 }
+                $ruleParts['_str'] = $rule;
             }
             $rules[] = $ruleParts;
         }
