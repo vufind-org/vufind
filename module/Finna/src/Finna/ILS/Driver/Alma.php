@@ -1274,6 +1274,14 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     public function getPickupLocations($patron, $holdDetails)
     {
+        // This may get called multiple times. Cache results during execution since
+        // this is quite expensive.
+        static $cachedPickups = [];
+        $cacheKey = md5(json_encode($patron) . json_encode($holdDetails));
+        if (isset($cachedPickups[$cacheKey])) {
+            return $cachedPickups[$cacheKey];
+        }
+
         $libraries = parent::getPickupLocations($patron, $holdDetails);
 
         $libraries = array_map(
@@ -1310,10 +1318,26 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 );
                 $items = [$item];
             } else {
-                $items = $this->makeRequest(
-                    '/bibs/' . rawurlencode($bibId) . '/holdings/ALL/items'
-                );
-                $items = $items->item;
+                $items = [];
+                // NOTE: According to documentation offset is 0-based, but in reality
+                // it seems to be 1-based.
+                $offset = 1;
+                $limit = 10;
+                do {
+                    $itemsResult = $this->makeRequest(
+                        '/bibs/' . rawurlencode($bibId) . '/holdings/ALL/items',
+                        [
+                            'offset' => $offset,
+                            'limit' => $limit
+                        ]
+                    );
+                    foreach ($itemsResult->item as $item) {
+                        $items[] = $item;
+                    }
+                    $total = (string)$itemsResult->attributes()
+                        ->{'total_record_count'};
+                    $offset += $limit;
+                } while ($offset < $total);
             }
             foreach ($items as $item) {
                 $lib = (string)$item->item_data->library;
@@ -1455,6 +1479,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 }
             }
         }
+
+        $cachedPickups[$cacheKey] = $libraries;
 
         return $libraries;
     }
