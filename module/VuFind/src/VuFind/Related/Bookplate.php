@@ -46,12 +46,22 @@ class Bookplate implements RelatedInterface
     /**
      * Bookplate URLs
      */
-    protected $bookplateUrls;
+    protected $bookplateImgNames;
 
     /**
-     * TEMPORARY
+     * URL template for full bookplate
      */
-    protected $baseUrl;
+    protected $fullUrlTemplate;
+
+    /**
+     * URL temlate for thumbnail
+     */
+    protected $thumbUrlTemplate;
+
+    /**
+     * Display bookplate titles?
+     */
+    protected $displayTitles;
 
     /**
      * Establishes base settings for bookplates.
@@ -63,55 +73,42 @@ class Bookplate implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $this->bookplateUrls = $driver->getBookplateUrls();
-        $this->bookplateStrs = $driver->getBookplateStrings();
-
-        // TEMPORARY
-        $this->baseUrl = 'http://www.lib.uchicago.edu/bookplates/';
+        $this->bookplateStrs = $driver->getBookplateSolrData('titles');
+        $this->bookplateImgNames = $driver->getBookplateSolrData('imgNames');
+        $this->fullUrlTemplate = $driver->getBookplateFullUrlTemplate();
+        $this->thumbUrlTemplate = $driver->getBookplateThumbUrlTemplate();
+        $this->displayTitles = $driver->displayBookplateTitles();
     }
 
     /**
-     * Get the bookplate URL.
-     *
-     * @param $i int
-     * 
-     * @return string
-     */
-    protected function getBookplateUrl($i)
-    {
-        return $this->baseUrl . strtolower($this->bookplateUrls[$i]) . '-full.jpg'; 
-    }
-
-    /**
-     * Combine data into a single array.
+     * Get bookplate details for display.
      *
      * @return array
      */
-    protected function getData()
+    public function getBookplateDetails()
     {
-        $sameLen = count($this->bookplateStrs) == count($this->bookplateUrls)
+        $sameLen = count($this->bookplateStrs) == count($this->bookplateImgNames)
             ?? false;
         $hasBookplates = !empty($this->bookplateStrs)
-            && !empty($this->bookplateUrls) && $sameLen;
+            && !empty($this->bookplateImgNames) && $sameLen;
         if ($hasBookplates) {
             $data = [];
             foreach ($this->bookplateStrs as $i => $bookplate) {
-                $imgUrl = $this->getBookplateUrl($i);
-                $data[$i] = [$bookplate, $imgUrl];
+                $imgUrl = sprintf(
+                    $this->fullUrlTemplate,
+                    $this->bookplateImgNames[$i]
+                );
+                $imgThumb = sprintf(
+                    $this->thumbUrlTemplate,
+                    $this->bookplateImgNames[$i]
+                );
+                $data[$i] = ['title' => $bookplate,
+                             'fullUrl' => $imgUrl,
+                             'thumbUrl' => $imgThumb,
+                             'displayTitle' => $this->displayTitles];
             }
             return $data;
         }
         return [];
-    }
-
-    /**
-     * Get array of bookplate string, url pairs
-     * to display in the template.
-     *
-     * @return array
-     */
-    public function getBookplates()
-    {
-        return $this->getData();
     }
 }

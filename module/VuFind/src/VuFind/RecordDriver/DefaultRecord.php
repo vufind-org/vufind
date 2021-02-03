@@ -1724,24 +1724,78 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the donor name.
+     * Get the bookplate names.
+     *
+     * @param $s string name of data to retrieve.
      *
      * @return array
      */
-    public function getBookplateStrings()
+    public function getBookplateSolrData($s)
     {
-        return isset($this->fields['donor']) ?
-            $this->fields['donor'] : [];
+        $data = [
+            'titles' => $this->getBookplateSolrTitlesField(),
+            'imgNames' => $this->getBookplateSolrImgNamesField()
+        ];
+        $field = $data[$s];
+        if (!empty($field) && isset($this->fields[$field])) {
+            return $this->fields[$field];
+        }
+        return [];
     }
 
     /**
-     * Get the donor code.
+     * Get the full bookplate URL string template.
      *
-     * @return array
+     * @return string
      */
-    public function getBookplateUrls()
+    public function getBookplateFullUrlTemplate()
     {
-        return isset($this->fields['donor_code']) ?
-            $this->fields['donor_code'] : [];
+        return isset($this->recordConfig->Record->bookplate_full) ?
+            $this->recordConfig->Record->bookplate_full : '';
+    }
+
+    /**
+     * Get the bookplate URL thumbnail string template.
+     *
+     * @return string
+     */
+    public function getBookplateThumbUrlTemplate()
+    {
+        return isset($this->recordConfig->Record->bookplate_thumb) ?
+            $this->recordConfig->Record->bookplate_thumb : '';
+    }
+
+    /**
+     * Display titles under bookplates.
+     *
+     * @return boolean
+     */
+    public function displayBookplateTitles()
+    {
+        return isset($this->recordConfig->Record->bookplate_display_title) ?
+            $this->recordConfig->Record->bookplate_display_title : true;
+    }
+
+    /**
+     * Get a Solr field with an array of bookplate image titles.
+     *
+     * @return string
+     */
+    protected function getBookplateSolrTitlesField()
+    {
+        return isset($this->recordConfig->Record->bookplate_titles_field) ?
+            $this->recordConfig->Record->bookplate_titles_field : '';
+    }
+
+    /**
+     * Get a Solr field with an array of strings that represent the unique
+     * part of image names.
+     *
+     * @return string
+     */
+    protected function getBookplateSolrImgNamesField()
+    {
+        return isset($this->recordConfig->Record->bookplate_img_names_field) ?
+            $this->recordConfig->Record->bookplate_img_names_field : '';
     }
 }
