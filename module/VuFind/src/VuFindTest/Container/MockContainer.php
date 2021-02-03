@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\Container;
 
-use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -39,7 +39,7 @@ use PHPUnit\Framework\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MockContainer implements ContainerInterface
+class MockContainer implements ServiceLocatorInterface
 {
     /**
      * Disabled services.
@@ -95,6 +95,19 @@ class MockContainer implements ContainerInterface
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
+    }
+
+    /**
+     * Alias for createMock(), needed to conform to ServiceLocatorInterface.
+     *
+     * @param string $name    Name of service to build
+     * @param array  $options Options
+     *
+     * @return mixed
+     */
+    public function build($name, array $options = null)
+    {
+        return $this->createMock($name, $options ?? []);
     }
 
     /**
