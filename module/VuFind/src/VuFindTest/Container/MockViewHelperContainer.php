@@ -1,10 +1,10 @@
 <?php
 /**
- * Container that produces mock objects.
+ * View helper container that produces mock objects.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,8 @@
  */
 namespace VuFindTest\Container;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
- * Container that produces mock objects.
+ * View helper container that produces mock objects.
  *
  * @category VuFind
  * @package  Tests
@@ -38,20 +36,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MockContainer implements ServiceLocatorInterface
+class MockViewHelperContainer extends \Laminas\View\HelperPluginManager
 {
     use MockContainerTrait;
-
-    /**
-     * Alias for createMock(), needed to conform to ServiceLocatorInterface.
-     *
-     * @param string $name    Name of service to build
-     * @param array  $options Options
-     *
-     * @return mixed
-     */
-    public function build($name, array $options = null)
-    {
-        return $this->createMock($name, $options ?? []);
-    }
 }
