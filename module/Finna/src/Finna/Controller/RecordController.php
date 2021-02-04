@@ -207,9 +207,9 @@ class RecordController extends \VuFind\Controller\RecordController
     {
         // Special case -- handle lightbox login request if login has already been
         // done
-        if ($this->params()->fromQuery('layout', 'false') == 'lightbox'
+        if ($this->inLightbox()
             && $this->params()->fromQuery('catalogLogin', 'false') == 'true'
-            && is_array($patron = $this->catalogLogin())
+            && is_array($this->catalogLogin())
         ) {
             $response = $this->getResponse();
             $response->setStatusCode(205);

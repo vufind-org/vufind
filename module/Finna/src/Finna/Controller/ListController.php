@@ -175,7 +175,7 @@ class ListController extends \Finna\Controller\MyResearchController
                 $callback
             )->getResults();
             $this->processSave($user, $records);
-            if ($this->params()->fromQuery('layout', 'false') == 'lightbox') {
+            if ($this->inLightbox()) {
                 return $this->getResponse()->setStatusCode(204);
             }
             // redirect to previously stored followup
