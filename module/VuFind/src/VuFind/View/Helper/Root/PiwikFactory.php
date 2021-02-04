@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Piwik helper factory.
@@ -61,11 +64,13 @@ class PiwikFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $url = $config->Piwik->url ?? false;
         $settings = [
             'siteId' => $config->Piwik->site_id ?? 1,
-            'searchPrefix' => $config->Piwik->searchPrefix ?? null
+            'searchPrefix' => $config->Piwik->searchPrefix ?? null,
+            'disableCookies' => $config->Piwik->disableCookies ?? false
         ];
         $customVars = $config->Piwik->custom_variables ?? false;
         $request = $container->get('Request');

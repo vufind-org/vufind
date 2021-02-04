@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Record Controller
@@ -57,8 +57,7 @@ class RecordController extends AbstractRecord
         parent::__construct($sm);
 
         // Load default tab setting:
-        $this->fallbackDefaultTab = isset($config->Site->defaultRecordTab)
-            ? $config->Site->defaultRecordTab : 'Holdings';
+        $this->fallbackDefaultTab = $config->Site->defaultRecordTab ?? 'Holdings';
     }
 
     /**
@@ -68,7 +67,7 @@ class RecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

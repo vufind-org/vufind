@@ -30,10 +30,10 @@ namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\Resolver\Driver\Redi;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
-use Zend\Http\Response as HttpResponse;
+use VuFind\Resolver\Driver\Redi;
 
 /**
  * Redi resolver driver test
@@ -47,6 +47,8 @@ use Zend\Http\Response as HttpResponse;
  */
 class RediTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test-Config
      *
@@ -115,20 +117,12 @@ class RediTest extends \VuFindTest\Unit\TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/resolver/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("resolver/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
-        $client = new \Zend\Http\Client();
+        $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
         $conn = new Redi($this->openUrlConfig['OpenURL']['url'], $client);

@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Flashmessages helper factory.
@@ -62,7 +65,7 @@ class FlashmessagesFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $messenger = $container->get('ControllerPluginManager')
-            ->get('Zend\Mvc\Plugin\FlashMessenger\FlashMessenger');
+            ->get(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         return new $requestedName($messenger);
     }
 }

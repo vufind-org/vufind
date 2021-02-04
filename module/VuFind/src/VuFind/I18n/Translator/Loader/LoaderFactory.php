@@ -1,11 +1,10 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory as Factory;
 use VuFind\I18n\Translator\Loader\Handler\HandlerManager;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 class LoaderFactory implements FactoryInterface
 {
@@ -14,7 +13,7 @@ class LoaderFactory implements FactoryInterface
         $proxyConf = $container->get('ProxyManager\Configuration');
         return (new Factory($proxyConf))->createProxy(LoaderInterface::class,
             function (& $loader, $proxy, $method, $params, & $initializer) use ($container) {
-                list ($loader, $initializer) = [$this->create($container), null];
+                list($loader, $initializer) = [$this->create($container), null];
             });
     }
 
@@ -28,5 +27,4 @@ class LoaderFactory implements FactoryInterface
         }
         return $loader;
     }
-
 }

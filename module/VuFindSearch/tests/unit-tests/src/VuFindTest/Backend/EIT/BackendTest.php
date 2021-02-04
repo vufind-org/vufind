@@ -44,6 +44,8 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -128,7 +130,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testConstructorSetters()
     {
-        $fact = $this->createMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         $conn = $this->getConnectorMock();
         $back = new Backend($conn, $fact);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
@@ -148,11 +150,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/eit/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return file_get_contents($file);
+        return $this->getFixture("eit/response/$fixture", 'VuFindSearch');
     }
 
     /**
@@ -164,7 +162,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock('Zend\Http\Client');
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(__NAMESPACE__ . '\ConnectorMock')
             ->setMethods($mock)
             ->setConstructorArgs(['http://fake', $client, 'profile', 'pwd', 'dbs'])

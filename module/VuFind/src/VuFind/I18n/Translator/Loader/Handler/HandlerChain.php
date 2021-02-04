@@ -1,10 +1,9 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
 
+use Laminas\EventManager\Filter\FilterInterface;
+use Laminas\EventManager\Filter\FilterIterator;
 use VuFind\I18n\Translator\Loader\Handler\Action\ActionInterface;
-use Zend\EventManager\Filter\FilterInterface;
-use Zend\EventManager\Filter\FilterIterator;
 
 class HandlerChain
 {

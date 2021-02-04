@@ -84,14 +84,17 @@ class NewGenLib extends AbstractBase
      *
      * @param string $RecordID The record id to retrieve the holdings for
      * @param array  $patron   Patron data
+     * @param array  $options  Extra options (not currently used)
      *
      * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($RecordID, array $patron = null)
+    public function getHolding($RecordID, array $patron = null, array $options = [])
     {
         $holding = $this->getItemStatus($RecordID);
         for ($i = 0; $i < count($holding); $i++) {

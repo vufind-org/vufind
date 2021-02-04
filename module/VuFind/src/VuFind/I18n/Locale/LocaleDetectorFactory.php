@@ -1,15 +1,14 @@
 <?php
-
 namespace VuFind\I18n\Locale;
 
 use Interop\Container\ContainerInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use SlmLocale\Locale\Detector;
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\CookieStrategy;
 use SlmLocale\Strategy\QueryStrategy;
 use VuFind\Cookie\CookieManager;
-use Zend\EventManager\EventInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 class LocaleDetectorFactory implements DelegatorFactoryInterface
 {

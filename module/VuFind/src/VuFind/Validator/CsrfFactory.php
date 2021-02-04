@@ -30,7 +30,10 @@
 namespace VuFind\Validator;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * CSRF Validator factory.
@@ -66,11 +69,12 @@ class CsrfFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $sessionManager = $container->get('Zend\Session\SessionManager');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         return new $requestedName(
             [
-                'session' => new \Zend\Session\Container('csrf', $sessionManager),
+                'session' => new \Laminas\Session\Container('csrf', $sessionManager),
                 'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt'
             ]
         );

@@ -131,6 +131,22 @@ class Params
     protected $extraFacetLabels = [];
 
     /**
+     * Config sections to search for facet labels if no override configuration
+     * is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
+
+    /**
+     * Config sections to search for checkbox facet labels if no override
+     * configuration is set.
+     *
+     * @var array
+     */
+    protected $defaultFacetLabelCheckboxSections = [];
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -198,6 +214,24 @@ class Params
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
+
+        // Set up facet label settings, to be used as fallbacks if specific facets
+        // are not already configured:
+        $config = $configLoader->get($options->getFacetsIni());
+        $sections = $config->FacetLabels->labelSections
+            ?? $this->defaultFacetLabelSections;
+        foreach ($sections as $section) {
+            foreach ($config->$section ?? [] as $field => $label) {
+                $this->extraFacetLabels[$field] = $label;
+            }
+        }
+
+        // Activate all relevant checkboxes, also important for labeling:
+        $checkboxSections = $config->FacetLabels->checkboxSections
+            ?? $this->defaultFacetLabelCheckboxSections;
+        foreach ($checkboxSections as $checkboxSection) {
+            $this->initCheckboxFacets($checkboxSection);
+        }
     }
 
     /**
@@ -250,7 +284,7 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -274,7 +308,7 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -305,7 +339,7 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -342,7 +376,7 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -358,7 +392,7 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -375,7 +409,7 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
@@ -454,7 +488,7 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -485,7 +519,7 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -514,7 +548,7 @@ class Params
     /**
      * Get the value for which results view to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -805,10 +839,11 @@ class Params
 
     /**
      * Detects if a filter is advanced (true) or simple (false). An advanced
-     * filter is currently defined as one surrounded by parentheses, while a
-     * simple filter is of the form field:value. Advanced filters are used to
-     * express more complex queries, such as combining multiple values from
-     * multiple fields using boolean operators.
+     * filter is currently defined as one surrounded by parentheses (possibly
+     * with a leading exclusion operator), while a simple filter is of the form
+     * field:value. Advanced filters are used to express more complex queries,
+     * such as combining multiple values from multiple fields using boolean
+     * operators.
      *
      * @param string $filter A filter string
      *
@@ -816,7 +851,7 @@ class Params
      */
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '(') {
+        if (substr($filter, 0, 1) == '(' || substr($filter, 0, 2) == '-(') {
             return true;
         }
         return false;
@@ -922,21 +957,22 @@ class Params
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
         list($fieldName) = explode(':', $filter);
-        $this->checkboxFacets[$fieldName][]
+        $this->checkboxFacets[$fieldName][$filter]
             = ['desc' => $desc, 'filter' => $filter];
     }
 
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field Facet field name.
-     * @param string $value Facet value.
+     * @param string $field   Facet field name.
+     * @param string $value   Facet value.
+     * @param string $default Default field name (null for default behavior).
      *
-     * @return string       Human-readable description of field.
+     * @return string         Human-readable description of field.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFacetLabel($field, $value = null)
+    public function getFacetLabel($field, $value = null, $default = null)
     {
         if (!isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
@@ -947,8 +983,8 @@ class Params
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
         }
-        return isset($this->extraFacetLabels[$field])
-            ? $this->extraFacetLabels[$field] : 'unrecognized_facet_label';
+        return $this->extraFacetLabels[$field]
+            ?? ($default ?: 'unrecognized_facet_label');
     }
 
     /**
@@ -976,7 +1012,7 @@ class Params
      *
      * @return array
      */
-    public function getFilters()
+    public function getRawFilters()
     {
         return $this->filterList;
     }
@@ -1104,15 +1140,22 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
+     * @param array $include List of checkbox filters to return (null for all)
+     *
      * @return array
      */
-    public function getCheckboxFacets()
+    public function getCheckboxFacets(array $include = null)
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
+                // If the current filter is not on the include list, skip it (but
+                // accept everything if the include list is empty).
+                if (!empty($include) && !in_array($facet['filter'], $include)) {
+                    continue;
+                }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
                 // Is this checkbox always visible, even if non-selected on the
                 // "no results" screen?  By default, no (may be overridden by
@@ -1127,7 +1170,7 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1231,13 +1274,13 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request         Parameter object representing
-     * user request.
-     * @param string                  $requestParam    Name of parameter containing
-     * names of range filter fields.
-     * @param Callable                $valueFilter     Optional callback to process
-     * values in the range.
-     * @param Callable                $filterGenerator Optional callback to create
+     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * representing user request.
+     * @param string                     $requestParam    Name of parameter
+     * containing names of range filter fields.
+     * @param callable                   $valueFilter     Optional callback to
+     * process values in the range.
+     * @param callable                   $filterGenerator Optional callback to create
      * a filter query from the range values.
      *
      * @return void
@@ -1335,7 +1378,7 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1353,7 +1396,7 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1371,7 +1414,7 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1387,7 +1430,7 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1427,7 +1470,7 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1597,29 +1640,6 @@ class Params
     }
 
     /**
-     * Load all available facet settings.  This is mainly useful for showing
-     * appropriate labels when an existing search has multiple filters associated
-     * with it.
-     *
-     * @param string $preferredSection Section to favor when loading settings;
-     * if multiple sections contain the same facet, this section's description
-     * will be favored.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function activateAllFacets($preferredSection = false)
-    {
-        // By default, there is only 1 set of facet settings, so this function isn't
-        // really necessary.  However, in the Search History screen, we need to
-        // use this for Solr-based Search Objects, so we need this dummy method to
-        // allow other types of Search Objects to co-exist with Solr-based ones.
-        // See the Solr Search Object for details of how this works if you need to
-        // implement context-sensitive facet settings in another module.
-    }
-
-    /**
      * Override the normal search behavior with an explicit array of IDs that must
      * be retrieved.
      *
@@ -1699,7 +1719,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return VuFindSearch\Query\AbstractQuery
+     * @return \VuFindSearch\Query\AbstractQuery
      */
     public function getQuery()
     {
@@ -1765,11 +1785,19 @@ class Params
     ) {
         $config = $this->configLoader
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (empty($config->$facetList)) {
-            return false;
+        $retVal = false;
+        // If the section is in reverse order, the tilde will flag this:
+        if (substr($facetList, 0, 1) == '~') {
+            foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
+        } else {
+            foreach ($config->$facetList ?? [] as $key => $value) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
         }
-        foreach ($config->$facetList as $key => $value) {
-            $this->addCheckboxFacet($key, $value);
-        }
+        return $retVal;
     }
 }

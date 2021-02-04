@@ -29,9 +29,9 @@
  */
 namespace VuFind\Record;
 
+use Laminas\Config\Config as Config;
 use VuFind\Db\Table\Record as Record;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
-use Zend\Config\Config as Config;
 
 /**
  * Record Cache
@@ -43,7 +43,7 @@ use Zend\Config\Config as Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Cache implements \Zend\Log\LoggerAwareInterface
+class Cache implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

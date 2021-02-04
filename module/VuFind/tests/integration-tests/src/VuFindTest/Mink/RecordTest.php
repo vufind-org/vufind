@@ -35,9 +35,12 @@ namespace VuFindTest\Mink;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class RecordTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Test record tabs for a particular ID.
      *
@@ -126,7 +129,7 @@ class RecordTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testRecordTabsOnPlusId()
     {
-        // Skip encoding on this one, because Zend Framework doesn't URL encode
+        // Skip encoding on this one, because Laminas doesn't URL encode
         // plus signs in route segments!
         $this->tryRecordTabsOnId('theplus+andtheminus-', false);
         $this->tryLoadingTabHashAndReturningToDefault(

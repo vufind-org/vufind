@@ -44,12 +44,12 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
      * Test that missing plugin manager causes exception.
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage DB table manager missing.
      */
     public function testMissingDependency()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('DB table manager missing.');
+
         $tag = new Tag();
         $tag->getSuggestions('foo');
     }
@@ -68,12 +68,12 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
         ];
 
         // Fake services:
-        $tagTable = $this->getMockBuilder('VuFind\Db\Table\Tags')
+        $tagTable = $this->getMockBuilder(\VuFind\Db\Table\Tags::class)
             ->disableOriginalConstructor()->setMethods(['matchText'])->getMock();
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
-        $tableManager = $this->getMockBuilder('VuFind\Db\Table\PluginManager')
+        $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
             ->disableOriginalConstructor()->setMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))

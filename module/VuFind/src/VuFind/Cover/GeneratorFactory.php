@@ -28,7 +28,10 @@
 namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cover generator factory.
@@ -62,8 +65,8 @@ class GeneratorFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFindTheme\ThemeInfo'),
-            $container->get('VuFind\Cover\Layer\PluginManager')
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get(\VuFind\Cover\Layer\PluginManager::class)
         );
     }
 }

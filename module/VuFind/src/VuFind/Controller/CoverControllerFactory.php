@@ -28,7 +28,10 @@
 namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cover controller factory.
@@ -62,9 +65,9 @@ class CoverControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Cover\Loader'),
-            $container->get('VuFind\Cover\CachingProxy'),
-            $container->get('VuFind\Session\Settings')
+            $container->get(\VuFind\Cover\Loader::class),
+            $container->get(\VuFind\Cover\CachingProxy::class),
+            $container->get(\VuFind\Session\Settings::class)
         );
     }
 }

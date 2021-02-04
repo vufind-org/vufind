@@ -28,7 +28,10 @@
 namespace VuFind\RecordDriver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Default factory for record drivers.
@@ -58,7 +61,8 @@ class AbstractBaseFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $mainConfig = $container->get('VuFind\Config\PluginManager')->get('config');
+        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         return new $requestedName($mainConfig, ...($options ?: []));
     }
 }

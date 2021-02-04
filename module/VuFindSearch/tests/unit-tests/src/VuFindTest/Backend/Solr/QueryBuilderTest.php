@@ -345,38 +345,6 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test generation with highlighting, using the setCreateHighlightingQuery()
-     * method.
-     *
-     * @return void
-     */
-    public function testSetCreateHighlightingQuery()
-    {
-        $qb = new QueryBuilder(
-            [
-                'test' => [
-                    'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']],
-                ]
-            ]
-        );
-
-        $q = new Query('*:*', 'test');
-
-        // No hl.q if highlighting query disabled:
-        $qb->setCreateHighlightingQuery(false);
-        $response1 = $qb->build($q);
-        $hlQ1 = $response1->get('hl.q');
-        $this->assertEquals(null, $hlQ1[0]);
-
-        // hl.q if highlighting query enabled:
-        $qb->setCreateHighlightingQuery(true);
-        $response2 = $qb->build($q);
-        $hlQ2 = $response2->get('hl.q');
-        $this->assertEquals('*:*', $hlQ2[0]);
-    }
-
-    /**
      * Test hl.q edge case: when we are in dismax (not edismax) mode, and a boost
      * is set, and a query contains advanced syntax, VuFind manipulates the query
      * to trigger the boost and sets hl.q to prevent the highlighter from matching
@@ -424,26 +392,26 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 
         $q = new Query('my friend', 'test');
 
-        // Map of field whitelist to expected hl.fl output.
+        // Map of field list to expected hl.fl output.
         $tests = [
             // No hl.fl if highlight field list is empty:
             '' => null,
-            // hl.fl set when whitelist is wildcard:
+            // hl.fl set when field list is wildcard:
             '*' => 'test1,test2,test3',
-            // No hl.fl if whitelist doesn't match handler list:
+            // No hl.fl if field list doesn't match handler list:
             'test4,test5' => null,
-            // hl.fl contains intersection of whitelist and handler list
-            // (testing with a comma-separated whitelist)
+            // hl.fl contains intersection of field list and handler list
+            // (testing with a comma-separated field list)
             'test1,test2,test6' => 'test1,test2',
-            // hl.fl contains intersection of whitelist and handler list
-            // (testing with a space-separated whitelist)
+            // hl.fl contains intersection of field list and handler list
+            // (testing with a space-separated field list)
             'test1 test3 test5' => 'test1,test3',
         ];
         foreach ($tests as $input => $output) {
             $qb->setFieldsToHighlight($input);
             $response = $qb->build($q);
             $hlfl = $response->get('hl.fl');
-            $this->assertEquals($output, $hlfl[0]);
+            $this->assertEquals($output, $hlfl[0] ?? null);
         }
     }
 
@@ -469,7 +437,7 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $qb->setCreateSpellingQuery(false);
         $response1 = $qb->build($q);
         $spQ1 = $response1->get('spellcheck.q');
-        $this->assertEquals(null, $spQ1[0]);
+        $this->assertFalse(isset($spQ1[0]));
 
         // spellcheck.q if spellcheck query enabled:
         $qb->setCreateSpellingQuery(true);

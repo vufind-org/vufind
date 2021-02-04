@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search;
 
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  * Wrapper class to handle search memory
@@ -155,18 +155,6 @@ class Memory
     }
 
     /**
-     * Deprecated alias for retrieveSearch, for legacy compatibility.
-     *
-     * @deprecated
-     *
-     * @return string|null
-     */
-    public function retrieve()
-    {
-        return $this->retrieveSearch();
-    }
-
-    /**
      * Retrieve a previous user parameter, if available. Return $default if
      * not found.
      *
@@ -178,8 +166,7 @@ class Memory
      */
     public function retrieveLastSetting($context, $setting, $default = null)
     {
-        return isset($this->session->{"params|$context|$setting"})
-            ? $this->session->{"params|$context|$setting"} : $default;
+        return $this->session->{"params|$context|$setting"} ?? $default;
     }
 
     /**
@@ -190,6 +177,6 @@ class Memory
      */
     public function retrieveSearch()
     {
-        return isset($this->session->last) ? $this->session->last : null;
+        return $this->session->last ?? null;
     }
 }

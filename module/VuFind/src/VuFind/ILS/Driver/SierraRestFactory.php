@@ -28,6 +28,9 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for SierraRest ILS driver.
@@ -61,8 +64,8 @@ class SierraRestFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get('Zend\Session\SessionManager');
-            return new \Zend\Session\Container("SierraRest_$namespace", $manager);
+            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            return new \Laminas\Session\Container("SierraRest_$namespace", $manager);
         };
         return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }

@@ -1,3 +1,7 @@
+.record h1 {
+  font-size: 24px;
+  line-height: 1.15;
+}
 .record .media-body h3 { margin-top: 0; } // Align title with top of image
 .recordcover { max-height: 300px; } // Keep the image from getting out of control
 .browzine .recordcover {
@@ -8,6 +12,8 @@
   width: 105px;
   height: auto;
 }
+
+.media-body h1 { margin-top: 0; }
 @media (max-width: 767px) {
   .record .media-left,
   .record .media-right { display: block; }
@@ -128,3 +134,41 @@
 
 /* ------ Relais ------ */
 .relaisLink { display: inline-block; }
+
+/* ------ Collection ------ */
+.collection-list-controls {
+  display: flex;
+  flex-flow: row wrap;
+
+  .collection-control {
+    white-space: nowrap;
+    margin: 0 0.5rem 0 0;
+  }
+}
+.collectionDetails .active-filters .filters {
+  padding: 0 0 5px 0;
+}
+.collection-list-results {
+  margin-top: 0.5rem;
+}
+
+/* ------ Tabs ------ */
+.tab-pane::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+.tab-pane .result {
+  margin-left: 0;
+}
+
+/* ------ OpenURL Links ------ */
+.openurls {
+  .openurl-notes {
+    display: block;
+    font-style: italic;
+  }
+  .openurl-authentication {
+    display: block;
+  }
+}

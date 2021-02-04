@@ -28,6 +28,9 @@
 namespace VuFind\RecordDriver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for Summon record drivers.
@@ -58,7 +61,7 @@ class SummonFactory extends NameBasedConfigFactory
         array $options = null
     ) {
         $driver = parent::__invoke($container, $requestedName, $options);
-        $driver->setDateConverter($container->get('VuFind\Date\Converter'));
+        $driver->setDateConverter($container->get(\VuFind\Date\Converter::class));
         return $driver;
     }
 }

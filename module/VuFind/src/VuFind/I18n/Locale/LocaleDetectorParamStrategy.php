@@ -1,10 +1,9 @@
 <?php
-
 namespace VuFind\I18n\Locale;
 
+use Laminas\Http\PhpEnvironment\Request;
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\AbstractStrategy;
-use Zend\Http\PhpEnvironment\Request;
 
 class LocaleDetectorParamStrategy extends AbstractStrategy
 {

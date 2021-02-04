@@ -28,7 +28,10 @@
 namespace VuFind\ContentBlock;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * FacetList content block factory.
@@ -61,8 +64,8 @@ class FacetListFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $fcpm = $container->get('VuFind\Search\FacetCache\PluginManager');
-        $cm = $container->get('VuFind\Config\PluginManager');
+        $fcpm = $container->get(\VuFind\Search\FacetCache\PluginManager::class);
+        $cm = $container->get(\VuFind\Config\PluginManager::class);
         return new $requestedName($fcpm, $cm);
     }
 }

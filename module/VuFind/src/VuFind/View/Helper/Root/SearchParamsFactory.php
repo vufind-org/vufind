@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * SearchParams helper factory.
@@ -62,7 +65,7 @@ class SearchParamsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Params\PluginManager')
+            $container->get(\VuFind\Search\Params\PluginManager::class)
         );
     }
 }

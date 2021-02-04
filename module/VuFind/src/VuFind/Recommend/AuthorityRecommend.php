@@ -28,8 +28,8 @@
  */
 namespace VuFind\Recommend;
 
+use Laminas\Stdlib\Parameters;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-use Zend\StdLib\Parameters;
 
 /**
  * AuthorityRecommend Module
@@ -101,6 +101,13 @@ class AuthorityRecommend implements RecommendInterface
     protected $mode = '*';
 
     /**
+     * Header to use in the user interface.
+     *
+     * @var string
+     */
+    protected $header = 'See also';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
@@ -126,6 +133,8 @@ class AuthorityRecommend implements RecommendInterface
                     $this->resultLimit = intval($params[$i + 1]);
                 } elseif ($params[$i] == '__mode__') {
                     $this->mode = strtolower($params[$i + 1]);
+                } elseif ($params[$i] == '__header__') {
+                    $this->header = $params[$i + 1];
                 } else {
                     $this->filters[] = $params[$i] . ':' . $params[$i + 1];
                 }
@@ -140,7 +149,7 @@ class AuthorityRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param Parameters                 $request Parameter object representing user
      * request.
      *
      * @return void
@@ -272,6 +281,11 @@ class AuthorityRecommend implements RecommendInterface
     {
         $this->results = $results;
 
+        // empty searches such as New Items will return blank
+        if ($this->lookfor == null) {
+            return;
+        }
+
         // function will return blank on Advanced Search
         if ($results->getParams()->getSearchType() == 'advanced') {
             return;
@@ -293,6 +307,16 @@ class AuthorityRecommend implements RecommendInterface
         if ($this->isModeActive('seealso')) {
             $this->addSeeAlsoReferences();
         }
+    }
+
+    /**
+     * Get the header to display in the user interface.
+     *
+     * @return string
+     */
+    public function getHeader()
+    {
+        return $this->header;
     }
 
     /**

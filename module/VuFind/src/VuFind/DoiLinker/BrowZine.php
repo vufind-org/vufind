@@ -51,19 +51,53 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
     protected $connector;
 
     /**
+     * Configuration options
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
      * @param Connector $connector Connector
+     * @param array     $config    Configuration settings
      */
-    public function __construct(Connector $connector)
+    public function __construct(Connector $connector, array $config = [])
     {
         $this->connector = $connector;
+        $this->config = $config;
+    }
+
+    /**
+     * Check if an array key is available in the data and allowed by filter settings.
+     *
+     * @param string $key  Key to check
+     * @param array  $data Available data
+     *
+     * @return bool
+     */
+    protected function arrayKeyAvailable(string $key, ?array $data): bool
+    {
+        if (empty($data[$key])) {
+            return false;
+        }
+        switch (strtolower(trim($this->config['filterType'] ?? 'none'))) {
+        case 'include':
+            return in_array($key, (array)($this->config['filter'] ?? []));
+        case 'exclude':
+            return !in_array($key, (array)($this->config['filter'] ?? []));
+        default:
+        }
+        // If we got this far, no filter setting is applied, so the option is legal:
+        return true;
     }
 
     /**
      * Given an array of DOIs, perform a lookup and return an associative array
      * of arrays, keyed by DOI. Each array contains one or more associative arrays
-     * with 'link' and 'label' keys.
+     * with required 'link' (URL to related resource) and 'label' (display text)
+     * keys and an optional 'icon' (URL to icon graphic) key.
      *
      * @param array $doiArray DOIs to look up
      *
@@ -71,20 +105,23 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
      */
     public function getLinks(array $doiArray)
     {
+        $baseIconUrl = 'https://assets.thirdiron.com/images/integrations/';
         $response = [];
         foreach ($doiArray as $doi) {
             $data = $this->connector->lookupDoi($doi)['data'] ?? null;
-            if (!empty($data['browzineWebLink'])) {
+            if ($this->arrayKeyAvailable('browzineWebLink', $data)) {
                 $response[$doi][] = [
                     'link' => $data['browzineWebLink'],
                     'label' => $this->translate('View Complete Issue'),
+                    'icon' => $baseIconUrl . 'browzine-open-book-icon.svg',
                     'data' => $data,
                 ];
             }
-            if (!empty($data['fullTextFile'])) {
+            if ($this->arrayKeyAvailable('fullTextFile', $data)) {
                 $response[$doi][] = [
                     'link' => $data['fullTextFile'],
                     'label' => $this->translate('PDF Full Text'),
+                    'icon' => $baseIconUrl . 'browzine-pdf-download-icon.svg',
                     'data' => $data,
                 ];
             }

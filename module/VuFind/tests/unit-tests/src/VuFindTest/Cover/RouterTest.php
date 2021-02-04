@@ -27,8 +27,11 @@
  */
 namespace VuFindTest\Cover;
 
+use Laminas\Config\Config;
+use VuFind\Cover\Loader;
 use VuFind\Cover\Router;
 use VuFindTest\RecordDriver\TestHarness;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Cover Router Test Class
@@ -41,6 +44,13 @@ use VuFindTest\RecordDriver\TestHarness;
  */
 class RouterTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Theme to use for testing purposes.
+     *
+     * @var string
+     */
+    protected $testTheme = 'bootstrap3';
+
     /**
      * Get a fake record driver
      *
@@ -62,7 +72,7 @@ class RouterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getRouter()
     {
-        return new Router('https://vufind.org/cover');
+        return new Router('https://vufind.org/cover', $this->getCoverLoader());
     }
 
     /**
@@ -102,5 +112,47 @@ class RouterTest extends \VuFindTest\Unit\TestCase
             'https://vufind.org/cover?foo=bar',
             $this->getRouter()->getUrl($this->getDriver(['Thumbnail' => $params]))
         );
+    }
+
+    /**
+     * Get a loader object to test.
+     *
+     * @param array                                $config      Configuration
+     * @param \VuFind\Content\Covers\PluginManager $manager     Plugin manager (null to create mock)
+     * @param ThemeInfo                            $theme       Theme info object (null to create default)
+     * @param \VuFindHttp\HttpService              $httpService HTTP client factory
+     * @param array|bool                           $mock        Array of functions to mock, or false for real object
+     *
+     * @return Loader
+     */
+    protected function getCoverLoader($config = [], $manager = null, $theme = null, $httpService = null, $mock = false)
+    {
+        $config = new Config($config);
+        if (null === $manager) {
+            $manager = $this->createMock(\VuFind\Content\Covers\PluginManager::class);
+        }
+        if (null === $theme) {
+            $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
+        }
+        if (null === $httpService) {
+            $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
+        }
+        if ($mock) {
+            return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
+                ->setMethods($mock)
+                ->setConstructorArgs([$config, $manager, $theme, $httpService])
+                ->getMock();
+        }
+        return new Loader($config, $manager, $theme, $httpService);
+    }
+
+    /**
+     * Get the theme directory.
+     *
+     * @return string
+     */
+    protected function getThemeDir()
+    {
+        return realpath(__DIR__ . '/../../../../../../../themes');
     }
 }

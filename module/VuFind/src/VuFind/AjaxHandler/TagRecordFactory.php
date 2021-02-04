@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for TagRecord AJAX handler.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TagRecordFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class TagRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,9 +66,9 @@ class TagRecordFactory implements \Zend\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Tags'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn()
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Tags::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn()
         );
     }
 }

@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for GetRecordTags AJAX handler.
@@ -38,7 +41,8 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetRecordTagsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetRecordTagsFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,10 +66,10 @@ class GetRecordTagsFactory implements \Zend\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $tablePluginManager->get('VuFind\Db\Table\Tags'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $tablePluginManager->get(\VuFind\Db\Table\Tags::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $container->get('ViewRenderer')
         );
     }

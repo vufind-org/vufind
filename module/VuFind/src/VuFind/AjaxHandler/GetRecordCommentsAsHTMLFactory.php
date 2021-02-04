@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for GetRecordCommentsAsHTML AJAX handler.
@@ -39,7 +42,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetRecordCommentsAsHTMLFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -64,7 +67,7 @@ class GetRecordCommentsAsHTMLFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Record\Loader'),
+            $container->get(\VuFind\Record\Loader::class),
             $container->get('ViewRenderer')
         );
     }

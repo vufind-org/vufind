@@ -1,12 +1,10 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
 
-
+use Laminas\Stdlib\Glob;
 use VuFind\I18n\Translator\Loader\Handler\Action\ActionInterface;
 use VuFind\I18n\Translator\Loader\Handler\Action\FileAction;
 use VuFind\I18n\Translator\Loader\Handler\Action\InitialAction;
-use Zend\Stdlib\Glob;
 
 class DirectoryHandler implements HandlerInterface
 {

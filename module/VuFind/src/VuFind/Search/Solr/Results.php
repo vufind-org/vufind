@@ -51,7 +51,7 @@ class Results extends \VuFind\Search\Base\Results
     protected $responseFacets = null;
 
     /**
-     * Search backend identifiers.
+     * Search backend identifier.
      *
      * @var string
      */
@@ -70,6 +70,34 @@ class Results extends \VuFind\Search\Base\Results
      * @var SpellingProcessor
      */
     protected $spellingProcessor = null;
+
+    /**
+     * CursorMark used for deep paging (e.g. OAI-PMH Server).
+     * Set to '*' to start paging a request and use the new value returned from the
+     * search request for the next request.
+     *
+     * @var null|string
+     */
+    protected $cursorMark = null;
+
+    /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $hierarchicalFacetHelper = null;
+
+    /**
+     * Set hierarchical facet helper
+     *
+     * @param HierarchicalFacetHelper $helper Hierarchical facet helper
+     *
+     * @return void
+     */
+    public function setHierarchicalFacetHelper(HierarchicalFacetHelper $helper)
+    {
+        $this->hierarchicalFacetHelper = $helper;
+    }
 
     /**
      * Get spelling processor.
@@ -97,6 +125,28 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
+     * Get cursorMark.
+     *
+     * @return null|string
+     */
+    public function getCursorMark()
+    {
+        return $this->cursorMark;
+    }
+
+    /**
+     * Set cursorMark.
+     *
+     * @param null|string $cursorMark New cursor mark
+     *
+     * @return void
+     */
+    public function setCursorMark($cursorMark)
+    {
+        $this->cursorMark = $cursorMark;
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -109,6 +159,13 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $searchService = $this->getSearchService();
+        $cursorMark = $this->getCursorMark();
+        if (null !== $cursorMark) {
+            $params->set('cursorMark', '' === $cursorMark ? '*' : $cursorMark);
+            // Override any default timeAllowed since it cannot be used with
+            // cursorMark
+            $params->set('timeAllowed', -1);
+        }
 
         try {
             $collection = $searchService
@@ -136,6 +193,11 @@ class Results extends \VuFind\Search\Base\Results
         $this->spellingQuery = $spellcheck->getQuery();
         $this->suggestions = $this->getSpellingProcessor()
             ->getSuggestions($spellcheck, $this->getParams()->getQuery());
+
+        // Update current cursorMark
+        if (null !== $cursorMark) {
+            $this->setCursorMark($collection->getCursorMark());
+        }
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -242,6 +304,7 @@ class Results extends \VuFind\Search\Base\Results
         // Loop through every field returned by the result set
         $fieldFacets = $this->responseFacets->getFieldFacets();
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
         foreach (array_keys($filter) as $field) {
             $data = $fieldFacets[$field] ?? [];
             // Skip empty arrays:
@@ -259,6 +322,7 @@ class Results extends \VuFind\Search\Base\Results
                 $translateTextDomain = $this->getOptions()
                     ->getTextDomainForTranslatedFacet($field);
             }
+            $hierarchical = in_array($field, $hierarchicalFacets);
             // Loop through values:
             foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
@@ -268,9 +332,20 @@ class Results extends \VuFind\Search\Base\Results
                 $displayText = $this->getParams()
                     ->checkForDelimitedFacetDisplayText($field, $value);
 
+                if ($hierarchical) {
+                    if (!$this->hierarchicalFacetHelper) {
+                        throw new \Exception(
+                            get_class($this)
+                            . ': hierarchical facet helper unavailable'
+                        );
+                    }
+                    $displayText = $this->hierarchicalFacetHelper
+                        ->formatDisplayText($displayText);
+                }
                 $currentSettings['displayText'] = $translate
-                    ? $this->translate("$translateTextDomain::$displayText")
+                    ? $this->translate([$translateTextDomain, $displayText])
                     : $displayText;
+
                 $currentSettings['count'] = $count;
                 $currentSettings['operator']
                     = $this->getParams()->getFacetOperator($field);

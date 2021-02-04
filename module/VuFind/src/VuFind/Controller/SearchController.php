@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Mail as MailException;
+use VuFind\Search\Factory\UrlQueryHelperFactory;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -52,6 +53,59 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
+     * Edit search memory action.
+     *
+     * @return mixed
+     */
+    public function editmemoryAction()
+    {
+        // Get the user's referer, with the home page as a fallback; we'll
+        // redirect here after the work is done.
+        $from = $this->getRequest()->getServer()->get('HTTP_REFERER')
+            ?? $this->url()->fromRoute('home');
+
+        // Get parameters:
+        $searchClassId = $this->params()
+            ->fromQuery('searchClassId', DEFAULT_SEARCH_BACKEND);
+        $removeAllFilters = $this->params()->fromQuery('removeAllFilters');
+        $removeFacet = $this->params()->fromQuery('removeFacet');
+        $removeFilter = $this->params()->fromQuery('removeFilter');
+
+        // Retrieve and manipulate the parameters:
+        $searchHelper = $this->getViewRenderer()->plugin('searchMemory');
+        $params = $searchHelper->getLastSearchParams($searchClassId);
+        $factory = $this->serviceLocator->get(UrlQueryHelperFactory::class);
+        $initialParams = $factory->fromParams($params);
+
+        if ($removeAllFilters) {
+            $defaultFilters = $params->getOptions()->getDefaultFilters();
+            $query = $initialParams->removeAllFilters();
+            foreach ($defaultFilters as $filter) {
+                $query = $query->addFilter($filter);
+            }
+        } elseif ($removeFacet) {
+            $defaults = ['operator' => 'AND', 'field' => '', 'value' => ''];
+            extract($removeFacet + $defaults);
+            $query = $initialParams->removeFacet($field, $value, $operator);
+        } elseif ($removeFilter) {
+            $query = $initialParams->removeFilter($removeFilter);
+        } else {
+            $query = null;
+        }
+
+        // Remember the altered parameters:
+        if ($query) {
+            $base = $this->url()
+                ->fromRoute($params->getOptions()->getSearchAction());
+            $this->getSearchMemory()
+                ->rememberSearch($base . $query->getParams(false));
+        }
+
+        // Send the user back where they came from:
+        return $this->redirect()->toUrl($from);
+    }
+
+    /**
      * Email action - Allows the email form to appear.
      *
      * @return mixed
@@ -60,11 +114,11 @@ class SearchController extends AbstractSolrSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $mailer = $this->serviceLocator->get('VuFind\Mailer\Mailer');
+        $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
         $view->url = $this->params()->fromPost(
             'url', $this->params()->fromQuery(
                 'url',
@@ -93,7 +147,7 @@ class SearchController extends AbstractSolrSearch
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
@@ -126,7 +180,8 @@ class SearchController extends AbstractSolrSearch
         }
         $userId = is_object($user) ? $user->id : null;
 
-        $searchHistoryHelper = $this->serviceLocator->get('VuFind\Search\History');
+        $searchHistoryHelper = $this->serviceLocator
+            ->get(\VuFind\Search\History::class);
 
         if ($this->params()->fromQuery('purge')) {
             $searchHistoryHelper->purgeSearchHistory($userId);
@@ -134,8 +189,19 @@ class SearchController extends AbstractSolrSearch
             // We don't want to remember the last search after a purge:
             $this->getSearchMemory()->forgetSearch();
         }
-        $lastSearches = $searchHistoryHelper->getSearchHistory($userId);
-        return $this->createViewModel($lastSearches);
+        $viewData = $searchHistoryHelper->getSearchHistory($userId);
+        // Eliminate schedule settings if scheduled searches are disabled; add
+        // user email data if scheduled searches are enabled.
+        $scheduleOptions = $this->serviceLocator
+            ->get(\VuFind\Search\History::class)
+            ->getScheduleOptions();
+        if (empty($scheduleOptions)) {
+            unset($viewData['schedule']);
+        } else {
+            $viewData['scheduleOptions'] = $scheduleOptions;
+            $viewData['alertemail'] = is_object($user) ? $user->email : null;
+        }
+        return $this->createViewModel($viewData);
     }
 
     /**
@@ -275,12 +341,12 @@ class SearchController extends AbstractSolrSearch
      */
     public function reservessearchAction()
     {
-        $request = new \Zend\Stdlib\Parameters(
+        $request = new \Laminas\Stdlib\Parameters(
             $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray()
         );
         $view = $this->createViewModel();
-        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
         $view->results = $runner->run(
             $request, 'SolrReserves', $this->getSearchSetupCallback()
         );
@@ -378,7 +444,7 @@ class SearchController extends AbstractSolrSearch
     /**
      * Handle OpenSearch.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function opensearchAction()
     {
@@ -405,7 +471,7 @@ class SearchController extends AbstractSolrSearch
      * Provide OpenSearch suggestions as specified at
      * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function suggestAction()
     {
@@ -415,13 +481,14 @@ class SearchController extends AbstractSolrSearch
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $suggester = $this->serviceLocator->get('VuFind\Autocomplete\Suggester');
+        $suggester = $this->serviceLocator
+            ->get(\VuFind\Autocomplete\Suggester::class);
         $suggestions = $suggester->getSuggestions($query, 'type', 'lookfor');
 
         // Send the JSON response:
         $response = $this->getResponse();
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'application/javascript');
+        $headers->addHeaderLine('Content-type', 'application/json');
         $response->setContent(
             json_encode([$query->get('lookfor', ''), $suggestions])
         );
@@ -435,7 +502,7 @@ class SearchController extends AbstractSolrSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

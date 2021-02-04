@@ -41,6 +41,8 @@ use VuFind\I18n\Translator\Loader\ExtendedIniType;
  */
 class ExtendedIniTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * @var string
      */
@@ -123,11 +125,12 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      * Test exception on circular load chain induced by extensions.
      *
      * @return void
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Circular chain of loaded language files.
      */
     public function testExceptionOnCircularExtensionChain()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Circular chain of loaded language files.');
+
         $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/base"]);
         $loader->load('circ1');
@@ -136,11 +139,12 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     /**
      * Test exception on circular load chain induced by fallbacks.
      *
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Circular chain of loaded language files.
      */
     public function testExceptionOnCircularFallbackChain()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Circular chain of loaded language files.');
+
         $loader = new ExtendedIniType();
         $loader->setDirs(["$this->path/base"]);
         $loader->setFallbacks(['fb2' => 'fb3', '*' => 'fb2']);

@@ -28,6 +28,9 @@
 namespace VuFind\Db\Table;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Resource table gateway factory.
@@ -60,8 +63,8 @@ class ResourceFactory extends GatewayFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $converter = $container->get('VuFind\Date\Converter');
-        $loader = $container->get('VuFind\Record\Loader');
+        $converter = $container->get(\VuFind\Date\Converter::class);
+        $loader = $container->get(\VuFind\Record\Loader::class);
         return parent::__invoke($container, $requestedName, [$converter, $loader]);
     }
 }

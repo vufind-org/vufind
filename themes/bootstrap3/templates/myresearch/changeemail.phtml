@@ -1,0 +1,32 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Change Email Address'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+        . '<li class="active">' . $this->transEsc('Change Email Address') . '</li>';
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+
+  <h2><?=$this->transEsc('Change Email Address') ?></h2>
+  <?=$this->flashmessages() ?>
+
+  <?php if (!$this->auth()->getManager()->supportsEmailChange($this->auth_method)): ?>
+    <div class="error"><?=$this->transEsc('change_email_disabled') ?></div>
+  <?php else: ?>
+    <form id="newemail" class="form-new-email" action="<?=$this->url('myresearch-changeemail') ?>" method="post" data-toggle="validator" role="form">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf"/>
+      <div class="form-group">
+        <label class="control-label"><?=$this->transEsc('Email Address') ?>:</label>
+        <input type="text" name="email" class="form-control" value="<?=$this->escapeHtmlAttr($this->email)?>" />
+      </div>
+      <?=$this->captcha()->html($this->useCaptcha) ?>
+      <div class="form-group">
+        <input class="btn btn-primary" name="submit" type="submit" value="<?=$this->transEscAttr('Submit')?>" />
+      </div>
+    </form>
+  <?php endif; ?>
+</div>
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'newpassword'])?>
+</div>

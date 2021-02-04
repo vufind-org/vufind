@@ -28,7 +28,10 @@
 namespace VuFind\ILS\Logic;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Shared factory for ILS logic classes.
@@ -62,10 +65,10 @@ class LogicFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\ILS\Connection'),
-            $container->get('VuFind\Crypt\HMAC'),
-            $container->get('VuFind\Config\PluginManager')->get('config')
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(\VuFind\Crypt\HMAC::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
     }
 }

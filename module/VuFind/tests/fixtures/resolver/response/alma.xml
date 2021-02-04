@@ -1,0 +1,335 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+p3p: CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"
+Content-Type: text/xml;charset=UTF-8
+Vary: Accept-Encoding
+Date: Mon, 19 Aug 2019 12:34:14 GMT
+
+<uresolver_content xmlns="http://com/exlibris/urm/uresolver/xmlbeans/u" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <context_object>
+    <keys>
+      <key id="rft.stitle">Fundamental Data Compression</key>
+      <key id="rft.pub">Elsevier Science</key>
+      <key id="rft.place">Burlington :</key>
+      <key id="licenseEnable">true</key>
+      <key id="sfx.sid">primo.exlibrisgroup.com</key>
+      <key id="available_services">viewit</key>
+      <key id="available_services">getit</key>
+      <key id="rft.btitle">Fundamental Data Compression</key>
+      <key id="rft.genre">book</key>
+      <key id="Incoming_URL">http%3A%2F%2Fna01.alma.exlibrisgroup.com%2Fview%2Furesolver%2FTR_INTEGRATION_INST%2Fopenurl%3Fdebug%3Dtrue%26%26u.ignore_date_coverage%3Dtrue%26rft.mms_id%3D9942811800561%26rfr_id%3Dinfo%3Asid%2Fprimo.exlibrisgroup.com%26svc_dat%3DCTO</key>
+      <key id="institution">561</key>
+      <key id="rft.eisbn_10">0-7506-6310-3</key>
+      <key id="rft.eisbn_10">0-08-053026-5</key>
+      <key id="rft.eisbn_10">1-281-03498-3</key>
+      <key id="rft.oclcnum">437189463</key>
+      <key id="http_request_type">GET</key>
+      <key id="rft.eisbn_13">978-0-7506-6310-6</key>
+      <key id="rft.eisbn_13">978-0-08-053026-0</key>
+      <key id="rft.eisbn_13">978-1-281-03498-4</key>
+      <key id="rft.normalized_eisbn">9780750663106</key>
+      <key id="req.id" xsi:nil="true"/>
+      <key id="rft.mms_id">9942811800561</key>
+      <key id="user_ip" xsi:nil="true"/>
+      <key id="inventory_id">5111975010000561</key>
+      <key id="rfr_id">info:sid/primo.exlibrisgroup.com</key>
+      <key id="rft.inventory_id">5111975010000561</key>
+      <key id="rft.eisbn">0-7506-6310-3</key>
+      <key id="rft.eisbn">0-08-053026-5</key>
+      <key id="rft.eisbn">9786611034986</key>
+      <key id="rft.eisbn">1-281-03498-3</key>
+      <key id="publication_place">Burlington :</key>
+      <key id="rft.object_type">BOOK</key>
+      <key id="rft.publisher">Elsevier Science</key>
+      <key id="rft.au">Pu, Ida Mengyi.</key>
+      <key id="ctx_id">5687947890000561</key>
+      <key id="rft.pubdate">2005.</key>
+      <key id="full_text_indicator">true</key>
+      <key id="u.ignore_date_coverage">true</key>
+      <key id="rft.title">Fundamental Data Compression</key>
+      <key id="customer">550</key>
+      <key id="rfr.rfr">primo.exlibrisgroup.com</key>
+    </keys>
+  </context_object>
+  <context_services>
+    <context_service service_type="getFullTxt" context_service_id="5687861830000561">
+      <keys>
+        <key id="package_name">Ebook Central Perpetual and DDA Titles</key>
+        <key id="package_public_name">Ebook override</key>
+        <key id="package_display_name">Ebook override</key>
+        <key id="package_internal_name">EBOOK_CENTRAL_PERPETUAL_DDA_TITLES</key>
+        <key id="interface_name">Ebook Central Perpetual and DDA Titles</key>
+        <key id="package_pid">61116046810000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">iso-8859-1</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">53117809230000561</key>
+        <key id="cz_link_id">534330000001495973</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability">Available from 2019&lt;br&gt;</key>
+        <key id="static_url">true</key>
+        <key id="parser_program">EBOOK::Central</key>
+        <key id="parse_parameters">url=http://ebookcentral.proquest.com/lib/ &amp; cust_id=&amp;bkey=4052992</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">false</key>
+        <key id="proxy_selected">DEFAULT</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861830000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="5687861800000561">
+      <keys>
+        <key id="package_name">ebrary</key>
+        <key id="package_public_name">ebrary Academic Complete Subscription UKI Edition</key>
+        <key id="package_display_name">ebrary Academic Complete Subscription UKI Edition</key>
+        <key id="package_internal_name">EBRARY_ACADEMIC_COMPLETE_SUBSCRIPTION_UKI_EDITION</key>
+        <key id="interface_name">ebrary</key>
+        <key id="package_pid">6128319920000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">utf8</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5332048890000561</key>
+        <key id="cz_link_id">533790000000347286</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability"/>
+        <key id="static_url">true</key>
+        <key id="parser_program">EBRARY::EBOOKS</key>
+        <key id="parse_parameters">url=http://site.ebrary.com &amp;cust_id=yes&amp;bkey=10190890</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">false</key>
+        <key id="proxy_selected">DEFAULT</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861800000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="5687861790000561">
+      <keys>
+        <key id="package_name">ebrary</key>
+        <key id="package_public_name">ebrary Science &amp; Technology Subscription</key>
+        <key id="package_display_name">ebrary Science &amp; Technology Subscription</key>
+        <key id="package_internal_name">EBRARY_SCIENCE_AND_TECHNOLOGY_SUBSCRIPTION</key>
+        <key id="interface_name">ebrary</key>
+        <key id="package_pid">6134559200000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">utf8</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5334835190000561</key>
+        <key id="cz_link_id">533790000000521471</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability"/>
+        <key id="static_url">true</key>
+        <key id="parser_program">EBRARY::EBOOKS</key>
+        <key id="parse_parameters">url=http://site.ebrary.com &amp;cust_id=&amp;bkey=10190890</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">false</key>
+        <key id="proxy_selected">DEFAULT</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861790000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="5687861770000561">
+      <keys>
+        <key id="package_name">EBSCOhost</key>
+        <key id="package_public_name">EBSCOhost Academic eBook Collection (North America)</key>
+        <key id="package_display_name">EBSCOhost Academic eBook Collection (North America)</key>
+        <key id="package_internal_name">EBSCOHOST_EBOOKS_ACADEMIC_COLLECTION_NORTH_AMERICA</key>
+        <key id="interface_name">EBSCOhost</key>
+        <key id="package_pid">6178520000000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">iso-8859-1</key>
+        <key id="Is_free">1</key>
+        <key id="portfolio_PID">5379940190000561</key>
+        <key id="cz_link_id">533640000000243115</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability"/>
+        <key id="static_url">true</key>
+        <key id="parser_program">EBSCO_HOST::netlibrary</key>
+        <key id="parse_parameters">url=http://search.ebscohost.com &amp; shib= &amp; customer_id=&amp;ID=207290</key>
+        <key id="Authentication_note">collection level auth&lt;br/>SERVICE LEVEL AUTHE NOTE&lt;br/></key>
+        <key id="public_note">notessssssssssss&lt;br/>SERVICE LEVEL PUBLIC NOTE&lt;br/></key>
+        <key id="proxy_enabled">false</key>
+        <key id="proxy_selected">DEFAULT</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861770000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getHolding" context_service_id="5687861780000561">
+      <keys>
+        <key id="package_name">EBSCOhost</key>
+        <key id="package_public_name">EBSCOhost eBook Community College Collection</key>
+        <key id="package_display_name">EBSCOhost eBook Community College Collection</key>
+        <key id="package_internal_name">EBSCOHOST_EBOOKS_COMMUNITY_COLLEGE_COLLECTION</key>
+        <key id="interface_name">EBSCOhost</key>
+        <key id="package_pid">6124119500000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">utf8</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5368625580000561</key>
+        <key id="cz_link_id">532560000001468461</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability"/>
+        <key id="static_url">true</key>
+        <key id="parser_program">EBSCO_HOST::netlibrary</key>
+        <key id="parse_parameters">url=http://search.ebscohost.com &amp; shib=test34 &amp; customer_id=test34&amp;ID=207290</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">true</key>
+        <key id="proxy_selected">proxy2</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861780000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="5687861820000561">
+      <keys>
+        <key id="package_name">Elsevier ScienceDirect</key>
+        <key id="package_public_name">Elsevier ScienceDirect Books</key>
+        <key id="package_display_name">Elsevier ScienceDirect Books</key>
+        <key id="package_internal_name">ELSEVIER_SD_BOOKS</key>
+        <key id="interface_name">Elsevier ScienceDirect</key>
+        <key id="package_pid">6111920000000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">iso-8859-1</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5311970200000561</key>
+        <key id="cz_link_id">531000000000933152</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability"/>
+        <key id="static_url">true</key>
+        <key id="parser_program">ELSEVIER::SCIENCE_DIRECT_BOOKS</key>
+        <key id="parse_parameters">url=http://www.sciencedirect.com/science &amp; shib=&amp;bkey=9780750663106</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">false</key>
+        <key id="proxy_selected">DEFAULT</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861820000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="GeneralElectronicService" context_service_id="2336397">
+      <keys>
+        <key id="code">LIBR</key>
+        <key id="name">Request Assistance for this Resource!</key>
+        <key id="public_name">Request Assistance for this Resource!</key>
+        <key id="url">https://www.google.com/search?Testingrft.oclcnum=437189463&amp;q=Fundamental+Data+Compression&amp;rft.archive=9942811800561</key>
+        <key id="service_order">0</key>
+      </keys>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="5687861810000561">
+      <keys>
+        <key id="package_name">Proquest</key>
+        <key id="package_public_name">ProQuest Safari Tech Books Online</key>
+        <key id="package_display_name">ProQuest Safari Tech Books Online</key>
+        <key id="package_internal_name">PROQUEST_SAFARI_TECH_BOOKS_ONLINE</key>
+        <key id="interface_name">Proquest</key>
+        <key id="package_pid">6112970000000561</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">iso-8859-1</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5326327260000561</key>
+        <key id="cz_link_id">533710000002010686</key>
+        <key id="electronic_material_type">BOOK</key>
+        <key id="Availability"/>
+        <key id="static_url">true</key>
+        <key id="parser_program">PROQUEST::SAFARI</key>
+        <key id="parse_parameters">url=http://proquestcombo.safaribooksonline.com &amp; uicode= &amp;shib= &amp;shire=https://authenticate.bvdep.com/ukfederation/Shibboleth.sso/SAML/POST &amp;provider=https://authenticate.bvdep.com/ukfederation&amp;bkey=9780750663106</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">true</key>
+        <key id="proxy_selected">Proxy 1</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">no</key>
+        <key id="Filtered">true</key>
+        <key id="Filter reason">Date Filter</key>
+        <key id="preferred_link">false</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=5687861810000561&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+    <context_service service_type="getFullTxt" context_service_id="971788650005972">
+      <keys>
+        <key id="package_name">Elsevier ScienceDirect</key>
+        <key id="package_public_name">Elsevier SD FREEDOM COLLECTION</key>
+        <key id="package_display_name">Elsevier SD FREEDOM COLLECTION</key>
+        <key id="package_internal_name">ELSEVIER_SD_FREEDOM_COLLECTION</key>
+        <key id="interface_name">Elsevier ScienceDirect</key>
+        <key id="db_id">.~1,8P~,AAOAW,ACRLP,AGUBO,AIKHN,BLXMC,EO8,EO9,EP2,EP3,G-Q,OAUVE,Q38,SDF</key>
+        <key id="package_pid">6139351080005972</key>
+        <key id="service_type_description">Full text available via</key>
+        <key id="character_set">iso-8859-1</key>
+        <key id="Is_free">0</key>
+        <key id="portfolio_PID">5344797220005972</key>
+        <key id="cz_link_id">531000000000042994</key>
+        <key id="electronic_material_type">JOURNAL</key>
+        <key id="Availability">Available from 1995 volume: 22 issue: 1.&lt;br></key>
+        <key id="static_url">true</key>
+        <key id="parser_program">ELSEVIER::SCIENCE_DIRECT</key>
+        <key id="parse_parameters">host=https://www.sciencedirect.com/science/&amp; prefsite = sd &amp; shib= &amp; u_shib=&amp;uis=03064549</key>
+        <key id="Authentication_note"/>
+        <key id="public_note"/>
+        <key id="proxy_enabled">true</key>
+        <key id="proxy_selected">ÅA Proxy</key>
+        <key id="related_title">@TITLE (@RelationType)</key>
+        <key id="is_related_service">false</key>
+        <key id="is_closly_related">false</key>
+        <key id="license_exist">false</key>
+        <key id="crossref_enabled">yes</key>
+        <key id="Filtered">true</key>
+        <key id="Filter reason">Available for - the ip groups are not part of the service AF groups</key>
+        <key id="preferred_link">true</key>
+      </keys>
+      <resolution_url>https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&amp;package_service_id=971788650005972&amp;institutionId=561&amp;customerId=550</resolution_url>
+    </context_service>
+  </context_services>
+  <performance_counters>
+    <performance_counter name="TOTAL" duration="0.0"/>
+    <performance_counter name="MMS_LOOKUP" duration="0.0"/>
+    <performance_counter name="ENRICH" duration="0.0"/>
+    <performance_counter name="PARSE" duration="0.0"/>
+    <performance_counter name="GET_SERVICES" duration="1.109"/>
+    <performance_counter name="FILTER" duration="0.249"/>
+    <performance_counter name="SAVE" duration="0.202"/>
+    <performance_counter name="GET_ZERO_TITLE_SERVICES" duration="0.0"/>
+    <performance_counter name="FETCH_SERVICE_THRESHOLD_RULES" duration="0.0"/>
+    <performance_counter name="CREATE_ZERO_TITLE_SERVICES" duration="0.0"/>
+    <performance_counter name="SAVE_ZERO_TITLE_SERVICES" duration="0.0"/>
+    <performance_counter name="GET_SINGLE_SERVICE" duration="0.0"/>
+    <performance_counter name="EXECUTE_TARGET_PARSER" duration="0.0"/>
+    <performance_counter name="GET_URESOLVER_CONTENT" duration="0.0"/>
+    <performance_counter name="UPDATE_SELECTED" duration="0.0"/>
+  </performance_counters>
+</uresolver_content>

@@ -6,6 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,19 +24,21 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch;
 
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
+
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
-
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerInterface;
 
 /**
  * Search service.
@@ -43,6 +46,7 @@ use Zend\EventManager\EventManagerInterface;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -101,8 +105,8 @@ class Service
     public function search($backend, Query\AbstractQuery $query, $offset = 0,
         $limit = 20, ParamBag $params = null
     ) {
-        $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
+        $params  = $params ?: new ParamBag();
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
         $args['backend_instance'] = $backend;
@@ -110,6 +114,42 @@ class Service
         $this->triggerPre($backend, $args);
         try {
             $response = $backend->search($query, $offset, $limit, $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+        return $response;
+    }
+
+    /**
+     * Perform a search that returns record IDs and return a wrapped response.
+     *
+     * @param string              $backend Search backend identifier
+     * @param Query\AbstractQuery $query   Search query
+     * @param int                 $offset  Search offset
+     * @param int                 $limit   Search limit
+     * @param ParamBag            $params  Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function getIds($backend, Query\AbstractQuery $query, $offset = 0,
+        $limit = 20, ParamBag $params = null
+    ) {
+        $context = strtolower(__FUNCTION__);
+
+        $params  = $params ?: new ParamBag();
+        $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
+        $backend  = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
+
+        $this->triggerPre($backend, $args);
+        try {
+            if ($backend instanceof GetIdsInterface) {
+                $response = $backend->getIds($query, $offset, $limit, $params);
+            } else {
+                $response = $backend->search($query, $offset, $limit, $params);
+            }
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;
@@ -302,6 +342,50 @@ class Service
                 throw new BackendException("$backend does not support similar()");
             }
             $response = $backendInstance->similar($id, $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+        return $response;
+    }
+
+    /**
+     * Return records for work expressions.
+     *
+     * @param string   $backend  Search backend identifier
+     * @param string   $id       Id of record to compare with
+     * @param array    $workKeys Work identification keys (optional; retrieved from
+     * the record to compare with if not specified)
+     * @param ParamBag $params   Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function workExpressions($backend, $id, $workKeys = null,
+        ParamBag $params = null
+    ) {
+        $params  = $params ?: new \VufindSearch\ParamBag();
+        $context = __FUNCTION__;
+        $args = compact('backend', 'id', 'params', 'context', 'workKeys');
+        $backendInstance = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backendInstance;
+
+        $this->triggerPre($backendInstance, $args);
+        try {
+            if (!($backendInstance instanceof Feature\WorkExpressionsInterface)) {
+                throw new BackendException(
+                    "$backend does not support workExpressions()"
+                );
+            }
+            if (empty($args['workKeys'])) {
+                $records = $backendInstance->retrieve($id)->getRecords();
+                if (!empty($records[0])) {
+                    $fields = $records[0]->getRawData();
+                    $args['workKeys'] = $fields['work_keys_str_mv'] ?? [];
+                }
+            }
+            $response = $backendInstance
+                ->workExpressions($id, $args['workKeys'], $params);
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;

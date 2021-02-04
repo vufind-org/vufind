@@ -81,7 +81,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
      * @param \VuFind\Search\Solr\Results  $results      populated results object
      * @param \VuFind\Search\Solr\Results  $emptyResults empty results object
      * @param string                       $settings     settings
-     * @param \Zend\StdLib\Parameters      $request      request
+     * @param \Laminas\Stdlib\Parameters      $request      request
      *
      * @return ExpandFacets
      */
@@ -97,7 +97,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
             $emptyResults = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters([]);
+            $request = new \Laminas\Stdlib\Parameters([]);
         }
         $sf = new ExpandFacets($configLoader, $emptyResults);
         $sf->setConfig($settings);
@@ -116,10 +116,10 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConfigLoader($config = [], $key = 'facets')
     {
-        $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
+        $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Zend\Config\Config($config)));
+            ->will($this->returnValue(new \Laminas\Config\Config($config)));
         return $loader;
     }
 
@@ -135,7 +135,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));
@@ -154,7 +154,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder('VuFind\Search\Solr\Params')
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
             ->will($this->returnValue($query));

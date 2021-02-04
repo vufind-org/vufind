@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Summon Controller
@@ -59,7 +59,7 @@ class SummonController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Summon');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
@@ -106,7 +106,7 @@ class SummonController extends AbstractSearch
 
         // Set up facet information:
         $facets = $this->serviceLocator
-            ->get('VuFind\Search\FacetCache\PluginManager')->get('Summon')
+            ->get(\VuFind\Search\FacetCache\PluginManager::class)->get('Summon')
             ->getList('Advanced');
         $view->facetList = $this->processAdvancedFacets($facets, $view->saved);
         $specialFacets = $this->parseSpecialFacetsSetting(

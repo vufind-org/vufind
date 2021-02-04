@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Bootstrap3;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * LayoutClass helper factory.
@@ -61,7 +64,8 @@ class LayoutClassFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $sidebarOnLeft = $config->Site->sidebarOnLeft ?? false;
         $mirror = $config->Site->mirrorSidebarInRTL ?? true;
         $offcanvas = $config->Site->offcanvas ?? false;

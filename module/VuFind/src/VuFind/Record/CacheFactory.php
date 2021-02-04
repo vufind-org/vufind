@@ -28,7 +28,10 @@
 namespace VuFind\Record;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Record cache factory.
@@ -62,9 +65,9 @@ class CacheFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\RecordDriver\PluginManager'),
-            $container->get('VuFind\Config\PluginManager')->get('RecordCache'),
-            $container->get('VuFind\Db\Table\PluginManager')->get('Record')
+            $container->get(\VuFind\RecordDriver\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('RecordCache'),
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Record')
         );
     }
 }

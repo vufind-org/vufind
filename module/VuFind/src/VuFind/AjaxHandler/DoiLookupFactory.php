@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for DoiLookup AJAX handler.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DoiLookupFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class DoiLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,8 +65,13 @@ class DoiLookupFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $pluginManager = $container->get('VuFind\DoiLinker\PluginManager');
-        return new $requestedName($pluginManager, $config->DOI->resolver ?? null);
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $pluginManager = $container->get(\VuFind\DoiLinker\PluginManager::class);
+        return new $requestedName(
+            $pluginManager,
+            $config->DOI->resolver ?? null,
+            $config->DOI->multi_resolver_mode ?? 'first'
+        );
     }
 }

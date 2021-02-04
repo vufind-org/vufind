@@ -50,7 +50,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->parser = new \VuFind\Tags();
     }

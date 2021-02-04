@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Connection;
 
-use VuFind\Connection\WorldCatUtils;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client as HttpClient;
+use VuFind\Connection\WorldCatUtils;
 
 /**
  * Unit tests for WorldCat utility connector.
@@ -44,6 +44,8 @@ use Zend\Http\Client as HttpClient;
  */
 class WorldCatUtilsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test related identities
      *
@@ -82,8 +84,7 @@ class WorldCatUtilsTest extends \PHPUnit\Framework\TestCase
         $client = new HttpClient();
         if (null !== $fixture) {
             $adapter = new TestAdapter();
-            $file = realpath(__DIR__ . '/../../../../fixtures/worldcat/' . $fixture);
-            $adapter->setResponse(file_get_contents($file));
+            $adapter->setResponse($this->getFixture("worldcat/$fixture"));
             $client->setAdapter($adapter);
         }
         return new WorldCatUtils('dummy', $client, $silent);

@@ -28,7 +28,10 @@
 namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cover loader factory.
@@ -61,19 +64,22 @@ class LoaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cacheDir = $container->get('VuFind\Cache\Manager')
+        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
             ->getCache('cover')->getOptions()->getCacheDir();
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $loader = new $requestedName(
             $config,
-            $container->get('VuFind\Content\Covers\PluginManager'),
-            $container->get('VuFindTheme\ThemeInfo'),
-            $container->get('VuFindHttp\HttpService'),
+            $container->get(\VuFind\Content\Covers\PluginManager::class),
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get(\VuFindHttp\HttpService::class),
             $cacheDir
         );
         // Add cover generator if enabled:
         if ($config->Content->makeDynamicCovers ?? false) {
-            $loader->setCoverGenerator($container->get('VuFind\Cover\Generator'));
+            $loader->setCoverGenerator(
+                $container->get(\VuFind\Cover\Generator::class)
+            );
         }
         return $loader;
     }

@@ -53,11 +53,12 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * for built-in defaults)
+     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * file (omit to use $mainConfig as $recordConfig)
+     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * file
      */
     public function __construct($mainConfig = null, $recordConfig = null,
         $searchSettings = null
@@ -233,8 +234,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCallNumbers()
     {
-        return isset($this->fields['callnumber-raw'])
-            ? $this->fields['callnumber-raw'] : [];
+        return $this->fields['callnumber-raw'] ?? [];
     }
 
     /**
@@ -322,14 +322,34 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get just the first listed national bibliography number (or false if none
+     * available).
+     *
+     * @return mixed
+     */
+    public function getCleanNBN()
+    {
+        return false;
+    }
+
+    /**
+     * Get just the base portion of the first listed ISMN (or false if no ISSMs).
+     *
+     * @return mixed
+     */
+    public function getCleanISMN()
+    {
+        return false;
+    }
+
+    /**
      * Get the main corporate authors (if any) for the record.
      *
      * @return array
      */
     public function getCorporateAuthors()
     {
-        return isset($this->fields['author_corporate']) ?
-            $this->fields['author_corporate'] : [];
+        return $this->fields['author_corporate'] ?? [];
     }
 
     /**
@@ -339,8 +359,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCorporateAuthorsRoles()
     {
-        return isset($this->fields['author_corporate_role']) ?
-            $this->fields['author_corporate_role'] : [];
+        return $this->fields['author_corporate_role'] ?? [];
     }
 
     /**
@@ -352,8 +371,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getDateSpan()
     {
-        return isset($this->fields['dateSpan']) ?
-            $this->fields['dateSpan'] : [];
+        return $this->fields['dateSpan'] ?? [];
     }
 
     /**
@@ -416,8 +434,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getEdition()
     {
-        return isset($this->fields['edition']) ?
-            $this->fields['edition'] : '';
+        return $this->fields['edition'] ?? '';
     }
 
     /**
@@ -438,7 +455,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getFormats()
     {
-        return isset($this->fields['format']) ? $this->fields['format'] : [];
+        return $this->fields['format'] ?? [];
     }
 
     /**
@@ -495,8 +512,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getLastIndexed()
     {
-        return isset($this->fields['last_indexed'])
-            ? $this->fields['last_indexed'] : '';
+        return $this->fields['last_indexed'] ?? '';
     }
 
     /**
@@ -544,8 +560,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getInstitutions()
     {
-        return isset($this->fields['institution'])
-            ? $this->fields['institution'] : [];
+        return $this->fields['institution'] ?? [];
     }
 
     /**
@@ -581,8 +596,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getLanguages()
     {
-        return isset($this->fields['language']) ?
-            $this->fields['language'] : [];
+        return $this->fields['language'] ?? [];
     }
 
     /**
@@ -593,7 +607,7 @@ class DefaultRecord extends AbstractBase
     protected function getRawLCCN()
     {
         // Get LCCN from Index
-        return isset($this->fields['lccn']) ? $this->fields['lccn'] : '';
+        return $this->fields['lccn'] ?? '';
     }
 
     /**
@@ -637,8 +651,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getNewerTitles()
     {
-        return isset($this->fields['title_new']) ?
-            $this->fields['title_new'] : [];
+        return $this->fields['title_new'] ?? [];
     }
 
     /**
@@ -648,8 +661,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getOCLC()
     {
-        return isset($this->fields['oclc_num']) ?
-            $this->fields['oclc_num'] : [];
+        return $this->fields['oclc_num'] ?? [];
     }
 
     /**
@@ -829,13 +841,14 @@ class DefaultRecord extends AbstractBase
         // of databases if they do not cover the exact date provided!
         unset($params['rft.date']);
 
-        // If we're working with the SFX resolver, we should add a
+        // If we're working with the SFX or Alma resolver, we should add a
         // special parameter to ensure that electronic holdings links
         // are shown even though no specific date or issue is specified:
-        if (isset($this->mainConfig->OpenURL->resolver)
-            && strtolower($this->mainConfig->OpenURL->resolver) == 'sfx'
-        ) {
+        $resolver = strtolower($this->mainConfig->OpenURL->resolver ?? '');
+        if ('sfx' === $resolver) {
             $params['sfx.ignore_date_threshold'] = 1;
+        } elseif ('alma' === $resolver) {
+            $params['u.ignore_date_coverage'] = 'true';
         }
         return $params;
     }
@@ -887,8 +900,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPhysicalDescriptions()
     {
-        return isset($this->fields['physical']) ?
-            $this->fields['physical'] : [];
+        return $this->fields['physical'] ?? [];
     }
 
     /**
@@ -920,8 +932,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPreviousTitles()
     {
-        return isset($this->fields['title_old']) ?
-            $this->fields['title_old'] : [];
+        return $this->fields['title_old'] ?? [];
     }
 
     /**
@@ -954,8 +965,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPrimaryAuthorsRoles()
     {
-        return isset($this->fields['author_role']) ?
-            $this->fields['author_role'] : [];
+        return $this->fields['author_role'] ?? [];
     }
 
     /**
@@ -976,8 +986,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPublicationDates()
     {
-        return isset($this->fields['publishDate']) ?
-            $this->fields['publishDate'] : [];
+        return $this->fields['publishDate'] ?? [];
     }
 
     /**
@@ -1037,8 +1046,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPublishers()
     {
-        return isset($this->fields['publisher']) ?
-            $this->fields['publisher'] : [];
+        return $this->fields['publisher'] ?? [];
     }
 
     /**
@@ -1083,8 +1091,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getSecondaryAuthors()
     {
-        return isset($this->fields['author2']) ?
-            $this->fields['author2'] : [];
+        return $this->fields['author2'] ?? [];
     }
 
     /**
@@ -1095,8 +1102,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getSecondaryAuthorsRoles()
     {
-        return isset($this->fields['author2_role']) ?
-            $this->fields['author2_role'] : [];
+        return $this->fields['author2_role'] ?? [];
     }
 
     /**
@@ -1112,8 +1118,7 @@ class DefaultRecord extends AbstractBase
         if (isset($this->fields['series']) && !empty($this->fields['series'])) {
             return $this->fields['series'];
         }
-        return isset($this->fields['series2']) ?
-            $this->fields['series2'] : [];
+        return $this->fields['series2'] ?? [];
     }
 
     /**
@@ -1123,8 +1128,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getShortTitle()
     {
-        return isset($this->fields['title_short']) ?
-            $this->fields['title_short'] : '';
+        return $this->fields['title_short'] ?? '';
     }
 
     /**
@@ -1145,8 +1149,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getSubtitle()
     {
-        return isset($this->fields['title_sub']) ?
-            $this->fields['title_sub'] : '';
+        return $this->fields['title_sub'] ?? '';
     }
 
     /**
@@ -1229,10 +1232,17 @@ class DefaultRecord extends AbstractBase
         if ($upc = $this->getCleanUPC()) {
             $arr['upc'] = $upc;
         }
+        if ($nbn = $this->getCleanNBN()) {
+            $arr['nbn'] = $nbn['nbn'];
+        }
+        if ($ismn = $this->getCleanISMN()) {
+            $arr['ismn'] = $ismn;
+        }
+
         // If an ILS driver has injected extra details, check for IDs in there
         // to fill gaps:
         if ($ilsDetails = $this->getExtraDetail('ils_details')) {
-            foreach (['isbn', 'issn', 'oclc', 'upc'] as $key) {
+            foreach (['isbn', 'issn', 'oclc', 'upc', 'nbn', 'ismn'] as $key) {
                 if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
                     $arr[$key] = $ilsDetails[$key];
                 }
@@ -1248,8 +1258,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getTitle()
     {
-        return isset($this->fields['title']) ?
-            $this->fields['title'] : '';
+        return $this->fields['title'] ?? '';
     }
 
     /**
@@ -1282,8 +1291,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getTOC()
     {
-        return isset($this->fields['contents'])
-            ? $this->fields['contents'] : [];
+        return $this->fields['contents'] ?? [];
     }
 
     /**
@@ -1304,8 +1312,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getUPC()
     {
-        return isset($this->fields['upc_str_mv']) ?
-            $this->fields['upc_str_mv'] : [];
+        return $this->fields['upc_str_mv'] ?? [];
     }
 
     /**
@@ -1504,8 +1511,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getContainerTitle()
     {
-        return isset($this->fields['container_title'])
-            ? $this->fields['container_title'] : '';
+        return $this->fields['container_title'] ?? '';
     }
 
     /**
@@ -1516,8 +1522,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getContainerVolume()
     {
-        return isset($this->fields['container_volume'])
-            ? $this->fields['container_volume'] : '';
+        return $this->fields['container_volume'] ?? '';
     }
 
     /**
@@ -1528,8 +1533,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getContainerIssue()
     {
-        return isset($this->fields['container_issue'])
-            ? $this->fields['container_issue'] : '';
+        return $this->fields['container_issue'] ?? '';
     }
 
     /**
@@ -1540,8 +1544,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getContainerStartPage()
     {
-        return isset($this->fields['container_start_page'])
-            ? $this->fields['container_start_page'] : '';
+        return $this->fields['container_start_page'] ?? '';
     }
 
     /**
@@ -1563,8 +1566,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getContainerReference()
     {
-        return isset($this->fields['container_reference'])
-            ? $this->fields['container_reference'] : '';
+        return $this->fields['container_reference'] ?? '';
     }
 
     /**
@@ -1574,8 +1576,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getSortTitle()
     {
-        return isset($this->fields['title_sort'])
-            ? $this->fields['title_sort'] : parent::getSortTitle();
+        return $this->fields['title_sort'] ?? parent::getSortTitle();
     }
 
     /**
@@ -1633,9 +1634,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getDedupData()
     {
-        return isset($this->fields['dedup_data'])
-            ? $this->fields['dedup_data']
-            : [];
+        return $this->fields['dedup_data'] ?? [];
     }
 
     /**
@@ -1667,8 +1666,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getGeoLocation()
     {
-        return isset($this->fields['long_lat'])
-            ? $this->fields['long_lat'] : [];
+        return $this->fields['long_lat'] ?? [];
     }
 
     /**
@@ -1678,8 +1676,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getDisplayCoordinates()
     {
-        return isset($this->fields['long_lat_display'])
-            ? $this->fields['long_lat_display'] : [];
+        return $this->fields['long_lat_display'] ?? [];
     }
 
     /**
@@ -1689,7 +1686,6 @@ class DefaultRecord extends AbstractBase
      */
     public function getCoordinateLabels()
     {
-        return isset($this->fields['long_lat_label'])
-            ? $this->fields['long_lat_label'] : [];
+        return $this->fields['long_lat_label'] ?? [];
     }
 }

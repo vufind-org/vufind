@@ -206,7 +206,7 @@ public class FullTextTools
         //System.out.println("Loading fulltext from " + url + ". Please wait ...");
         try {
             Process p = Runtime.getRuntime().exec(cmd);
-            
+
             // Debugging output
             /*
             BufferedReader stdInput = new BufferedReader(new
@@ -216,7 +216,7 @@ public class FullTextTools
                 System.out.println(s);
             }
             */
-            
+
             // Wait for Aperture to finish
             p.waitFor();
         } catch (Throwable e) {
@@ -248,6 +248,28 @@ public class FullTextTools
         return plainText;
     }
 
+    class ErrorStreamHandler extends Thread {
+        InputStream stdErr;
+
+        ErrorStreamHandler(InputStream stdErr) {
+            this.stdErr = stdErr;
+        }
+
+        public void run()
+        {
+            try {
+                InputStreamReader isr = new InputStreamReader(stdErr, "UTF8");
+                BufferedReader br = new BufferedReader(isr);
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    logger.debug(line);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Harvest the contents of a document file (PDF, Word, etc.) using Tika.
      * This method will only work if Tika is properly configured in the fulltext.ini
@@ -258,16 +280,17 @@ public class FullTextTools
      * @return the full-text
      */
     public String harvestWithTika(String url, String scraperPath) {
-
-        // Construct the command
-        String cmd = "java -jar " + scraperPath + " -t -eUTF8 " + url;
-
         StringBuilder stringBuilder= new StringBuilder();
 
         // Call our scraper
         //System.out.println("Loading fulltext from " + url + ". Please wait ...");
         try {
-            Process p = Runtime.getRuntime().exec(cmd);
+            ProcessBuilder pb = new ProcessBuilder(
+                "java", "-jar", scraperPath, "-t", "-eutf8", url
+            );
+            Process p = pb.start();
+            ErrorStreamHandler esh = new ErrorStreamHandler(p.getErrorStream());
+            esh.start();
             BufferedReader stdInput = new BufferedReader(new
                 InputStreamReader(p.getInputStream(), "UTF8"));
 

@@ -28,9 +28,9 @@
  */
 namespace VuFind\Search;
 
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 use VuFind\Recommend\PluginManager;
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * Recommend listener.
@@ -150,6 +150,9 @@ class RecommendListener
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
+                if (empty($module)) {
+                    continue;
+                }
                 $config = implode(':', $current);
                 if (!$this->pluginManager->has($module)) {
                     throw new \Exception(

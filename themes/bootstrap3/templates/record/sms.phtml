@@ -1,10 +1,10 @@
 <?php
   // Set page title.
   $this->headTitle($this->translate('Text this'));
-  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
+  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
@@ -14,7 +14,7 @@
   }
 JS;
 ?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
 <form method="post" name="smsRecord" class="form-record-sms"<?php if(isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<?php endif; ?>>
   <?=$this->flashmessages()?>
@@ -22,7 +22,7 @@ JS;
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
-    <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control"/>
+    <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control"/>
     <div class="help-block with-errors"></div>
   </div>
   <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
@@ -39,8 +39,8 @@ JS;
     <?php $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
     <input type="hidden" name="provider" value="<?=$keys[0] ?? ''?>" />
   <?php endif; ?>
-  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+  <?=$this->captcha()->html($this->useCaptcha) ?>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Send Text')?>"/>
   </div>
 </form>

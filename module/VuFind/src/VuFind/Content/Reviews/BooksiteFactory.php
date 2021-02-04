@@ -28,6 +28,9 @@
 namespace VuFind\Content\Reviews;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Booksite review plugin factory.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BooksiteFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -60,9 +63,9 @@ class BooksiteFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $url = isset($config->Booksite->url)
-            ? $config->Booksite->url : 'https://api.booksite.com';
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $url = $config->Booksite->url ?? 'https://api.booksite.com';
         if (!isset($config->Booksite->key)) {
             throw new \Exception("Booksite 'key' not set in VuFind config");
         }

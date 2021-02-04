@@ -41,6 +41,8 @@ use VuFind\Config\Version;
  */
 class VersionTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test the default directory parameter.
      *
@@ -59,12 +61,12 @@ class VersionTest extends \VuFindTest\Unit\TestCase
      * Test with a bad directory.
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Cannot load /will/never/exist/ever/ever/build.xml.
      */
     public function testMissingFile()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot load /will/never/exist/ever/ever/build.xml.');
+
         Version::getBuildVersion('/will/never/exist/ever/ever');
     }
 
@@ -75,7 +77,7 @@ class VersionTest extends \VuFindTest\Unit\TestCase
      */
     public function testKnownVersion()
     {
-        $fixture = __DIR__ . '/../../../../fixtures/configs/buildxml-2.5';
+        $fixture = $this->getFixtureDir() . 'configs/buildxml-2.5';
         $this->assertEquals('2.5', Version::getBuildVersion($fixture));
     }
 }

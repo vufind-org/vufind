@@ -28,7 +28,10 @@
 namespace VuFind;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Tags factory.
@@ -61,9 +64,9 @@ class TagsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $maxLength = isset($config->Social->max_tag_length)
-            ? $config->Social->max_tag_length : 64;
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $maxLength = $config->Social->max_tag_length ?? 64;
         return new $requestedName($maxLength);
     }
 }

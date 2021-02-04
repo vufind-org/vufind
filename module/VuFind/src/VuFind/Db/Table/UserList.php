@@ -27,12 +27,13 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Session\Container;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\RecordMissing as RecordMissingException;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
-use Zend\Session\Container;
 
 /**
  * Table Definition for user_list
@@ -57,14 +58,14 @@ class UserList extends Gateway
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param Container     $session Session container (must use same
      * namespace as container provided to \VuFind\View\Helper\Root\UserList).
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, Container $session = null, $table = 'user_list'
+        ?RowGateway $rowObj = null, Container $session = null, $table = 'user_list'
     ) {
         $this->session = $session;
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
@@ -128,7 +129,7 @@ class UserList extends Gateway
                     new Expression(
                         'DISTINCT(?)', ['user_list.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(

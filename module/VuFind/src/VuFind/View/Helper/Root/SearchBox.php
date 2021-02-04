@@ -38,7 +38,7 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Zend\View\Helper\AbstractHelper
+class SearchBox extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Configuration for search box.
@@ -127,6 +127,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Is autocomplete enabled for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteAutoSubmit($activeSearchClass)
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteAutoSubmit();
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *
@@ -150,6 +163,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Helper method: get special character to represent operator in filter
+     *
+     * @param string $operator Operator
+     *
+     * @return string
+     */
+    protected function getOperatorCharacter($operator)
+    {
+        static $map = ['NOT' => '-', 'OR' => '~'];
+        return $map[$operator] ?? '';
+    }
+
+    /**
      * Get an array of filter information for use by the "retain filters" feature
      * of the search box. Returns an array of arrays with 'id' and 'value' keys used
      * for generating hidden checkboxes.
@@ -164,7 +190,10 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         $results = [];
         foreach ($filterList as $field => $data) {
             foreach ($data as $value) {
-                $results[] = "$field:\"$value\"";
+                $results[] = is_array($value)
+                    ? $this->getOperatorCharacter($value['operator'] ?? '')
+                    . $value['field'] . ':"' . $value['value'] . '"'
+                    : "$field:\"$value\"";
             }
         }
         foreach ($checkboxFilters as $current) {
@@ -200,11 +229,9 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     {
         // Searchbox place
         if (!empty($this->placeholders)) {
-            return isset($this->placeholders[$activeSearchClass])
-                ? $this->placeholders[$activeSearchClass]
-                : (isset($this->placeholders['default'])
-                    ? $this->placeholders['default']
-                    : null);
+            return $this->placeholders[$activeSearchClass]
+                ?? $this->placeholders['default']
+                ?? null;
         }
         return null;
     }
@@ -224,6 +251,28 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         return $this->combinedHandlersActive()
             ? $this->getCombinedHandlers($activeSearchClass, $activeHandler)
             : $this->getBasicHandlers($activeSearchClass, $activeHandler);
+    }
+
+    /**
+     * Get number of active filters
+     *
+     * @param array $checkboxFilters Checkbox filters
+     * @param array $filterList      Other filters
+     *
+     * @return int
+     */
+    public function getFilterCount($checkboxFilters, $filterList)
+    {
+        $result = 0;
+        foreach ($checkboxFilters as $filter) {
+            if ($filter['selected']) {
+                ++$result;
+            }
+        }
+        foreach ($filterList as $filter) {
+            $result += count($filter);
+        }
+        return $result;
     }
 
     /**
@@ -258,8 +307,7 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     {
         if (!isset($this->cachedConfigs[$activeSearchClass])) {
             // Load and validate configuration:
-            $settings = isset($this->config['CombinedHandlers'])
-                ? $this->config['CombinedHandlers'] : [];
+            $settings = $this->config['CombinedHandlers'] ?? [];
             if (empty($settings)) {
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
@@ -270,12 +318,19 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 throw new \Exception('CombinedHandlers configuration incomplete.');
             }
 
+            // Fill in missing group settings, if necessary:
+            if (count($settings['group'] ?? []) < $typeCount) {
+                $settings['group'] = array_fill(0, $typeCount, false);
+            }
+
             // Add configuration for the current search class if it is not already
             // present:
             if (!in_array($activeSearchClass, $settings['target'])) {
                 $settings['type'][] = 'VuFind';
                 $settings['target'][] = $activeSearchClass;
                 $settings['label'][] = $activeSearchClass;
+                $settings['group'][]
+                    = $this->config['General']['defaultGroupLabel'] ?? false;
             }
 
             $this->cachedConfigs[$activeSearchClass] = $settings;
@@ -305,7 +360,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 'value' => 'External:' . $alphaBrowseUrl,
                 'label' => $labelPrefix . $this->getView()->translate($label),
                 'indent' => $indent,
-                'selected' => $activeHandler == 'AlphaBrowse:' . $source
+                'selected' => $activeHandler == 'AlphaBrowse:' . $source,
+                'group' => $this->config['General']['alphaBrowseGroup'] ?? false,
             ];
         }
         return $handlers;
@@ -351,11 +407,23 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                     ) {
                         $backupSelectedIndex = count($handlers);
                     }
+                    // Depending on whether or not the current section has a label,
+                    // we'll either want to override the first label and indent
+                    // subsequent ones, or else use all default labels without
+                    // any indentation.
+                    if (empty($label)) {
+                        $finalLabel = $searchDesc;
+                        $indent = false;
+                    } else {
+                        $finalLabel = $j == 1 ? $label : $searchDesc;
+                        $indent = $j == 1 ? false : true;
+                    }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,
-                        'label' => $j == 1 ? $label : $searchDesc,
-                        'indent' => $j == 1 ? false : true,
-                        'selected' => $selected
+                        'label' => $finalLabel,
+                        'indent' => $indent,
+                        'selected' => $selected,
+                        'group' => $settings['group'][$i],
                     ];
                 }
 
@@ -363,13 +431,16 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 if ($target === 'Solr' && $this->alphaBrowseOptionsEnabled()) {
                     $addedBrowseHandlers = true;
                     $handlers = array_merge(
-                        $handlers, $this->getAlphaBrowseHandlers($activeHandler)
+                        $handlers,
+                        // Only indent alphabrowse handlers if label is non-empty:
+                        $this->getAlphaBrowseHandlers($activeHandler, !empty($label))
                     );
                 }
             } elseif ($type == 'External') {
                 $handlers[] = [
                     'value' => $type . ':' . $target, 'label' => $label,
-                    'indent' => false, 'selected' => false
+                    'indent' => false, 'selected' => false,
+                    'group' => $settings['group'][$i],
                 ];
             }
         }

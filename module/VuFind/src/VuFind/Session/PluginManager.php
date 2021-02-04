@@ -47,13 +47,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'database' => 'VuFind\Session\Database',
-        'file' => 'VuFind\Session\File',
-        'memcache' => 'VuFind\Session\Memcache',
+        'database' => Database::class,
+        'file' => File::class,
+        'memcache' => Memcache::class,
+        'redis' => Redis::class,
         // for legacy 1.x compatibility
-        'filesession' => 'VuFind\Session\File',
-        'memcachesession' => 'VuFind\Session\Memcache',
-        'mysqlsession' => 'VuFind\Session\Database',
+        'filesession' => File::class,
+        'memcachesession' => Memcache::class,
+        'mysqlsession' => Database::class,
     ];
 
     /**
@@ -62,20 +63,22 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\Session\Database' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Session\File' => 'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\Session\Memcache' => 'Zend\ServiceManager\Factory\InvokableFactory',
+        Database::class => AbstractBaseFactory::class,
+        File::class => AbstractBaseFactory::class,
+        Memcache::class => AbstractBaseFactory::class,
+        Redis::class => RedisFactory::class,
     ];
 
     /**
      * Default delegator factories.
      *
-     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [
-        'VuFind\Session\Database' => ['VuFind\Session\SecureDelegatorFactory'],
-        'VuFind\Session\File' => ['VuFind\Session\SecureDelegatorFactory'],
-        'VuFind\Session\Memcache' => ['VuFind\Session\SecureDelegatorFactory'],
+        Database::class => [SecureDelegatorFactory::class],
+        File::class => [SecureDelegatorFactory::class],
+        Memcache::class => [SecureDelegatorFactory::class],
+        Redis::class => [SecureDelegatorFactory::class],
     ];
 
     /**
@@ -90,7 +93,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->addAbstractFactory('VuFind\Session\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
 
@@ -102,6 +105,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Session\HandlerInterface';
+        return HandlerInterface::class;
     }
 }

@@ -114,12 +114,14 @@ class Evergreen extends AbstractBase
 
         // Build SQL Statement
         $sql = <<<HERE
-SELECT ccs.name AS status, acn.label AS callnumber, acpl.name AS location
+SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location
 FROM config.copy_status ccs
-    INNER JOIN asset.copy ac ON ccs.id = ac.status
-    INNER JOIN asset.call_number acn ON ac.call_number = acn.id
-    INNER JOIN asset.copy_location acpl ON ac.copy_location = acpl.id
-WHERE ac.id = ?
+    INNER JOIN asset.copy ac ON ac.status = ccs.id
+    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+WHERE 
+    acn.record = ? AND
+    NOT ac.deleted
 HERE;
 
         // Execute SQL
@@ -188,16 +190,19 @@ HERE;
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @throws VuFind\Date\DateException;
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         $holding = [];
 
@@ -215,7 +220,9 @@ FROM config.copy_status ccs
     FULL JOIN action.circulation circ ON (
         ac.id = circ.target_copy AND circ.checkin_time IS NULL
     )
-WHERE acn.record = ?
+WHERE 
+    acn.record = ? AND
+    NOT ac.deleted
 HERE;
 
         // Execute SQL

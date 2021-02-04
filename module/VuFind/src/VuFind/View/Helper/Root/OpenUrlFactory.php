@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * OpenUrl helper factory.
@@ -61,7 +64,8 @@ class OpenUrlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $openUrlRules = json_decode(
             file_get_contents(
                 \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
@@ -69,7 +73,7 @@ class OpenUrlFactory implements FactoryInterface
             true
         );
         $resolverPluginManager
-            = $container->get('VuFind\Resolver\Driver\PluginManager');
+            = $container->get(\VuFind\Resolver\Driver\PluginManager::class);
         $helpers = $container->get('ViewHelperManager');
         return new $requestedName(
             $helpers->get('context'),

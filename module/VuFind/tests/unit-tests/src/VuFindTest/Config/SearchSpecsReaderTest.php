@@ -42,6 +42,8 @@ use VuFind\Config\SearchSpecsReader;
  */
 class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Flag -- did writing config files fail?
      *
@@ -61,7 +63,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // Create test files:
         $parentPath = Locator::getLocalConfigPath('top.yaml', null, true);
@@ -94,7 +96,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = $this->getServiceManager()->get('VuFind\Config\SearchSpecsReader');
+        $reader = $this->getServiceManager()->get(\VuFind\Config\SearchSpecsReader::class);
         $specs = $reader->get('searchspecs.yaml');
         $this->assertTrue(
             isset($specs['Author']['DismaxFields'])
@@ -109,7 +111,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingFileRead()
     {
-        $reader = $this->getServiceManager()->get('VuFind\Config\SearchSpecsReader');
+        $reader = $this->getServiceManager()->get(\VuFind\Config\SearchSpecsReader::class);
         $specs = $reader->get('notreallyasearchspecs.yaml');
         $this->assertEquals([], $specs);
     }
@@ -122,8 +124,8 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     public function testYamlLoad()
     {
         $reader = new SearchSpecsReader();
-        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
+        $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'bar'],
@@ -148,8 +150,8 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     public function testYamlMerge()
     {
         $reader = new SearchSpecsReader();
-        $core = __DIR__ . '/../../../../fixtures/configs/yaml/core.yaml';
-        $local = __DIR__ . '/../../../../fixtures/configs/yaml/local.yaml';
+        $core = $this->getFixtureDir() . 'configs/yaml/core.yaml';
+        $local = $this->getFixtureDir() . 'configs/yaml/local.yaml';
         $this->assertEquals(
             [
                 'top' => ['foo' => 'xyzzy'],
@@ -188,7 +190,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // Clean up test files:
         array_map('unlink', self::$filesToDelete);

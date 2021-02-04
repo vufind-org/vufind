@@ -28,6 +28,9 @@
 namespace VuFind\Search\Tags;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for Tags search results objects.
@@ -60,7 +63,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $tm = $container->get('VuFind\Db\Table\PluginManager');
+        $tm = $container->get(\VuFind\Db\Table\PluginManager::class);
         return parent::__invoke($container, $requestedName, [$tm->get('Tags')]);
     }
 }

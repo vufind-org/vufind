@@ -29,10 +29,10 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Subfield;
+import org.solrmarc.callnum.CallNumUtils;
 import org.solrmarc.callnum.DeweyCallNumber;
 import org.solrmarc.callnum.LCCallNumber;
 import org.solrmarc.index.SolrIndexer;
-import org.solrmarc.tools.CallNumUtils;
 
 /**
  * Call number indexing routines.
@@ -169,7 +169,7 @@ public class CallNumberTools
 
     /**
      * Get call numbers of a specific type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      *
@@ -200,7 +200,7 @@ public class CallNumberTools
                 // Assume tag represents a DataField
                 DataField df = (DataField) vf;
                 boolean callTypeMatch = false;
-                
+
                 // Assume call type subfield could repeat
                 for (Subfield typeSf : df.getSubfields(callTypeSf)) {
                     if (callTypeSf.indexOf(typeSf.getCode()) != -1 && typeSf.getData().equals(callType)) {
@@ -215,11 +215,11 @@ public class CallNumberTools
         } // end loop over fieldSpec
         return result;
     }
-    
+
 
     /**
      * Get call numbers of a specific type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      * @param record  current MARC record
@@ -235,7 +235,7 @@ public class CallNumberTools
 
     /**
      * Get call numbers of a specific type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      * @param record  current MARC record
@@ -256,7 +256,7 @@ public class CallNumberTools
      *
      * @param  record current MARC record
      * @param  fieldSpec which MARC fields / subfields need to be analyzed
-     * @return sortable shelf key of the first valid LC number encountered, 
+     * @return sortable shelf key of the first valid LC number encountered,
      *         otherwise shelf key of the first call number found.
      */
     public String getLCSortable(Record record, String fieldSpec) {
@@ -274,13 +274,17 @@ public class CallNumberTools
             }
         }
 
+        // if the call number is empty, return null to indicate there is no LC number
+        if (firstCall.length() == 0) {
+            return null;
+        }
         // If we made it this far, did not find a valid LC number, so use what we have:
         return new LCCallNumber(firstCall).getShelfKey();
     }
 
     /**
      * Get sort key for first LC call number, identified by call type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      *
@@ -311,7 +315,7 @@ public class CallNumberTools
                 // Assume tag represents a DataField
                 DataField df = (DataField) vf;
                 boolean callTypeMatch = false;
-                
+
                 // Assume call type subfield could repeat
                 for (Subfield typeSf : df.getSubfields(callTypeSf)) {
                     if (callTypeSf.indexOf(typeSf.getCode()) != -1 && typeSf.getData().equals(callType)) {
@@ -354,10 +358,10 @@ public class CallNumberTools
             if (callNum.isValid()) {
                 // Convert the numeric portion of the call number into a float:
                 float currentVal = Float.parseFloat(callNum.getClassification());
-                
+
                 // Round the call number value to the specified precision:
                 Float finalVal = new Float(Math.floor(currentVal / precision) * precision);
-                
+
                 // Convert the rounded value back to a string (with leading zeros) and save it:
                 // TODO: Provide different conversion to remove CallNumUtils dependency
                 result.add(CallNumUtils.normalizeFloat(finalVal.toString(), 3, -1));
@@ -435,7 +439,7 @@ public class CallNumberTools
 
     /**
      * Get sort key for first Dewey call number, identified by call type.
-     * 
+     *
      * <p>{@code fieldSpec} is of form {@literal 098abc:099ab}, does not accept subfield ranges.
      *
      *
@@ -466,7 +470,7 @@ public class CallNumberTools
                 // Assume tag represents a DataField
                 DataField df = (DataField) vf;
                 boolean callTypeMatch = false;
-                
+
                 // Assume call type subfield could repeat
                 for (Subfield typeSf : df.getSubfields(callTypeSf)) {
                     if (callTypeSf.indexOf(typeSf.getCode()) != -1 && typeSf.getData().equals(callType)) {
@@ -483,7 +487,7 @@ public class CallNumberTools
         return sortKey;
     }
 
-    
+
     /**
      * Normalize Dewey numbers for AlphaBrowse sorting purposes (use all numbers!)
      *

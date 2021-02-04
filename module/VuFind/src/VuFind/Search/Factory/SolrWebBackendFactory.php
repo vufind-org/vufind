@@ -61,8 +61,7 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     protected function getSolrCore()
     {
         $config = $this->config->get($this->searchConfig);
-        return isset($config->Index->default_core)
-            ? $config->Index->default_core : 'website';
+        return $config->Index->default_core ?? 'website';
     }
 
     /**
@@ -91,7 +90,8 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = parent::createBackend($connector);
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('SolrWeb');
             $driver->setRawData($data);

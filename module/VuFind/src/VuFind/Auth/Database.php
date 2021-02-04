@@ -29,10 +29,12 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Crypt\Password\Bcrypt;
+use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
-use Zend\Crypt\Password\Bcrypt;
-use Zend\Http\PhpEnvironment\Request;
+use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 
 /**
  * Database authentication class
@@ -67,7 +69,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -84,6 +86,9 @@ class Database extends AbstractBase
             throw new AuthException('authentication_error_invalid');
         }
 
+        // Verify email address:
+        $this->checkEmailVerified($user);
+
         // If we got this far, the login was successful:
         return $user;
     }
@@ -96,8 +101,7 @@ class Database extends AbstractBase
     protected function passwordHashingEnabled()
     {
         $config = $this->getConfig();
-        return isset($config->Authentication->hash_passwords)
-            ? $config->Authentication->hash_passwords : false;
+        return $config->Authentication->hash_passwords ?? false;
     }
 
     /**
@@ -106,7 +110,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function create($request)
     {
@@ -126,6 +130,9 @@ class Database extends AbstractBase
         $user = $this->createUserFromParams($params, $userTable);
         $user->save();
 
+        // Verify email address:
+        $this->checkEmailVerified($user);
+
         return $user;
     }
 
@@ -135,7 +142,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function updatePassword($request)
     {
@@ -191,6 +198,28 @@ class Database extends AbstractBase
     }
 
     /**
+     * Check if the user's email address has been verified (if necessary) and
+     * throws exception if not.
+     *
+     * @param User $user User to check
+     *
+     * @return void
+     * @throws AuthEmailNotVerifiedException
+     */
+    protected function checkEmailVerified($user)
+    {
+        $config = $this->getConfig();
+        $verify_email = $config->Authentication->verify_email ?? false;
+        if ($verify_email && !$user->checkEmailVerified()) {
+            $exception = new AuthEmailNotVerifiedException(
+                'authentication_error_email_not_verified_html'
+            );
+            $exception->user = $user;
+            throw $exception;
+        }
+    }
+
+    /**
      * Check that the user's password matches the provided value.
      *
      * @param string $password Password to check.
@@ -219,7 +248,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Check that an email address is legal based on whitelist (if configured).
+     * Check that an email address is legal based on inclusion list (if configured).
      *
      * @param string $email Email address to check (assumed to be valid/well-formed)
      *
@@ -227,28 +256,28 @@ class Database extends AbstractBase
      */
     protected function emailAllowed($email)
     {
-        // If no whitelist is configured, all emails are allowed:
-        $config = $this->getConfig();
-        if (!isset($config->Authentication->domain_whitelist)
-            || empty($config->Authentication->domain_whitelist)
-        ) {
+        // If no inclusion list is configured, all emails are allowed:
+        $fullConfig = $this->getConfig();
+        $config = isset($fullConfig->Authentication)
+            ? $fullConfig->Authentication->toArray() : [];
+        $rawIncludeList = $config['legal_domains']
+            ?? $config['domain_whitelist']  // deprecated configuration
+            ?? null;
+        if (empty($rawIncludeList)) {
             return true;
         }
 
-        // Normalize the whitelist:
-        $whitelist = array_map(
-            'trim',
-            array_map(
-                'strtolower', $config->Authentication->domain_whitelist->toArray()
-            )
+        // Normalize the allowed list:
+        $includeList = array_map(
+            'trim', array_map('strtolower', $rawIncludeList)
         );
 
         // Extract the domain from the email address:
         $parts = explode('@', $email);
         $domain = strtolower(trim(array_pop($parts)));
 
-        // Match domain against whitelist:
-        return in_array($domain, $whitelist);
+        // Match domain against allowed list:
+        return in_array($domain, $includeList);
     }
 
     /**
@@ -331,12 +360,12 @@ class Database extends AbstractBase
     protected function validateParams($params, $table)
     {
         // Invalid Email Check
-        $validator = new \Zend\Validator\EmailAddress();
+        $validator = new \Laminas\Validator\EmailAddress();
         if (!$validator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }
 
-        // Check if Email is on whitelist (if applicable)
+        // Check if Email is on allowed list (if applicable)
         if (!$this->emailAllowed($params['email'])) {
             throw new AuthException('authentication_error_creation_blocked');
         }
@@ -358,14 +387,14 @@ class Database extends AbstractBase
      * @param string[]  $params Parameters returned from collectParamsFromRequest()
      * @param UserTable $table  The VuFind user table
      *
-     * @return \VuFind\Db\Row\User A user row object
+     * @return User A user row object
      */
     protected function createUserFromParams($params, $table)
     {
         $user = $table->createRowForUsername($params['username']);
         $user->firstname = $params['firstname'];
         $user->lastname = $params['lastname'];
-        $user->email = $params['email'];
+        $user->updateEmail($params['email'], true);
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
             $user->pass_hash = $bcrypt->create($params['password']);

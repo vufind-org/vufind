@@ -41,7 +41,8 @@ interface DoiLinkerInterface
     /**
      * Given an array of DOIs, perform a lookup and return an associative array
      * of arrays, keyed by DOI. Each array contains one or more associative arrays
-     * with 'link' and 'label' keys.
+     * with required 'link' (URL to related resource) and 'label' (display text)
+     * keys and an optional 'icon' (URL to icon graphic) key.
      *
      * @param array $doiArray DOIs to look up
      *

@@ -18,9 +18,12 @@ package org.vufind.index;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.Set;
-import java.text.SimpleDateFormat;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import org.marc4j.marc.Record;
@@ -34,16 +37,16 @@ public class UpdateDateTools
     // Initialize logging category
     static Logger logger = Logger.getLogger(UpdateDateTools.class.getName());
 
-    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static 
+    // the SimpleDateFormat class is not Thread-safe the below line were changes to be not static
     // which given the rest of the design of SolrMarc will make them work correctly.
-    private SimpleDateFormat marc005date = new SimpleDateFormat("yyyyMMddHHmmss.S");
-    private SimpleDateFormat marc008date = new SimpleDateFormat("yyMMdd");
+    private DateTimeFormatter marc005date = DateTimeFormatter.ofPattern("yyyyMMddHHmmss.S");
+    private DateTimeFormatter marc008date = DateTimeFormatter.ofPattern("yyMMdd");
 
     /**
      * Support method for getLatestTransaction.
      * @return Date extracted from 005 (or very old date, if unavailable)
      */
-    private java.util.Date normalize005Date(String input)
+    private LocalDateTime normalize005Date(String input)
     {
         // Normalize "null" strings to a generic bad value:
         if (input == null) {
@@ -52,11 +55,11 @@ public class UpdateDateTools
 
         // Try to parse the date; default to "millisecond 0" (very old date) if we can't
         // parse the data successfully.
-        java.util.Date retVal;
+        LocalDateTime retVal;
         try {
-            retVal = marc005date.parse(input);
-        } catch(java.text.ParseException e) {
-            retVal = new java.util.Date(0);
+            retVal = LocalDateTime.parse(input, marc005date);
+        } catch(java.time.format.DateTimeParseException e) {
+            retVal = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         }
         return retVal;
     }
@@ -65,7 +68,7 @@ public class UpdateDateTools
      * Support method for getLatestTransaction.
      * @return Date extracted from 008 (or very old date, if unavailable)
      */
-    private java.util.Date normalize008Date(String input)
+    private LocalDateTime normalize008Date(String input)
     {
         // Normalize "null" strings to a generic bad value:
         if (input == null || input.length() < 6) {
@@ -74,13 +77,11 @@ public class UpdateDateTools
 
         // Try to parse the date; default to "millisecond 0" (very old date) if we can't
         // parse the data successfully.
-        java.util.Date retVal;
+        LocalDateTime retVal;
         try {
-            retVal = marc008date.parse(input.substring(0, 6));
-        } catch(java.lang.StringIndexOutOfBoundsException e) {
-            retVal = new java.util.Date(0);
-        } catch(java.text.ParseException e) {
-            retVal = new java.util.Date(0);
+            retVal = LocalDate.parse(input.substring(0, 6), marc008date).atStartOfDay();
+        } catch(java.lang.StringIndexOutOfBoundsException | java.time.format.DateTimeParseException e) {
+            retVal = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         }
         return retVal;
     }
@@ -92,7 +93,7 @@ public class UpdateDateTools
      * @param record MARC record
      * @return Latest transaction date.
      */
-    public java.util.Date getLatestTransaction(Record record) {
+    public LocalDateTime getLatestTransaction(Record record) {
         // First try the 005 -- this is most likely to have a precise transaction date:
         Set<String> dates = SolrIndexer.instance().getFieldList(record, "005");
         if (dates != null) {
@@ -112,7 +113,7 @@ public class UpdateDateTools
         }
 
         // If we got this far, we couldn't find a valid value; return an arbitrary date:
-        return new java.util.Date(0);
+        return LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
     }
 
 
@@ -122,7 +123,7 @@ public class UpdateDateTools
      * allow the history of our indexing activity to be stored permanently in a
      * fashion that can survive even a total Solr rebuild.
      */
-    public void updateTracker(String core, String id, java.util.Date latestTransaction)
+    public void updateTracker(String core, String id, LocalDateTime latestTransaction)
     {
         // Update the database (if necessary):
         try {

@@ -28,6 +28,9 @@
 namespace VuFind\Resolver\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Generic factory suitable for most resolver drivers.
@@ -57,7 +60,7 @@ class DriverWithHttpClientFactory extends AbstractBaseFactory
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $client = $container->get('VuFindHttp\HttpService')->createClient();
+        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         if ($options) {
             array_unshift($options, $client);
         } else {

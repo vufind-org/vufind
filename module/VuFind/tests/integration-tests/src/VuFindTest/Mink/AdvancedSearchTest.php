@@ -37,9 +37,12 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ * @retry    4
  */
 class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
 {
+    use \VuFindTest\Unit\AutoRetryTrait;
+
     /**
      * Test persistent
      *
@@ -168,5 +171,15 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         // Test edit search (modified search is restored properly)
         $this->editAdvancedSearch($page);
         $this->assertEquals('miller', $this->findCss($page, '#search_lookfor0_0')->getValue());
+
+        // Clear test
+        $multiSel = $this->findCss($page, '#limit_callnumber-first');
+        $multiSel->selectOption('~callnumber-first:"A - General Works"', true);
+        $multiSel->selectOption('~callnumber-first:"D - World History"', true);
+        $this->assertEquals(2, count($multiSel->getValue()));
+
+        $this->findCss($page, '.adv-submit .clear-btn')->press();
+        $this->assertEquals('', $this->findCss($page, '#search_lookfor0_0')->getValue());
+        $this->assertEquals(0, count($multiSel->getValue()));
     }
 }

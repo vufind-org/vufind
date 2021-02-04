@@ -28,10 +28,10 @@
  */
 namespace VuFindTest\Connection;
 
-use VuFind\Connection\Wikipedia;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
+use Laminas\Http\Client as HttpClient;
+use VuFind\Connection\Wikipedia;
 
 /**
  * Unit tests for Wikipedia connector.
@@ -44,6 +44,8 @@ use Zend\Http\Client as HttpClient;
  */
 class WikipediaTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test processing of English-language Jane Austen entry.
      *
@@ -68,9 +70,8 @@ class WikipediaTest extends \PHPUnit\Framework\TestCase
      */
     protected function getClient($fixture)
     {
-        $file = realpath(__DIR__ . '/../../../../fixtures/wikipedia/' . $fixture);
         $adapter = new TestAdapter();
-        $adapter->setResponse(file_get_contents($file));
+        $adapter->setResponse($this->getFixture("wikipedia/$fixture"));
         $client = new HttpClient();
         $client->setAdapter($adapter);
         return $client;

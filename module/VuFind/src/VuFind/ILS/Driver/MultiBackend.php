@@ -42,7 +42,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterface
+class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -145,13 +145,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             throw new ILSException('Configuration needs to be set.');
         }
         $this->drivers = $this->config['Drivers'];
-        $this->defaultDriver = isset($this->config['General']['default_driver'])
-            ? $this->config['General']['default_driver']
-            : null;
+        $this->defaultDriver = $this->config['General']['default_driver'] ?? null;
         $this->driversConfigPath
-            = isset($this->config['General']['drivers_config_path'])
-            ? $this->config['General']['drivers_config_path']
-            : null;
+            = $this->config['General']['drivers_config_path'] ?? null;
     }
 
     /**
@@ -245,14 +241,17 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
@@ -265,7 +264,8 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             }
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source),
+                $options
             );
             return $this->addIdPrefixes($holdings, $source);
         }
@@ -300,9 +300,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      */
     public function getLoginDrivers()
     {
-        return isset($this->config['Login']['drivers'])
-            ? $this->config['Login']['drivers']
-            : [];
+        return $this->config['Login']['drivers'] ?? [];
     }
 
     /**
@@ -481,16 +479,17 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
      * @return mixed      Array of the patron's transactions
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron, $params = [])
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $transactions = $driver->getMyTransactions(
-                $this->stripIdPrefixes($patron, $source)
+                $this->stripIdPrefixes($patron, $source), $params
             );
             return $this->addIdPrefixes($transactions, $source);
         }
@@ -738,7 +737,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
             }
             $locations = $driver->getPickUpLocations(
                 $this->stripIdPrefixes($patron, $source),
-                $this->stripIdPrefixes($holdDetails, $source)
+                $this->stripIdPrefixes(
+                    $holdDetails, $source, ['id', 'cat_username', 'item_id']
+                )
             );
             return $this->addIdPrefixes($locations, $source);
         }
@@ -929,7 +930,9 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
         );
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
+            $holdDetails = $this->stripIdPrefixes(
+                $holdDetails, $source, ['id', 'item_id', 'cat_username']
+            );
             return $driver->getCancelHoldDetails($holdDetails);
         }
         throw new ILSException('No suitable backend driver found');
@@ -1512,7 +1515,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 : $this->driversConfigPath . '/' . $source;
 
             $config = $this->configLoader->get($path);
-        } catch (\Zend\Config\Exception\RuntimeException $e) {
+        } catch (\Laminas\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             $this->error("Could not load config for $source");
@@ -1545,7 +1548,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                     $value, $source, $modifyFields
                 );
             } else {
-                if (!is_numeric($key)
+                if (!ctype_digit((string)$key)
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
@@ -1586,7 +1589,8 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
                 );
             } else {
                 $prefixLen = strlen($source) + 1;
-                if ((!is_array($data) || in_array($key, $modifyFields))
+                if ((!is_array($data)
+                    || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);

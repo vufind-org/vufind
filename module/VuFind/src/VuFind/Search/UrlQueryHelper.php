@@ -94,8 +94,7 @@ class UrlQueryHelper
      */
     protected function getBasicSearchParam()
     {
-        return isset($this->config['basicSearchParam'])
-            ? $this->config['basicSearchParam'] : 'lookfor';
+        return $this->config['basicSearchParam'] ?? 'lookfor';
     }
 
     /**
@@ -144,6 +143,17 @@ class UrlQueryHelper
                         $this->urlParams['lookfor' . $i][] = $inner->getString();
                         $this->urlParams['type' . $i][] = $inner->getHandler();
                         if (null !== ($op = $inner->getOperator())) {
+                            // We want the op and lookfor parameters to align
+                            // with each other; let's backfill empty op values
+                            // if there aren't enough in place already.
+                            $expectedOps
+                                = count($this->urlParams['lookfor' . $i]) - 1;
+                            while (
+                                count($this->urlParams['op' . $i] ?? [])
+                                < $expectedOps
+                            ) {
+                                $this->urlParams['op' . $i][] = '';
+                            }
                             $this->urlParams['op' . $i][] = $op;
                         }
                     }
@@ -170,22 +180,42 @@ class UrlQueryHelper
      */
     protected function getDefault($key)
     {
-        return isset($this->config['defaults'][$key])
-            ? $this->config['defaults'][$key] : null;
+        return $this->config['defaults'][$key] ?? null;
     }
 
     /**
-     * Add a parameter to the object.
+     * Set the default value of a parameter, and add that parameter to the object
+     * if it is not already defined.
      *
-     * @param string $name  Name of parameter
-     * @param string $value Value of parameter
+     * @param string $name          Name of parameter
+     * @param string $value         Value of parameter
+     * @param bool   $forceOverride Force an override of the existing value, even if
+     * it was set in the incoming $urlParams in the constructor (defaults to true for
+     * backward compatibility)
      *
      * @return UrlQueryHelper
      */
-    public function setDefaultParameter($name, $value)
+    public function setDefaultParameter($name, $value, $forceOverride = true)
     {
-        $this->urlParams[$name] = $value;
+        // Add the new default to the configuration, and apply it to the query
+        // if no existing value has already been set in this position (or if an
+        // override has been forced).
+        $this->config['defaults'][$name] = $value;
+        if (!isset($this->urlParams[$name]) || $forceOverride) {
+            $this->urlParams[$name] = $value;
+        }
         return $this;
+    }
+
+    /**
+     * Get an array of field names with configured defaults; this is a useful way
+     * to identify custom query parameters added through setDefaultParameter().
+     *
+     * @return array
+     */
+    public function getParamsWithConfiguredDefaults()
+    {
+        return array_keys($this->config['defaults'] ?? []);
     }
 
     /**
@@ -230,22 +260,23 @@ class UrlQueryHelper
      */
     public function __toString()
     {
-        $escape = isset($this->config['escape']) ? $this->config['escape'] : true;
+        $escape = $this->config['escape'] ?? true;
         return $this->getParams($escape);
     }
 
     /**
      * Replace a term in the search query (used for spelling replacement)
      *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
+     * @param string  $from      Search term to find
+     * @param string  $to        Search term to insert
+     * @param boolean $normalize If we should apply text normalization when replacing
      *
      * @return UrlQueryHelper
      */
-    public function replaceTerm($from, $to)
+    public function replaceTerm($from, $to, $normalize = false)
     {
         $query = clone $this->queryObject;
-        $query->replaceTerm($from, $to);
+        $query->replaceTerm($from, $to, $normalize);
         return new static($this->urlParams, $query, $this->config);
     }
 
@@ -298,6 +329,20 @@ class UrlQueryHelper
         $params = $this->urlParams;
         // Clear page:
         unset($params['filter']);
+
+        return new static($params, $this->queryObject, $this->config, false);
+    }
+
+    /**
+     * Reset default filter state.
+     *
+     * @return string
+     */
+    public function resetDefaultFilters()
+    {
+        $params = $this->urlParams;
+        // Clear page:
+        unset($params['dfApplied']);
 
         return new static($params, $this->queryObject, $this->config, false);
     }
@@ -362,7 +407,7 @@ class UrlQueryHelper
      * @param string $value    Facet value
      * @param string $operator Facet type to add (AND, OR, NOT)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function removeFacet($field, $value, $operator = 'AND')
     {
@@ -466,7 +511,7 @@ class UrlQueryHelper
      * parameter.
      *
      * Note: This is called setViewParam rather than setView to avoid confusion
-     * with the \Zend\View\Helper\AbstractHelper interface.
+     * with the \Laminas\View\Helper\AbstractHelper interface.
      *
      * @param string $v New sort parameter (null for NO view parameter)
      *

@@ -41,6 +41,8 @@ use VuFind\Config\Upgrade;
  */
 class UpgradeTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Target upgrade version
      *
@@ -57,7 +59,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
      */
     protected function getUpgrader($version)
     {
-        $oldDir = realpath(__DIR__ . '/../../../../fixtures/configs/' . $version);
+        $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
         return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
     }
@@ -131,7 +133,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
-                'CallNumber' => ['TopFacets:ResultsTop']
+                'CallNumber' => ['TopFacets:ResultsTop'],
+                'WorkKeys' => ['']
             ],
             $results['searches.ini']['TopRecommendations']
         );
@@ -469,7 +472,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     {
         $upgrader = $this->getUpgrader('1.4');
         $meaningless = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/empty.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/empty.properties'
         );
         $this->assertFalse(
             $this->callMethod(
@@ -477,7 +480,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $meaningful = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/meaningful.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/meaningful.properties'
         );
         $this->assertTrue(
             $this->callMethod(
@@ -501,5 +504,60 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             'http://my-id.hosted.exlibrisgroup.com:1701',
             $results['Primo.ini']['General']['url']
         );
+    }
+
+    /**
+     * Test deprecated Amazon cover content warning.
+     *
+     * @return void
+     */
+    public function testAmazonCoverWarning()
+    {
+        $upgrader = $this->getUpgrader('amazoncover');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
+                . 'ports it. You should remove Amazon references from config.ini.',
+                $warnings
+            )
+        );
+    }
+
+    /**
+     * Test deprecated Amazon review content warning.
+     *
+     * @return void
+     */
+    public function testAmazonReviewWarning()
+    {
+        $upgrader = $this->getUpgrader('amazonreview');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
+                . 'ports it. You should remove Amazon references from config.ini.',
+                $warnings
+            )
+        );
+    }
+
+    /**
+     * Test ReCaptcha setting migration.
+     *
+     * @return void
+     */
+    public function testReCaptcha()
+    {
+        $upgrader = $this->getUpgrader('recaptcha');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $captcha = $results['config.ini']['Captcha'];
+        $this->assertEquals('public', $captcha['recaptcha_siteKey']);
+        $this->assertEquals('private', $captcha['recaptcha_secretKey']);
+        $this->assertEquals('theme', $captcha['recaptcha_theme']);
+        $this->assertEquals(['recaptcha'], $captcha['types']);
     }
 }

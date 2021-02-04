@@ -27,9 +27,9 @@
  */
 namespace VuFindApi\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search API Controller
@@ -83,6 +83,41 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $searchAccessPermission = 'access.api.Search';
 
     /**
+     * Record route uri
+     *
+     * @var string
+     */
+    protected $recordRoute = 'record';
+
+    /**
+     * Search route uri
+     *
+     * @var string
+     */
+    protected $searchRoute = 'search';
+
+    /**
+     * Descriptive label for the index managed by this controller
+     *
+     * @var string
+     */
+    protected $indexLabel = 'primary';
+
+    /**
+     * Prefix for use in model names used by API
+     *
+     * @var string
+     */
+    protected $modelPrefix = '';
+
+    /**
+     * Max limit of search results in API response (default 100);
+     *
+     * @var int
+     */
+    protected $maxLimit = 100;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -100,6 +135,20 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
                 $this->defaultRecordFields[] = $fieldName;
             }
         }
+
+        // Load configurations from the search options class:
+        $settings = $sm->get(\VuFind\Search\Options\PluginManager::class)
+            ->get($this->searchClassId)->getAPISettings();
+
+        // Apply all supported configurations:
+        $configKeys = [
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit'
+        ];
+        foreach ($configKeys as $key) {
+            if (isset($settings[$key])) {
+                $this->$key = $settings[$key];
+            }
+        }
     }
 
     /**
@@ -114,7 +163,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $results = $this->getResultsManager()->get($this->searchClassId);
         $options = $results->getOptions();
         $params = $results->getParams();
-        $params->activateAllFacets();
 
         $viewParams = [
             'config' => $config,
@@ -125,7 +173,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'defaultFields' => $this->defaultRecordFields,
             'facetConfig' => $params->getFacetConfig(),
             'sortOptions' => $options->getSortOptions(),
-            'defaultSort' => $options->getDefaultSortByHandler()
+            'defaultSort' => $options->getDefaultSortByHandler(),
+            'recordRoute' => $this->recordRoute,
+            'searchRoute' => $this->searchRoute,
+            'searchIndex' => $this->searchClassId,
+            'indexLabel' => $this->indexLabel,
+            'modelPrefix' => $this->modelPrefix,
+            'maxLimit' => $this->maxLimit,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
@@ -136,12 +190,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $e Event
+     * @param \Laminas\Mvc\MvcEvent $e Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $e)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {
         // Add CORS headers and handle OPTIONS requests. This is a simplistic
         // approach since we allow any origin. For more complete CORS handling
@@ -169,7 +223,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Record action
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function recordAction()
     {
@@ -189,12 +243,15 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
 
-        $loader = $this->serviceLocator->get('VuFind\Record\Loader');
+        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         try {
             if (is_array($request['id'])) {
-                $results = $loader->loadBatchForSource($request['id']);
+                $results = $loader->loadBatchForSource(
+                    $request['id'],
+                    $this->searchClassId
+                );
             } else {
-                $results[] = $loader->load($request['id']);
+                $results[] = $loader->load($request['id'], $this->searchClassId);
             }
         } catch (\Exception $e) {
             return $this->output(
@@ -217,7 +274,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     /**
      * Search action
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function searchAction()
     {
@@ -236,7 +293,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
 
         if (isset($request['limit'])
             && (!ctype_digit($request['limit'])
-            || $request['limit'] < 0 || $request['limit'] > 100)
+            || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
         ) {
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
         }
@@ -253,7 +310,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
             : [];
 
-        $runner = $this->serviceLocator->get('VuFind\Search\SearchRunner');
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
         try {
             $results = $runner->run(
                 $request,
@@ -333,7 +390,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         $facetResults = $results->getFullFieldFacets($facets, false, -1, 'count');
 
         $facetHelper = $this->serviceLocator
-            ->get('VuFind\Search\Solr\HierarchicalFacetHelper');
+            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $facetList = [];
         foreach ($facets as $facet) {

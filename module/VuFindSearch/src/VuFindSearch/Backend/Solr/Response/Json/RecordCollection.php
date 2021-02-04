@@ -44,7 +44,7 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Template of deserialized SOLR response.
      *
-     * @see self::__construct()
+     * @see \VuFindSearch\Backend\Solr\Response\Json\RecordCollection::__construct()
      *
      * @var array
      */
@@ -85,6 +85,11 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function __construct(array $response)
     {
+        if (array_key_exists('response', $response)
+            && null === $response['response']
+        ) {
+            unset($response['response']);
+        }
         $this->response = array_replace_recursive(static::$template, $response);
         $this->offset = $this->response['response']['start'];
         $this->rewind();
@@ -146,6 +151,16 @@ class RecordCollection extends AbstractRecordCollection
     public function getHighlighting()
     {
         return $this->response['highlighting'] ?? [];
+    }
+
+    /**
+     * Get cursorMark.
+     *
+     * @return string
+     */
+    public function getCursorMark()
+    {
+        return $this->response['nextCursorMark'] ?? '';
     }
 
     /**

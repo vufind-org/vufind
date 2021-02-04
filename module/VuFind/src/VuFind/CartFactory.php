@@ -28,7 +28,10 @@
 namespace VuFind;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cart factory.
@@ -61,16 +64,15 @@ class CartFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $active = isset($config->Site->showBookBag)
             ? (bool)$config->Site->showBookBag : false;
-        $size = isset($config->Site->bookBagMaxSize)
-            ? $config->Site->bookBagMaxSize : 100;
-        $activeInSearch = isset($config->Site->bookbagTogglesInSearch)
-            ? $config->Site->bookbagTogglesInSearch : true;
+        $size = $config->Site->bookBagMaxSize ?? 100;
+        $activeInSearch = $config->Site->bookbagTogglesInSearch ?? true;
         return new $requestedName(
-            $container->get('VuFind\Record\Loader'),
-            $container->get('VuFind\Cookie\CookieManager'),
+            $container->get(\VuFind\Record\Loader::class),
+            $container->get(\VuFind\Cookie\CookieManager::class),
             $size, $active, $activeInSearch
         );
     }

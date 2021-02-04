@@ -58,7 +58,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Record factory callback
+     * @param callable $recordFactory   Record factory callback
      * @param string   $collectionClass Class of collection
      *
      * @return void
@@ -98,7 +98,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             ?? $response['Records'] ?? [];
 
         foreach ($records as $record) {
-            $collection->add(call_user_func($this->recordFactory, $record));
+            $collection->add(call_user_func($this->recordFactory, $record), false);
         }
         return $collection;
     }

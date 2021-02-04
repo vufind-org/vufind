@@ -28,7 +28,10 @@
 namespace VuFind\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * QRCode controller factory.
@@ -62,8 +65,8 @@ class QRCodeControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\QRCode\Loader'),
-            $container->get('VuFind\Session\Settings')
+            $container->get(\VuFind\QRCode\Loader::class),
+            $container->get(\VuFind\Session\Settings::class)
         );
     }
 }

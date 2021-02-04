@@ -28,13 +28,13 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use SoapClient;
 use SoapFault;
 use SoapHeader;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -148,11 +148,11 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         ];
 
         // Initialize cache manager.
-        if (isset($configArray['PolicyCache']['type'])
+        if (isset($this->config['PolicyCache']['type'])
             && $this->cacheManager
         ) {
             $this->policyCache = $this->cacheManager
-                ->getCache($configArray['PolicyCache']['type']);
+                ->getCache($this->config['PolicyCache']['type']);
         }
     }
 
@@ -270,13 +270,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param string $operation  the SymWS operation name
      * @param array  $parameters the request parameters for the operation
      * @param array  $options    An associative array of additional options:
-     *                           - 'login': login to use for the operation;
-     *                                      omit for configured default
-     *                                      credentials or anonymous
-     *                           - 'password': password associated with login;
-     *                                         omit for no password
-     *                           - 'header': SoapHeader to use for the request;
-     *                                       omit to handle automatically
+     * - 'login': login to use for the operation; omit for configured default
+     * credentials or anonymous
+     * - 'password': password associated with login; omit for no password
+     * - 'header': SoapHeader to use for the request; omit to handle automatically
      *
      * @return mixed the result of the SOAP call
      */
@@ -310,9 +307,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             )
         ) {
             $login    = $this->config['WebServices']['login'];
-            $password = isset($this->config['WebServices']['password'])
-                ? $this->config['WebServices']['password']
-                : null;
+            $password = $this->config['WebServices']['password'] ?? null;
         } else {
             $login    = null;
             $password = null;
@@ -503,14 +498,14 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function libraryIsFilteredOut($libraryID)
     {
-        $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
+        $notIncluded = !empty($this->config['LibraryFilter']['include_only'])
             && !in_array(
                 $libraryID, $this->config['LibraryFilter']['include_only']
             );
-        $onBlacklist = in_array(
+        $excluded = in_array(
             $libraryID, $this->config['LibraryFilter']['exclude']
         );
-        return $notInWhitelist || $onBlacklist;
+        return $notIncluded || $excluded;
     }
 
     /**
@@ -618,8 +613,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         date('F j, Y', strtotime($itemInfo->recallDueDate)) :
                         $duedate;
 
-                $requests_placed = isset($itemInfo->numberOfHolds) ?
-                            $itemInfo->numberOfHolds : 0;
+                $requests_placed = $itemInfo->numberOfHolds ?? 0;
 
                 // Handle item notes
                 $notes = [];
@@ -648,8 +642,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         )
                         : null;
 
-                $transitReason = isset($itemInfo->transitReason) ?
-                    $itemInfo->transitReason : null;
+                $transitReason = $itemInfo->transitReason ?? null;
 
                 $transitDate = isset($itemInfo->transitDate) ?
                      date('F j, Y', strtotime($itemInfo->transitDate)) : null;
@@ -776,7 +769,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $library_id = $titleOrderInfo->orderLibraryID;
 
             /* Allow returned holdings information to be
-             * limited to a whitelist of library names. */
+             * limited to a specified list of library names. */
             if (isset($this->config['holdings']['include_libraries'])
                 && !in_array(
                     $library_id,
@@ -1023,15 +1016,18 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
+     * @param string $id      The record id to retrieve the holdings for
+     * @param array  $patron  Patron data
+     * @param array  $options Extra options (not currently used)
      *
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }

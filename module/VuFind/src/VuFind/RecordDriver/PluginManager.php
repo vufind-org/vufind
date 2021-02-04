@@ -27,6 +27,8 @@
  */
 namespace VuFind\RecordDriver;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Record driver plugin manager
  *
@@ -44,35 +46,36 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'browzine' => 'VuFind\RecordDriver\BrowZine',
-        'eds' => 'VuFind\RecordDriver\EDS',
-        'eit' => 'VuFind\RecordDriver\EIT',
-        'libguides' => 'VuFind\RecordDriver\LibGuides',
-        'missing' => 'VuFind\RecordDriver\Missing',
-        'pazpar2' => 'VuFind\RecordDriver\Pazpar2',
-        'primo' => 'VuFind\RecordDriver\Primo',
-        'solrauth' => 'VuFind\RecordDriver\SolrAuthMarc', // legacy name
-        'solrauthdefault' => 'VuFind\RecordDriver\SolrAuthDefault',
-        'solrauthmarc' => 'VuFind\RecordDriver\SolrAuthMarc',
-        'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
-        'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
-        'solrmarcremote' => 'VuFind\RecordDriver\SolrMarcRemote',
-        'solrreserves' => 'VuFind\RecordDriver\SolrReserves',
-        'solrweb' => 'VuFind\RecordDriver\SolrWeb',
-        'summon' => 'VuFind\RecordDriver\Summon',
-        'worldcat' => 'VuFind\RecordDriver\WorldCat',
+        'browzine' => BrowZine::class,
+        'eds' => EDS::class,
+        'eit' => EIT::class,
+        'libguides' => LibGuides::class,
+        'missing' => Missing::class,
+        'pazpar2' => Pazpar2::class,
+        'primo' => Primo::class,
+        'search2default' => Search2Default::class,
+        'solrarchivesspace' => SolrArchivesSpace::class,
+        'solrauth' => SolrAuthMarc::class, // legacy name
+        'solrauthdefault' => SolrAuthDefault::class,
+        'solrauthmarc' => SolrAuthMarc::class,
+        'solrdefault' => SolrDefault::class,
+        'solrmarc' => SolrMarc::class,
+        'solrmarcremote' => SolrMarcRemote::class,
+        'solroverdrive' => SolrOverdrive::class,
+        'solrreserves' => SolrReserves::class,
+        'solrweb' => SolrWeb::class,
+        'summon' => Summon::class,
+        'worldcat' => WorldCat::class,
     ];
 
     /**
      * Default delegator factories.
      *
-     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [
-        'VuFind\RecordDriver\SolrMarc' =>
-            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
-        'VuFind\RecordDriver\SolrMarcRemote' =>
-            ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+        SolrMarc::class => [IlsAwareDelegatorFactory::class],
+        SolrMarcRemote::class => [IlsAwareDelegatorFactory::class],
     ];
 
     /**
@@ -81,31 +84,25 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        'VuFind\RecordDriver\BrowZine' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordDriver\EDS' => 'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\EIT' => 'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\LibGuides' =>
-            'Zend\ServiceManager\Factory\InvokableFactory',
-        'VuFind\RecordDriver\Missing' => 'VuFind\RecordDriver\AbstractBaseFactory',
-        'VuFind\RecordDriver\Pazpar2' =>
-            'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\Primo' => 'VuFind\RecordDriver\NameBasedConfigFactory',
-        'VuFind\RecordDriver\SolrAuthDefault' =>
-            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
-        'VuFind\RecordDriver\SolrAuthMarc' =>
-            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
-        'VuFind\RecordDriver\SolrDefault' =>
-            'VuFind\RecordDriver\SolrDefaultFactory',
-        'VuFind\RecordDriver\SolrMarc' => 'VuFind\RecordDriver\SolrDefaultFactory',
-        'VuFind\RecordDriver\SolrMarcRemote' =>
-            'VuFind\RecordDriver\SolrDefaultFactory',
-        'VuFind\RecordDriver\SolrReserves' =>
-            'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
-        'VuFind\RecordDriver\SolrWeb' => 'VuFind\RecordDriver\SolrWebFactory',
-        'VuFind\RecordDriver\Summon' => 'VuFind\RecordDriver\SummonFactory',
-        'VuFind\RecordDriver\WorldCat' =>
-            'VuFind\RecordDriver\NameBasedConfigFactory',
+        BrowZine::class => InvokableFactory::class,
+        EDS::class => NameBasedConfigFactory::class,
+        EIT::class => NameBasedConfigFactory::class,
+        LibGuides::class => InvokableFactory::class,
+        Missing::class => AbstractBaseFactory::class,
+        Pazpar2::class => NameBasedConfigFactory::class,
+        Primo::class => NameBasedConfigFactory::class,
+        Search2Default::class => SolrDefaultFactory::class,
+        SolrArchivesSpace::class => SolrDefaultFactory::class,
+        SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
+        SolrAuthMarc::class => SolrDefaultWithoutSearchServiceFactory::class,
+        SolrDefault::class => SolrDefaultFactory::class,
+        SolrMarc::class => SolrDefaultFactory::class,
+        SolrMarcRemote::class => SolrDefaultFactory::class,
+        SolrOverdrive::class => SolrOverdriveFactory::class,
+        SolrReserves::class => SolrDefaultWithoutSearchServiceFactory::class,
+        SolrWeb::class => SolrWebFactory::class,
+        Summon::class => SummonFactory::class,
+        WorldCat::class => NameBasedConfigFactory::class,
     ];
 
     /**
@@ -124,7 +121,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // we are building a brand new object.
         $this->sharedByDefault = false;
 
-        $this->addAbstractFactory('VuFind\RecordDriver\PluginFactory');
+        $this->addAbstractFactory(PluginFactory::class);
 
         parent::__construct($configOrContainerInstance, $v3config);
 
@@ -134,9 +131,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             if ($hasHierarchyType
                 && is_callable([$instance, 'setHierarchyDriverManager'])
             ) {
-                if ($sm && $sm->has('VuFind\Hierarchy\Driver\PluginManager')) {
+                if ($sm && $sm->has(\VuFind\Hierarchy\Driver\PluginManager::class)) {
                     $instance->setHierarchyDriverManager(
-                        $sm->get('VuFind\Hierarchy\Driver\PluginManager')
+                        $sm->get(\VuFind\Hierarchy\Driver\PluginManager::class)
                     );
                 }
             }
@@ -152,7 +149,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\RecordDriver\AbstractBase';
+        return AbstractBase::class;
     }
 
     /**
@@ -176,6 +173,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $driver = $this->get($recordType);
         $driver->setRawData($data);
         return $driver;
+    }
+
+    /**
+     * Convenience method to retrieve a populated Search2 record driver.
+     *
+     * @param array  $data             Raw Solr data
+     * @param string $defaultKeySuffix Default key suffix
+     *
+     * @return AbstractBase
+     */
+    public function getSearch2Record($data, $defaultKeySuffix = 'Default')
+    {
+        return $this->getSolrRecord($data, 'Search2', $defaultKeySuffix);
     }
 
     /**

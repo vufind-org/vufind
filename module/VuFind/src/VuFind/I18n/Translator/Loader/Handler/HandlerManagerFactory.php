@@ -1,9 +1,8 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class HandlerManagerFactory implements FactoryInterface
 {

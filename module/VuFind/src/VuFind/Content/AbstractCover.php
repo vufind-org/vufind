@@ -53,6 +53,13 @@ abstract class AbstractCover
     protected $supportsIssn = false;
 
     /**
+     * Does this plugin support ISMNs?
+     *
+     * @var bool
+     */
+    protected $supportsIsmn = false;
+
+    /**
      * Does this plugin support OCLC numbers?
      *
      * @var bool
@@ -67,11 +74,26 @@ abstract class AbstractCover
     protected $supportsUpc = false;
 
     /**
+     * Does this plugin support national bibliographies number?
+     *
+     * @var bool
+     */
+    protected $supportsNbn = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @var bool
      */
     protected $cacheAllowed = false;
+
+    /**
+     * Use direct urls as image urls. When set to true, direct urls to content cover
+     * provider will be used in interface instead internal Cover/Show urls.
+     *
+     * @var bool
+     */
+    protected $directUrls = false;
 
     /**
      * Are we allowed to cache images from this source?
@@ -81,6 +103,16 @@ abstract class AbstractCover
     public function isCacheAllowed()
     {
         return $this->cacheAllowed;
+    }
+
+    /**
+     * Use direct urls? (Or proxied urls)
+     *
+     * @return bool
+     */
+    public function useDirectUrls()
+    {
+        return $this->directUrls;
     }
 
     /**
@@ -95,8 +127,10 @@ abstract class AbstractCover
         return
             ($this->supportsIsbn && isset($ids['isbn']))
             || ($this->supportsIssn && isset($ids['issn']))
+            || ($this->supportsIsmn && isset($ids['ismn']))
             || ($this->supportsOclc && isset($ids['oclc']))
-            || ($this->supportsUpc && isset($ids['upc']));
+            || ($this->supportsUpc && isset($ids['upc']))
+            || ($this->supportsNbn && isset($ids['nbn']));
     }
 
     /**

@@ -28,7 +28,10 @@
 namespace VuFind\Form;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for configurable forms.
@@ -62,12 +65,13 @@ class FormFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $config = $container->get('VuFind\Config\PluginManager')
+        $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->toArray();
-        $yamlReader = $container->get('VuFind\Config\YamlReader');
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $viewHelperManager = $container->get('ViewHelperManager');
 
         return new $requestedName(
-            $yamlReader, $config['Feedback'] ?? null
+            $yamlReader, $viewHelperManager, $config['Feedback'] ?? null
         );
     }
 }

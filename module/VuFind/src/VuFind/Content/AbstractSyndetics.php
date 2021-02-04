@@ -80,7 +80,7 @@ abstract class AbstractSyndetics extends AbstractBase
      *
      * @param string $url URL for client to use
      *
-     * @return \Zend\Http\Client
+     * @return \Laminas\Http\Client
      * @throws \Exception
      */
     protected function getHttpClient($url = null)

@@ -30,6 +30,7 @@ namespace VuFind\Cover;
 
 use VuFind\Content\Covers\PluginManager as ApiManager;
 use VuFindCode\ISBN;
+use VuFindCode\ISMN;
 
 /**
  * Book Cover Generator
@@ -68,7 +69,7 @@ class Loader extends \VuFind\ImageLoader
     /**
      * VuFind configuration settings
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -122,6 +123,20 @@ class Loader extends \VuFind\ImageLoader
     protected $upc = null;
 
     /**
+     * User National bibliography number parameter
+     *
+     * @var array
+     */
+    protected $nbn = null;
+
+    /**
+     * User ISMN parameter
+     *
+     * @var ISMN
+     */
+    protected $ismn = null;
+
+    /**
      * User record id number parameter
      *
      * @var string
@@ -150,9 +165,16 @@ class Loader extends \VuFind\ImageLoader
     protected $type;
 
     /**
+     * Flag denoting the last loaded image was a FailImage
+     *
+     * @var bool
+     */
+    protected $hasLoadedUnavailable = false;
+
+    /**
      * Constructor
      *
-     * @param \Zend\Config\Config     $config      VuFind configuration
+     * @param \Laminas\Config\Config  $config      VuFind configuration
      * @param ApiManager              $manager     Plugin manager for API handlers
      * @param \VuFindTheme\ThemeInfo  $theme       VuFind theme tools
      * @param \VuFindHttp\HttpService $httpService HTTP client factory
@@ -165,8 +187,7 @@ class Loader extends \VuFind\ImageLoader
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
-        $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
-            ? $config->Content->noCoverAvailableImage : null;
+        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
@@ -232,6 +253,8 @@ class Loader extends \VuFind\ImageLoader
             'upc' => null,
             'recordid' => null,
             'source' => null,
+            'nbn' => null,
+            'ismn' => null,
         ];
     }
 
@@ -260,14 +283,15 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Support method for loadImage() -- sanitize and store some key values.
      *
-     * @param array $settings Settings from loadImage (with missing defaults
-     * already filled in).
+     * @param array $settings Settings from loadImage
      *
      * @return void
      */
     protected function storeSanitizedSettings($settings)
     {
+        $settings = array_merge($this->getDefaultSettings(), $settings);
         $this->isbn = new ISBN($settings['isbn']);
+        $this->ismn = new ISMN($settings['ismn']);
         if (!empty($settings['issn'])) {
             $rawissn = preg_replace('/[^0-9X]/', '', strtoupper($settings['issn']));
             $this->issn = substr($rawissn, 0, 8);
@@ -278,6 +302,7 @@ class Loader extends \VuFind\ImageLoader
         $this->upc = $settings['upc'];
         $this->recordid = $settings['recordid'];
         $this->source = $settings['source'];
+        $this->nbn = $settings['nbn'];
         $this->type = preg_replace('/[^a-zA-Z]/', '', $settings['type']);
         $this->size = $settings['size'];
     }
@@ -289,16 +314,19 @@ class Loader extends \VuFind\ImageLoader
      * contain any or all of these keys: 'isbn' (ISBN), 'size' (requested size),
      * 'type' (content type), 'title' (title of book, for dynamic covers), 'author'
      * (author of book, for dynamic covers), 'callnumber' (unique ID, for dynamic
-     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number).
+     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number),
+     * 'nbn' (national bibliography number), 'ismn' (ISMN).
      *
      * @return void
      */
     public function loadImage($settings = [])
     {
+        // reset to normal
+        $this->hasLoadedUnavailable = false;
         // Load settings from legacy function parameters if they are not passed
         // in as an array:
         $settings = is_array($settings)
-            ? array_merge($this->getDefaultSettings(), $settings)
+            ? $settings
             : $this->getImageSettingsFromLegacyArgs(func_get_args());
 
         // Store sanitized versions of some parameters for future reference:
@@ -321,6 +349,28 @@ class Loader extends \VuFind\ImageLoader
                 $this->loadUnavailable();
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     * Adds @see self::$hasLoadedUnavailable flag
+     *
+     * @return void
+     */
+    public function loadUnavailable()
+    {
+        $this->hasLoadedUnavailable = true;
+        return parent::loadUnavailable();
+    }
+
+    /**
+     * Returns true if the last loaded image was the FailImage
+     *
+     * @return bool
+     */
+    public function hasLoadedUnavailable()
+    {
+        return $this->hasLoadedUnavailable;
     }
 
     /**
@@ -347,6 +397,10 @@ class Loader extends \VuFind\ImageLoader
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
         } elseif (isset($ids['upc'])) {
             return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
+        } elseif (isset($ids['nbn'])) {
+            return $this->getCachePath($this->size, 'NBN' . $ids['nbn']);
+        } elseif (isset($ids['ismn'])) {
+            return $this->getCachePath($this->size, 'ISMN' . $ids['ismn']->get13());
         } elseif (isset($ids['recordid']) && isset($ids['source'])) {
             return $this->getCachePath(
                 $this->size,
@@ -375,6 +429,12 @@ class Loader extends \VuFind\ImageLoader
         }
         if ($this->upc && strlen($this->upc) > 0) {
             $ids['upc'] = $this->upc;
+        }
+        if ($this->nbn && strlen($this->nbn) > 0) {
+            $ids['nbn'] = $this->nbn;
+        }
+        if ($this->ismn && $this->ismn->isValid()) {
+            $ids['ismn'] = $this->ismn;
         }
         if ($this->recordid && strlen($this->recordid) > 0) {
             $ids['recordid'] = $this->recordid;
@@ -405,31 +465,14 @@ class Loader extends \VuFind\ImageLoader
             $this->contentType = 'image/jpeg';
             $this->image = file_get_contents($this->localFile);
             return true;
-        } elseif (isset($this->config->Content->coverimages)) {
-            $providers = explode(',', $this->config->Content->coverimages);
-            foreach ($providers as $provider) {
-                $provider = explode(':', trim($provider));
-                $apiName = strtolower(trim($provider[0]));
-                $key = isset($provider[1]) ? trim($provider[1]) : null;
-                try {
-                    $handler = $this->apiManager->get($apiName);
-
-                    // Is the current provider appropriate for the available data?
-                    if ($handler->supports($ids)) {
-                        if ($url = $handler->getUrl($key, $this->size, $ids)) {
-                            $success = $this->processImageURLForSource(
-                                $url, $handler->isCacheAllowed(), $apiName
-                            );
-                            if ($success) {
-                                return true;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    $this->debug(
-                        get_class($e) . ' during processing of ' . $apiName
-                        . ': ' . $e->getMessage()
-                    );
+        } else {
+            $urls = $this->getCoverUrls();
+            foreach ($urls as $url) {
+                $success = $this->processImageURLForSource(
+                    $url['url'], $url['handler']->isCacheAllowed(), $url['apiName']
+                );
+                if ($success) {
+                    return true;
                 }
             }
         }
@@ -599,7 +642,7 @@ class Loader extends \VuFind\ImageLoader
             $imagePath = substr($url, 7);
 
             // Display the image:
-            $this->contentType =  mime_content_type($imagePath);
+            $this->contentType = mime_content_type($imagePath);
             $this->image = file_get_contents($imagePath);
             return true;
         } else {
@@ -641,5 +684,74 @@ class Loader extends \VuFind\ImageLoader
             }
             return true;
         }
+    }
+
+    /**
+     * Get urls for defined provider, works as generator
+     *
+     * @return array
+     */
+    protected function getCoverUrls()
+    {
+        $ids = $this->getIdentifiers();
+        $handlers = $this->getHandlers();
+        foreach ($handlers as $handler) {
+            try {
+                // Is the current provider appropriate for the available data?
+                if ($handler['handler']->supports($ids)) {
+                    $url = $handler['handler']
+                        ->getUrl($handler['key'], $this->size, $ids);
+                    if ($url) {
+                        yield [
+                            'url' => $url,
+                            'apiName' => $handler['apiName'],
+                            'handler' => $handler['handler'],
+                        ];
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->debug(
+                    get_class($e) . ' during processing of ' . $handler['apiName']
+                    . ': ' . $e->getMessage()
+                );
+            }
+        }
+    }
+
+    /**
+     * Return API handlers
+     *
+     * @return \Generator Array with keys: key - API key, apiName - api name from
+     * configuration, handler - handler object
+     */
+    public function getHandlers()
+    {
+        if (!isset($this->config->Content->coverimages)) {
+            return [];
+        }
+        $providers = explode(',', $this->config->Content->coverimages);
+        foreach ($providers as $provider) {
+            $provider = explode(':', trim($provider));
+            $apiName = strtolower(trim($provider[0]));
+            $key = isset($provider[1]) ? trim($provider[1]) : null;
+            yield [
+                'key' => $key,
+                'apiName' => $apiName,
+                'handler' => $this->apiManager->get($apiName),
+            ];
+        }
+    }
+
+    /**
+     * Get identifiers for given settings
+     *
+     * @param array $settings Settings from loadImage
+     *
+     * @return array
+     */
+    public function getIdentifiersForSettings($settings)
+    {
+        $this->storeSanitizedSettings($settings);
+        return $this->getIdentifiers();
     }
 }

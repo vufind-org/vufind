@@ -28,6 +28,9 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for PAIA ILS driver.
@@ -62,7 +65,7 @@ class PAIAFactory extends DriverWithDateConverterFactory
         }
         return parent::__invoke(
             $container, $requestedName,
-            [$container->get('Zend\Session\SessionManager')]
+            [$container->get(\Laminas\Session\SessionManager::class)]
         );
     }
 }

@@ -28,7 +28,10 @@
 namespace VuFind\Related;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Similar related record module (and subclasses).
@@ -61,6 +64,6 @@ class SimilarFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('VuFindSearch\Service'));
+        return new $requestedName($container->get(\VuFindSearch\Service::class));
     }
 }

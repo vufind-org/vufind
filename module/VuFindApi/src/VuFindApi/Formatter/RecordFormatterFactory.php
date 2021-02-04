@@ -28,7 +28,10 @@
 namespace VuFindApi\Formatter;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Record Formatter factory.
@@ -41,6 +44,13 @@ use Zend\ServiceManager\Factory\FactoryInterface;
  */
 class RecordFormatterFactory implements FactoryInterface
 {
+    /**
+     * Record fields configuration file name
+     *
+     * @var string
+     */
+    protected $configFile = 'SearchApiRecordFields.yaml';
+
     /**
      * Create an object
      *
@@ -62,8 +72,8 @@ class RecordFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $recordFields = $container->get('VuFind\Config\YamlReader')
-            ->get('SearchApiRecordFields.yaml');
+        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
+            ->get($this->configFile);
         $helperManager = $container->get('ViewHelperManager');
         return new $requestedName($recordFields, $helperManager);
     }

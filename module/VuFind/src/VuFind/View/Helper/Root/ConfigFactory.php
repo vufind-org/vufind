@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Config helper factory.
@@ -61,6 +64,8 @@ class ConfigFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get('VuFind\Config\PluginManager'));
+        return new $requestedName(
+            $container->get(\VuFind\Config\PluginManager::class)
+        );
     }
 }

@@ -28,6 +28,9 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for VoyagerRestful ILS driver.
@@ -60,7 +63,7 @@ class VoyagerRestfulFactory extends DriverWithDateConverterFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $ils = $container->get('VuFind\ILS\HoldSettings');
+        $ils = $container->get(\VuFind\ILS\HoldSettings::class);
         $extraParams = [$ils->getHoldsMode(), $ils->getTitleHoldsMode()];
         return parent::__invoke($container, $requestedName, $extraParams);
     }

@@ -107,7 +107,7 @@ class Minified
 
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
-        $this->f = $searchObject->getParams()->getFilters();
+        $this->f = $searchObject->getParams()->getRawFilters();
         $this->hf = $searchObject->getParams()->getHiddenFilters();
     }
 

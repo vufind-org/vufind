@@ -1,13 +1,12 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader;
 
+use Laminas\EventManager\Filter\FilterIterator;
 use VuFind\I18n\Translator\Loader\Handler\Action\ActionInterface;
 use VuFind\I18n\Translator\Loader\Handler\Action\InitialAction;
 use VuFind\I18n\Translator\Loader\Handler\HandlerChain;
 use VuFind\I18n\Translator\Loader\Handler\HandlerInterface;
 use VuFind\I18n\Translator\TranslatorRuntimeException;
-use Zend\EventManager\Filter\FilterIterator;
 use Zend\EventManager\FilterChain;
 use Zend\I18n\Translator\TextDomain;
 
@@ -26,8 +25,7 @@ class Loader implements LoaderInterface
     public function attach(HandlerInterface $handler, int $priority = 0)
     {
         $this->filterChain->attach(
-            function (ActionInterface $action, array $args, FilterIterator $filterIterator)
-            use ($handler): \Generator {
+            function (ActionInterface $action, array $args, FilterIterator $filterIterator) use ($handler): \Generator {
                 $chain = new HandlerChain($this->filterChain, $filterIterator);
                 yield from $handler->handle($action, $chain);
             }, $priority);

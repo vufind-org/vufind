@@ -81,6 +81,13 @@ class Solr extends AbstractBase
     protected $batchSize = 1000;
 
     /**
+     * Hierarchy cache file prefix.
+     *
+     * @var string
+     */
+    protected $cachePrefix = null;
+
+    /**
      * Constructor.
      *
      * @param Connector        $connector Solr connector
@@ -192,8 +199,7 @@ class Solr extends AbstractBase
         }
         $map = [$id => []];
         foreach ($records as $current) {
-            $parents = isset($current->hierarchy_parent_id)
-                ? $current->hierarchy_parent_id : [];
+            $parents = $current->hierarchy_parent_id ?? [];
             foreach ($parents as $parentId) {
                 if ($current->id === $parentId) {
                     // Ignore circular reference
@@ -265,7 +271,9 @@ class Solr extends AbstractBase
         $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
-            ? $this->cacheDir . '/' . sprintf($cacheTemplate, urlencode($id))
+            ? $this->cacheDir . '/'
+              . ($this->cachePrefix ? "{$this->cachePrefix}_" : '')
+              . sprintf($cacheTemplate, urlencode($id))
             : false;
 
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;

@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for GetItemStatus AJAX handler.
@@ -38,7 +41,8 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetItemStatusesFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetItemStatusesFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,11 +67,11 @@ class GetItemStatusesFactory implements \Zend\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $container->get('VuFind\ILS\Connection'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
-            $container->get('VuFind\ILS\Logic\Holds')
+            $container->get(\VuFind\ILS\Logic\Holds::class)
         );
     }
 }

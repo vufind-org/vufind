@@ -60,7 +60,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Record factory callback (null for default)
+     * @param callable $recordFactory   Record factory callback (null for default)
      * @param string   $collectionClass Class of collection
      *
      * @return void
@@ -100,7 +100,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['data'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc));
+            $collection->add(call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
     }

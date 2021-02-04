@@ -28,7 +28,10 @@
 namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * ReCaptcha factory.
@@ -61,22 +64,39 @@ class ReCaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $siteKey = isset($config->Captcha->siteKey)
-            ? $config->Captcha->siteKey
-            : (isset($config->Captcha->publicKey)
-                ? $config->Captcha->publicKey
-                : '');
-        $secretKey = isset($config->Captcha->secretKey)
-            ? $config->Captcha->secretKey
-            : (isset($config->Captcha->privateKey)
-                ? $config->Captcha->privateKey
-                : '');
-        $httpClient = $container->get('VuFindHttp\HttpService')->createClient();
-        $translator = $container->get('Zend\Mvc\I18n\Translator');
+
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+
+        $legacySettingsMap = [
+            'publicKey' => 'recaptcha_siteKey',
+            'siteKey' => 'recaptcha_siteKey',
+            'privateKey' => 'recaptcha_secretKey',
+            'secretKey' => 'recaptcha_secretKey',
+            'theme' => 'recaptcha_theme',
+        ];
+
+        $recaptchaConfig = $config->Captcha->toArray();
+        foreach ($legacySettingsMap as $old => $new) {
+            if (isset($recaptchaConfig[$old])) {
+                error_log(
+                    'Deprecated ' . $old . ' setting found in config.ini - '
+                    . 'please use ' . $new . ' instead.'
+                );
+                if (!isset($recaptchaConfig[$new])) {
+                    $recaptchaConfig[$new] = $recaptchaConfig[$old];
+                }
+            }
+        }
+
+        $siteKey = $recaptchaConfig['recaptcha_siteKey'] ?? '';
+        $secretKey = $recaptchaConfig['recaptcha_secretKey'] ?? '';
+        $httpClient = $container->get(\VuFindHttp\HttpService::class)
+            ->createClient();
+        $translator = $container->get(\Laminas\Mvc\I18n\Translator::class);
         $rcOptions = ['lang' => $translator->getLocale()];
-        if (isset($config->Captcha->theme)) {
-            $rcOptions['theme'] = $config->Captcha->theme;
+        if (isset($recaptchaConfig['recaptcha_theme'])) {
+            $rcOptions['theme'] = $recaptchaConfig['recaptcha_theme'];
         }
         return new $requestedName(
             $siteKey, $secretKey, ['ssl' => true], $rcOptions, null, $httpClient

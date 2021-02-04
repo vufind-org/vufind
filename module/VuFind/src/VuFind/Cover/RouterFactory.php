@@ -28,7 +28,10 @@
 namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Cover router factory.
@@ -61,8 +64,16 @@ class RouterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $base = $container->get('ControllerPluginManager')->get('url')
-            ->fromRoute('cover-show');
-        return new $requestedName($base);
+        // Try to get the base URL from the controller plugin; fail over to
+        // the view helper if that doesn't work.
+        try {
+            $base = $container->get('ControllerPluginManager')->get('url')
+                ->fromRoute('cover-show');
+        } catch (\Exception $e) {
+            $base = $container->get('ViewRenderer')->plugin('url')
+                ->__invoke('cover-show');
+        }
+        $coverLoader = $container->get(\VuFind\Cover\Loader::class);
+        return new $requestedName($base, $coverLoader);
     }
 }

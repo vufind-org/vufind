@@ -136,7 +136,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
      * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
      *
-     * @var \Zend\Http\Response\Header\SetCookie[]
+     * @var \Laminas\Http\Response\Header\SetCookie[]
      */
     protected $cookies = false;
 
@@ -251,26 +251,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = (isset($this->config['pickUpLocations']))
             ? $this->config['pickUpLocations'] : false;
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
         $this->holdCheckLimit
-            = isset($this->config['Holds']['holdCheckLimit'])
-            ? $this->config['Holds']['holdCheckLimit'] : '15';
+            = $this->config['Holds']['holdCheckLimit'] ?? '15';
         $this->callSlipCheckLimit
-            = isset($this->config['StorageRetrievalRequests']['checkLimit'])
-            ? $this->config['StorageRetrievalRequests']['checkLimit'] : '15';
+            = $this->config['StorageRetrievalRequests']['checkLimit'] ?? '15';
 
         $this->recallsEnabled
-            = isset($this->config['Holds']['enableRecalls'])
-            ? $this->config['Holds']['enableRecalls'] : true;
+            = $this->config['Holds']['enableRecalls'] ?? true;
 
         $this->itemHoldsEnabled
-            = isset($this->config['Holds']['enableItemHolds'])
-            ? $this->config['Holds']['enableItemHolds'] : true;
+            = $this->config['Holds']['enableItemHolds'] ?? true;
 
         $this->requestGroupsEnabled
             = isset($this->config['Holds']['extraHoldFields'])
@@ -279,31 +273,25 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 explode(':', $this->config['Holds']['extraHoldFields'])
             );
         $this->defaultRequestGroup
-            = isset($this->config['Holds']['defaultRequestGroup'])
-            ? $this->config['Holds']['defaultRequestGroup'] : false;
+            = $this->config['Holds']['defaultRequestGroup'] ?? false;
         if ($this->defaultRequestGroup === 'user-selected') {
             $this->defaultRequestGroup = false;
         }
         $this->pickupLocationsInRequestGroup
-            = isset($this->config['Holds']['pickupLocationsInRequestGroup'])
-            ? $this->config['Holds']['pickupLocationsInRequestGroup'] : false;
+            = $this->config['Holds']['pickupLocationsInRequestGroup'] ?? false;
 
         $this->checkItemsExist
-            = isset($this->config['Holds']['checkItemsExist'])
-            ? $this->config['Holds']['checkItemsExist'] : false;
+            = $this->config['Holds']['checkItemsExist'] ?? false;
         $this->checkItemsNotAvailable
-            = isset($this->config['Holds']['checkItemsNotAvailable'])
-            ? $this->config['Holds']['checkItemsNotAvailable'] : false;
+            = $this->config['Holds']['checkItemsNotAvailable'] ?? false;
         $this->checkLoans
-            = isset($this->config['Holds']['checkLoans'])
-            ? $this->config['Holds']['checkLoans'] : false;
+            = $this->config['Holds']['checkLoans'] ?? false;
         $this->excludedItemLocations
             = isset($this->config['Holds']['excludedItemLocations'])
             ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
             : '';
         $this->allowCancelingAvailableRequests
-            = isset($this->config['Holds']['allowCancelingAvailableRequests'])
-            ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
+            = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
     }
 
     /**
@@ -749,8 +737,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($pickResponse) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -1056,8 +1043,7 @@ EOT;
         }
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
         // Attach XML if necessary
@@ -1166,12 +1152,11 @@ EOT;
      */
     protected function extractBlockReasons($borrowBlocks)
     {
-        $whitelistConfig = isset($this->config['Patron']['ignoredBlockCodes'])
-            ? $this->config['Patron']['ignoredBlockCodes'] : '';
-        $whitelist = array_map('trim', explode(',', $whitelistConfig));
+        $ignoredConfig = $this->config['Patron']['ignoredBlockCodes'] ?? '';
+        $ignored = array_map('trim', explode(',', $ignoredConfig));
         $blockReason = [];
         foreach ($borrowBlocks as $borrowBlock) {
-            if (!in_array((string)$borrowBlock->blockCode, $whitelist)) {
+            if (!in_array((string)$borrowBlock->blockCode, $ignored)) {
                 $blockReason[] = (string)$borrowBlock->blockReason;
             }
         }
@@ -1247,18 +1232,6 @@ EOT;
         }
         return empty($blockReason) ? false : $blockReason;
     }
-
-    /**
-     * Renew My Items
-     *
-     * Function for attempting to renew a patron's items.  The data in
-     * $renewDetails['details'] is determined by getRenewDetails().
-     *
-     * @param array $renewDetails An array of data required for renewing items
-     * including the Patron ID and an array of renewal IDS
-     *
-     * @return array              An array of renewal information keyed by item ID
-     */
 
     /**
      * Renew My Items
@@ -1507,7 +1480,7 @@ EOT;
         }
 
         // Build request
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
   xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -1973,7 +1946,7 @@ EOT;
         }
 
         try {
-            $checkTime =  $this->dateFormat->convertFromDisplayDate(
+            $checkTime = $this->dateFormat->convertFromDisplayDate(
                 'U', $holdDetails['requiredBy']
             );
             if (!is_numeric($checkTime)) {
@@ -2391,7 +2364,7 @@ EOT;
 
         $replyCode = (string)$results->{'reply-code'};
         if ($replyCode != 0 && $replyCode != 8) {
-            throw new Exception('System error fetching call slips');
+            throw new \Exception('System error fetching call slips');
         }
         $requests = [];
         if (isset($results->callslips->institution)) {
@@ -2658,7 +2631,7 @@ EOT;
             return $data;
         }
 
-        if (strstr($patron['id'], '.') === false) {
+        if (strpos($patron['id'], '.') === false) {
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );
@@ -2734,7 +2707,7 @@ EOT;
             return false;
         }
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -2943,7 +2916,7 @@ EOT;
         $barcode = $this->encodeXML($catUsername);
         $pickupLib = $this->encodeXML($pickupLib);
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -3056,7 +3029,7 @@ EOT;
         }
 
         // Attempt Request
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
@@ -3313,7 +3286,7 @@ EOT;
         }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
-        $xml =  <<<EOT
+        $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <ser:serviceParameters
 xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">

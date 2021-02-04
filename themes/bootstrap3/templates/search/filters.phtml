@@ -1,0 +1,150 @@
+<?php
+  if (!isset($this->params)) {
+    // No current search, use last search in memory
+    $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+  } else {
+    // clone params so that the manipulation doesn't cause trouble e.g. for facets
+    $params = clone $this->params;
+  }
+
+  $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+  $options = $this->searchOptions($this->searchClassId);
+  $hasDefaultsApplied = $params->hasDefaultsApplied();
+  $filterCount = $this->searchbox()->getFilterCount($this->checkboxFilters, $this->filterList);
+
+  // Determine whether the only filters applied are the default ones; this controls
+  // when we display or hide the reset button:
+  $defaultFilters = $options->getDefaultFilters();
+  $onlyDefaultsApplied = count($defaultFilters) == $filterCount;
+  foreach ($defaultFilters as $currentDefault) {
+    if (!$params->hasFilter($currentDefault)) {
+      $onlyDefaultsApplied = false;
+      break;
+    }
+  }
+
+  $advancedSearch = $this->searchType === 'advanced';
+?>
+<?php ob_start(); ?>
+  <?php foreach ($this->checkboxFilters as $filter): ?>
+    <?php if ($filter['selected']): ?>
+      <span class="filter-value">
+        <?php
+          $removeLink = isset($urlQuery)
+            ? $urlQuery->removeFilter($filter['filter'])
+            : $this->searchMemory()->getEditLink(
+              $this->searchClassId, 'removeFilter', $filter['filter']
+            );
+          $desc = $this->translate($filter['desc']);
+          $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
+        ?>
+        <?=$desc?>
+        <?php if($removeLink): ?>
+          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><!--icon from css --></a>
+        <?php endif; ?>
+      </span>
+    <?php endif ?>
+  <?php endforeach; ?>
+
+  <?php foreach ($filterList as $field => $data): ?>
+    <div class="title-value-pair">
+      <span class="filters-title"><?=$this->transEsc($field)?>:</span>
+      <?php if (count($data) > 3): ?>
+        <div class="search-filter-dropdown dropdown">
+          <?php $dropdown = true; ?>
+          <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
+          <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => count($data)])?>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-toggle-<?=$safeId?>">
+      <?php else: ?>
+        <?php $dropdown = false; ?>
+      <?php endif; ?>
+      <?php foreach ($data as $index => $value): ?>
+        <?php if ($dropdown): ?>
+          <li>
+        <?php endif; ?>
+        <?php
+          switch ($value['operator']) {
+          case 'NOT':
+            $operatorChar = '-';
+            $join = $this->transEsc('NOT');
+            break;
+          case 'OR':
+            $operatorChar = '~';
+            $join = $this->transEsc('OR');
+            break;
+          case 'AND':
+            $operatorChar = '';
+            $join = $this->transEsc('AND');
+            break;
+          default:
+            $operatorChar = $join = '';
+          }
+          $operatorClass = $this->escapeHtmlAttr(strtolower($value['operator']));
+        ?>
+        <span class="filters-term filters-<?=$operatorClass?>">
+          <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
+        </span>
+        <span class="filter-value filters-<?=$operatorClass?>">
+          <span class="text">
+            <?=$this->escapeHtml($value['displayText'])?>
+          </span>
+          <?php
+            $removeLink = isset($this->urlQuery)
+              ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
+              : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
+          ?>
+          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
+        </span>
+        <?php if ($dropdown): ?>
+          </li>
+        <?php endif; ?>
+      <?php endforeach; ?>
+      <?php if ($dropdown): ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+    </div>
+  <?php endforeach; ?>
+<?php $filters = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+
+<?php if ($hasDefaultsApplied || $filterCount > 0): ?>
+  <?php
+    $resetLink = null;
+    if (!$onlyDefaultsApplied) {
+      $resetLink = isset($urlQuery)
+        ? $urlQuery->removeAllFilters()->resetDefaultFilters()
+        : $this->searchMemory()->getEditLink($this->searchClassId, 'removeAllFilters', 1);
+    }
+  ?>
+  <?php // Normal view ?>
+  <div class="active-filters hidden-xs">
+    <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+      <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+    <?php elseif ($advancedSearch): ?>
+      <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
+    <?php endif; ?>
+    <div class="filters">
+      <?=$filters ?>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <?php // Narrow view ?>
+  <div class="active-filters visible-xs">
+    <div class="filters-toggle-bar">
+      <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
+        <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
+      <?php endif; ?>
+      <div class="filters-toggle collapsed" data-toggle="collapse" data-target="#active-filters-mobile">
+        <?=$this->transEsc('show_filters_html', ['%%count%%' => $filterCount])?>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div id="active-filters-mobile" class="filters filters-bar collapse">
+      <?=$filters ?>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+<?php endif; ?>

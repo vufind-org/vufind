@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordLink extends \Zend\View\Helper\AbstractHelper
+class RecordLink extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Record router
@@ -180,15 +180,18 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
      * representing record to link to, or source|id pipe-delimited string
      * @param string                                   $tab    Optional record
      * tab to access
+     * @param array                                    $query  Optional query params
      *
      * @return string
      */
-    public function getTabUrl($driver, $tab = null)
+    public function getTabUrl($driver, $tab = null, $query = [])
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = $this->router->getTabRouteDetails($driver, $tab);
-        return $urlHelper($details['route'], $details['params']);
+        $details = $this->router->getTabRouteDetails($driver, $tab, $query);
+        return $urlHelper(
+            $details['route'], $details['params'], $details['options'] ?? []
+        );
     }
 
     /**
@@ -242,6 +245,32 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Return search URL for all versions
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return string
+     */
+    public function getVersionsSearchUrl($driver)
+    {
+        $route = $this->getVersionsActionForSource($driver->getSourceIdentifier());
+        if (false === $route) {
+            return '';
+        }
+
+        $urlParams = [
+            'id' => $driver->getUniqueID(),
+            'keys' => $driver->tryMethod('getWorkKeys', [], [])
+        ];
+
+        $urlHelper = $this->getView()->plugin('url');
+        $url = $urlHelper($route, [], ['query' => $urlParams]);
+        // Make sure everything is properly HTML encoded:
+        $escaper = $this->getView()->plugin('escapehtml');
+        return $escaper($url);
+    }
+
+    /**
      * Given a record source ID, return the route name for searching its backend.
      *
      * @param string $source Record source identifier.
@@ -252,5 +281,19 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
         return $optionsHelper->__invoke($source)->getSearchAction();
+    }
+
+    /**
+     * Given a record source ID, return the route name for version search with its
+     * backend.
+     *
+     * @param string $source Record source identifier.
+     *
+     * @return string|bool
+     */
+    protected function getVersionsActionForSource($source)
+    {
+        $optionsHelper = $this->getView()->plugin('searchOptions');
+        return $optionsHelper->__invoke($source)->getVersionsAction();
     }
 }

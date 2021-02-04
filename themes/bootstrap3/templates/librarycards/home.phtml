@@ -36,12 +36,12 @@
         <td><?=$this->escapeHtml($username)?></td>
         <td>
           <div class="btn-group">
-            <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEsc('Edit Library Card')?>"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Edit')?></a>
+            <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Edit')?></a>
             <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
               <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc('Delete')?>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+              <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1" data-clear-account-cache><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>

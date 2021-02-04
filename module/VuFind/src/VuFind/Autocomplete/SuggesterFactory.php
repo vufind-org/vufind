@@ -28,6 +28,9 @@
 namespace VuFind\Autocomplete;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for autocomplete suggester.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SuggesterFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SuggesterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -60,9 +63,9 @@ class SuggesterFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Autocomplete\PluginManager'),
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Search\Options\PluginManager')
+            $container->get(\VuFind\Autocomplete\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Search\Options\PluginManager::class)
         );
     }
 }

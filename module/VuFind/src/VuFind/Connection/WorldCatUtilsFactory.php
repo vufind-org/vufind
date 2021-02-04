@@ -28,7 +28,10 @@
 namespace VuFind\Connection;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * WorldCat utils factory.
@@ -61,11 +64,12 @@ class WorldCatUtilsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
-        $client = $container->get('VuFindHttp\HttpService')->createClient();
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         $ip = $container->get('Request')->getServer()->get('SERVER_ADDR');
         return new $requestedName(
-            isset($config->WorldCat) ? $config->WorldCat : null,
+            $config->WorldCat ?? null,
             $client, true, $ip
         );
     }

@@ -20,7 +20,7 @@
   <div class="media-body">
     <div class="result-body">
       <div>
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
       </div>
@@ -32,7 +32,7 @@
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <?=$this->transEsc('by')?>
             <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
             <?php endforeach; ?>
           <?php endif; ?>
 
@@ -53,7 +53,7 @@
             <?php foreach ($summInCollection as $collId => $collText): ?>
               <div>
                 <b><?=$this->transEsc("in_collection_label")?></b>
-                <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
               </div>
@@ -65,7 +65,7 @@
       <?php if(!$this->driver->isCollection()): ?>
         <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
           <?php if (!empty($snippet['caption'])): ?>
-            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
+            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
           <?php endif; ?>
           <?php if (!empty($snippet['snippet'])): ?>
             <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
@@ -97,6 +97,10 @@
         </div>
       <?php endif; ?>
 
+      <?php if ($this->driver->tryMethod('getWorkKeys') && $this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
+        <div class="record-versions ajax"></div>
+      <?php endif; ?>
+
       <div class="callnumAndLocation ajax-availability hidden">
         <?php if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
@@ -115,10 +119,8 @@
         <?php endif; ?>
       </div>
 
-      <?php /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
-            but even if we don't plan to display the link, we still want to get the $openUrl
-            value for use in generating a COinS (Z3988) tag -- see bottom of file.
-          */
+      <?php
+        // Display an OpenURL link if configured to do so:
         $openUrl = $this->openUrl($this->driver, 'results');
         $openUrlActive = $openUrl->isActive();
         $doi = $this->doi($this->driver, 'results');
@@ -168,21 +170,23 @@
           <i class="fa fa-fw fa-qrcode" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
           <div class="qrcode hidden">
             <script type="text/template" class="qrCodeImgTag">
-              <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+              <img alt="<?=$this->transEscAttr('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
             </script>
           </div><br/>
         </span>
       <?php endif; ?>
 
-      <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+      <?php if ($this->cart()->isActiveInSearch() && isset($this->params) && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
         <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
       <?php endif; ?>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
           <?php /* Add to favorites */ ?>
-          <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
-          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record result-link-label" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+            <i class="result-link-icon fa fa-fw fa-star" aria-hidden="true"></i>
+            <span class="result-link-label"><?=$this->transEsc('Add to favorites')?></span>
+          </a><br/>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
         <?php endif; ?>
@@ -198,7 +202,7 @@
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
             <i class="result-link-icon fa fa-fw fa-sitemap" aria-hidden="true"></i>
-            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab')?>?hierarchy=<?=urlencode($hierarchyID)?>" data-lightbox-post="tab=hierarchytree">
+            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID])?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->recordLink()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID])?>" data-lightbox-post="tab=hierarchytree">
               <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
             </a>
           </div>

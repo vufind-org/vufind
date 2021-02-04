@@ -27,6 +27,7 @@
  */
 namespace VuFind\Search\Base;
 
+use Laminas\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -227,6 +228,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteEnabled = false;
 
     /**
+     * Autocomplete auto submit setting
+     *
+     * @var bool
+     */
+    protected $autocompleteAutoSubmit = true;
+
+    /**
      * Configuration file to read global settings from
      *
      * @var string
@@ -284,6 +292,20 @@ abstract class Options implements TranslatorAwareInterface
     {
         $this->limitOptions = [$this->defaultLimit];
         $this->setConfigLoader($configLoader);
+
+        $id = $this->getSearchClassId();
+        $facetSettings = $configLoader->get($this->facetsIni);
+        if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
+            foreach ($facetSettings->AvailableFacetSortOptions[$id]->toArray()
+                     as $facet => $sortOptions
+            ) {
+                $this->facetSortOptions[$facet] = [];
+                foreach (explode(',', $sortOptions) as $fieldAndLabel) {
+                    list($field, $label) = explode('=', $fieldAndLabel);
+                    $this->facetSortOptions[$facet][$field] = $label;
+                }
+            }
+        }
     }
 
     /**
@@ -364,8 +386,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getLabelForBasicHandler($handler)
     {
-        return isset($this->basicHandlers[$handler])
-            ? $this->basicHandlers[$handler] : false;
+        return $this->basicHandlers[$handler] ?? false;
     }
 
     /**
@@ -465,13 +486,15 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get an array of sort options for facets.
+     * Get an array of sort options for a facet.
+     *
+     * @param string $facet Facet
      *
      * @return array
      */
-    public function getFacetSortOptions()
+    public function getFacetSortOptions($facet = '*')
     {
-        return $this->facetSortOptions;
+        return $this->facetSortOptions[$facet] ?? $this->facetSortOptions['*'] ?? [];
     }
 
     /**
@@ -641,8 +664,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getTextDomainForTranslatedFacet($field)
     {
-        return isset($this->translatedFacetsTextDomains[$field])
-            ? $this->translatedFacetsTextDomains[$field] : 'default';
+        return $this->translatedFacetsTextDomains[$field] ?? 'default';
     }
 
     /**
@@ -710,6 +732,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Should autocomplete auto submit?
+     *
+     * @return bool
+     */
+    public function autocompleteAutoSubmit()
+    {
+        return $this->autocompleteAutoSubmit;
+    }
+
+    /**
      * Get a string of the listviewOption (full or tab).
      *
      * @return string
@@ -758,6 +790,17 @@ abstract class Options implements TranslatorAwareInterface
      * @return string|bool
      */
     public function getFacetListAction()
+    {
+        return false;
+    }
+
+    /**
+     * Return the route name for the versions search action. Returns false to cover
+     * unimplemented support.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
     {
         return false;
     }
@@ -843,6 +886,24 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Load all API-related settings from the relevant ini file(s).
+     *
+     * @return array
+     */
+    public function getAPISettings()
+    {
+        // Inherit defaults from searches.ini (if that is not already the
+        // configured search settings file):
+        $defaultConfig = $this->configLoader->get('searches')->API;
+        $defaultSettings = $defaultConfig ? $defaultConfig->toArray() : [];
+        $localIni = $this->getSearchIni();
+        $localConfig = ($localIni !== 'searches')
+            ? $this->configLoader->get($localIni)->API : null;
+        $localSettings = $localConfig ? $localConfig->toArray() : [];
+        return array_merge($defaultSettings, $localSettings);
+    }
+
+    /**
      * Load all recommendation settings from the relevant ini file.  Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
@@ -920,5 +981,49 @@ abstract class Options implements TranslatorAwareInterface
     public function supportsFirstLastNavigation()
     {
         return $this->firstlastNavigation;
+    }
+
+    /**
+     * Does this search backend support scheduled searching?
+     *
+     * @return bool
+     */
+    public function supportsScheduledSearch()
+    {
+        // Unsupported by default!
+        return false;
+    }
+
+    /**
+     * Configure autocomplete preferences from an .ini file.
+     *
+     * @param Config $searchSettings Object representation of .ini file
+     *
+     * @return void
+     */
+    protected function configureAutocomplete(Config $searchSettings = null)
+    {
+        // Only change settings from current values if they are defined in .ini:
+        $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled
+            ?? $this->autocompleteEnabled;
+        $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
+            ?? $this->autocompleteAutoSubmit;
+    }
+
+    /**
+     * Get advanced search limits that override the natural sorting to
+     * display at the top.
+     *
+     * @param string $limit advanced search limit
+     *
+     * @return array
+     */
+    public function limitOrderOverride($limit)
+    {
+        $facetSettings = $this->configLoader->get($this->getFacetsIni());
+        $limits = $facetSettings->Advanced_Settings->limitOrderOverride ?? null;
+        $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
+        $limitConf = $limits ? $limits->get($limit) : '';
+        return array_map('trim', explode($delimiter, $limitConf));
     }
 }

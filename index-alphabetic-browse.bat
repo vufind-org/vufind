@@ -12,7 +12,7 @@ goto end
 rem ##################################################
 rem # Set SOLR_HOME
 rem ##################################################
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 rem VUFIND_HOME not set -- try to call env.bat to 
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
@@ -25,22 +25,22 @@ set VUFIND_HOME=%VUFIND_HOME:~0,-1%
 goto vufindhomefound
 :useenvbat
 call env > nul
-if not (!%VUFIND_HOME%!)==(!!) goto vufindhomefound
+if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 echo You need to set the VUFIND_HOME environmental variable before running this script.
 goto end
 :vufindhomefound
-if not (!%SOLR_HOME%!)==(!!) goto solrhomefound
+if not "!%SOLR_HOME%!"=="!!" goto solrhomefound
 set SOLR_HOME=%VUFIND_HOME%\solr\vufind
 :solrhomefound
 
 rem #####################################################
 rem # Build java command
 rem #####################################################
-if not (!%JAVA_HOME%!)==(!!) goto javahomefound
+if not "!%JAVA_HOME%!"=="!!" goto javahomefound
 set JAVA=java
 goto javaset
 :javahomefound
-set JAVA=%JAVA_HOME%\bin\java
+set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
 cd %VUFIND_HOME%\import
@@ -91,7 +91,7 @@ set args="%bib_index%" "%field%" "%auth_index%" "%browse%.tmp"
 :skipauth
 
 rem Extract lines from Solr
-java %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
+%JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
 
 rem Sort lines
 sort %browse%.tmp /o sorted-%browse%.tmp /rec 65535
@@ -100,7 +100,7 @@ rem Remove duplicate lines
 php %VUFIND_HOME%\util\dedupe.php "sorted-%browse%.tmp" "unique-%browse%.tmp"
 
 rem Build database file
-java -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
+%JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
 
 del /q *.tmp > nul
 

@@ -29,13 +29,13 @@
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+
+use Laminas\Http\Client as HttpClient;
 use PHPUnit\Framework\TestCase;
 
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
-
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for SOLR connector.
@@ -48,6 +48,8 @@ use Zend\Http\Client as HttpClient;
  */
 class ConnectorTest extends TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Current response.
      *
@@ -64,7 +66,7 @@ class ConnectorTest extends TestCase
     {
         $conn = $this->createConnector('single-record');
         $resp = $conn->retrieve('id');
-        $this->assertInternalType('string', $resp);
+        $this->assertIsString($resp);
         json_decode($resp, true);
         $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
     }
@@ -78,19 +80,19 @@ class ConnectorTest extends TestCase
     {
         $conn = $this->createConnector('no-match');
         $resp = $conn->retrieve('id');
-        $this->assertInternalType('string', $resp);
+        $this->assertIsString($resp);
     }
 
     /**
      * Test RemoteErrorException is thrown on a remote 5xx error.
      *
      * @return void
-     *
-     * @expectedException     VuFindSearch\Backend\Exception\RemoteErrorException
-     * @expectedExceptionCode 500
      */
     public function testInternalServerError()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\RemoteErrorException::class);
+        $this->expectExceptionCode(500);
+
         $conn = $this->createConnector('internal-server-error');
         $resp = $conn->retrieve('id');
     }
@@ -99,12 +101,12 @@ class ConnectorTest extends TestCase
      * Test RequestErrorException is thrown on a remote 4xx error.
      *
      * @return void
-     *
-     * @expectedException     VuFindSearch\Backend\Exception\RequestErrorException
-     * @expectedExceptionCode 400
      */
     public function testBadRequestError()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\RequestErrorException::class);
+        $this->expectExceptionCode(400);
+
         $conn = $this->createConnector('bad-request');
         $resp = $conn->retrieve('id');
     }
@@ -113,12 +115,12 @@ class ConnectorTest extends TestCase
      * Test InvalidArgumentException invalid adapter object.
      *
      * @return void
-     *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage AdapterInterface
      */
     public function testSetAdapterThrowsInvalidObject()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('AdapterInterface');
+
         $conn = $this->createConnector('single-record');
         $conn->setAdapter($this);
     }
@@ -127,14 +129,14 @@ class ConnectorTest extends TestCase
      * Test InvalidArgumentException unknown serialization format.
      *
      * @return void
-     *
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Unable to serialize
      */
     public function testSaveThrowsUnknownFormat()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unable to serialize');
+
         $conn = $this->createConnector();
-        $document = $this->createMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
+        $document = $this->createMock(\VuFindSearch\Backend\Solr\Document\UpdateDocument::class);
         $conn->write($document, 'unknown', 'update');
     }
 
@@ -176,11 +178,8 @@ class ConnectorTest extends TestCase
     protected function createConnector($fixture = null)
     {
         if ($fixture) {
-            $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-            }
-            $this->response = file_get_contents($file);
+            $this->response
+                = $this->getFixture("solr/response/$fixture", 'VuFindSearch');
         }
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);

@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Auth helper factory.
@@ -62,8 +65,8 @@ class AuthFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Auth\Manager'),
-            $container->get('VuFind\Auth\ILSAuthenticator')
+            $container->get(\VuFind\Auth\Manager::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }
 }

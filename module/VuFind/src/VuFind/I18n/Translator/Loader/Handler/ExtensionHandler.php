@@ -1,11 +1,10 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
 
+use Laminas\Uri\Uri;
 use VuFind\I18n\Translator\Loader\Handler\Action\ActionInterface;
 use VuFind\I18n\Translator\Loader\Handler\Action\FileAction;
 use VuFind\I18n\Translator\TranslatorRuntimeException;
-use Zend\Uri\Uri;
 
 class ExtensionHandler implements HandlerInterface
 {

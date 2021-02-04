@@ -28,6 +28,11 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+
+use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
  * Factory for Recommend AJAX handler.
@@ -38,7 +43,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecommendFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class RecommendFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,9 +68,9 @@ class RecommendFactory implements \Zend\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\Recommend\PluginManager'),
-            $container->get('VuFind\Search\Results\PluginManager')->get('Solr'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\Recommend\PluginManager::class),
+            $container->get(ResultsManager::class)->get('Solr'),
             $container->get('ViewRenderer')
         );
     }

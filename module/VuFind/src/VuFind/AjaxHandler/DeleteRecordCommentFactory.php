@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for DeleteRecordComment AJAX handler.
@@ -39,7 +42,7 @@ use Interop\Container\ContainerInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class DeleteRecordCommentFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,11 +66,11 @@ class DeleteRecordCommentFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
-        $capabilities = $container->get('VuFind\Config\AccountCapabilities');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $tablePluginManager->get('VuFind\Db\Table\Comments'),
-            $container->get('VuFind\Auth\Manager')->isLoggedIn(),
+            $tablePluginManager->get(\VuFind\Db\Table\Comments::class),
+            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $capabilities->getCommentSetting() !== 'disabled'
         );
     }

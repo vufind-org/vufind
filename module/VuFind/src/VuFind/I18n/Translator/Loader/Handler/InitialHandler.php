@@ -1,7 +1,5 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
-
 
 use VuFind\I18n\Translator\Loader\Handler\Action\ActionInterface;
 use VuFind\I18n\Translator\Loader\Handler\Action\InitialAction;
@@ -30,7 +28,7 @@ class InitialHandler implements HandlerInterface
             yield from $chain->head($localeAction);
         }
     }
-    
+
     protected function getBaseLocale(string $locale)
     {
         $parts = array_slice(array_reverse(explode('-', $locale)), 1);

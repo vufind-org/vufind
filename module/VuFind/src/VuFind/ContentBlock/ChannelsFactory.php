@@ -28,7 +28,10 @@
 namespace VuFind\ContentBlock;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Channels factory.
@@ -63,7 +66,7 @@ class ChannelsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get('Request'),
-            $container->get('VuFind\ChannelProvider\ChannelLoader')
+            $container->get(\VuFind\ChannelProvider\ChannelLoader::class)
         );
     }
 }

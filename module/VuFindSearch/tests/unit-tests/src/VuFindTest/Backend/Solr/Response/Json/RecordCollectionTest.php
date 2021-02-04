@@ -66,6 +66,29 @@ class RecordCollectionTest extends TestCase
     }
 
     /**
+     * Test that the object returns appropriate defaults when given a null response
+     * element.
+     *
+     * @return void
+     */
+    public function testDefaultsWithNullResponse()
+    {
+        $coll = new RecordCollection(['response' => null]);
+        $this->assertEquals(
+            'VuFindSearch\Backend\Solr\Response\Json\Spellcheck',
+            get_class($coll->getSpellcheck())
+        );
+        $this->assertEquals(0, $coll->getTotal());
+        $this->assertEquals(
+            'VuFindSearch\Backend\Solr\Response\Json\Facets',
+            get_class($coll->getFacets())
+        );
+        $this->assertEquals([], $coll->getGroups());
+        $this->assertEquals([], $coll->getHighlighting());
+        $this->assertEquals(0, $coll->getOffset());
+    }
+
+    /**
      * Test that the object handles offsets properly.
      *
      * @return void
@@ -78,7 +101,7 @@ class RecordCollectionTest extends TestCase
             ]
         );
         for ($i = 0; $i < 5; $i++) {
-            $coll->add($this->createMock('VuFindSearch\Response\RecordInterface'));
+            $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
         }
         $coll->rewind();
         $this->assertEquals(5, $coll->key());
@@ -191,5 +214,29 @@ class RecordCollectionTest extends TestCase
         $this->assertTrue(in_array($r1, $final));
         $this->assertTrue(in_array($r2, $final));
         $this->assertTrue(in_array($r3, $final));
+    }
+
+    /**
+     * Test that the object handles offsets properly.
+     *
+     * @return void
+     */
+    public function testAdd()
+    {
+        $coll = new RecordCollection(
+            [
+                'response' => ['numFound' => 10, 'start' => 5]
+            ]
+        );
+        $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
+        $coll->add($record);
+        for ($i = 0; $i < 4; $i++) {
+            $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
+        }
+        $this->assertEquals(5, $coll->count());
+        $coll->add($record);
+        $this->assertEquals(5, $coll->count());
+        $coll->add($record, false);
+        $this->assertEquals(6, $coll->count());
     }
 }

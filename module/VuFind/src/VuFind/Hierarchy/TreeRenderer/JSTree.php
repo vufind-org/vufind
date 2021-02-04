@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
+
 /**
  * Hierarchy Tree Renderer
  *
@@ -46,7 +48,7 @@ class JSTree extends AbstractBase
     /**
      * Router plugin
      *
-     * @var \Zend\Mvc\Controller\Plugin\Url
+     * @var UrlPlugin
      */
     protected $router = null;
 
@@ -60,14 +62,13 @@ class JSTree extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Mvc\Controller\Plugin\Url $router             Router plugin for
+     * @param UrlPlugin $router             Router plugin for
      * urls
-     * @param bool                            $collectionsEnabled Whether the
-     * collections functionality is enabled
+     * @param bool      $collectionsEnabled Whether the collections functionality is
+     * enabled
      */
-    public function __construct(\Zend\Mvc\Controller\Plugin\Url $router,
-        $collectionsEnabled
-    ) {
+    public function __construct(UrlPlugin $router, $collectionsEnabled)
+    {
         $this->router = $router;
         $this->collectionsEnabled = $collectionsEnabled;
     }
@@ -179,7 +180,7 @@ class JSTree extends AbstractBase
      */
     protected function buildNodeArray($node, $context, $hierarchyID)
     {
-        $escaper = new \Zend\Escaper\Escaper('utf-8');
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
         $ret = [
             'id' => preg_replace('/\W/', '-', $node->id),
             'text' => $escaper->escapeHtml($node->title),
@@ -249,9 +250,28 @@ class JSTree extends AbstractBase
                     'recordID' => '__record_id__'
                 ]
             ];
-            $cache[$route] = $this->router->fromRoute($route, $params, $options);
+            $cache[$route] = $this->router->fromRoute(
+                $this->getRouteNameFromDataSource($route), $params, $options
+            );
         }
         return str_replace('__record_id__', urlencode($id), $cache[$route]);
+    }
+
+    /**
+     * Get route name from data source.
+     *
+     * @param string $route Route
+     *
+     * @return string
+     */
+    protected function getRouteNameFromDataSource($route)
+    {
+        if ($route === 'collection') {
+            return $this->getDataSource()->getCollectionRoute();
+        } elseif ($route === 'record') {
+            return $this->getDataSource()->getRecordRoute();
+        }
+        return $route;
     }
 
     /**
@@ -266,7 +286,7 @@ class JSTree extends AbstractBase
      */
     protected function jsonToHTML($node, $context, $hierarchyID, $recordID = false)
     {
-        $escaper = new \Zend\Escaper\Escaper('utf-8');
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
 
         $name = strlen($node->title) > 100
             ? substr($node->title, 0, 100) . '...'

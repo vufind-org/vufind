@@ -28,7 +28,10 @@
 namespace VuFind\Solr;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Solr writer factory.
@@ -61,9 +64,10 @@ class WriterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $changeTracker = $container->get(\VuFind\Db\Table\PluginManager::class)
+            ->get('changetracker');
         return new $requestedName(
-            $container->get('VuFind\Search\BackendManager'),
-            $container->get('VuFind\Db\Table\PluginManager')->get('changetracker')
+            $container->get(\VuFind\Search\BackendManager::class), $changeTracker
         );
     }
 }

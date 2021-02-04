@@ -28,10 +28,11 @@
  */
 namespace VuFindSearch\Backend\EIT;
 
+use Laminas\Http\Client;
+use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-use VuFindSearch\ParamBag;
 
-use Zend\Http\Request;
+use VuFindSearch\ParamBag;
 
 /**
  * Central class for connecting to EIT resources used by VuFind.
@@ -42,7 +43,7 @@ use Zend\Http\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
-class Connector implements \Zend\Log\LoggerAwareInterface
+class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -56,7 +57,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * The HTTP_Request object used for REST transactions
      *
-     * @var \Zend\Http\Client
+     * @var Client
      */
     protected $client;
 
@@ -84,13 +85,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string            $base   Base URL
-     * @param \Zend\Http\Client $client HTTP client
-     * @param string            $prof   Profile
-     * @param string            $pwd    Password
-     * @param string            $dbs    Database list (comma-separated abbrevs.)
+     * @param string $base   Base URL
+     * @param Client $client HTTP client
+     * @param string $prof   Profile
+     * @param string $pwd    Password
+     * @param string $dbs    Database list (comma-separated abbrevs.)
      */
-    public function __construct($base, \Zend\Http\Client $client, $prof, $pwd, $dbs)
+    public function __construct($base, Client $client, $prof, $pwd, $dbs)
     {
         $this->base = $base;
         $this->client = $client;
@@ -131,7 +132,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     /**
      * Check for HTTP errors in a response.
      *
-     * @param \Zend\Http\Response $result The response to check.
+     * @param \Laminas\Http\Response $result The response to check.
      *
      * @throws BackendException
      * @return void

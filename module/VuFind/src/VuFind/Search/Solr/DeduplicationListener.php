@@ -3,10 +3,13 @@
 /**
  * Solr deduplication (merged records) listener.
  *
+ * See https://vufind.org/wiki/indexing:deduplication for details on how this is
+ * used.
+ *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013.
+ * Copyright (C) The National Library of Finland 2013-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,11 +33,11 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Backend\BackendInterface;
+use Laminas\EventManager\EventInterface;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Backend\BackendInterface;
 
 /**
  * Solr merged record handling listener.
@@ -134,10 +137,13 @@ class DeduplicationListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             $context = $event->getParam('context');
-            if (($context == 'search' || $context == 'similar') && $params) {
+            $contexts = ['search', 'similar', 'getids', 'workExpressions'];
+            if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
-                if ($this->enabled) {
+                if ($this->enabled && 'getids' !== $context
+                    && !$this->hasChildFilter($params)
+                ) {
                     $fq = '-merged_child_boolean:true';
                     if ($context == 'similar' && $id = $event->getParam('id')) {
                         $fq .= ' AND -local_ids_str_mv:"'
@@ -150,6 +156,19 @@ class DeduplicationListener
             }
         }
         return $event;
+    }
+
+    /**
+     * Check search parameters for child records filter
+     *
+     * @param array|ArrayAccess $params Search parameters
+     *
+     * @return bool
+     */
+    public function hasChildFilter($params)
+    {
+        $filters = $params->get('fq');
+        return $filters != null && in_array('merged_child_boolean:true', $filters);
     }
 
     /**
@@ -168,7 +187,8 @@ class DeduplicationListener
             return $event;
         }
         $context = $event->getParam('context');
-        if ($this->enabled && ($context == 'search' || $context == 'similar')) {
+        $contexts = ['search', 'similar', 'workExpressions'];
+        if ($this->enabled && in_array($context, $contexts)) {
             $this->fetchLocalRecords($event);
         }
         return $event;
@@ -183,7 +203,7 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords($event)
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager');
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
         $searchConfig = $config->get($this->searchConfig);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
         $recordSources = !empty($searchConfig->Records->sources)

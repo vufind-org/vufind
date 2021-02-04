@@ -28,7 +28,10 @@
 namespace VuFind\Role;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Permission manager factory.
@@ -61,11 +64,11 @@ class PermissionManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $permissions = $container->get('VuFind\Config\PluginManager')
+        $permissions = $container->get(\VuFind\Config\PluginManager::class)
             ->get('permissions')->toArray();
         $permManager = new $requestedName($permissions);
         $permManager->setAuthorizationService(
-            $container->get('ZfcRbac\Service\AuthorizationService')
+            $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $permManager;
     }

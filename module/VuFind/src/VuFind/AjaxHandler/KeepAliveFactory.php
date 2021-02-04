@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for KeepAlive AJAX handler.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class KeepAliveFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class KeepAliveFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,6 +65,8 @@ class KeepAliveFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get('Zend\Session\SessionManager'));
+        return new $requestedName(
+            $container->get(\Laminas\Session\SessionManager::class)
+        );
     }
 }

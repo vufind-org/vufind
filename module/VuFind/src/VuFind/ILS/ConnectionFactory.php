@@ -28,7 +28,10 @@
 namespace VuFind\ILS;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * ILS connection factory
@@ -61,11 +64,16 @@ class ConnectionFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $request = $container->get('Request');
         $catalog = new $requestedName(
-            $container->get('VuFind\Config\PluginManager')->get('config')->Catalog,
-            $container->get('VuFind\ILS\Driver\PluginManager'),
-            $container->get('VuFind\Config\PluginManager')
+            $configManager->get('config')->Catalog,
+            $container->get(\VuFind\ILS\Driver\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            $request instanceof \Laminas\Http\Request ? $request : null
         );
-        return $catalog->setHoldConfig($container->get('VuFind\ILS\HoldSettings'));
+        return $catalog->setHoldConfig(
+            $container->get(\VuFind\ILS\HoldSettings::class)
+        );
     }
 }

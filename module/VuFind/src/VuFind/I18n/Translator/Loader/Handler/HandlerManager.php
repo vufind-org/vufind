@@ -1,9 +1,8 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
 
-use Zend\ServiceManager\AbstractPluginManager;
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\AbstractPluginManager;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 class HandlerManager extends AbstractPluginManager
 {

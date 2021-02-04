@@ -28,7 +28,10 @@
 namespace VuFind\Connection;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Relais factory.
@@ -61,9 +64,11 @@ class RelaisFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         $url = $config->Relais->authenticateurl ?? null;
-        $client = $container->get('VuFindHttp\HttpService')->createClient($url);
+        $client = $container->get(\VuFindHttp\HttpService::class)
+            ->createClient($url);
         $client->setOptions(['timeout' => $config->Relais->timeout ?? 500]);
         return new $requestedName($client, $config->Relais ?? null);
     }

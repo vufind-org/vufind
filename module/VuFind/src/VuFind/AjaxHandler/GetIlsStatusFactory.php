@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for GetIlsStatus AJAX handler.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetIlsStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class GetIlsStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -63,8 +66,8 @@ class GetIlsStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Session\Settings'),
-            $container->get('VuFind\ILS\Connection'),
+            $container->get(\VuFind\Session\Settings::class),
+            $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer')
         );
     }

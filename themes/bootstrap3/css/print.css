@@ -7,3 +7,6 @@ a[href]:after{ content: ''; } /* hide following urls */
 /* print utilities */
 .hidden-print,
 .hidden-print * { display:none !important; }
+
+.bulkActionButtons,
+.action-toolbar { display: none !important; }

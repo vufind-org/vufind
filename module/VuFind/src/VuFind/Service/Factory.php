@@ -27,7 +27,7 @@
  */
 namespace VuFind\Service;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Factory for various top-level VuFind services.
@@ -47,7 +47,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\Db\Adapter\Adapter
+     * @return \Laminas\Db\Adapter\Adapter
      */
     public static function getDbAdapter(ServiceManager $sm)
     {
@@ -108,7 +108,7 @@ class Factory
     public static function getSearchService(ServiceManager $sm)
     {
         return new \VuFindSearch\Service(
-            new \Zend\EventManager\EventManager($sm->get('SharedEventManager'))
+            new \Laminas\EventManager\EventManager($sm->get('SharedEventManager'))
         );
     }
 }

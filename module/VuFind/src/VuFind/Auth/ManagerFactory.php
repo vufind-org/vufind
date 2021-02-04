@@ -28,7 +28,10 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Authentication Manager factory.
@@ -62,13 +65,14 @@ class ManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         // Set up configuration:
-        $config = $container->get('VuFind\Config\PluginManager')->get('config');
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         try {
             // Check if the catalog wants to hide the login link, and override
             // the configuration if necessary.
-            $catalog = $container->get('VuFind\ILS\Connection');
+            $catalog = $container->get(\VuFind\ILS\Connection::class);
             if ($catalog->loginIsHidden()) {
-                $config = new \Zend\Config\Config($config->toArray(), true);
+                $config = new \Laminas\Config\Config($config->toArray(), true);
                 $config->Authentication->hideLogin = true;
                 $config->setReadOnly();
             }
@@ -80,11 +84,12 @@ class ManagerFactory implements FactoryInterface
         }
 
         // Load remaining dependencies:
-        $userTable = $container->get('VuFind\Db\Table\PluginManager')->get('user');
-        $sessionManager = $container->get('Zend\Session\SessionManager');
-        $pm = $container->get('VuFind\Auth\PluginManager');
-        $cookies = $container->get('VuFind\Cookie\CookieManager');
-        $csrf = $container->get('VuFind\Validator\Csrf');
+        $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
+            ->get('user');
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
+        $pm = $container->get(\VuFind\Auth\PluginManager::class);
+        $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
+        $csrf = $container->get(\VuFind\Validator\Csrf::class);
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(

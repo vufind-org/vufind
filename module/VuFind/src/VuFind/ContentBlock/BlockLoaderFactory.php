@@ -28,7 +28,10 @@
 namespace VuFind\ContentBlock;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * BlockLoader factory.
@@ -62,9 +65,9 @@ class BlockLoaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Search\Options\PluginManager'),
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\ContentBlock\PluginManager')
+            $container->get(\VuFind\Search\Options\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\ContentBlock\PluginManager::class)
         );
     }
 }

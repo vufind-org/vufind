@@ -32,21 +32,21 @@ namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 
+use Laminas\Http\Client\Adapter\AdapterInterface;
+use Laminas\Http\Client\Adapter\Exception\TimeoutException;
+use Laminas\Http\Client as HttpClient;
+use Laminas\Http\Request;
+
 use VuFindSearch\Backend\Exception\BackendException;
+
 use VuFindSearch\Backend\Exception\HttpErrorException;
+
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
-
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\AdapterInterface;
-use Zend\Http\Client\Adapter\Exception\TimeoutException;
-use Zend\Http\Client as HttpClient;
-
-use Zend\Http\Request;
 
 /**
  * SOLR connector.
@@ -59,16 +59,16 @@ use Zend\Http\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Zend\Log\LoggerAwareInterface
+class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Maximum length of a GET url.
      *
-     * Switches to POST if the SOLR target URL exeeds this length.
+     * Switches to POST if the SOLR target URL exceeds this length.
      *
-     * @see self::query()
+     * @see \VuFindSearch\Backend\Solr\Connector::query()
      *
      * @var int
      */
@@ -116,7 +116,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @var string|AdapterInterface
      */
-    protected $adapter = 'Zend\Http\Client\Adapter\Socket';
+    protected $adapter = 'Laminas\Http\Client\Adapter\Socket';
 
     /**
      * Constructor
@@ -403,7 +403,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @param string   $method    HTTP method to use
      * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param Callable $callback  Callback to configure client (null for none)
+     * @param callable $callback  Callback to configure client (null for none)
      *
      * @return string Response body
      *

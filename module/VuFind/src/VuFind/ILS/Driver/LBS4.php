@@ -127,7 +127,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      */
     public function getConfig($function, $params = null)
     {
-        return isset($this->config[$function]) ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**

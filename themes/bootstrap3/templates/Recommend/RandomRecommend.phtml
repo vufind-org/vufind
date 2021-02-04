@@ -3,7 +3,7 @@
     <li class="list-group-item title" data-toggle="collapse" href="#side-collapse-randomrecommend">
       <?=$this->transEsc("random_recommendation_title")?>
     </li>
-    <div id="side-collapse-randomrecommend" class="collapse<?php if(!in_array('RandomRecommend', $collapsedFacets)): ?> in<?php endif ?>">
+    <div id="side-collapse-randomrecommend" class="collapse in">
     <?php foreach ($recommend as $driver): ?>
       <li class="list-group-item">
         <?php if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>

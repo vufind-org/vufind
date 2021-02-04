@@ -41,7 +41,7 @@ class AdminController extends AbstractAdmin
     /**
      * Display disabled message.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function disabledAction()
     {
@@ -51,14 +51,14 @@ class AdminController extends AbstractAdmin
     /**
      * Admin home.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
         $config = $this->getConfig();
         $xml = false;
         if (isset($config->Index->url)) {
-            $response = $this->serviceLocator->get('VuFindHttp\HttpService')
+            $response = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
                 ->get($config->Index->url . '/admin/cores?wt=xml');
             $xml = $response->isSuccess() ? $response->getBody() : false;
         }

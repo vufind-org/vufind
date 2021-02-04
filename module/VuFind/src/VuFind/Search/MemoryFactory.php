@@ -28,8 +28,11 @@
 namespace VuFind\Search;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\Session\Container;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Session\Container;
 
 /**
  * Search memory factory.
@@ -63,7 +66,7 @@ class MemoryFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $session = new Container(
-            'Search', $container->get('Zend\Session\SessionManager')
+            'Search', $container->get(\Laminas\Session\SessionManager::class)
         );
         return new $requestedName($session);
     }

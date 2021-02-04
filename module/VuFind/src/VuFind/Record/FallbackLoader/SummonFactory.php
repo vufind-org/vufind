@@ -28,7 +28,10 @@
 namespace VuFind\Record\FallbackLoader;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Summon record fallback loader factory
@@ -61,9 +64,9 @@ class SummonFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $backendManager = $container->get('VuFind\Search\BackendManager');
+        $backendManager = $container->get(\VuFind\Search\BackendManager::class);
         return new $requestedName(
-            $container->get('VuFind\Db\Table\PluginManager')->get('resource'),
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('resource'),
             $backendManager->get('Summon')
         );
     }

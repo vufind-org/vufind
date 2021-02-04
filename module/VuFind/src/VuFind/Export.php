@@ -27,7 +27,8 @@
  */
 namespace VuFind;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * Export support class
@@ -75,25 +76,11 @@ class Export
     }
 
     /**
-     * Get bulk export options.
-     *
-     * @deprecated use getActiveFormats($context) instead
-     *
-     * @return array
-     */
-    public function getBulkOptions()
-    {
-        return $this->getActiveFormats('bulk');
-    }
-
-    /**
      * Get the URL for bulk export.
      *
-     * @param \Zend\View\Renderer\RendererInterface $view   View object (needed for
-     * URL generation)
-     * @param string                                $format Export format being used
-     * @param array                                 $ids    Array of IDs to export
-     * (in source|id format)
+     * @param RendererInterface $view   View object (needed for URL generation)
+     * @param string            $format Export format being used
+     * @param array             $ids    Array of IDs to export (in source|id format)
      *
      * @return string
      */
@@ -308,8 +295,7 @@ class Export
      */
     public function getHeaders($format)
     {
-        return isset($this->exportConfig->$format->headers)
-            ? $this->exportConfig->$format->headers : [];
+        return $this->exportConfig->$format->headers ?? [];
     }
 
     /**
@@ -321,8 +307,7 @@ class Export
      */
     public function getLabelForFormat($format)
     {
-        return isset($this->exportConfig->$format->label)
-            ? $this->exportConfig->$format->label : $format;
+        return $this->exportConfig->$format->label ?? $format;
     }
 
     /**
@@ -340,8 +325,7 @@ class Export
         }
 
         // else check if export type is set in config.ini
-        return isset($this->mainConfig->BulkExport->defaultType)
-            ? $this->mainConfig->BulkExport->defaultType : 'link';
+        return $this->mainConfig->BulkExport->defaultType ?? 'link';
     }
 
     /**

@@ -30,10 +30,10 @@ namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\ILS\Driver\PAIA;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
-use Zend\Http\Response as HttpResponse;
+use VuFind\ILS\Driver\PAIA;
 
 /**
  * ILS driver test
@@ -46,6 +46,8 @@ use Zend\Http\Response as HttpResponse;
  */
 class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     protected $validConfig = [
         'DAIA' =>
             [
@@ -135,9 +137,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '05-23-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => 'Zend framework in action / Allen, Rob (2009)',
+                'title' => 'Test framework in action / Allen, Rob (2009)',
                 'feeid' => null,
-                'about' => 'Zend framework in action / Allen, Rob (2009)',
+                'about' => 'Test framework in action / Allen, Rob (2009)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28323471'
             ],
         2 =>
@@ -248,6 +250,12 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'duedate' => '',
                 'message' => '',
                 'borrowingLocation' => 'Ausleihe',
+                'type' => 'held',
+                'location' => 'Ausleihe',
+                'position' => 0,
+                'available' => false,
+                'create' => '11-15-2013',
+                'cancel_details' => '',
             ],
         1 =>
             [
@@ -265,6 +273,12 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'message' => '',
                 'borrowingLocation' => 'Ausleihe',
                 'callnumber' => '22:2227-8001',
+                'type' => 'held',
+                'location' => 'Ausleihe',
+                'position' => 0,
+                'available' => false,
+                'create' => '12-22-2011',
+                'cancel_details' => '',
             ]
     ];
 
@@ -293,19 +307,22 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     protected $profileTestResult = [
         'firstname' => "Nobody",
         'lastname' => "Nothing",
-        'address1' => null,
+        'address1' => "No street at all 8, D-21073 Hamburg",
         'address2' => null,
         'city' => null,
         'country' => null,
         'zip' => null,
         'phone' => null,
-        'group' => null,
+        'group' => "de-830:user-type:2",
+        'mobile_phone' => null,
         'expires' => "12-31-9999",
         'statuscode' => 0,
         'canWrite' => true
     ];
 
-    /******************* Test cases ***************/
+    /*******************
+     * Test cases
+     ***************/
     /*
      ok changePassword
      ok checkRequestIsValid
@@ -326,7 +343,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = $this->createConnector();
     }
@@ -346,9 +363,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
              "newPassword" => "newsecret"
         ];
 
-        $conn = $this->createConnector('changePassword.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('changePassword.json');
         $result = $conn->changePassword($changePasswordTestdata);
         $this->assertEquals($this->pwchangeTestResult, $result);
     }
@@ -360,9 +375,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testFees()
     {
-        $conn = $this->createConnector('fees.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('fees.json');
         $result = $conn->getMyFines($this->patron);
 
         $this->assertEquals($this->feeTestResult, $result);
@@ -375,9 +388,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testHolds()
     {
-        $conn = $this->createConnector('items.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('items.json');
         $result = $conn->getMyHolds($this->patron);
 
         $this->assertEquals($this->holdsTestResult, $result);
@@ -390,9 +401,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testRequests()
     {
-        $conn = $this->createConnector('items.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('items.json');
         $result = $conn->getMyStorageRetrievalRequests($this->patron);
 
         $this->assertEquals($this->requestsTestResult, $result);
@@ -405,9 +414,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testTransactions()
     {
-        $conn = $this->createConnector('items.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('items.json');
         $result = $conn->getMyTransactions($this->patron);
 
         $this->assertEquals($this->transactionsTestResult, $result);
@@ -469,9 +476,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testRenewDetails()
     {
-        $conn = $this->createConnector('');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('');
         $result = $conn->getRenewDetails($this->transactionsTestResult[1]);
 
         $this->assertEquals('', $result);
@@ -491,9 +496,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         ];
 
-        $conn = $this->createConnector('storageretrieval.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('storageretrieval.json');
         $result = $conn->placeHold($sr_request);
         $this->assertEquals($this->storageRetrievalTestResult, $result);
     }
@@ -512,9 +515,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         ];
 
-        $conn = $this->createConnector('storageretrieval.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('storageretrieval.json');
         $result = $conn->placeStorageRetrievalRequest($sr_request);
         $this->assertEquals($this->storageRetrievalTestResult, $result);
     }
@@ -535,9 +536,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         ];
 
-        $conn = $this->createConnector('renew_ok.json');
-        $conn->setConfig($this->validConfig);
-        $conn->init();
+        $conn = $this->createMockConnector('renew_ok.json');
         $result = $conn->renewMyItems($renew_request);
 
         $this->assertEquals($this->renewTestResult, $result);
@@ -553,6 +552,29 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Create HTTP service for testing.
+     *
+     * @param string $fixture Fixture file
+     *
+     * @return \VuFindHttp\HttpService
+     *
+     * @throws InvalidArgumentException Fixture file does not exist
+     */
+    protected function getHttpService($fixture = null)
+    {
+        $adapter = new TestAdapter();
+        if ($fixture) {
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("paia/response/$fixture")
+            );
+            $adapter->setResponse($responseObj);
+        }
+        $service = new \VuFindHttp\HttpService();
+        $service->setDefaultAdapter($adapter);
+        return $service;
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
@@ -563,26 +585,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function createConnector($fixture = null)
     {
-        $adapter = new TestAdapter();
-        if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/paia/response/' . $fixture
-            );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
-            $adapter->setResponse($responseObj);
-        }
-        $service = new \VuFindHttp\HttpService();
-        $service->setDefaultAdapter($adapter);
+        $service = $this->getHttpService($fixture);
         $conn = new PAIA(
             new \VuFind\Date\Converter(),
-            new \Zend\Session\SessionManager()
+            new \Laminas\Session\SessionManager()
         );
         $conn->setHttpService($service);
         return $conn;
@@ -599,31 +605,25 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function createMockConnector($fixture = null)
     {
-        $adapter = new TestAdapter();
-        if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/paia/response/' . $fixture
-            );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
-            $adapter->setResponse($responseObj);
-        }
-        $service = new \VuFindHttp\HttpService();
-        $service->setDefaultAdapter($adapter);
-        $conn = $this->getMockBuilder('VuFind\ILS\Driver\PAIA')
-            ->setConstructorArgs([ new \VuFind\Date\Converter(),
-                new \Zend\Session\SessionManager()
-            ])
+        $service = $this->getHttpService($fixture);
+        $dateConverter = new \VuFind\Date\Converter();
+        $sessionManager = new \Laminas\Session\SessionManager();
+        $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
+            ->setConstructorArgs([$dateConverter, $sessionManager])
             ->setMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
-            ->will($this->returnValue([ 'write_items' ]));
+            ->will(
+                $this->returnValue(
+                    [
+                    'write_items',
+                    'change_password',
+                    'read_fees',
+                    'read_items',
+                    'read_patron'
+                    ]
+                )
+            );
         $conn->setHttpService($service);
         $conn->setConfig($this->validConfig);
         $conn->init();

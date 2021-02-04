@@ -29,6 +29,9 @@
 namespace VuFind\Autocomplete;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for Solr-driven autocomplete plugins. Works for \VuFind\Autocomplete\Solr
@@ -40,7 +43,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,7 +65,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Search\Results\PluginManager')
+            $container->get(\VuFind\Search\Results\PluginManager::class)
         );
     }
 }

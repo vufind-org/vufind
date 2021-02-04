@@ -13,9 +13,12 @@ rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
-echo ERROR: env.bat does not exist -- could not set up environment.
+echo WARNING: env.bat does not exist -- trying default environment settings.
 echo Please run "php install.php" to correct this problem.
-goto end
+rem Extract path from current batch file and trim trailing slash:
+set VUFIND_HOME=%~dp0%
+set VUFIND_HOME=%VUFIND_HOME:~0,-1%
+goto vufindhomefound
 :useenvbat
 call env > nul
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
@@ -28,6 +31,7 @@ if not exist %VUFIND_LOCAL_DIR%\import\import_auth.properties goto nolocalproper
 set PROPERTIES_FILE=%VUFIND_LOCAL_DIR%\import\import_auth.properties
 goto propertiesfound
 :nolocalproperties
+echo WARNING: VUFIND_LOCAL_DIR environment variable is not set. Is this intentional?
 set PROPERTIES_FILE=%VUFIND_HOME%\import\import_auth.properties
 :propertiesfound
 

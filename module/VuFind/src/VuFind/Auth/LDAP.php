@@ -75,7 +75,7 @@ class LDAP extends AbstractBase
     protected function getSetting($name)
     {
         $config = $this->getConfig();
-        $value = isset($config->LDAP->$name) ? $config->LDAP->$name : '';
+        $value = $config->LDAP->$name ?? '';
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
@@ -86,7 +86,7 @@ class LDAP extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException

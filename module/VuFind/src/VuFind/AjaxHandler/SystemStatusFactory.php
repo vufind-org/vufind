@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for SystemStatus AJAX handler.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SystemStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -62,12 +65,12 @@ class SystemStatusFactory implements \Zend\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
         return new $requestedName(
-            $container->get('Zend\Session\SessionManager'),
-            $container->get('VuFind\Search\Results\PluginManager'),
-            $container->get('VuFind\Config\PluginManager')->get('config'),
-            $tablePluginManager->get('VuFind\Db\Table\Session')
+            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get(\VuFind\Search\Results\PluginManager::class),
+            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $tablePluginManager->get(\VuFind\Db\Table\Session::class)
         );
     }
 }

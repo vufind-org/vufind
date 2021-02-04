@@ -1,5 +1,4 @@
 <?php
-
 namespace VuFind\I18n\Translator\Loader\Handler;
 
 use VuFind\I18n\Translator\Loader\Handler\Action\ActionInterface;

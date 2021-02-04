@@ -106,7 +106,7 @@ class AuthorController extends AbstractSearch
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get('VuFind\Config\PluginManager')
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

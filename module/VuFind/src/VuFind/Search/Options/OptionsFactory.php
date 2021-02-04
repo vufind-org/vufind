@@ -28,7 +28,10 @@
 namespace VuFind\Search\Options;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory for search options objects.
@@ -59,7 +62,7 @@ class OptionsFactory implements FactoryInterface
         array $options = null
     ) {
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager'), ...($options ?: [])
+            $container->get(\VuFind\Config\PluginManager::class), ...($options ?: [])
         );
     }
 }

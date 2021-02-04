@@ -94,8 +94,7 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyTopID()
     {
-        return isset($this->fields['hierarchy_top_id'])
-            ? $this->fields['hierarchy_top_id'] : [];
+        return $this->fields['hierarchy_top_id'] ?? [];
     }
 
     /**
@@ -105,8 +104,7 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyTopTitle()
     {
-        return isset($this->fields['hierarchy_top_title'])
-            ? $this->fields['hierarchy_top_title'] : [];
+        return $this->fields['hierarchy_top_title'] ?? [];
     }
 
     /**
@@ -188,6 +186,7 @@ trait HierarchyAwareTrait
         case 'Top':
             return isset($this->fields['is_hierarchy_title'])
                 && isset($this->fields['is_hierarchy_id'])
+                && isset($this->fields['hierarchy_top_id'])
                 && in_array(
                     $this->fields['is_hierarchy_id'],
                     $this->fields['hierarchy_top_id']
@@ -224,11 +223,9 @@ trait HierarchyAwareTrait
     public function getHierarchyType()
     {
         if (isset($this->fields['hierarchy_top_id'])) {
-            $hierarchyType = isset($this->fields['hierarchytype'])
-                ? $this->fields['hierarchytype'] : false;
+            $hierarchyType = $this->fields['hierarchytype'] ?? false;
             if (!$hierarchyType) {
-                $hierarchyType = isset($this->mainConfig->Hierarchy->driver)
-                    ? $this->mainConfig->Hierarchy->driver : false;
+                $hierarchyType = $this->mainConfig->Hierarchy->driver ?? false;
             }
             return $hierarchyType;
         }

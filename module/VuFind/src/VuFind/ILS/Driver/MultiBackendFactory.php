@@ -28,7 +28,10 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for MultiBackend ILS driver.
@@ -62,9 +65,9 @@ class MultiBackendFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get('VuFind\Config\PluginManager'),
-            $container->get('VuFind\Auth\ILSAuthenticator'),
-            $container->get('VuFind\ILS\Driver\PluginManager')
+            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\ILS\Driver\PluginManager::class)
         );
     }
 }
