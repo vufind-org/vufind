@@ -1,0 +1,36 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('loan_history_save'));
+?>
+<h2><?=$this->translate("loan_history_save") ?></h2>
+<?=$this->flashmessages()?>
+<form class="form-record-save" method="post" action="<?=$this->url('myresearch-savehistoricloans')?>" name="saveLoans" data-lightbox-onclose="checkSaveStatusesCallback">
+  <input type="hidden" name="submit" value="1" />
+  <?php $showLists = (!empty($this->lists)); ?>
+
+  <div class="form-group">
+    <?php if ($showLists): ?>
+      <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+    <?php endif; ?>
+    <?php if ($showLists): ?>
+      <select class="form-control" id="save_list" name="list">
+      <?php if ($this->lists): ?>
+        <?php foreach ($this->lists as $list): ?>
+          <option value="<?=$list['id'] ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+            <?=$this->escapeHtml($list['title'])?><?php if ($list['public']):?> (<?=$this->transEsc('Public')?>)<?php endif; ?>
+          </option>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <option value=""><?=$this->transEsc('My Favorites') ?></option>
+      <?php endif; ?>
+      </select>
+    <?php endif; ?>
+    <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', ['id' => 'NEW'], ['query' => ['saveHistoricLoans' => 1]]) ?>"><?=$this->transEsc('or create a new list'); ?></a>
+  </div>
+
+  <?php if ($showLists): ?>
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save') ?>"/>
+    </div>
+  <?php endif; ?>
+</form>
