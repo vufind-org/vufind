@@ -56,7 +56,8 @@ abstract class SessionHandlerTestCase extends TestCase
     protected function getTables()
     {
         if (!$this->tables) {
-            $this->tables = new \VuFindTest\Container\MockContainer($this);
+            $this->tables
+                = new \VuFindTest\Container\MockDbTablePluginManager($this);
         }
         return $this->tables;
     }
