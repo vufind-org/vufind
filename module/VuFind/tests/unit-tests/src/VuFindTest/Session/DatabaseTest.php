@@ -116,7 +116,6 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session = $this->getMockSessionTable();
         $session->expects($this->once())->method('destroySession')
             ->with($this->equalTo('foo'));
-        // We expect the third call to get to return the Session.
         $this->tables->set('Session', $session);
         $this->assertTrue($handler->destroy('foo'));
     }
