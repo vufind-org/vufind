@@ -116,7 +116,8 @@ trait MockContainerTrait
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
-     * @param string $rawId Identifier of the entry to look for.
+     * @param string $rawId   Identifier of the entry to look for.
+     * @param array  $options Additional options (used for method list here)
      *
      * @return mixed
      */
