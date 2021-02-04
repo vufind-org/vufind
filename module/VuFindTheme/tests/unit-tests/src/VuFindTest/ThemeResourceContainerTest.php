@@ -81,17 +81,17 @@ class ThemeResourceContainerTest extends Unit\TestCase
     {
         $container = new ResourceContainer();
         $container->addJs('a');
-        $container->addJs(['file' => 'p2', 'priority' => 200]);
+        $container->addJs(['file' => 'p2', 'priority' => 120]);
         $container->addJs(['b', 'c']);
         $container->addJs(['file' => 'd', 'position' => 'header']);
         $container->addJs('http://foo/bar:lt IE 7');
         $container->addJs(['file' => 'd1', 'load_after' => 'd']);
-        $container->addJs(['file' => 'p1', 'priority' => 100]);
+        $container->addJs(['file' => 'p1', 'priority' => 210]);
         $container->addJs(['file' => 'd2', 'load_after' => 'd1']);
         $container->addJs([]);
 
-        $expectedResult = [['file' => 'p1', 'priority' => 100, 'position' => 'header'],
-                           ['file' => 'p2', 'priority' => 200, 'position' => 'header'],
+        $expectedResult = [['file' => 'p1', 'priority' => 210, 'position' => 'header'],
+                           ['file' => 'p2', 'priority' => 120, 'position' => 'header'],
                            ['file' => 'a', 'position' => 'header'],
                            ['file' => 'b', 'position' => 'header'],
                            ['file' => 'c', 'position' => 'header'],
@@ -123,6 +123,25 @@ class ThemeResourceContainerTest extends Unit\TestCase
 
         $container = new ResourceContainer();
         $container->addJs($jsEntry);
+    }
+
+    /**
+     * Test Exception for invalid priority.
+     *
+     * @return void
+     */
+    public function testJsPriorityException()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            'Invalid priority: 1000'
+        );
+
+        // This test will require another value with a priority
+        // before the one that we would like to test.
+        $container = new ResourceContainer();
+        $container->addJs(['file' => 'test', 'priority' => 100]);
+        $container->addJs(['file' => 'test2', 'priority' => 1000]);
     }
 
     /**

@@ -188,6 +188,53 @@ class ResourceContainer
     }
 
     /**
+     * Normalize a given 4-digit-priority to int
+     *
+     * @param string|int $priority priority
+     *
+     * @return int
+     * @throws \Exception
+     */
+    protected static function normalizePriority($priority): int
+    {
+        if ($priority < 100 || $priority > 999) {
+            throw new \Exception('Invalid priority: ' . $priority);
+        }
+        return intval($priority);
+    }
+
+    /**
+     * Canonize priority (& make it comparable)
+     *
+     * @param string|int $priority priority
+     *
+     * @return int
+     */
+    protected static function canonizePriority($priority): int
+    {
+        $priority = self::normalizePriority($priority);
+        return $priority % 100;
+    }
+
+    /**
+     * Compare 2 priorities. The result is similar to strcmp().
+     *     Negative value: Priority 1 is higher
+     *     0: Equal
+     *     Positive value: Priority 2 is higher
+     *
+     * @param int $priority1 Priority 1
+     * @param int $priority2 Priority 2
+     *
+     * @return int
+     */
+    protected static function comparePriority($priority1, $priority2): int
+    {
+        $priority1 = self::canonizePriority($priority1);
+        $priority2 = self::canonizePriority($priority2);
+        return $priority2 - $priority1;
+    }
+
+    /**
      * Helper function to insert an entry to an array,
      * also considering priority and dependency, if existing.
      *
@@ -203,7 +250,9 @@ class ResourceContainer
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
                     if (!isset($currentPriority)
-                        || $currentPriority > $entry['priority']
+                        || self::comparePriority(
+                            $currentPriority, $entry['priority']
+                        ) < 0
                     ) {
                         array_splice($array, $i, 0, [$entry]);
                         return;
