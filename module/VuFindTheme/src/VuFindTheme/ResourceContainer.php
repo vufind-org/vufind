@@ -246,7 +246,7 @@ class ResourceContainer
     protected function insertEntry($entry, &$array)
     {
         if (isset($entry['priority']) || isset($entry['load_after'])) {
-            for ($i=0; $i < count($array);++$i) {
+            foreach (array_keys($array) as $i) {
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
                     if (!isset($currentPriority)

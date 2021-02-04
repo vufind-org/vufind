@@ -49,7 +49,8 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     {
         trigger_error(
             'Deprecated headThemeResources view helper called; ' .
-            'check configuration.'
+            'check configuration.',
+            E_USER_DEPRECATED
         );
         $this->view->plugin('themeResources')('header');
     }
