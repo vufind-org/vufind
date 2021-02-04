@@ -1,46 +1,40 @@
 <!-- START of: finna - Content/help-tabs.phtml -->
-<div class="finna-main-tabs">
-    <ul class="nav nav-tabs help-tabs hidden-xs" role="tablist">
-        <li class="help-tab <?= $activeTab == "help" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help'])?>">
-            <?=$this->translate('tabs_help');?>
-        </li>
-        <li class="help-tab <?= $activeTab == "help-basic" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-basic'])?>">
-            <?=$this->translate('tabs_help-basic');?>
-        </li>
-        <li class="help-tab <?= $activeTab == "help-advanced" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-advanced'])?>">
-            <?=$this->translate('tabs_help-advanced');?>
-        </li>
-        <li class="help-tab <?= $activeTab == "help-syntax" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-syntax'])?>">
-           <?=$this->translate('tabs_help-syntax');?>
-        </li>
-        <li class="help-tab <?= $activeTab == "help-favorites" ? ' active" aria-selected="true"' : '" aria-selected="false"' ?> role="tab" tabindex="0" data-url="<?=$this->url('content-page', ['page' => 'help-favorites'])?>">
-           <?=$this->translate('tabs_help-favorites');?>
-        </li>
-    </ul>
-    <div class="mobile-main-tabs visible-xs">
-        <div class="dropdown visible-xs">
-            <div class="dropdown-toggle clearfix" data-toggle="dropdown">
-                <div class="tab-title"><?=$this->translate('tabs_' . $activeTab);?></div>
-                <div class="more"><?=$this->transEsc("More");?><b class="caret"></b></div>
-            </div>
-            <ul class="dropdown-menu" role="menu">
-                <li role="menuitem" <?php if($activeTab == "help"): ?> class="active" <?php endif; ?> >
-                    <a href="<?=$this->url('content-page', ['page' => 'help'])?>"><?=$this->translate('tabs_help');?></a>
-                </li>
-                <li role="menuitem" <?php if($activeTab == "help-basic"): ?> class="active" <?php endif; ?>>
-                    <a href="<?=$this->url('content-page', ['page' => 'help-basic'])?>"><?=$this->translate('tabs_help-basic');?></a>
-                </li>
-                <li role="menuitem" <?php if($activeTab == "help-advanced"): ?> class="active" <?php endif; ?>>
-                    <a href="<?=$this->url('content-page', ['page' => 'help-advanced'])?>"><?=$this->translate('tabs_help-advanced');?></a>
-                </li>
-                <li role="menuitem" <?php if($activeTab == "help-syntax"): ?> class="active" <?php endif; ?>>
-                    <a href="<?=$this->url('content-page', ['page' => 'help-syntax'])?>"><?=$this->translate('tabs_help-syntax');?></a>
-                </li>
-                <li role="menuitem" <?php if($activeTab == "help-favorites"): ?> class="active" <?php endif; ?>>
-                    <a href="<?=$this->url('content-page', ['page' => 'help-favorites'])?>"><?=$this->translate('tabs_help-favorites');?></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
+<?= $this->render('components/organisms/navigation/finna-multi-level-nav/finna-multi-level-nav.phtml',
+  [
+    'ariaLabel' => $this->translate('Help'),
+    'attributes' => [
+      'class' => ['finna-multi-level-nav-content', 'finna-multi-level-nav-lg']
+    ],
+    'brandContent' => $this->translate('tabs_' . $activeTab),
+    'collapseId' => 'nav-help-collapse',
+    'items' => [
+      [
+        'active' => 'help' === $activeTab,
+        'label' => $this->translate('tabs_help'),
+        'link' => $this->url('content-page', ['page' => 'help'])
+      ],
+      [
+        'active' => 'help-basic' === $activeTab,
+        'label' => $this->translate('tabs_help-basic'),
+        'link' => $this->url('content-page', ['page' => 'help-basic']),
+      ],
+      [
+        'active' => 'help-advanced' === $activeTab,
+        'label' => $this->translate('tabs_help-advanced'),
+        'link' => $this->url('content-page', ['page' => 'help-advanced']),
+      ],
+      [
+        'active' => 'help-syntax' === $activeTab,
+        'label' => $this->translate('tabs_help-syntax'),
+        'link' => $this->url('content-page', ['page' => 'help-syntax']),
+      ],
+      [
+        'active' => 'help-favorites' === $activeTab,
+        'label' => $this->translate('tabs_help-favorites'),
+        'link' => $this->url('content-page', ['page' => 'help-favorites']),
+      ],
+    ],
+    "toggleBtnLabel" => $this->transEsc("More"),
+  ]);
+?>
 <!-- END of: finna - Content/help-tabs.phtml -->

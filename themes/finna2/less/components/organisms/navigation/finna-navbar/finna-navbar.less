@@ -1,0 +1,193 @@
+// -component suffix added to avoid problems with non-component finna-navbar class.
+.finna-navbar-component {
+  @media(max-width: @grid-float-breakpoint-max) {
+    .navbar-toggle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .navbar-collapse > ul > li {
+      border-bottom: 1px solid @gray-lighter;
+    }
+    .navbar-nav > li > a {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 16px;
+      padding-bottom: 16px;
+    }
+  }
+}
+
+.finna-navbar-icon-caret {
+  font-family: finnaicons;
+  font-style: normal;
+  &::after {
+    content: '\e612';
+  }
+  .finna-navbar-component .navbar-toggle.collapsed &::after {
+    content: '\e613';
+  }
+}
+
+// Content navbar variation with own variables for customization.
+
+@finna-navbar-content-color:             mix(@brand-primary, contrast(@brand-primary), 5%);;
+@finna-navbar-content-bg:                @brand-primary;
+@finna-navbar-content-border:            @finna-navbar-content-bg;
+
+// Navbar links
+@finna-navbar-content-link-color:                @finna-navbar-content-color;
+@finna-navbar-content-link-hover-color:          @finna-navbar-content-link-color;
+@finna-navbar-content-link-hover-bg:             @finna-navbar-content-bg;
+@finna-navbar-content-link-active-color:         @finna-navbar-content-link-color;
+@finna-navbar-content-link-active-bg:            @finna-navbar-content-bg;
+@finna-navbar-content-link-disabled-color:       @finna-navbar-content-link-color;
+@finna-navbar-content-link-disabled-bg:          @finna-navbar-content-bg;
+
+// Navbar brand label
+@finna-navbar-content-brand-color:               @finna-navbar-content-color;
+@finna-navbar-content-brand-hover-color:         @finna-navbar-content-brand-color;
+@finna-navbar-content-brand-hover-bg:            @finna-navbar-content-bg;
+
+// Navbar toggle
+@finna-navbar-content-toggle-hover-bg:           @finna-navbar-content-bg;
+@finna-navbar-content-toggle-icon-bar-bg:        @finna-navbar-content-bg;
+@finna-navbar-content-toggle-border-color:       @finna-navbar-content-border;
+
+.finna-navbar-content {
+  background-color: @finna-navbar-content-bg;
+  border-color: @finna-navbar-content-border;
+
+  .navbar-brand,
+  .navbar-brand > a {
+    color: @finna-navbar-content-brand-color;
+    &:hover,
+    &:focus {
+      color: @finna-navbar-content-brand-hover-color;
+      background-color: @finna-navbar-content-brand-hover-bg;
+    }
+  }
+
+  .navbar-text {
+    color: @finna-navbar-content-color;
+  }
+
+  .navbar-nav {
+    > li > a {
+      color: @finna-navbar-content-link-color;
+
+      &:hover,
+      &:focus {
+        color: @finna-navbar-content-link-hover-color;
+        background-color: @finna-navbar-content-link-hover-bg;
+      }
+    }
+    > .active > a {
+      &,
+      &:hover,
+      &:focus {
+        color: @finna-navbar-content-link-active-color;
+        background-color: @finna-navbar-content-link-active-bg;
+      }
+    }
+    > .disabled > a {
+      &,
+      &:hover,
+      &:focus {
+        color: @finna-navbar-content-link-disabled-color;
+        background-color: @finna-navbar-content-link-disabled-bg;
+      }
+    }
+
+    // Dropdown menu items
+    // Remove background color from open dropdown
+    > .open > a {
+      &,
+      &:hover,
+      &:focus {
+        color: @finna-navbar-content-link-active-color;
+        background-color: @finna-navbar-content-link-active-bg;
+      }
+    }
+  }
+
+  .navbar-toggle {
+    border-color: @finna-navbar-content-toggle-border-color;
+    &:hover,
+    &:focus {
+      background-color: @finna-navbar-content-toggle-hover-bg;
+    }
+    .icon-bar {
+      background-color: @finna-navbar-content-toggle-icon-bar-bg;
+    }
+  }
+
+  .navbar-collapse,
+  .navbar-form {
+    border-color: @finna-navbar-content-border;
+
+    // Finna-specific custom display when collapsed
+    @media (max-width: @grid-float-breakpoint-max) {
+      color: @dropdown-link-color;
+      background-color: @dropdown-bg;
+      .navbar-nav,
+      .navbar-nav > .dropdown,
+      .open .dropdown-menu,
+      // This last selector is a non-component CSS compatibility hack
+      .open:not(.logoutOptions):not(.browsebar-dropdown) .dropdown-menu {
+        > li > a {
+          color: @dropdown-link-color;
+          background-color: @dropdown-bg;
+          &:hover,
+          &:focus {
+            color: @dropdown-link-hover-color;
+            background-color: @dropdown-link-hover-bg;
+          }
+        }
+        > .active > a {
+          &,
+          &:hover,
+          &:focus {
+            color: @dropdown-link-hover-color;
+            background-color: @dropdown-link-hover-bg;
+          }
+        }
+        > .disabled > a {
+          &,
+          &:hover,
+          &:focus {
+            color: @dropdown-link-color;
+            background-color: @dropdown-bg;
+          }
+        }
+      }
+    }
+  }
+
+
+  // Links in navbars
+  //
+  // Add a class to ensure links outside the navbar nav are colored correctly.
+
+  .navbar-link {
+    color: @finna-navbar-content-link-color;
+    &:hover {
+      color: @finna-navbar-content-link-hover-color;
+    }
+  }
+
+  .btn-link {
+    color: @finna-navbar-content-link-color;
+    &:hover,
+    &:focus {
+      color: @finna-navbar-content-link-hover-color;
+    }
+    &[disabled],
+    fieldset[disabled] & {
+      &:hover,
+      &:focus {
+        color: @finna-navbar-content-link-disabled-color;
+      }
+    }
+  }
+}

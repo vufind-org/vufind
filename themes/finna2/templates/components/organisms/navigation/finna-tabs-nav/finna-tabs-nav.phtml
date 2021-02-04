@@ -1,0 +1,21 @@
+<?php
+  $__attributes = $this->htmlAttributes($attributes ?? []);
+  if (isset($ariaLabel)) {
+    $__attributes['aria-label'] = $ariaLabel;
+  }
+?>
+<nav<?= $__attributes->add('class', ['finna-tabs-nav', 'clearfix']) ?>>
+  <?php
+    $__navAttributes = $this->htmlAttributes(['class' => 'finna-nav-tabs']);
+    if ($__attributes->hasValue('class', 'finna-tabs-nav-lg')) {
+      $__navAttributes->add('class', 'finna-nav-lg');
+    }
+  ?>
+  <?= $this->render('components/molecules/navigation/finna-nav/finna-nav.phtml', [
+      'ariaCurrent' => $ariaCurrent ?? null,
+      'attributes' => $__navAttributes,
+      'items' => $items ?? [],
+      'renderChildren' => 'simple'
+    ]); ?>
+</nav>
+<?php $this->headScript()->appendFile('components/organisms/navigation/finna-tabs-nav/finna-tabs-nav.js'); ?>

@@ -1,0 +1,82 @@
+.finna-nav {
+  font-size: 1em;
+}
+
+// Tabs variation.
+// Selector specificity is increased to override current global Bootstrap defaults.
+.finna-nav.finna-nav-tabs {
+  position: relative;
+  border-bottom: 1px solid @nav-tabs-border-color;
+  font-size: 1em;
+  &.active-multi-level {
+    margin-bottom: 3.2em;
+  }
+  > li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -1px;
+    border-top: 4px solid transparent;
+    border-right: 1px solid transparent;
+    border-bottom: 1px solid @nav-tabs-border-color;
+    border-left: 1px solid transparent;
+    background-color: #ededed;
+    &.active,
+    &.active-trail {
+      border-top: 4px solid @nav-tabs-active-color;
+      border-right: 1px solid @nav-tabs-border-color;
+      border-bottom: 1px solid @body-bg;
+      border-left: 1px solid @nav-tabs-border-color;
+      background-color: transparent;
+    }
+    > a,
+    > a:hover,
+    > a:focus {
+      margin: 0;
+      border: 0;
+      padding: .6em .6em;
+      font-size: 1em;
+    }
+    > button {
+      padding-left: 0;
+      color: @nav-tabs-active-color;
+    }
+  }
+
+  // Active tab children when rendered in 'simple' mode.
+  > li:not(.dropdown) {
+    position: static;
+    > ul {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      display: none;
+      padding-left: 0;
+      margin-bottom: 0;
+      list-style: none;
+      > li {
+        flex: 1 0 auto;
+        padding: .8em .6em;
+      }
+      > li > a {
+        color: @text-color;
+      }
+      > li.active > a {
+        font-weight: bold;
+      }
+    }
+    &.active > ul,
+    &.active-trail > ul {
+      display: flex;
+    }
+  }
+}
+
+// Large variation.
+// Selector specificity is increased to override current global Bootstrap defaults.
+.finna-nav.finna-nav-lg {
+  font-size: 1.14em;
+  @media (min-width: @screen-md-min) {
+    font-size: 1.357em;
+  }
+}
