@@ -32,6 +32,7 @@
 namespace VuFindTest\Unit;
 
 use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Util\Test;
 
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
@@ -77,7 +78,9 @@ trait AutoRetryTrait
         // subsequent tests, and retrying will just waste time before showing
         // the cause of the initial error. We only really want to retry if it
         // will prevent ANY failures from occurring.
-        $annotations = $this->getAnnotations();
+        $annotations = Test::parseTestMethodAnnotations(
+            static::class, $this->getName(false)
+        );
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
         $retryCount = !self::$failedAfterRetries && $retryCountAnnotation > 0

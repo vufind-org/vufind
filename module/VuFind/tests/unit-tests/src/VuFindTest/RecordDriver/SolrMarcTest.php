@@ -233,7 +233,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
         $this->assertEquals(['VuFind Golden Award, 2020'], $obj->getAwards());
         $this->assertEquals(['Bibliography: p. 122'], $obj->getBibliographyNotes());
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '/<collection.*?>.*<record>.*<\/record>.*<\/collection>/s',
             $obj->getFilteredXML()
         );
