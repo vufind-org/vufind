@@ -47,7 +47,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     /**
      * Main configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -61,7 +61,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config                  $config Configuration
+     * @param \Laminas\Config\Config               $config Configuration
      * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
      * manager
      */
