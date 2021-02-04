@@ -23,7 +23,7 @@
       <?php endif; ?>
       </select>
     <?php endif; ?>
-    <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', ['id' => 'NEW']) ?>"><?=$this->transEsc('or create a new list'); ?></a>
+    <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', ['id' => 'NEW'], ['query' => ['saveListId' => $this->listId]]) ?>"><?=$this->transEsc('or create a new list'); ?></a>
   </div>
 
   <?php if ($showLists): ?>

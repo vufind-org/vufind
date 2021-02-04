@@ -356,6 +356,183 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Save historic loans to favorites
+     *
+     * @return mixed
+     */
+    public function saveHistoricloansAction()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new ForbiddenException('Lists disabled');
+        }
+
+        // Retrieve user object and force login if necessary:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Check permission:
+        $response = $this->permission()->check('feature.Favorites', false);
+        if (is_object($response)) {
+            return $response;
+        }
+
+        // Process form submission:
+        if ($this->formWasSubmitted('submit')) {
+            // Connect to the ILS:
+            $catalog = $this->getILS();
+
+            // Check function config
+            $functionConfig = $catalog->checkFunction(
+                'getMyTransactionHistory', $patron
+            );
+            if (false === $functionConfig) {
+                $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
+                return $this->createViewModel();
+            }
+
+            $post = $this->getRequest()->getPost()->toArray();
+            $favorites = $this->serviceLocator
+                ->get(\VuFind\Favorites\FavoritesService::class);
+
+            $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+            $tableManager = $this->serviceLocator
+                ->get(\VuFind\Db\Table\PluginManager::class);
+            $userResource = $tableManager->get(\VuFind\Db\Table\UserResource::class);
+
+            $notesSeparator = '#### ' . $this->translate('Loan History') . "\n";
+
+            $page = 1;
+            do {
+                // Try to use large page size, but take ILS limits into account
+                $pageOptions = $this->getPaginationHelper()
+                    ->getOptions($page, null, 1000, $functionConfig);
+                $result = $catalog
+                    ->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
+
+                if (isset($result['success']) && !$result['success']) {
+                    $this->flashMessenger()->addErrorMessage($result['status']);
+                    return $this->createViewModel();
+                }
+
+                $ids = [];
+                foreach ($result['transactions'] as $current) {
+                    $id = $current['id'] ?? '';
+                    $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
+                    $ids[] = compact('id', 'source');
+                }
+                $records = $recordLoader->loadBatch($ids, true);
+
+                foreach ($result['transactions'] as $i => $current) {
+                    // loadBatch ensures correct indexing
+                    $driver = $records[$i];
+                    $otherNotes = '';
+                    $notesBlocks = [];
+
+                    // Keep existing notes
+                    $savedData = $userResource->getSavedData(
+                        $current['id'],
+                        $current['source'] ?? DEFAULT_SEARCH_BACKEND,
+                        $post['list'] ?? '',
+                        $user->id
+                    )->current();
+                    if (!empty($savedData['notes'])) {
+                        $notesBlocks
+                            = explode($notesSeparator, $savedData['notes']);
+                        // Separate any other notes from the loan notes blocks
+                        $otherBlock = strncmp(
+                            $savedData['notes'],
+                            $notesSeparator,
+                            strlen($notesSeparator)
+                        );
+                        if ($notesBlocks && $otherBlock) {
+                            $otherNotes = array_shift($notesBlocks);
+                        }
+                    }
+
+                    $notes = [];
+                    if (!empty($current['volume'])) {
+                        $notes[] = $this->translate('Issue') . ': '
+                            . $current['volume'];
+                    }
+                    if (!empty($current['publication_year'])) {
+                        $notes[] = $this->translate('Year of Publication') . ': '
+                            . $current['publication_year'];
+                    }
+
+                    $inst = $current['institution_name'] ?? '';
+                    $loc = $current['borrowingLocation'] ?? '';
+                    if ($inst && $inst !== $loc) {
+                        $notes[] = $this->translateWithPrefix('location_', $inst);
+                    }
+                    if ($loc) {
+                        $notes[] = $this->translate('Borrowing Location') . ': '
+                            . $this->translateWithPrefix('location_', $inst);
+                    }
+
+                    if (!empty($current['checkoutdate'])) {
+                        $notes[] = $this->translate('Checkout Date') . ': '
+                            . $current['checkoutdate'];
+                    }
+                    if (!empty($current['returndate'])) {
+                        $notes[] = $this->translate('Return Date') . ': '
+                            . $current['returndate'];
+                    }
+                    if (!empty($current['duedate'])) {
+                        $notes[] = $this->translate('Due Date') . ': '
+                            . $current['duedate'];
+                    }
+
+                    $notesStr = implode("\n", $notes);
+                    if ($notesStr) {
+                        $notesBlocks[] = $notesStr;
+                    }
+                    $notesBlocks = array_unique($notesBlocks);
+                    $allNotes = $otherNotes;
+                    if ($notesBlocks) {
+                        $allNotes .= "\n$notesSeparator"
+                            . implode("\n$notesSeparator", $notesBlocks);
+                    }
+
+                    $favorites->save(
+                        array_merge($post, ['notes' => $allNotes]),
+                        $user,
+                        $driver
+                    );
+                }
+
+                $pageEnd = $pageOptions['ilsPaging']
+                    ? ceil($result['count'] / $pageOptions['limit'])
+                    : 1;
+                $page++;
+            } while ($page <= $pageEnd);
+
+            // Display a success status message:
+            $listUrl = $this->url()
+                ->fromRoute('userList', ['id' => $post['list'] ?? 0]);
+            $message = [
+                'html' => true,
+                'msg' => $this->translate('bulk_save_success') . '. '
+                . '<a href="' . $listUrl . '" class="gotolist">'
+                . $this->translate('go_to_list') . '</a>.'
+            ];
+            $this->flashMessenger()->addSuccessMessage($message);
+        }
+        $view = $this->createViewModel(
+            [
+                'lists' => $user->getLists()
+            ]
+        );
+        return $view;
+    }
+
+    /**
      * Send user's saved favorites from a particular list to the edit view
      *
      * @return mixed
@@ -363,12 +540,26 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public function editlistAction()
     {
         $view = parent::editlistAction();
-        if ($view instanceof \Laminas\Http\PhpEnvironment\Response
-            && !empty($url = $this->getFollowupUrl())
-        ) {
-            return $this->redirect()->toUrl($url);
+        // If the user is in the process of saving a public list, send them back
+        // to the save screen
+        if ($view instanceof \Laminas\Http\PhpEnvironment\Response) {
+            if ($this->formWasSubmitted('submit')
+                && ($listId = $this->params()->fromQuery('saveListId'))
+            ) {
+                $saveUrl = $this->url()->fromRoute('list-save', ['id' => $listId]);
+                return $this->redirect()->toUrl($saveUrl);
+            }
         }
-        $this->setFollowupUrlToReferer();
+        // If the user is in the process of saving historic loans, send them back
+        // to the save screen
+        if ($view instanceof \Laminas\Http\PhpEnvironment\Response) {
+            if ($this->formWasSubmitted('submit')
+                && ($this->params()->fromQuery('saveHistoricLoans'))
+            ) {
+                $saveUrl = $this->url()->fromRoute('myresearch-savehistoricloans');
+                return $this->redirect()->toUrl($saveUrl);
+            }
+        }
         return $view;
     }
 

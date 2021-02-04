@@ -45,9 +45,12 @@
           </div>
           <?php if ($purgeAllowed): ?>
             <div class="hidden-print left-control">
-              <a class="btn btn-primary" href="<?=$this->url('myresearch-purgehistoricloans');?>" data-lightbox><?=$this->transEsc('loan_history_purge')?></a>
+              <a class="btn btn-primary btn-sm" href="<?=$this->url('myresearch-purgehistoricloans');?>" data-lightbox><?=$this->transEsc('loan_history_purge')?></a>
             </div>
           <?php endif; ?>
+          <div class="save-list-wrapper hidden-print left-control">
+            <a class="btn btn-primary btn-sm" data-lightbox role="button" href="<?=$this->url('myresearch-savehistoricloans') ?>"><?=$this->transEsc('loan_history_save')?></a>
+          </div>
           <div class="pagination-container">
             <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination-simple.phtml', ['params' => $this->params]) : ''?>
           </div>
