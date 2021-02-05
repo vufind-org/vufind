@@ -1570,20 +1570,7 @@ class MyResearchController extends AbstractBase
 
         if ($driversNeeded) {
             $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-            try {
-                $drivers = $recordLoader->loadBatch($driversNeeded);
-            } catch (\Exception $e) {
-                // Loading the batch failed, try one by one:
-                foreach ($driversNeeded as $i => $current) {
-                    try {
-                        $drivers[$i] = $recordLoader
-                            ->load($current['id'], $current['source'], true);
-                    } catch (\Exception $e) {
-                        // Ignore record loading exceptions...
-                    }
-                }
-            }
-
+            $drivers = $recordLoader->loadBatch($driversNeeded, true);
             foreach ($drivers as $i => $driver) {
                 $fines[$i]['driver'] = $driver;
                 if (empty($fines[$i]['title'])) {
