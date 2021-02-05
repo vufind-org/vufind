@@ -225,21 +225,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an auth manager instance.
-     *
-     * @return \VuFind\Auth\PluginManager
-     */
-    public function getAuthManager()
-    {
-        $sm = $this->getServiceManager();
-        if (!$sm->has(\VuFind\Auth\PluginManager::class)) {
-            $authManager = new \VuFind\Auth\PluginManager($sm);
-            $sm->setService('VuFind\Auth\PluginManager', $authManager);
-        }
-        return $sm->get(\VuFind\Auth\PluginManager::class);
-    }
-
-    /**
      * Is this test running in a continuous integration context?
      *
      * @return bool
