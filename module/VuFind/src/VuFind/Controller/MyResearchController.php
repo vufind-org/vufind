@@ -1127,21 +1127,35 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get a record driver object corresponding to an array returned by an ILS
-     * driver's getMyHolds / getMyTransactions method.
+     * Get record driver objects corresponding to an array of record arrays returned
+     * by an ILS driver's methods such as getMyHolds / getMyTransactions.
      *
-     * @param array $current Record information
+     * @param array $records Record information
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return \VuFind\RecordDriver\AbstractBase[]
      */
-    protected function getDriverForILSRecord($current)
+    protected function getDriversForILSRecords(array $records): array
     {
-        $id = $current['id'] ?? '';
-        $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
-        $record = $this->serviceLocator->get(\VuFind\Record\Loader::class)
-            ->load($id, $source, true);
-        $record->setExtraDetail('ils_details', $current);
-        return $record;
+        if (!$records) {
+            return [];
+        }
+        $ids = array_map(
+            function ($current) {
+                return [
+                    'id' => $current['id'] ?? '',
+                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND
+                ];
+            },
+            $records
+        );
+        $drivers = $this->serviceLocator->get(\VuFind\Record\Loader::class)
+            ->loadBatch($ids, true);
+        foreach ($records as $i => $current) {
+            // loadBatch takes care of maintaining correct order, so we can access
+            // the array by index
+            $drivers[$i]->setExtraDetail('ils_details', $current);
+        }
+        return $drivers;
     }
 
     /**
@@ -1174,7 +1188,7 @@ class MyResearchController extends AbstractBase
 
         // Get held item details:
         $result = $catalog->getMyHolds($patron);
-        $recordList = [];
+        $driversNeeded = [];
         $this->holds()->resetValidation();
         foreach ($result as $current) {
             // Add cancel details if appropriate:
@@ -1188,8 +1202,7 @@ class MyResearchController extends AbstractBase
                 $view->cancelForm = true;
             }
 
-            // Build record driver:
-            $recordList[] = $this->getDriverForILSRecord($current);
+            $driversNeeded[] = $current;
         }
 
         // Get List of PickUp Libraries based on patron's home library
@@ -1200,8 +1213,8 @@ class MyResearchController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $recordList;
-        $view->accountStatus = $this->collectRequestAccountStats($recordList);
+        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
+        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
         return $view;
     }
 
@@ -1240,7 +1253,7 @@ class MyResearchController extends AbstractBase
 
         // Get request details:
         $result = $catalog->getMyStorageRetrievalRequests($patron);
-        $recordList = [];
+        $driversNeeded = [];
         $this->storageRetrievalRequests()->resetValidation();
         foreach ($result as $current) {
             // Add cancel details if appropriate:
@@ -1255,8 +1268,7 @@ class MyResearchController extends AbstractBase
                 $view->cancelForm = true;
             }
 
-            // Build record driver:
-            $recordList[] = $this->getDriverForILSRecord($current);
+            $driversNeeded[] = $current;
         }
 
         // Get List of PickUp Libraries based on patron's home library
@@ -1267,8 +1279,8 @@ class MyResearchController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $recordList;
-        $view->accountStatus = $this->collectRequestAccountStats($recordList);
+        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
+        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
         return $view;
     }
 
@@ -1307,7 +1319,7 @@ class MyResearchController extends AbstractBase
 
         // Get request details:
         $result = $catalog->getMyILLRequests($patron);
-        $recordList = [];
+        $driversNeeded = [];
         $this->ILLRequests()->resetValidation();
         foreach ($result as $current) {
             // Add cancel details if appropriate:
@@ -1322,12 +1334,11 @@ class MyResearchController extends AbstractBase
                 $view->cancelForm = true;
             }
 
-            // Build record driver:
-            $recordList[] = $this->getDriverForILSRecord($current);
+            $driversNeeded[] = $current;
         }
 
-        $view->recordList = $recordList;
-        $view->accountStatus = $this->collectRequestAccountStats($recordList);
+        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
+        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
         return $view;
     }
 
@@ -1398,7 +1409,7 @@ class MyResearchController extends AbstractBase
             $accountStatus = null;
         }
 
-        $transactions = $hiddenTransactions = [];
+        $driversNeeded = $hiddenTransactions = [];
         foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
@@ -1425,13 +1436,15 @@ class MyResearchController extends AbstractBase
                 }
             }
 
-            // Build record driver (only for the current visible page):
+            // Build record drivers (only for the current visible page):
             if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
-                $transactions[] = $this->getDriverForILSRecord($current);
+                $driversNeeded[] = $current;
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
+
+        $transactions = $this->getDriversForILSRecords($driversNeeded);
 
         $displayItemBarcode
             = !empty($config->Catalog->display_checked_out_item_barcode);
@@ -1501,16 +1514,17 @@ class MyResearchController extends AbstractBase
             $pageEnd = $result['count'];
         }
 
-        $transactions = $hiddenTransactions = [];
+        $driversNeeded = $hiddenTransactions = [];
         foreach ($result['transactions'] as $i => $current) {
-            // Build record driver (only for the current visible page):
+            // Build record drivers (only for the current visible page):
             if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
-                $transactions[] = $this->getDriverForILSRecord($current);
+                $driversNeeded[] = $current;
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
 
+        $transactions = $this->getDriversForILSRecords($driversNeeded);
         $sortList = $pageOptions['sortList'];
         $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
@@ -1540,28 +1554,34 @@ class MyResearchController extends AbstractBase
         $result = $catalog->getMyFines($patron);
         $fines = [];
         $totalDue = 0;
-        foreach ($result as $row) {
-            // Attempt to look up and inject title:
-            try {
-                if (strlen($row['id'] ?? '') > 0) {
-                    $source = $row['source'] ?? DEFAULT_SEARCH_BACKEND;
-                    $row['driver'] = $this->serviceLocator
-                        ->get(\VuFind\Record\Loader::class)
-                        ->load($row['id'], $source);
-                    if (empty($row['title'])) {
-                        $row['title'] = $row['driver']->getShortTitle();
-                    }
-                }
-            } catch (\Exception $e) {
-                // Ignore record loading exceptions...
-            }
-            // In case we skipped or failed record loading, make sure title is set.
-            if (!isset($row['title'])) {
-                $row['title'] = null;
+        $driversNeeded = [];
+        foreach ($result as $i => $row) {
+            // If we have an id, add it to list of record drivers to load:
+            if ($row['id'] ?? false) {
+                $driversNeeded[$i] = [
+                    'id' => $row['id'],
+                    'source' => $row['source'] ?? DEFAULT_SEARCH_BACKEND
+                ];
             }
             $totalDue += $row['balance'] ?? 0;
-            $fines[] = $row;
+            // Store by original index so that we can access it when loading record
+            // drivers:
+            $fines[$i] = $row;
         }
+
+        if ($driversNeeded) {
+            $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+            $drivers = $recordLoader->loadBatch($driversNeeded, true);
+            foreach ($drivers as $i => $driver) {
+                $fines[$i]['driver'] = $driver;
+                if (empty($fines[$i]['title'])) {
+                    $fines[$i]['title'] = $driver->getShortTitle();
+                }
+            }
+        }
+
+        // Clean up array keys:
+        $fines = array_values($fines);
 
         // Collect up to date stats for ajax account notifications:
         if (!empty($this->getConfig()->Authentication->enableAjax)) {
