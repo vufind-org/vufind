@@ -234,7 +234,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $accountStatus = null;
         }
 
-        $transactions = $hiddenTransactions = [];
+        $driversNeeded = $hiddenTransactions = [];
         foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
@@ -263,11 +263,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
             // Build record driver (only for the current visible page):
             if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
-                $transactions[] = $this->getDriverForILSRecord($current);
+                $driversNeeded[] = $current;
             } else {
                 $hiddenTransactions[] = $current;
             }
         }
+
+        $transactions = $this->getDriversForILSRecords($driversNeeded);
 
         $displayItemBarcode
             = !empty($config->Catalog->display_checked_out_item_barcode);
@@ -1701,31 +1703,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         return $userLists;
-    }
-
-    /**
-     * Get a record driver object corresponding to an array returned by an ILS
-     * driver's getMyHolds / getMyTransactions method.
-     *
-     * @param array $current Record information
-     *
-     * @return \VuFind\RecordDriver\AbstractBase
-     */
-    protected function getDriverForILSRecord($current)
-    {
-        try {
-            return parent::getDriverForILSRecord($current);
-        } catch (\Exception $e) {
-            $id = $current['id'] ?? null;
-            $source = $current['source'] ?? DEFAULT_SEARCH_BACKEND;
-            $recordFactory = $this->serviceLocator
-                ->get(\VuFind\RecordDriver\PluginManager::class);
-            $record = $recordFactory->get('Missing');
-            $record->setRawData(['id' => $id]);
-            $record->setSourceIdentifier($source);
-            $record->setExtraDetail('ils_details', $current);
-            return $record;
-        }
     }
 
     /**
