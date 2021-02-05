@@ -74,8 +74,12 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         if (!isset($blenderConfig['Secondary']['backend'])) {
             throw new \Exception('Secondary backend not defined in blender.ini');
         }
+        $secondary = $blenderConfig['Secondary']['backend'];
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
+        $blenderMappings = $yamlReader->get("BlenderMappings$secondary.yaml");
+        if (empty($blenderMappings)) {
+            $blenderMappings = $yamlReader->get("BlenderMappings.yaml");
+        }
         $paramsMgr = $container->get(\VuFind\Search\Params\PluginManager::class);
         $secondaryParams = $paramsMgr->get(
             'VuFind\\Search\\' . $blenderConfig['Secondary']['backend']
