@@ -151,7 +151,6 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
      * @var array
      */
     protected $uncreditedRoleAttributes = [
-        'elokuva-elokreditoimatontekija-nimi',
         'elokuva-elokreditoimatonnayttelija-rooli',
         'elokuva-elokreditoimatonesiintyja-maare'
     ];
