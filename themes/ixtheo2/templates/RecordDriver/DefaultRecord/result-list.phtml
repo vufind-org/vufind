@@ -86,7 +86,7 @@
           <?php endif; ?>
           <?php // Handle superior data according to Issue 131 / Rule 5 ?>
           <?php $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
-          <?php if (!empty($journal_issue)): ?>
+          <?php if (is_array($journal_issue) && count($journal_issue) > 1): ?>
             <?php $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
             <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
             <?php unset($journal_issue[$superior_ppn_index]); ?>
