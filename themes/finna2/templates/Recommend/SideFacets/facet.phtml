@@ -17,7 +17,7 @@
   $plotFrom = null;
   $daterangeFacetField = null;
   $options = $results->getOptions();
-  if (in_array($backendId, ['Solr', 'Primo'])) {
+  if (in_array($backendId, ['Solr', 'Primo', 'Blender'])) {
     if (is_callable([$options, 'getDateRangeSearchField'])) {
       $daterangeFacetField = $options->getDateRangeSearchField();
     }

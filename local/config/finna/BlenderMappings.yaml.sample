@@ -34,6 +34,11 @@ Facets:
     Secondary: topic
   main_date_str:
     Secondary: creationdate
+  search_daterange_mv:
+    Secondary: creationdate
+    RegExp:
+      - Search: ".*\\|"
+        Replace: ""
   language:
     Secondary: lang
   online_boolean:

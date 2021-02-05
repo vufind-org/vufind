@@ -116,6 +116,11 @@ class Params extends \Finna\Search\Solr\Params
     public function getBackendParameters()
     {
         $params = parent::getBackendParameters();
+        if (!is_callable([$this->secondaryParams, 'getBackendParameters'])) {
+            throw new \Exception(
+                'Secondary backend missing support for getBackendParameters'
+            );
+        }
         $secondaryParams = $this->secondaryParams->getBackendParameters();
         $params->set(
             'secondary_backend',
@@ -160,6 +165,14 @@ class Params extends \Finna\Search\Solr\Params
                         }
                         if ($value === $v) {
                             $resultValues[] = $k;
+                        }
+                    }
+                    foreach ($mappings[$field]['RegExp'] ?? [] as $regexp) {
+                        $search = $regexp['Search'] ?? '';
+                        $replace = $regexp['Replace'] ?? '';
+                        if ($search) {
+                            $resultValues[]
+                                = preg_replace("/$search/", $replace, $value);
                         }
                     }
                     if ($resultValues) {

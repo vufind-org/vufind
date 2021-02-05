@@ -117,6 +117,7 @@ class GetDateRangeVisual extends \VuFind\AjaxHandler\AbstractBase
         } else {
             $options = $results->getOptions();
             $options->disableHighlighting();
+            $results->getParams()->setLimit(0);
             $results->performAndProcessSearch();
             $facets = $results->getFacetlist([$facet => $facet]);
             $facetList = $facets[$facet]['list'] ?? [];
