@@ -143,12 +143,13 @@ class ListController extends \Finna\Controller\MyResearchController
         if (is_object($response)) {
             return $response;
         }
-        $listId = $this->params()->fromRoute('id');
-        if ($listId === null) {
+        $sourceListId = $this->params()->fromRoute('id');
+        $targetListId = $this->params()->fromPost('list');
+        if ($sourceListId === null) {
             return $this->notFoundAction();
         }
         try {
-            $list = $this->getTable('UserList')->getExisting($listId);
+            $list = $this->getTable('UserList')->getExisting($sourceListId);
             if (!$list->isPublic()) {
                 return $this->createNoAccessView();
             }
@@ -161,34 +162,24 @@ class ListController extends \Finna\Controller\MyResearchController
             return $this->forceLogin();
         }
 
-        $this->setFollowupUrlToReferer();
-
         // Process form submission:
         if ($this->formWasSubmitted('submit')) {
-            $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
-            $callback = function ($callback, $params, $runningSearchId) {
-                $params->setLimit(100000);
-            };
-            $records = $runner->run(
-                ['id' => $listId],
-                'Favorites',
-                $callback
-            )->getResults();
-            $this->processSave($user, $records);
-            if ($this->inLightbox()) {
-                return $this->getResponse()->setStatusCode(204);
-            }
-            // redirect to previously stored followup
-            if ($url = $this->getFollowupUrl()) {
-                $this->clearFollowupUrl();
-                return $this->redirect()->toUrl($url);
-            }
-            // No followup info found?  Send back to list view:
+            $this->processSave($user, $sourceListId, $targetListId);
+
+            // Display a success status message:
+            $listUrl = $this->url()->fromRoute('userList', ['id' => $targetListId]);
+            $message = [
+                'html' => true,
+                'msg' => $this->translate('bulk_save_success') . '. '
+                . '<a href="' . $listUrl . '" class="gotolist">'
+                . $this->translate('go_to_list') . '</a>.'
+            ];
+            $this->flashMessenger()->addMessage($message, 'success');
             return $this->redirect()->toRoute('list-page', ['lid' => $sourceListId]);
         }
         $view = $this->createViewModel(
             [
-                'listId' => $listId,
+                'listId' => $sourceListId,
                 'lists' => $user->getLists()
             ]
         );
@@ -199,28 +190,31 @@ class ListController extends \Finna\Controller\MyResearchController
     /**
      * ProcessSave -- store the results of the Save action.
      *
-     * @param VuFind\Db\Row\User $user    User
-     * @param array              $records Records to be saved in userlist
+     * @param VuFind\Db\Row\User $user         User
+     * @param int                $sourceListId Source list id
+     * @param int                $targetListId Target list id
      *
      * @return void
      */
-    protected function processSave($user, array $records): void
+    protected function processSave($user, $sourceListId, $targetListId): void
     {
+        if ($sourceListId === $targetListId) {
+            return;
+        }
+        $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
+        $callback = function ($callback, $params, $runningSearchId) {
+            $params->setLimit(100000);
+        };
+        $records = $runner->run(
+            ['id' => $sourceListId],
+            'Favorites',
+            $callback
+        )->getResults();
+
         // Perform the save operation:
-        $post = $this->getRequest()->getPost()->toArray();
         $favorites = $this->serviceLocator
             ->get(\VuFind\Favorites\FavoritesService::class);
-        $results = $favorites->saveMany($post, $user, $records);
-
-        // Display a success status message:
-        $listUrl = $this->url()->fromRoute('userList', ['id' => $results['listId']]);
-        $message = [
-            'html' => true,
-            'msg' => $this->translate('bulk_save_success') . '. '
-            . '<a href="' . $listUrl . '" class="gotolist">'
-            . $this->translate('go_to_list') . '</a>.'
-        ];
-        $this->flashMessenger()->addMessage($message, 'success');
+        $results = $favorites->saveMany(['list' => $targetListId], $user, $records);
     }
 
     /**
