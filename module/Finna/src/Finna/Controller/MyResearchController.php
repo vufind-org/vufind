@@ -397,7 +397,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 return $this->createViewModel();
             }
 
-            $post = $this->getRequest()->getPost()->toArray();
+            $listId = $this->params()->fromPost('list');
             $favorites = $this->serviceLocator
                 ->get(\VuFind\Favorites\FavoritesService::class);
 
@@ -500,11 +500,17 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                             . implode("\n$notesSeparator", $notesBlocks);
                     }
 
-                    $favorites->save(
-                        array_merge($post, ['notes' => $allNotes]),
+                    $saveResult = $favorites->save(
+                        [
+                            'list' => $listId,
+                            'notes' => $allNotes
+                        ],
                         $user,
                         $driver
                     );
+                    // If save() added a new list, make sure to add subsequent
+                    // records to the same list:
+                    $listId = $saveResult['listId'];
                 }
 
                 $pageEnd = $pageOptions['ilsPaging']
@@ -514,8 +520,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             } while ($page <= $pageEnd);
 
             // Display a success status message:
-            $listUrl = $this->url()
-                ->fromRoute('userList', ['id' => $post['list'] ?? 0]);
+            $listUrl = $this->url()->fromRoute('userList', ['id' => $listId ?: 0]);
             $message = [
                 'html' => true,
                 'msg' => $this->translate('bulk_save_success') . '. '
