@@ -33,9 +33,9 @@
  */
 namespace VuFind\Search\Solr;
 
-use Interop\Container\ContainerInterface;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Psr\Container\ContainerInterface;
 
 use VuFindSearch\Backend\Solr\Backend;
 
@@ -94,7 +94,7 @@ class DeduplicationListener
      * @param string             $searchConfig     Search config file id
      * @param string             $dataSourceConfig Data source file id
      * @param bool               $enabled          Whether deduplication is
-     *                                             enabled
+     * enabled
      *
      * @return void
      */
