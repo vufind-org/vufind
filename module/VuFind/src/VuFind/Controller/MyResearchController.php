@@ -1126,14 +1126,14 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get record driver objects corresponding to an of record arrays returned by an
-     * ILS driver's methods such as getMyHolds / getMyTransactions.
+     * Get record driver objects corresponding to an array of record arrays returned
+     * by an ILS driver's methods such as getMyHolds / getMyTransactions.
      *
      * @param array $records Record information
      *
-     * @return array
+     * @return \VuFind\RecordDriver\AbstractBase[]
      */
-    protected function getDriversForILSRecords($records)
+    protected function getDriversForILSRecords(array $records): array
     {
         if (!$records) {
             return [];
