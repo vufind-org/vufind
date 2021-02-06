@@ -57,7 +57,7 @@ abstract class DbTestCase extends TestCase
                     ['VuFind\Db\Table\PluginFactory'],
             ]
         );
-        $sm->setService('VuFind\Db\Table\PluginManager', $factory);
+        $sm->set('VuFind\Db\Table\PluginManager', $factory);
     }
 
     /**
@@ -70,7 +70,7 @@ abstract class DbTestCase extends TestCase
     protected function addRowManager(ServiceManager $sm)
     {
         $factory = new \VuFind\Db\Row\PluginManager($sm);
-        $sm->setService('VuFind\Db\Row\PluginManager', $factory);
+        $sm->set('VuFind\Db\Row\PluginManager', $factory);
     }
 
     /**
@@ -88,17 +88,16 @@ abstract class DbTestCase extends TestCase
             $dbFactory = new \VuFind\Db\AdapterFactory(
                 $sm->get(\VuFind\Config\PluginManager::class)->get('config')
             );
-            $sm->setService('Laminas\Db\Adapter\Adapter', $dbFactory->getAdapter());
+            $sm->set('Laminas\Db\Adapter\Adapter', $dbFactory->getAdapter());
             $this->addTableManager($sm);
             $this->addRowManager($sm);
-            $sm->setService(
+            $sm->set(
                 'Laminas\Session\SessionManager',
                 $this->createMock(\Laminas\Session\SessionManager::class)
             );
 
             // Override the configuration so PostgreSQL tests can work:
-            $sm->setAllowOverride(true);
-            $sm->setService(
+            $sm->set(
                 'config',
                 [
                     'vufind' => [
@@ -133,7 +132,7 @@ abstract class DbTestCase extends TestCase
     public function getTable($table)
     {
         $sm = $this->getServiceManager();
-        $sm->setService(\VuFind\Tags::class, new \VuFind\Tags());
+        $sm->set(\VuFind\Tags::class, new \VuFind\Tags());
         return $sm->get(\VuFind\Db\Table\PluginManager::class)->get($table);
     }
 }

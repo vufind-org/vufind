@@ -124,12 +124,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->serviceManager, $config
         );
         $bm = new \VuFind\Search\BackendManager($registry);
-        $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
+        $this->serviceManager->set('VuFind\Search\BackendManager', $bm);
         $ss = new \VuFindSearch\Service();
-        $this->serviceManager->setService('VuFindSearch\Service', $ss);
+        $this->serviceManager->set('VuFindSearch\Service', $ss);
         $fh = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         $this->serviceManager
-            ->setService('VuFind\Search\Solr\HierarchicalFacetHelper', $fh);
+            ->set('VuFind\Search\Solr\HierarchicalFacetHelper', $fh);
         $events = $ss->getEventManager();
         $events->attach('resolve', [$bm, 'onResolve']);
     }
@@ -142,7 +142,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function getServiceManager()
     {
         if (!$this->serviceManager) {
-            $this->serviceManager = new \Laminas\ServiceManager\ServiceManager();
+            $this->serviceManager = new \VuFindTest\Container\MockContainer($this);
             $optionsFactory = new \VuFind\Search\Options\PluginManager(
                 $this->serviceManager,
                 [
@@ -150,7 +150,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                         [\VuFind\Search\Options\PluginFactory::class],
                 ]
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\Search\Options\PluginManager::class, $optionsFactory
             );
             $paramsFactory = new \VuFind\Search\Params\PluginManager(
@@ -160,7 +160,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                         [\VuFind\Search\Params\PluginFactory::class],
                 ]
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\Search\Params\PluginManager::class, $paramsFactory
             );
             $resultsFactory = new \VuFind\Search\Results\PluginManager(
@@ -170,7 +170,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                         [\VuFind\Search\Results\PluginFactory::class],
                 ]
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\Search\Results\PluginManager::class, $resultsFactory
             );
             $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
@@ -180,44 +180,40 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                         [\VuFind\RecordDriver\PluginFactory::class]
                 ]
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\RecordDriver\PluginManager::class, $recordDriverFactory
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\Config\SearchSpecsReader::class,
                 new \VuFind\Config\SearchSpecsReader()
             );
-            $this->serviceManager->setService(
-                \VuFind\Log\Logger::class,
-                $this->createMock(\VuFind\Log\Logger::class)
-            );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFindHttp\HttpService::class, new \VuFindHttp\HttpService()
             );
             $this->setupSearchService();
             $cfg = ['abstract_factories' => [\VuFind\Config\PluginFactory::class]];
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\Config\PluginManager::class,
                 new \VuFind\Config\PluginManager($this->serviceManager, $cfg)
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 'SharedEventManager', new \Laminas\EventManager\SharedEventManager()
             );
             $driverManager = $this->serviceManager
                 ->get(\VuFind\RecordDriver\PluginManager::class);
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \VuFind\Record\Loader::class, new \VuFind\Record\Loader(
                     $this->serviceManager->get(\VuFindSearch\Service::class),
                     $driverManager
                 )
             );
-            $this->serviceManager->setService('Config', []);
+            $this->serviceManager->set('Config', []);
             $factory = new \Laminas\Mvc\I18n\TranslatorFactory();
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 \Laminas\Mvc\I18n\Translator::class,
                 $factory->createService($this->serviceManager)
             );
-            $this->serviceManager->setService(
+            $this->serviceManager->set(
                 UrlQueryHelperFactory::class, new UrlQueryHelperFactory()
             );
         }
