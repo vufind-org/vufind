@@ -55,27 +55,6 @@ abstract class DbTestCase extends TestCase
             [
                 'abstract_factories' =>
                     ['VuFind\Db\Table\PluginFactory'],
-                'factories' => [
-                    'changetracker' =>
-                        'VuFind\Db\Table\Factory::getChangeTracker',
-                    'comments' => 'VuFind\Db\Table\Factory::getComments',
-                    'externalsession' =>
-                        'VuFind\Db\Table\Factory::getExternalSession',
-                    'oairesumption' =>
-                        'VuFind\Db\Table\Factory::getOaiResumption',
-                    'record' => 'VuFind\Db\Table\Factory::getRecord',
-                    'resource' => 'VuFind\Db\Table\Factory::getResource',
-                    'resourcetags' =>
-                        'VuFind\Db\Table\Factory::getResourceTags',
-                    'search' => 'VuFind\Db\Table\Factory::getSearch',
-                    'session' => 'VuFind\Db\Table\Factory::getSession',
-                    'tags' => 'VuFind\Db\Table\Factory::getTags',
-                    'user' => 'VuFind\Db\Table\Factory::getUser',
-                    'usercard' => 'VuFind\Db\Table\Factory::getUserCard',
-                    'userlist' => 'VuFind\Db\Table\Factory::getUserList',
-                    'userresource' =>
-                        'VuFind\Db\Table\Factory::getUserResource',
-                ],
             ]
         );
         $sm->setService('VuFind\Db\Table\PluginManager', $factory);
