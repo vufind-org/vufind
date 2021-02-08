@@ -324,7 +324,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $contents string to be checked
      * @param string $default  value to return if $contents is ""
      *
-     * @return $contents or $default
+     * @return string
      */
     protected function getField($contents, $default = "Unknown")
     {
