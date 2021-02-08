@@ -54,7 +54,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     /**
      * Search options plugin manager
      *
-     * @var \VuFind\Search\Options\PluginManager;
+     * @var \VuFind\Search\Options\PluginManager
      */
     protected $searchOptionsManager;
 

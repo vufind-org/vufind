@@ -69,7 +69,7 @@ abstract class AbstractBase
     /**
      * How many nodes have we formatted?
      *
-     * @var int;
+     * @var int
      */
     protected $count = 0;
 
@@ -94,7 +94,7 @@ abstract class AbstractBase
     /**
      * Get number of nodes formatted.
      *
-     * @return int;
+     * @return int
      */
     public function getCount()
     {
