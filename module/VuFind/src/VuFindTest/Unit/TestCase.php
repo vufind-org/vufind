@@ -41,71 +41,14 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    use ReflectionTrait;
+
     /**
      * The service manager instance
      *
      * @var \Laminas\ServiceManager\ServiceManager
      */
     protected $serviceManager = false;
-
-    /**
-     * Call protected or private method for side-effect and result.
-     *
-     * Uses PHP's reflection API in order to modify method accessibility.
-     *
-     * @param object|string $object    Object or class name
-     * @param string        $method    Method name
-     * @param array         $arguments Method arguments
-     *
-     * @throws \ReflectionException Method does not exist
-     *
-     * @return mixed
-     */
-    protected function callMethod($object, $method, array $arguments = [])
-    {
-        $reflectionMethod = new \ReflectionMethod($object, $method);
-        $reflectionMethod->setAccessible(true);
-        return $reflectionMethod->invokeArgs($object, $arguments);
-    }
-
-    /**
-     * Return protected or private property.
-     *
-     * Uses PHP's reflection API in order to modify property accessibility.
-     *
-     * @param object|string $object   Object or class name
-     * @param string        $property Property name
-     *
-     * @throws \ReflectionException Property does not exist
-     *
-     * @return mixed
-     */
-    protected function getProperty($object, $property)
-    {
-        $reflectionProperty = new \ReflectionProperty($object, $property);
-        $reflectionProperty->setAccessible(true);
-        return $reflectionProperty->getValue($object);
-    }
-
-    /**
-     * Set protected or private property.
-     *
-     * Uses PHP's reflection API in order to modify property accessibility.
-     *
-     * @param object|string $object   Object or class name
-     * @param string        $property Property name
-     * @param mixed         $value    Property value
-     *
-     * @throws \ReflectionException Property does not exist
-     *
-     * @return void
-     */
-    protected function setProperty($object, $property, $value)
-    {
-        $reflectionProperty = new \ReflectionProperty($object, $property);
-        $reflectionProperty->setAccessible(true);
-        return $reflectionProperty->setValue($object, $value);
-    }
 
     /**
      * Support method for getServiceManager()
