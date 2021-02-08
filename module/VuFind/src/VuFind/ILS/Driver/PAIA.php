@@ -55,14 +55,14 @@ class PAIA extends DAIA
     /**
      * URL of PAIA service
      *
-     * @var
+     * @var string
      */
     protected $paiaURL;
 
     /**
      * Timeout in seconds to be used for PAIA http requests
      *
-     * @var
+     * @var int
      */
     protected $paiaTimeout = null;
 

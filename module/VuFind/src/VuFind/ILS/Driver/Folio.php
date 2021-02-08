@@ -355,7 +355,6 @@ class Folio extends AbstractAPI implements
      *
      * @param string $bibId Bib-level id
      *
-     * @throw
      * @return array
      */
     protected function getInstanceByBibId($bibId)

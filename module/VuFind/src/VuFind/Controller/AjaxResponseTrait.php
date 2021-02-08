@@ -57,7 +57,7 @@ trait AjaxResponseTrait
     /**
      * AJAX Handler plugin manager
      *
-     * @var PluginManager;
+     * @var PluginManager
      */
     protected $ajaxManager = null;
 
