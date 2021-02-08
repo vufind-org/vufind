@@ -58,7 +58,7 @@ trait UserCreationTrait
         }
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable('User');
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
         if (count($userTable->select()) > 0) {
             self::fail(
                 'Test cannot run with pre-existing user data!'
@@ -194,7 +194,7 @@ trait UserCreationTrait
         }
 
         // Delete test user
-        $userTable = $test->getTable('User');
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
         foreach ((array)$users as $username) {
             $user = $userTable->getByUsername($username, false);
             if (!empty($user)) {

@@ -80,7 +80,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get a service manager.
      *
-     * @return \Laminas\ServiceManager\ServiceManager
+     * @return ContainerInterface
      */
     public function getServiceManager()
     {

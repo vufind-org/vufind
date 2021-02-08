@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Unit;
 
-use Laminas\ServiceManager\ServiceManager;
+use Psr\Container\ContainerInterface;
 
 /**
  * Abstract base class for PHPUnit database test cases.
@@ -42,13 +42,20 @@ use Laminas\ServiceManager\ServiceManager;
 abstract class DbTestCase extends TestCase
 {
     /**
+     * Table manager connected to live database.
+     *
+     * @return \VuFind\Db\Table\PluginManager
+     */
+    protected $liveTableManager = null;
+
+    /**
      * Add table manager to service manager.
      *
-     * @param ServiceManager $sm Service manager
+     * @param ContainerInterface $sm Service manager
      *
      * @return void
      */
-    protected function addTableManager(ServiceManager $sm)
+    protected function addTableManager(ContainerInterface $sm)
     {
         $factory = new \VuFind\Db\Table\PluginManager(
             $sm,
@@ -63,11 +70,11 @@ abstract class DbTestCase extends TestCase
     /**
      * Add row manager to service manager.
      *
-     * @param ServiceManager $sm Service manager
+     * @param ContainerInterface $sm Service manager
      *
      * @return void
      */
-    protected function addRowManager(ServiceManager $sm)
+    protected function addRowManager(ContainerInterface $sm)
     {
         $factory = new \VuFind\Db\Row\PluginManager($sm);
         $sm->set('VuFind\Db\Row\PluginManager', $factory);
@@ -76,7 +83,7 @@ abstract class DbTestCase extends TestCase
     /**
      * Get a service manager.
      *
-     * @return \Laminas\ServiceManager\ServiceManager
+     * @return ContainerInterface
      */
     public function getServiceManager()
     {
@@ -84,7 +91,9 @@ abstract class DbTestCase extends TestCase
         $sm = parent::getServiceManager();
 
         // Add database service:
-        if (!$sm->has(\VuFind\Db\Table\PluginManager::class)) {
+        static $serviceAdded = false;
+        if (!$serviceAdded) {
+            $serviceAdded = true;
             $dbFactory = new \VuFind\Db\AdapterFactory(
                 $sm->get(\VuFind\Config\PluginManager::class)->get('config')
             );
@@ -123,6 +132,45 @@ abstract class DbTestCase extends TestCase
     }
 
     /**
+     * Get a real, working table manager.
+     *
+     * @return \VuFind\Db\Table\PluginManager
+     */
+    public function getLiveTableManager()
+    {
+        if (!$this->liveTableManager) {
+            // Set up the bare minimum services to actually load real configs:
+            $config = require(
+                APPLICATION_PATH . '/module/VuFind/config/module.config.php'
+            );
+            $container = new \VuFindTest\Container\MockContainer($this);
+            $configManager = new \VuFind\Config\PluginManager(
+                $container, $config['vufind']['config_reader']
+            );
+            $container->set(\VuFind\Config\PluginManager::class, $configManager);
+            $adapterFactory = new \VuFind\Db\AdapterFactory(
+                $configManager->get('config')
+            );
+            $container->set(
+                \Laminas\Db\Adapter\Adapter::class, $adapterFactory->getAdapter()
+            );
+            $container->set(\VuFind\Tags::class, new \VuFind\Tags());
+            $container->set('config', $config);
+            $container->set(
+                \VuFind\Db\Row\PluginManager::class,
+                new \VuFind\Db\Row\PluginManager($container, [])
+            );
+            $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
+                $container, []
+            );
+            $container->set(
+                \VuFind\Db\Table\PluginManager::class, $this->liveTableManager
+            );
+        }
+        return $this->liveTableManager;
+    }
+
+    /**
      * Get a table object.
      *
      * @param string $table Name of table to load
@@ -131,8 +179,6 @@ abstract class DbTestCase extends TestCase
      */
     public function getTable($table)
     {
-        $sm = $this->getServiceManager();
-        $sm->set(\VuFind\Tags::class, new \VuFind\Tags());
-        return $sm->get(\VuFind\Db\Table\PluginManager::class)->get($table);
+        return $this->getLiveTableManager()->get($table);
     }
 }
