@@ -29,7 +29,7 @@
 namespace VuFindTest\Feature;
 
 /**
- * Mix-in for constructing Solr search objects for tests.
+ * Mix-in for accessing a real database during testing.
  *
  * @category VuFind
  * @package  Tests
