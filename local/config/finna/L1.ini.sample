@@ -45,7 +45,7 @@ default_noresults_recommend[] = SwitchQuery
 default_noresults_recommend[] = SpellingSuggestions
 
 highlighting = true
-;highlighting_fields = *
+highlighting_fields = "artist_str_mv,author,author2,author_additional,author_fuller,collection,container_title,contents,culture,description,dewey-full,edition,era,genre,geographic,institution,isbn,issn,language,lccn,material,measurements,publication_place_txt_mv,publisher,series,series2,title,title_alt,title_full,title_new,title_old,topic"
 snippets = true
 retain_filters_by_default = true
 ;default_filters[] = "format:Book"
@@ -205,6 +205,7 @@ genericRange[] = example_field_str
 hierarchical[] = building
 hierarchical[] = educational_level_str_mv
 hierarchicalFacetSortOptions[building] = top
+hierarchicalFacetSortOptions[educational_level_str_mv] = "all"
 hierarchicalFacetDisplayStyles[format] = full
 hierarchicalFacetSeparators[format] = " > "
 
