@@ -40,6 +40,8 @@ use VuFind\View\Helper\Root\ResultFeed;
  */
 class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
+    use \VuFindTest\Feature\LiveSolrTrait;
+
     /**
      * Standard setup method.
      *
@@ -118,12 +120,11 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('sort', 'title');
         $request->set('view', 'rss');
 
-        $results = $this->getServiceManager()
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
 
         $helper = new ResultFeed();
-        $helper->registerExtensions($this->getServiceManager());
+        $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper->__invoke($results, '/test/path');

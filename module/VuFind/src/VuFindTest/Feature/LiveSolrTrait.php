@@ -28,6 +28,12 @@
  */
 namespace VuFindTest\Feature;
 
+use Laminas\EventManager\SharedEventManager;
+use VuFind\Config\SearchSpecsReader;
+use VuFind\Search\BackendManager;
+use VuFind\Search\Factory\UrlQueryHelperFactory;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
+
 /**
  * Mix-in for accessing a real Solr instance during testing.
  *
@@ -47,6 +53,44 @@ trait LiveSolrTrait
     protected $liveSolrContainer = null;
 
     /**
+     * Create and populate container for services related to live Solr connectivity.
+     *
+     * @return \VuFindTest\Container\MockContainer
+     */
+    protected function createLiveSolrContainer()
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $config = require(
+            APPLICATION_PATH . '/module/VuFind/config/module.config.php'
+        );
+        $configManager = new \VuFind\Config\PluginManager(
+            $container, $config['vufind']['config_reader']
+        );
+        $container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $container->set(SearchSpecsReader::class, new SearchSpecsReader());
+        $container->set('SharedEventManager', new SharedEventManager());
+        $container->set(
+            \VuFind\RecordDriver\PluginManager::class,
+            new \VuFind\RecordDriver\PluginManager($container)
+        );
+        $registry = new \VuFind\Search\BackendRegistry($container, $config);
+        $backendManager = new BackendManager($registry);
+        $container->set(BackendManager::class, $backendManager);
+        foreach (['Options', 'Params', 'Results'] as $type) {
+            $class = 'VuFind\Search\\' . $type . '\PluginManager';
+            $container->set($class, new $class($container));
+        }
+        $container->set(UrlQueryHelperFactory::class, new UrlQueryHelperFactory());
+        $container
+            ->set(HierarchicalFacetHelper::class, new HierarchicalFacetHelper());
+        $searchService = new \VuFindSearch\Service();
+        $container->set(\VuFindSearch\Service::class, $searchService);
+        $events = $searchService->getEventManager();
+        $events->attach('resolve', [$backendManager, 'onResolve']);
+        return $container;
+    }
+
+    /**
      * Get container for services related to live Solr connectivity.
      *
      * @return \VuFindTest\Container\MockContainer
@@ -54,38 +98,34 @@ trait LiveSolrTrait
     protected function getLiveSolrContainer()
     {
         if (null === $this->liveSolrContainer) {
-            $container = new \VuFindTest\Container\MockContainer($this);
-            $config = require(
-                APPLICATION_PATH . '/module/VuFind/config/module.config.php'
-            );
-            $configManager = new \VuFind\Config\PluginManager(
-                $container, $config['vufind']['config_reader']
-            );
-            $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $container->set(
-                \VuFind\Config\SearchSpecsReader::class,
-                new \VuFind\Config\SearchSpecsReader()
-            );
-            $container->set(
-                'SharedEventManager', new \Laminas\EventManager\SharedEventManager()
-            );
-            $recordDriverFactory = new \VuFind\RecordDriver\PluginManager($container);
-            $container->set(
-                \VuFind\RecordDriver\PluginManager::class, $recordDriverFactory
-            );
-            $registry = new \VuFind\Search\BackendRegistry(
-                $container, $config
-            );
-            $bm = new \VuFind\Search\BackendManager($registry);
-            $container->set('VuFind\Search\BackendManager', $bm);
-            $this->liveSolrContainer = $container;
+            $this->liveSolrContainer = $this->createLiveSolrContainer();
         }
         return $this->liveSolrContainer;
     }
 
+    /**
+     * Get a search backend
+     *
+     * @param string $name Backend name
+     *
+     * @return object
+     */
     protected function getBackend($name = 'Solr')
     {
         return $this->getLiveSolrContainer()
             ->get(\VuFind\Search\BackendManager::class)->get($name);
+    }
+
+    /**
+     * Get a search results object
+     *
+     * @param string $name Backend name
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    protected function getResultsObject($name = 'Solr')
+    {
+        return $this->getLiveSolrContainer()
+            ->get(\VuFind\Search\Results\PluginManager::class)->get($name);
     }
 }
