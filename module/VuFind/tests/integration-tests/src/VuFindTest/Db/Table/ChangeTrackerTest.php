@@ -38,9 +38,10 @@ use VuFind\Db\Table\ChangeTracker;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ChangeTrackerTest extends \VuFindTest\Unit\TestCase
+class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
      * Standard setup method.

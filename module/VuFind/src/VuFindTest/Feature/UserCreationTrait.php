@@ -2,7 +2,8 @@
 
 /**
  * Trait with utility methods for user creation/management. Depends upon the
- * LiveDatabaseTrait for database access.
+ * LiveDatabaseTrait for database access and the LiveDetectionTrait for
+ * identification of a live test environment.
  *
  * PHP version 7
  *
@@ -33,7 +34,8 @@ use Behat\Mink\Element\Element;
 
 /**
  * Trait with utility methods for user creation/management. Depends upon the
- * LiveDatabaseTrait for database access.
+ * LiveDatabaseTrait for database access and the LiveDetectionTrait for
+ * identification of a live test environment.
  *
  * @category VuFind
  * @package  Tests
@@ -51,8 +53,14 @@ trait UserCreationTrait
      */
     protected static function failIfUsersExist(): void
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
         $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
         if (!$test->continuousIntegrationRunning()) {
             return;
         }
@@ -193,8 +201,14 @@ trait UserCreationTrait
      */
     protected static function removeUsers($users)
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
         $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
         if (!$test->continuousIntegrationRunning()) {
             return;
         }

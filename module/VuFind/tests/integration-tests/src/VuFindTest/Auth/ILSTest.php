@@ -40,9 +40,10 @@ use VuFind\Db\Table\User;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSTest extends \VuFindTest\Unit\TestCase
+class ILSTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**

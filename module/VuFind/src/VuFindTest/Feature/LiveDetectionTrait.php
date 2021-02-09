@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Abstract base class for PHPUnit test cases.
+ * Mix-in for detecting whether a live test environment is currently running.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,24 +22,30 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
+namespace VuFindTest\Feature;
 
 /**
- * Abstract base class for PHPUnit test cases.
+ * Mix-in for detecting whether a live test environment is currently running.
  *
  * @category VuFind
  * @package  Tests
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class TestCase extends \PHPUnit\Framework\TestCase
+trait LiveDetectionTrait
 {
-    use \VuFindTest\Feature\ReflectionTrait;
+    /**
+     * Flag to allow other traits to test for the presence of this one (to enforce
+     * dependencies).
+     *
+     * @var bool
+     */
+    public $hasLiveDetectionTrait = true;
 
     /**
      * Is this test running in a continuous integration context?

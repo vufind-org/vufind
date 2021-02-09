@@ -35,7 +35,6 @@ use VuFindSearch\Backend\Solr\Connector;
 
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for multiindex listener.
@@ -46,8 +45,10 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class MultiIndexListenerTest extends TestCase
+class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Specs used for stripping tests.
      *

@@ -40,6 +40,7 @@ use VuFind\View\Helper\Root\ResultFeed;
  */
 class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
+    use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\LiveSolrTrait;
 
     /**

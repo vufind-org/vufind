@@ -45,7 +45,7 @@ use VuFind\Resolver\Driver\Ezb;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class EzbTest extends \VuFindTest\Unit\TestCase
+class EzbTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

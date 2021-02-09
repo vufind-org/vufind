@@ -30,7 +30,6 @@ namespace VuFindTest\Search;
 
 use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * QueryAdapter unit tests.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class QueryAdapterTest extends TestCase
+class QueryAdapterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

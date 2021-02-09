@@ -38,7 +38,7 @@ use VuFind\Recommend\CollectionSideFacets;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
+class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test "getResults"

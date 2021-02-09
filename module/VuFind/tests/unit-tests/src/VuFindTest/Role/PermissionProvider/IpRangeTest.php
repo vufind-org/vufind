@@ -39,7 +39,7 @@ use VuFind\Role\PermissionProvider\IpRange;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IpRangeTest extends \VuFindTest\Unit\TestCase
+class IpRangeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a permission provider with the specified IP assigned.

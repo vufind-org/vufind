@@ -31,7 +31,6 @@ namespace VuFindTest\Search\Solr;
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Hide Facet Value Listener.
@@ -42,7 +41,7 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HideFacetValueListenerTest extends TestCase
+class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a mock backend

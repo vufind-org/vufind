@@ -40,7 +40,7 @@ use VuFind\RecordTab\TabManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TabManagerTest extends \VuFindTest\Unit\TestCase
+class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Set up a tab manager for testing.

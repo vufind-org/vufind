@@ -38,9 +38,10 @@ use VuFind\Auth\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DatabaseTest extends \VuFindTest\Unit\TestCase
+class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**

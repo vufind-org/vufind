@@ -48,7 +48,7 @@ use VuFind\Resolver\Driver\Alma;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AlmaTest extends \VuFindTest\Unit\TestCase
+class AlmaTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 
