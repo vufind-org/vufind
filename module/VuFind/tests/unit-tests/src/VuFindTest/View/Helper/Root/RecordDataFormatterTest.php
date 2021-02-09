@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Interop\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -62,9 +63,11 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Get view helpers needed by test.
      *
+     * @param ContainerInterface $container Mock service container
+     *
      * @return array
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers($container)
     {
         $context = new \VuFind\View\Helper\Root\Context();
         return [
@@ -78,7 +81,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
             'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockRecordRouter()),
-            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($this->getServiceManager())),
+            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
             'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
@@ -135,12 +138,14 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
-        $formatter = $factory->__invoke(
-            $this->getServiceManager(), RecordDataFormatter::class
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(
+            \VuFind\Config\PluginManager::class, new \VuFind\Config\PluginManager($container)
         );
+        $formatter = $factory->__invoke($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers();
+        $helpers = $this->getViewHelpers($container);
         $view = $this->getPhpRenderer($helpers);
 
         // Mock out the router to avoid errors:
