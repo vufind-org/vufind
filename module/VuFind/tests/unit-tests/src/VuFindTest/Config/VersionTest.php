@@ -41,7 +41,7 @@ use VuFind\Config\Version;
  */
 class VersionTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test the default directory parameter.

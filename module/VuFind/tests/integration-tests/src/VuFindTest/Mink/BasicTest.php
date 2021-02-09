@@ -39,7 +39,7 @@ namespace VuFindTest\Mink;
  */
 class BasicTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Test that the home page is available.

@@ -42,7 +42,7 @@ use VuFind\RecordDriver\SolrOverdrive;
  */
 class SolrOverdriveTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test supportsOpenUrl()

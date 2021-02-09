@@ -50,7 +50,7 @@ use VuFind\Resolver\Driver\Alma;
  */
 class AlmaTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test-Config

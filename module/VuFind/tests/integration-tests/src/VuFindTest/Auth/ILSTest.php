@@ -42,8 +42,8 @@ use VuFind\Db\Table\User;
  */
 class ILSTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\LiveDatabaseTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.

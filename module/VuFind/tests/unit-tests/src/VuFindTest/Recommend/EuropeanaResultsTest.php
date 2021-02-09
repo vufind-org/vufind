@@ -44,7 +44,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  */
 class EuropeanaResultsTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test that the module properly parses a sample response.

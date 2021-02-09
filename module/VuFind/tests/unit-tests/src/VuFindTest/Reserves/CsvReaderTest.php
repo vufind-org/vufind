@@ -40,7 +40,7 @@ use VuFind\Reserves\CsvReader;
  */
 class CsvReaderTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test getInstructors()

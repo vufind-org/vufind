@@ -43,7 +43,7 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test performing an autocomplete

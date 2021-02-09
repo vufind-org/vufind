@@ -42,7 +42,7 @@ use VuFind\DoiLinker\Unpaywall;
  */
 class UnpaywallTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test configuration validation.

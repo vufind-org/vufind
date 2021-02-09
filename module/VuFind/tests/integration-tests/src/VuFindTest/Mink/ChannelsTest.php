@@ -41,7 +41,7 @@ use Behat\Mink\Element\Element;
  */
 class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Get a reference to a standard search results page.

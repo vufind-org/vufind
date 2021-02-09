@@ -44,7 +44,7 @@ use VuFind\RecordDriver\Response\PublicationDetails;
  */
 class DefaultRecordTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test getPublicationDates for a record.

@@ -41,7 +41,7 @@ use Behat\Mink\Element\Element;
  */
 class LinkResolverTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Standard setup method.

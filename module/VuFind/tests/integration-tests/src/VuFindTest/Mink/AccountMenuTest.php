@@ -39,10 +39,10 @@ namespace VuFindTest\Mink;
  */
 class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\LiveDatabaseTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
-    use \VuFindTest\Unit\DemoDriverTestTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
+    use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
      * Standard setup method.

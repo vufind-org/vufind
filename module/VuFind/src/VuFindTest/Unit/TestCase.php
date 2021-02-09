@@ -41,7 +41,7 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    use ReflectionTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * The service manager instance

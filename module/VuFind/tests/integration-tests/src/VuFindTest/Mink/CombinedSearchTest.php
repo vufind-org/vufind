@@ -41,7 +41,7 @@ use Behat\Mink\Element\Element;
  */
 class CombinedSearchTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Get config settings for combined.ini.

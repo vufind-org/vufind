@@ -42,9 +42,9 @@ use VuFind\Search\Solr\SpellingProcessor;
  */
 class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
-    use \VuFindTest\Unit\ReflectionTrait;
-    use \VuFindTest\Unit\SolrSearchObjectTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
      * Test defaults.

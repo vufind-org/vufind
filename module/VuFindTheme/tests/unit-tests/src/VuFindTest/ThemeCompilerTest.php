@@ -41,7 +41,7 @@ use VuFindTheme\ThemeInfo;
  */
 class ThemeCompilerTest extends Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * ThemeInfo object for tests

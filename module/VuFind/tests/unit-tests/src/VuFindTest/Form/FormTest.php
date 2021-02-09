@@ -42,7 +42,7 @@ use VuFind\Form\Form;
  */
 class FormTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test defaults with no configuration.

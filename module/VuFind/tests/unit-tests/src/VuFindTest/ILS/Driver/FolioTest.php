@@ -41,7 +41,7 @@ use VuFind\ILS\Driver\Folio;
  */
 class FolioTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     protected $testConfig = [
         'API' => [

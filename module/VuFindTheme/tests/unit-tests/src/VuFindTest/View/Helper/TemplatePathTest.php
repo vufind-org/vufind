@@ -40,7 +40,7 @@ use VuFindTheme\View\Helper\TemplatePath;
  */
 class TemplatePathTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Path to theme fixtures

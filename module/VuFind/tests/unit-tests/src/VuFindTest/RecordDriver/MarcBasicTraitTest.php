@@ -38,7 +38,7 @@ namespace VuFindTest\RecordDriver;
  */
 class MarcBasicTraitTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test methods in MarcBasicTrait.

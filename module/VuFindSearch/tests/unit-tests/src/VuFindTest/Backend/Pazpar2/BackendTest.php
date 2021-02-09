@@ -44,7 +44,7 @@ use VuFindTest\Unit\TestCase;
  */
 class BackendTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test that getConnector works.

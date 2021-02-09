@@ -42,7 +42,7 @@ use VuFindTheme\ThemeInfo;
  */
 class PageLocatorTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test determining a template and renderer.

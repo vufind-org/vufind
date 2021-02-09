@@ -39,7 +39,7 @@ namespace VuFindTest\Mink;
  */
 class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * CSS selector for finding active filters

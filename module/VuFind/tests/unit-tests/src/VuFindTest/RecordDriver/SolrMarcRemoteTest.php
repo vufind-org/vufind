@@ -44,7 +44,7 @@ use VuFindHttp\HttpServiceInterface;
  */
 class SolrMarcRemoteTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test config validation.

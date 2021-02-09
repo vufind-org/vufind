@@ -40,7 +40,7 @@ namespace VuFindTest\Search\Base;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\SolrSearchObjectTrait;
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
      * Test a record that used to be known to cause problems because of the way

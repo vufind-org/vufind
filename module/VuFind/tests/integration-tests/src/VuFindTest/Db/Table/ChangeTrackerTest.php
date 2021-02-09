@@ -40,7 +40,7 @@ use VuFind\Db\Table\ChangeTracker;
  */
 class ChangeTrackerTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
 
     /**
      * Standard setup method.

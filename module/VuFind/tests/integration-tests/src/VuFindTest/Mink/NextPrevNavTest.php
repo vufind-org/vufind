@@ -39,7 +39,7 @@ namespace VuFindTest\Mink;
  */
 class NextPrevNavTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * if next_prev_navigation and first_last_navigation are set to true

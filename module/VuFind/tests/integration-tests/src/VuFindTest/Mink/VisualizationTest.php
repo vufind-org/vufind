@@ -39,7 +39,7 @@ namespace VuFindTest\Mink;
  */
 class VisualizationTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Test that combined results work in mixed AJAX/non-AJAX mode.

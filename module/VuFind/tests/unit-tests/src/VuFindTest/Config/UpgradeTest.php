@@ -41,7 +41,7 @@ use VuFind\Config\Upgrade;
  */
 class UpgradeTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Target upgrade version

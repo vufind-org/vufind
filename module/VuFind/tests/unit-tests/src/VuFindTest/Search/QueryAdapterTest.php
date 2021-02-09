@@ -43,7 +43,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  */
 class QueryAdapterTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test various conversions.

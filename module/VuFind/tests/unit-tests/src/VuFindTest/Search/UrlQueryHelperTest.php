@@ -44,7 +44,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  */
 class UrlQueryHelperTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get a preconfigured helper.

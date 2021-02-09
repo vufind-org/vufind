@@ -38,7 +38,7 @@ namespace VuFindTest\Marc;
  */
 class MarcReaderTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test MarcReader methods

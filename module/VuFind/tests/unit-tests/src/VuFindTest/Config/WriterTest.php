@@ -41,7 +41,7 @@ use VuFind\Config\Writer;
  */
 class WriterTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test reading from a file.

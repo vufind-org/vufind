@@ -47,7 +47,7 @@ use VuFind\Resolver\Driver\Redi;
  */
 class RediTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test-Config

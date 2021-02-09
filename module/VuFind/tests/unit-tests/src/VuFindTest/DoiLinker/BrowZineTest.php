@@ -41,7 +41,7 @@ use VuFindSearch\Backend\BrowZine\Connector;
  */
 class BrowZineTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get a mock connector

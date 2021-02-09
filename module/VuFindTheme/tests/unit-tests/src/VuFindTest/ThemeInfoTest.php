@@ -40,7 +40,7 @@ use VuFindTheme\ThemeInfo;
  */
 class ThemeInfoTest extends Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Path to theme fixtures

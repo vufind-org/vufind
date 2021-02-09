@@ -41,7 +41,7 @@ use VuFind\I18n\Translator\Loader\ExtendedIni;
  */
 class ExtendedIniTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test translations.

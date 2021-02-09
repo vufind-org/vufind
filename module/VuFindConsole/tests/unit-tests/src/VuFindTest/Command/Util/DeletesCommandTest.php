@@ -41,7 +41,7 @@ use VuFindConsole\Command\Util\DeletesCommand;
  */
 class DeletesCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get mock Solr writer.

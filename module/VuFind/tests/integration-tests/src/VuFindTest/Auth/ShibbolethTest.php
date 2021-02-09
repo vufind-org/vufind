@@ -44,8 +44,8 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
  */
 class ShibbolethTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\LiveDatabaseTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     protected $user1 = [
         'Shib-Identity-Provider' => 'https://idp1.example.org/',

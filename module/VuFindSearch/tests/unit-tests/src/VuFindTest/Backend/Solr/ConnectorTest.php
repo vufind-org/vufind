@@ -48,7 +48,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  */
 class ConnectorTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Current response.

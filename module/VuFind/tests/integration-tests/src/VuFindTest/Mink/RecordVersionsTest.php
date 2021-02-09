@@ -39,7 +39,7 @@ namespace VuFindTest\Mink;
  */
 class RecordVersionsTest extends \VuFindTest\Unit\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Standard setup method.

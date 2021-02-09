@@ -43,7 +43,7 @@ use VuFind\View\Helper\Root\OpenUrl;
  */
 class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Configuration array providing basic settings for testing OpenUrlRules

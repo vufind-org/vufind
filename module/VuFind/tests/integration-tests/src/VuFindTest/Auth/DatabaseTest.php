@@ -40,8 +40,8 @@ use VuFind\Auth\Database;
  */
 class DatabaseTest extends \VuFindTest\Unit\TestCase
 {
-    use \VuFindTest\Unit\LiveDatabaseTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Object to test
