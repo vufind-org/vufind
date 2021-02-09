@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\Unit;
 
-use VuFind\Search\Factory\UrlQueryHelperFactory;
-
 /**
  * Abstract base class for PHPUnit test cases.
  *
