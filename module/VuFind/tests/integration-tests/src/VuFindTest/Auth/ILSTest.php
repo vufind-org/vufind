@@ -101,7 +101,7 @@ class ILSTest extends \VuFindTest\Unit\TestCase
         }
         $authenticator = $this->getMockILSAuthenticator($patron);
         $driverManager = new \VuFind\ILS\Driver\PluginManager(
-            $this->getServiceManager()
+            new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
