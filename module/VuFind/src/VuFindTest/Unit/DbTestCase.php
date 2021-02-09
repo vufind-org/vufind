@@ -41,12 +41,7 @@ use Psr\Container\ContainerInterface;
  */
 abstract class DbTestCase extends TestCase
 {
-    /**
-     * Table manager connected to live database.
-     *
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    protected $liveTableManager = null;
+    use LiveDatabaseTrait;
 
     /**
      * Add table manager to service manager.
@@ -129,56 +124,5 @@ abstract class DbTestCase extends TestCase
             );
         }
         return $sm;
-    }
-
-    /**
-     * Get a real, working table manager.
-     *
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getLiveTableManager()
-    {
-        if (!$this->liveTableManager) {
-            // Set up the bare minimum services to actually load real configs:
-            $config = require(
-                APPLICATION_PATH . '/module/VuFind/config/module.config.php'
-            );
-            $container = new \VuFindTest\Container\MockContainer($this);
-            $configManager = new \VuFind\Config\PluginManager(
-                $container, $config['vufind']['config_reader']
-            );
-            $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $adapterFactory = new \VuFind\Db\AdapterFactory(
-                $configManager->get('config')
-            );
-            $container->set(
-                \Laminas\Db\Adapter\Adapter::class, $adapterFactory->getAdapter()
-            );
-            $container->set(\VuFind\Tags::class, new \VuFind\Tags());
-            $container->set('config', $config);
-            $container->set(
-                \VuFind\Db\Row\PluginManager::class,
-                new \VuFind\Db\Row\PluginManager($container, [])
-            );
-            $this->liveTableManager = new \VuFind\Db\Table\PluginManager(
-                $container, []
-            );
-            $container->set(
-                \VuFind\Db\Table\PluginManager::class, $this->liveTableManager
-            );
-        }
-        return $this->liveTableManager;
-    }
-
-    /**
-     * Get a table object.
-     *
-     * @param string $table Name of table to load
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getTable($table)
-    {
-        return $this->getLiveTableManager()->get($table);
     }
 }

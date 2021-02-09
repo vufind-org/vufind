@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait with utility methods for user creation/management. Depends upon the
+ * LiveDatabaseTrait for database access.
  *
  * PHP version 7
  *
@@ -32,8 +32,8 @@ namespace VuFindTest\Unit;
 use Behat\Mink\Element\Element;
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait with utility methods for user creation/management. Depends upon the
+ * LiveDatabaseTrait for database access.
  *
  * @category VuFind
  * @package  Tests
@@ -55,6 +55,12 @@ trait UserCreationTrait
         $test = new static();   // create instance of current class
         if (!$test->continuousIntegrationRunning()) {
             return;
+        }
+        // Fail if the test does not include the LiveDatabaseTrait.
+        if (!$test->hasLiveDatabaseTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
         }
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
@@ -191,6 +197,13 @@ trait UserCreationTrait
         $test = new static();   // create instance of current class
         if (!$test->continuousIntegrationRunning()) {
             return;
+        }
+
+        // Fail if the test does not include the LiveDatabaseTrait.
+        if (!$test->hasLiveDatabaseTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
         }
 
         // Delete test user

@@ -40,8 +40,9 @@ use VuFind\Db\Table\User;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSTest extends \VuFindTest\Unit\DbTestCase
+class ILSTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\LiveDatabaseTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
@@ -113,9 +114,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             ),
             $authenticator
         );
-        $auth->setDbTableManager(
-            $this->getServiceManager()->get(\VuFind\Db\Table\PluginManager::class)
-        );
+        $auth->setDbTableManager($this->getLiveTableManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }
