@@ -60,9 +60,8 @@ trait LiveSolrTrait
     protected function createLiveSolrContainer()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $config = require(
-            APPLICATION_PATH . '/module/VuFind/config/module.config.php'
-        );
+        $config = include APPLICATION_PATH
+            . '/module/VuFind/config/module.config.php';
         $configManager = new \VuFind\Config\PluginManager(
             $container, $config['vufind']['config_reader']
         );

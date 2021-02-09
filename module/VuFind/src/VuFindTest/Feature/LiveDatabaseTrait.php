@@ -63,9 +63,8 @@ trait LiveDatabaseTrait
     {
         if (!$this->liveTableManager) {
             // Set up the bare minimum services to actually load real configs:
-            $config = require(
-                APPLICATION_PATH . '/module/VuFind/config/module.config.php'
-            );
+            $config = include APPLICATION_PATH
+                . '/module/VuFind/config/module.config.php';
             $container = new \VuFindTest\Container\MockContainer($this);
             $configManager = new \VuFind\Config\PluginManager(
                 $container, $config['vufind']['config_reader']
