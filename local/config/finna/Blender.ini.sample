@@ -57,7 +57,7 @@ deduplication = true
 
 ; This section controls the search handler options displayed in blended mode.
 [Basic_Searches]
-All Fields = "All Fields"
+AllFields = "All Fields"
 Title = Title
 Author = Author
 Subject = Subject
@@ -84,7 +84,8 @@ author_facet        = Author
 language            = Language
 original_lng_str_mv = original_work_language
 subtitle_lng_str_mv = subtitle_language
-main_date_str       = "Year"
+;main_date_str       = "Year"
+search_daterange_mv = "Main Year"
 topic_facet         = Topic
 
 [FacetLabels]
