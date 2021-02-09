@@ -39,7 +39,9 @@
                 $url_params['date'] = $year;
             $pages = $this->escapeHtml(str_replace(" ", "", $this->driver->getPages()));
             if (!empty($pages))
-                $url_params['pages'] = preg_match('/(^\d+$)/', $pages, $match) ? $match[0] . '-' . $match[0] : $pages;
+            $url_params['pages'] = preg_match('/(^\d+$)/', $pages, $match) ? $match[0] . '-' . $match[0] :
+                                       // Address strange page formatting in some online only articles
+                                       (preg_match('/^NP(\d+)-NP(\d+)$/', $pages, $match) ? $match[1] . '-' . $match[2]  : $pages);
         }
 
         // prepare url_suffix (same for each url)
