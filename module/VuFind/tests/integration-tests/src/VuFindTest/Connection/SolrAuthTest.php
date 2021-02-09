@@ -40,6 +40,8 @@ use VuFindSearch\Query\Query;
  */
 class SolrAuthTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Feature\LiveSolrTrait;
+
     /**
      * Standard setup method.
      *
@@ -61,8 +63,7 @@ class SolrAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testSimpleSearch()
     {
-        $solr = $this->getServiceManager()->get(\VuFind\Search\BackendManager::class)
-            ->get('SolrAuth');
+        $solr = $this->getBackend('SolrAuth');
 
         // Search for a term known to exist in the sample data; request just one
         // record -- we should get a single record back.
