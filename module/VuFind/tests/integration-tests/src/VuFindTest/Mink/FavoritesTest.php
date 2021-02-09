@@ -42,6 +42,7 @@ use Behat\Mink\Element\Element;
 class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Unit\LiveDatabaseTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**

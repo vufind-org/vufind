@@ -43,6 +43,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\AutoRetryTrait;
     use \VuFindTest\Unit\DemoDriverTestTrait;
+    use \VuFindTest\Unit\LiveDatabaseTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**

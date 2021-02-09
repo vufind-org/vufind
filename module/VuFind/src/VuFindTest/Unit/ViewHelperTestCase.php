@@ -37,7 +37,7 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class ViewHelperTestCase extends DbTestCase
+abstract class ViewHelperTestCase extends TestCase
 {
     /**
      * Get a working renderer.

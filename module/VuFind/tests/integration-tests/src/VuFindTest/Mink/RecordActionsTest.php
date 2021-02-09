@@ -40,6 +40,7 @@ namespace VuFindTest\Mink;
 class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
 {
     use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Unit\LiveDatabaseTrait;
     use \VuFindTest\Unit\UserCreationTrait;
 
     /**
