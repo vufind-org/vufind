@@ -48,7 +48,7 @@ trait SolrSearchObjectTrait
      *
      * @return \VuFind\Config\PluginManager
      */
-    public function getMockConfigManager()
+    public function getMockConfigManager(): \VuFind\Config\PluginManager
     {
         $manager = $this->createMock(\VuFind\Config\PluginManager::class);
         $manager->expects($this->any())->method('get')
@@ -61,7 +61,7 @@ trait SolrSearchObjectTrait
      *
      * @return Options
      */
-    public function getSolrOptions()
+    public function getSolrOptions(): Options
     {
         return new Options(
             $this->getMockConfigManager()
@@ -71,12 +71,14 @@ trait SolrSearchObjectTrait
     /**
      * Get Solr params.
      *
+     * @param Options $options Solr options to inject (null for default)
+     *
      * @return Params
      */
-    public function getSolrParams()
+    public function getSolrParams(Options $options = null): Params
     {
         return new Params(
-            $this->getSolrOptions(),
+            $options ?? $this->getSolrOptions(),
             $this->getMockConfigManager()
         );
     }
@@ -84,12 +86,14 @@ trait SolrSearchObjectTrait
     /**
      * Get Solr results.
      *
-     * @return Results;
+     * @param Params $params Solr parameters to inject (null for default)
+     *
+     * @return Results
      */
-    public function getSolrResults()
+    public function getSolrResults(Params $params = null): Results
     {
         return new Results(
-            $this->getSolrParams(),
+            $params ?? $this->getSolrParams(),
             $this->createMock(\VuFindSearch\Service::class),
             $this->createMock(\VuFind\Record\Loader::class)
         );
