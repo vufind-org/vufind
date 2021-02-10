@@ -38,10 +38,11 @@ use VuFind\View\Helper\Root\ResultFeed;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
+class ResultFeedTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\LiveSolrTrait;
+    use \VuFindTest\Feature\ViewTrait;
 
     /**
      * Standard setup method.
