@@ -39,6 +39,16 @@ namespace VuFind\Related;
 class Bookplate implements RelatedInterface
 {
     /**
+     * Bookplate config
+     */
+    protected $config;
+
+    /**
+     * Solr fields
+     */
+    protected $fields;
+
+    /**
      * Bookplate strings
      */
     protected $bookplateStrs;
@@ -64,6 +74,17 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
+     * Constructor
+     *
+     * @param VuFind\Config\PluginManager $configLoader PluginManager
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+        $this->config = $this->configLoader->get('Related');
+    }
+
+    /**
      * Establishes base settings for bookplates.
      *
      * @param string                            $settings Settings from config.ini
@@ -73,11 +94,88 @@ class Bookplate implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $this->bookplateStrs = $driver->getBookplateSolrData('titles');
-        $this->bookplateImgNames = $driver->getBookplateSolrData('imgNames');
-        $this->fullUrlTemplate = $driver->getBookplateFullUrlTemplate();
-        $this->thumbUrlTemplate = $driver->getBookplateThumbUrlTemplate();
-        $this->displayTitles = $driver->displayBookplateTitles();
+        $this->fields = $driver->getRawData();
+        $this->bookplateStrs = $this->getBookplateSolrData('titles');
+        $this->bookplateImgNames = $this->getBookplateSolrData('imgNames');
+        $this->fullUrlTemplate = $this->getBookplateFullUrlTemplate();
+        $this->thumbUrlTemplate = $this->getBookplateThumbUrlTemplate();
+        $this->displayTitles = $this->displayBookplateTitles();
+    }
+
+    /**
+     * Get the bookplate names.
+     *
+     * @param $s string name of data to retrieve.
+     *
+     * @return array
+     */
+    protected function getBookplateSolrData($s)
+    {
+        $data = [
+            'titles' => $this->getBookplateSolrTitlesField(),
+            'imgNames' => $this->getBookplateSolrImgNamesField()
+        ];
+        $field = $data[$s];
+        if (!empty($field) && isset($this->fields[$field])) {
+            return $this->fields[$field];
+        }
+        return [];
+    }
+
+    /**
+     * Get the full bookplate URL string template.
+     *
+     * @return string
+     */
+    protected function getBookplateFullUrlTemplate()
+    {
+        return isset($this->config->Bookplate->bookplate_full) ?
+            $this->config->Bookplate->bookplate_full : '';
+    }
+
+    /**
+     * Get the bookplate URL thumbnail string template.
+     *
+     * @return string
+     */
+    protected function getBookplateThumbUrlTemplate()
+    {
+        return isset($this->config->Bookplate->bookplate_thumb) ?
+            $this->config->Bookplate->bookplate_thumb : '';
+    }
+
+    /**
+     * Display titles under bookplates.
+     *
+     * @return boolean
+     */
+    protected function displayBookplateTitles()
+    {
+        return isset($this->config->Bookplate->bookplate_display_title) ?
+            $this->config->Bookplate->bookplate_display_title : true;
+    }
+
+    /**
+     * Get a Solr field with an array of bookplate image titles.
+     *
+     * @return string
+     */
+    protected function getBookplateSolrTitlesField()
+    {
+        return isset($this->config->Bookplate->bookplate_titles_field) ?
+            $this->config->Bookplate->bookplate_titles_field : '';
+    }
+
+    /**
+     * Get a Solr field with an array of strings that represent the unique
+     * part of image names.
+     *
+     * @return string
+     */
+    protected function getBookplateSolrImgNamesField()
+    {
+        return isset($this->config->Bookplate->bookplate_img_names_field) ?
+            $this->config->Bookplate->bookplate_img_names_field : '';
     }
 
     /**
@@ -87,8 +185,7 @@ class Bookplate implements RelatedInterface
      */
     public function getBookplateDetails()
     {
-        $sameLen = count($this->bookplateStrs) == count($this->bookplateImgNames)
-            ?? false;
+        $sameLen = count($this->bookplateStrs) == count($this->bookplateImgNames);
         $hasBookplates = !empty($this->bookplateStrs)
             && !empty($this->bookplateImgNames) && $sameLen;
         if ($hasBookplates) {

@@ -61,7 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Channels::class => InvokableFactory::class,
-        Bookplate::class => InvokableFactory::class,
+        Bookplate::class => BookplateFactory::class,
         Deprecated::class => InvokableFactory::class,
         Similar::class => SimilarFactory::class,
         WorldCatSimilar::class => SimilarFactory::class,
