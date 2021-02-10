@@ -527,10 +527,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             ];
         }
 
-        // Try field 700 if 979 is empty
+        // Try fields 700 and 730 if 979 is empty
         if (!$componentParts) {
             foreach ($this->getMarcReader()->getFields('700') as $field) {
-                if ($field['i2'] != 2 || !$this->getSubfield($field, 't')) {
+                if ($field['i2'] != 2 || '' === $this->getSubfield($field, 't')) {
                     continue;
                 }
                 $partOrderCounter++;
@@ -582,6 +582,50 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                     'presenters' => $partPresenters,
                     'arrangers' => $partArrangers,
                     'otherAuthors' => $partOtherAuthors,
+                ];
+            }
+
+            foreach ($this->getMarcReader()->getFields('730') as $field) {
+                if ($field['i2'] != 2) {
+                    continue;
+                }
+
+                $partTitle = $this->getSubfieldArray(
+                    $field,
+                    ['m', 'n', 'r', 'h', 'i', 'g', 'n', 'p', 's', 'l', 'o', 'k']
+                );
+                $partTitle = reset($partTitle);
+
+                // If there's only a uniform title without a title, use it as the
+                // title. Otherwise leave uniform title to its own field.
+                $partUniformTitle = $this->getSubfield($field, 'a');
+                $partTitleMain = $this->getSubfield($field, 't');
+                if ('' === $partTitleMain) {
+                    if ('' === $partUniformTitle) {
+                        continue;
+                    }
+                    $partTitle = "$partUniformTitle $partTitle";
+                    $partUniformTitle = '';
+                } else {
+                    $partTitle = "$partTitleMain $partTitle";
+                }
+
+                $partOrderCounter++;
+
+                $partAuthors = [];
+                $partPresenters = [];
+                $partArrangers = [];
+                $partOtherAuthors = [];
+                $componentParts[] = [
+                    'number' => $partOrderCounter,
+                    'title' => $partTitle,
+                    'link' => null,
+                    'authors' => [],
+                    'uniformTitle' => $partUniformTitle,
+                    'duration' => '',
+                    'presenters' => [],
+                    'arrangers' => [],
+                    'otherAuthors' => [],
                 ];
             }
         }
@@ -1319,7 +1363,15 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         }
         // Alternatively, are there titles in 700 fields?
         foreach ($this->getMarcReader()->getFields('700') as $field) {
-            if ($field['i2'] == 2 && $this->getSubfield($field, 't')) {
+            if ($field['i2'] == 2 && '' !== $this->getSubfield($field, 't')) {
+                return true;
+            }
+        }
+        // Or maybe in 730 fields?
+        foreach ($this->getMarcReader()->getFields('730') as $field) {
+            if ($field['i2'] == 2 && ('' !== $this->getSubfield($field, 'a')
+                || '' !== $this->getSubfield($field, 't'))
+            ) {
                 return true;
             }
         }
