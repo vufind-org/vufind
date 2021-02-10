@@ -56,8 +56,8 @@ trait AutoRetryTrait
     /**
      * Count of remaining retry attempts (updated during the retry loop). This is
      * exposed as a class property rather than a local variable so that classes
-     * using the trait can be aware of the retry state. This is used, for example,
-     * in the VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
+     * using the trait can be aware of the retry state. This is used, for example, in
+     * the VuFindTest\Integration\MinkTestCase class to control screenshot behavior.
      *
      * @var int
      */

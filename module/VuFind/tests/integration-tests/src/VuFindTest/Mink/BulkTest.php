@@ -39,7 +39,7 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class BulkTest extends \VuFindTest\Unit\MinkTestCase
+class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;

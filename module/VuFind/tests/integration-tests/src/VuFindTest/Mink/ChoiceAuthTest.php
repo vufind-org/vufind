@@ -37,7 +37,7 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class ChoiceAuthTest extends \VuFindTest\Unit\MinkTestCase
+class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
