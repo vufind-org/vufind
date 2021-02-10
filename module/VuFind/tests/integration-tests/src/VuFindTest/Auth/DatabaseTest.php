@@ -71,7 +71,8 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
             $this->markTestSkipped('Continuous integration not running.');
             return;
         }
-        $this->auth = $this->getAuthManager()->get('Database');
+        $authManager = new \VuFind\Auth\PluginManager($this->getServiceManager());
+        $this->auth = $authManager->get('Database');
     }
 
     /**

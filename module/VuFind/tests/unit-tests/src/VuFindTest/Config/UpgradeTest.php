@@ -133,7 +133,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
-                'CallNumber' => ['TopFacets:ResultsTop']
+                'CallNumber' => ['TopFacets:ResultsTop'],
+                'WorkKeys' => ['']
             ],
             $results['searches.ini']['TopRecommendations']
         );

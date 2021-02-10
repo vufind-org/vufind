@@ -202,8 +202,7 @@ class HierarchyTree extends AbstractBase
     public function getSearchLimit()
     {
         $config = $this->getConfig();
-        return isset($config->Hierarchy->treeSearchLimit)
-            ? $config->Hierarchy->treeSearchLimit : -1;
+        return $config->Hierarchy->treeSearchLimit ?? -1;
     }
 
     /**

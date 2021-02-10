@@ -8,6 +8,6 @@
         <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected']?' selected="selected"':''?>><?=$this->escapeHtml($limitData['desc'])?></option>
       <?php endforeach; ?>
     </select>
-    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+    <noscript><input type="submit" value="<?=$this->transEscAttr("Set")?>" /></noscript>
   </form>
 <?php endif; ?>

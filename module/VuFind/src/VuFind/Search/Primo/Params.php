@@ -115,7 +115,11 @@ class Params extends \VuFind\Search\Base\Params
         if ($str == 'reference_entrys') {
             return 'Reference Entries';
         }
-        return ucwords(str_replace('_', ' ', $str));
+        return mb_convert_case(
+            preg_replace('/_/u', ' ', $str),
+            MB_CASE_TITLE,
+            'UTF-8'
+        );
     }
 
     /**
