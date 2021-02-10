@@ -147,12 +147,38 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return $this->cache[__FUNCTION__];
         }
         $result = parent::getAllRecordLinks();
+
+        // Handle 730 separately so that ind2 can be checked.
+        foreach ($this->getMarcReader()->getFields('730') as $field) {
+            if ($field['i2'] !== ' ') {
+                continue;
+            }
+
+            // Get data for field
+            $tmp = $this->getFieldData($field);
+            if (is_array($tmp)) {
+                if ('' === $tmp['value']) {
+                    // getfieldData doesn't handle subfield a (it's not the same for
+                    // other fields), so do it now if we didn't get a title:
+                    $tmp['value'] = $this->getSubfield($field, 'a');
+                    if ('title' === $tmp['link']['type']) {
+                        $tmp['link']['value'] = $tmp['value'];
+                    }
+                }
+                if (null === $result) {
+                    $result = [];
+                }
+                $result[] = $tmp;
+            }
+        }
+
         if ($result !== null) {
             foreach ($result as &$link) {
                 if (isset($link['value'])) {
                     $link['value'] = $this->stripTrailingPunctuation($link['value']);
                 }
             }
+            unset($link);
         }
 
         $this->cache[__FUNCTION__] = $result;
