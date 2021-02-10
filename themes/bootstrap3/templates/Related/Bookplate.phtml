@@ -1,15 +1,17 @@
 <?php $bookplates = $this->related->getBookplateDetails(); ?>
 <div id="bookplates">
   <?php foreach($bookplates as $bookplate): ?>
+    <?php $bpTitle = $bookplate['title'];?>
+    <?php $bpAltText = $bpTitle . ' bookplate';?>
     <div class="bookplate">
       <div class="bookplate-img">
-        <a href="<?=$bookplate['fullUrl']?>">
-          <img src="<?=$bookplate['thumbUrl']?>" alt="<?=$bookplate['title']?> bookplate" />
+        <a href="<?=$this->escapeHtmlAttr($bookplate['fullUrl'])?>">
+          <img src="<?=$this->escapeHtmlAttr($bookplate['thumbUrl'])?>" alt="<?=$this->escapeHtmlAttr($bpAltText)?>" />
         </a>
       </div>
       <?php if($bookplate['displayTitle']): ?>
         <div class="bookplate-title">
-          <?=$bookplate['title'];?>
+          <?=$this->escapeHtml($bpTitle);?>
         </div>
       <? endif ?>
     </div>
