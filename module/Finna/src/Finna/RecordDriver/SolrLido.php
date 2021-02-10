@@ -51,6 +51,15 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
+     * Map from site locale to Lido language codes.
+     */
+    const LANGUAGE_CODES = [
+        'fi' => ['fi','fin'],
+        'sv' => ['sv','swe'],
+        'en-gb' => ['en','eng']
+    ];
+
+    /**
      * List of undisplayable file formats
      *
      * @var array
@@ -468,6 +477,37 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Get an array of other language titles for the record.
+     *
+     * @return array
+     */
+    public function getOtherLanguageTitles()
+    {
+        $results = [];
+        $mainTitle = $this->getTitle();
+        foreach ($this->getXmlRecord()->xpath(
+            'lido/descriptiveMetadata/objectIdentificationWrap/titleWrap/titleSet/'
+            . "appellationValue"
+        ) as $node) {
+            $attr = $node->attributes();
+            $label = $attr->label ?? null;
+            if (!$label
+                || !in_array((string)$label, ['teosnimi','nimi','title','titel'])
+            ) {
+                continue;
+            }
+            if (in_array((string)$attr->lang, self::LANGUAGE_CODES['fi'])) {
+                continue;
+            }
+            $title = trim((string)$node);
+            if ($title && $title != $mainTitle) {
+                $results[] = $title;
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Get an array of related publications for the record.
      *
      * @return array
@@ -504,7 +544,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getOtherClassifications()
     {
-        $results = [];
+        $preferredLanguages = $this->getPreferredLanguageCodes();
+        $preferredLangResults = $allResults = [];
         foreach ($this->getXmlRecord()->xpath(
             'lido/descriptiveMetadata/objectClassificationWrap/classificationWrap/'
             . 'classification'
@@ -513,16 +554,21 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $term = trim((string)$node->term);
                 if ('' !== $term) {
                     $attributes = $node->term->attributes();
-                    $label = isset($attributes->label) ? $attributes->label : '';
-                    if ($label) {
-                        $results[] = compact('term', 'label');
-                    } else {
-                        $results[] = $term;
+                    $label = isset($attributes->label)
+                        ? (string)$attributes->label : '';
+                    $data = $label ? compact('term', 'label') : $term;
+                    $allResults[] = $data;
+                    if (in_array(
+                        (string)$node->attributes()->lang,
+                        $preferredLanguages
+                    )
+                    ) {
+                        $preferredLangResults[] = $data;
                     }
                 }
             }
         }
-        return $results;
+        return $preferredLangResults ?: $allResults;
     }
 
     /**
@@ -959,6 +1005,56 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Get all subject headings associated with this record.  Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
+     * @return array
+     */
+    public function getAllSubjectHeadings($extended = false)
+    {
+        $preferredLangResults = $allResults = [];
+        $preferredLanguages = $this->getPreferredLanguageCodes();
+
+        foreach ($this->getXmlRecord()->xpath(
+            'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
+            . 'subjectSet/subject/subjectConcept/term'
+        ) as $node) {
+            if ($term = trim((string)$node)) {
+                $attr = $node->attributes();
+                $allResults[] = $term;
+                if (in_array((string)$attr->lang, $preferredLanguages)) {
+                    $preferredLangResults[] = $term;
+                }
+            }
+        }
+        $headings = $preferredLangResults ?: $allResults;
+
+        foreach (['geographic', 'genre', 'era'] as $field) {
+            if (isset($this->fields[$field])) {
+                $headings = array_merge($headings, (array)$this->fields[$field]);
+            }
+        }
+
+        // The default index schema doesn't currently store subject headings in a
+        // broken-down format, so we'll just send each value as a single chunk.
+        // Other record drivers (i.e. SolrMarc) can offer this data in a more
+        // granular format.
+        $callback = function ($i) use ($extended) {
+            return $extended
+                ? ['heading' => [$i], 'type' => '', 'source' => '']
+                : [$i];
+        };
+        return array_map($callback, array_unique($headings));
+    }
+
+    /**
      * Get subject actors
      *
      * @return array
@@ -1195,6 +1291,19 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 }
             }
         }
+
+        $preferredLanguages = $this->getPreferredLanguageCodes();
+        foreach ($this->getXmlRecord()->xpath(
+            'lido/descriptiveMetadata/objectIdentificationWrap/objectDescriptionWrap'
+            . '/objectDescriptionSet[@type="description"]/descriptiveNoteValue'
+        ) as $node) {
+            if (in_array((string)$node->attributes()->lang, $preferredLanguages)) {
+                if ($term = trim((string)$node)) {
+                    $results[] = $term;
+                }
+            }
+        }
+
         if (!$results && !empty($this->fields['description'])) {
             $results[] = (string)($this->fields['description']) != $title
                 ? (string)$this->fields['description'] : '';
@@ -1221,5 +1330,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             return $this->fields['fullrecord'];
         }
         return parent::getXML($format, $baseUrl, $recordLink);
+    }
+
+    /**
+     * Get LIDO language codes that correpond user preferred language.
+     *
+     * @return array
+     */
+    protected function getPreferredLanguageCodes()
+    {
+        return self::LANGUAGE_CODES[$this->preferredLanguage]
+            ?? self::LANGUAGE_CODES['fi'];
     }
 }

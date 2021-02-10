@@ -28,6 +28,11 @@
         ?>
         </a>
       </h2>
+      <?php if ($otherTitles = $this->driver->tryMethod('getOtherLanguageTitles')): ?>
+        <div class="result-other-language-titles">
+          <?=implode(' &ndash; ', array_map($this->escapeHtml, $otherTitles)) ?>
+        </div>
+      <?php endif; ?>
       <div class="dateyeartype">
         <div class="resultItemFormat"><?=$this->record($this->driver)->getFormatList() ?></div>
         <?=$this->escapeHtml($this->organisationDisplayName($this->driver)) ?>

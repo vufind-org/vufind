@@ -75,6 +75,11 @@
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
         </div>
       <?php endif; ?>
+      <?php if ($results = $this->driver->getOtherLanguageTitles()): ?>
+        <div class="recordOtherLanguageTitles record-other-language-titles">
+          <?=implode('<br>', array_map([$this, 'escapeHtml'], $results))?>
+        </div>
+      <?php endif; ?>
 
       <div class="record-core-metadata">
         <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>

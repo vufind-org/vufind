@@ -38,6 +38,13 @@ if ($img):
             ?>
             </a>
           </h2>
+          <?php if ($otherTitles = $this->driver->tryMethod('getOtherLanguageTitles')): ?>
+            <div class="result-other-language-titles">
+              <?php foreach ($otherTitles as $otherTitle): ?>
+                <?=$this->escapeHtml($otherTitle) ?><br/>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
           <span class="sr-only"> <?=$this->transEsc('To the record')?></span>
         </div>
 
