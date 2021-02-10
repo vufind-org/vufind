@@ -1,6 +1,6 @@
 <?php
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Bookplates
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Related;
 
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Bookplates
  *
  * @category VuFind
  * @package  Related_Records
@@ -44,7 +44,7 @@ class Bookplate implements RelatedInterface
     protected $config;
 
     /**
-     * Solr fields
+     * Data fields (usually Solr)
      */
     protected $fields;
 
@@ -54,9 +54,14 @@ class Bookplate implements RelatedInterface
     protected $bookplateStrs;
 
     /**
-     * Bookplate URLs
+     * Bookplate image names or full URLs
      */
-    protected $bookplateImgNames;
+    protected $bookplateImages;
+
+    /**
+     * Bookplate thumbnail image names or thumbnail URLs
+     */
+    protected $bookplateThumbnails;
 
     /**
      * URL template for full bookplate
@@ -95,25 +100,27 @@ class Bookplate implements RelatedInterface
     public function init($settings, $driver)
     {
         $this->fields = $driver->getRawData();
-        $this->bookplateStrs = $this->getBookplateSolrData('titles');
-        $this->bookplateImgNames = $this->getBookplateSolrData('imgNames');
+        $this->bookplateStrs = $this->getBookplateData('titles');
+        $this->bookplateImages = $this->getBookplateData('imgFull');
+        $this->bookplateThumbnails = $this->getBookplateData('imgThumb');
         $this->fullUrlTemplate = $this->getBookplateFullUrlTemplate();
         $this->thumbUrlTemplate = $this->getBookplateThumbUrlTemplate();
         $this->displayTitles = $this->displayBookplateTitles();
     }
 
     /**
-     * Get the bookplate names.
+     * Get an array of data representing bookplates.
      *
      * @param $s string name of data to retrieve.
      *
      * @return array
      */
-    protected function getBookplateSolrData($s)
+    protected function getBookplateData($s)
     {
         $data = [
-            'titles' => $this->getBookplateSolrTitlesField(),
-            'imgNames' => $this->getBookplateSolrImgNamesField()
+            'titles' => $this->getBookplateTitlesField(),
+            'imgThumb' => $this->getBookplateThumbnailsField(),
+            'imgFull' => $this->getBookplateFullImagesField(),
         ];
         $field = $data[$s];
         if (!empty($field) && isset($this->fields[$field])) {
@@ -156,26 +163,40 @@ class Bookplate implements RelatedInterface
     }
 
     /**
-     * Get a Solr field with an array of bookplate image titles.
+     * Get a data field with an array of bookplate image titles.
      *
      * @return string
      */
-    protected function getBookplateSolrTitlesField()
+    protected function getBookplateTitlesField()
     {
         return isset($this->config->Bookplate->bookplate_titles_field) ?
             $this->config->Bookplate->bookplate_titles_field : '';
     }
 
     /**
-     * Get a Solr field with an array of strings that represent the unique
-     * part of image names.
+     * Get a data field with an array of strings that represent full images.
+     * These could be the unique parts of image names (e.g. donor code) or
+     * full paths to image files.
      *
      * @return string
      */
-    protected function getBookplateSolrImgNamesField()
+    protected function getBookplateFullImagesField()
     {
-        return isset($this->config->Bookplate->bookplate_img_names_field) ?
-            $this->config->Bookplate->bookplate_img_names_field : '';
+        return isset($this->config->Bookplate->bookplate_images_field) ?
+            $this->config->Bookplate->bookplate_images_field : '';
+    }
+
+    /**
+     * Get a data field with an array of strings that represent thumbnails.
+     * These could be the unique parts of thumbnail names (e.g. donor code)
+     * or full paths to thumbnail image files.
+     *
+     * @return string
+     */
+    protected function getBookplateThumbnailsField()
+    {
+        return isset($this->config->Bookplate->bookplate_thumbnails_field) ?
+            $this->config->Bookplate->bookplate_thumbnails_field : '';
     }
 
     /**
@@ -185,19 +206,29 @@ class Bookplate implements RelatedInterface
      */
     public function getBookplateDetails()
     {
-        $sameLen = count($this->bookplateStrs) == count($this->bookplateImgNames);
+        $sameLen = count($this->bookplateStrs) == count($this->bookplateImages);
         $hasBookplates = !empty($this->bookplateStrs)
-            && !empty($this->bookplateImgNames) && $sameLen;
+            && !empty($this->bookplateImages) && $sameLen;
         if ($hasBookplates) {
             $data = [];
             foreach ($this->bookplateStrs as $i => $bookplate) {
-                $imgUrl = sprintf(
-                    $this->fullUrlTemplate,
-                    $this->bookplateImgNames[$i]
+                $tokens = [
+                    '%%img%%',
+                    '%%thumb%%',
+                ];
+                $tokenValues = [
+                    $this->bookplateImages[$i],
+                    $this->bookplateThumbnails[$i],
+                ];
+                $imgUrl = str_replace(
+                    $tokens,
+                    $tokenValues,
+                    $this->fullUrlTemplate
                 );
-                $imgThumb = sprintf(
-                    $this->thumbUrlTemplate,
-                    $this->bookplateImgNames[$i]
+                $imgThumb = str_replace(
+                    $tokens,
+                    $tokenValues,
+                    $this->thumbUrlTemplate
                 );
                 $data[$i] = ['title' => $bookplate,
                              'fullUrl' => $imgUrl,
