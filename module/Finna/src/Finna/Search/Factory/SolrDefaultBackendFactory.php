@@ -54,12 +54,21 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 class SolrDefaultBackendFactory
     extends \VuFind\Search\Factory\SolrDefaultBackendFactory
 {
+    use SolrCachingConnectorFactoryTrait;
+
     /**
      * Callback for creating a record driver.
      *
      * @var string
      */
     protected $createRecordMethod = 'getSolrRecord';
+
+    /**
+     * Solr connector class
+     *
+     * @var string
+     */
+    protected $connectorClass = \FinnaSearch\Backend\Solr\Connector::class;
 
     /**
      * Create the SOLR backend.
@@ -228,20 +237,5 @@ class SolrDefaultBackendFactory
             shuffle($url);
         }
         return $url;
-    }
-
-    /**
-     * Create the SOLR connector.
-     *
-     * @return Connector
-     */
-    protected function createConnector()
-    {
-        $connector = parent::createConnector();
-        $vufindConfig = $this->config->get('config');
-        if (!empty($vufindConfig['Http']['adapter'])) {
-            $connector->setAdapter($vufindConfig['Http']['adapter']);
-        }
-        return $connector;
     }
 }
