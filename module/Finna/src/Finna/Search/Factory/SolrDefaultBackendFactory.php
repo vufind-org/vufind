@@ -6,7 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013-2019.
+ * Copyright (C) The National Library of Finland 2013-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -228,5 +228,20 @@ class SolrDefaultBackendFactory
             shuffle($url);
         }
         return $url;
+    }
+
+    /**
+     * Create the SOLR connector.
+     *
+     * @return Connector
+     */
+    protected function createConnector()
+    {
+        $connector = parent::createConnector();
+        $vufindConfig = $this->config->get('config');
+        if (!empty($vufindConfig['Http']['adapter'])) {
+            $connector->setAdapter($vufindConfig['Http']['adapter']);
+        }
+        return $connector;
     }
 }
