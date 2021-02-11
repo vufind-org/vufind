@@ -23,7 +23,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBirth(AuthorityRecordDriver &$driver) {
+    public function getBirth(AuthorityRecordDriver &$driver): string {
         $display = '';
 
         $birthDate = $driver->getBirthDateOrYear();
@@ -49,7 +49,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
      * @param string $propertyId
      * @return string
      */
-    private function getDateTimeProperty($datetimeCandidate, $propertyId) {
+    private function getDateTimeProperty($datetimeCandidate, $propertyId): string {
         $iso8601DateTime = $this->getView()->tuefind()->convertDateTimeToIso8601($datetimeCandidate);
         if ($iso8601DateTime == $datetimeCandidate)
             return '<span property="' . htmlspecialchars($propertyId) . '">' . $datetimeCandidate . '</span>';
@@ -64,7 +64,7 @@ class Authority extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getDeath(AuthorityRecordDriver &$driver) {
+    public function getDeath(AuthorityRecordDriver &$driver): string {
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
@@ -77,13 +77,26 @@ class Authority extends \Zend\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getName(AuthorityRecordDriver &$driver) {
+    public function getExternalReferences(AuthorityRecordDriver &$driver): string {
+        $references = $driver->getExternalReferences();
+        if (count($references) == 0)
+            return '';
+
+        $display = '<ul>';
+        foreach ($references as $reference)
+            $display .= '<li><a href="' . $reference['url'] . '">' . htmlspecialchars($reference['title']) . '</a></li>';
+        $display .= '</ul>';
+
+        return $display;
+    }
+
+    public function getName(AuthorityRecordDriver &$driver): string {
         $name = $driver->getTitle();
         $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
-    public function getProfessions(AuthorityRecordDriver &$driver) {
+    public function getProfessions(AuthorityRecordDriver &$driver): string {
         $professions = $driver->getProfessions();
         $professions_display = '';
         foreach ($professions as $profession) {
