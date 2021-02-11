@@ -12,7 +12,7 @@ class CookieManager extends \VuFind\Cookie\CookieManager implements \TueFind\Ser
      *
      * @see parent
      */
-    public function setGlobalCookie($key, $value, $expire, $httpOnly = null)
+    public function setGlobalCookie($key, $value, $expire, $httpOnly = null, $sameSite=null)
     {
         // Make cookies persistent.
         // Normal session lifetime only refers to session, but not to cookie.
@@ -24,7 +24,7 @@ class CookieManager extends \VuFind\Cookie\CookieManager implements \TueFind\Ser
             }
         }
 
-        return parent::setGlobalCookie($key, $value, $expire, $httpOnly);
+        return parent::setGlobalCookie($key, $value, $expire, $httpOnly, $sameSite);
     }
 
     /**
