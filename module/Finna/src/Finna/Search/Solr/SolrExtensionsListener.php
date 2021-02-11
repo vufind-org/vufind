@@ -359,10 +359,16 @@ class SolrExtensionsListener
     }
 
     /**
-     * Change the online_boolean filter to online_str_mv filter or
-     * free_online_boolean to free_online_str_mv filter if deduplication is enabled.
-     * Combine that with source_available_str_mv if no building filter is active
-     * or building_available_str_mv if building filter is active.
+     * Process availability checkbox filters
+     *
+     * Changes the following filters if deduplication is enabled:
+     *
+     *  - online_boolean            to online_str_mv
+     *  - free_online_boolean       to free_online_str_mv
+     *  - hires_image_boolean       to hires_image_str_mv
+     *  - source_available_str_mv:* to source_available_str_mv:(...) or
+     *                                 building_available_str_mv:(...) if a building
+     *                                 filter is active
      *
      * @param EventInterface $event Event
      *
@@ -385,17 +391,19 @@ class SolrExtensionsListener
                 );
 
                 if (!empty($searchConfig->Records->deduplication)) {
-                    foreach ($filters as $key => $value) {
-                        if ($value === 'online_boolean:"1"'
-                            || $value === 'free_online_boolean:"1"'
-                        ) {
-                            unset($filters[$key]);
-                            $filter = $value == 'online_boolean:"1"'
-                                ? 'online_str_mv' : 'free_online_str_mv';
-                            $filter .= ':(' . implode(' OR ', $sources) . ')';
-                            $filters[] = $filter;
-                            $params->set('fq', $filters);
-                            break;
+                    $prefixes = [
+                        'online', 'free_online', 'hires_images'
+                    ];
+                    foreach ($prefixes as $prefix) {
+                        foreach ($filters as $key => $value) {
+                            if ($value === $prefix . '_boolean:"1"') {
+                                unset($filters[$key]);
+                                $filter = $prefix . '_str_mv:('
+                                    . implode(' OR ', $sources) . ')';
+                                $filters[] = $filter;
+                                $params->set('fq', $filters);
+                                break;
+                            }
                         }
                     }
                 }
