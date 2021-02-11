@@ -48,7 +48,7 @@ abstract class AbstractBase
     /**
      * Driver configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -83,12 +83,12 @@ abstract class AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config          Configuration
-     * @param DataManager         $dataManager     Tree data source plugin manager
-     * @param RendererManager     $rendererManager Tree renderer plugin manager
-     * @param array               $options         Extra options (if any)
+     * @param \Laminas\Config\Config $config          Configuration
+     * @param DataManager            $dataManager     Tree data source plugin manager
+     * @param RendererManager        $rendererManager Tree renderer plugin manager
+     * @param array                  $options         Extra options (if any)
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         DataManager $dataManager, RendererManager $rendererManager,
         $options = []
     ) {

@@ -29,11 +29,11 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\ParameterContainer;
+use Laminas\Db\TableGateway\Feature;
 use minSO;
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Adapter\ParameterContainer;
-use Zend\Db\TableGateway\Feature;
 
 /**
  * Table Definition for search
@@ -54,12 +54,12 @@ class Search extends Gateway
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'search'
+        ?RowGateway $rowObj = null, $table = 'search'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -67,7 +67,7 @@ class Search extends Gateway
     /**
      * Initialize features
      *
-     * @param array $cfg Zend Framework configuration
+     * @param array $cfg Laminas configuration
      *
      * @return void
      */

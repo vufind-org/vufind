@@ -41,7 +41,7 @@ class PrivateUser extends User
     /**
      * Session container for account information.
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session = null;
 
@@ -87,11 +87,11 @@ class PrivateUser extends User
     /**
      * Set session container
      *
-     * @param \Zend\Session\Container $session Session container
+     * @param \Laminas\Session\Container $session Session container
      *
      * @return void
      */
-    public function setSession(\Zend\Session\Container $session)
+    public function setSession(\Laminas\Session\Container $session)
     {
         $this->session = $session;
     }

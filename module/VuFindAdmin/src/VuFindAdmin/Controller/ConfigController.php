@@ -41,7 +41,7 @@ class ConfigController extends AbstractAdmin
     /**
      * Configuration management
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

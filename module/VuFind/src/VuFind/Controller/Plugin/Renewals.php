@@ -27,10 +27,10 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
- * Zend action helper to perform renewal-related actions
+ * Action helper to perform renewal-related actions
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -72,9 +72,9 @@ class Renewals extends AbstractPlugin
     /**
      * Process renewal requests.
      *
-     * @param \Zend\Stdlib\Parameters $request Request object
-     * @param \VuFind\ILS\Connection  $catalog ILS connection object
-     * @param array                   $patron  Current logged in patron
+     * @param \Laminas\Stdlib\Parameters $request Request object
+     * @param \VuFind\ILS\Connection     $catalog ILS connection object
+     * @param array                      $patron  Current logged in patron
      *
      * @return array                  The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)

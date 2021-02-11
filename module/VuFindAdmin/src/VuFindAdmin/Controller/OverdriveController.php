@@ -65,7 +65,7 @@ class OverdriveController extends AbstractAdmin
     /**
      * Tag Details
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

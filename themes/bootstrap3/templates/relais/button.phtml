@@ -26,6 +26,6 @@
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
     $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));
     $activateRelais = "$(document).ready(function() { VuFind.relais.checkAvailability('$addLink', '$oclc', '$failLink') });";
-    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $activateRelais, 'SET');
   }
 ?>

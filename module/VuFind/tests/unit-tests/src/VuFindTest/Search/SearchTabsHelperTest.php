@@ -208,7 +208,7 @@ class SearchTabsHelperTest extends TestCase
     protected function getSearchTabsHelper($config = 'default_unfiltered',
         $filters = null
     ) {
-        $mockRequest = $this->createMock(\Zend\Http\Request::class);
+        $mockRequest = $this->createMock(\Laminas\Http\Request::class);
         $mockRequest->expects($this->any())
             ->method('getQuery')
             ->with($this->equalTo('hiddenFilters'))

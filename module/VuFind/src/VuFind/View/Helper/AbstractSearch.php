@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Helper class for displaying search-related HTML chunks.
@@ -50,8 +50,8 @@ abstract class AbstractSearch extends AbstractHelper
     /**
      * Render an expand link.
      *
-     * @param string                          $url  Link href
-     * @param \Zend\View\Renderer\PhpRenderer $view View renderer object
+     * @param string                             $url  Link href
+     * @param \Laminas\View\Renderer\PhpRenderer $view View renderer object
      *
      * @return string
      */
@@ -60,10 +60,10 @@ abstract class AbstractSearch extends AbstractHelper
     /**
      * Support function to display spelling suggestions.
      *
-     * @param string                          $msg     HTML to display at the top of
-     * the spelling section.
-     * @param \VuFind\Search\Base\Results     $results Results object
-     * @param \Zend\View\Renderer\PhpRenderer $view    View renderer object
+     * @param string                             $msg     HTML to display at the top
+     * of the spelling section.
+     * @param \VuFind\Search\Base\Results        $results Results object
+     * @param \Laminas\View\Renderer\PhpRenderer $view    View renderer object
      *
      * @return string
      */

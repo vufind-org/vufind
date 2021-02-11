@@ -27,7 +27,9 @@
  */
 namespace VuFind\Log;
 
-use Zend\Log\Logger as BaseLogger;
+use Laminas\Log\Logger as BaseLogger;
+use Traversable;
+use VuFind\Net\UserIpReader;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -46,6 +48,32 @@ class Logger extends BaseLogger
      * @var bool
      */
     protected $debugNeeded = false;
+
+    /**
+     * User IP address reader
+     *
+     * @var UserIpReader
+     */
+    protected $userIpReader;
+
+    /**
+     * Constructor
+     *
+     * Set options for a logger. Accepted options are:
+     * - writers: array of writers to add to this logger
+     * - exceptionhandler: if true register this logger as exceptionhandler
+     * - errorhandler: if true register this logger as errorhandler
+     * - vufind_ip_reader: UserIpReader object to use for IP lookups
+     *
+     * @param array|Traversable $options Configuration options
+     *
+     * @throws \Laminas\Log\Exception\InvalidArgumentException
+     */
+    public function __construct($options = null)
+    {
+        parent::__construct($options);
+        $this->userIpReader = $options['vufind_ip_reader'] ?? null;
+    }
 
     /**
      * Is one of the log writers listening for debug messages?  (This is useful to
@@ -114,10 +142,10 @@ class Logger extends BaseLogger
     }
 
     /**
-     * Log an exception triggered by ZF2 for administrative purposes.
+     * Log an exception triggered by the framework for administrative purposes.
      *
-     * @param \Exception              $error  Exception to log
-     * @param \Zend\Stdlib\Parameters $server Server metadata
+     * @param \Exception                 $error  Exception to log
+     * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return void
      */
@@ -132,8 +160,10 @@ class Logger extends BaseLogger
             $prev = $prev->getPrevious();
         }
         $referer = $server->get('HTTP_REFERER', 'none');
+        $ipAddr = $this->userIpReader !== null
+            ? $this->userIpReader->getUserIp() : $server->get('REMOTE_ADDR');
         $basicServer
-            = '(Server: IP = ' . $server->get('REMOTE_ADDR') . ', '
+            = '(Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '

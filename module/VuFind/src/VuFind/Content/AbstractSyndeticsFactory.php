@@ -28,7 +28,7 @@
 namespace VuFind\Content;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic Syndetics content plugin factory.

@@ -1,7 +1,12 @@
 module.exports = function(grunt) {
-  require('jit-grunt')(grunt); // Just in time library loading
+  const fs = require("fs");
 
-  var fs = require('fs');
+  // Local custom tasks
+  if (fs.existsSync("./Gruntfile.local.js")) {
+    require("./Gruntfile.local.js")(grunt);
+  }
+
+  require('jit-grunt')(grunt); // Just in time library loading
 
   function getLoadPaths(file) {
     var config;

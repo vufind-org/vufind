@@ -27,11 +27,11 @@
  */
 namespace VuFind\Controller\Plugin;
 
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Session\Container;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Session\Container;
 
 /**
- * Zend action helper to deal with login followup; responsible for remembering URLs
+ * Action helper to deal with login followup; responsible for remembering URLs
  * before login and then redirecting the user to the appropriate place afterwards.
  *
  * @category VuFind
@@ -79,7 +79,7 @@ class Followup extends AbstractPlugin
      * Retrieve the stored followup information.
      *
      * @param string $key     Element to retrieve and clear (null for entire
-     * \Zend\Session\Container object)
+     * \Laminas\Session\Container object)
      * @param mixed  $default Default value to return if no stored value found
      * (ignored when $key is null)
      *

@@ -40,7 +40,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CoverController extends \Zend\Mvc\Controller\AbstractActionController
+class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
      * Cover loader
@@ -107,7 +107,7 @@ class CoverController extends \Zend\Mvc\Controller\AbstractActionController
     /**
      * Send image data for display in the view
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function showAction()
     {
@@ -136,7 +136,7 @@ class CoverController extends \Zend\Mvc\Controller\AbstractActionController
     /**
      * Return the default 'image not found' information
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function unavailableAction()
     {
@@ -152,7 +152,7 @@ class CoverController extends \Zend\Mvc\Controller\AbstractActionController
      * @param string $type  Content type of image (null to access loader)
      * @param string $image Image data (null to access loader)
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function displayImage($type = null, $image = null)
     {

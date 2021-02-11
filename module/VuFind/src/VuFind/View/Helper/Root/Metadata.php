@@ -36,19 +36,19 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Metadata extends \Zend\View\Helper\AbstractHelper
+class Metadata extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Metadata configuration entries
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
-     * Zend meta helper, used to embed html tags in the generated page
+     * Laminas meta helper, used to embed html tags in the generated page
      *
-     * @var \Zend\View\Helper\HeadMeta
+     * @var \Laminas\View\Helper\HeadMeta
      */
     protected $metaHelper;
 
@@ -63,12 +63,12 @@ class Metadata extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
-     * @param \Zend\Config\Config                      $config     Configuration
-     * @param \Zend\View\Helper\HeadMeta               $metaHelper Head meta helper
+     * @param \Laminas\Config\Config                   $config     Configuration
+     * @param \Laminas\View\Helper\HeadMeta            $metaHelper Head meta helper
      */
     public function __construct(\VuFind\MetadataVocabulary\PluginManager $pm,
-        \Zend\Config\Config $config,
-        \Zend\View\Helper\HeadMeta $metaHelper
+        \Laminas\Config\Config $config,
+        \Laminas\View\Helper\HeadMeta $metaHelper
     ) {
         $this->pluginManager = $pm;
         $this->config = $config;

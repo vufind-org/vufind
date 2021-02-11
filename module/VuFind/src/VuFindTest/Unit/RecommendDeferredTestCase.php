@@ -44,7 +44,7 @@ abstract class RecommendDeferredTestCase extends TestCase
      *
      * @param string                      $class    class to construct
      * @param string                      $settings settings
-     * @param \Zend\StdLib\Parameters     $request  request
+     * @param \Laminas\Stdlib\Parameters  $request  request
      * @param \VuFind\Search\Solr\Results $results  results object
      *
      * @return SideFacets
@@ -56,7 +56,7 @@ abstract class RecommendDeferredTestCase extends TestCase
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters([]);
+            $request = new \Laminas\Stdlib\Parameters([]);
         }
         $mod = new $class();
         $mod->setConfig($settings);

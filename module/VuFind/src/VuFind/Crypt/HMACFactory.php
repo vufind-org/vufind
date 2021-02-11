@@ -28,7 +28,7 @@
 namespace VuFind\Crypt;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Plugin Manager factory.

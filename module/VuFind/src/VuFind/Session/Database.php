@@ -44,18 +44,18 @@ class Database extends AbstractBase
      * Read function must return string value always to make save handler work as
      * expected. Return empty string if there is no data to read.
      *
-     * @param string $sess_id The session ID to read
+     * @param string $sessId The session ID to read
      *
      * @return string
      */
-    public function read($sess_id)
+    public function read($sessId)
     {
         // Try to read the session, but destroy it if it has expired:
         try {
             return $this->getTable('Session')
-                ->readSession($sess_id, $this->lifetime);
+                ->readSession($sessId, $this->lifetime);
         } catch (SessionExpiredException $e) {
-            $this->destroy($sess_id);
+            $this->destroy($sessId);
             return '';
         }
     }
@@ -64,17 +64,17 @@ class Database extends AbstractBase
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
-     * @param string $sess_id The session ID to destroy
+     * @param string $sessId The session ID to destroy
      *
      * @return bool
      */
-    public function destroy($sess_id)
+    public function destroy($sessId)
     {
         // Perform standard actions required by all session methods:
-        parent::destroy($sess_id);
+        parent::destroy($sessId);
 
         // Now do database-specific destruction:
-        $this->getTable('Session')->destroySession($sess_id);
+        $this->getTable('Session')->destroySession($sessId);
 
         return true;
     }
@@ -83,27 +83,27 @@ class Database extends AbstractBase
      * The garbage collector, this is executed when the session garbage collector
      * is executed and takes the max session lifetime as its only parameter.
      *
-     * @param int $sess_maxlifetime Maximum session lifetime.
+     * @param int $sessMaxLifetime Maximum session lifetime.
      *
      * @return bool
      */
-    public function gc($sess_maxlifetime)
+    public function gc($sessMaxLifetime)
     {
-        $this->getTable('Session')->garbageCollect($sess_maxlifetime);
+        $this->getTable('Session')->garbageCollect($sessMaxLifetime);
         return true;
     }
 
     /**
      * A function that is called internally when session data is to be saved.
      *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
+     * @param string $sessId The current session ID
+     * @param string $data   The session data to write
      *
      * @return bool
      */
-    protected function saveSession($sess_id, $data)
+    protected function saveSession($sessId, $data)
     {
-        $this->getTable('Session')->writeSession($sess_id, $data);
+        $this->getTable('Session')->writeSession($sessId, $data);
         return true;
     }
 }

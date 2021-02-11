@@ -13,7 +13,7 @@ $config = [
     'router' => [
         'routes' => [
             'devtools-deminify' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/devtools/deminify',
                     'defaults' => [
@@ -23,7 +23,7 @@ $config = [
                 ]
             ],
             'devtools-home' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/devtools/home',
                     'defaults' => [
@@ -33,7 +33,7 @@ $config = [
                 ]
             ],
             'devtools-language' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/devtools/language',
                     'defaults' => [

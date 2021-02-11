@@ -27,8 +27,8 @@
  */
 namespace VuFind\RecordTab;
 
-use ZfcRbac\Service\AuthorizationServiceAwareInterface;
-use ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Record tab abstract base class
@@ -62,7 +62,7 @@ abstract class AbstractBase implements TabInterface,
     /**
      * User request associated with the tab (false for none)
      *
-     * @var \Zend\Http\Request|bool
+     * @var \Laminas\Http\Request|bool
      */
     protected $request = false;
 
@@ -137,11 +137,11 @@ abstract class AbstractBase implements TabInterface,
     /**
      * Set the user request
      *
-     * @param \Zend\Http\Request $request Request
+     * @param \Laminas\Http\Request $request Request
      *
      * @return AbstractBase
      */
-    public function setRequest(\Zend\Http\Request $request)
+    public function setRequest(\Laminas\Http\Request $request)
     {
         $this->request = $request;
         return $this;
@@ -150,7 +150,7 @@ abstract class AbstractBase implements TabInterface,
     /**
      * Get the user request (or false if unavailable)
      *
-     * @return \Zend\Http\Request|bool
+     * @return \Laminas\Http\Request|bool
      */
     protected function getRequest()
     {

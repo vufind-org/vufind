@@ -54,7 +54,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     public function testBug1()
     {
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
-        $config = new \Zend\Config\Config($configArr);
+        $config = new \Laminas\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->loadRecordFixture('testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -100,7 +100,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
      */
     public function testSubjectHeadings()
     {
-        $config = new \Zend\Config\Config([]);
+        $config = new \Laminas\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->loadRecordFixture('testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -117,6 +117,45 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
                 ],
             ],
             $record->getAllSubjectHeadings(true)
+        );
+    }
+
+    /**
+     * Test getFormattedMarcDetails() method.
+     *
+     * @return void
+     */
+    public function testGetFormattedMarcDetails()
+    {
+        $config = new \Laminas\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $fixture = $this->loadRecordFixture('testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+        $input = [
+            'foo' => 'msg|true',
+            'bar' => 'msg|false',
+            'baz' => 'msg|xyzzy',
+            'null' => 'msg',
+            'title' => 'marc|a',
+            'default' => 'marc',
+            'emptySubfield' => 'marc|c',
+            'pub' => 'marc|abc|260',
+        ];
+        $this->assertEquals(
+            [
+                [
+                    'id' => '000105196',
+                    'foo' => true,
+                    'bar' => false,
+                    'null' => null,
+                    'baz' => 'xyzzy',
+                    'title' => 'Bollettino della Unione matematica italiana.',
+                    'default' => 'Bollettino della Unione matematica italiana.',
+                    'emptySubfield' => '',
+                    'pub' => 'Bologna : Zanichelli, 1922-1975.',
+                ]
+            ],
+            $record->getFormattedMarcDetails('245', $input)
         );
     }
 

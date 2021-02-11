@@ -28,14 +28,14 @@
  */
 namespace VuFind\Search\Solr;
 
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\ParamBag;
+
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
-
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
 
 /**
  * Solr spelling listener.

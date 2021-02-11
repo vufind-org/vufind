@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for Followup controller plugin.
@@ -62,8 +62,8 @@ class FollowupFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            new \Zend\Session\Container(
-                'Followup', $container->get(\Zend\Session\SessionManager::class)
+            new \Laminas\Session\Container(
+                'Followup', $container->get(\Laminas\Session\SessionManager::class)
             )
         );
     }

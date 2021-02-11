@@ -50,9 +50,9 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -60,11 +60,12 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -283,6 +284,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test canceling a hold.
      *
+     * @depends testPlaceHold
+     *
      * @return void
      */
     public function testCancelHold()
@@ -350,6 +353,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test ILL requests.
      *
+     * @depends testPlaceHold
+     *
      * @return void
      */
     public function testIllRequest()
@@ -385,6 +390,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test storage retrieval requests.
+     *
+     * @depends testPlaceHold
      *
      * @return void
      */
@@ -422,6 +429,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test user profile action.
      *
+     * @depends testPlaceHold
+     *
      * @return void
      */
     public function testProfile()
@@ -453,6 +462,8 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test renewal action.
+     *
+     * @depends testPlaceHold
      *
      * @return void
      */
@@ -566,7 +577,7 @@ class IlsActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2']);
     }

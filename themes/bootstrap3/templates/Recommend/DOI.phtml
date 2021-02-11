@@ -5,6 +5,6 @@
   </div>
   <?php if ($this->recommend->isFullMatch()): ?>
     <?php $redirect = 'document.location.href = "' . $this->escapeJs($url) . '";'; ?>
-    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $redirect, 'SET')?>
+    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $redirect, 'SET')?>
   <?php endif; ?>
 <?php endif; ?>

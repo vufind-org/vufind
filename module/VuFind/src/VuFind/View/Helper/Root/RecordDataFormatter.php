@@ -28,8 +28,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * Record driver data formatting view helper
@@ -357,7 +357,9 @@ class RecordDataFormatter extends AbstractHelper
         $remaining = count($array);
         foreach ($array as $line) {
             $remaining--;
-            $text = $escaper($transDomain . $line);
+            $text = $options['itemPrefix'] ?? '';
+            $text .= $escaper($transDomain . $line);
+            $text .= $options['itemSuffix'] ?? '';
             $retVal .= ($link = $this->getLink($line, $options))
                 ? '<a href="' . $link . '">' . $text . '</a>' : $text;
             if ($remaining > 0) {

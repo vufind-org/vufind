@@ -43,7 +43,7 @@ class HierarchyController extends AbstractBase
      *
      * @param string $xml XML to output
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function output($xml)
     {
@@ -60,7 +60,7 @@ class HierarchyController extends AbstractBase
      * @param string $json   A JSON string
      * @param int    $status Response status code
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function outputJSON($json, $status = 200)
     {
@@ -76,7 +76,7 @@ class HierarchyController extends AbstractBase
      * Search the tree and echo a json result of items that
      * matched the keywords.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function searchtreeAction()
     {
@@ -124,7 +124,7 @@ class HierarchyController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getRecordLoader();
         try {
             if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()->render(
@@ -159,7 +159,7 @@ class HierarchyController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getRecordLoader();
         try {
             if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()
@@ -191,7 +191,7 @@ class HierarchyController extends AbstractBase
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
-        $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $loader = $this->getRecordLoader();
         try {
             $record = $loader->load($id, $source);
             $result = $this->getViewRenderer()->record($record)

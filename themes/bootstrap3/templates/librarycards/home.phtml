@@ -41,7 +41,7 @@
               <i class="fa fa-trash-o" aria-hidden="true"></i> <?=$this->transEsc('Delete')?>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+              <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1" data-clear-account-cache><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>

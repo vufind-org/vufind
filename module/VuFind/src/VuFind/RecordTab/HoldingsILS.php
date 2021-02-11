@@ -137,7 +137,7 @@ class HoldingsILS extends AbstractBase
      * @param int $page           Currently selected page of the items paginator
      * @param int $itemLimit      Max. no of items per page
      *
-     * @return \Zend\Paginator\Paginator
+     * @return \Laminas\Paginator\Paginator
      */
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
@@ -147,8 +147,8 @@ class HoldingsILS extends AbstractBase
         }
 
         // Create the paginator
-        $nullAdapter = new \Zend\Paginator\Adapter\NullFill($totalItemCount);
-        $paginator = new \Zend\Paginator\Paginator($nullAdapter);
+        $nullAdapter = new \Laminas\Paginator\Adapter\NullFill($totalItemCount);
+        $paginator = new \Laminas\Paginator\Paginator($nullAdapter);
 
         // Some settings for the paginator
         $paginator

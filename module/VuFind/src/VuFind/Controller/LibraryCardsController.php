@@ -201,7 +201,7 @@ class LibraryCardsController extends AbstractBase
     /**
      * Activates a library card
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function selectCardAction()
     {
@@ -317,7 +317,7 @@ class LibraryCardsController extends AbstractBase
      * @param User   $user User object
      * @param string $hash Hash
      *
-     * @return \Zend\Http\Response Response object
+     * @return \Laminas\Http\Response Response object
      */
     protected function processEmailLink($user, $hash)
     {

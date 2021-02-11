@@ -41,7 +41,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
+class QRCodeController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
      * QR Code loader
@@ -72,7 +72,7 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
     /**
      * Send QRCode data for display in the view
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function showAction()
     {
@@ -89,7 +89,7 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
     /**
      * Return the default 'qrcode not found' information
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function unavailableAction()
     {
@@ -102,7 +102,7 @@ class QRCodeController extends \Zend\Mvc\Controller\AbstractActionController
      * Support method -- update the view to display the qrcode currently found in the
      * \VuFind\QRCode\Loader.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function displayQRCode()
     {

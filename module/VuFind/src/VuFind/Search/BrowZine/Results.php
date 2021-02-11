@@ -27,9 +27,6 @@
  */
 namespace VuFind\Search\BrowZine;
 
-use VuFind\Record\Loader;
-use VuFindSearch\Service as SearchService;
-
 /**
  * BrowZine Search Results
  *
@@ -42,19 +39,11 @@ use VuFindSearch\Service as SearchService;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
-     * Constructor
+     * Search backend identifier.
      *
-     * @param \VuFind\Search\Base\Params $params        Object representing user
-     * search parameters.
-     * @param SearchService              $searchService Search service
-     * @param Loader                     $recordLoader  Record loader
+     * @var string
      */
-    public function __construct(\VuFind\Search\Base\Params $params,
-        SearchService $searchService, Loader $recordLoader
-    ) {
-        parent::__construct($params, $searchService, $recordLoader);
-        $this->backendId = 'BrowZine';
-    }
+    protected $backendId = 'BrowZine';
 
     /**
      * Returns the stored list of facets for the last search
@@ -83,7 +72,7 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $collection = $this->getSearchService()->search(
-            'BrowZine', $query, $offset, $limit
+            $this->backendId, $query, $offset, $limit
         );
 
         $this->resultTotal = $collection->getTotal();

@@ -22,7 +22,7 @@
     $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
         . $this->recommend->getSearchParams() . "', VuFind.path, "
         . $this->recommend->getZooming() . ");";
-    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $js, 'SET');
+    echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
   ?>
 
 <?php endif; ?>

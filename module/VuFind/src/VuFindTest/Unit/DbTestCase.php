@@ -28,7 +28,7 @@
  */
 namespace VuFindTest\Unit;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Abstract base class for PHPUnit database test cases.
@@ -97,7 +97,7 @@ abstract class DbTestCase extends TestCase
     /**
      * Get a service manager.
      *
-     * @return \Zend\ServiceManager\ServiceManager
+     * @return \Laminas\ServiceManager\ServiceManager
      */
     public function getServiceManager()
     {
@@ -109,12 +109,12 @@ abstract class DbTestCase extends TestCase
             $dbFactory = new \VuFind\Db\AdapterFactory(
                 $sm->get(\VuFind\Config\PluginManager::class)->get('config')
             );
-            $sm->setService('Zend\Db\Adapter\Adapter', $dbFactory->getAdapter());
+            $sm->setService('Laminas\Db\Adapter\Adapter', $dbFactory->getAdapter());
             $this->addTableManager($sm);
             $this->addRowManager($sm);
             $sm->setService(
-                'Zend\Session\SessionManager',
-                $this->createMock(\Zend\Session\SessionManager::class)
+                'Laminas\Session\SessionManager',
+                $this->createMock(\Laminas\Session\SessionManager::class)
             );
 
             // Override the configuration so PostgreSQL tests can work:

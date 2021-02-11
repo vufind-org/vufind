@@ -27,12 +27,12 @@
  */
 namespace VuFind\Controller\Plugin;
 
+use Laminas\Log\LoggerAwareInterface;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
-use Zend\Log\LoggerAwareInterface;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * VuFind Action Helper - Permission Checker

@@ -27,9 +27,9 @@
  */
 namespace VuFind\Search\Solr;
 
+use Laminas\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
-use Zend\Config\Config;
 
 /**
  * Solr spelling processor.
@@ -118,7 +118,7 @@ class SpellingProcessor
      */
     public function tokenize($input)
     {
-        // Blacklist of useless tokens:
+        // Exclusion list of useless tokens:
         $joins = ["AND", "OR", "NOT"];
 
         // Strip out parentheses -- irrelevant for tokenization:

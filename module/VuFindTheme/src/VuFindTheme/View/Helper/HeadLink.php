@@ -38,8 +38,8 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadLink extends \Zend\View\Helper\HeadLink
-    implements \Zend\Log\LoggerAwareInterface
+class HeadLink extends \Laminas\View\Helper\HeadLink
+    implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -52,16 +52,36 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     protected $themeInfo;
 
     /**
+     * CSP nonce
+     *
+     * @var string
+     */
+    protected $cspNonce;
+
+    /**
+     * Maximum import size (for inlining of e.g. images) in kilobytes
+     *
+     * @var int|null
+     */
+    protected $maxImportSize;
+
+    /**
      * Constructor
      *
-     * @param ThemeInfo   $themeInfo Theme information service
-     * @param string|bool $plconfig  Config for current application environment
+     * @param ThemeInfo   $themeInfo     Theme information service
+     * @param string|bool $plconfig      Config for current application environment
+     * @param string      $nonce         Nonce from nonce generator
+     * @param int         $maxImportSize Maximum imported (inlined) file size
      */
-    public function __construct(ThemeInfo $themeInfo, $plconfig = false)
-    {
+    public function __construct(ThemeInfo $themeInfo, $plconfig = false, $nonce = '',
+        $maxImportSize = null
+    ) {
         parent::__construct();
         $this->themeInfo = $themeInfo;
         $this->usePipeline = $this->enabledInConfig($plconfig);
+        $this->cspNonce = $nonce;
+        $this->maxImportSize = $maxImportSize;
+        $this->itemKeys[] = 'nonce';
     }
 
     /**
@@ -95,7 +115,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
             $url .= filemtime($details['path']);
             $item->href = $url;
         }
-
+        $this->addNonce($item);
         return parent::itemToString($item);
     }
 
@@ -234,6 +254,10 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     protected function getMinifier()
     {
-        return new \VuFindTheme\Minify\CSS();
+        $minifier = new \VuFindTheme\Minify\CSS();
+        if (null !== $this->maxImportSize) {
+            $minifier->setMaxImportSize($this->maxImportSize);
+        }
+        return $minifier;
     }
 }

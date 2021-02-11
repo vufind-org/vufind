@@ -52,7 +52,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
     /**
      * Add an API controller to the list of available controllers
      *
-     * @param Zend\Mvc\Controller\AbstractActionController $controller API Controller
+     * @param Laminas\Mvc\Controller\AbstractActionController $controller API
+     * Controller
      *
      * @return void
      */
@@ -68,7 +69,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
      *
      * Return Swagger specification or redirect to Swagger UI
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function indexAction()
     {
