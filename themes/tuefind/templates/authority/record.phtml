@@ -21,6 +21,11 @@
         <?php if ($death != ''): ?>
           <br/><?=$death?>
         <?php endif; ?>
+
+        <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
+        <?php if ($externalReferences != ''): ?>
+          <br/><?=$externalReferences?>
+        <?php endif; ?>
       </p>
       <?=$this->context($this)->renderInContext('related/AuthorityTitles', ['driver' => $this->driver])?>
     </div>
