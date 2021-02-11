@@ -431,7 +431,8 @@ class Ontology implements RecommendInterface, TranslatorAwareInterface
      */
     protected function skipFromFintoSearch(string $term): bool
     {
-        return 0 === strpos($term, 'topic_uri_str_mv:');
+        return 0 === strpos($term, 'topic_uri_str_mv:')
+            || in_array($term, ['AND', 'OR', 'NOT']);
     }
 
     /**
