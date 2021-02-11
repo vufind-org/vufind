@@ -3,7 +3,6 @@
 namespace IxTheo\Search;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
 
 class BackendManagerFactory extends \VuFind\Search\BackendManagerFactory {
 

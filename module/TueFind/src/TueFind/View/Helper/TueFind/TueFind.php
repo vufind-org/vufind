@@ -7,7 +7,7 @@ use Interop\Container\ContainerInterface;
 /**
  * General View Helper for TueFind, containing miscellaneous functions
  */
-class TueFind extends \Zend\View\Helper\AbstractHelper
+class TueFind extends \Laminas\View\Helper\AbstractHelper
               implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -93,7 +93,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
      * @param string $id Config file id, default 'tuefind'
      *                   use e.g. 'config' for vufind's config.ini instead
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function getConfig($id = 'tuefind') {
         return $this->container->get('VuFind\Config\PluginManager')->get($id);
@@ -129,13 +129,13 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
     /**
      * Calculate percentage and get localized string
      *
-     * @param \Zend\View\Renderer\PhpRenderer $view
+     * @param \Laminas\View\Renderer\PhpRenderer $view
      * @param int $count
      * @param \VuFind\Search\Solr\Results $results
      *
      * @return string
      */
-    public function getLocalizedOverallPercentage(\Zend\View\Renderer\PhpRenderer $view,
+    public function getLocalizedOverallPercentage(\Laminas\View\Renderer\PhpRenderer $view,
                                            $count, \VuFind\Search\Solr\Results $results) {
         $percentage = $this->getOverallPercentage($count, $results);
         return $percentage > 0.1 ? $view->localizedNumber($percentage, 1) : "&lt; 0.1";
@@ -375,7 +375,7 @@ class TueFind extends \Zend\View\Helper\AbstractHelper
         }
         throw new \Exception('can\'t determine TueFind subsystem type for "' . $instance . '"!');
     }
-    
+
     /**
       * Derive the German FID denomination
       * @return string or false of no matching value could be found

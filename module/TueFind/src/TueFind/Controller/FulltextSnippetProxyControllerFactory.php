@@ -3,12 +3,12 @@ namespace TueFind\Controller;
 
 use \Elasticsearch\ClientBuilder;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class FulltextSnippetProxyControllerFactory {
+class FulltextSnippetProxyControllerFactory implements FactoryInterface {
 
    public function __invoke(ContainerInterface $container, $requestedName, array $options = null) {
-       return new FulltextSnippetProxyController(new \Elasticsearch\ClientBuilder,
+       return new FulltextSnippetProxyController(new ClientBuilder,
                                                  $container,
                                                  $container->get('VuFind\Logger'),
                                                  $container->get('VuFind\Config\PluginManager'));

@@ -2,8 +2,6 @@
 
 namespace TueFind\Controller;
 
-use Zend\View\Model\ViewModel;
-
 class RecordController extends \VuFind\Controller\RecordController {
     /**
      * Show redirect page if FallbackLoader was active

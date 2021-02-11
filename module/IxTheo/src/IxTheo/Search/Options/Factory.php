@@ -1,7 +1,7 @@
 <?php
 
 namespace IxTheo\Search\Options;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class Factory extends \VuFind\Search\Options\OptionsFactory
 {

@@ -8,8 +8,8 @@
  * @copyright   2015-2017 Universtitätsbibliothek Tübingen
  */
 namespace IxTheo;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
+use Laminas\ModuleManager\ModuleManager,
+    Laminas\Mvc\MvcEvent;
 
 class Module
 {
@@ -31,7 +31,7 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],

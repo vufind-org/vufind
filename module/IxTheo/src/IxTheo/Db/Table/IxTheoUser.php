@@ -2,7 +2,7 @@
 namespace IxTheo\Db\Table;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 class IxTheoUser extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
@@ -14,7 +14,7 @@ class IxTheoUser extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\Db
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas Framework configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */

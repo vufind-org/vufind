@@ -3,8 +3,8 @@ namespace TueFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\SharedEventManagerInterface;
 
 class InjectFulltextMatchIdsListener
 {

@@ -3,7 +3,7 @@ namespace TueFind\Recommend;
 
 use Interop\Container\ContainerInterface;
 
-class SideFacetsFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SideFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null

@@ -1,4 +1,5 @@
 <?php
+
 namespace TueFind\Controller;
 
 
@@ -21,7 +22,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
    /**
      * Get Subscription Bundle Entries
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function getSubscriptionBundleEntriesAjax()
     {

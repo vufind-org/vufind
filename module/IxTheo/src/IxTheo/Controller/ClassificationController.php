@@ -6,7 +6,7 @@ class ClassificationController extends \VuFind\Controller\AbstractBase
 {
     /**
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

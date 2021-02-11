@@ -3,14 +3,14 @@ namespace TueFind\Mailer;
 
 use VuFind\Exception\Mail as MailException;
 use Interop\Container\ContainerInterface;
-use Zend\Mail\Address;
-use Zend\Mail\AddressList;
+use Laminas\Mail\Address;
+use Laminas\Mail\AddressList;
 
 class Mailer extends \VuFind\Mailer\Mailer {
 
     protected $container;
 
-    public function __construct(\Zend\Mail\Transport\TransportInterface $transport, ContainerInterface $container)
+    public function __construct(\Laminas\Mail\Transport\TransportInterface $transport, ContainerInterface $container)
     {
         parent::__construct($transport);
         $this->container = $container;
@@ -74,7 +74,7 @@ class Mailer extends \VuFind\Mailer\Mailer {
                 throw new MailException('Too Many Email Recipients');
             }
         }
-        $validator = new \Zend\Validator\EmailAddress();
+        $validator = new \Laminas\Validator\EmailAddress();
         if (count($recipients) == 0) {
             throw new MailException('Invalid Recipient Email Address');
         }

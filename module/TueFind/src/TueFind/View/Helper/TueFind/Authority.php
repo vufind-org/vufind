@@ -7,7 +7,7 @@ use \TueFind\RecordDriver\SolrAuthMarc as AuthorityRecordDriver;
 /**
  * View Helper for TueFind, containing functions related to authority data + schema.org
  */
-class Authority extends \Zend\View\Helper\AbstractHelper
+class Authority extends \Laminas\View\Helper\AbstractHelper
                 implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

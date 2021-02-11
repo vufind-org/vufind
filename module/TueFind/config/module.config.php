@@ -5,7 +5,7 @@ $config = [
     'router' => [
         'routes' => [
             'proxy-load' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Proxy/Load',
                     'defaults' => [
@@ -15,7 +15,7 @@ $config = [
                 ],
             ],
             'pdaproxy-load' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/PDAProxy/Load',
                     'defaults' => [
@@ -25,7 +25,7 @@ $config = [
                 ],
             ],
             'fulltextsnippetproxy-load' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/FulltextSnippetProxy/Load',
                     'defaults' => [
@@ -35,7 +35,7 @@ $config = [
                 ],
             ],
             'wikidataproxy-load' => [
-                'type'    => 'Zend\Router\Http\Literal',
+                'type'    => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/WikidataProxy/Load',
                     'defaults' => [
@@ -45,7 +45,7 @@ $config = [
                 ],
             ],
             'quicklink' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/r/[:id]',
                     'constraints' => [
@@ -58,7 +58,7 @@ $config = [
                 ],
             ],
             'redirect' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/redirect/:url[/:group]',
                     'constraints' => [
@@ -73,7 +73,7 @@ $config = [
                 ],
             ],
             'static-page' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => "/:page",
                     'constraints' => [
@@ -135,7 +135,7 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'TueFind\Controller\Plugin\Recaptcha' => 'TueFind\Controller\Plugin\RecaptchaFactory',
-            'TueFind\Controller\Plugin\Wikidata' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'TueFind\Controller\Plugin\Wikidata' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
             'recaptcha' => 'TueFind\Controller\Plugin\Recaptcha',
@@ -154,7 +154,7 @@ $config = [
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\Service\ReCaptcha' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'TueFind\Service\ReCaptcha' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'TueFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
@@ -162,7 +162,7 @@ $config = [
             'TueFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
-            'Zend\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
+            'Laminas\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
         ],
         'initializers' => [
             'TueFind\ServiceManager\ServiceInitializer',

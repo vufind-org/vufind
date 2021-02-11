@@ -1,15 +1,15 @@
 <?php
 
 namespace IxTheo\Controller\Plugin;
-use Zend\Mail\Address,
-    Zend\Mail\AddressList,
-    Zend\Mvc\Controller\Plugin\AbstractPlugin,
+use Laminas\Mail\Address,
+    Laminas\Mail\AddressList,
+    Laminas\Mvc\Controller\Plugin\AbstractPlugin,
     VuFind\Db\Row\User,
     VuFind\Exception\Mail as MailException;
 
 
 /**
- * Zend action helper to perform favorites-related actions
+ * Laminas action helper to perform favorites-related actions
  */
 class PDASubscriptions extends AbstractPlugin
 {
@@ -21,7 +21,7 @@ class PDASubscriptions extends AbstractPlugin
 
     public function __construct(\IxTheo\Db\Table\PluginManager $dbTableManager, \TueFind\Mailer\Mailer $mailer,
                                 \VuFind\Record\Loader $recordLoader, \VuFind\Config\PluginManager $config,
-                                \Zend\View\Renderer\PhpRenderer $renderer) {
+                                \Laminas\View\Renderer\PhpRenderer $renderer) {
         $this->dbTableManager = $dbTableManager;
         $this->mailer = $mailer;
         $this->recordLoader = $recordLoader;

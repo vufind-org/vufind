@@ -7,7 +7,7 @@ class Params extends \TueFind\Search\Solr\Params
     /**
      * Overwrite sort for BibleRangeSearch
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\StdLib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
