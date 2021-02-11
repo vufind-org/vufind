@@ -79,10 +79,8 @@ class Connector extends \VuFindSearch\Backend\Solr\Connector
         if ($this->cache) {
             try {
                 if ($result = $this->cache->getItem($cacheKey)) {
-                    $this->cache->incrementItem('x-cache-hits', 1);
                     return $result;
                 }
-                $this->cache->incrementItem('x-cache-misses', 1);
             } catch (\Exception $e) {
                 throw new \Exception('Cache request failed: ' . $e->getMessage());
             }
