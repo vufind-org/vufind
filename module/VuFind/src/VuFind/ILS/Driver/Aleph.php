@@ -1010,10 +1010,12 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
             $barcode = (string)$z30->{'z30-barcode'};
+            $adm_id = (string)$z30->{'z30-doc-number'};
 
             $transList[] = [
                 //'type' => $type,
                 'id' => $this->barcodeToID($barcode),
+                'adm_id'   => $adm_id,
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
