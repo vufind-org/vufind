@@ -134,11 +134,9 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'TueFind\Controller\Plugin\Recaptcha' => 'TueFind\Controller\Plugin\RecaptchaFactory',
             'TueFind\Controller\Plugin\Wikidata' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
-            'recaptcha' => 'TueFind\Controller\Plugin\Recaptcha',
             'wikidata' => 'TueFind\Controller\Plugin\Wikidata',
         ],
     ],
@@ -154,7 +152,6 @@ $config = [
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\Service\ReCaptcha' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'TueFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
@@ -181,7 +178,6 @@ $config = [
             'VuFind\Form\Form' => 'TueFind\Form\Form',
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\MetadataVocabulary\PluginManager' => 'TueFind\MetadataVocabulary\PluginManager',
-            'VuFind\Recaptcha' => 'TueFind\Service\ReCaptcha',
             'VuFind\RecommendPluginManager' => 'TueFind\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'TueFind\Recommend\PluginManager',
             'VuFind\Record\FallbackLoader\PluginManager' => 'TueFind\Record\FallbackLoader\PluginManager',
@@ -194,7 +190,6 @@ $config = [
             'VuFind\Search' => 'TueFindSearch\Service',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
             'VuFindSearch\Service' => 'TueFindSearch\Service',
-            'VuFind\Service\Recaptcha' => 'TueFind\Service\ReCaptcha',
         ],
     ],
     'view_helpers' => [
