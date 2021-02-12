@@ -8,7 +8,7 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get List of all beacon references.
      * @return [['title', 'url']]
      */
-    public function getBeaconReferences() {
+    public function getBeaconReferences(): array {
         $beacon_references = [];
         $beacon_fields = $this->getMarcRecord()->getFields('BEA');
         if (is_array($beacon_fields)) {
@@ -22,6 +22,29 @@ class SolrAuthMarc extends SolrAuthDefault {
             }
         }
         return $beacon_references;
+    }
+
+    public function getExternalReferences(): array {
+        $references = [];
+
+        $gndNumber = $this->getGNDNumber();
+        if ($gndNumber != null)
+            $references[] = ['title' => 'GND',
+                             'url' => 'http://d-nb.info/gnd/' . $gndNumber];
+
+        $fields = $this->getMarcRecord()->getFields('670');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+                $urlSubfield = $field->getSubfield('u');
+
+                if ($nameSubfield !== false && $urlSubfield !== false)
+                    $references[] = ['title' => $nameSubfield->getData(),
+                                     'url' => $urlSubfield->getData()];
+            }
+        }
+        $references = array_merge($references, $this->getBeaconReferences());
+        return $references;
     }
 
     protected function getLifeDates() {
