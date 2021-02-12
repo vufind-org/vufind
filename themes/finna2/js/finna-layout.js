@@ -150,7 +150,7 @@ finna.layout = (function finnaLayout() {
           .appendTo($('.content-navigation-menu'));
         $('<a>')
           .attr('href', link)
-          .text($('h2', this).text())
+          .text($('h2', this).first().text())
           .appendTo($p);
       });
     }
