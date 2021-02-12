@@ -77,6 +77,13 @@ class SolrPrefix implements AutocompleteInterface
     protected $facetField;
 
     /**
+     * Facet limit, can be overridden in subclasses
+     *
+     * @var int
+     */
+    protected $limit = 10;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
@@ -110,7 +117,7 @@ class SolrPrefix implements AutocompleteInterface
             $params->setBasicSearch($rawQuery);
             $params->addFacet($this->facetField);
             $params->setLimit(0);
-            $params->setFacetLimit(10);
+            $params->setFacetLimit($this->limit);
             $this->searchObject->getResults();
             $facets = $this->searchObject->getFacetList();
             if (isset($facets[$this->facetField]['list'])) {
