@@ -37,6 +37,6 @@ namespace FinnaSearch\Backend\L1;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector extends \VuFindSearch\Backend\Solr\Connector
+class Connector extends \FinnaSearch\Backend\Solr\Connector
 {
 }
