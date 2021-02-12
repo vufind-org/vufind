@@ -222,8 +222,8 @@ class SolrEad extends SolrDefault
     {
         $record = $this->getXmlRecord();
         $findingAids = [];
-        if (isset($this->record->otherfindaid->p)) {
-            foreach ($this->record->otherfindaid->p as $p) {
+        if (isset($record->otherfindaid->p)) {
+            foreach ($record->otherfindaid->p as $p) {
                 $findingAids[] = (string)$p;
             }
         }
