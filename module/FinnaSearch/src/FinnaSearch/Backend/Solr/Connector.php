@@ -79,10 +79,11 @@ class Connector extends \VuFindSearch\Backend\Solr\Connector
         if ($this->cache) {
             try {
                 if ($result = $this->cache->getItem($cacheKey)) {
+                    $this->debug('Returning cached results');
                     return $result;
                 }
             } catch (\Exception $e) {
-                throw new \Exception('Cache request failed: ' . $e->getMessage());
+                $this->logWarning('Cache getItem failed: ' . $e->getMessage());
             }
         }
 
@@ -92,7 +93,11 @@ class Connector extends \VuFindSearch\Backend\Solr\Connector
             try {
                 $this->cache->setItem($cacheKey, $result);
             } catch (\Exception $e) {
-                throw new \Exception('Cache request failed: ' . $e->getMessage());
+                if ($e->getMessage() === 'ITEM TOO BIG') {
+                    $this->debug('Cache setItem failed: ' . $e->getMessage());
+                } else {
+                    $this->logWarning('Cache setItem failed: ' . $e->getMessage());
+                }
             }
         }
 
