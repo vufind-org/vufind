@@ -21,22 +21,30 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get('VuFind\Form\Form');
-        $form->setFormId($formId);
+        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
+        $params = [];
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')
+        ) {
+            $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        $form->setFormId($formId, $params);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
+        if (!$user && $form->showOnlyForLoggedUsers()) {
+            return $this->forceLogin();
+        }
+
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useRecaptcha
-            = $this->recaptcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha
+            = $this->captcha()->active('feedback') && $form->useCaptcha();
 
         $params = $this->params();
         $form->setData($params->fromPost());
 
-
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
             $form = $this->prefillUrlInfo($form);
             $form = $this->prefillUserInfo($form, $user);
             return $view;
