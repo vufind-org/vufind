@@ -43,3 +43,5 @@ CREATE TABLE IF NOT EXISTS tuefind_rss_subscriptions (
     FOREIGN KEY (rss_feeds_id) REFERENCES tuefind_rss_feeds(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+
+ALTER TABLE vufind.user ADD tuefind_rss_feed_notification_type('rss', 'email') NOT NULL DEFAULT 'email';
