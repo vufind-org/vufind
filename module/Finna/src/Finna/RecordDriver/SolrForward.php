@@ -1442,7 +1442,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                 ) {
                     $office = $reason = $length = $subject = $notification = '';
                     $format = $part = $tax = $type  = $date = $inspector = $age = '';
-                    $number = $time = '';
+                    $number = $time = $additional = '';
                     if (!empty($atr->{'elokuva-tarkastus-tarkastusnro'})) {
                         $number = (string)$atr->{'elokuva-tarkastus-tarkastusnro'};
                     }
@@ -1476,6 +1476,9 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                     if (!empty($atr->{'elokuva-tarkastus-tarkastusaihe'})) {
                         $reason = (string)$atr->{'elokuva-tarkastus-perustelut'};
                     }
+                    if (!empty($atr->{'elokuva-tarkastus-muuttiedot'})) {
+                        $additional = (string)$atr->{'elokuva-tarkastus-muuttiedot'};
+                    }
                     if (!empty($atr->{'elokuva-tarkastus-tarkastusilmoitus'})) {
                         $notification = (string)$atr->{
                             'elokuva-tarkastus-tarkastusilmoitus'
@@ -1501,6 +1504,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
                         'inspectiontype' => $type,
                         'part' => $part,
                         'office' => $office,
+                        'additional' => $additional,
                         'runningtime' => $time,
                         'subject' => $subject,
                         'date' => $date,
