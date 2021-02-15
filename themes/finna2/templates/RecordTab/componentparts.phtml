@@ -61,23 +61,27 @@
 <?php
 $translations = json_encode(
   [
-      'sSearch' => $this->transEsc('component_parts_filter'),
-      'sLengthMenu' => $this->transEsc('component_parts_show_entries'),
-      'sInfoFiltered' => $this->transEsc('component_parts_filtered'),
-      'sInfo' => $this->transEsc('component_parts_entries_on_page'),
-      'oPaginate' => [
-        'sNext' => '<i class="fa fa-arrow-right"></i> <span class="sr-only">' . $this->transEsc('component_parts_next') . '</span>',
-        'sPrevious' => '<span class="sr-only">' . $this->transEsc('component_parts_previous') . '</span> <i class="fa fa-arrow-left"></i>',
+      'search' => $this->transEsc('component_parts_filter'),
+      'lengthMenu' => $this->transEsc('component_parts_show_entries'),
+      'infoFiltered' => $this->transEsc('component_parts_filtered'),
+      'info' => $this->transEsc('component_parts_entries_on_page'),
+      'paginate' => [
+        'next' => '<i class="fa fa-arrow-right"></i> <span class="sr-only">' . $this->transEsc('component_parts_next') . '</span>',
+        'previous' => '<span class="sr-only">' . $this->transEsc('component_parts_previous') . '</span> <i class="fa fa-arrow-left"></i>',
       ],
-      'sThousands' => $this->transEsc('number_thousands_separator'),
+      'thousands' => $this->transEsc('number_thousands_separator'),
+      'aria' => [
+          'sortAscending' => ' - ' . $this->transEsc('label_sort_ascending'),
+          'sortDescending' => ' - ' . $this->transEsc('label_sort_descending'),
+      ]
   ]
 );
 
 $script = <<<JS
 $(document).ready(function() {
   $('table#componentparts').dataTable({
-    "iDisplayLength": 50,
-    "oLanguage": {$translations},
+    "pageLength": 50,
+    "language": {$translations},
   });
 });
 JS;

@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg">
-<metadata>Copyright (C) 2020 by original authors @ fontello.com</metadata>
+<metadata>Copyright (C) 2021 by original authors @ fontello.com</metadata>
 <defs>
 <font id="finnaicons" horiz-adv-x="1000" >
 <font-face font-family="finnaicons" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
@@ -313,6 +313,8 @@
 <glyph glyph-name="rs-noc" unicode="&#xe8bd;" d="M1000 850v-500a500 500 0 0 0-500-500h-500v500a500 500 0 0 0 500 500h500z m-775-505a262 262 0 0 0 79 195 270 270 0 0 0 196 78 274 274 0 0 0 146-40l99 99a408 408 0 0 1-572-572l93 93a263 263 0 0 0-41 147z m597 257l-398-399a145 145 0 0 1 73-19 173 173 0 0 1 141 69l75-78q-89-100-210-100a284 284 0 0 0-162 45l-92-92a404 404 0 0 1 251-87 408 408 0 0 1 322 661z m-477-255a187 187 0 0 1 9-61l210 210a163 163 0 0 1-59 10 161 161 0 0 1-113-43c-31-29-47-68-47-116z" horiz-adv-x="1000" />
 
 <glyph glyph-name="rs-other" unicode="&#xe8be;" d="M1000 850v-500a500 500 0 0 0-500-500h-500v500a500 500 0 0 0 500 500h500z m-909-500a409 409 0 1 1 409 409 409 409 0 0 1-409-409z m573 121a102 102 0 0 0-7-46c-5-9-9-16-11-21a105 105 0 0 0-14-19c-7-8-12-14-15-16-12-13-23-24-34-34a110 110 0 0 1-21-26 68 68 0 0 1-6-31v-45h-115v56a107 107 0 0 0 8 47 214 214 0 0 0 34 42l51 53a52 52 0 0 1 11 35 53 53 0 0 1-12 36 38 38 0 0 1-31 15 40 40 0 0 1-33-17 83 83 0 0 1-16-46h-121c6 51 24 90 56 119a167 167 0 0 0 117 44q71 0 115-39c30-26 44-62 44-107z m-117-288a67 67 0 1 1 0-95 67 67 0 0 1 0 95z" horiz-adv-x="1000" />
+
+<glyph glyph-name="arrow-both" unicode="&#xe8bf;" d="M275 308h558l-279-433-279 433z m554 84h-554l279 433 275-433z" horiz-adv-x="1000" />
 
 <glyph glyph-name="zoom-all" unicode="&#xe900;" d="M708 79h-416c-23 0-42 19-42 42v0 417c0 23 19 41 42 41v0h416c23 0 42-18 42-41v0-417c0-23-19-42-42-42v0z m-375 84h334v333h-334z m-166 375h-84v125c0 0 0 1 0 3 0 44 36 80 81 80 1 0 2 0 3 0l0 0h125v-83h-125z m125-626h-125c-1 0-2 0-3 0-45 0-81 36-81 81 0 1 0 2 0 3l0 0v125h84v-125h125z m541 0h-112v84h112v125h84v-125c0-1 0-2 0-3 0-45-36-81-81-81-1 0-2 0-3 0l0 0z m84 626h-84v125h-112v83h112c1 0 2 0 3 0 45 0 81-36 81-80 0-2 0-3 0-4l0 1z" horiz-adv-x="1000" />
 

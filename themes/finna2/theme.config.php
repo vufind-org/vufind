@@ -161,7 +161,6 @@ $config = [
         'vendor/L.Control.Locate.min.css',
         'vendor/leaflet.css',
         'vendor/leaflet.draw.css',
-        'dataTables.bootstrap.custom.css',
         'vendor/simplemde.min.css',
         'vendor/slick.css',
         'vendor/slick-theme.css',

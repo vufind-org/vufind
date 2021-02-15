@@ -2679,6 +2679,20 @@
       "search": [
         "rs-other"
       ]
+    },
+    {
+      "uid": "4c8e09ee19e02cd3532b912f2b5a1669",
+      "css": "arrow-both",
+      "code": 59583,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M275 541.7H833.3L554.2 975 275 541.7ZM829.2 458.3H275L554.2 25 829.2 458.3Z",
+        "width": 1000
+      },
+      "search": [
+        "arrow-both"
+      ]
     }
   ]
 }

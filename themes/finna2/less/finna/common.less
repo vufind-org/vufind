@@ -255,18 +255,33 @@ table.content-table {
 }
 
 table#componentparts {
-  & th {
+  th {
     background-color: @list-group-bg;
     border-right: 2px solid @body-bg;
-    &.sorting_asc,&.sorting_desc,&.sorting {
-      background-position: center left;
-      padding-left: 20px;
+    &.sorting_asc, &.sorting_desc, &.sorting {
+      padding-left: 8px;
+    }
+    &.sorting_asc {
+      &:extend(.fa-arrow-up all);
+    }
+    &.sorting_desc {
+      &:extend(.fa-arrow-down all);
+    }
+    &.sorting {
+      &:extend(.datatables-sort-both all);
+      &:before {
+        opacity: 0.5;
+      }
+    }
+    // Hide defaults from dataTables.bootstrap.min.css
+    &.sorting_asc:after, &.sorting_desc:after, &.sorting:after {
+      content: "";
     }
   }
-  & .even td {
+  .even td {
     background: fade(@nav-tabs-border-color, 5%);
   }
-  & td a {
+  td a {
     font-weight: bold;
   }
 }
