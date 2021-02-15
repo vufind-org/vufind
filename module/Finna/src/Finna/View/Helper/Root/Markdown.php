@@ -39,13 +39,6 @@ namespace Finna\View\Helper\Root;
 class Markdown extends \VuFind\View\Helper\Root\Markdown
 {
     /**
-     * Parsedown parser
-     *
-     * @var \Parsedown
-     */
-    protected $parsedown = null;
-
-    /**
      * Return HTML.
      *
      * @param string $markdown Markdown
@@ -55,12 +48,8 @@ class Markdown extends \VuFind\View\Helper\Root\Markdown
     public function toHtml($markdown)
     {
         $cleanHtml = $this->getView()->plugin('cleanHtml');
-        if (null === $this->parsedown) {
-            $this->parsedown = new \ParsedownExtra();
-            $this->parsedown->setBreaksEnabled(true);
-        }
-        $text = $this->parsedown->text($markdown);
-        return $cleanHtml($text);
+        $text = $cleanHtml($this->converter->convertToHtml($markdown));
+        return $text;
     }
 
     /**
