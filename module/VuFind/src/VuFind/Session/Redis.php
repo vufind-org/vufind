@@ -27,7 +27,7 @@
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
 
@@ -41,7 +41,7 @@ use Laminas\Config\Config;
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class Redis extends AbstractBase
 {
