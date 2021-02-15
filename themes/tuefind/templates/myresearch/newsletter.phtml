@@ -3,7 +3,7 @@
   <?php
     // Submit redirect with inline script to make it lightbox compatible
     $script = "setTimeout(function() { window.location = '{$this->url('myresearch-profile')}'; }, 0);";
-    print $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+    print $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
   ?>
 <?php endif;?>
 <p>

@@ -58,7 +58,7 @@
           <?php foreach ($summInCollection as $collId => $collText): ?>
             <div>
               <b><?=$this->transEsc("in_collection_label")?></b>
-              <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+              <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collid)?>">
                 <?=$this->escapeHtml($collText)?>
               </a>
             </div>
@@ -100,12 +100,12 @@
       <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if (count($this->lists) > 0): ?>
-        <strong><?=$this->transEsc('Saved in')?>:</strong>
-        <?php $i = 0;foreach($this->lists as $current): ?>
-            <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
-        <?php endforeach; ?>
-        <br/>
+    <?php if (count($this->lists ?? []) > 0): ?>
+      <strong><?=$this->transEsc('Saved in')?>:</strong>
+      <?php $i = 0;foreach($this->lists as $current): ?>
+        <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+      <?php endforeach; ?>
+      <br/>
     <?php endif; ?>
 
         <div class="callnumAndLocation ajax-availability hidden">
@@ -157,7 +157,13 @@
           <?php endif; ?>
         <?php endif; ?>
       <br/>
-      <?=str_replace('class="', 'class="badge badge-info ', $this->record($this->driver)->getFormatList())?>
+
+      <?=$this->record($this->driver)->getFormatList() ?>
+
+      <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+        <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>
+        <br/><br/>
+      <?php endif; ?>
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
   </div>
@@ -165,7 +171,7 @@
   <div class="col-xs-2 right">
     <?php $account = $this->auth()->getManager() ?>
     <?php if ($account->isLoggedIn()): ?>
-       <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+       <i class="fa fa-fw fa-edit" aria-hidden="true"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
        <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
          $deleteUrl = null === $list_id
              ? $this->url('myresearch-favorites')
@@ -179,7 +185,7 @@
            <?=$this->transEsc('Delete') ?>
          </a>
          <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
-           <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeJs($id) ?>','source':'<?=$this->escapeJs($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+           <li><a id="confirm_delete_item_<?=$this->escapeHtmlAttr($id);?>" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
            <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
          </ul>
       </div>
@@ -188,3 +194,22 @@
     <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
   </div>
 </div>
+<?php
+$escId = $this->escapeJs($id);
+$escSource = $this->escapeJs($source);
+$script = <<<JS
+$('#confirm_delete_item_${escId}').click(function(e) {
+    e.preventDefault();
+    $.post('${deleteUrl}', {
+                'delete':'${escId}',
+                'source':'${escSource}',
+                'confirm':true
+            },
+            function(){
+                location.reload()
+            }
+        );
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

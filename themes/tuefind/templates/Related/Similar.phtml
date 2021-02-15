@@ -15,10 +15,10 @@ $(function () {
     list-style-type: none;
 }
 </style>
-<h4><?=$this->transEsc('Similar Items')?></h4>
+<h2><?=$this->transEsc('Similar Items')?></h2>
 <?php $similarRecords = $this->related->getResults(); ?>
 <?php if (!empty($similarRecords)): ?>
-  <ul id="mlt" class="list-group">
+  <ul class="list-group">
     <?php foreach ($similarRecords as $data): ?>
       <li class="list-group-item">
         <?php $formats = $data->getFormats(); ?>
