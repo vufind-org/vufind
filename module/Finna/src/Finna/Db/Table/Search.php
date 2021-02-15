@@ -49,7 +49,7 @@ class Search extends \VuFind\Db\Table\Search
     {
         $sql
             = "SELECT distinct notification_base_url as url FROM {$this->table}"
-            . " WHERE notification_base_url != '';";
+            . " WHERE notification_base_url != '' AND notification_frequency != 0;";
 
         $result = $this->getAdapter()->query(
             $sql,
