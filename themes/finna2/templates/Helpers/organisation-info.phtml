@@ -31,9 +31,13 @@
 <?php endif ?>
       <div class="info schedules">
         <div class="week-navi-holder">
-          <i class="fa fa-arrow-left prev-week week-navi" data-dir="-1" tabindex="0" aria-label="<?= $this->transEscAttr('organisation_info_previous_week')?>"></i>
+          <button type="button" class="prev-week week-navi btn-link" data-dir="-1" aria-label="<?= $this->transEscAttr('organisation_info_previous_week')?>">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+          </button>
           <span class="week-text"><?=$this->translate('organisation_info_schedule_week')?> <span class="num"></span></span>
-          <i class="fa fa-arrow-right next-week week-navi" data-dir="+1" tabindex="0" aria-label="<?= $this->transEscAttr('organisation_info_next_week')?>"></i>
+          <button type="button" class="next-week week-navi btn-link" data-dir="+1" aria-label="<?= $this->transEscAttr('organisation_info_next_week')?>">
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+          </button>
         </div>
         <div class="loader"><i class="fa fa-spin fa-spinner"></i></div>
 

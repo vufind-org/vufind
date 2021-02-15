@@ -56,15 +56,22 @@
         @media (max-width: @screen-sm-max) {
             max-width: @organisation-info-max-w;
         }
+        & button {
+            margin: 0;
+            border: 0;
+            padding: 0;
+        }
         & i {
             font-size: 1.6em;
-            margin-left: 4px;
             vertical-align: middle;
-            margin-top: 0px;
             color: @link-color;
             &:hover {
                 cursor: pointer;
             }
+        }
+        & .week-text {
+            display: inline-block;
+            margin: 0 4px;
         }
     }
     & .info {

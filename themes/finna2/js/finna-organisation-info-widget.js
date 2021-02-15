@@ -11,18 +11,18 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
       && 'currentWeek' in response.openTimes
       && response.openTimes.currentWeek
     ) {
-      prevBtn.fadeTo(200, 0).addClass('disabled');
+      prevBtn.fadeTo(200, 0).addClass('disabled').attr('disabled', true);
     } else {
-      prevBtn.fadeTo(200, 1).removeClass('disabled');
+      prevBtn.fadeTo(200, 1).removeClass('disabled').removeAttr('disabled');
     }
   }
 
   function updateNextBtn(response) {
     var nextBtn = holder.find('.week-navi.next-week');
     if (response.openTimes.museum === true) {
-      nextBtn.fadeTo(200, 0).addClass('disabled');
+      nextBtn.fadeTo(200, 0).addClass('disabled').attr('disabled', true);
     } else {
-      nextBtn.fadeTo(200, 1).removeClass('disabled');
+      nextBtn.fadeTo(200, 1).removeClass('disabled').removeAttr('disabled');
     }
   }
 
@@ -45,9 +45,9 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     $('.time-staff').empty();
 
     holder.find('.week-navi-holder .week-navi').each(function handleWeekNavi() {
-      var classes = $(this).data('classes');
+      var classes = $(this).data('icon-classes');
       if (classes) {
-        $(this).attr('class', classes);
+        $(this).children('i').first().attr('class', classes);
       }
     });
 
@@ -221,9 +221,11 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
       var dir = parseInt($(this).data('dir'));
 
       holder.find('.week-text .num').text(holder.data('week-num') + dir);
-      $(this).attr('data-classes', $(this).attr('class'));
-      $(this).removeClass('fa-arrow-right fa-arrow-left');
-      $(this).addClass('fa-spinner fa-spin');
+
+      var icon = $(this).children('i').first();
+      $(this).data('icon-classes', icon.attr('class'));
+      icon.removeClass('fa-arrow-right fa-arrow-left');
+      icon.addClass('fa-spinner fa-spin');
 
       service.getSchedules(
         holder.data('target'), parent, id, holder.data('period-start'), dir, false, false,
