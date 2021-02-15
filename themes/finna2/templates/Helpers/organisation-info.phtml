@@ -66,8 +66,12 @@
     <div class="details details-col">
       <a href="#" data-href="<?=$this->escapeHtmlAttr($this->url('organisationinfo-home'))?>" class="facility details" aria-label="<?= $this->transEscAttr('organisation_info_more_info') ?>"><img src="<?=$this->imageLink('noCover2.gif')?>" alt="" class="facility-image"></a>
       <div class="contact-links">
-        <span class="email info-element"><span class="btn btn-open-widget emails" tabindex="0" data-placement="bottom" data-html="true" data-original-title=""><i class="fa fa-at" aria-hidden="true"></i><span class="sr-only"><?=$this->transEsc('organisation_info_email') ?></span></span></span>
-        <span class="btn btn-open-widget phone info-element" tabindex="0" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title=""><i class="fa fa-phone-square" aria-hidden="true"></i><span class="sr-only"><?=$this->transEsc('organisation_info_phone_numbers') ?></span></span>
+        <button type="button" class="btn btn-open-widget emails email info-element btn-link" data-placement="bottom" data-html="true" data-original-title="" aria-label="<?=$this->transEsc('organisation_info_email') ?>">
+          <i class="fa fa-at" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-open-widget phone info-element btn-link" data-toggle="tooltip" data-placement="bottom" data-html="true" data-original-title="" aria-label="<?=$this->transEsc('organisation_info_phone_numbers') ?>">
+          <i class="fa fa-phone-square" aria-hidden="true"></i>
+        </button>
         <a href="#" target="_blank" class="route info-element"><span class="btn"><i class="fa fa-bus" aria-hidden="true"></i><span class="sr-only"><?=$this->transEsc('organisation_info_route') . ' (' . $this->transEsc('external_link') . ')' ?></span></span></a>
         <a href="#" target="_blank" class="facebook info-element"><span class="btn"><i class="fa fa-facebook-square" aria-hidden="true"></i><span class="sr-only"><?=$this->transEsc('organisation_info_facebook') ?></span></span></a>
       </div>
