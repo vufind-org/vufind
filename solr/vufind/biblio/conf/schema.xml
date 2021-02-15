@@ -244,7 +244,7 @@
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
    <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="false" />
    <dynamicField name="*_geo_mv" type="geo" indexed="true" stored="true" multiValued="true" />
-   <dynamicField name="*_autocomplete" type="text_autocomplete" indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="*_autocomplete" type="text_autocomplete" indexed="true" stored="true" multiValued="false"/>
  </fields>
  <uniqueKey>id</uniqueKey>
  <!-- CopyFields for Spelling -->
