@@ -773,7 +773,7 @@ class RecordDataFormatterFactory
             $final = [];
             foreach ($data as $type => $values) {
                 $final[] = [
-                    'label' => "Access Restrictions:$type",
+                    'label' => "access_restrictions_$type",
                     'values' => $values ? array_values($values) : null,
                     'options' => [
                         'pos' => $pos++,
@@ -781,11 +781,11 @@ class RecordDataFormatterFactory
                         'template' => 'data-escapeHtml.phtml',
                         'context' => [
                             'class' => 'extendedAccess',
-                            'type' => "Access Restrictions::$type",
+                            'type' => "access_restrictions_$type",
                             'schemaLabel' => null,
                         ],
                     ],
-                 ];
+                ];
             }
             return $final;
         };
@@ -1005,7 +1005,7 @@ class RecordDataFormatterFactory
         };
 
         $setMultiTemplateLine(
-            'Archive Relations', 'getNonPresenterAuthors', $getRelations
+            'Archive Relations', 'getRelations', $getRelations
         );
 
         return $lines;
