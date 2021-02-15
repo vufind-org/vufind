@@ -13,7 +13,6 @@
     <?php
       $originalImageData = $recordImage->getMasterImageWithInfo($ind);
       $originalImage = $originalImageData['url'] ?? false;
-      $desc = isset($img['description']) && !empty($img['description']) ? $img['description'] : $this->transEsc('Cover Image');
       $creditLine = $img['rights']['creditLine'] ?? '';
       if ($creditLine && !empty($img['rights']['copyright'])) {
         if (substr($creditLine, -1) !== '.') {
@@ -26,7 +25,7 @@
         'medium' => $img['urls']['medium'],
         'largest' => $enableImageZoom && $originalImage !== false ? $originalImage : $img['urls']['large'] ?? $img['urls']['medium'],
         'index' => $ind++,
-        'alt' => $desc,
+        'alt' => $img['description'],
         'description' => $img['description'],
         'creditLine' => $creditLine,
         'title' => $this->transEsc('Image') . ' ' . $ind
