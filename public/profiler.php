@@ -67,7 +67,8 @@ function enableProfiler($profilerBaseUrl)
 
             // Try to detect how the script was executed to add output appropriately
             if ('cli' === php_sapi_name()) {
-                echo "Profiler output: $url";
+                echo PHP_EOL . "Profiler output: $url" . PHP_EOL;
+                return;
             }
             $reqUri = $_SERVER['REQUEST_URI'] ?? '';
             if (strpos($reqUri, '/AJAX/') === false) {
