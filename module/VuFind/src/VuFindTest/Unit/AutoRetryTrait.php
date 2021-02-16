@@ -32,6 +32,7 @@
 namespace VuFindTest\Unit;
 
 use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Util\Test;
 
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
@@ -53,6 +54,16 @@ trait AutoRetryTrait
     protected static $failedAfterRetries = false;
 
     /**
+     * Count of remaining retry attempts (updated during the retry loop). This is
+     * exposed as a class property rather than a local variable so that classes
+     * using the trait can be aware of the retry state. This is used, for example,
+     * in the VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
+     *
+     * @var int
+     */
+    protected $retriesLeft;
+
+    /**
      * Override PHPUnit's main run method, introducing annotation-based retry
      * behavior.
      *
@@ -67,7 +78,9 @@ trait AutoRetryTrait
         // subsequent tests, and retrying will just waste time before showing
         // the cause of the initial error. We only really want to retry if it
         // will prevent ANY failures from occurring.
-        $annotations = $this->getAnnotations();
+        $annotations = Test::parseTestMethodAnnotations(
+            static::class, $this->getName(false)
+        );
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
         $retryCount = !self::$failedAfterRetries && $retryCountAnnotation > 0
@@ -78,10 +91,9 @@ trait AutoRetryTrait
         $retryCallbacks = $annotations['method']['retryCallback'] ?? [];
         $retryCallbacks[] = 'tearDown';
 
-        // Run through all of the attempts... Note that even if retryCount is 0,
-        // we still need to run the test once (single attempt, no retries)...
-        // hence the $retryCount + 1 below.
-        for ($i = 0; $i < $retryCount + 1; $i++) {
+        // Run through all of the attempts...
+        $this->retriesLeft = $retryCount;
+        while ($this->retriesLeft >= 0) {
             try {
                 parent::runBare();
                 // No exception thrown? We can return as normal.
@@ -91,13 +103,17 @@ trait AutoRetryTrait
                 if (get_class($e) == SkippedTestError::class) {
                     throw $e;
                 }
-                // Execute callbacks for interrupted test.
-                foreach ($retryCallbacks as $callback) {
-                    if (is_callable([$this, $callback])) {
-                        $this->{$callback}();
+                // Execute callbacks for interrupted test, unless this is the
+                // last round of testing:
+                if ($this->retriesLeft > 0) {
+                    foreach ($retryCallbacks as $callback) {
+                        if (is_callable([$this, $callback])) {
+                            $this->{$callback}();
+                        }
                     }
                 }
             }
+            $this->retriesLeft--;
         }
 
         // If we got this far, something went wrong... under healthy circumstances,

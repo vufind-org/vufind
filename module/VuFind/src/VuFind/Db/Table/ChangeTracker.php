@@ -59,7 +59,7 @@ class ChangeTracker extends Gateway
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'change_tracker'
+        ?RowGateway $rowObj = null, $table = 'change_tracker'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }

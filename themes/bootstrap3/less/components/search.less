@@ -49,6 +49,17 @@ header .container.navbar { margin-bottom: 0; }
   .search-controls { text-align: right; }
 }
 
+.versions-tab {
+  .search-controls {
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    text-align: left;
+  }
+  .search-header {
+    .search-stats { flex-grow: 0; }
+  }
+}
+
 .record-nav,
 .bulkActionButtons {
   .clearfix();
@@ -148,7 +159,10 @@ header .container.navbar { margin-bottom: 0; }
   }
   .media-left { margin-right: 10px; }
   .media-right { margin-left: 10px; }
-  .media-body { flex: 1; }
+  .media-body {
+    flex: 1;
+    width: unset;
+  }
 }
 
 .ajaxcover .cover-container {
@@ -285,9 +299,16 @@ body.rtl {
   padding: 0;
 }
 
+.combined-column {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 0;
+}
+
 @media (min-width: 768px) {
   .combined-search-container {
     display: flex;
+    padding-left: 1rem;
 
     .result { margin-left: 0; }
     .result-body {
@@ -298,9 +319,8 @@ body.rtl {
   }
   .combined-column {
     flex: 0 1 100%;
-    padding-left: 1rem;
+    margin-left: 0;
   }
-  .combined-column:last-child { padding-right: 1rem; }
 }
 
 .wikipedia img { margin-right: 1rem; }

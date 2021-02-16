@@ -245,7 +245,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getFullFacetSettings()
     {
-        return isset($this->fullFacetSettings) ? $this->fullFacetSettings : [];
+        return $this->fullFacetSettings ?? [];
     }
 
     /**

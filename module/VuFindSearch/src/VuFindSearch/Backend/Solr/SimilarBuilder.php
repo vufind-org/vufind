@@ -96,7 +96,7 @@ class SimilarBuilder implements SimilarBuilderInterface
                 && $mlt->useMoreLikeThisHandler
             ) {
                 $this->useHandler = true;
-                $this->handlerParams = isset($mlt->params) ? $mlt->params : '';
+                $this->handlerParams = $mlt->params ?? '';
             }
             if (isset($mlt->count)) {
                 $this->count = $mlt->count;

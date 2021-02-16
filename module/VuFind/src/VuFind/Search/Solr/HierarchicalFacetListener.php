@@ -246,9 +246,7 @@ class HierarchicalFacetListener
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'
             : false;
-        $separator = isset($this->separators[$facet])
-            ? $this->separators[$facet]
-            : '/';
+        $separator = $this->separators[$facet] ?? '/';
         $domain = in_array($facet, $this->translatedFacets)
             ? ($this->translatedFacetsTextDomains[$facet] ?? 'default')
             : false;

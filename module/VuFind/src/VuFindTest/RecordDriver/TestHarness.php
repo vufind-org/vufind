@@ -50,7 +50,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
     {
         if (substr($method, 0, 3) == 'get') {
             $index = substr($method, 3);
-            return isset($this->fields[$index]) ? $this->fields[$index] : null;
+            return $this->fields[$index] ?? null;
         } elseif (substr($method, 0, 3) == 'set') {
             $index = substr($method, 3);
             $this->fields[$index] = $params[0];

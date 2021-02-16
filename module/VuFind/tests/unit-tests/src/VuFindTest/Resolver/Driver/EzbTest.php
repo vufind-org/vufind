@@ -47,6 +47,8 @@ use VuFind\Resolver\Driver\Ezb;
  */
 class EzbTest extends \VuFindTest\Unit\TestCase
 {
+    use \VuFindTest\Unit\FixtureTrait;
+
     /**
      * Test-Config
      *
@@ -67,7 +69,7 @@ class EzbTest extends \VuFindTest\Unit\TestCase
     ];
 
     /**
-     * Test
+     * Test link parsing
      *
      * @return void
      */
@@ -133,37 +135,50 @@ class EzbTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test URL generation
+     *
+     * @return void
+     */
+    public function testGetResolverUrl()
+    {
+        $ipAddr = '1.2.3.4';
+        $connector = $this->createConnector(null, $ipAddr);
+        $expected = 'http://services.d-nb.de/fize-service/gvr/full.xml?'
+            . 'foo=bar&pid=client_ip%3D' . $ipAddr;
+        $this->assertEquals(
+            $expected,
+            $connector->getResolverUrl('foo=bar')
+        );
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
+     * @param string $ipAddr  Source IP address to simulate
      *
      * @return Connector
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector($fixture = null)
+    protected function createConnector($fixture = null, $ipAddr = '127.0.0.1')
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/resolver/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("resolver/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
-        $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
-
         $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
-        $conn = new Ezb($this->openUrlConfig['OpenURL']['url'], $client);
+        $ipReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $ipReader->expects($this->once())->method('getUserIp')
+            ->will($this->returnValue($ipAddr));
+        $conn = new Ezb($this->openUrlConfig['OpenURL']['url'], $client, $ipReader);
         return $conn;
     }
 }

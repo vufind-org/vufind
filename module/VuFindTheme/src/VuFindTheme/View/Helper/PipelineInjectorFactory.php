@@ -28,7 +28,10 @@
 namespace VuFindTheme\View\Helper;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -94,10 +97,12 @@ class PipelineInjectorFactory implements FactoryInterface
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
         $nonce = $nonceGenerator->getNonce();
+        $config = $configManager->get('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
-            $this->getPipelineConfig($configManager->get('config')),
-            $nonce
+            $this->getPipelineConfig($config),
+            $nonce,
+            $config['Site']['asset_pipeline_max_css_import_size'] ?? null
         );
     }
 }

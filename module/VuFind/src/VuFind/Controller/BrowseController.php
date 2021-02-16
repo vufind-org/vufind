@@ -345,9 +345,14 @@ class BrowseController extends AbstractBase
                 }
             } else {
                 // Default case: always display tag list for non-alphabetical modes:
+                $callback = function ($select) {
+                    // Discard user list tags
+                    $select->where->isNotNull('resource_tags.resource_id');
+                };
+
                 $tagList = $tagTable->getTagList(
                     $params['findby'],
-                    $this->config->Browse->result_limit
+                    $this->config->Browse->result_limit, $callback
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {
@@ -704,9 +709,8 @@ class BrowseController extends AbstractBase
     protected function getAlphabetList()
     {
         // Get base alphabet:
-        $chars = isset($this->config->Browse->alphabet_letters)
-            ? $this->config->Browse->alphabet_letters
-            : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $chars = $this->config->Browse->alphabet_letters
+            ?? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         // Put numbers in the front for Era since years are important:
         if ($this->getCurrentAction() == 'Era') {

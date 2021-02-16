@@ -403,6 +403,9 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // necessary.
         $url = $this->getAuth()->logout($url);
 
+        // Reset authentication state
+        $this->getAuth()->resetState();
+
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
         unset($this->session->userId);
@@ -435,7 +438,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|bool Object if user is logged in, false otherwise.
+     * @return UserRow|false Object if user is logged in, false otherwise.
      */
     public function isLoggedIn()
     {

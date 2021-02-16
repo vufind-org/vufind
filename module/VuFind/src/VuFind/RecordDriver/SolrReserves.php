@@ -45,7 +45,7 @@ class SolrReserves extends SolrDefault
      */
     public function getInstructor()
     {
-        return isset($this->fields['instructor']) ? $this->fields['instructor'] : '';
+        return $this->fields['instructor'] ?? '';
     }
 
     /**
@@ -55,8 +55,7 @@ class SolrReserves extends SolrDefault
      */
     public function getInstructorId()
     {
-        return isset($this->fields['instructor_id'])
-            ? $this->fields['instructor_id'] : '';
+        return $this->fields['instructor_id'] ?? '';
     }
 
     /**
@@ -66,7 +65,7 @@ class SolrReserves extends SolrDefault
      */
     public function getCourse()
     {
-        return isset($this->fields['course']) ? $this->fields['course'] : '';
+        return $this->fields['course'] ?? '';
     }
 
     /**
@@ -76,7 +75,7 @@ class SolrReserves extends SolrDefault
      */
     public function getCourseId()
     {
-        return isset($this->fields['course_id']) ? $this->fields['course_id'] : '';
+        return $this->fields['course_id'] ?? '';
     }
 
     /**
@@ -86,7 +85,7 @@ class SolrReserves extends SolrDefault
      */
     public function getDepartment()
     {
-        return isset($this->fields['department']) ? $this->fields['department'] : '';
+        return $this->fields['department'] ?? '';
     }
 
     /**
@@ -96,8 +95,7 @@ class SolrReserves extends SolrDefault
      */
     public function getDepartmentId()
     {
-        return isset($this->fields['department_id'])
-            ? $this->fields['department_id'] : '';
+        return $this->fields['department_id'] ?? '';
     }
 
     /**
@@ -118,7 +116,6 @@ class SolrReserves extends SolrDefault
      */
     public function getItemIds()
     {
-        return isset($this->fields['bib_id'])
-            ? $this->fields['bib_id'] : [];
+        return $this->fields['bib_id'] ?? [];
     }
 }

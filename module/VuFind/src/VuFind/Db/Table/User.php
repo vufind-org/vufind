@@ -31,6 +31,7 @@ use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Row\User as UserRow;
 
 /**
  * Table Definition for user
@@ -70,7 +71,7 @@ class User extends Gateway
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj, Config $config, Container $session = null,
+        ?RowGateway $rowObj, Config $config, Container $session = null,
         $table = 'user'
     ) {
         $this->config = $config;

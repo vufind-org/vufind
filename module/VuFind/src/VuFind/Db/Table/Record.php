@@ -57,7 +57,7 @@ class Record extends Gateway
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'record'
+        ?RowGateway $rowObj = null, $table = 'record'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
