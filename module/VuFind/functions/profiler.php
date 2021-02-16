@@ -50,11 +50,18 @@ function enableVuFindProfiling($profilerBaseUrl)
     if ($profilerEnableFunc && $profilerDisableFunc) {
         $profilerEnableFunc();
 
-        // Handle final profiling details, if necessary:
-        $shutdownFunc = function () use ($profilerBaseUrl, $profilerDisableFunc) {
+        $xhprofRunId = uniqid();
+        $suffix = 'vufind';
+        $profileUrl = "$profilerBaseUrl?run=$xhprofRunId&source=$suffix";
+        // Set the header now as headers may get sent before the shutdown function is
+        // reached:
+        header("X-VuFind-Profiler-Results: $profileUrl");
+
+        // Handle final profiling details:
+        $shutdownFunc = function () use ($profileUrl, $xhprofRunId, $suffix,
+            $profilerDisableFunc
+        ) {
             $xhprofData = $profilerDisableFunc();
-            $xhprofRunId = uniqid();
-            $suffix = 'vufind';
             $dir = ini_get('xhprof.output_dir');
             if (empty($dir)) {
                 $dir = sys_get_temp_dir();
@@ -63,19 +70,27 @@ function enableVuFindProfiling($profilerBaseUrl)
                 "$dir/$xhprofRunId.$suffix.xhprof",
                 serialize($xhprofData)
             );
-            $url = "$profilerBaseUrl?run=$xhprofRunId&source=$suffix";
 
-            // Try to detect how the script was executed to add output appropriately
+            // Try to detect how the script was executed to add output appropriately:
             if (PHP_SAPI === 'cli') {
-                echo PHP_EOL . "Profiler output: $url" . PHP_EOL;
+                echo PHP_EOL . "Profiler output: $profileUrl" . PHP_EOL;
                 return;
             }
-            $reqUri = $_SERVER['REQUEST_URI'] ?? '';
-            if (strpos($reqUri, '/AJAX/') === false) {
-                echo '<a href="' . htmlspecialchars($url) . '">Profiler output</a>';
+            $contentType = 'text/html';
+            foreach (headers_list() as $header) {
+                $parts = explode(': ', $header, 2);
+                if (isset($parts[1]) && strtolower($parts[0]) === 'content-type') {
+                    list($contentType) = explode('; ', $parts[1]);
+                    break;
+                }
+            }
+            if ('text/html' === $contentType) {
+                echo '<a href="' . htmlspecialchars($profileUrl)
+                    . '">Profiler output</a>';
             } else {
                 error_log(
-                    'Profiler output for ' . $_SERVER['REQUEST_URI'] . ": $url"
+                    'Profiler output for ' . $_SERVER['REQUEST_URI']
+                    . ": $profileUrl"
                 );
             }
         };
