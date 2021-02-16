@@ -380,6 +380,31 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             );
         }
+
+        if (!empty($config->IndexCache->adapter)) {
+            $cacheConfig = $config->IndexCache->toArray();
+            $options = $cacheConfig['options'] ?? [];
+            if (empty($options['namespace'])) {
+                $options['namespace'] = 'Index';
+            }
+            if (empty($options['ttl'])) {
+                $options['ttl'] = 300;
+            }
+            if ('Memcached' === $cacheConfig['adapter']) {
+                $servers = $cacheConfig['servers'] ?? ['localhost:11211'];
+                foreach ($servers as $server) {
+                    $options['servers'][] = explode(':', $server, 2);
+                }
+            }
+            $settings = [
+                'adapter' => [
+                    'name' => $cacheConfig['adapter'],
+                    'options' => $options,
+                ]
+            ];
+            $cache = \Laminas\Cache\StorageFactory::factory($settings);
+            $connector->setCache($cache);
+        }
         return $connector;
     }
 
