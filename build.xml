@@ -258,6 +258,13 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <!-- fail if the system is already running -->
+    <if>
+      <available file="${srcdir}/local/solr-8983.pid" />
+      <then>
+        <fail>Solr PID file (${srcdir}/local/solr-8983.pid) detected. Is the system already running?</fail>
+      </then>
+    </if>
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
