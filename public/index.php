@@ -2,32 +2,8 @@
 // If the profiler is enabled, set it up now:
 $vufindProfiler = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($vufindProfiler)) {
-    $funcPrefix = false;
-    if (extension_loaded('xhprof')) {
-        $funcPrefix = 'xhprof_';
-    } elseif (extension_loaded('tideways_xhprof')) {
-        $funcPrefix = 'tideways_xhprof_';
-    }
-
-    if ($funcPrefix) {
-        call_user_func($funcPrefix . 'enable');
-
-        // Handle final profiling details, if necessary:
-        register_shutdown_function(function () use ($vufindProfiler, $funcPrefix) {
-            $xhprofData = call_user_func($funcPrefix . 'disable');
-            $xhprofRunId = uniqid();
-            $suffix = 'vufind';
-            $dir = ini_get('xhprof.output_dir');
-            if (empty($dir)) {
-                $dir = sys_get_temp_dir();
-            }
-            file_put_contents(
-                "$dir/$xhprofRunId.$suffix.xhprof", serialize($xhprofData)
-            );
-            $url = "$vufindProfiler?run=$xhprofRunId&source=$suffix";
-            echo "<a href='$url'>Profiler output</a>";
-        });
-    }
+    include 'profiler.php';
+    enableProfiler($vufindProfiler);
 }
 
 // Define path to application directory
