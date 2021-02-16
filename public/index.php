@@ -11,7 +11,7 @@ defined('APPLICATION_PATH')
 $vufindProfiler = getenv('VUFIND_PROFILER_XHPROF');
 if (!empty($vufindProfiler)) {
     include APPLICATION_PATH . '/module/VuFind/functions/profiler.php';
-    enableProfiler($vufindProfiler);
+    enableVuFindProfiling($vufindProfiler);
 }
 
 // Define application environment
