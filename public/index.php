@@ -1,11 +1,4 @@
 <?php
-// If the profiler is enabled, set it up now:
-$vufindProfiler = getenv('VUFIND_PROFILER_XHPROF');
-if (!empty($vufindProfiler)) {
-    include 'profiler.php';
-    enableProfiler($vufindProfiler);
-}
-
 // Define path to application directory
 defined('APPLICATION_PATH')
     || define(
@@ -13,6 +6,13 @@ defined('APPLICATION_PATH')
         (getenv('VUFIND_APPLICATION_PATH') ? getenv('VUFIND_APPLICATION_PATH')
             : dirname(__DIR__))
     );
+
+// If the profiler is enabled, set it up now:
+$vufindProfiler = getenv('VUFIND_PROFILER_XHPROF');
+if (!empty($vufindProfiler)) {
+    include APPLICATION_PATH . '/module/VuFind/functions/profiler.php';
+    enableProfiler($vufindProfiler);
+}
 
 // Define application environment
 defined('APPLICATION_ENV')
