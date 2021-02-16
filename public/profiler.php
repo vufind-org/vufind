@@ -66,7 +66,7 @@ function enableProfiler($profilerBaseUrl)
             $url = "$profilerBaseUrl?run=$xhprofRunId&source=$suffix";
 
             // Try to detect how the script was executed to add output appropriately
-            if ('cli' === php_sapi_name()) {
+            if (PHP_SAPI === 'cli') {
                 echo PHP_EOL . "Profiler output: $url" . PHP_EOL;
                 return;
             }
