@@ -127,6 +127,14 @@ JS;
     </nav>
     <div role="main" class="main">
       <div id="content" class="container">
+        <?=
+          // Normally, flash messages should be displayed as part of the inner
+          // template, but we also display them here as a fallback so they don't get
+          // lost if a template is missing the flashmessages call. The double call is
+          // safe because the inner template renders first, and it clears out messages
+          // after displaying them.
+          $this->flashmessages();
+        ?>
         <?=$this->layout()->content ?>
       </div>
     </div>
