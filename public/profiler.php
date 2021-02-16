@@ -41,7 +41,7 @@ function enableProfiler($profilerBaseUrl)
     $profilerDisableFunc = false;
     if (extension_loaded('xhprof')) {
         $profilerEnableFunc = 'xhprof_enable';
-        $profilerDisableFunc = 'xhprof_enable';
+        $profilerDisableFunc = 'xhprof_disable';
     } elseif (extension_loaded('tideways_xhprof')) {
         $profilerEnableFunc = 'tideways_xhprof_enable';
         $profilerDisableFunc = 'tideways_xhprof_disable';
