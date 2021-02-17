@@ -126,8 +126,7 @@ class GetPiwikPopularSearches extends \VuFind\AjaxHandler\AbstractBase
             . md5(implode('|', $params) . "|$url") . '.html';
 
         // Minutes
-        $maxAge = isset($this->config->Piwik->querycachetime)
-            ? $this->config->Piwik->querycachetime : 60;
+        $maxAge = $this->config->Piwik->querycachetime ?? 60;
 
         if (is_readable($cacheFile)
             && time() - filemtime($cacheFile) < $maxAge * 60

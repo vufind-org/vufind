@@ -1,6 +1,6 @@
 <div class="form-group">
   <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
-  <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" size="35" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+  <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" size="35" name="to" value="<?=$this->to ?? ''?>"/>
   <?php if ($this->maxRecipients != 1): ?>
     <br />
     <?=$this->transEsc('email_multiple_recipients_note')?>
@@ -12,18 +12,18 @@
 <?php if (!$this->disableFrom): ?>
   <div class="form-group">
     <label class="control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
-    <input type="email" id="email_from" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="35" class="form-control"/>
+    <input type="email" id="email_from" name="from" value="<?=$this->from ?? ''?>" size="35" class="form-control"/>
   </div>
 <?php endif; ?>
 <?php if ($this->editableSubject): ?>
   <div class="form-group">
     <label class="control-label" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
-    <input type="text" id="email_subject" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="37" class="form-control"/>
+    <input type="text" id="email_subject" name="subject" value="<?=$this->subject ?? ''?>" size="37" class="form-control"/>
   </div>
 <?php endif; ?>
 <div class="form-group">
   <label class="control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
-  <textarea id="email_message" class="form-control" name="message" rows="4" cols="33"><?=isset($this->message) ? $this->message : ''?></textarea>
+  <textarea id="email_message" class="form-control" name="message" rows="4" cols="33"><?=$this->message ?? ''?></textarea>
 </div>
 <?php if ($this->disableFrom && $this->userEmailInFrom): ?>
   <div class="form-group">

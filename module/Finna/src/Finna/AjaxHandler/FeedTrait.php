@@ -70,14 +70,13 @@ trait FeedTrait
         $modal = $feed['modal'];
 
         $images
-            = isset($config->content['image'])
-            ? $config->content['image'] : true;
+            = $config->content['image'] ?? true;
 
         $moreLink = !isset($config->moreLink) || $config->moreLink
              ? $channel->getLink() : null;
 
         $type = $config->type;
-        $linkTo = isset($config->linkTo) ? $config->linkTo : null;
+        $linkTo = $config->linkTo ?? null;
 
         $key = $touchDevice ? 'touch' : 'desktop';
         $linkText = null;
@@ -132,11 +131,11 @@ trait FeedTrait
         if ('carousel' === $type || 'carousel-vertical' === $type) {
             $settings['images'] = $images;
             $settings['autoplay']
-                = isset($config->autoplay) ? $config->autoplay : false;
+                = $config->autoplay ?? false;
             $settings['dots']
                 = isset($config->dots) ? $config->dots == true : true;
             $settings['scrollSpeed']
-                = isset($config->scrollSpeed) ? $config->scrollSpeed : 750;
+                = $config->scrollSpeed ?? 750;
             $breakPoints = [
                 'desktop' => 4, 'desktop-small' => 3, 'tablet' => 2, 'mobile' => 1
             ];
@@ -154,7 +153,7 @@ trait FeedTrait
 
             if ('carousel' === $type) {
                 $settings['titlePosition']
-                    = isset($config->titlePosition) ? $config->titlePosition : null;
+                    = $config->titlePosition ?? null;
             }
         }
 

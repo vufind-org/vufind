@@ -117,7 +117,7 @@ class SimilarBuilder extends \VuFindSearch\Backend\Solr\SimilarBuilder
                 && $mlt->useMoreLikeThisHandler
             ) {
                 $this->useHandler = true;
-                $this->handlerParams = isset($mlt->params) ? $mlt->params : '';
+                $this->handlerParams = $mlt->params ?? '';
             }
             if (isset($mlt->count)) {
                 $this->count = $mlt->count;

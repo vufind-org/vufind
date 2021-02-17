@@ -1137,8 +1137,7 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault
         if (empty($sourceConfigs)) {
             return [];
         }
-        $posterSource = isset($this->recordConfig->Record->poster_sources[$source])
-            ? $this->recordConfig->Record->poster_sources[$source] : '';
+        $posterSource = $this->recordConfig->Record->poster_sources[$source] ?? '';
 
         $videoUrls = [];
         foreach ($this->getAllRecordsXML() as $xml) {

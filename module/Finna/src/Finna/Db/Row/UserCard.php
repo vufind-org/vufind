@@ -89,7 +89,7 @@ class UserCard extends \VuFind\Db\Row\UserCard
             return isset($this->cat_pass_enc)
                 ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
         }
-        return isset($this->cat_password) ? $this->cat_password : null;
+        return $this->cat_password ?? null;
     }
 
     /**
@@ -101,8 +101,7 @@ class UserCard extends \VuFind\Db\Row\UserCard
     {
         if (null === $this->encryptionEnabled) {
             $this->encryptionEnabled
-                = isset($this->config->Authentication->encrypt_ils_password)
-                ? $this->config->Authentication->encrypt_ils_password : false;
+                = $this->config->Authentication->encrypt_ils_password ?? false;
         }
         return $this->encryptionEnabled;
     }
@@ -138,9 +137,8 @@ class UserCard extends \VuFind\Db\Row\UserCard
         }
 
         // Perform encryption:
-        $algo = isset($this->config->Authentication->ils_encryption_algo)
-            ? $this->config->Authentication->ils_encryption_algo
-            : 'blowfish';
+        $algo = $this->config->Authentication->ils_encryption_algo
+            ?? 'blowfish';
         $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);

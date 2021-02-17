@@ -5,7 +5,7 @@
     <?php if (isset($loginMenu) && $loginMenu): ?>
       <li class="logoutOptions card-selection">
         <a class="card-header" href="<?=$this->url('librarycards-home')?>">
-          <?=$this->transEsc(isset($this->label) ? $this->label : 'Kirjastokortti') ?>
+          <?=$this->transEsc($this->label ?? 'Kirjastokortti') ?>
         </a>
         <label id="select-card-label-dropdown"><?= $this->transEsc('Library Card') ?></label>
         <?php if ($cards->count() > 1 || empty($this->user->cat_username)) : ?>

@@ -158,8 +158,7 @@ class Demo extends \VuFind\ILS\Driver\Demo
     {
         $accruedType = 'Accrued Fine';
 
-        $config = isset($this->config['OnlinePayment'])
-            ? $this->config['OnlinePayment'] : [];
+        $config = $this->config['OnlinePayment'] ?? [];
         $nonPayable = $config['nonPayable'] ?? []
         ;
         $nonPayable[] = $accruedType;

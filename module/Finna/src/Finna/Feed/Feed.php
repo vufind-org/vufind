@@ -376,14 +376,12 @@ EOT;
 
         $modal = $config->linkTo == 'modal';
         $contentPage = $config->linkTo == 'content-page';
-        $dateFormat = isset($config->dateFormat) ? $config->dateFormat : 'j.n.';
-        $contentDateFormat = isset($config->contentDateFormat)
-            ? $config->contentDateFormat : 'j.n.Y';
-        $fullDateFormat = isset($config->fullDateFormat)
-            ? $config->fullDateFormat : 'j.n.Y';
+        $dateFormat = $config->dateFormat ?? 'j.n.';
+        $contentDateFormat = $config->contentDateFormat ?? 'j.n.Y';
+        $fullDateFormat = $config->fullDateFormat ?? 'j.n.Y';
 
-        $itemsCnt = isset($config->items) ? $config->items : null;
-        $elements = isset($config->content) ? $config->content : [];
+        $itemsCnt = $config->items ?? null;
+        $elements = $config->content ?? [];
         $allowXcal = $elements['xcal'] ?? true;
         $timeRegex = '/^(.*?)([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/';
 

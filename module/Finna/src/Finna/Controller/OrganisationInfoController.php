@@ -76,11 +76,9 @@ class OrganisationInfoController extends \VuFind\Controller\AbstractBase
             )
         );
 
-        $consortiumInfo = isset($config->OrganisationPage->consortiumInfo)
-            ? $config->OrganisationPage->consortiumInfo : false;
+        $consortiumInfo = $config->OrganisationPage->consortiumInfo ?? false;
 
-        $title = isset($config->OrganisationPage->title)
-            ? $config->OrganisationPage->title : 'organisation_info_page_title';
+        $title = $config->OrganisationPage->title ?? 'organisation_info_page_title';
 
         $title = str_replace(
             '%%organisation%%',

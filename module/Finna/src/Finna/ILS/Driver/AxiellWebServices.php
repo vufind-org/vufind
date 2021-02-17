@@ -2364,8 +2364,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
         foreach ($reservations as $reservation) {
             $expireDate = $reservation->reservationStatus == 'fetchable'
                 ? $reservation->pickUpExpireDate : $reservation->validToDate;
-            $title = isset($reservation->catalogueRecord->title)
-                ? $reservation->catalogueRecord->title : '';
+            $title = $reservation->catalogueRecord->title ?? '';
             if (isset($reservation->note)) {
                 $title .= ' (' . $reservation->note . ')';
             }
@@ -2378,11 +2377,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase
                    ($reservation->isDeletable == 'yes' &&
                        isset($reservation->id)) ? $reservation->id : '',
                 'pickupnum' =>
-                   isset($reservation->pickUpNo) ? $reservation->pickUpNo : '',
+                   $reservation->pickUpNo ?? '',
                 'expire' => $this->formatDate($expireDate),
                 'create' => $this->formatDate($reservation->validFromDate),
                 'position' =>
-                   isset($reservation->queueNo) ? $reservation->queueNo : '-',
+                   $reservation->queueNo ?? '-',
                 'available' => $reservation->reservationStatus == 'fetchable',
                 'is_editable' => $reservation->isEditable == 'yes',
                 'item_id' => '',

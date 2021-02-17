@@ -101,9 +101,8 @@ class LocationService
             'location' => $location,
             'title' => $title,
             'lang' => substr($language, 0, 2),
-            'owner' => isset($this->config[$source]['owner'])
-               ? $this->config[$source]['owner']
-               : ''
+            'owner' => $this->config[$source]['owner']
+               ?? ''
         ];
 
         foreach ($params as $key => $val) {
@@ -112,12 +111,9 @@ class LocationService
 
         return [
            'url' => $url,
-           'modal' => isset($this->config['General']['modal'])
-              ? $this->config['General']['modal'] : true,
-           'qrCodeRecord' => isset($this->config['General']['qr_code_record'])
-              ? $this->config['General']['qr_code_record'] : false,
-           'qrCodeResults' => isset($this->config['General']['qr_code_results'])
-              ? $this->config['General']['qr_code_results'] : false
+           'modal' => $this->config['General']['modal'] ?? true,
+           'qrCodeRecord' => $this->config['General']['qr_code_record'] ?? false,
+           'qrCodeResults' => $this->config['General']['qr_code_results'] ?? false
         ];
     }
 

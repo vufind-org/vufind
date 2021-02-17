@@ -1493,9 +1493,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $title .= $qualifyingInfo;
         }
 
-        $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
-            ? $this->mainConfig->Record->marc_links_link_types
-            : 'id,oclc,dlc,isbn,issn,title';
+        $linkTypeSetting = $this->mainConfig->Record->marc_links_link_types
+            ?? 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $this->getSubfields($field, 'w');
 

@@ -435,11 +435,9 @@ class DueDateReminders extends AbstractUtilCommand
                         );
                     }
 
-                    $dateFormat = isset(
-                        $this->currentSiteConfig['Site']['displayDateFormat']
-                    )
-                        ? $this->currentSiteConfig['Site']['displayDateFormat']
-                        : $this->mainConfig->Site->displayDateFormat;
+                    $dateFormat
+                        = $this->currentSiteConfig['Site']['displayDateFormat']
+                        ?? $this->mainConfig->Site->displayDateFormat;
 
                     $remindLoans[] = [
                         'loanId' => $loan['item_id'],
@@ -503,8 +501,7 @@ class DueDateReminders extends AbstractUtilCommand
             $this->currentSiteConfig = parse_ini_file($siteConfig, true);
         }
 
-        $language = isset($this->currentSiteConfig['Site']['language'])
-            ? $this->currentSiteConfig['Site']['language'] : 'fi';
+        $language = $this->currentSiteConfig['Site']['language'] ?? 'fi';
         $validLanguages = array_keys($this->currentSiteConfig['Languages']);
         if (!empty($user->last_language)
             && in_array($user->last_language, $validLanguages)
@@ -543,9 +540,8 @@ class DueDateReminders extends AbstractUtilCommand
         $serviceName = $urlInstitution . '.finna.fi';
         $lastLogin = new \DateTime($user->last_login);
         $loginMethod = strtolower($user->auth_method);
-        $dateFormat = isset($this->currentSiteConfig['Site']['displayDateFormat'])
-            ? $this->currentSiteConfig['Site']['displayDateFormat']
-            : $this->mainConfig->Site->displayDateFormat;
+        $dateFormat = $this->currentSiteConfig['Site']['displayDateFormat']
+            ?? $this->mainConfig->Site->displayDateFormat;
 
         $params = [
             'loans' => $remindLoans,

@@ -80,11 +80,9 @@ class SolrEad extends SolrDefault
         $origination = $this->getOrigination();
         $record = $this->getXmlRecord();
         if ($origination == 'Kotimaisten kielten keskus') {
-            return isset($record->userestrict->p)
-                ? $record->userestrict->p : [];
+            return $record->userestrict->p ?? [];
         } else {
-            return isset($record->accessrestrict->p)
-                ? $record->accessrestrict->p : [];
+            return $record->accessrestrict->p ?? [];
         }
     }
 

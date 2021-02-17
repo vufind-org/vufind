@@ -2168,9 +2168,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             // Get Notes
             $data = $this->getHoldingsMarc(
                 $marc,
-                isset($this->config['Holdings']['notes'])
-                ? $this->config['Holdings']['notes']
-                : '852z'
+                $this->config['Holdings']['notes']
+                ?? '852z'
             );
             if ($data) {
                 $marcDetails['notes'] = $data;
@@ -2179,9 +2178,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             // Get Summary (may be multiple lines)
             $data = $this->getHoldingsMarc(
                 $marc,
-                isset($this->config['Holdings']['summary'])
-                ? $this->config['Holdings']['summary']
-                : '866a'
+                $this->config['Holdings']['summary']
+                ?? '866a'
             );
             if ($data) {
                 $marcDetails['summary'] = $data;
@@ -3071,8 +3069,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     protected function getUpdateProfileFields()
     {
-        $fieldConfig = isset($this->config['updateProfile']['fields'])
-            ? $this->config['updateProfile']['fields'] : [];
+        $fieldConfig = $this->config['updateProfile']['fields'] ?? [];
         if ($disabled = ($this->config['updateProfile']['disabledFields'] ?? '')) {
             $result = [];
             $disabled = explode(':', $disabled);

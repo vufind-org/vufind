@@ -135,26 +135,20 @@ class SolrDefaultBackendFactory
     {
         $specs   = $this->loadSpecs();
         $config = $this->config->get('config');
-        $defaultDismax = isset($config->Index->default_dismax_handler)
-            ? $config->Index->default_dismax_handler : 'dismax';
+        $defaultDismax = $config->Index->default_dismax_handler ?? 'dismax';
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
         $search = $this->config->get($this->searchConfig);
         $caseSensitiveBooleans
-            = isset($search->General->case_sensitive_bools)
-            ? $search->General->case_sensitive_bools : true;
+            = $search->General->case_sensitive_bools ?? true;
         $caseSensitiveRanges
-            = isset($search->General->case_sensitive_ranges)
-            ? $search->General->case_sensitive_ranges : true;
+            = $search->General->case_sensitive_ranges ?? true;
         $unicodeNormalizationForm
-            = isset($search->General->unicode_normalization_form)
-            ? $search->General->unicode_normalization_form : 'NFKC';
+            = $search->General->unicode_normalization_form ?? 'NFKC';
         $searchFilters
-            = isset($config->Index->search_filters)
-            ? $config->Index->search_filters : [];
-        $maxSpellcheckWords = isset($search->General->max_spellcheck_words)
-            ? $search->General->max_spellcheck_words : 5;
+            = $config->Index->search_filters ?? [];
+        $maxSpellcheckWords = $search->General->max_spellcheck_words ?? 5;
         $helper = new LuceneSyntaxHelper(
             $caseSensitiveBooleans,
             $caseSensitiveRanges,

@@ -50,7 +50,7 @@ class RecordCollection
      */
     public function getDebugInformation()
     {
-        return isset($this->response['debug']) ? $this->response['debug'] : [];
+        return $this->response['debug'] ?? [];
     }
 
     /**
@@ -96,7 +96,6 @@ class RecordCollection
                 ]
             ]];
         }
-        return isset($this->response['spellcheck']['suggestions'])
-            ? $this->response['spellcheck']['suggestions'] : [];
+        return $this->response['spellcheck']['suggestions'] ?? [];
     }
 }

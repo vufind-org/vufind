@@ -152,8 +152,7 @@
 
       <?php $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
         <?php
-        $selectedShards = isset($this->selectedShards)
-            ? $this->selectedShards : $options->getDefaultSelectedShards();
+        $selectedShards = $this->selectedShards ?? $options->getDefaultSelectedShards();
         ?>
         <br />
         <?php foreach ($shards as $shard => $val): ?>

@@ -148,9 +148,8 @@ class CoverController extends \VuFind\Controller\CoverController
         $recordId = $params->fromQuery('recordid');
         $datasourceId = strtok($recordId, '.');
         $datasourceCovers
-            = isset($this->datasourceConfig->$datasourceId->coverimages)
-                ? $this->datasourceConfig->$datasourceId->coverimages
-                : null;
+            = $this->datasourceConfig->$datasourceId->coverimages
+                ?? null;
         $this->loader->setDatasourceConfig($datasourceCovers);
 
         if ($id = $params->fromQuery('id')) {

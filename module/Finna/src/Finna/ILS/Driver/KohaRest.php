@@ -105,9 +105,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             = 'patron_status_restricted_with_reason';
 
         $this->groupHoldingsByLocation
-            = isset($this->config['Holdings']['group_by_location'])
-            ? $this->config['Holdings']['group_by_location']
-            : '';
+            = $this->config['Holdings']['group_by_location']
+            ?? '';
 
         if (isset($this->config['Holdings']['holdings_branch_order'])) {
             $values = explode(
@@ -300,8 +299,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         $messagingSettings = [];
         if ($this->config['Profile']['messagingSettings'] ?? true) {
             foreach ($result['messaging_preferences'] as $type => $prefs) {
-                $typeName = isset($this->messagingPrefTypeMap[$type])
-                    ? $this->messagingPrefTypeMap[$type] : $type;
+                $typeName = $this->messagingPrefTypeMap[$type] ?? $type;
                 $settings = [
                     'type' => $typeName
                 ];
@@ -358,13 +356,11 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
             ];
         }
 
-        $phoneField = isset($this->config['Profile']['phoneNumberField'])
-            ? $this->config['Profile']['phoneNumberField']
-            : 'mobile';
+        $phoneField = $this->config['Profile']['phoneNumberField']
+            ?? 'mobile';
 
-        $smsField = isset($this->config['Profile']['smsNumberField'])
-            ? $this->config['Profile']['smsNumberField']
-            : 'sms_number';
+        $smsField = $this->config['Profile']['smsNumberField']
+            ?? 'sms_number';
 
         $profile = [
             'firstname' => $result['firstname'],
@@ -515,8 +511,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     {
         $request = [];
         $addressFields = [];
-        $fieldConfig = isset($this->config['updateAddress']['fields'])
-            ? $this->config['updateAddress']['fields'] : [];
+        $fieldConfig = $this->config['updateAddress']['fields'] ?? [];
         foreach ($fieldConfig as $field) {
             $parts = explode(':', $field);
             if (isset($parts[1])) {
@@ -976,8 +971,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($locations) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -1638,9 +1632,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         // Get Notes
         $data = $this->getMARCData(
             $marc,
-            isset($this->config['Holdings']['notes'])
-            ? $this->config['Holdings']['notes']
-            : '852z'
+            $this->config['Holdings']['notes']
+            ?? '852z'
         );
         if ($data) {
             $marcDetails['notes'] = $data;
@@ -1649,9 +1642,8 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
         // Get Summary (may be multiple lines)
         $data = $this->getMARCData(
             $marc,
-            isset($this->config['Holdings']['summary'])
-            ? $this->config['Holdings']['summary']
-            : '866a'
+            $this->config['Holdings']['summary']
+            ?? '866a'
         );
         if ($data) {
             $marcDetails['summary'] = $data;

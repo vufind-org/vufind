@@ -62,6 +62,6 @@ class SearchTabsRecommendations extends \Laminas\View\Helper\AbstractHelper
      */
     public function getConfig()
     {
-        return isset($this->recommendationConfig) ? $this->recommendationConfig : [];
+        return $this->recommendationConfig ?? [];
     }
 }

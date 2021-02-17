@@ -460,8 +460,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
             $userName = $user->username;
         }
 
-        $dsConfig = isset($this->datasourceConfig[$userInstitution])
-            ? $this->datasourceConfig[$userInstitution] : [];
+        $dsConfig = $this->datasourceConfig[$userInstitution] ?? [];
         if (!empty($dsConfig['disableAccountExpirationReminders'])) {
             $this->msg(
                 "User {$user->username} (id {$user->id}) institution"
@@ -591,8 +590,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
         $expirationDatetime = new DateTime($user->last_login);
         $expirationDatetime->add(new DateInterval('P' . $expirationDays . 'D'));
 
-        $language = isset($this->currentSiteConfig['Site']['language'])
-            ? $this->currentSiteConfig['Site']['language'] : 'fi';
+        $language = $this->currentSiteConfig['Site']['language'] ?? 'fi';
         $validLanguages = array_keys((array)$this->currentSiteConfig['Languages']);
 
         if (!empty($user->last_language)

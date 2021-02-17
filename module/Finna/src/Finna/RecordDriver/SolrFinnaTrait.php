@@ -249,8 +249,7 @@ trait SolrFinnaTrait
      */
     public function getFullTitle()
     {
-        return isset($this->fields['title_full']) ?
-            $this->fields['title_full'] : '';
+        return $this->fields['title_full'] ?? '';
     }
 
     /**
@@ -260,8 +259,7 @@ trait SolrFinnaTrait
      */
     public function getGenres()
     {
-        return isset($this->fields['genre'])
-            ? $this->fields['genre'] : [];
+        return $this->fields['genre'] ?? [];
     }
 
     /**
@@ -271,8 +269,7 @@ trait SolrFinnaTrait
      */
     public function getGeoLocations()
     {
-        return isset($this->fields['location_geo'])
-            ? $this->fields['location_geo'] : [];
+        return $this->fields['location_geo'] ?? [];
     }
 
     /**
@@ -292,8 +289,7 @@ trait SolrFinnaTrait
      */
     public function getHierarchyParentID()
     {
-        return isset($this->fields['hierarchy_parent_id'])
-            ? $this->fields['hierarchy_parent_id'] : [];
+        return $this->fields['hierarchy_parent_id'] ?? [];
     }
 
     /**
@@ -303,8 +299,7 @@ trait SolrFinnaTrait
      */
     public function getHierarchyParentTitle()
     {
-        return isset($this->fields['hierarchy_parent_title'])
-            ? $this->fields['hierarchy_parent_title'] : [];
+        return $this->fields['hierarchy_parent_title'] ?? [];
     }
 
     /**
@@ -505,8 +500,7 @@ trait SolrFinnaTrait
      */
     public function getOriginalLanguages()
     {
-        return isset($this->fields['original_lng_str_mv'])
-            ? $this->fields['original_lng_str_mv'] : [];
+        return $this->fields['original_lng_str_mv'] ?? [];
     }
 
     /**
@@ -579,8 +573,7 @@ trait SolrFinnaTrait
      */
     public function getUsageRights()
     {
-        return isset($this->fields['usage_rights_str_mv'])
-            ? $this->fields['usage_rights_str_mv'] : [];
+        return $this->fields['usage_rights_str_mv'] ?? [];
     }
 
     /**
@@ -662,8 +655,7 @@ trait SolrFinnaTrait
      */
     public function getYear()
     {
-        return isset($this->fields['main_date_str'])
-            ? $this->fields['main_date_str'] : false;
+        return $this->fields['main_date_str'] ?? false;
     }
 
     /**
@@ -673,8 +665,7 @@ trait SolrFinnaTrait
      */
     public function getFirstIndexed()
     {
-        return isset($this->fields['first_indexed'])
-            ? $this->fields['first_indexed'] : '';
+        return $this->fields['first_indexed'] ?? '';
     }
 
     /**

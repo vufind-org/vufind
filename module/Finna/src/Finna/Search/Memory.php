@@ -66,7 +66,7 @@ class Memory extends \VuFind\Search\Memory
      */
     public function retrieveLastSearchData()
     {
-        return isset($this->session->searchData) ? $this->session->searchData : null;
+        return $this->session->searchData ?? null;
     }
 
     /**
@@ -88,6 +88,6 @@ class Memory extends \VuFind\Search\Memory
      */
     public function retrieveScrollData()
     {
-        return isset($this->session->scrollData) ? $this->session->scrollData : null;
+        return $this->session->scrollData ?? null;
     }
 }

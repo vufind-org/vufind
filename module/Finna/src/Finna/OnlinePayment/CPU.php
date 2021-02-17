@@ -132,8 +132,7 @@ class CPU extends BaseHandler
         }
 
         $payment->Description
-            = isset($this->config->paymentDescription)
-            ? $this->config->paymentDescription : '';
+            = $this->config->paymentDescription ?? '';
 
         $payment->ReturnAddress = $returnUrl;
         $payment->NotificationAddress = $notifyUrl;
@@ -192,8 +191,7 @@ class CPU extends BaseHandler
             $payment = $payment->addProduct($product);
         }
         if ($transactionFee) {
-            $code = isset($this->config->transactionFeeProductCode)
-                ? $this->config->transactionFeeProductCode : $productCode;
+            $code = $this->config->transactionFeeProductCode ?? $productCode;
             $product = new \Cpu_Client_Product(
                 $code, 1, $transactionFee,
                 'Palvelumaksu / Serviceavgift / Transaction fee'

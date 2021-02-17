@@ -185,8 +185,7 @@ trait SolrCommonFinnaTrait
      */
     public function getLocalIds()
     {
-        return isset($this->fields['local_ids_str_mv'])
-            ? $this->fields['local_ids_str_mv'] : [];
+        return $this->fields['local_ids_str_mv'] ?? [];
     }
 
     /**

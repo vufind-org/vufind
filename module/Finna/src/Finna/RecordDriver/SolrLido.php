@@ -585,8 +585,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             'lido/descriptiveMetadata/objectRelationWrap/relatedWorksWrap/'
             . 'relatedWorkSet'
         ) as $node) {
-            $term = isset($node->relatedWorkRelType->term)
-             ? $node->relatedWorkRelType->term : '';
+            $term = $node->relatedWorkRelType->term ?? '';
             if (in_array($term, $allowedTypes)) {
                 $results[] = (string)$node->relatedWork->displayObject;
             }
@@ -794,7 +793,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     as $classificationNode
                 ) {
                     $attributes = $classificationNode->attributes();
-                    $type = isset($attributes->type) ? $attributes->type : '';
+                    $type = $attributes->type ?? '';
                     if ($type) {
                         $results[] = (string)$classificationNode->term
                             . " ($type)";
@@ -808,7 +807,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 ) {
                     foreach ($classificationNode->term as $term) {
                         $attributes = $term->attributes();
-                        $label = isset($attributes->label) ? $attributes->label : '';
+                        $label = $attributes->label ?? '';
                         if ($label) {
                             $results[] = (string)$term . " ($label)";
                         } else {
@@ -828,8 +827,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getIdentifier()
     {
-        return isset($this->fields['identifier'])
-            ? $this->fields['identifier'] : [];
+        return $this->fields['identifier'] ?? [];
     }
 
     /**
@@ -911,7 +909,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         ) as $node) {
             $type = null;
             $attributes = $node->attributes();
-            $type = isset($attributes->type) ? $attributes->type : '';
+            $type = $attributes->type ?? '';
             // sometimes type exists with empty value or space(s)
             if (($type) && trim((string)$node) != '') {
                 $results[] = (string)$node . ' (' . $type . ')';
@@ -981,8 +979,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                         $actor->actorInRole->actor->nameActorSet->appellationValue
                     ) != ''
                 ) {
-                    $role = isset($actor->actorInRole->roleActor->term)
-                        ? $actor->actorInRole->roleActor->term : '';
+                    $role = $actor->actorInRole->roleActor->term ?? '';
                     $authors[] = [
                         'name' => $actor->actorInRole->actor->nameActorSet
                             ->appellationValue,

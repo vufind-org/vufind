@@ -121,8 +121,8 @@ trait ILSFinna
         // Figure out which field of the response to use as an identifier; fail
         // if the expected field is missing or empty:
         $config = $this->getConfig();
-        $usernameField = isset($config->Authentication->ILS_username_field)
-            ? $config->Authentication->ILS_username_field : 'cat_username';
+        $usernameField = $config->Authentication->ILS_username_field
+            ?? 'cat_username';
         if (!isset($info[$usernameField]) || empty($info[$usernameField])) {
             throw new AuthException('authentication_error_technical');
         }

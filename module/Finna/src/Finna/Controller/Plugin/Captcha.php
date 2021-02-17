@@ -157,8 +157,7 @@ class Captcha extends \VuFind\Controller\Plugin\Captcha
         if (empty($storage->sessionStartTime)) {
             $storage->sessionStartTime = time();
         }
-        $timestamp = isset($storage->lastProtectedActionTime)
-            ? $storage->lastProtectedActionTime : $storage->sessionStartTime;
+        $timestamp = $storage->lastProtectedActionTime ?? $storage->sessionStartTime;
         $passed = time() - $timestamp >= $this->actionInterval;
         if ($passed) {
             $storage->lastProtectedActionTime = time();

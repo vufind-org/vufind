@@ -101,9 +101,8 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         parent::init();
 
         $this->groupHoldingsByLocation
-            = isset($this->config['Holdings']['group_by_location'])
-            ? $this->config['Holdings']['group_by_location']
-            : '';
+            = $this->config['Holdings']['group_by_location']
+            ?? '';
 
         if (isset($this->config['Holdings']['holdings_branch_order'])) {
             $values = explode(
@@ -284,8 +283,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         $messagingSettings = [];
         if (200 === $resultCode) {
             foreach ($messagingPrefs as $type => $prefs) {
-                $typeName = isset($this->messagingPrefTypeMap[$type])
-                    ? $this->messagingPrefTypeMap[$type] : $type;
+                $typeName = $this->messagingPrefTypeMap[$type] ?? $type;
                 $settings = [
                     'type' => $typeName
                 ];
@@ -333,13 +331,11 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
             }
         }
 
-        $phoneField = isset($this->config['Profile']['phoneNumberField'])
-            ? $this->config['Profile']['phoneNumberField']
-            : 'mobile';
+        $phoneField = $this->config['Profile']['phoneNumberField']
+            ?? 'mobile';
 
-        $smsField = isset($this->config['Profile']['smsNumberField'])
-            ? $this->config['Profile']['smsNumberField']
-            : 'smsalertnumber';
+        $smsField = $this->config['Profile']['smsNumberField']
+            ?? 'smsalertnumber';
 
         return [
             'firstname' => $result['firstname'],
@@ -568,8 +564,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
     public function updateAddress($patron, $details)
     {
         $addressFields = [];
-        $fieldConfig = isset($this->config['updateAddress']['fields'])
-            ? $this->config['updateAddress']['fields'] : [];
+        $fieldConfig = $this->config['updateAddress']['fields'] ?? [];
         foreach ($fieldConfig as $field) {
             $parts = explode(':', $field);
             if (isset($parts[1])) {
@@ -1163,8 +1158,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config[$section]['pickUpLocationOrder'])
-            ? $this->config[$section]['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config[$section]['pickUpLocationOrder'] ?? 'default';
         if (count($locations) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -1860,9 +1854,8 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         // Get Notes
         $data = $this->getMFHDData(
             $marc,
-            isset($this->config['Holdings']['notes'])
-            ? $this->config['Holdings']['notes']
-            : '852z'
+            $this->config['Holdings']['notes']
+            ?? '852z'
         );
         if ($data) {
             $marcDetails['notes'] = $data;
@@ -1871,9 +1864,8 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         // Get Summary (may be multiple lines)
         $data = $this->getMFHDData(
             $marc,
-            isset($this->config['Holdings']['summary'])
-            ? $this->config['Holdings']['summary']
-            : '866a'
+            $this->config['Holdings']['summary']
+            ?? '866a'
         );
         if ($data) {
             $marcDetails['summary'] = $data;

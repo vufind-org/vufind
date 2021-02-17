@@ -9,7 +9,7 @@
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
-        isset($this->searchIndex) ? $this->searchIndex : null
+        $this->searchIndex ?? null
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();

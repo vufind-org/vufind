@@ -26,8 +26,8 @@
             'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
             'selectedShards' => $this->params->getSelectedShards(),
             'savedSearches' => $this->layout()->savedTabs,
-            'ignoreHiddenFiltersInRequest' => isset($this->ignoreHiddenFiltersInRequest) ? $this->ignoreHiddenFiltersInRequest : false,
-            'ignoreHiddenFilterMemory' => isset($this->ignoreHiddenFilterMemory) ? $this->ignoreHiddenFilterMemory : false,
+            'ignoreHiddenFiltersInRequest' => $this->ignoreHiddenFiltersInRequest ?? false,
+            'ignoreHiddenFilterMemory' => $this->ignoreHiddenFilterMemory ?? false,
         ]
     );
 
@@ -38,8 +38,7 @@
       'results' => $this->results,
       'params' => $this->params,
       'lookfor' => $lookfor,
-      'overrideSearchHeading' => isset($this->overrideSearchHeading)
-          ? $this->overrideSearchHeading : null,
+      'overrideSearchHeading' => $this->overrideSearchHeading ?? null,
       'startRecord' => $this->results->getStartRecord(),
       'endRecord' => $this->results->getEndRecord(),
       'recordsFound' => $this->results->getResultTotal() > 0,

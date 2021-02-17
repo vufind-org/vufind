@@ -113,8 +113,7 @@ class UserResource extends \VuFind\Db\Table\UserResource
             )->current();
             if ($rowToUpdate) {
                 $rowToUpdate->finna_custom_order_index
-                    = isset($resourceIndex[$row->record_id])
-                    ? $resourceIndex[$row->record_id] : 0;
+                    = $resourceIndex[$row->record_id] ?? 0;
                 $rowToUpdate->save();
             }
         }

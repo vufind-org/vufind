@@ -189,8 +189,7 @@ class Solr extends \VuFind\Autocomplete\Solr
             }
         }
 
-        $suggestionsLimit = isset($this->searchConfig->Autocomplete->suggestions)
-            ? $this->searchConfig->Autocomplete->suggestions : 5;
+        $suggestionsLimit = $this->searchConfig->Autocomplete->suggestions ?? 5;
 
         $suggestions = parent::getSuggestions($query);
         if (!empty($suggestions)) {

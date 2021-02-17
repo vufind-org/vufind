@@ -121,8 +121,7 @@ class TurkuPayment extends Paytrail
             );
         }
         if ($transactionFee) {
-            $code = isset($this->config->transactionFeeProductCode)
-                ? $this->config->transactionFeeProductCode : $productCode;
+            $code = $this->config->transactionFeeProductCode ?? $productCode;
             $module->addProduct(
                 'Palvelumaksu / Serviceavgift / Transaction fee', $code, 1,
                 $transactionFee, 0, TurkuPaytrailE2::TYPE_HANDLING

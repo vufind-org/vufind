@@ -142,8 +142,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $pageOptions = $this->getPaginationHelper()->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
-            isset($config->Catalog->checked_out_page_size)
-                ? $config->Catalog->checked_out_page_size : 50,
+            $config->Catalog->checked_out_page_size ?? 50,
             $catalog->checkFunction('getMyTransactions', compact('patron'))
         );
 

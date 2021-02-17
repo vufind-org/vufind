@@ -142,7 +142,6 @@ class OnlinePayment implements \VuFind\I18n\Translator\TranslatorAwareInterface,
      */
     protected function getConfig($source)
     {
-        return isset($this->config[$source]['onlinePayment'])
-            ? $this->config[$source]['onlinePayment'] : null;
+        return $this->config[$source]['onlinePayment'] ?? null;
     }
 }

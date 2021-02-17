@@ -37,7 +37,7 @@
     </fieldset>
   <?php endif; ?>
 <?php endif; ?>
-<?php $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : []; ?>
+<?php $extraFilters = $this->extraSideFacetFilters ?? []; ?>
 <?php $collapsedFacets = $this->recommend->getCollapsedFacets(); ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets(); ?>
@@ -71,7 +71,7 @@ if ($this->fromStreetSearch) {
   }
 }
 ?>
-<?=isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?=$this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>

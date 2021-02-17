@@ -61,8 +61,7 @@ class Params extends \Finna\Search\Solr\Params
      */
     public function getCombinedSearchId($backend)
     {
-        return isset($this->combinedSearches[$backend])
-            ? $this->combinedSearches[$backend] : null
+        return $this->combinedSearches[$backend] ?? null
         ;
     }
 

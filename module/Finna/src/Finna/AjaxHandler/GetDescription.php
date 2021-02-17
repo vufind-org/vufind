@@ -120,8 +120,7 @@ class GetDescription extends \VuFind\AjaxHandler\AbstractBase
 
         $localFile = "$cacheDir/" . urlencode($id) . '.txt';
 
-        $maxAge = isset($this->config->Content->summarycachetime)
-            ? $this->config->Content->summarycachetime : 1440;
+        $maxAge = $this->config->Content->summarycachetime ?? 1440;
 
         if (is_readable($localFile)
             && time() - filemtime($localFile) < $maxAge * 60

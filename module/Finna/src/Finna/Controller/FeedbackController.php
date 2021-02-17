@@ -172,8 +172,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
                 $dataSources = $this->serviceLocator
                     ->get(\VuFind\Config\PluginManager::class)->get('datasources');
                 $inst = $dataSources->$dataSource ?? null;
-                $recipientEmail = isset($inst->feedbackEmail) ?
-                    $inst->feedbackEmail : null;
+                $recipientEmail = $inst->feedbackEmail ?? null;
                 if ($recipientEmail == null) {
                     throw new \Exception(
                         'Error sending record feedback:'

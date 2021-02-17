@@ -499,7 +499,7 @@ class Primo extends \VuFind\RecordDriver\Primo
      */
     protected function getDefaultOpenUrlParams()
     {
-        $link = isset($this->fields['url']) ? $this->fields['url'] : '';
+        $link = $this->fields['url'] ?? '';
 
         $params = [];
         // Take params from the OpenURL returned from Primo, if available
