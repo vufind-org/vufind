@@ -75,6 +75,7 @@ class RecordCollection
     {
         $this->config = $config;
         $this->mappings = $mappings;
+        $this->response = static::$template;
     }
 
     /**
@@ -208,6 +209,9 @@ class RecordCollection
         $facets = $primaryCollection
             ? $primaryCollection->getFacets()->getFieldFacets() : [];
         $secondary = $secondaryCollection ? $secondaryCollection->getFacets() : [];
+        if ($secondary instanceof \VuFindSearch\Backend\Solr\Response\Json\Facets) {
+            $secondary = $secondary->getFieldFacets();
+        }
         foreach ($facets as $facet => &$values) {
             if (is_object($values)) {
                 $values = $values->toArray();
@@ -275,6 +279,12 @@ class RecordCollection
 
             $facets[$facet] = $list;
         }
+
+        $facets['blender_backend'] = [
+            'primary' => $primaryCollection ? $primaryCollection->getTotal() : 0,
+            'secondary' => $secondaryCollection
+                ? $secondaryCollection->getTotal() : 0
+        ];
 
         // Break the keyed array back to Solr-style array with two elements
         $facetFields = [];

@@ -152,6 +152,8 @@ dateRangeVis = search_daterange_mv:main_date_str
 ;
 ; Leave the section empty if you do not need checkbox facets.
 [CheckboxFacets]
+;blender_backend:primary = tabs_local
+;blender_backend:secondary = tabs_pci
 ;edition:1st* = "First Edition"     ; Contrived hypothetical example
 source_available_str_mv:* = available_locally_facet_html
 online_boolean:1 = online_material_facet_html

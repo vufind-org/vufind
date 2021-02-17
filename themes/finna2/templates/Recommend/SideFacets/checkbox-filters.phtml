@@ -1,12 +1,38 @@
 <?php foreach ($checkboxFilters as $current): ?>
-  <div class="checkbox <?=($current['selected'] ? 'checked' : '')?><?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?> checkbox-filter" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=!$current['selected'] && isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
+  <?php
+    $parts = explode(':', $current['filter']);
+    $classes = str_replace('_', '-', $parts[0]);
+    if (isset($parts[1])) {
+      $classes .= " $classes-" . preg_replace('/\W/', 'x', $parts[1]);
+    }
+
+    $this->htmlElement()->addAttributeTemplate('sidebar-tooltip-element', [
+      'class' => 'toggle-tooltip',
+      'data-toggle' => 'tooltip',
+      'data-html' => 'true',
+      'data-placement' => 'bottom'
+    ]);
+  ?>
+  <div class="checkbox <?=$current['selected'] ? 'checked' : ''?><?=!empty($current['disabled']) ? ' disabled' : ''?> <?=$this->escapeHtmlAttr($classes)?><?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?> checkbox-filter" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=!$current['selected'] && empty($current['disabled']) && isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
     <label>
       <span class="badge cb-facet avail-count"></span>
       <input class="checkbox-filter" type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>
         id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
         data-location="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']) ?>"
+        <?=!empty($current['disabled']) ? 'disabled="disabled"' : ''?>
       />
-      <?=$this->translate($current['desc']) // Intentionally left unescaped to allow HTML in the description ?>
+      <span><?=$this->translate($current['desc']) // Intentionally left unescaped to allow HTML in the description ?></span>
+      <?php if (!$this->translationEmpty('tooltip_' . $current['desc'])): ?>
+        <?php
+          $tooltip = [
+            'aria-label' => $this->translate('Help') . ' - ' . $this->translate($current['desc']),
+            'data-original-title' => $this->translate('tooltip_' . $current['desc']),
+          ];
+        ?>
+        <button <?=$this->htmlElement()->getAttributes($tooltip, 'sidebar-tooltip-element') ?>>
+          <i class="fa fa-info-big"></i>
+        </button>
+      <?php endif; ?>
     </label>
   </div>
 <?php endforeach; ?>

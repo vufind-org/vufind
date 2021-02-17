@@ -143,9 +143,17 @@ class Params extends \Finna\Search\Solr\Params
         $mappings = $this->mappings['Facets'] ?? [];
         $filters = $request->get('filter');
         if (!empty($filters)) {
+            $hierarchicalFacets = [];
+            $options = $this->getOptions();
+            if (is_callable([$options, 'getHierarchicalFacets'])) {
+                $hierarchicalFacets = $options->getHierarchicalFacets();
+            }
             $newFilters = [];
             foreach ((array)$filters as $filter) {
                 list($field, $value) = $this->parseFilter($filter);
+                if ('blender_backend' === $field) {
+                    continue;
+                }
                 $prefix = '';
                 if (substr($field, 0, 1) === '~') {
                     $prefix = '~';
@@ -251,5 +259,33 @@ class Params extends \Finna\Search\Solr\Params
         }
 
         return $request;
+    }
+
+    /**
+     * Get information on the current state of the boolean checkbox facets.
+     *
+     * @param array $allowed List of checkbox filters to return (null for all)
+     *
+     * @return array
+     */
+    public function getCheckboxFacets(array $allowed = null)
+    {
+        $facets = parent::getCheckboxFacets($allowed);
+
+        // Mark other backend filters disabled if one is enabled
+        foreach ($facets as $details) {
+            list($field) = $this->parseFilter($details['filter']);
+            if ('blender_backend' === $field && $details['selected']) {
+                foreach ($facets as $key => $current) {
+                    list($field) = $this->parseFilter($current['filter']);
+                    if ('blender_backend' === $field && !$current['selected']) {
+                        $facets[$key]['disabled'] = true;
+                    }
+                }
+                break;
+            }
+        }
+
+        return $facets;
     }
 }

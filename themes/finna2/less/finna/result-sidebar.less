@@ -4,6 +4,13 @@
   margin: 15px 0px;
   .checkbox {
     margin: 8px 0px;
+    &.disabled label > span {
+      .opacity(0.5);
+      cursor: @cursor-disabled;
+    }
+    &.blender-backend-secondary {
+      margin-bottom: 1.5em;
+    }
   }
   label {
     margin-left: 0px;
@@ -20,6 +27,18 @@
       overflow: hidden;
       text-overflow: ellipsis;
       margin-right: 6px;
+    }
+  }
+  .toggle-tooltip {
+    border: 0;
+    background: none;
+    width: 16px;
+    color: @action-link-color;
+    font-size: 1.2em;
+
+    i {
+      cursor: pointer;
+      margin-left: -5px;
     }
   }
 }

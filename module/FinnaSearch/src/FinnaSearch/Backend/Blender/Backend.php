@@ -27,6 +27,7 @@
  */
 namespace FinnaSearch\Backend\Blender;
 
+use FinnaSearch\Backend\Blender\Response\Json\RecordCollection;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\ParamBag;
@@ -131,6 +132,31 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         $secondaryParams = $params->get('secondary_backend')[0];
         $params->remove('secondary_backend');
 
+        $usePrimary = true;
+        $useSecondary = true;
+
+        // Handle the blender_backend pseudo-facet
+        $fq = $params->get('fq');
+        foreach ($fq ?? [] as $key => $current) {
+            if (strncmp($current, 'blender_backend:', 16) === 0) {
+                if (substr($current, 16) === '"primary"') {
+                    $useSecondary = false;
+                } elseif (substr($current, 16) === '"secondary"') {
+                    $usePrimary = false;
+                }
+                unset($fq[$key]);
+                $params->set('fq', $fq);
+            }
+        }
+        $facetFields = $params->get('facet.field');
+        foreach ($facetFields ?? [] as $key => $current) {
+            if ('{!ex=blender_backend_filter}blender_backend' === $current) {
+                unset($facetFields[$key]);
+                $params->set('facet.field', $facetFields);
+                break;
+            }
+        }
+
         $primaryCollection = null;
         $secondaryCollection = null;
 
@@ -143,24 +169,25 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         $exception = null;
         if ($offset <= $this->blendLimit) {
             try {
-                $primaryCollection = $this->primaryBackend->search(
+                $primaryCollection = $usePrimary ? $this->primaryBackend->search(
                     $query,
                     0,
                     $blendLimit,
                     $params
-                );
+                ) : new RecordCollection();
             } catch (\Exception $e) {
                 $exception = $e;
                 $primaryCollection = null;
             }
 
             try {
-                $secondaryCollection = $this->secondaryBackend->search(
-                    $secondaryQuery,
-                    0,
-                    $blendLimit,
-                    $secondaryParams
-                );
+                $secondaryCollection = $useSecondary
+                    ? $this->secondaryBackend->search(
+                        $secondaryQuery,
+                        0,
+                        $blendLimit,
+                        $secondaryParams
+                    ) : new RecordCollection();
             } catch (\Exception $e) {
                 if (null !== $exception) {
                     // Both searches failed, throw the previous exception
@@ -179,24 +206,25 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
             );
         } else {
             try {
-                $primaryCollection = $this->primaryBackend->search(
+                $primaryCollection = $usePrimary ? $this->primaryBackend->search(
                     $query,
                     0,
                     0,
                     $params
-                );
+                ) : new RecordCollection();
             } catch (\Exception $e) {
                 $exception = $e;
                 $primaryCollection = null;
             }
 
             try {
-                $secondaryCollection = $this->secondaryBackend->search(
-                    $secondaryQuery,
-                    0,
-                    0,
-                    $secondaryParams
-                );
+                $secondaryCollection = $useSecondary
+                    ? $this->secondaryBackend->search(
+                        $secondaryQuery,
+                        0,
+                        0,
+                        $secondaryParams
+                    ) : new RecordCollection();
             } catch (\Exception $e) {
                 if (null !== $exception) {
                     // Both searches failed, throw the previous exception
