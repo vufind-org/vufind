@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_feeds (
     feed_url VARCHAR(1000) NOT NULL,
     website_url VARCHAR(1000) NOT NULL,
     strptime_format VARCHAR(50) DEFAULT NULL,
+    title_suppression_regex VARCHAR(200) DEFAULT NULL,
     downloader_time_limit INT NOT NULL DEFAULT 30,
     CONSTRAINT id_constraint UNIQUE (id),
     CONSTRAINT feed_name_constraint UNIQUE (feed_name),
