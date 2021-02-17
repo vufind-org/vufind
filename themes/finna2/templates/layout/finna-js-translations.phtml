@@ -1,0 +1,79 @@
+<?php /* Global context translations only */
+
+// Add Finna translation strings
+$this->jsTranslations()->addStrings(
+  [
+    'change_hold_success' => 'change_hold_success',
+    'show_more' => 'show_more',
+    'show_less' => 'show_less',
+    'Organisation' => 'Organisation',
+    'location-service' => 'Location Service',
+    'login' => 'Login',
+    'none_selected' => 'none_selected',
+    'selected' => 'selected',
+    'shelf_location' => 'shelf_location',
+    'request_change_done' => 'request_change_done',
+    'other_records' => 'other_records',
+    'records' => 'records',
+    'search_placeholder' => 'search_placeholder',
+    'Image' => 'Image',
+    'show_filters' => 'show_filters',
+    'hide_filters' => 'hide_filters',
+
+    'radiusPrefix' => 'Radius',
+    'circleCaption' => 'Select Area',
+    'clearCaption' => 'Clear Selections',
+    'removeCaption' => 'Clear',
+    'map_zoom_in' => 'map_zoom_in',
+    'map_zoom_out' => 'map_zoom_out',
+    'street_search_geolocation_inactive' => 'street_search_geolocation_inactive',
+    'street_search_checking_for_geolocation' => 'street_search_checking_for_geolocation',
+    'street_search_geolocation_available' => 'street_search_geolocation_available',
+    'street_search_geolocation_position_unavailable' => 'street_search_geolocation_position_unavailable',
+    'street_search_geolocation_other_error' => 'street_search_geolocation_other_error',
+    'street_search_geolocation_inactive' => 'street_search_geolocation_inactive',
+    'street_search_timeout' => 'street_search_timeout',
+    'street_search_no_streetname_found' => 'street_search_no_streetname_found',
+    'street_search_reversegeocode_unavailable' => 'street_search_reversegeocode_unavailable',
+    'street_search_searching_for' => 'street_search_searching_for',
+    'street_search_coordinates_found' => 'street_search_coordinates_found',
+    'street_search_coordinates_found_accuracy_bad' => 'street_search_coordinates_found_accuracy_bad',
+
+    'Prev' => 'Prev',
+    'Next' => 'Next',
+    'Next Record' => 'Next Record',
+    'Previous Record' => 'Previous Record',
+    'No Cover Image' => 'No Cover Image'
+
+  ]
+);
+
+// Autocomplete strings:
+if ($this->searchbox()->autocompleteEnabled($this->searchClassId ?? 'Solr')) {
+  if ($phrase = $this->autocomplete()->getPhraseSearch()) {
+    $this->jsTranslations()->addStrings(['autocomplete_phrase' => $this->translate('autocomplete_phrase')]);
+  }
+
+  $browse = $browse ?? false;
+  if (!$browse) {
+    $activeTab = $this->searchClassId ?? DEFAULT_SEARCH_BACKEND;
+    if (isset($searchTabs['selected'])) {
+      $activeTab = $searchTabs['selected']['id'];
+    }
+
+    foreach (['suggestion','facet','handler', 'filter', 'phrase'] as $section) {
+      $section = "autocomplete_section_$section";
+      if ($this->translationEmpty($section)) {
+        continue;
+      }
+      $this->jsTranslations()->addStrings([$section => $this->translate($section)]);
+    }
+    foreach ($this->autocomplete()->getFilters($activeTab) as $filter) {
+      $this->jsTranslations()->addStrings([$filter['label'] => $this->translate($filter['label'])]);
+    }
+    $acHandlers = $this->autocomplete()->getHandlers($activeTab);
+    foreach ($acHandlers as $handler) {
+      $this->jsTranslations()->addStrings([$handler['handler'] => $this->translate($handler['label'])]);
+    }
+  }
+}
