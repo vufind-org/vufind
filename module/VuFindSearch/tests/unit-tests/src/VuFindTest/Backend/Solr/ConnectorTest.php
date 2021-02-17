@@ -169,6 +169,10 @@ class ConnectorTest extends TestCase
         $this->assertEquals($expectedBody, $resp);
         $resp = $conn->retrieve('id');
         $this->assertEquals('foo', $resp);
+
+        // Make sure that write() doesn't access the cache
+        $doc = new \VuFindSearch\Backend\Solr\Document\UpdateDocument();
+        $conn->write($doc);
     }
 
     /**
