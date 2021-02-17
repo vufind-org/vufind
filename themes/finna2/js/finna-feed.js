@@ -68,8 +68,21 @@ finna.feed = (function finnaFeed() {
       dots: settings.dots,
       swipe: !settings.vertical,
       infinite: true,
-      prevArrow: '<button class="slick-prev" aria-label=' + VuFind.translate("Prev") + ' type="button">' + VuFind.translate("Prev") + '</button>',
-      nextArrow: '<button class="slick-next" aria-label=' + VuFind.translate("Next") + ' type="button">' + VuFind.translate("Next") + '</button>',
+      prevArrow: '<button class="slick-prev" type="button">'
+        + '<span class="slick-prev-icon" aria-hidden="true"></span>'
+        + '<span class="slick-sr-only">' + VuFind.translate("Prev") + '</span>'
+        + '</button>',
+      nextArrow: '<button class="slick-next" type="button">'
+        + '<span class="slick-next-icon" aria-hidden="true"></span>'
+        + '<span class="slick-sr-only">' + VuFind.translate("Next") + '</span>'
+                + '</button>',
+      regionLabel: VuFind.translate("Image Carousel"),
+      customPaging: function initCustomPaging(slider, i) {
+        return $('<button type="button">'
+         + '<span class="slick-dot-icon" aria-hidden="true"></span>'
+         + '<span class="slick-sr-only">' + VuFind.translate("Go to slide") + ' ' + (i + 1) + '</span>'
+         + '</button>');
+      },
       touchThreshold: 8,
       autoplay: autoplay !== 0,
       autoplaySpeed: autoplay,
