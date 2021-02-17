@@ -136,8 +136,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullUrlTemplate()
     {
-        return isset($this->config->Bookplate->bookplate_full) ?
-            $this->config->Bookplate->bookplate_full : '';
+        return $this->config->Bookplate->bookplate_full ?? '';
     }
 
     /**
@@ -147,8 +146,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbUrlTemplate()
     {
-        return isset($this->config->Bookplate->bookplate_thumb) ?
-            $this->config->Bookplate->bookplate_thumb : '';
+        return $this->config->Bookplate->bookplate_thumb ?? '';
     }
 
     /**
@@ -158,8 +156,7 @@ class Bookplate implements RelatedInterface
      */
     protected function displayBookplateTitles()
     {
-        return isset($this->config->Bookplate->bookplate_display_title) ?
-            $this->config->Bookplate->bookplate_display_title : true;
+        return $this->config->Bookplate->bookplate_display_title ?? true;
     }
 
     /**
@@ -169,8 +166,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateTitlesField()
     {
-        return isset($this->config->Bookplate->bookplate_titles_field) ?
-            $this->config->Bookplate->bookplate_titles_field : '';
+        return $this->config->Bookplate->bookplate_titles_field ?? '';
     }
 
     /**
@@ -182,8 +178,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullImagesField()
     {
-        return isset($this->config->Bookplate->bookplate_images_field) ?
-            $this->config->Bookplate->bookplate_images_field : '';
+        return $this->config->Bookplate->bookplate_images_field ?? '';
     }
 
     /**
@@ -195,8 +190,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbnailsField()
     {
-        return isset($this->config->Bookplate->bookplate_thumbnails_field) ?
-            $this->config->Bookplate->bookplate_thumbnails_field : '';
+        return $this->config->Bookplate->bookplate_thumbnails_field ?? '';
     }
 
     /**
