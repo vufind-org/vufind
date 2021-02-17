@@ -363,9 +363,8 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
 
   function menuClicked(disable) {
     var toggle = holder.find('.organisation .dropdown-toggle');
-    var input = toggle.find('input');
-    var id = input.val();
-    var name = holder.find('.organisation ul.dropdown-menu li input[value="' + id + '"]').parent('li').text();
+    var id = toggle.data('id');
+    var name = holder.find('.organisation ul.dropdown-menu li[data-id="' + id + '"]').text();
 
     toggle.find('span:not(.sr-only)').text(name);
     showDetails(id, name, false);
@@ -381,13 +380,13 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     var id = data.id;
     var found = false;
     var menu = holder.find('.organisation ul.dropdown-menu');
-    var menuInput = holder.find('.organisation .dropdown-toggle input');
+    var menuToggle = holder.find('.organisation .dropdown-toggle');
 
     $.each(list, function handleOrganisationList(ind, obj) {
       if (String(id) === String(obj.id)) {
         found = true;
       }
-      $('<li role="menuitem" tabindex="0"><input type="hidden" value="' + obj.id + '"></input>' + obj.name + '</li>')
+      $('<li role="menuitem" tabindex="0" data-id="' + obj.id + '">' + obj.name + '</li>')
         .on('keydown', function onOrganisationKeydown(e) {
           keyHandler(e, $(this));
         }).appendTo(menu);
@@ -397,13 +396,13 @@ finna.organisationInfoWidget = (function finnaOrganisationInfoWidget() {
     if (!found) {
       id = finna.common.getField(data.consortium.finna, 'service_point');
       if (!id) {
-        id = menu.find('li input').eq(0).val();
+        id = menu.find('li').eq(0).data('id');
       }
     }
-    menuInput.val(id);
+    menuToggle.data('id', id);
     var menuItem = holder.find('.organisation ul.dropdown-menu li');
     menuItem.on('click', function onClickMenuItem() {
-      menuInput.val($(this).find('input').val());
+      menuToggle.data('id', $(this).data('id'));
       menuClicked(false);
     });
 
