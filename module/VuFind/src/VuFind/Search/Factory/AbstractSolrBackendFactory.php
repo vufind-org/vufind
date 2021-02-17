@@ -381,8 +381,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             );
         }
 
-        if (!empty($config->IndexCache->adapter)) {
-            $cacheConfig = $config->IndexCache->toArray();
+        if (!empty($searchConfig->SearchCache->adapter)) {
+            $cacheConfig = $searchConfig->SearchCache->toArray();
             $options = $cacheConfig['options'] ?? [];
             if (empty($options['namespace'])) {
                 $options['namespace'] = 'Index';
