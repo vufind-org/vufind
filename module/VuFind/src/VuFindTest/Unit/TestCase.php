@@ -232,6 +232,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function continuousIntegrationRunning()
     {
         // We'll assume that if the CI Solr PID is present, then CI is active:
-        return file_exists(__DIR__ . '/../../../../../local/vufind-8983.pid');
+        return file_exists(__DIR__ . '/../../../../../local/solr-8983.pid');
     }
 }
