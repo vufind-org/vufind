@@ -141,6 +141,37 @@ class ConnectorTest extends TestCase
     }
 
     /**
+     * Test caching.
+     *
+     * @return void
+     */
+    public function testCaching()
+    {
+        $conn = $this->createConnector('single-record');
+
+        list(, $expectedBody) = explode("\n\n", $this->response);
+
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $cache->expects($this->exactly(3))
+            ->method('getItem')
+            ->willReturnOnConsecutiveCalls(null, $expectedBody, 'foo');
+        $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
+        $cache->expects($this->exactly(1))
+            ->method('setItem')
+            ->with($keyConstraint, $expectedBody)
+            ->will($this->returnValue(true));
+
+        $conn->setCache($cache);
+
+        $resp = $conn->retrieve('id');
+        $this->assertEquals($expectedBody, $resp);
+        $resp = $conn->retrieve('id');
+        $this->assertEquals($expectedBody, $resp);
+        $resp = $conn->retrieve('id');
+        $this->assertEquals('foo', $resp);
+    }
+
+    /**
      * Test simple getters.
      *
      * @return void
