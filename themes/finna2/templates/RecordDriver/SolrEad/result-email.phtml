@@ -27,11 +27,14 @@
 <?php if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
 <?= PHP_EOL . $this->transEsc('Archive Series')?>: <?php $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?><?php foreach ($parentIds as $index => $parentId): ?><?= isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?><?=($index < count($parentIds) - 1 ? ', ' : '')?><?php endforeach; ?>
 <?php endif; ?>
-<?php if (!empty($dates)): ?>
-<?= PHP_EOL . $this->translate('Published') . ': ' . $this->escapeHtml($dates);?>
+<?php if (!empty($date)): ?>
+<?= PHP_EOL . $this->translate('Published') . ': ' . $this->escapeHtml($date);?>
 <?php endif; ?>
 <?php if (!empty($format)): ?>
 <?= PHP_EOL . $this->translate($format) ?>
+<?php endif; ?>
+<?php if ($identifier = ($this->driver->getIdentifier())): ?>
+  <?= PHP_EOL . $this->translate('Identifier') . ': ' . implode(', ', $identifier) ?>
 <?php endif; ?>
 
 <?= $this->translate('View Full Record') . ": $url"; ?>
