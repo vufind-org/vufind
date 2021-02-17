@@ -783,7 +783,7 @@ class RemsService implements
             $err = 'REMS: request failed: '
                 . $client->getRequest()->getUriString()
                 . ', params: ' . var_export($params, true)
-                . ', exception: ' . $exception->getMessage();
+                . ', exception: ' . $e->getMessage();
             $this->error($err);
             return $handleException('REMS request error');
         }

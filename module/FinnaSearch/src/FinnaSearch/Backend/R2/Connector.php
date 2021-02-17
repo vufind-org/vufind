@@ -43,7 +43,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector extends \VuFindSearch\Backend\Solr\Connector
+class Connector extends \FinnaSearch\Backend\Solr\Connector
 {
     /**
      * R2 daily request limit exceeded.
