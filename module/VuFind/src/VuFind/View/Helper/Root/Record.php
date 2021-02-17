@@ -492,8 +492,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return false;
         }
         // check for context-specific overrides
-        return isset($this->config->Content->coversize[$context])
-            ? $this->config->Content->coversize[$context] : $default;
+        return $this->config->Content->coversize[$context] ?? $default;
     }
 
     /**

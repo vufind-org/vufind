@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\AjaxHandler\Recommend;
 use VuFind\AjaxHandler\RecommendFactory;
 use VuFind\Recommend\PluginManager;
@@ -76,11 +75,10 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->container->set(ResultsManager::class, $resultsManager);
 
         // Set up view helper and renderer:
-        $viewHelper = $this->container->createMock(RecommendHelper::class);
-        $view = $this->container->createMock(PhpRenderer::class, ['plugin']);
-        $view->expects($this->once())->method('plugin')
-            ->with($this->equalTo('recommend'))
-            ->will($this->returnValue($viewHelper));
+        $view = new \Laminas\View\Renderer\PhpRenderer();
+        $plugins = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $plugins->set('recommend', $plugins->get(RecommendHelper::class));
+        $view->setHelperPluginManager($plugins);
         $this->container->set('ViewRenderer', $view);
 
         // Build and test the ajax handler:

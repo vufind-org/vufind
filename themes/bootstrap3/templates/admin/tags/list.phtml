@@ -58,9 +58,9 @@
 
   <?php if(count($this->results) > 0):?>
     <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
-      <input type="hidden" name="user_id" value="<?=isset($this->params['user_id']) ? $this->params['user_id'] : '' ?>" />
-      <input type="hidden" name="tag_id" value="<?=isset($this->params['tag_id']) ? $this->params['tag_id'] : '' ?>" />
-      <input type="hidden" name="resource_id" value="<?=isset($this->params['resource_id']) ? $this->params['resource_id'] : '' ?>" />
+      <input type="hidden" name="user_id" value="<?=$this->params['user_id'] ?? '' ?>" />
+      <input type="hidden" name="tag_id" value="<?=$this->params['tag_id'] ?? '' ?>" />
+      <input type="hidden" name="resource_id" value="<?=$this->params['resource_id'] ?? '' ?>" />
       <input type="hidden" name="origin" value="list" />
 
       <table class="table table-striped">

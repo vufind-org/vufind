@@ -92,16 +92,12 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockView()
     {
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view->expects($this->at(0))->method('plugin')
-            ->with($this->equalTo('headMeta'))
-            ->will($this->returnValue($this->getMockHeadMeta()));
-        $view->expects($this->at(1))->method('plugin')
-            ->with($this->equalTo('headLink'))
-            ->will($this->returnValue($this->getMockHeadLink()));
-        $view->expects($this->at(2))->method('plugin')
-            ->with($this->equalTo('headScript'))
-            ->will($this->returnValue($this->getMockHeadScript()));
+        $view = new \Laminas\View\Renderer\PhpRenderer();
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $container->set('headMeta', $this->getMockHeadMeta());
+        $container->set('headLink', $this->getMockHeadLink());
+        $container->set('headScript', $this->getMockHeadScript());
+        $view->setHelperPluginManager($container);
         return $view;
     }
 

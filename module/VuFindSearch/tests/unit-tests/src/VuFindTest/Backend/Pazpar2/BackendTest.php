@@ -77,12 +77,9 @@ class BackendTest extends TestCase
         $conn->expects($this->once())
             ->method('show')
             ->will($this->returnValue($this->loadResponse('pp2show')));
-        $conn->expects($this->at(0))
+        $conn->expects($this->exactly(2))
             ->method('stat')
-            ->will($this->returnValue(simplexml_load_string($this->getStatXml(0.5))));
-        $conn->expects($this->at(1))
-            ->method('stat')
-            ->will($this->returnValue(simplexml_load_string($this->getStatXml(1.0))));
+            ->willReturnOnConsecutiveCalls(simplexml_load_string($this->getStatXml(0.5)), simplexml_load_string($this->getStatXml(1.0)));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');

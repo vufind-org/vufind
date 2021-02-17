@@ -111,7 +111,7 @@ class SolrMarcRemote extends SolrMarc implements
     /**
      * Load the fullrecord field if not already loaded
      *
-     * @return void;
+     * @return void
      */
     protected function verifyFullRecordIsAvailable()
     {

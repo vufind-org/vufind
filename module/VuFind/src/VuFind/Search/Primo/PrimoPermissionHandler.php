@@ -163,10 +163,8 @@ class PrimoPermissionHandler
         }
 
         // Handle legacy options
-        $codes = isset($this->primoConfig['code'])
-            ? $this->primoConfig['code'] : [];
-        $regex = isset($this->primoConfig['regex'])
-            ? $this->primoConfig['regex'] : [];
+        $codes = $this->primoConfig['code'] ?? [];
+        $regex = $this->primoConfig['regex'] ?? [];
         if (!empty($codes) && !empty($regex)) {
             throw new \Exception(
                 'Legacy [Institutions] settings detected.'
@@ -281,8 +279,7 @@ class PrimoPermissionHandler
         }
 
         $onCampusRule
-            = isset($this->primoConfig['onCampusRule'][$code])
-            ? $this->primoConfig['onCampusRule'][$code] : false;
+            = $this->primoConfig['onCampusRule'][$code] ?? false;
 
         if (false !== $onCampusRule) {
             return $onCampusRule;

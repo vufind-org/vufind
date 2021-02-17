@@ -151,9 +151,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $template = 'Email/login-link.phtml'
     ) {
         // Make sure we've waited long enough
-        $recoveryInterval = isset($this->config->Authentication->recover_interval)
-            ? $this->config->Authentication->recover_interval
-            : 60;
+        $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
         $sessionId = $this->sessionManager->getId();
 
         if (($row = $this->authHashTable->getLatestBySessionId($sessionId))

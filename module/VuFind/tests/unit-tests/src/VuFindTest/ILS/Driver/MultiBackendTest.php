@@ -899,7 +899,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         //Set up the mock object and prepare its expectations
         $ILS = $this->getMockILS('Voyager', ['patronLogin']);
-        $ILS->expects($this->at(0))
+        $ILS->expects($this->once())
             ->method('patronLogin')
             ->with('username', 'password')
             ->will($this->returnValue($patronReturn));

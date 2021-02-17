@@ -125,7 +125,7 @@ public class WorkKeys
     ) {
         String normalized = transliterator != null ? transliterator.transliterate(s)
             : Normalizer.normalize(s, Normalizer.Form.NFKC);
-        if (!includeRegEx.isBlank()) {
+        if (!includeRegEx.chars().allMatch(Character::isWhitespace)) {
             StringBuilder result = new StringBuilder();
             Matcher m = Pattern.compile(includeRegEx).matcher(normalized);
             while (m.find()) {
@@ -133,7 +133,7 @@ public class WorkKeys
             }
             normalized = result.toString();
         }
-        if (!excludeRegEx.isBlank()) {
+        if (!excludeRegEx.chars().allMatch(Character::isWhitespace)) {
             normalized = normalized.replaceAll(excludeRegEx, "");
         }
         int length = normalized.length();
