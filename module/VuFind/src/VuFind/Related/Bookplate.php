@@ -86,7 +86,6 @@ class Bookplate implements RelatedInterface
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->configLoader = $configLoader;
-        $this->config = $this->configLoader->get('Related');
     }
 
     /**
@@ -99,6 +98,14 @@ class Bookplate implements RelatedInterface
      */
     public function init($settings, $driver)
     {
+        $config = explode(';', $settings);
+        $configFile = 'config';
+        $configSection = 'Record';
+        if (count($config) == 2) {
+            $configFile = $config[0];
+            $configSection = $config[1];
+        }
+        $this->config = $this->configLoader->get($configFile)->$configSection;
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData('titles');
         $this->bookplateImages = $this->getBookplateData('imgFull');
@@ -136,7 +143,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullUrlTemplate()
     {
-        return $this->config->Bookplate->bookplate_full ?? '';
+        return $this->config->bookplate_full ?? '';
     }
 
     /**
@@ -146,7 +153,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbUrlTemplate()
     {
-        return $this->config->Bookplate->bookplate_thumb ?? '';
+        return $this->config->bookplate_thumb ?? '';
     }
 
     /**
@@ -156,7 +163,7 @@ class Bookplate implements RelatedInterface
      */
     protected function displayBookplateTitles()
     {
-        return $this->config->Bookplate->bookplate_display_title ?? true;
+        return $this->config->bookplate_display_title ?? true;
     }
 
     /**
@@ -166,7 +173,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateTitlesField()
     {
-        return $this->config->Bookplate->bookplate_titles_field ?? '';
+        return $this->config->bookplate_titles_field ?? '';
     }
 
     /**
@@ -178,7 +185,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullImagesField()
     {
-        return $this->config->Bookplate->bookplate_images_field ?? '';
+        return $this->config->bookplate_images_field ?? '';
     }
 
     /**
@@ -190,7 +197,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbnailsField()
     {
-        return $this->config->Bookplate->bookplate_thumbnails_field ?? '';
+        return $this->config->bookplate_thumbnails_field ?? '';
     }
 
     /**
