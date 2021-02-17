@@ -38,7 +38,7 @@ use VuFind\Recommend\FacetCloud;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FacetCloudTest extends \VuFindTest\Unit\TestCase
+class FacetCloudTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getEmptyResults()

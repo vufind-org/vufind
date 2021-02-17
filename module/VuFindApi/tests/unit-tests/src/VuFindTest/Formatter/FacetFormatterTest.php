@@ -41,7 +41,7 @@ use VuFindTest\Search\TestHarness\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class FacetFormatterTest extends \VuFindTest\Unit\TestCase
+class FacetFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get fake facet data.

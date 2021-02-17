@@ -30,7 +30,6 @@ namespace VuFindTest\Search\Primo;
 
 use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Search\Primo\PrimoPermissionHandler;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Primo Permission Handler.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PrimoPermissionHandlerTest extends TestCase
+class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Backend.

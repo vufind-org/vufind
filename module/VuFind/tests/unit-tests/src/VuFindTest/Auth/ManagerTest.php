@@ -43,8 +43,10 @@ use VuFind\Db\Table\User as UserTable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ManagerTest extends \VuFindTest\Unit\TestCase
+class ManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test that database is the default method.
      *
