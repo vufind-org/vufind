@@ -171,8 +171,11 @@ class ConnectorTest extends TestCase
         $resp = $conn->retrieve('id');
         $this->assertEquals('foo', $resp);
 
-        // Make sure that write() doesn't access the cache. The excepted number of
-        // calls to getItem or setItem would fail the test if it does.
+        // Make sure that write() doesn't access the cache.
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $cache->expects($this->never())->method('getItem');
+        $cache->expects($this->never())->method('setItem');
+        $conn->setCache($cache);
         $doc = new \VuFindSearch\Backend\Solr\Document\UpdateDocument();
         $conn->write($doc);
     }
