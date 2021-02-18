@@ -36,7 +36,6 @@ use Finna\Search\Solr\SolrExtensionsListener;
 use FinnaSearch\Backend\Solr\LuceneSyntaxHelper;
 use FinnaSearch\Backend\Solr\QueryBuilder;
 
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
