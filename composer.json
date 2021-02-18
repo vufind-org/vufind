@@ -104,7 +104,7 @@
         }
     },
     "scripts": {
-        "phing-install-dependencies": "phing patch-dependencies ; phing installsolr installswaggerui",
+        "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies"
     }
