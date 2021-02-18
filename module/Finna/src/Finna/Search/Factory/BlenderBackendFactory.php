@@ -37,9 +37,10 @@ use FinnaSearch\Backend\Blender\Backend;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\Backend as SolrBackend;
 
 /**
  * Factory for Blender backend.
@@ -115,24 +116,48 @@ class BlenderBackendFactory implements FactoryInterface
         }
         $blenderMappings = $yamlReader->get('BlenderMappings.yaml');
         $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
+        $primary = $backendManager->get($blenderConfig['Primary']['backend']);
+        $secondary = $backendManager->get($blenderConfig['Secondary']['backend']);
+        if ($primary instanceof SolrBackend) {
+            $this->createListeners($primary);
+        }
+        if ($secondary instanceof SolrBackend) {
+            $this->createListeners($secondary);
+        }
         $backend = new Backend(
-            $backendManager->get($blenderConfig['Primary']['backend']),
-            $backendManager->get($blenderConfig['Secondary']['backend']),
+            $primary,
+            $secondary,
             $blenderConfig,
-            $blenderMappings
+            $blenderMappings,
+            new EventManager($sm->get('SharedEventManager'))
         );
-        $this->createListeners($backend);
+        $this->attachEvents($backend);
         return $backend;
     }
 
     /**
-     * Create listeners.
+     * Create Blender listeners.
      *
      * @param Backend $backend Backend
      *
      * @return void
      */
-    protected function createListeners(Backend $backend)
+    protected function attachEvents(Backend $backend)
+    {
+        $manager = $this->serviceLocator->get('SharedEventManager');
+
+        $manager->attach('VuFind\Search', 'pre', [$backend, 'onSearchPre']);
+        $manager->attach('VuFind\Search', 'post', [$backend, 'onSearchPost']);
+    }
+
+    /**
+     * Create Solr listeners.
+     *
+     * @param SolrBackend $backend Backend
+     *
+     * @return void
+     */
+    protected function createListeners(SolrBackend $backend)
     {
         // Apply deduplication also if it's not enabled by default (could be enabled
         // by a special filter):
@@ -155,12 +180,12 @@ class BlenderBackendFactory implements FactoryInterface
     /**
      * Get a deduplication listener for the backend
      *
-     * @param BackendInterface $backend Search backend
-     * @param bool             $enabled Whether deduplication is enabled
+     * @param SolrBackend $backend Search backend
+     * @param bool        $enabled Whether deduplication is enabled
      *
      * @return DeduplicationListener
      */
-    protected function getDeduplicationListener(BackendInterface $backend, $enabled)
+    protected function getDeduplicationListener(SolrBackend $backend, $enabled)
     {
         return new DeduplicationListener(
             $backend,

@@ -28,6 +28,9 @@
 namespace FinnaSearch\Backend\Blender;
 
 use FinnaSearch\Backend\Blender\Response\Json\RecordCollection;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\ParamBag;
@@ -88,22 +91,31 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     protected $mappings;
 
     /**
+     * Event manager.
+     *
+     * @var EventManager
+     */
+    protected $events;
+
+    /**
      * Constructor.
      *
      * @param AbstractBackend        $primary   Primary backend
      * @param AbstractBackend        $secondary Secondary backend
      * @param \Laminas\Config\Config $config    Blender configuration
      * @param array                  $mappings  Mappings configuration
+     * @param EventManager           $events    Event manager
      *
      * @return void
      */
     public function __construct(AbstractBackend $primary, AbstractBackend $secondary,
-        \Laminas\Config\Config $config, $mappings
+        \Laminas\Config\Config $config, $mappings, EventManager $events
     ) {
         $this->primaryBackend = $primary;
         $this->secondaryBackend = $secondary;
         $this->config = $config;
         $this->mappings = $mappings;
+        $this->setEventManager($events);
 
         $boost = ($this->config['Blending']['boostPosition'] ?? 0)
             + ($this->config['Blending']['boostCount'] ?? 0);
@@ -275,7 +287,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
                     }
                     $primary = false;
                 }
-                if ($primary) {
+                if ($primary && $primaryCollection) {
                     $record = $this->getRecord(
                         $this->primaryBackend,
                         $params,
@@ -285,7 +297,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
                         $primaryOffset
                     );
                     ++$primaryOffset;
-                } else {
+                } elseif ($secondaryCollection) {
                     $record = $this->getRecord(
                         $this->secondaryBackend,
                         $secondaryParams,
@@ -416,5 +428,69 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
     protected function translateQuery(AbstractQuery $query)
     {
         return $query;
+    }
+
+    /**
+     * Set EventManager instance.
+     *
+     * @param EventManagerInterface $events Event manager
+     *
+     * @return void
+     * @todo   Deprecate `VuFind\Search' event namespace (2.2)
+     */
+    protected function setEventManager(EventManagerInterface $events)
+    {
+        $events->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
+        $this->events = $events;
+    }
+
+    /**
+     * Set up filter for excluding merge children.
+     *
+     * @param EventInterface $event Event
+     *
+     * @return EventInterface
+     */
+    public function onSearchPre(EventInterface $event)
+    {
+        $backend = $event->getParam('backend');
+
+        if ($backend !== $this->getIdentifier()) {
+            return $event;
+        }
+
+        $event->setParam('backend', $this->primaryBackend->getIdentifier());
+        $this->events->triggerEvent($event);
+
+        $event->setParam('backend', $this->secondaryBackend->getIdentifier());
+        $this->events->triggerEvent($event);
+
+        $event->setParam('backend', $backend);
+        return $event;
+    }
+
+    /**
+     * Fetch appropriate dedup child
+     *
+     * @param EventInterface $event Event
+     *
+     * @return EventInterface
+     */
+    public function onSearchPost(EventInterface $event)
+    {
+        $backend = $event->getParam('backend');
+
+        if ($backend !== $this->getIdentifier()) {
+            return $event;
+        }
+
+        $event->setParam('backend', $this->primaryBackend->getIdentifier());
+        $this->events->triggerEvent($event);
+
+        $event->setParam('backend', $this->secondaryBackend->getIdentifier());
+        $this->events->triggerEvent($event);
+
+        $event->setParam('backend', $backend);
+        return $event;
     }
 }
