@@ -150,12 +150,13 @@ class ConnectorTest extends TestCase
         $conn = $this->createConnector('single-record');
 
         list(, $expectedBody) = explode("\n\n", $this->response);
+        $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $cache->expects($this->exactly(3))
             ->method('getItem')
+            ->with($keyConstraint)
             ->willReturnOnConsecutiveCalls(null, $expectedBody, 'foo');
-        $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
         $cache->expects($this->exactly(1))
             ->method('setItem')
             ->with($keyConstraint, $expectedBody)
@@ -170,7 +171,8 @@ class ConnectorTest extends TestCase
         $resp = $conn->retrieve('id');
         $this->assertEquals('foo', $resp);
 
-        // Make sure that write() doesn't access the cache
+        // Make sure that write() doesn't access the cache. The excepted number of
+        // calls to getItem or setItem would fail the test if it does.
         $doc = new \VuFindSearch\Backend\Solr\Document\UpdateDocument();
         $conn->write($doc);
     }
