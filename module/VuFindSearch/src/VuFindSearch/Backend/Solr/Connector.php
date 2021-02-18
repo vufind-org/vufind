@@ -463,7 +463,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 if ($cacheKey) {
                     try {
                         $this->cache->setItem($cacheKey, $result);
-                    } catch (\Exception $ex) {
+                    } catch (\Laminas\Cache\Exception\RuntimeException $ex) {
+                        // Try to determine if caching failed due to response size
+                        // and log the case accordingly.
+                        // Unfortunately Laminas Cache does not translate exceptions
+                        // to any common error codes, so we must check codes and/or
+                        // message for adapter-specific values.
+                        // 'ITEM TOO BIG' is the message from the Memcached adapter
+                        // and comes directly from libmemcached.
                         if ($ex->getMessage() === 'ITEM TOO BIG') {
                             $this->debug(
                                 'Cache setItem failed: ' . $ex->getMessage()
@@ -473,6 +480,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                                 'Cache setItem failed: ' . $ex->getMessage()
                             );
                         }
+                    } catch (\Exception $ex) {
+                        $this->logWarning(
+                            'Cache setItem failed: ' . $ex->getMessage()
+                        );
                     }
                 }
 
