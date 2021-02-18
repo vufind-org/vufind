@@ -38,7 +38,7 @@ namespace VuFindTest\ContentBlock;
  */
 class TemplateBasedTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test basic functionality of .phtml content block.
