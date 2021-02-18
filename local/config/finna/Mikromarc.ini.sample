@@ -147,3 +147,22 @@ method = driver
 ; is 'driver'.
 ;[changeRequestStatus]
 ;method = driver
+
+[OnlinePayment]
+; Whether online payment is enabled. Default is false.
+;enabled = true
+; Fee types listed are not payable online.
+; 8 = lost item replacement message
+; 11 = lost item replacement fee
+nonPayable[] = 8
+nonPayable[] = 11
+; Transaction fee (in cents) added to each payment
+;transactionFee = 0
+; Minimum fee (in cents) allowed to be paid online
+;minimumFee = 65
+; Email address for transactions that could not be registered.
+;errorEmail = ''
+; Maximum duration (in minutes) for a transaction.
+;transactionMaxDuration = 15
+; Currency
+currency = 'EUR'
