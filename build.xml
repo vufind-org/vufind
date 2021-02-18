@@ -525,4 +525,28 @@
     </if>
   </target>
 
+  <target name="patch-dependencies" description="apply fixes to dependencies">
+    <!-- Fix for PHP 8 incompatibility in laminas-db 2.11.3: -->
+    <reflexive>
+      <fileset dir="${srcdir}/vendor/laminas/laminas-db/src/Sql">
+        <include pattern="AbstractSql.php" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="\$multiParamValues\[\] = vsprintf\(\$paramSpecs\[\$position\]\[\$ppCount\], \$multiParamsForPosition\);" replace="\$multiParamValues[] = vsprintf(\$paramSpecs[\$position][\$ppCount], (array)\$multiParamsForPosition);" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+    <!-- Fix for PHP 8 incompatibility in phing 2.16.4: -->
+    <reflexive>
+      <fileset dir="vendor/phing/phing/classes/phing/tasks/system">
+        <include pattern="ChmodTask.php" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="vsprintf\([&quot;']%o[&quot;'], \$mode\)" replace="vsprintf('%o', [\$mode])" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
 </project>
