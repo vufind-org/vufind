@@ -60,4 +60,15 @@ class Options extends \Finna\Search\Solr\Options
     {
         return 'search-blended';
     }
+
+    /**
+     * Return the route name of the action used for performing advanced searches.
+     * Returns false if the feature is not supported.
+     *
+     * @return string|bool
+     */
+    public function getAdvancedSearchAction()
+    {
+        return false;
+    }
 }
