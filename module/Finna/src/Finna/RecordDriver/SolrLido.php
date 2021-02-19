@@ -1305,7 +1305,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             $results[] = (string)($this->fields['description']) != $title
                 ? (string)$this->fields['description'] : '';
         }
-        return $results;
+        return array_unique($results);
     }
 
     /**
