@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for PHPUnit database test cases.
+ * Trait for tests involving Laminas Views.
  *
  * PHP version 7
  *
@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
+namespace VuFindTest\Feature;
 
 /**
- * Abstract base class for PHPUnit database test cases.
+ * Trait for tests involving Laminas Views.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class ViewHelperTestCase extends DbTestCase
+trait ViewTrait
 {
     /**
      * Get a working renderer.

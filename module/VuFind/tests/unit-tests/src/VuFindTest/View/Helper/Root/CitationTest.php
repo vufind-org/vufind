@@ -38,8 +38,10 @@ use VuFind\View\Helper\Root\Citation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
+class CitationTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Sample citations -- each element of this array contains three elements --
      * the raw input data and the expected apa/mla output citations.

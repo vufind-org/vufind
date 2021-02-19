@@ -43,7 +43,7 @@ use VuFindConsole\Command\Util\IndexReservesCommand;
  */
 class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get mock ILS connection.

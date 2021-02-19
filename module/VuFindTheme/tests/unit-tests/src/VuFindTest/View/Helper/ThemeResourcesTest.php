@@ -39,8 +39,10 @@ use VuFindTheme\View\Helper\ThemeResources;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeResourcesTest extends \VuFindTest\Unit\TestCase
+class ThemeResourcesTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test the helper.
      *

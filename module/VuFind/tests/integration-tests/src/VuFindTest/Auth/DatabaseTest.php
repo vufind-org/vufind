@@ -38,9 +38,11 @@ use VuFind\Auth\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DatabaseTest extends \VuFindTest\Unit\DbTestCase
+class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Object to test
@@ -71,8 +73,8 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
             $this->markTestSkipped('Continuous integration not running.');
             return;
         }
-        $authManager = new \VuFind\Auth\PluginManager($this->getServiceManager());
-        $this->auth = $authManager->get('Database');
+        $this->auth = new Database();
+        $this->auth->setDbTableManager($this->getLiveTableManager());
     }
 
     /**
