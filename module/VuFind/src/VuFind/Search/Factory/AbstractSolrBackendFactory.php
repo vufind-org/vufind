@@ -391,8 +391,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $options['ttl'] = 300;
             }
             if ('Memcached' === $cacheConfig['adapter']) {
-                $servers = $cacheConfig['servers'] ?? ['localhost:11211'];
-                foreach ($servers as $server) {
+                $servers = $cacheConfig['memcached_servers'] ?? ['localhost:11211'];
+                foreach ((array)$servers as $server) {
                     $options['servers'][] = explode(':', $server, 2);
                 }
             }
