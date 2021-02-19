@@ -112,6 +112,7 @@ dateRangeVis = search_daterange_mv:main_date_str
 online_boolean:1 = online_material_facet_html
 ;free_online_boolean:1 = free_online_material_facet_html
 source_available_str_mv:* = available_locally_facet_html
+;hires_image_boolean:1 = high_resolution_image_available_html
 
 ; These settings affect the way the [Results] facets are displayed
 ; If using facets at the top of search results you have more room for text.
