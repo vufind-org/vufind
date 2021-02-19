@@ -105,14 +105,15 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         );
         $tabs = &$tabConfig['tabs'];
         if ($type == 'advanced') {
+            // Remove tab if advanced searches are not supported
             $tabs = array_filter(
                 $tabs,
                 function ($tab) {
-                    return strcasecmp($tab['class'], 'combined') != 0;
+                    return false !== $this->results->get($tab['class'])
+                        ->getOptions()->getAdvancedSearchAction();
                 }
             );
         }
-        $searchTable = $this->table->get('Search');
 
         foreach ($tabs as $key => &$tab) {
             // Remove any disabled functions
