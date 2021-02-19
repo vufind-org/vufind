@@ -967,7 +967,7 @@ $config['router']['routes']['l1record-feedback'] = [
 ];
 
 $config['router']['routes']['r2record-feedback'] = [
-    'type'    => 'Zend\Router\Http\Segment',
+    'type'    => 'Laminas\Router\Http\Segment',
     'options' => [
         'route'    => '/R2Record/[:id]/Feedback',
         'constraints' => [
