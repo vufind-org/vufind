@@ -129,9 +129,7 @@ class ResourceContainer
      */
     public function addJs($js)
     {
-        if (!is_array($js) && !is_a($js, 'Traversable')) {
-            $this->addJsEntry($js);
-        } elseif (isset($js['file'])) {
+        if ((!is_array($js) && !is_a($js, 'Traversable')) || isset($js['file'])) {
             $this->addJsEntry($js);
         } elseif (isset($js[0])) {
             foreach ($js as $current) {
@@ -140,7 +138,7 @@ class ResourceContainer
         } elseif ($js == []) {
             return;
         } else {
-            trigger_error("Invalid JS entry format: " . print_r($js, true));
+            throw new \Exception("Invalid JS entry format: " . print_r($js, true));
         }
     }
 
@@ -256,7 +254,7 @@ class ResourceContainer
      *
      * @return array
      */
-    public function getJs(string $position=null)
+    public function getJs(string $position = null)
     {
         if (!isset($position)) {
             return $this->js;
