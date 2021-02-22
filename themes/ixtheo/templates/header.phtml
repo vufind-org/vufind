@@ -5,7 +5,7 @@
       <span class="sr-only">Toggle navigation</span>
       <i class="fa fa-bars"></i>
     </button>
-    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">IxTheo</a>
+    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>"><?=$this->translate($this->tuefind()->getConfig('config')->Site->title)?></a>
   </div>
   <?php if (!isset($this->layout()->renderingError)): ?>
     <div class="collapse navbar-collapse" id="header-collapse">

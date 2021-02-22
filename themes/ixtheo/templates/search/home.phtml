@@ -1,6 +1,6 @@
 <?php
   // Set page title.
-  $this->headTitle($this->translate('IxTheo'));
+  $this->headTitle($this->translate($this->tuefind()->getConfig('config')->Site->title));
 
   // IxTheo: Searchbox will always be shown, so do not override it (Part 1)
   // $this->layout()->searchbox = false;
