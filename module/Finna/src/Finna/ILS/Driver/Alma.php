@@ -1215,35 +1215,41 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     = explode(':', $config['titleHoldBibLevels']);
             }
             if (!empty($params['id']) && !empty($params['patron']['id'])) {
-                $cacheKey = md5(
-                    'request-options-' . $params['id'] . '-'
-                    . $params['patron']['id']
-                );
-                $requestOptions = $this->getCachedData($cacheKey);
-                if (null === $requestOptions) {
+                if (empty($params['details']['item_id'])) {
                     // Check if we require the part_issue (description) field
-                    $requestOptionsPath = '/bibs/' . rawurlencode($params['id'])
-                        . '/request-options?user_id='
-                        . urlencode($params['patron']['id']);
-                    // Make the API request
-                    $requestOptions = $this->makeRequest($requestOptionsPath);
-                    $this->putCachedData($cacheKey, $requestOptions->asXML(), 120);
-                } else {
-                    $requestOptions = simplexml_load_string($requestOptions);
-                }
-                // Check possible request types from the API answer
-                $requestTypes = $requestOptions->xpath(
-                    '/request_options/request_option//type'
-                );
-                $types = [];
-                foreach ($requestTypes as $requestType) {
-                    $types[] = (string)$requestType;
-                }
-                if ($types === ['PURCHASE']) {
-                    $config['extraHoldFields']
-                        = empty($config['extraHoldFields'])
-                            ? 'part_issue'
-                            : $config['extraHoldFields'] . ':part_issue';
+                    $cacheKey = md5(
+                        'request-options-' . $params['id'] . '-'
+                        . $params['patron']['id']
+                    );
+                    $requestOptions = $this->getCachedData($cacheKey);
+                    if (null === $requestOptions) {
+                        $requestOptionsPath = '/bibs/' . rawurlencode($params['id'])
+                            . '/request-options?user_id='
+                            . urlencode($params['patron']['id']);
+                        // Make the API request
+                        $requestOptions = $this->makeRequest($requestOptionsPath);
+                        $this->putCachedData(
+                            $cacheKey,
+                            $requestOptions->asXML(),
+                            120
+                        );
+                    } else {
+                        $requestOptions = simplexml_load_string($requestOptions);
+                    }
+                    // Check possible request types from the API answer
+                    $requestTypes = $requestOptions->xpath(
+                        '/request_options/request_option//type'
+                    );
+                    $types = [];
+                    foreach ($requestTypes as $requestType) {
+                        $types[] = (string)$requestType;
+                    }
+                    if ($types === ['PURCHASE']) {
+                        $config['extraHoldFields']
+                            = empty($config['extraHoldFields'])
+                                ? 'part_issue'
+                                : $config['extraHoldFields'] . ':part_issue';
+                    }
                 }
 
                 // Add a flag so that checkRequestIsValid knows to check valid pickup

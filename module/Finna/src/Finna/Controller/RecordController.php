@@ -309,6 +309,22 @@ class RecordController extends \VuFind\Controller\RecordController
             return $this->redirectToRecord();
         }
 
+        // Call checkFunction once more now that we have the gathered details since
+        // details may affect the fields to display:
+        if ($gatheredDetails) {
+            $checkHolds = $catalog->checkFunction(
+                'Holds',
+                [
+                    'id' => $driver->getUniqueID(),
+                    'patron' => $patron,
+                    'details' => $gatheredDetails,
+                ]
+            );
+            if (!$checkHolds) {
+                return $this->redirectToRecord();
+            }
+        }
+
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
