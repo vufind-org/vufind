@@ -80,7 +80,7 @@ class Iso2709 implements SerializationInterface
         $offset = 0;
         while ($offset < $dirLen) {
             $tag = substr($marc, self::LEADER_LEN + $offset, 3);
-            $len = substr($marc, self::LEADER_LEN + $offset + 3, 4);
+            $len = (int)substr($marc, self::LEADER_LEN + $offset + 3, 4);
             $dataOffset
                 = (int)substr($marc, self::LEADER_LEN + $offset + 7, 5);
 
