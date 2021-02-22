@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -69,6 +70,28 @@ class TabManager extends \VuFind\RecordTab\TabManager
             $details = $result['Details'];
             unset($result['Details']);
             $result['Details'] = $details;
+        }
+        return $result;
+    }
+
+    /**
+     * Get a default tab by looking up the provided record driver in the tab
+     * configuration array.
+     *
+     * @param AbstractRecordDriver $driver   Record driver
+     * @param array                $tabs     Details on available tabs (returned
+     * from getTabsForRecord()).
+     * @param string               $fallback Fallback to use if no tab specified
+     * or matched.
+     *
+     * @return string
+     */
+    public function getDefaultTabForRecord(AbstractRecordDriver $driver,
+        array $tabs, $fallback = null
+    ) {
+        $result = parent::getDefaultTabForRecord($driver, $tabs, $fallback);
+        if ('Details' === $result) {
+            $result = '';
         }
         return $result;
     }
