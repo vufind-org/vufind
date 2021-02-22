@@ -9,6 +9,7 @@
   // Make sure we have something to display
   $rights = $this->image['rights'] ?? [];
   if (empty($rights['rightsHolders']) && empty($image['identifier'])
+    && empty($image['creditLine'])
     && empty(array_intersect_key(array_filter($this->image), $arrayElements))
   ) {
     return;
@@ -42,6 +43,15 @@
                 <?=$this->escapeHtml($rightsHolder['name'])?>
               <?php endif; ?>
             <?php endforeach; ?>
+          </td>
+        </tr>
+      <?php endif; ?>
+
+      <?php if (!empty($rights['creditLine'])): ?>
+        <tr>
+          <th><?=$this->transEsc('image_rights_credits')?></th>
+          <td>
+            <?=$this->escapeHtml($rights['creditLine'])?>
           </td>
         </tr>
       <?php endif; ?>

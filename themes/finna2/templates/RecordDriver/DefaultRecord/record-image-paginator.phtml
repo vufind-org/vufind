@@ -13,13 +13,6 @@
     <?php
       $originalImageData = $recordImage->getMasterImageWithInfo($ind);
       $originalImage = $originalImageData['url'] ?? false;
-      $creditLine = $img['rights']['creditLine'] ?? '';
-      if ($creditLine && !empty($img['rights']['copyright'])) {
-        if (substr($creditLine, -1) !== '.') {
-          $creditLine .= '.';
-        }
-        $creditLine .= ' ' . $img['rights']['copyright'];
-      }
       $obj = [
         'small' => $img['urls']['small'],
         'medium' => $img['urls']['medium'],
@@ -27,7 +20,6 @@
         'index' => $ind++,
         'alt' => $img['description'],
         'description' => $img['description'],
-        'creditLine' => $creditLine,
         'title' => $this->transEsc('Image') . ' ' . $ind
       ];
       $paginatedLinks[] = $obj;
@@ -40,12 +32,7 @@
         <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>">
           <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
           <div class="paginator-info"><span class="image-index"></span></div>
-          <div class="image-credit-container">
-            <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-            <?php if ('list' !== $type): ?>
-              <div class="image-credit-line hidden" aria-label="<?=$this->transEscAttr('Credits')?>"></div>
-            <?php endif; ?>
-          </div>
+          <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
         </a>
         <span class="hidden-trigger" hidden></span>
         <button class="next-image right" type="button"><i class="fa fa-chevron-right"></i><span class="sr-only"><?= $this->transEsc('next_image') ?></span></button>

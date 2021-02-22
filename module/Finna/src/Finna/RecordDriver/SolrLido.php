@@ -368,7 +368,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 $result['identifier'] = (string)$resourceSet->resourceID;
             }
             if (!empty($resourceSet->resourceType->term)) {
-                $result['type'] = (string)$this->getLanguageSpecificItem(
+                $type = (string)$this->getLanguageSpecificItem(
                     $resourceSet->resourceType->term,
                     $language
                 );
