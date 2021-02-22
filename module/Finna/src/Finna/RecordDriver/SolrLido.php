@@ -464,27 +464,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     public function getAlternativeTitles()
     {
         $results = [];
-        $mainTitle = $this->getTitle();
-        foreach ($this->getXmlRecord()->xpath(
-            'lido/descriptiveMetadata/objectIdentificationWrap/titleWrap/titleSet/'
-            . "appellationValue[@label='teosnimi']"
-        ) as $node) {
-            if ((string)$node != $mainTitle) {
-                $results[] = (string)$node;
-            }
-        }
-        return $results;
-    }
-
-    /**
-     * Get an array of other language titles for the record.
-     *
-     * @return array
-     */
-    public function getOtherLanguageTitles()
-    {
-        $results = [];
-        $mainTitle = $this->getTitle();
+        // Main title might be already normalized, but do it again to make sure:
+        $mainTitle = \Normalizer::normalize($this->getTitle(), \Normalizer::FORM_KC);
         foreach ($this->getXmlRecord()->xpath(
             'lido/descriptiveMetadata/objectIdentificationWrap/titleWrap/titleSet/'
             . "appellationValue"
@@ -496,11 +477,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             ) {
                 continue;
             }
-            if (in_array((string)$attr->lang, self::LANGUAGE_CODES['fi'])) {
-                continue;
-            }
             $title = trim((string)$node);
-            if ($title && $title != $mainTitle) {
+            // Compare the normalized forms:
+            if (\Normalizer::normalize($title, \Normalizer::FORM_KC) != $mainTitle) {
                 $results[] = $title;
             }
         }

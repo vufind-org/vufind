@@ -28,8 +28,8 @@
         ?>
         </a>
       </h2>
-      <?php if ($otherTitles = $this->driver->tryMethod('getOtherLanguageTitles')): ?>
-        <div class="result-other-language-titles">
+      <?php if ($otherTitles = $this->driver->tryMethod('getAlternativeTitles')): ?>
+        <div class="result-alt-titles">
           <?=implode(' &ndash; ', array_map($this->escapeHtml, $otherTitles)) ?>
         </div>
       <?php endif; ?>

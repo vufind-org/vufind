@@ -16,7 +16,7 @@
   <h3 id="popup-image-title" class="title"><?=$this->escapeHtml($this->driver->getTitle())?></h3>
   <?php if ($otherTitles = array_merge(
     $this->driver->tryMethod('getUniformTitles') ?? [],
-    $this->driver->tryMethod('getOtherLanguageTitles') ?? []
+    $this->driver->tryMethod('getAlternativeTitles') ?? []
   )): ?>
     <div class="result-other-titles">
       <?=implode(' &ndash; ', array_map($this->escapeHtml, $otherTitles)) ?>
