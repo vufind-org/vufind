@@ -86,7 +86,7 @@ class ILS extends AbstractBase
      * Get the ILS driver associated with this object (or load the default from
      * the service manager.
      *
-     * @return \VuFind\ILS\Driver\DriverInterface
+     * @return \VuFind\ILS\Connection
      */
     public function getCatalog()
     {
@@ -371,7 +371,6 @@ class ILS extends AbstractBase
     protected function getUsernameField()
     {
         $config = $this->getConfig();
-        return isset($config->Authentication->ILS_username_field)
-            ? $config->Authentication->ILS_username_field : 'cat_username';
+        return $config->Authentication->ILS_username_field ?? 'cat_username';
     }
 }

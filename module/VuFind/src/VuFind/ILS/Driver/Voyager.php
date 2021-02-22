@@ -150,8 +150,7 @@ class Voyager extends AbstractBase
         $this->dbName = $this->config['Catalog']['database'];
 
         $this->useHoldingsSortGroups
-            = isset($this->config['Holdings']['use_sort_groups'])
-            ? $this->config['Holdings']['use_sort_groups'] : true;
+            = $this->config['Holdings']['use_sort_groups'] ?? true;
 
         $this->displayDueTimeIntervals
             = isset($this->config['Loans']['display_due_time_only_for_intervals'])
@@ -294,8 +293,7 @@ class Voyager extends AbstractBase
         // "No information available" message that we hard-code when items are
         // missing); return a large number in this case to avoid an undefined index
         // error and to allow recognized statuses to take precedence.
-        return isset($this->statusRankings[$status])
-            ? $this->statusRankings[$status] : 32000;
+        return $this->statusRankings[$status] ?? 32000;
     }
 
     /**
@@ -918,9 +916,7 @@ EOT;
                 // Get Notes
                 $data = $this->getMFHDData(
                     $record,
-                    isset($this->config['Holdings']['notes'])
-                    ? $this->config['Holdings']['notes']
-                    : '852z'
+                    $this->config['Holdings']['notes'] ?? '852z'
                 );
                 if ($data) {
                     $marcDetails['notes'] = $data;
@@ -929,9 +925,7 @@ EOT;
                 // Get Summary (may be multiple lines)
                 $data = $this->getMFHDData(
                     $record,
-                    isset($this->config['Holdings']['summary'])
-                    ? $this->config['Holdings']['summary']
-                    : '866a'
+                    $this->config['Holdings']['summary'] ?? '866a'
                 );
                 if ($data) {
                     $marcDetails['summary'] = $data;
@@ -1187,8 +1181,7 @@ EOT;
     {
         // Return empty array if purchase history is disabled or embedded
         // in holdings
-        $setting = isset($this->config['Holdings']['purchase_history'])
-            ? $this->config['Holdings']['purchase_history'] : true;
+        $setting = $this->config['Holdings']['purchase_history'] ?? true;
         return (!$setting || $setting === 'split')
             ? [] : $this->getPurchaseHistoryData($id);
     }
@@ -1394,9 +1387,7 @@ EOT;
      */
     protected function pickTransactionStatus($statuses)
     {
-        $regex = isset($this->config['Loans']['show_statuses'])
-            ? $this->config['Loans']['show_statuses']
-            : '/lost|missing|claim/i';
+        $regex = $this->config['Loans']['show_statuses'] ?? '/lost|missing|claim/i';
         $retVal = [];
         foreach ($statuses as $status) {
             if (preg_match($regex, $status)) {
@@ -1995,12 +1986,8 @@ EOT;
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
                "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
-        $primaryPhoneType = isset($this->config['Profile']['primary_phone'])
-            ? $this->config['Profile']['primary_phone']
-            : 'Primary';
-        $mobilePhoneType = isset($this->config['Profile']['mobile_phone'])
-            ? $this->config['Profile']['mobile_phone']
-            : 'Mobile';
+        $primaryPhoneType = $this->config['Profile']['primary_phone'] ?? 'Primary';
+        $mobilePhoneType = $this->config['Profile']['mobile_phone'] ?? 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];
@@ -2171,33 +2158,21 @@ EOT;
         $list = [];
 
         // Are funds disabled?  If so, do no work!
-        if (isset($this->config['Funds']['disabled'])
-            && $this->config['Funds']['disabled']
-        ) {
+        if ($this->config['Funds']['disabled'] ?? false) {
             return $list;
         }
 
-        // Load and normalize whitelist and blacklist if necessary:
-        if (isset($this->config['Funds']['whitelist'])
-            && is_array($this->config['Funds']['whitelist'])
-        ) {
-            $whitelist = [];
-            foreach ($this->config['Funds']['whitelist'] as $current) {
-                $whitelist[] = strtolower($current);
-            }
-        } else {
-            $whitelist = false;
-        }
-        if (isset($this->config['Funds']['blacklist'])
-            && is_array($this->config['Funds']['blacklist'])
-        ) {
-            $blacklist = [];
-            foreach ($this->config['Funds']['blacklist'] as $current) {
-                $blacklist[] = strtolower($current);
-            }
-        } else {
-            $blacklist = false;
-        }
+        // Load and normalize inclusion/exclusion lists if necessary:
+        $rawIncludeList = $this->config['Funds']['include_list']
+            ?? $this->config['Funds']['whitelist'] // deprecated terminology
+            ?? null;
+        $include = is_array($rawIncludeList)
+            ? array_map('strtolower', $rawIncludeList) : false;
+        $rawExcludeList = $this->config['Funds']['exclude_list']
+            ?? $this->config['Funds']['blacklist'] // deprecated terminology
+            ?? null;
+        $exclude = is_array($rawExcludeList)
+            ? array_map('strtolower', $rawExcludeList) : false;
 
         // Retrieve the data from Voyager; if we're limiting to a parent fund, we
         // need to apply a special WHERE clause and bind parameter.
@@ -2213,9 +2188,9 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql, $bindParams);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                // Process blacklist and whitelist to skip illegal values:
-                if ((is_array($blacklist) && in_array($row['NAME'], $blacklist))
-                    || (is_array($whitelist) && !in_array($row['NAME'], $whitelist))
+                // Process inclusion/exclusion lists to skip illegal values:
+                if ((is_array($exclude) && in_array($row['NAME'], $exclude))
+                    || (is_array($include) && !in_array($row['NAME'], $include))
                 ) {
                     continue;
                 }

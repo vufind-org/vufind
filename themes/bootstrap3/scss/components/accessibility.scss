@@ -17,4 +17,10 @@ $state-danger-text: #8a211e;
 .alert-danger,
 .alert-danger a {
   color: $state-danger-text;
+  .btn-danger {
+    color: white;
+  }
+  .btn-danger:hover {
+    color: $state-danger-text;
+  }
 }

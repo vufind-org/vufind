@@ -346,9 +346,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             return [];
         }
 
-        // Whitelist:
-        $whitelist = array_map('trim', explode(',', $formatSetting));
-        return array_intersect($whitelist, $this->getSupportedCitationFormats());
+        // Filter based on include list:
+        $allowed = array_map('trim', explode(',', $formatSetting));
+        return array_intersect($allowed, $this->getSupportedCitationFormats());
     }
 
     /**
@@ -372,7 +372,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getExtraDetail($key)
     {
-        return isset($this->extraDetails[$key]) ? $this->extraDetails[$key] : null;
+        return $this->extraDetails[$key] ?? null;
     }
 
     /**

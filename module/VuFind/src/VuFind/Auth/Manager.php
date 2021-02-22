@@ -61,7 +61,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $activeAuth;
 
     /**
-     * Whitelist of values allowed to be set into $activeAuth
+     * List of values allowed to be set into $activeAuth
      *
      * @var array
      */
@@ -403,6 +403,9 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // necessary.
         $url = $this->getAuth()->logout($url);
 
+        // Reset authentication state
+        $this->getAuth()->resetState();
+
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
         unset($this->session->userId);
@@ -435,7 +438,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|bool Object if user is logged in, false otherwise.
+     * @return UserRow|false Object if user is logged in, false otherwise.
      */
     public function isLoggedIn()
     {
@@ -672,7 +675,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         }
 
         // If this method supports switching to a different method and we haven't
-        // already initialized it, add those options to the whitelist. If the object
+        // already initialized it, add those options to the legal list. If the object
         // is already initialized, that means we've already gone through this step
         // and can save ourselves the trouble.
 

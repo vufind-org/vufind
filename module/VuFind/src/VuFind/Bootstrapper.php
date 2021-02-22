@@ -374,7 +374,7 @@ class Bootstrapper
             if ($exception instanceof \VuFind\Exception\HttpStatusInterface) {
                 $response = $e->getResponse();
                 if (!$response) {
-                    $response = new HttpResponse();
+                    $response = new \Laminas\Http\Response();
                     $e->setResponse($response);
                 }
                 $response->setStatusCode($exception->getHttpStatus());
@@ -456,7 +456,8 @@ class Bootstrapper
         $sm = $this->event->getApplication()->getServiceManager();
         $headers = $this->event->getResponse()->getHeaders();
         $cspHeaderGenerator = $sm->get(\VuFind\Security\CspHeaderGenerator::class);
-        $cspHeader = $cspHeaderGenerator->getHeader();
-        $headers->addHeader($cspHeader);
+        if ($cspHeader = $cspHeaderGenerator->getHeader()) {
+            $headers->addHeader($cspHeader);
+        }
     }
 }

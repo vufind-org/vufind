@@ -55,7 +55,9 @@ class MarkdownFactory implements FactoryInterface
      */
     protected static $configKeys = [
         'ExternalLink' => 'external_link',
+        'Footnote' => 'footnote',
         'HeadingPermalink' => 'heading_permalink',
+        'Mention' => 'mentions',
         'SmartPunct' => 'smartpunct',
         'TableOfContents' => 'table_of_contents',
     ];
@@ -79,38 +81,40 @@ class MarkdownFactory implements FactoryInterface
     ) {
         $markdownConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('markdown');
-        $markdownSection = $markdownConfig->Markdown;
+        $mainConfig = $markdownConfig->Markdown;
         $environment = Environment::createCommonMarkEnvironment();
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $config = [
-            'html_input' => $config->html_input ?? 'strip',
-            'allow_unsafe_links' => $config->allow_unsafe_links ?? false,
-            'enable_em' => $config->enable_em ?? true,
-            'enable_strong' => $config->enable_strong ?? true,
-            'use_asterisk' => $config->use_asterisk ?? true,
-            'use_underscore' => $config->use_underscore ?? true,
-            'unordered_list_markers' => isset($config->unordered_list_markers)
-                && $config->unordered_list_markers instanceof \ArrayAccess
-                    ? $config->unordered_list_markers->toArray()
+            'html_input' => $mainConfig->html_input ?? 'strip',
+            'allow_unsafe_links' => $mainConfig->allow_unsafe_links ?? false,
+            'enable_em' => $mainConfig->enable_em ?? true,
+            'enable_strong' => $mainConfig->enable_strong ?? true,
+            'use_asterisk' => $mainConfig->use_asterisk ?? true,
+            'use_underscore' => $mainConfig->use_underscore ?? true,
+            'unordered_list_markers' => isset($mainConfig->unordered_list_markers)
+                && $mainConfig->unordered_list_markers instanceof \ArrayAccess
+                    ? $mainConfig->unordered_list_markers->toArray()
                     : ['-', '*', '+'],
-            'max_nesting_level' => $config->max_nesting_level ?? \INF,
+            'max_nesting_level' => $mainConfig->max_nesting_level ?? \INF,
             'renderer' => [
                 'block_separator'
-                    => $config->renderer['block_separator'] ?? "\n",
+                    => $mainConfig->renderer['block_separator'] ?? "\n",
                 'inner_separator'
-                    => $config->renderer['inner_separator'] ?? "\n",
-                'soft_break' => $config->renderer['soft_break'] ?? "\n",
+                    => $mainConfig->renderer['inner_separator'] ?? "\n",
+                'soft_break' => $mainConfig->renderer['soft_break'] ?? "\n",
             ],
         ];
-        $extensions = isset($markdownSection->extensions)
-            ? array_map('trim', explode(',', $markdownSection->extensions)) : [];
+        $extensions = isset($mainConfig->extensions)
+            ? array_map('trim', explode(',', $mainConfig->extensions)) : [];
 
         foreach ($extensions as $ext) {
             $extClass = sprintf(
                 'League\CommonMark\Extension\%s\%sExtension', $ext, $ext
             );
             $environment->addExtension(new $extClass());
-            $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
+            if (isset($markdownConfig[$ext])) {
+                $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
+            }
         }
         return new CommonMarkConverter($config, $environment);
     }

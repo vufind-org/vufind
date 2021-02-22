@@ -42,8 +42,11 @@ use VuFind\RecordDriver\Response\PublicationDetails;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DefaultRecordTest extends \VuFindTest\Unit\TestCase
+class DefaultRecordTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test getPublicationDates for a record.
      *
@@ -431,15 +434,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     protected function getDriver($overrides = [], Config $mainConfig = null)
     {
-        $fixture = json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/testbug2.json'
-                )
-            ),
-            true
-        );
-
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;

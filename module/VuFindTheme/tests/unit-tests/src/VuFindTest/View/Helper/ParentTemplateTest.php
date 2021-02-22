@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\View\Helper;
 
-use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\ParentTemplate;
 
 /**
@@ -39,8 +38,10 @@ use VuFindTheme\View\Helper\ParentTemplate;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ParentTemplateTest extends \VuFindTest\Unit\TestCase
+class ParentTemplateTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Path to theme fixtures
      *
@@ -55,13 +56,14 @@ class ParentTemplateTest extends \VuFindTest\Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../../../fixtures/themes');
+        $this->fixturePath
+            = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
     }
 
     /**
      * Get a populated resource container for testing.
      *
-     * @return ResourceContainer
+     * @return ParentTemplate
      */
     protected function getHelper($stack)
     {

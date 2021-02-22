@@ -202,7 +202,7 @@ class Cart
     /**
      * Get cart size.
      *
-     * @return string The maximum cart size
+     * @return int The maximum cart size
      */
     public function getMaxSize()
     {
@@ -335,6 +335,16 @@ class Cart
     public function getCookiePath()
     {
         return $this->cookieManager->getPath();
+    }
+
+    /**
+     * Get cookie SameSite attribute (null if unset).
+     *
+     * @return string
+     */
+    public function getCookieSameSite()
+    {
+        return $this->cookieManager->getSameSite();
     }
 
     /**

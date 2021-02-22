@@ -168,14 +168,14 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     * @param array $include List of checkbox filters to return (null for all)
      *
      * @return array
      */
-    public function getCheckboxFacets(array $whitelist = null)
+    public function getCheckboxFacets(array $include = null)
     {
         // Grab checkbox facet details using the standard method:
-        $facets = parent::getCheckboxFacets($whitelist);
+        $facets = parent::getCheckboxFacets($include);
 
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since

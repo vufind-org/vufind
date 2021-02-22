@@ -51,7 +51,7 @@ class SafeMoneyFormat extends AbstractHelper
     /**
      * Number formatter.
      *
-     * @var NumberFormatter;
+     * @var NumberFormatter
      */
     protected $formatter;
 

@@ -38,7 +38,7 @@ use Laminas\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
+class MultiAuthTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get an authentication object.
@@ -52,8 +52,10 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $manager = $this->getAuthManager();
-        $obj = clone $manager->get('MultiAuth');
+        $manager = new \VuFind\Auth\PluginManager(
+            new \VuFindTest\Container\MockContainer($this)
+        );
+        $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);
         $obj->setConfig($config);
         return $obj;

@@ -557,11 +557,11 @@ class InstallController extends AbstractBase
             $dir
                 = opendir(APPLICATION_PATH . '/module/VuFind/src/VuFind/ILS/Driver');
             $drivers = [];
-            $blacklist = [
+            $excludeList = [
                 'Sample.php', 'Demo.php', 'DriverInterface.php', 'PluginManager.php',
             ];
             while ($line = readdir($dir)) {
-                if (stristr($line, '.php') && !in_array($line, $blacklist)
+                if (stristr($line, '.php') && !in_array($line, $excludeList)
                     && substr($line, 0, 8) !== 'Abstract'
                     && substr($line, -11) !== 'Factory.php'
                     && substr($line, -9) !== 'Trait.php'
@@ -645,8 +645,7 @@ class InstallController extends AbstractBase
             $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
-        $view->core = isset($config->Index->default_core)
-            ? $config->Index->default_core : "biblio";
+        $view->core = $config->Index->default_core ?? "biblio";
         $view->configFile = $configFile;
         return $view;
     }

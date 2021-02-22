@@ -181,7 +181,10 @@ class CombinedController extends AbstractSearch
             $combinedResults[$current]['domId']
                 = 'combined_' . str_replace(':', '____', $current);
 
-            $combinedResults[$current]['view'] = ($settings['ajax'] ?? false)
+            $permissionDenied = isset($settings['permission'])
+                && !$this->permission()->isAuthorized($settings['permission']);
+            $isAjax = $settings['ajax'] ?? false;
+            $combinedResults[$current]['view'] = ($permissionDenied || $isAjax)
                 ? $this->createViewModel(['results' => $results])
                 : $this->forwardTo($controller, $action);
 
@@ -201,8 +204,7 @@ class CombinedController extends AbstractSearch
         $actualMaxColumns = count($combinedResults);
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
-        $placement = $config['Layout']['stack_placement']
-            ?? 'distributed';
+        $placement = $config['Layout']['stack_placement'] ?? 'distributed';
         if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }

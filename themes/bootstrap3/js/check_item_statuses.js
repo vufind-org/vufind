@@ -210,5 +210,5 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     }
   }
 
-  return { init: init, check: checkItemStatuses };
+  return { init: init, check: checkItemStatuses, checkRecord: checkItemStatus };
 });

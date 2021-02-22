@@ -28,6 +28,9 @@
 namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -70,6 +73,7 @@ class RouterFactory implements FactoryInterface
             $base = $container->get('ViewRenderer')->plugin('url')
                 ->__invoke('cover-show');
         }
-        return new $requestedName($base);
+        $coverLoader = $container->get(\VuFind\Cover\Loader::class);
+        return new $requestedName($base, $coverLoader);
     }
 }

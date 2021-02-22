@@ -38,8 +38,10 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeInfoTest extends Unit\TestCase
+class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Path to theme fixtures
      *
@@ -52,7 +54,8 @@ class ThemeInfoTest extends Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
+        $this->fixturePath
+            = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
     }
 
     /**

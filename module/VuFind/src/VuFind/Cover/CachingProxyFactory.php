@@ -28,6 +28,9 @@
 namespace VuFind\Cover;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -66,8 +69,8 @@ class CachingProxyFactory implements FactoryInterface
         $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
             ->toArray();
-        $whitelist = isset($config['Content']['coverproxyCache'])
+        $allowedHosts = isset($config['Content']['coverproxyCache'])
             ? (array)$config['Content']['coverproxyCache'] : [];
-        return new $requestedName($client, $cacheDir . '/proxy', $whitelist);
+        return new $requestedName($client, $cacheDir . '/proxy', $allowedHosts);
     }
 }

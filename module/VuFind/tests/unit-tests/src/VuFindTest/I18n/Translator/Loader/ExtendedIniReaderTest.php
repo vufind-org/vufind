@@ -39,7 +39,7 @@ use VuFind\I18n\Translator\Loader\ExtendedIniReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExtendedIniReaderTest extends \VuFindTest\Unit\TestCase
+class ExtendedIniReaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test non-joiner functionality.
