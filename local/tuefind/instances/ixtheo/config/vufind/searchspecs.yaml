@@ -585,6 +585,7 @@ AllFields:
     - series2^30
     - author^300
     - author_fuller^150
+    - author2^50
     - contents^10
     - topic_unstemmed^550
     - topic_all^500
