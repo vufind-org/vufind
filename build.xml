@@ -526,7 +526,7 @@
   </target>
 
   <target name="patch-dependencies" description="apply fixes to dependencies">
-    <!-- Fix for PHP 8 incompatibility in laminas-db 2.11.3: -->
+    <!-- Fix for PHP 8 incompatibility in laminas-db 2.11.4: -->
     <reflexive>
       <fileset dir="${srcdir}/vendor/laminas/laminas-db/src/Sql">
         <include pattern="AbstractSql.php" />
