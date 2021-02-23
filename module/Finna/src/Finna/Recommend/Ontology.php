@@ -345,6 +345,7 @@ class Ontology implements RecommendInterface, TranslatorAwareInterface
             if (!($this->canMakeApiCalls() && $this->canAddRecommendation())) {
                 break;
             }
+            $term = trim($term);
             if ($this->skipFromFintoSearch($term)) {
                 continue;
             }
@@ -431,7 +432,8 @@ class Ontology implements RecommendInterface, TranslatorAwareInterface
      */
     protected function skipFromFintoSearch(string $term): bool
     {
-        return 0 === strpos($term, 'topic_uri_str_mv:')
+        return empty($term)
+            || 0 === strpos($term, 'topic_uri_str_mv:')
             || in_array($term, ['AND', 'OR', 'NOT']);
     }
 
