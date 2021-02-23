@@ -1960,13 +1960,13 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             if ($method == 'GET') {
                 $client->setParameterGet($params);
             } else {
-                if (is_string($params)) {
-                    $client->getRequest()->setContent($params);
-                    $client->getRequest()->getHeaders()
-                        ->addHeaderLine('Content-Type', 'application/json');
-                } else {
-                    $client->setParameterPost($params);
-                }
+            if (is_string($params)) {
+                $client->getRequest()->setContent($params);
+                $client->getRequest()->getHeaders()
+                    ->addHeaderLine('Content-Type', 'application/json');
+            } else {
+                $client->setParameterPost($params);
+            }
             }
         } else {
             $client->setHeaders(['Content-length' => 0]);
@@ -1976,14 +1976,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $startTime = microtime(true);
         $client->setMethod($method);
 
-        if (false == $params) {
-            $params = [];
-        }
-
         $page = 0;
         $data = [];
-        $fetch = true;
-        while ($fetch) {
+        do {
             $client->setUri($apiUrl);
             $response = $client->send();
             $result = $response->getBody();
@@ -2015,34 +2010,41 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 throw new ILSException('Problem with Mikromarc REST API.');
             }
 
-            // More results available?
-            if ($next = !empty($decodedResult['@odata.nextLink'])
-                && !strpos(
-                    $decodedResult['@odata.nextLink'], 'LibraryUnits?$skip=100'
-                )
-            ) {
-                $client->setParameterPost([]);
-                $client->setParameterGet([]);
-                $apiUrl = $decodedResult['@odata.nextLink'];
-            }
-
-            if (isset($decodedResult['value'])) {
-                $decodedResult = $decodedResult['value'];
-            }
-
-            if ($page == 0) {
-                $data = $decodedResult;
+            $resultData = $decodedResult['value'] ?? $decodedResult;
+            if ($page === 0) {
+                $data = $resultData;
             } else {
-                $data = array_merge($data, $decodedResult);
+                $data = array_merge($data, $resultData);
             }
 
-            if (!$next) {
-                $fetch = false;
+            // More results available?
+            $nextLink = $decodedResult['@odata.nextLink'] ?? '';
+            if (!$nextLink) {
+                break;
             }
+
+            // At least with LibraryUnits, Mikromarc may repeat the same link over
+            // and over again. Try to fix.
+            if ($apiUrl === $nextLink) {
+                if (is_array($data)) {
+                    $nextLink = preg_replace(
+                        '/\$skip=(\d+)/',
+                        '$skip=' . count($data),
+                        $nextLink
+                    );
+                }
+                if ($apiUrl === $nextLink) {
+                    $this->logError('Could not rewrite $skip parameter');
+                    break;
+                }
+            }
+
+            $client->setParameterPost([]);
+            $apiUrl = $nextLink;
             $page++;
-        }
-        return $returnCode ? [$response->getStatusCode(), $data]
-            : $data;
+        } while ($page < 100); // safety valve
+
+        return $returnCode ? [$response->getStatusCode(), $data] : $data;
     }
 
     /**
