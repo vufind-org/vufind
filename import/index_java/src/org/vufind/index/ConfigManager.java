@@ -258,6 +258,7 @@ public class ConfigManager
         switch (config.trim().toLowerCase()) {
         case "false":
         case "0":
+        case "":
             return false;
         }
         return true;
