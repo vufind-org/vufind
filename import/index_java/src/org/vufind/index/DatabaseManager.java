@@ -85,7 +85,11 @@ public class DatabaseManager
                 prefix = "mysql";
                 String useSsl = ConfigManager.instance().getConfigSetting("config.ini", "Database", "use_ssl");
                 if (useSsl != null) {
-                    extraParams = "?useSSL=" + useSsl;
+                    String verifyCert = ConfigManager.instance().getConfigSetting("config.ini", "Database", "verify_server_certificate");
+                    if (verifyCert == null) {
+                        verifyCert = "false";
+                    }
+                    extraParams = "?useSSL=" + useSsl + "&verifyServerCertificate=" + verifyCert;
                 }
             } else if (dsn.substring(0, 8).equals("pgsql://")) {
                 classname = "org.postgresql.Driver";
