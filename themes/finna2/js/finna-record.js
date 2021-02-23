@@ -189,7 +189,12 @@ finna.record = (function finnaRecord() {
         var $newLink = $(newLink)
           .removeClass('url-template')
           .removeClass('hidden');
-        $newLink.prependTo($recordUrls);
+
+        if ($existing.length === 0) {
+          $newLink.prependTo($recordUrls);
+        } else {
+          $existing.replaceWith($newLink);
+        }
       }
     });
 
