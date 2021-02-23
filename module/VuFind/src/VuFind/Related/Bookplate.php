@@ -98,7 +98,7 @@ class Bookplate implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $config = explode(';', $settings);
+        $config = explode(':', $settings);
         $configFile = 'config';
         $configSection = 'Record';
         if (count($config) == 2) {

@@ -109,7 +109,7 @@ class Related extends AbstractClassBasedTemplateRenderer
         $retVal = [];
         $config = $this->getConfigForSource($driver->getSourceIdentifier());
         foreach ($config as $current) {
-            $parts = explode(':', $current);
+            $parts = explode(':', $current, 2);
             $type = $parts[0];
             $params = $parts[1] ?? null;
             if ($this->pluginManager->has($type)) {
