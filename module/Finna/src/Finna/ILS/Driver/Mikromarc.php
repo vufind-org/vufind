@@ -1960,13 +1960,13 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             if ($method == 'GET') {
                 $client->setParameterGet($params);
             } else {
-            if (is_string($params)) {
-                $client->getRequest()->setContent($params);
-                $client->getRequest()->getHeaders()
-                    ->addHeaderLine('Content-Type', 'application/json');
-            } else {
-                $client->setParameterPost($params);
-            }
+                if (is_string($params)) {
+                    $client->getRequest()->setContent($params);
+                    $client->getRequest()->getHeaders()
+                        ->addHeaderLine('Content-Type', 'application/json');
+                } else {
+                    $client->setParameterPost($params);
+                }
             }
         } else {
             $client->setHeaders(['Content-length' => 0]);
