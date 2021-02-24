@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2009.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Related_Records
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Brad Busenius <bbusenius@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
@@ -32,7 +32,7 @@ namespace VuFind\Related;
  *
  * @category VuFind
  * @package  Related_Records
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Brad Busenius <bbusenius@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
