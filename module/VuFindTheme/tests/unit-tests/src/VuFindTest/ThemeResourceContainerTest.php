@@ -118,7 +118,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage(
             'Using "priority" as well as "load_after" in the same entry '
-                . ' is not supported: "' . $jsEntry['file'] . '"'
+                . 'is not supported: "' . $jsEntry['file'] . '"'
         );
 
         $container = new ResourceContainer();

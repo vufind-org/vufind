@@ -153,24 +153,51 @@ class ResourceContainer
     protected function addJsEntry($jsEntry)
     {
         if (!is_array($jsEntry)) {
-            $parts = $this->parseSetting($jsEntry);
-            if (count($parts) == 1) {
-                $jsEntry = ['file' => $jsEntry];
-            } else {
-                $jsEntry = [
-                    'file' => $parts[0],
-                    'attributes' => ['conditional' => trim($parts[1])],
-                ];
-            }
-        } elseif (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
-            throw new \Exception(
-                'Using "priority" as well as "load_after" in the same entry '
-                . ' is not supported: "' . $jsEntry['file'] . '"'
-            );
+            $this->addJsStringEntry($jsEntry);
+        } else {
+            $this->addJsArrayEntry($jsEntry);
         }
+    }
 
+    /**
+     * Helper function for adding a Javascript file which is described as string.
+     *
+     * @param string $jsEntry Entry to add as string.
+     *
+     * @return void
+     */
+    protected function addJsStringEntry($jsEntry)
+    {
+        $parts = $this->parseSetting($jsEntry);
+        if (count($parts) == 1) {
+            $jsEntry = ['file' => $jsEntry];
+        } else {
+            $jsEntry = [
+                'file' => $parts[0],
+                'attributes' => ['conditional' => trim($parts[1])],
+            ];
+        }
+        $this->addJsArrayEntry($jsEntry);
+    }
+
+    /**
+     * Helper function for adding a Javascript file which is described as array.
+     *
+     * @param string $jsEntry Entry to add as string.
+     *
+     * @return void
+     */
+    protected function addJsArrayEntry($jsEntry)
+    {
         if (!isset($jsEntry['position'])) {
             $jsEntry['position'] = 'header';
+        }
+
+        if (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
+            throw new \Exception(
+                'Using "priority" as well as "load_after" in the same entry '
+                . 'is not supported: "' . $jsEntry['file'] . '"'
+            );
         }
 
         foreach ($this->js as $existingEntry) {
