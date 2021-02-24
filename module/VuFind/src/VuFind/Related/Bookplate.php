@@ -99,12 +99,8 @@ class Bookplate implements RelatedInterface
     public function init($settings, $driver)
     {
         $config = explode(':', $settings);
-        $configFile = 'config';
-        $configSection = 'Record';
-        if (count($config) == 2) {
-            $configFile = $config[0];
-            $configSection = $config[1];
-        }
+        $configFile = $settings[0] ?? 'config';
+        $configSection = $settings[1] ?? 'Record';
         $this->config = $this->configLoader->get($configFile)->$configSection;
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData('titles');
