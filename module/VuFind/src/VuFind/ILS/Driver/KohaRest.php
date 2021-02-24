@@ -250,9 +250,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
@@ -924,8 +922,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($locations) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -1486,8 +1483,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
 
-        return isset($this->config[$function])
-            ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -1540,8 +1536,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(
             ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
         );
@@ -2055,8 +2050,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusRanking($status)
     {
-        return isset($this->statusRankings[$status])
-            ? $this->statusRankings[$status] : 32000;
+        return $this->statusRankings[$status] ?? 32000;
     }
 
     /**
@@ -2229,8 +2223,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function mapRenewalBlockReason($reason)
     {
-        return isset($this->renewalBlockMappings[$reason])
-            ? $this->renewalBlockMappings[$reason] : 'renew_item_no';
+        return $this->renewalBlockMappings[$reason] ?? 'renew_item_no';
     }
 
     /**

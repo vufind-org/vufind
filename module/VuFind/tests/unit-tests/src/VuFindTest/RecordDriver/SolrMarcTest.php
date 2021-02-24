@@ -39,9 +39,9 @@ namespace VuFindTest\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrMarcTest extends \VuFindTest\Unit\TestCase
+class SolrMarcTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test a record that used to be known to cause problems because of the way
@@ -223,17 +223,17 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
     public function testMarcAdvancedTrait()
     {
         $xml = $this->getFixture('marc/marctraits.xml');
-        $record = (new \File_MARCXML($xml, \File_MARCXML::SOURCE_STRING))->next();
+        $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
-            ->onlyMethods(['getMarcRecord'])->getMock();
+            ->onlyMethods(['getMarcReader'])->getMock();
         $obj->expects($this->any())
-            ->method('getMarcRecord')
+            ->method('getMarcReader')
             ->will($this->returnValue($record));
 
         $this->assertEquals(['Classified.'], $obj->getAccessRestrictions());
         $this->assertEquals(['VuFind Golden Award, 2020'], $obj->getAwards());
         $this->assertEquals(['Bibliography: p. 122'], $obj->getBibliographyNotes());
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '/<collection.*?>.*<record>.*<\/record>.*<\/collection>/s',
             $obj->getFilteredXML()
         );
@@ -257,7 +257,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(
             [
-                ['name' => 'Development Series'],
+                ['name' => 'Development Series &\'><"'],
                 ['name' => 'Development', 'number' => 'no. 2']
             ],
             $obj->getSeries()
@@ -299,7 +299,7 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertEquals(2, substr_count($marc21Xml, '<controlfield '));
         $this->assertEquals(52, substr_count($marc21Xml, '<datafield '));
-        $this->assertEquals(86, substr_count($marc21Xml, '<subfield '));
+        $this->assertEquals(87, substr_count($marc21Xml, '<subfield '));
         $rdfXml = $obj->getRDFXML();
         $this->assertStringContainsString(
             '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
@@ -314,6 +314,39 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
         $this->assertStringContainsString(
             '<identifier type="isbn">978-3-16-148410-0</identifier>',
             $rdfXml
+        );
+    }
+
+    /**
+     * Test methods in MarcReaderTrait.
+     *
+     * @return void
+     */
+    public function testMarcReaderTrait()
+    {
+        $xml = $this->getFixture('marc/marctraits.xml');
+        $record = new \VuFind\Marc\MarcReader($xml);
+        $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
+            ->onlyMethods(['getMarcReader'])->getMock();
+        $obj->expects($this->any())
+            ->method('getMarcReader')
+            ->will($this->returnValue($record));
+
+        $reflection = new \ReflectionObject($obj);
+
+        $getFieldArray = $reflection->getMethod('getFieldArray');
+        $getFieldArray->setAccessible(true);
+        $this->assertEquals(
+            ['Author, Test (1800-)'],
+            $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
+        );
+
+        $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
+        $getSubfieldArray->setAccessible(true);
+        $this->assertEquals(
+            ['Author, Test (1800-)'],
+            $getSubfieldArray
+                ->invokeArgs($obj, [$record->getField('100'), ['a', 'd']])
         );
     }
 }

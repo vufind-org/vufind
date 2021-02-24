@@ -195,8 +195,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
      */
     public function getSnippetCaption($field)
     {
-        return isset($this->snippetCaptions[$field])
-            ? $this->snippetCaptions[$field] : false;
+        return $this->snippetCaptions[$field] ?? false;
     }
 
     /**

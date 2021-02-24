@@ -30,7 +30,6 @@ namespace VuFindTest\Controller\Plugin;
 
 use Laminas\Session\Container;
 use VuFind\Controller\Plugin\ResultScroller;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * ResultScroller controller plugin tests.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ResultScrollerTest extends TestCase
+class ResultScrollerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test next_prev_nav bug

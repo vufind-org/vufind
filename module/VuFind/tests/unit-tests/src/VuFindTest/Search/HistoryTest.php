@@ -29,7 +29,6 @@
 namespace VuFindTest\Search;
 
 use VuFind\Search\History;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * History unit tests.
@@ -40,7 +39,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HistoryTest extends TestCase
+class HistoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that we get no schedule options when scheduled search is disabled

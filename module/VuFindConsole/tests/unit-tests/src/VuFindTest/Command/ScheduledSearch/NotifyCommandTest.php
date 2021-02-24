@@ -287,7 +287,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'userInstitution' => 'My Institution',
             ],
         ];
-        $renderer = $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $renderer = $this->prepareMock(
+            \Laminas\View\Renderer\PhpRenderer::class, ['render']
+        );
         $renderer->expects($this->once())->method('render')
             ->with(
                 $this->equalTo('Email/scheduled-alert.phtml'),
@@ -474,9 +476,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     {
         $renderer = $options['renderer']
             ?? $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $renderer->expects($this->any())->method('plugin')
-            ->with($this->equalTo('url'))
-            ->will($this->returnValue($this->prepareMock(\Laminas\View\Helper\Url::class)));
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $container->set('url', $this->prepareMock(\Laminas\View\Helper\Url::class));
+        $renderer->setHelperPluginManager($container);
         $command = new NotifyCommand(
             $this->prepareMock(\VuFind\Crypt\HMAC::class),
             $renderer,
@@ -561,14 +563,16 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Prepare a mock object
      *
-     * @param string $class Class to mock
+     * @param string $class   Class to mock
+     * @param array  $methods Methods to mock
      *
      * @return mixed
      */
-    protected function prepareMock($class)
+    protected function prepareMock($class, $methods = [])
     {
         return $this->getMockBuilder($class)
             ->disableOriginalConstructor()
+            ->setMethods($methods)
             ->getMock();
     }
 }

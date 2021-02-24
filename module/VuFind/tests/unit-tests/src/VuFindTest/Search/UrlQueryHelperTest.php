@@ -31,7 +31,6 @@ namespace VuFindTest\Search;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\UrlQueryHelper;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * UrlQueryHelper unit tests.
@@ -42,9 +41,9 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UrlQueryHelperTest extends TestCase
+class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get a preconfigured helper.
