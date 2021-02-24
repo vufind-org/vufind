@@ -201,7 +201,9 @@ class ResourceContainer
         }
 
         foreach ($this->js as $existingEntry) {
-            if ($existingEntry['file'] == $jsEntry['file']) {
+            if ($existingEntry['file'] == $jsEntry['file']
+                && count(array_diff($existingEntry, $jsEntry)) > 0
+            ) {
                 throw new \Exception(
                     'Overriding an existing dependency is not supported: '
                     . '"' . $jsEntry['file'] . '"'
