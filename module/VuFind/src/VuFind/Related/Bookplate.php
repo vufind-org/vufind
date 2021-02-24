@@ -103,9 +103,15 @@ class Bookplate implements RelatedInterface
         $configSection = $settings[1] ?? 'Record';
         $this->config = $this->configLoader->get($configFile)->$configSection;
         $this->fields = $driver->getRawData();
-        $this->bookplateStrs = $this->getBookplateData('titles');
-        $this->bookplateImages = $this->getBookplateData('imgFull');
-        $this->bookplateThumbnails = $this->getBookplateData('imgThumb');
+        $this->bookplateStrs = $this->getBookplateData(
+            $this->getBookplateTitlesField()
+        );
+        $this->bookplateImages = $this->getBookplateData(
+            $this->getBookplateFullImagesField()
+        );
+        $this->bookplateThumbnails = $this->getBookplateData(
+            $this->getBookplateThumbnailsField()
+        );
         $this->fullUrlTemplate = $this->getBookplateFullUrlTemplate();
         $this->thumbUrlTemplate = $this->getBookplateThumbUrlTemplate();
         $this->displayTitles = $this->displayBookplateTitles();
@@ -114,18 +120,12 @@ class Bookplate implements RelatedInterface
     /**
      * Get an array of data representing bookplates.
      *
-     * @param $s string name of data to retrieve.
+     * @param $field string name of data to retrieve.
      *
      * @return array
      */
-    protected function getBookplateData($s)
+    protected function getBookplateData($field)
     {
-        $data = [
-            'titles' => $this->getBookplateTitlesField(),
-            'imgThumb' => $this->getBookplateThumbnailsField(),
-            'imgFull' => $this->getBookplateFullImagesField(),
-        ];
-        $field = $data[$s];
         if (!empty($field) && isset($this->fields[$field])) {
             return $this->fields[$field];
         }
