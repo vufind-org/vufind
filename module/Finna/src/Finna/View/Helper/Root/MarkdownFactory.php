@@ -31,6 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
+use League\CommonMark\Extension\Autolink\AutolinkExtension;
 
 /**
  * Markdown view helper factory
@@ -71,7 +72,13 @@ class MarkdownFactory implements FactoryInterface
             'League\CommonMark\Block\Element\Heading',
             new MarkdownHeadingRenderer()
         );
-        $config = [];
+        $environment->addExtension(new AutolinkExtension());
+
+        $config = [
+            'renderer' => [
+                'soft_break' => "<br>",
+            ]
+        ];
         $converter = new CommonMarkConverter($config, $environment);
 
         return new $requestedName($converter);
