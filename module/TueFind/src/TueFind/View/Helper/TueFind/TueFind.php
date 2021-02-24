@@ -99,6 +99,11 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         return $this->container->get('VuFind\Config\PluginManager')->get($id);
     }
 
+    public function getBrowserTitle() {
+        $siteConfig = $this->getConfig('config')->Site;
+        return $siteConfig->browser_title ?? $siteConfig->title;
+    }
+
     /**
      * Get name of the current controller
      * (If no Controller is found in URL, returns default value 'index')
