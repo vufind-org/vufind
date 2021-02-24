@@ -203,9 +203,7 @@ class Bookplate implements RelatedInterface
      */
     public function getBookplateDetails()
     {
-        $sameLen = count($this->bookplateStrs) == count($this->bookplateImages);
-        $hasBookplates = !empty($this->bookplateStrs)
-            && !empty($this->bookplateImages) && $sameLen;
+        $hasBookplates = !empty($this->bookplateStrs);
         if ($hasBookplates) {
             $data = [];
             foreach ($this->bookplateStrs as $i => $bookplate) {
