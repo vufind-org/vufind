@@ -212,8 +212,8 @@ class Bookplate implements RelatedInterface
                     '%%thumb%%',
                 ];
                 $tokenValues = [
-                    $this->bookplateImages[$i],
-                    $this->bookplateThumbnails[$i],
+                    $this->bookplateImages[$i] ?? '',
+                    $this->bookplateThumbnails[$i] ?? '',
                 ];
                 $imgUrl = str_replace(
                     $tokens,
