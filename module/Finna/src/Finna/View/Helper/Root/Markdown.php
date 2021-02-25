@@ -50,6 +50,7 @@ class Markdown extends \VuFind\View\Helper\Root\Markdown
         $cleanHtml = $this->getView()->plugin('cleanHtml');
         $markdown = str_replace("</summary>", "</summary>\n", $markdown);
         $text = $cleanHtml($this->converter->convertToHtml($markdown));
+        $text = str_replace('<p><br /></p>', '', $text);
         return $text;
     }
 
