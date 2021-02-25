@@ -42,7 +42,7 @@ use VuFindTest\Container\MockContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MailerTest extends \VuFindTest\Unit\TestCase
+class MailerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the factory configures the object correctly.

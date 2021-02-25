@@ -40,7 +40,7 @@ use VuFind\Net\UserIpReaderFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
+class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a container set up for the factory.
@@ -57,14 +57,15 @@ class UserIpReaderFactoryTest extends \VuFindTest\Unit\MockContainerTest
         $configManager->expects($this->once())->method('get')
             ->with($this->equalTo('config'))
             ->will($this->returnValue(new Config($config)));
-        $this->container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $mockRequest = $this
             ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()->getMock();
         $mockRequest->expects($this->once())->method('getServer')
             ->will($this->returnValue(new Parameters($server)));
-        $this->container->set('Request', $mockRequest);
-        return $this->container;
+        $container->set('Request', $mockRequest);
+        return $container;
     }
 
     /**

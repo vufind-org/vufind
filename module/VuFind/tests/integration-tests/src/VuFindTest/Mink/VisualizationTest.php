@@ -37,9 +37,9 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class VisualizationTest extends \VuFindTest\Unit\MinkTestCase
+class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Test that combined results work in mixed AJAX/non-AJAX mode.

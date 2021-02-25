@@ -70,8 +70,8 @@ class VisualFacets extends AbstractFacets
 
         // Load the desired facet information:
         $config = $this->configLoader->get($iniName);
-        $this->facets = isset($config->$mainSection->visual_facets)
-            ? $config->$mainSection->visual_facets : 'callnumber-first,topic_facet';
+        $this->facets = $config->$mainSection->visual_facets
+            ?? 'callnumber-first,topic_facet';
     }
 
     /**

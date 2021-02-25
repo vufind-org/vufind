@@ -41,9 +41,10 @@ use VuFind\View\Helper\Root\OpenUrl;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
+class OpenUrlTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ViewTrait;
 
     /**
      * Configuration array providing basic settings for testing OpenUrlRules

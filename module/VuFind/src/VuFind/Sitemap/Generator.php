@@ -126,7 +126,7 @@ class Generator
     /**
      * Verbose callback
      *
-     * @var \Callable
+     * @var callable
      */
     protected $verbose = null;
 
@@ -157,8 +157,7 @@ class Generator
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
         // Process backend configuration:
-        $backendConfig = isset($this->config->Sitemap->index)
-            ? $this->config->Sitemap->index : ['Solr,/Record/'];
+        $backendConfig = $this->config->Sitemap->index ?? ['Solr,/Record/'];
         $backendConfig = is_callable([$backendConfig, 'toArray'])
             ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
@@ -184,10 +183,10 @@ class Generator
     /**
      * Get/set verbose callback
      *
-     * @param \Callable|null $newMode Callback for writing verbose messages (or null
+     * @param callable|null $newMode Callback for writing verbose messages (or null
      * to disable them)
      *
-     * @return \Callable|null Current verbose callback (null if disabled)
+     * @return callable|null Current verbose callback (null if disabled)
      */
     public function setVerbose($newMode = null)
     {

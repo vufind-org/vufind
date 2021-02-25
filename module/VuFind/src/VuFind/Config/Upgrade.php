@@ -338,8 +338,7 @@ class Upgrade
         // Now override on a section-by-section basis where necessary:
         foreach ($fullSections as $section) {
             $this->newConfigs[$filename][$section]
-                = isset($this->oldConfigs[$filename][$section])
-                ? $this->oldConfigs[$filename][$section] : [];
+                = $this->oldConfigs[$filename][$section] ?? [];
         }
     }
 
@@ -438,8 +437,7 @@ class Upgrade
     protected function checkTheme($setting, $default = null)
     {
         // If a setting is not set, there is nothing to check:
-        $theme = isset($this->newConfigs['config.ini']['Site'][$setting])
-            ? $this->newConfigs['config.ini']['Site'][$setting] : null;
+        $theme = $this->newConfigs['config.ini']['Site'][$setting] ?? null;
         if (empty($theme)) {
             return;
         }
@@ -876,7 +874,7 @@ class Upgrade
                 }
             }
         }
-        $this->upgradeSpellingSettings('searches.ini', ['CallNumber']);
+        $this->upgradeSpellingSettings('searches.ini', ['CallNumber', 'WorkKeys']);
 
         // save the file
         $this->saveModifiedConfig('searches.ini');
@@ -1326,8 +1324,7 @@ class Upgrade
      */
     protected function upgradeILS()
     {
-        $driver = isset($this->newConfigs['config.ini']['Catalog']['driver'])
-            ? $this->newConfigs['config.ini']['Catalog']['driver'] : '';
+        $driver = $this->newConfigs['config.ini']['Catalog']['driver'] ?? '';
         if (empty($driver)) {
             $this->addWarning("WARNING: Could not find ILS driver setting.");
         } elseif ('Sample' == $driver) {

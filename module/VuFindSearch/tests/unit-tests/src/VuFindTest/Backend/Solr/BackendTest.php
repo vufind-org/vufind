@@ -49,7 +49,7 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test retrieving a record.
@@ -126,15 +126,9 @@ class BackendTest extends TestCase
         $resp2 = $this->loadResponse('multi-record-part2');
         $resp3 = $this->loadResponse('multi-record-part3');
         $conn = $this->getConnectorMock(['search']);
-        $conn->expects($this->at(0))
+        $conn->expects($this->exactly(3))
             ->method('search')
-            ->will($this->returnValue($resp1->getBody()));
-        $conn->expects($this->at(1))
-            ->method('search')
-            ->will($this->returnValue($resp2->getBody()));
-        $conn->expects($this->at(2))
-            ->method('search')
-            ->will($this->returnValue($resp3->getBody()));
+            ->willReturnOnConsecutiveCalls($resp1->getBody(), $resp2->getBody(), $resp3->getBody());
 
         $back = new Backend($conn);
         $back->setPageSize(1);

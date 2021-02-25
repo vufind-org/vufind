@@ -41,7 +41,7 @@ class VuFindGeo
     /**
      * Method for logging errors (overrideable for testing purposes)
      *
-     * @var \Callable
+     * @var callable
      */
     public static $logMethod = 'error_log';
 

@@ -5,7 +5,7 @@
   <ul class="similar">
     <?php foreach ($data['worksArray'] as $work): ?>
       <li>
-        <a href="http://openlibrary.org<?=$work['key']?>" title="<?=$this->transEsc('Get full text')?>" target="_blank">
+        <a href="http://openlibrary.org<?=$work['key']?>" title="<?=$this->transEscAttr('Get full text')?>" target="_blank">
           <span class="olSubjectCover">
           <?php if (isset($work['cover_id']) && !empty($work['cover_id'])): ?>
             <img src="http://covers.openlibrary.org/b/<?=$this->escapeHtmlAttr($work['cover_id_type'])?>/<?=$this->escapeHtmlAttr($work['cover_id'])?>-S.jpg" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>" />

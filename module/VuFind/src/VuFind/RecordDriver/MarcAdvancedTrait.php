@@ -6,6 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
+ * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,6 +40,7 @@ use VuFind\XSLT\Processor as XSLTProcessor;
  * @category VuFind
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
@@ -111,7 +113,7 @@ trait MarcAdvancedTrait
         // Try each MARC field one at a time:
         foreach ($this->subjectFields as $field => $fieldType) {
             // Do we have any results for the current field?  If not, try the next.
-            $results = $this->getMarcRecord()->getFields($field);
+            $results = $this->getMarcReader()->getFields($field);
             if (!$results) {
                 continue;
             }
@@ -122,36 +124,30 @@ trait MarcAdvancedTrait
                 $current = [];
 
                 // Get all the chunks and collect them together:
-                $subfields = $result->getSubfields();
-                if ($subfields) {
-                    foreach ($subfields as $subfield) {
-                        // Numeric subfields are for control purposes and should not
-                        // be displayed:
-                        if (!is_numeric($subfield->getCode())) {
-                            $current[] = $subfield->getData();
-                        }
+                foreach ($result['subfields'] as $subfield) {
+                    // Numeric subfields are for control purposes and should not
+                    // be displayed:
+                    if (!is_numeric($subfield['code'])) {
+                        $current[] = $subfield['data'];
                     }
-                    // If we found at least one chunk, add a heading to our result:
-                    if (!empty($current)) {
-                        if ($extended) {
-                            $sourceIndicator = $result->getIndicator(2);
-                            $source = '';
-                            if (isset($this->subjectSources[$sourceIndicator])) {
-                                $source = $this->subjectSources[$sourceIndicator];
-                            } else {
-                                $source = $result->getSubfield('2');
-                                if ($source) {
-                                    $source = $source->getData();
-                                }
-                            }
-                            $retval[] = [
-                                'heading' => $current,
-                                'type' => $fieldType,
-                                'source' => $source ?: ''
-                            ];
+                }
+                // If we found at least one chunk, add a heading to our result:
+                if (!empty($current)) {
+                    if ($extended) {
+                        $sourceIndicator = $result['i2'];
+                        $source = '';
+                        if (isset($this->subjectSources[$sourceIndicator])) {
+                            $source = $this->subjectSources[$sourceIndicator] ?? '';
                         } else {
-                            $retval[] = $current;
+                            $source = $this->getSubfield($result, '2');
                         }
+                        $retval[] = [
+                            'heading' => $current,
+                            'type' => $fieldType,
+                            'source' => $source
+                        ];
+                    } else {
+                        $retval[] = $current;
                     }
                 }
             }
@@ -180,7 +176,7 @@ trait MarcAdvancedTrait
      */
     public function getBibliographicLevel()
     {
-        $leader = $this->getMarcRecord()->getLeader();
+        $leader = $this->getMarcReader()->getLeader();
         $biblioLevel = strtoupper($leader[7]);
 
         switch ($biblioLevel) {
@@ -220,10 +216,15 @@ trait MarcAdvancedTrait
      */
     public function getFilteredXML()
     {
-        $record = clone $this->getMarcRecord();
+        $record = clone $this->getMarcReader();
         // The default implementation does not filter out any fields
-        // $record->deleteFields('9', true);
-        return $record->toXML();
+        // $marc = new \File_MARCXML(
+        //    $record->toFormat('MARCXML'), \File_MARCXML::SOURCE_STRING
+        //);
+        // $marc->deleteFields('9', true);
+        // return $marc->toXML();
+        //
+        return $record->toFormat('MARCXML');
     }
 
     /**
@@ -393,27 +394,24 @@ trait MarcAdvancedTrait
         // Loop through the field specification....
         foreach ($fieldInfo as $field => $subfields) {
             // Did we find any matching fields?
-            $series = $this->getMarcRecord()->getFields($field);
-            if (is_array($series)) {
-                foreach ($series as $currentField) {
-                    // Can we find a name using the specified subfield list?
-                    $name = $this->getSubfieldArray($currentField, $subfields);
-                    if (isset($name[0])) {
-                        $currentArray = ['name' => $name[0]];
+            $series = $this->getMarcReader()->getFields($field);
+            foreach ($series as $currentField) {
+                // Can we find a name using the specified subfield list?
+                $name = $this->getSubfieldArray($currentField, $subfields);
+                if (isset($name[0])) {
+                    $currentArray = ['name' => $name[0]];
 
-                        // Can we find a number in subfield v?  (Note that number is
-                        // always in subfield v regardless of whether we are dealing
-                        // with 440, 490, 800 or 830 -- hence the hard-coded array
-                        // rather than another parameter in $fieldInfo).
-                        $number
-                            = $this->getSubfieldArray($currentField, ['v']);
-                        if (isset($number[0])) {
-                            $currentArray['number'] = $number[0];
-                        }
-
-                        // Save the current match:
-                        $matches[] = $currentArray;
+                    // Can we find a number in subfield v?  (Note that number is
+                    // always in subfield v regardless of whether we are dealing
+                    // with 440, 490, 800 or 830 -- hence the hard-coded array
+                    // rather than another parameter in $fieldInfo).
+                    $number = $this->getSubfieldArray($currentField, ['v']);
+                    if (isset($number[0])) {
+                        $currentArray['number'] = $number[0];
                     }
+
+                    // Save the current match:
+                    $matches[] = $currentArray;
                 }
             }
         }
@@ -479,17 +477,16 @@ trait MarcAdvancedTrait
      */
     public function getTOC()
     {
-        // Return empty array if we have no table of contents:
         $toc = [];
-        if ($fields = $this->getMarcRecord()->getFields('505')) {
+        if ($fields = $this->getMarcReader()->getFields('505')) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
                 // on the -- separators (filtering out empty chunks). Due to
                 // inconsistent application of subfield codes, this is the most
                 // reliable way to split up a table of contents.
                 $str = '';
-                foreach ($field->getSubfields() as $subfield) {
-                    $str .= trim($subfield->getData()) . ' ';
+                foreach ($field['subfields'] as $subfield) {
+                    $str .= trim($subfield['data']) . ' ';
                 }
                 $toc = array_merge(
                     $toc,
@@ -511,13 +508,12 @@ trait MarcAdvancedTrait
     public function getHierarchicalPlaceNames()
     {
         $placeNames = [];
-        if ($fields = $this->getMarcRecord()->getFields('752')) {
+        if ($fields = $this->getMarcReader()->getFields('752')) {
             foreach ($fields as $field) {
-                $subfields = $field->getSubfields();
                 $current = [];
-                foreach ($subfields as $subfield) {
-                    if (!is_numeric($subfield->getCode())) {
-                        $current[] = $subfield->getData();
+                foreach ($field['subfields'] as $subfield) {
+                    if (!is_numeric($subfield['code'])) {
+                        $current[] = $subfield['data'];
                     }
                 }
                 $placeNames[] = implode(' -- ', $current);
@@ -547,33 +543,24 @@ trait MarcAdvancedTrait
         // Which fields/subfields should we check for URLs?
         $fieldsToCheck = [
             '856' => ['y', 'z', '3'],   // Standard URL
-            '555' => ['a']         // Cumulative index/finding aids
+            '555' => ['a']              // Cumulative index/finding aids
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
-            $urls = $this->getMarcRecord()->getFields($field);
-            if ($urls) {
-                foreach ($urls as $url) {
-                    // Is there an address in the current field?
-                    $address = $url->getSubfield('u');
-                    if ($address) {
-                        $address = $address->getData();
-
-                        // Is there a description?  If not, just use the URL itself.
-                        foreach ($subfields as $current) {
-                            $desc = $url->getSubfield($current);
-                            if ($desc) {
-                                break;
-                            }
-                        }
+            $urls = $this->getMarcReader()->getFields($field);
+            foreach ($urls as $url) {
+                // Is there an address in the current field?
+                $address = $this->getSubfield($url, 'u');
+                if ($address) {
+                    // Is there a description?  If not, just use the URL itself.
+                    foreach ($subfields as $current) {
+                        $desc = $this->getSubfield($url, $current);
                         if ($desc) {
-                            $desc = $desc->getData();
-                        } else {
-                            $desc = $address;
+                            break;
                         }
-
-                        $retVal[] = ['url' => $address, 'desc' => $desc];
                     }
+
+                    $retVal[] = ['url' => $address, 'desc' => $desc ?: $address];
                 }
             }
         }
@@ -602,28 +589,25 @@ trait MarcAdvancedTrait
         $fieldsNames = isset($this->mainConfig->Record->marc_links)
             ? explode(',', $this->mainConfig->Record->marc_links) : [];
         $useVisibilityIndicator
-            = isset($this->mainConfig->Record->marc_links_use_visibility_indicator)
-            ? $this->mainConfig->Record->marc_links_use_visibility_indicator : true;
+            = $this->mainConfig->Record->marc_links_use_visibility_indicator ?? true;
 
         $retVal = [];
         foreach ($fieldsNames as $value) {
             $value = trim($value);
-            $fields = $this->getMarcRecord()->getFields($value);
-            if (!empty($fields)) {
-                foreach ($fields as $field) {
-                    // Check to see if we should display at all
-                    if ($useVisibilityIndicator) {
-                        $visibilityIndicator = $field->getIndicator('1');
-                        if ($visibilityIndicator == '1') {
-                            continue;
-                        }
+            $fields = $this->getMarcReader()->getFields($value);
+            foreach ($fields as $field) {
+                // Check to see if we should display at all
+                if ($useVisibilityIndicator) {
+                    $visibilityIndicator = $field['i1'];
+                    if ($visibilityIndicator == '1') {
+                        continue;
                     }
+                }
 
-                    // Get data for field
-                    $tmp = $this->getFieldData($field);
-                    if (is_array($tmp)) {
-                        $retVal[] = $tmp;
-                    }
+                // Get data for field
+                $tmp = $this->getFieldData($field);
+                if (is_array($tmp)) {
+                    $retVal[] = $tmp;
                 }
             }
         }
@@ -635,29 +619,29 @@ trait MarcAdvancedTrait
      * into the field number where relevant to generate a note to associate
      * with a record link.
      *
-     * @param File_MARC_Data_Field $field Field to examine
+     * @param array $field Field to examine
      *
      * @return string
      */
     protected function getRecordLinkNote($field)
     {
         // If set, use relationship information from subfield i
-        if ($subfieldI = $field->getSubfield('i')) {
+        if ($subfieldI = $this->getSubfield($field, 'i')) {
             // VuFind will add a colon to the label, so prevent double colons:
-            $data = rtrim(trim($subfieldI->getData(), ':'));
+            $data = rtrim($subfieldI, ':');
             if (!empty($data)) {
                 return $data;
             }
         }
 
         // Normalize blank relationship indicator to 0:
-        $relationshipIndicator = $field->getIndicator('2');
+        $relationshipIndicator = $field['i2'];
         if ($relationshipIndicator == ' ') {
             $relationshipIndicator = '0';
         }
 
         // Assign notes based on the relationship type
-        $value = $field->getTag();
+        $value = $field['tag'];
         switch ($value) {
         case '780':
             if (in_array($relationshipIndicator, range('0', '7'))) {
@@ -677,25 +661,22 @@ trait MarcAdvancedTrait
     /**
      * Returns the array element for the 'getAllRecordLinks' method
      *
-     * @param File_MARC_Data_Field $field Field to examine
+     * @param array $field Field to examine
      *
-     * @return array|bool                 Array on success, boolean false if no
-     * valid link could be found in the data.
+     * @return array|bool  Array on success, boolean false if no valid link could be
+     * found in the data.
      */
     protected function getFieldData($field)
     {
         // Make sure that there is a t field to be displayed:
-        if ($title = $field->getSubfield('t')) {
-            $title = $title->getData();
-        } else {
+        if (!($title = $this->getSubfield($field, 't'))) {
             return false;
         }
 
-        $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
-            ? $this->mainConfig->Record->marc_links_link_types
-            : 'id,oclc,dlc,isbn,issn,title';
+        $linkTypeSetting = $this->mainConfig->Record->marc_links_link_types
+            ?? 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
-        $linkFields = $field->getSubfields('w');
+        $linkFields = $this->getSubfields($field, 'w');
 
         // Run through the link types specified in the config.
         // For each type, check field for reference
@@ -725,17 +706,17 @@ trait MarcAdvancedTrait
                 }
                 break;
             case 'isbn':
-                if ($isbn = $field->getSubfield('z')) {
+                if ($isbn = $this->getSubfield($field, 'z')) {
                     $link = [
-                        'type' => 'isn', 'value' => trim($isbn->getData()),
+                        'type' => 'isn', 'value' => $isbn,
                         'exclude' => $this->getUniqueId()
                     ];
                 }
                 break;
             case 'issn':
-                if ($issn = $field->getSubfield('x')) {
+                if ($issn = $this->getSubfield($field, 'x')) {
                     $link = [
-                        'type' => 'isn', 'value' => trim($issn->getData()),
+                        'type' => 'isn', 'value' => $issn,
                         'exclude' => $this->getUniqueId()
                     ];
                 }
@@ -760,16 +741,15 @@ trait MarcAdvancedTrait
     /**
      * Returns an id extracted from the identifier subfield passed in
      *
-     * @param \File_MARC_Subfield $idField MARC field containing id information
-     * @param string              $prefix  Prefix to search for in id field
-     * @param bool                $raw     Return raw match, or normalize?
+     * @param string $idField MARC subfield containing id information
+     * @param string $prefix  Prefix to search for in id field
+     * @param bool   $raw     Return raw match, or normalize?
      *
-     * @return string|bool                 ID on success, false on failure
+     * @return string|bool    ID on success, false on failure
      */
     protected function getIdFromLinkingField($idField, $prefix = null, $raw = false)
     {
-        $text = $idField->getData();
-        if (preg_match('/\(([^)]+)\)(.+)/', $text, $matches)) {
+        if (preg_match('/\(([^)]+)\)(.+)/', $idField, $matches)) {
             // If prefix matches, return ID:
             if ($matches[1] == $prefix) {
                 // Special case -- LCCN should not be stripped:
@@ -779,7 +759,7 @@ trait MarcAdvancedTrait
             }
         } elseif ($prefix == null) {
             // If no prefix was given or found, we presume it is a raw bib record
-            return $text;
+            return $idField;
         }
         return false;
     }
@@ -787,8 +767,8 @@ trait MarcAdvancedTrait
     /**
      * Support method for getFormattedMarcDetails() -- extract a single result
      *
-     * @param object $currentField Result from File_MARC::getFields
-     * @param array  $details      Parsed instructions from getFormattedMarcDetails()
+     * @param array $currentField Result from MarcReader::getFields
+     * @param array $details      Parsed instructions from getFormattedMarcDetails()
      *
      * @return string|bool
      */
@@ -846,7 +826,7 @@ trait MarcAdvancedTrait
         };
         $fields = [];
         foreach (array_unique(array_map($getTagCallback, $instructions)) as $field) {
-            $fields[$field] = $this->getMarcRecord()->getFields($field);
+            $fields[$field] = $this->getMarcReader()->getFields($field);
         }
 
         // Initialize return array
@@ -888,7 +868,9 @@ trait MarcAdvancedTrait
             $xml = simplexml_load_string(
                 trim(
                     preg_replace(
-                        "/$sanitizeXmlRegEx/u", ' ', $this->getMarcRecord()->toXML()
+                        "/$sanitizeXmlRegEx/u",
+                        ' ',
+                        $this->getMarcReader()->toFormat('MARCXML')
                     )
                 )
             );
@@ -920,7 +902,7 @@ trait MarcAdvancedTrait
     public function getRDFXML()
     {
         return XSLTProcessor::process(
-            'record-rdf-mods.xsl', trim($this->getMarcRecord()->toXML())
+            'record-rdf-mods.xsl', trim($this->getMarcReader()->toFormat('MARCXML'))
         );
     }
 
@@ -931,7 +913,7 @@ trait MarcAdvancedTrait
      */
     public function getConsortialIDs()
     {
-        return $this->getFieldArray('035', 'a', true);
+        return $this->getFieldArray('035');
     }
 
     /**
@@ -941,17 +923,15 @@ trait MarcAdvancedTrait
      */
     public function getCleanISMN()
     {
-        $fields024 = $this->getMarcRecord()->getFields('024');
-        $ismn = null;
+        $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field->getIndicator(1) == 2
-                && $subfield = $field->getSubfield('a')
+            if ($field['i1'] == 2
+                && $subfield = $this->getSubfield($field, 'a')
             ) {
-                $ismn = $subfield->getData();
-                break;
+                return $subfield;
             }
         }
-        return $ismn ?? false;
+        return false;
     }
 
     /**
@@ -961,19 +941,14 @@ trait MarcAdvancedTrait
      */
     public function getCleanNBN()
     {
-        $field = $this->getMarcRecord()->getField('015');
-        $nbn = false;
-        if ($field) {
-            $subfields = $this->getSubfieldArray($field, ['a', '7'], false);
-            if (!empty($subfields)) {
-                $nbn = [
-                    'nbn' => $subfields[0],
-                ];
-                if (isset($subfields[1])) {
-                    $nbn['source'] = $subfields[1];
-                }
+        $field = $this->getMarcReader()->getField('015');
+        if ($field && $nbn = $this->getSubfield($field, 'a')) {
+            $result = compact('nbn');
+            if ($source = $this->getSubfield($field, '7')) {
+                $result['source'] = $source;
             }
+            return $result;
         }
-        return $nbn;
+        return false;
     }
 }
