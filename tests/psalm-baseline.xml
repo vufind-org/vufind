@@ -1,0 +1,3356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.6.1@e93e532e4eaad6d68c4d7b606853800eaceccc72">
+  <file src="config/application.config.php">
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_ENV</code>
+      <code>APPLICATION_ENV</code>
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/config/module.config.php">
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_ENV</code>
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/AbstractIlsAndUserActionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/AbstractRelaisActionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/CommentRecord.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/CommentRecordFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/DeleteRecordCommentFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/DoiLookupFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetACSuggestionsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetFacetData.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetFacetDataFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetIlsStatusFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetItemStatuses.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetItemStatusesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordCommentsAsHTML.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordCommentsAsHTMLFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordCover.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordCoverFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordDetailsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordTags.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordTagsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetRecordVersionsFactory.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>ContainerException</code>
+      <code>ServiceNotCreatedException</code>
+      <code>ServiceNotFoundException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetResolverLinksFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetSaveStatuses.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetSaveStatusesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetSideFacets.php">
+    <UndefinedConstant occurrences="2">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetSideFacetsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedClass occurrences="1">
+      <code>\VuFind\SearchRunner</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetUserFinesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/GetVisDataFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/KeepAliveFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/RecommendFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/SystemStatusFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/TagRecord.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/AjaxHandler/TagRecordFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/ChoiceAuthFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/EmailAuthenticatorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/EmailFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/FacebookFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/ILSAuthenticatorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/ILSFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/ManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/MultiAuthFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Auth/ShibbolethFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedDocblockClass occurrences="1">
+      <code>configuration</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Autocomplete/EdsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Autocomplete/SolrFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Autocomplete/SuggesterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cache/KeyGeneratorTrait.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cache/Manager.php">
+    <UndefinedConstant occurrences="5">
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_CACHE_DIR</code>
+      <code>LOCAL_CACHE_DIR</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cache/ManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Captcha/FigletFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Captcha/ImageFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Captcha/ReCaptchaFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cart.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/CartFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/AbstractILSChannelProviderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/AlphaBrowseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/ChannelLoader.php">
+    <UndefinedConstant occurrences="3">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/ChannelLoaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/FacetsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/ListItemsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/RandomFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ChannelProvider/SimilarItemsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/AccountCapabilitiesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/Locator.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/PluginManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/Upgrade.php">
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/Version.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Config/YamlReaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Connection/Oracle.php">
+    <UndefinedConstant occurrences="10">
+      <code>OCI_DEFAULT</code>
+      <code>OCI_D_ROWID</code>
+      <code>OCI_FETCHSTATEMENT_BY_ROW</code>
+      <code>SQLT_BLOB</code>
+      <code>SQLT_CHR</code>
+      <code>SQLT_CLOB</code>
+      <code>SQLT_FLT</code>
+      <code>SQLT_INT</code>
+      <code>SQLT_LNG</code>
+      <code>SQLT_RDD</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Connection/RelaisFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Connection/WorldCatUtilsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/AbstractSyndeticsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/AuthorNotes/PluginManager.php">
+    <UndefinedClass occurrences="2">
+      <code>SyndeticsPlus</code>
+      <code>SyndeticsPlus</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/BooksiteFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/BrowZineFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/BuchhandelFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/ContentCafeFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/LocalFile.php">
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/PluginManager.php">
+    <UndefinedClass occurrences="3">
+      <code>Amazon</code>
+      <code>Amazon</code>
+      <code>AmazonFactory</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Covers/SyndeticsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Excerpts/PluginManager.php">
+    <UndefinedClass occurrences="2">
+      <code>SyndeticsPlus</code>
+      <code>SyndeticsPlus</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Factory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/PageLocatorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Reviews/BooksiteFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Reviews/PluginManager.php">
+    <UndefinedClass occurrences="4">
+      <code>Amazon</code>
+      <code>AmazonEditorial</code>
+      <code>SyndeticsPlus</code>
+      <code>SyndeticsPlus</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/Summaries/PluginManager.php">
+    <UndefinedClass occurrences="2">
+      <code>SyndeticsPlus</code>
+      <code>SyndeticsPlus</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Content/TOC/PluginManager.php">
+    <UndefinedClass occurrences="2">
+      <code>SyndeticsPlus</code>
+      <code>SyndeticsPlus</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ContentBlock/BlockLoaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ContentBlock/ChannelsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ContentBlock/FacetListFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ContentBlock/TemplateBasedFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AbstractBaseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AbstractBaseWithConfigFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AbstractSearch.php">
+    <InvalidParamDefault occurrences="7">
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AbstractSolrSearch.php">
+    <InvalidParamDefault occurrences="2">
+      <code>object</code>
+      <code>object</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AjaxControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/AjaxResponseTrait.php">
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_ENV</code>
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/CartControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/ChannelsController.php">
+    <UndefinedConstant occurrences="3">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/ChannelsControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/CoverControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/EdsController.php">
+    <InvalidParamDefault occurrences="4">
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+      <code>object</code>
+    </InvalidParamDefault>
+    <UndefinedVariable occurrences="4">
+      <code>$view</code>
+      <code>$view</code>
+      <code>$view</code>
+      <code>$view</code>
+    </UndefinedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/ExternalAuthController.php">
+    <UndefinedClass occurrences="1">
+      <code>\VuFind\Logger</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/HierarchyController.php">
+    <UndefinedConstant occurrences="4">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/IndexControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/InstallController.php">
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="2">
+      <code>\Laminas\View\Model</code>
+      <code>\Laminas\View\Model</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/LibraryCardsController.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>User</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/MyResearchController.php">
+    <UndefinedConstant occurrences="6">
+      <code>APPLICATION_ENV</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Exception\DomainException</code>
+      <code>\VuFind\Config</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/AbstractRequestBaseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/Captcha.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="1">
+      <code>\VuFind\Config</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/CaptchaFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/FavoritesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/FlashMessengerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/FollowupFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/NewItemsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/PermissionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/ReservesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Plugin/ResultScrollerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/QRCodeControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Search2Controller.php">
+    <UndefinedClass occurrences="1">
+      <code>\VuFind\Config</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/Search2recordController.php">
+    <UndefinedClass occurrences="1">
+      <code>\VuFind\Config</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/SearchController.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/SummonController.php">
+    <InvalidParamDefault occurrences="1">
+      <code>object</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/UpgradeController.php">
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Controller/UpgradeControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cookie/CookieManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/CachingProxyFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/GeneratorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/Layer/AbstractLayer.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>allocated</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/Layer/AbstractTextLayer.php">
+    <InvalidParamDefault occurrences="1">
+      <code>int</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/Loader.php">
+    <AssignmentToVoid occurrences="1">
+      <code>$this-&gt;localFile</code>
+    </AssignmentToVoid>
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/LoaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Cover/RouterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Crypt/HMACFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/AdapterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/PrivateUser.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception\InvalidArgumentException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/RowGatewayFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/Search.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>VuFind\Crypt\HMAC</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/User.php">
+    <UndefinedConstant occurrences="2">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/UserFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/UserList.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Row/UserListFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/AuthHash.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Select</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/CaseSensitiveTagsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/Comments.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/ExternalSession.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Select</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/GatewayFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/Record.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Updated</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/Resource.php">
+    <UndefinedConstant occurrences="3">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/ResourceFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/ResourceTags.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/Search.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Select</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/Session.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Select</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/Tags.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="1">
+      <code>callback</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/UserFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/UserList.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/UserListFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Db/Table/UserResource.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/DigitalContent/OverdriveConnectorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/DoiLinker/BrowZineFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/DoiLinker/UnpaywallFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ExportFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Feed/Writer/Extension/OpenSearch/Feed.php">
+    <UndefinedClass occurrences="2">
+      <code>Exception\InvalidArgumentException</code>
+      <code>Exception\InvalidArgumentException</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>StringWrapperInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Form/Form.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>Exception</code>
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Form/FormFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/GeoFeatures/AbstractConfigFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/Driver/ConfigurationBasedFactory.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/Driver/PluginManager.php">
+    <UndefinedClass occurrences="6">
+      <code>HierarchyDefault</code>
+      <code>HierarchyDefault</code>
+      <code>HierarchyFlat</code>
+      <code>HierarchyFlat</code>
+      <code>HierarchySearch2</code>
+      <code>HierarchySearch2</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeDataSource/SolrFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeRenderer/AbstractBase.php">
+    <InvalidParamDefault occurrences="2">
+      <code>string</code>
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeRenderer/JSTree.php">
+    <InvalidParamDefault occurrences="3">
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/Hierarchy/TreeRenderer/JSTreeFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Http/PhpEnvironment/RemoteAddressFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/I18n/Translator/LanguageInitializerTrait.php">
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/I18n/Translator/TranslatorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedConstant occurrences="2">
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/ConnectionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Aleph.php">
+    <UndefinedDocblockClass occurrences="30">
+      <code>$result</code>
+      <code>$result-&gt;error</code>
+      <code>$result-&gt;{'del-pat-hold'}</code>
+      <code>$result-&gt;{'reply-code'}</code>
+      <code>$result-&gt;{'reply-code'}</code>
+      <code>$result-&gt;{'reply-text'}</code>
+      <code>$result-&gt;{'reply-text'}</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml</code>
+      <code>$xml-&gt;z303</code>
+      <code>$xml-&gt;z303</code>
+      <code>$xml-&gt;z304</code>
+      <code>$xml-&gt;z304</code>
+      <code>$xml-&gt;z305</code>
+      <code>$xml-&gt;{"no_records"}</code>
+      <code>$xml-&gt;{"set_number"}</code>
+      <code>$xml-&gt;{'items'}</code>
+      <code>SimpleXMLElement</code>
+      <code>SimpleXMLElement</code>
+      <code>SimpleXMLElement</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/AlephFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Alma.php">
+    <ParadoxicalCondition occurrences="2">
+      <code>$xml == null || empty($xml)</code>
+      <code>empty($userBlocks)</code>
+    </ParadoxicalCondition>
+    <UndefinedDocblockClass occurrences="1">
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/AlmaFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Amicus.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/DAIA.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>Array|DOMNode|null</code>
+      <code>xml</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Demo.php">
+    <DuplicateArrayKey occurrences="1">
+      <code>"reqnum" =&gt; $i</code>
+    </DuplicateArrayKey>
+    <InvalidParamDefault occurrences="3">
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <ParadoxicalCondition occurrences="1">
+      <code>'date_due desc'</code>
+    </ParadoxicalCondition>
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="3">
+      <code>patron</code>
+      <code>patron</code>
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/DemoFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/DriverWithDateConverterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Evergreen.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Folio.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$bibId</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/FolioFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Horizon.php">
+    <UndefinedDocblockClass occurrences="6">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/HorizonXMLAPI.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="14">
+      <code>$initResponse-&gt;alert</code>
+      <code>$initResponse-&gt;request_confirm</code>
+      <code>$initResponse-&gt;request_confirm</code>
+      <code>$request-&gt;request_success</code>
+      <code>$response-&gt;error</code>
+      <code>$response-&gt;error</code>
+      <code>$response-&gt;holdsdata</code>
+      <code>$response-&gt;itemsoutdata</code>
+      <code>$response-&gt;itemsoutdata</code>
+      <code>$response-&gt;security</code>
+      <code>$response-&gt;session</code>
+      <code>obj</code>
+      <code>obj</code>
+      <code>obj</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Innovative.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Koha.php">
+    <UndefinedDocblockClass occurrences="5">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/KohaILSDI.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="30">
+      <code>$idObj-&gt;{'code'}</code>
+      <code>$idObj-&gt;{'id'}</code>
+      <code>$rsp-&gt;{'address'}</code>
+      <code>$rsp-&gt;{'address2'}</code>
+      <code>$rsp-&gt;{'borrowernumber'}</code>
+      <code>$rsp-&gt;{'borrowernumber'}</code>
+      <code>$rsp-&gt;{'borrowernumber'}</code>
+      <code>$rsp-&gt;{'cardnumber'}</code>
+      <code>$rsp-&gt;{'categorycode'}</code>
+      <code>$rsp-&gt;{'charges'}</code>
+      <code>$rsp-&gt;{'code'}</code>
+      <code>$rsp-&gt;{'code'}</code>
+      <code>$rsp-&gt;{'code'}</code>
+      <code>$rsp-&gt;{'date_due'}</code>
+      <code>$rsp-&gt;{'email'}</code>
+      <code>$rsp-&gt;{'fines'}</code>
+      <code>$rsp-&gt;{'firstname'}</code>
+      <code>$rsp-&gt;{'firstname'}</code>
+      <code>$rsp-&gt;{'holds'}</code>
+      <code>$rsp-&gt;{'loans'}</code>
+      <code>$rsp-&gt;{'phone'}</code>
+      <code>$rsp-&gt;{'pickup_location'}</code>
+      <code>$rsp-&gt;{'success'}</code>
+      <code>$rsp-&gt;{'surname'}</code>
+      <code>$rsp-&gt;{'surname'}</code>
+      <code>$rsp-&gt;{'title'}</code>
+      <code>$rsp-&gt;{'zipcode'}</code>
+      <code>$rsp2-&gt;{'AvailableFor'}</code>
+      <code>obj</code>
+      <code>obj</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/KohaRest.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="2">
+      <code>patron</code>
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/KohaRestFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/LBS4.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+    <UndefinedFunction occurrences="13">
+      <code>sybase_fetch_row($sqlStmt)</code>
+      <code>sybase_fetch_row($sqlStmt)</code>
+      <code>sybase_fetch_row($sqlStmt)</code>
+      <code>sybase_fetch_row($sqlStmt)</code>
+      <code>sybase_fetch_row($sqlStmt)</code>
+      <code>sybase_fetch_row($sqlStmt)</code>
+      <code>sybase_query($sql)</code>
+      <code>sybase_query($sql)</code>
+      <code>sybase_query($sql)</code>
+      <code>sybase_query($sql)</code>
+      <code>sybase_query($sql)</code>
+      <code>sybase_select_db($this-&gt;config['Catalog']['database'])</code>
+    </UndefinedFunction>
+    <UndefinedVariable occurrences="1">
+      <code>$row</code>
+    </UndefinedVariable>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/MultiBackend.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="4">
+      <code>Config</code>
+      <code>patron</code>
+      <code>patron</code>
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/MultiBackendFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/NewGenLib.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$RecordID</code>
+    </ParamNameMismatch>
+    <UndefinedDocblockClass occurrences="4">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/NoILS.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/NoILSFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/PAIA.php">
+    <UndefinedClass occurrences="4">
+      <code>$session-&gt;access_token</code>
+      <code>$session-&gt;expires</code>
+      <code>$session-&gt;patron</code>
+      <code>$session-&gt;scope</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="13">
+      <code>$session-&gt;expires</code>
+      <code>$session-&gt;patron</code>
+      <code>$session-&gt;patron</code>
+      <code>$session-&gt;patron</code>
+      <code>$this-&gt;getSession()-&gt;access_token</code>
+      <code>$this-&gt;getSession()-&gt;access_token</code>
+      <code>$this-&gt;getSession()-&gt;access_token</code>
+      <code>$this-&gt;getSession()-&gt;access_token</code>
+      <code>$this-&gt;getSession()-&gt;scope</code>
+      <code>SessionContainer</code>
+      <code>patron</code>
+      <code>patron</code>
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/PAIAFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Polaris.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="28">
+      <code>$reply_response-&gt;StatusValue</code>
+      <code>$response-&gt;BibGetRows</code>
+      <code>$response-&gt;BibHoldingsGetRows</code>
+      <code>$response-&gt;ItemRenewResult</code>
+      <code>$response-&gt;ItemRenewResult</code>
+      <code>$response-&gt;Message</code>
+      <code>$response-&gt;Message</code>
+      <code>$response-&gt;Message</code>
+      <code>$response-&gt;Message</code>
+      <code>$response-&gt;OrganizationsGetRows</code>
+      <code>$response-&gt;PAPIErrorCode</code>
+      <code>$response-&gt;PAPIErrorCode</code>
+      <code>$response-&gt;PAPIErrorCode</code>
+      <code>$response-&gt;PAPIErrorCode</code>
+      <code>$response-&gt;PAPIErrorCode</code>
+      <code>$response-&gt;PatronAccountGetRows</code>
+      <code>$response-&gt;PatronBarcode</code>
+      <code>$response-&gt;PatronBasicData</code>
+      <code>$response-&gt;PatronHoldRequestsGetRows</code>
+      <code>$response-&gt;PatronID</code>
+      <code>$response-&gt;PatronItemsOutGetRows</code>
+      <code>$response-&gt;PatronReadingHistoryGetRows</code>
+      <code>$response-&gt;RequestGUID</code>
+      <code>$response-&gt;StatusValue</code>
+      <code>$response-&gt;TxnGroupQualifer</code>
+      <code>$response-&gt;TxnQualifier</code>
+      <code>$response-&gt;ValidPatron</code>
+      <code>obj</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Sierra.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/SierraRest.php">
+    <InvalidParamDefault occurrences="6">
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="1">
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/SierraRestFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Symphony.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="2">
+      <code>Exception</code>
+      <code>The</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/SymphonyFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Unicorn.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="6">
+      <code>File_MARC_Record</code>
+      <code>File_Marc_Field</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Virtua.php">
+    <InvalidParamDefault occurrences="2">
+      <code>string</code>
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="4">
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+      <code>VuFind\Date\DateException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/Voyager.php">
+    <InvalidParamDefault occurrences="1">
+      <code>array</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="22">
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>PDOStatement</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/VoyagerRestful.php">
+    <InvalidParamDefault occurrences="8">
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>array</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="54">
+      <code>$blocks-&gt;blocks</code>
+      <code>$blocks-&gt;{'reply-text'}</code>
+      <code>$cancel</code>
+      <code>$cancel</code>
+      <code>$cancel</code>
+      <code>$check</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$response</code>
+      <code>$result</code>
+      <code>$result</code>
+      <code>$result</code>
+      <code>$results-&gt;callslips</code>
+      <code>$results-&gt;holds</code>
+      <code>$results-&gt;loans</code>
+      <code>$results-&gt;{'reply-code'}</code>
+      <code>$results-&gt;{'reply-code'}</code>
+      <code>$results-&gt;{'reply-code'}</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>$sqlStmt</code>
+      <code>\Laminas\Http\Response\Header\SetCookie[]</code>
+      <code>number</code>
+      <code>obj</code>
+      <code>patron</code>
+      <code>patron</code>
+      <code>patron</code>
+      <code>protected $cookies = false;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/VoyagerRestfulFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Driver/XCNCIP2.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="2">
+      <code>SimpleXMLElement</code>
+      <code>patron</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/HoldSettingsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Logic/Holds.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/ILS/Logic/LogicFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Log/LoggerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Mailer/Factory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Marc/MarcReader.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Marc/Serialization/Iso2709.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Marc/Serialization/MarcXml.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>Exception</code>
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Marc/Serialization/SerializationInterface.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/MetadataVocabulary/PluginManager.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>class</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Net/UserIpReaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/OAI/ServerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/QRCode/LoaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/AuthorInfoFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/CollectionSideFacetsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/DPLATermsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/EuropeanaResultsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/ExpandFacetsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/FavoriteFacetsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/InjectConfigManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/InjectResultsManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/InjectSearchRunnerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/MapSelection.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>number</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/MapSelectionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/OpenLibrarySubjects.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>\VuFind\Search\Params\Base</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/RandomRecommend.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>number</code>
+      <code>number</code>
+      <code>protected $limit = 10;</code>
+      <code>protected $minimum = 0;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/RandomRecommendFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/SideFacetsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/SwitchQueryFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Recommend/WorldCatIdentitiesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Record/CacheFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Record/FallbackLoader/SummonFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Record/Loader.php">
+    <UndefinedConstant occurrences="2">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Record/LoaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Record/Router.php">
+    <UndefinedConstant occurrences="2">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/AbstractBaseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/DefaultRecord.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/EDS.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>SimpleXml</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/HierarchyAwareTrait.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/IlsAwareDelegatorFactory.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/NameBasedConfigFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/Pazpar2.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>associative</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SolrDefaultFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SolrDefaultWithoutSearchServiceFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SolrMarcRemote.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>MarcReader</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SolrOverdriveFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SolrWebFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordDriver/SummonFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/AbstractContentFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/CollectionHierarchyTreeFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/CollectionListFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/ComponentPartsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/HierarchyTreeFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/HoldingsILSFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/HoldingsWorldCatFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/MapFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/PreviewFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/SimilarItemsCarouselFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/TabManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/UserCommentsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/RecordTab/VersionsFactory.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>ContainerException</code>
+      <code>ServiceNotCreatedException</code>
+      <code>ServiceNotFoundException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Related/SimilarFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Resolver/Driver/AbstractBaseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Resolver/Driver/DriverWithHttpClientFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Resolver/Driver/EzbFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Resolver/Driver/Redi.php">
+    <NullReference occurrences="1">
+      <code>getNamedItem</code>
+    </NullReference>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/DynamicRoleProvider.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>$this-&gt;manager</code>
+      <code>PermissionProviderPluginManager</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/DynamicRoleProviderFactory.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>PermissionProviderPluginManager</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionDeniedManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionProvider/InjectAuthorizationServiceFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionProvider/InjectRequestFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionProvider/IpRange.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>$this-&gt;request</code>
+      <code>Request</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionProvider/IpRangeFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionProvider/IpRegExFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Role/PermissionProvider/ShibbolethFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/BackendManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Base/FacetCacheFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/EDS/Options.php">
+    <UndefinedDocblockClass occurrences="9">
+      <code>$this-&gt;expanderOptions</code>
+      <code>$this-&gt;limiterOptions</code>
+      <code>number</code>
+      <code>protected $expanderOptions = [];</code>
+      <code>protected $includeFacets = 'y';</code>
+      <code>protected $limiterOptions = [];</code>
+      <code>unknown</code>
+      <code>unknown</code>
+      <code>unknown</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/EDS/OptionsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Favorites/ResultsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/HistoryFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/MemoryFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Options/OptionsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Params/ParamsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Primo/PrimoPermissionHandler.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Laminas\Config\Config|array</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Results/ResultsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Search2/ResultsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/SearchRunnerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/SearchTabsHelperFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/HierarchicalFacetHelper.php">
+    <InvalidParamDefault occurrences="1">
+      <code>UrlHelper</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="1">
+      <code>UrlHelper</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/HierarchicalFacetListener.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>$this-&gt;facetConfig-&gt;SpecialFacets</code>
+      <code>Config</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/ParamsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/Results.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>ArrayObject</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/ResultsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Solr/V4/ErrorListener.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>StdLib</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Search/Tags/ResultsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Security/CspHeaderGenerator.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Security/CspHeaderGeneratorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/DateConverterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/HttpServiceFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/MarkdownFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/ProxyConfigFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/ReCaptchaFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/SearchServiceFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Service/ServiceWithConfigIniFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ServiceManager/AbstractPluginManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/ServiceManager/LowerCaseServiceNameTrait.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$name</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="module/VuFind/src/VuFind/Session/AbstractBaseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Session/ManagerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Session/Memcache.php">
+    <UndefinedClass occurrences="1">
+      <code>\Memcache</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="4">
+      <code>$this-&gt;connection</code>
+      <code>$this-&gt;connection</code>
+      <code>$this-&gt;connection</code>
+      <code>\Memcache</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Session/RedisFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Sitemap/Generator.php">
+    <UndefinedDocblockClass occurrences="7">
+      <code>$smf</code>
+      <code>$smf</code>
+      <code>$smf</code>
+      <code>$smf</code>
+      <code>$smf</code>
+      <code>IndexWriter</code>
+      <code>SitemapWriter</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Sitemap/GeneratorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/Solr/WriterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/TagsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/UrlShortener/None.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/Validator/CsrfFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Bootstrap3/LayoutClassFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/AccountCapabilitiesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/AddThisFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/AlphaBrowseFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/AuthorNotesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/CaptchaFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/CartFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Citation.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="1">
+      <code>\VuFind\RecordDriver\Base</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/CitationFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ConfigFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ContentLoaderFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Context.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Renderer</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/DateTimeFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/DisplayLanguageOptionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Doi.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>$this-&gt;recordDriver</code>
+      <code>$this-&gt;recordDriver</code>
+      <code>\VuFind\RecordDriver</code>
+      <code>\VuFind\RecordDriver</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/DoiFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ExportFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/FeedbackFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/FlashmessagesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/GeoCoordsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/GoogleAnalytics.php">
+    <InvalidParamDefault occurrences="2">
+      <code>string</code>
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/GoogleAnalyticsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/HelpTextFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/HistoryLabelFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/IlsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/JsTranslationsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/KeepAliveFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/MarkdownFactory.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>type</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/MetadataFactory.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>type</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/OpenUrl.php">
+    <UndefinedDocblockClass occurrences="6">
+      <code>$this-&gt;recordDriver</code>
+      <code>$this-&gt;recordDriver</code>
+      <code>$this-&gt;recordDriver</code>
+      <code>$this-&gt;recordDriver</code>
+      <code>\VuFind\RecordDriver</code>
+      <code>\VuFind\RecordDriver</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/OpenUrlFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/OverdriveFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Permission.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>PermissionsDeniedManager</code>
+      <code>PermissionsManager</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/PermissionFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Piwik.php">
+    <UndefinedDocblockClass occurrences="11">
+      <code>Laminas\Http\PhpEnvironment\Request</code>
+      <code>Laminas\Router\Http\RouteMatch</code>
+      <code>VuFind\RecordDriver\AbstractBase</code>
+      <code>VuFind\RecordDriver\AbstractBase</code>
+      <code>VuFind\RecordDriver\AbstractBase|null</code>
+      <code>VuFind\Search\Base\Results</code>
+      <code>VuFind\Search\Base\Results</code>
+      <code>VuFind\Search\Base\Results</code>
+      <code>VuFind\Search\Base\Results</code>
+      <code>VuFind\Search\Base\Results</code>
+      <code>VuFind\Search\Base\Results|null</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/PiwikFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ProxyUrlFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Record.php">
+    <InvalidParamDefault occurrences="4">
+      <code>\VuFind\Db\Row\User</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RecordDataFormatterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RecordFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RecordLink.php">
+    <UndefinedConstant occurrences="2">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RecordLinkFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RelaisFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/RelatedFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ResultFeedFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SafeMoneyFormatFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SearchBoxFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SearchMemoryFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SearchOptionsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SearchParamsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SearchTabsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ServerUrlFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/ShortenUrlFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SyndeticsPlusFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/SystemEmailFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/Url.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>array|Traversable</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/UrlFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/UserListFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/View/Helper/Root/UserTagsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/src/VuFind/XSLT/Import/VuFind.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>ServiceLocatorInterface</code>
+      <code>ServiceLocatorInterface</code>
+      <code>static::$serviceLocator</code>
+      <code>static::$serviceLocator</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/XSLT/Import/VuFindWorkKeys.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>string|DOMElement</code>
+      <code>string|DOMElement</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/XSLT/Importer.php">
+    <UndefinedClass occurrences="1">
+      <code>$class::setServiceLocator($this-&gt;serviceLocator)</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/src/VuFind/XSLT/Processor.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Container/MockContainerTrait.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$rawId</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Feature/LiveDatabaseTrait.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Feature/LiveSolrTrait.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Feature/ViewTrait.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/src/VuFindTest/Unit/RecommendDeferredTestCase.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>SideFacets</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/CollectionsTest.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>$page</code>
+      <code>$page</code>
+      <code>Element</code>
+      <code>Element</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/integration-tests/src/VuFindTest/Mink/FavoritesTest.php">
+    <AssignmentToVoid occurrences="5">
+      <code>$page</code>
+      <code>$page</code>
+      <code>$page</code>
+      <code>$page</code>
+      <code>$page</code>
+    </AssignmentToVoid>
+    <NullReference occurrences="1">
+      <code>find</code>
+    </NullReference>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/AjaxHandler/CheckRequestIsValidTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>User|bool</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Auth/ChoiceAuthTest.php">
+    <NoValue occurrences="1">
+      <code>return $this-&gt;fail('Expected exception not thrown.');</code>
+    </NoValue>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Auth/MultiAuthTest.php">
+    <UndefinedDocblockClass occurrences="6">
+      <code>$this-&gt;getAuthObject($config)</code>
+      <code>$this-&gt;getAuthObject($config)</code>
+      <code>$this-&gt;getAuthObject($config)</code>
+      <code>$this-&gt;getAuthObject()</code>
+      <code>$this-&gt;getAuthObject()</code>
+      <code>LDAP</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Auth/SIP2Test.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>$this-&gt;getAuthObject()</code>
+      <code>$this-&gt;getAuthObject()</code>
+      <code>LDAP</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Captcha/ImageFactoryTest.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Config/VersionTest.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/DoiLinker/BrowZineTest.php">
+    <AssignmentToVoid occurrences="1">
+      <code>$connector</code>
+    </AssignmentToVoid>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/DAIATest.php">
+    <UndefinedDocblockClass occurrences="7">
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>Connector</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/MultiBackendTest.php">
+    <DuplicateArrayKey occurrences="2">
+      <code>'id' =&gt; '2'</code>
+      <code>'id' =&gt; 'd1.2'</code>
+    </DuplicateArrayKey>
+    <InvalidParamDefault occurrences="2">
+      <code>bool</code>
+      <code>object</code>
+    </InvalidParamDefault>
+    <ParamNameMismatch occurrences="2">
+      <code>$holdDetails</code>
+      <code>$patron</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/PAIATest.php">
+    <UndefinedDocblockClass occurrences="18">
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>Connector</code>
+      <code>Connector</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/QRCode/LoaderTest.php">
+    <AssignmentToVoid occurrences="2">
+      <code>$loader</code>
+      <code>$loader</code>
+    </AssignmentToVoid>
+    <NullReference occurrences="2">
+      <code>getImage</code>
+      <code>loadQRCode</code>
+    </NullReference>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/CollectionSideFacetsTest.php">
+    <InvalidParamDefault occurrences="1">
+      <code>\VuFind\Search\Solr\HierarchicalFacetHelper</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="3">
+      <code>$csf</code>
+      <code>$csf</code>
+      <code>SideFacets</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/EDSResultsDeferredTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$mod</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/EuropeanaResultsDeferredTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$mod</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/EuropeanaResultsTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>HttpClient</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/OpenLibrarySubjectsDeferredTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$mod</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/SideFacetsTest.php">
+    <InvalidParamDefault occurrences="1">
+      <code>\VuFind\Search\Solr\HierarchicalFacetHelper</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/SummonBestBetsDeferredTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$this-&gt;getRecommend('VuFind\Recommend\SummonBestBetsDeferred')</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/SummonDatabasesDeferredTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$this-&gt;getRecommend('VuFind\Recommend\SummonDatabasesDeferred')</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/SummonResultsDeferredTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$mod</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Record/CacheTest.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>PHPUnit\Framework\MockObject\MockObject</code>
+      <code>PHPUnit\Framework\MockObject\MockObject</code>
+      <code>PHPUnit\Framework\MockObject\MockObject</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/RecordDriver/DefaultRecordTest.php">
+    <UndefinedDocblockClass occurrences="34">
+      <code>$driver</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver([], $cfg)</code>
+      <code>SolrDefault</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/RecordDriver/EITTest.php">
+    <UndefinedDocblockClass occurrences="8">
+      <code>$driver</code>
+      <code>$driver</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>$this-&gt;getDriver()</code>
+      <code>SolrDefault</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Resolver/Driver/AlmaTest.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>Connector</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Resolver/Driver/EzbTest.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$connector</code>
+      <code>Connector</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Resolver/Driver/RediTest.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>Connector</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Role/PermissionProvider/IpRangeTest.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>$provider</code>
+      <code>$provider</code>
+      <code>IpRegEx</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Role/PermissionProvider/UserTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>UserRow</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Search/Primo/OnCampusListenerTest.php">
+    <UndefinedClass occurrences="1">
+      <code>\PrimoPermissionHandler</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>BackendInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Search/Primo/PrimoPermissionHandlerTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>BackendInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Search/Solr/ConditionalFilterListenerTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>BackendInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Search/Solr/MultiIndexListenerTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>BackendInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Service/MarkdownFactoryTest.php">
+    <InvalidThrow occurrences="2">
+      <code>\Interop\Container\Exception\ContainerException</code>
+      <code>\Interop\Container\Exception\ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Session/FileTest.php">
+    <UndefinedDocblockClass occurrences="17">
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>Database</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Session/MemcacheTest.php">
+    <UndefinedClass occurrences="4">
+      <code>\Memcache</code>
+      <code>\Memcache</code>
+      <code>\Memcache</code>
+      <code>\Memcache</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="6">
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>Database</code>
+      <code>\Memcache</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Session/RedisTest.php">
+    <UndefinedDocblockClass occurrences="5">
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>$handler</code>
+      <code>Database</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/UrlShortener/DatabaseTest.php">
+    <UndefinedClass occurrences="4">
+      <code>ResultSet</code>
+      <code>ResultSet</code>
+      <code>ResultSet</code>
+      <code>ResultSet</code>
+    </UndefinedClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/PermissionTest.php">
+    <InvalidParamDefault occurrences="2">
+      <code>array</code>
+      <code>array</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/RecordDataFormatterTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>SolrDefault</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/RecordLinkTest.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>$recordLink</code>
+      <code>$recordLink</code>
+      <code>$recordLink</code>
+      <code>Record</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/XSLT/Import/VuFindGeoTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>\class</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindAdmin/src/VuFindAdmin/Controller/TagsController.php">
+    <UndefinedDocblockClass occurrences="9">
+      <code>$this-&gt;getUniqueResources()</code>
+      <code>$this-&gt;getUniqueResources()</code>
+      <code>$this-&gt;getUniqueTags()</code>
+      <code>$this-&gt;getUniqueTags()</code>
+      <code>$this-&gt;getUniqueUsers()</code>
+      <code>$this-&gt;getUniqueUsers()</code>
+      <code>\Laminas\Db\ResultSet</code>
+      <code>\Laminas\Db\ResultSet</code>
+      <code>\Laminas\Db\ResultSet</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/ApiController.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Laminas\Mvc\Controller\AbstractActionController</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/ApiControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/ApiTrait.php">
+    <UndefinedConstant occurrences="1">
+      <code>self::STATUS_ERROR</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception\DomainException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/Search2ApiControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/SearchApiController.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception\DomainException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/SearchApiControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Controller/WebApiControllerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Formatter/FacetFormatter.php">
+    <InvalidParamDefault occurrences="1">
+      <code>array</code>
+    </InvalidParamDefault>
+  </file>
+  <file src="module/VuFindApi/src/VuFindApi/Formatter/RecordFormatterFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Compile/ThemeCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Generate/AbstractCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Generate/AbstractContainerAwareCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Generate/AbstractRouteCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Generate/NonTabRecordActionCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Generate/ThemeCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Generate/ThemeMixinCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Harvest/HarvestOaiCommand.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Harvest/HarvestOaiCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_PATH</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+      <code>LOCAL_OVERRIDE_DIR</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Import/ImportXslCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Import/WebCrawlCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Language/AbstractCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/ScheduledSearch/NotifyCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/AbstractSolrAndIlsCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/AbstractSolrCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/CleanUpRecordCacheCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/CreateHierarchyTreesCommand.php">
+    <UndefinedConstant occurrences="2">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/CreateHierarchyTreesCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/CssBuilderCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/ExpireAuthHashesCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/ExpireExternalSessionsCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/ExpireSearchesCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/ExpireSessionsCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/ScssBuilderCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/SitemapCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Command/Util/SwitchDbHashCommandFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/ConsoleRunnerFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Generator/GeneratorTools.php">
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindConsole/src/VuFindConsole/Generator/GeneratorToolsFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindConsole/tests/unit-tests/src/VuFindTest/Command/Generate/ThemeMixinCommandTest.php">
+    <UndefinedDocblockClass occurrences="4">
+      <code>$generator</code>
+      <code>$generator</code>
+      <code>$generator</code>
+      <code>ThemeGenerator</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindConsole/tests/unit-tests/src/VuFindTest/Command/Language/DeleteCommandTest.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>$command</code>
+      <code>AddUsingTemplateCommand</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindConsole/tests/unit-tests/src/VuFindTest/Command/Language/NormalizeCommandTest.php">
+    <UndefinedClass occurrences="1">
+      <code>DeleteCommand</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>AddUsingTemplateCommand</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindConsole/tests/unit-tests/src/VuFindTest/Command/Util/CreateHierarchyTreesCommandTest.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>SuppressedCommand</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindDevTools/src/VuFindDevTools/Controller/DevtoolsController.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindDevTools/src/VuFindDevTools/LanguageHelper.php">
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindDevTools/tests/unit-tests/src/VuFindTest/LanguageHelperTest.php">
+    <UndefinedDocblockClass occurrences="6">
+      <code>$h</code>
+      <code>$h</code>
+      <code>$h</code>
+      <code>$h</code>
+      <code>$h</code>
+      <code>Controller</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/AbstractBackend.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>ResponseInterface</code>
+      <code>ResponseInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/EIT/Connector.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>BackendException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Pazpar2/Backend.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>$statResponse-&gt;progress</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Pazpar2/Connector.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="8">
+      <code>$session-&gt;session</code>
+      <code>$set-&gt;status</code>
+      <code>SimpleXMLElement</code>
+      <code>associative</code>
+      <code>associative</code>
+      <code>associative</code>
+      <code>session</code>
+      <code>session</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/SRU/Connector.php">
+    <InvalidParamDefault occurrences="1">
+      <code>string</code>
+    </InvalidParamDefault>
+    <UndefinedDocblockClass occurrences="2">
+      <code>string|SimpleXMLElement</code>
+      <code>string|SimpleXMLElement</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Solr/Response/Json/Spellcheck.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>ArrayIterator</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/Solr/Response/Json/Terms.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>ArrayIterator</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Backend/WorldCat/Connector.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>SimpleXMLElement</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Feature/WorkExpressionsInterface.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>RecordCollectionInterface</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Query/QueryGroup.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>\VuFind\Search\AbstractQuery</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Response/SimpleRecord.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindSearch/src/VuFindSearch/Service.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>array|ArrayAccess</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Solr/BackendTest.php">
+    <AssignmentToVoid occurrences="1">
+      <code>$rec</code>
+    </AssignmentToVoid>
+    <UndefinedDocblockClass occurrences="19">
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$conn</code>
+      <code>$resp</code>
+      <code>$resp</code>
+      <code>$resp</code>
+      <code>$resp</code>
+      <code>$resp</code>
+      <code>$resp1</code>
+      <code>$resp2</code>
+      <code>$resp3</code>
+      <code>Connector</code>
+      <code>Laminas\Http\Response</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/WorldCat/Response/XML/RecordCollectionFactoryTest.php">
+    <UndefinedFunction occurrences="1">
+      <code>'bad'</code>
+    </UndefinedFunction>
+  </file>
+  <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Response/SimpleRecordTest.php">
+    <UndefinedConstant occurrences="1">
+      <code>DEFAULT_SEARCH_BACKEND</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/Initializer.php">
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/ThemeInfo.php">
+    <EmptyArrayAccess occurrences="1">
+      <code>$this-&gt;allThemeInfo[$currentTheme]</code>
+    </EmptyArrayAccess>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/ThemeInfoFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/ThemeInfoInjectorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/ConcatTrait.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>number</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadLink.php">
+    <UndefinedConstant occurrences="3">
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+      <code>APPLICATION_PATH</code>
+    </UndefinedConstant>
+    <UndefinedDocblockClass occurrences="5">
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadScript.php">
+    <UndefinedDocblockClass occurrences="5">
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+      <code>stdClass</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/HeadThemeResourcesFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/ImageLinkFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/ParentTemplate.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/ParentTemplateFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/PipelineInjectorFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+    <UndefinedConstant occurrences="1">
+      <code>APPLICATION_ENV</code>
+    </UndefinedConstant>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/TemplatePath.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Exception</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="module/VuFindTheme/src/VuFindTheme/View/Helper/TemplatePathFactory.php">
+    <InvalidThrow occurrences="1">
+      <code>ContainerException</code>
+    </InvalidThrow>
+  </file>
+  <file src="module/VuFindTheme/tests/unit-tests/src/VuFindTest/View/Helper/HeadThemeResourcesTest.php">
+    <UndefinedClass occurrences="1">
+      <code>\VuFindTheme\View\Helper\HeadMeta</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>\PHPUnit\Framework\MockObject\MockObject&amp;\VuFindTheme\View\Helper\HeadMeta</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="public/index.php">
+    <UndefinedFunction occurrences="1">
+      <code>enableVuFindProfiling($vufindProfiler)</code>
+    </UndefinedFunction>
+  </file>
+</files>
