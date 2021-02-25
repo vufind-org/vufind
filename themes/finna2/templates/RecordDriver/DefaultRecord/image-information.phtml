@@ -9,7 +9,7 @@
   // Make sure we have something to display
   $rights = $this->image['rights'] ?? [];
   if (empty($rights['rightsHolders']) && empty($image['identifier'])
-    && empty($image['creditLine'])
+    && empty($rights['creditLine'])
     && empty(array_intersect_key(array_filter($this->image), $arrayElements))
   ) {
     return;
