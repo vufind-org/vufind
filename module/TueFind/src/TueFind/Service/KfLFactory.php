@@ -24,10 +24,9 @@ class KfLFactory implements FactoryInterface
         // We pass an anonymized version of the user id together with host+tuefind instance.
         // This value will be saved by the proxy and reported back to us
         // in case of abuse.
-        // TODO: Shorten hostname if necessary + replace user id by some kind of unique id (e.g. MySQL UUID())
         $userUniqueId = implode('#', [gethostname(),
                                       $container->get('ViewHelperManager')->get('tuefind')->getTueFindInstance(),
-                                      $user->id]);
+                                      $user->tuefind_uuid]);
 
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('tuefind')->KfL;
