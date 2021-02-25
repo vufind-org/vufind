@@ -681,7 +681,7 @@ class GeneratorTools
      * @param string    $module     Module in which to create the new class
      * @param string    $parent     Parent class (null for no parent)
      * @param string[]  $interfaces Interfaces for class to implement
-     * @param \Callable $callback   Callback to set up class generator
+     * @param callable $callback   Callback to set up class generator
      *
      * @return void
      * @throws \Exception

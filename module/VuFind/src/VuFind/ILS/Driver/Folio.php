@@ -72,7 +72,7 @@ class Folio extends AbstractAPI implements
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
 
