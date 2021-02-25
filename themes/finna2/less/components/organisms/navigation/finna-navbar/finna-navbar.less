@@ -1,10 +1,22 @@
 // -component suffix added to avoid problems with non-component finna-navbar class.
 .finna-navbar-component {
   @media(max-width: @grid-float-breakpoint-max) {
+    .navbar-header {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+    }
     .navbar-toggle {
+      position: static;
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    .navbar-brand {
+      flex-grow: 1;
+      height: auto;
+      max-width: none;
+      line-height: normal;
     }
     .navbar-collapse > ul > li {
       border-bottom: 1px solid @gray-lighter;
