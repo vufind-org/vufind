@@ -17,9 +17,7 @@
     <?php foreach ($images as $image): ?>
       <?php $rights = $image['rights']; ?>
       <div class="image-details-container<?=$ind > 0 ? ' hidden' : '' ?> text-left" data-img-index="<?=$ind ?>">
-        <?php if ($this->record($this->driver)->allowRecordImageDownload()): ?>
-          <?= $this->record($this->driver)->renderTemplate('image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
-        <?php endif; ?>
+        <?= $this->record($this->driver)->renderTemplate('image-download.phtml', ['index' => $ind, 'rights' => $rights, 'image' => $image, 'hiRes' => $image['highResolution'] ?? false]) ?>
         <?= $this->record($this->driver)->renderTemplate('image-information.phtml', ['index' => $ind, 'image' => $image]); ?>
         <?= $this->record($this->driver)->renderTemplate('image-rights.phtml', ['imageRightsLabel' => $imageRightsLabel, 'rights' => $rights, 'truncateLicense' => $ind === 0]); ?>
       </div>
