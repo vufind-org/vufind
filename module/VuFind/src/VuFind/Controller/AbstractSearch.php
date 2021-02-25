@@ -69,7 +69,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
