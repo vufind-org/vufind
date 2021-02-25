@@ -1,8 +1,14 @@
 <?php
 
+
 namespace TueFind\Service;
 
-
+/**
+ * Class to communicate with KfL/HAN Proxy.
+ *
+ * For API documentation, see:
+ * https://www.hh-han.com/webhelp-de/han_web_api.htm
+ */
 class KfL
 {
     private $baseUrl;
