@@ -192,6 +192,10 @@ trait FinnaRecordTrait
      */
     public function allowRecordImageDownload()
     {
+        $rights = $this->tryMethod('getUsageRights');
+        if (empty($rights) || in_array('usage_F', $rights)) {
+            return false;
+        }
         return true;
     }
 

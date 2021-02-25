@@ -1,9 +1,6 @@
 <!-- START of Finna - RecordDriver/DefaultRecord/image-download.phtml -->
 <?php
-    if (!$this->record($this->driver)->allowRecordImageDownload()
-        || empty($rights['copyright'])
-        || $rights['copyright'] === $this->transEsc('usage_F')
-    ) {
+    if (!$this->record($this->driver)->allowRecordImageDownload()) {
         return;
     }
 ?>
