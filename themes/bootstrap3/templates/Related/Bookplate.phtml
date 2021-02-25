@@ -1,7 +1,7 @@
 <?php $bookplates = $this->related->getBookplateDetails(); ?>
 <div id="bookplates">
   <?php foreach($bookplates as $bookplate): ?>
-    <?php $bpTitle = $this->translate($bookplate['title']);?>
+    <?php $bpTitle = $this->translate('bookplate::' . $bookplate['title']);?>
     <?php $bpAltText = $this->translate('bookplate_label', ['%%title%%' => $bpTitle]); ?>
     <?php $bpFullUrl = $bookplate['fullUrl'];?>
     <?php $bpThumbUrl = $bookplate['thumbUrl'];?>
