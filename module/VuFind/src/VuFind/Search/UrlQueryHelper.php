@@ -269,7 +269,7 @@ class UrlQueryHelper
      *
      * @param string   $from       Search term to find
      * @param string   $to         Search term to insert
-     * @param Callable $normalizer Function to normalize text strings (null for
+     * @param callable $normalizer Function to normalize text strings (null for
      * no normalization)
      *
      * @return UrlQueryHelper

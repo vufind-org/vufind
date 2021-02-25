@@ -77,7 +77,7 @@ class Query extends AbstractQuery
     /**
      * Return search string (optionally applying a normalization callback)
      *
-     * @param Callable $normalizer Function to normalize text strings (null for
+     * @param callable $normalizer Function to normalize text strings (null for
      * no normalization)
      *
      * @return string
@@ -148,7 +148,7 @@ class Query extends AbstractQuery
      * provided to allow for fuzzier matching.
      *
      * @param string   $needle     Term to check
-     * @param Callable $normalizer Function to normalize text strings (null for
+     * @param callable $normalizer Function to normalize text strings (null for
      * no normalization)
      *
      * @return bool
@@ -177,7 +177,7 @@ class Query extends AbstractQuery
      *
      * @param string   $from       Search term to find
      * @param string   $to         Search term to insert
-     * @param Callable $normalizer Function to normalize text strings (null for
+     * @param callable $normalizer Function to normalize text strings (null for
      * no normalization)
      *
      * @return void

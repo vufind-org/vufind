@@ -997,7 +997,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Return the callback used for normalization within this backend.
      *
-     * @return Callable
+     * @return callable
      */
     public function getSpellingNormalizer()
     {

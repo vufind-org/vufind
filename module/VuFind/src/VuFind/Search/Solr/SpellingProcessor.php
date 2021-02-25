@@ -74,7 +74,7 @@ class SpellingProcessor
     /**
      * Callback for normalizing text.
      *
-     * @var Callable
+     * @var callable
      */
     protected $normalizer;
 
@@ -82,8 +82,7 @@ class SpellingProcessor
      * Constructor
      *
      * @param Config   $config     Spelling configuration (optional)
-     * @param Callback $normalizer Callback for normalization of text
-     * (optional).
+     * @param callable $normalizer Callback for normalization of text (optional).
      */
     public function __construct($config = null, $normalizer = null)
     {
