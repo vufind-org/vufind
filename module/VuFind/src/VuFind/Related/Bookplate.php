@@ -169,7 +169,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateTitlesField()
     {
-        return $this->config->bookplate_titles_str_mv ?? '';
+        return $this->config->bookplate_titles_field ?? '';
     }
 
     /**
@@ -181,7 +181,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateFullImagesField()
     {
-        return $this->config->bookplate_images_str_mv ?? '';
+        return $this->config->bookplate_images_field ?? '';
     }
 
     /**
@@ -193,7 +193,7 @@ class Bookplate implements RelatedInterface
      */
     protected function getBookplateThumbnailsField()
     {
-        return $this->config->bookplate_thumbnails_str_mv ?? '';
+        return $this->config->bookplate_thumbnails_field ?? '';
     }
 
     /**
