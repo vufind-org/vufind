@@ -1,12 +1,13 @@
 <?php $limitList = $this->params->getLimitList(); ?>
 <?php if (count($limitList) > 1): ?>
-  <form class="form-inline search-result-limit" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="post">
+  <form class="form-inline search-result-limit" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="get">
+    <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/']);?>
     <label for="limit"><?=$this->transEsc('Results per page')?></label>
     <select id="limit" name="limit" class="jumpMenu form-control">
       <?php foreach ($limitList as $limitVal => $limitData): ?>
         <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected']?' selected="selected"':''?>><?=$this->escapeHtml($limitData['desc'])?></option>
       <?php endforeach; ?>
     </select>
-    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+    <noscript><input type="submit" value="<?=$this->transEscAttr("Set")?>" /></noscript>
   </form>
 <?php endif; ?>

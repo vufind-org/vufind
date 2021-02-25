@@ -645,8 +645,7 @@ class InstallController extends AbstractBase
             $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
-        $view->core = isset($config->Index->default_core)
-            ? $config->Index->default_core : "biblio";
+        $view->core = $config->Index->default_core ?? "biblio";
         $view->configFile = $configFile;
         return $view;
     }

@@ -29,7 +29,6 @@
  */
 namespace VuFind\Db\Table;
 
-use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 
 /**
@@ -49,61 +48,51 @@ trait ExpirationTrait
      *
      * @param Select $select  Select clause
      * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
      *
      * @return void
      */
-    abstract protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    );
+    abstract protected function expirationCallback($select, $daysOld);
 
     /**
      * Delete expired records. Allows setting of 'from' and 'to' ID's so that rows
      * can be deleted in small batches.
      *
-     * @param int $daysOld Age in days of an "expired" record.
-     * @param int $idFrom  Lowest id of rows to delete.
-     * @param int $idTo    Highest id of rows to delete.
+     * @param int      $daysOld Age in days of an "expired" record.
+     * @param int|null $limit   Maximum number of rows to delete or null for no
+     * limit.
      *
      * @return int Number of rows deleted
      */
-    public function deleteExpired($daysOld = 2, $idFrom = null, $idTo = null)
+    public function deleteExpired($daysOld, $limit = null)
     {
-        // Determine the expiration date:
-        $callback = function ($select) use ($daysOld, $idFrom, $idTo) {
-            $this->expirationCallback($select, $daysOld, $idFrom, $idTo);
+        // Determine the expiration parameters:
+        $lastId = $limit ? $this->getExpiredBatchLastId($daysOld, $limit) : null;
+        $callback = function ($select) use ($daysOld, $lastId) {
+            $this->expirationCallback($select, $daysOld);
+            if (null !== $lastId) {
+                $select->where->and->lessThanOrEqualTo('id', $lastId);
+            }
         };
         return $this->delete($callback);
     }
 
     /**
-     * Get the lowest id and highest id for expired records.
+     * Get the highest id to delete in a batch.
      *
      * @param int $daysOld Age in days of an "expired" record.
+     * @param int $limit   Maximum number of rows to delete.
      *
-     * @return array|bool Array of lowest id and highest id or false if no expired
-     * records found
+     * @return int|null Highest id value to delete or null if a limiting id is not
+     * available
      */
-    public function getExpiredIdRange($daysOld = 2)
+    protected function getExpiredBatchLastId($daysOld, $limit)
     {
         // Determine the expiration date:
-        $callback = function ($select) use ($daysOld) {
+        $callback = function ($select) use ($daysOld, $limit) {
             $this->expirationCallback($select, $daysOld);
+            $select->columns(['id'])->order('id')->offset($limit - 1)->limit(1);
         };
-        $select = $this->getSql()->select();
-        $select->columns(
-            [
-                'id' => new Expression('1'), // required for TableGateway
-                'minId' => new Expression('MIN(id)'),
-                'maxId' => new Expression('MAX(id)'),
-            ]
-        );
-        $select->where($callback);
-        $result = $this->selectWith($select)->current();
-        if (null === $result->minId) {
-            return false;
-        }
-        return [$result->minId, $result->maxId];
+        $result = $this->select($callback)->current();
+        return $result ? $result->id : null;
     }
 }

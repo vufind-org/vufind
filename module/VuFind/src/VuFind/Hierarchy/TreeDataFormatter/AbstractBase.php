@@ -69,7 +69,7 @@ abstract class AbstractBase
     /**
      * How many nodes have we formatted?
      *
-     * @var int;
+     * @var int
      */
     protected $count = 0;
 
@@ -94,7 +94,7 @@ abstract class AbstractBase
     /**
      * Get number of nodes formatted.
      *
-     * @return int;
+     * @return int
      */
     public function getCount()
     {
@@ -192,7 +192,7 @@ abstract class AbstractBase
     {
         $titles = $this->getTitlesInHierarchy($record);
         // TODO: handle missing titles more gracefully (title not available?)
-        $title = isset($record->title) ? $record->title : $record->id;
+        $title = $record->title ?? $record->id;
         return null != $parentID && isset($titles[$parentID])
             ? $titles[$parentID] : $title;
     }

@@ -43,6 +43,8 @@ use VuFind\ILS\Driver\XCNCIP2;
  */
 class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Standard setup method.
      *
@@ -132,6 +134,35 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
                     'item_id' => '105',
                     'renewable' => true,
+                ],
+            ],
+        ],
+    ];
+
+    protected $notRenewableTransactionsTests = [
+        [
+            'file' => [
+                'lookupUserResponse.xml',
+                'LookupItem.xml',
+            ],
+            'result' => [
+                [
+                    'id' => 'MZK01000847602-MZK50000847602000090',
+                    'item_agency_id' => 'My Agency',
+                    'patronAgencyId' => 'Test agency',
+                    'duedate' => '11-19-2014',
+                    'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
+                    'item_id' => '104',
+                    'renewable' => false,
+                ],
+                [
+                    'id' => 'KN3183000000046386',
+                    'item_agency_id' => 'Agency from lookup item',
+                    'patronAgencyId' => 'Test agency',
+                    'duedate' => '11-26-2014',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                    'item_id' => '105',
+                    'renewable' => false,
                 ],
             ],
         ],
@@ -798,6 +829,57 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ],
     ];
 
+    protected $renewMyItemsWithDisabledRenewals = [
+        [
+            'file' => 'RenewItemResponseAccepted.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => false,
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => false,
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'RenewItemResponseDenied.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => false,
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+        [
+            'file' => 'RenewItemResponseDeniedInvalidMessage.xml',
+            'result' => [
+                'blocks' => false,
+                'details' => [
+                    'Item1' => [
+                        'success' => false,
+                        'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+    ];
+
     /**
      * Test getMyTransactions
      *
@@ -806,6 +888,66 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     public function testGetMyTransactions()
     {
         $this->configureDriver();
+        foreach ($this->transactionsTests as $test) {
+            $this->mockResponse($test['file']);
+            $transactions = $this->driver->getMyTransactions([
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'patronAgencyId' => 'Test agency',
+            ]);
+            $this->assertEquals(
+                $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
+            );
+        }
+    }
+
+    /**
+     * Test getMyTransactions
+     *
+     * @return void
+     */
+    public function testDisableRenewalsConfiguration()
+    {
+        $config = [
+            'Catalog' => [
+                'url' => 'https://test.ncip.example',
+                'consortium' => false,
+                'agency' => 'Test agency',
+                'pickupLocationsFile' => 'XCNCIP2_locations.txt',
+                'disableRenewals' => true,
+            ],
+            'NCIP' => [],
+        ];
+        $this->configureDriver($config);
+        foreach ($this->notRenewableTransactionsTests as $test) {
+            $this->mockResponse($test['file']);
+            $transactions = $this->driver->getMyTransactions([
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'patronAgencyId' => 'Test agency',
+            ]);
+            $this->assertEquals(
+                $test['result'], $transactions, 'Fixture file: ' . implode(', ', (array)$test['file'])
+            );
+        }
+        foreach ($this->renewMyItemsWithDisabledRenewals as $test) {
+            $this->mockResponse($test['file']);
+            $result = $this->driver->renewMyItems(
+                [
+                    'patron' => [
+                        'cat_username' => 'my_login',
+                        'cat_password' => 'my_password',
+                        'patronAgencyId' => 'Test agency',
+                    ],
+                    'details' => [
+                        'My University|Item1',
+                    ],
+                ]
+            );
+            $this->assertEquals($test['result'], $result, 'Fixture file: ' . implode(', ', (array)$test['file']));
+        }
+        $config['Catalog']['disableRenewals'] = false;
+        $this->configureDriver($config);
         foreach ($this->transactionsTests as $test) {
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions([
@@ -1278,17 +1420,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function loadResponse($filename)
     {
-        $file = realpath(
-            __DIR__ .
-            '/../../../../../../tests/fixtures/xcncip2/response/' . $filename
+        return HttpResponse::fromString(
+            $this->getFixture("xcncip2/response/$filename")
         );
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to load fixture file: %s ', $file)
-            );
-        }
-        $response = file_get_contents($file);
-        return HttpResponse::fromString($response);
     }
 
     /**

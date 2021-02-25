@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('storage_retrieval_request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li>')
+    $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li>')
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>'
         . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
@@ -89,7 +89,7 @@
   <?php endif; ?>
 
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="placeStorageRetrievalRequest" value="<?=$this->transEsc('storage_retrieval_request_submit_text')?>"/>
+    <input class="btn btn-primary" type="submit" name="placeStorageRetrievalRequest" value="<?=$this->transEscAttr('storage_retrieval_request_submit_text')?>"/>
   </div>
 </form>
 

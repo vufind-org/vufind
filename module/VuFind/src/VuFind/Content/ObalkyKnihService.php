@@ -89,7 +89,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
         }
-        return $this->httpService->createClient($url);
+        $client = $this->httpService->createClient($url);
+        if (isset($this->referrer)) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Referer', $this->referrer);
+        }
+        return $client;
     }
 
     /**
@@ -101,15 +106,11 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function createCacheKey(array $ids)
     {
-        array_walk(
-            $ids, function (&$value, $key) {
-                if (gettype($value) === 'object') {
-                    $value = $value->get13();
-                }
-                $value = "$key::$value";
-            }
-        );
-        return implode("%%", $ids);
+        $key = $ids['recordid'];
+        $key = !empty($key) ? $key
+            : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
+        $key = !empty($key) ? $key : sha1(json_encode($ids));
+        return $key;
     }
 
     /**
@@ -158,11 +159,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         $url = $this->apiUrl . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
-        if (isset($this->referrer)) {
-            $client->getRequest()->getHeaders()
-                ->addHeaderLine('Referer', $this->referrer);
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
+            return null;
         }
-        $response = $client->send();
         return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
     }
 }

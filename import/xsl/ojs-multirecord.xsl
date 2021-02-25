@@ -7,6 +7,9 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">OJS</xsl:param>
+    <xsl:param name="workKey_include_regEx"></xsl:param>
+    <xsl:param name="workKey_exclude_regEx"></xsl:param>
+    <xsl:param name="workKey_transliterator_rules">:: NFD; :: lower; :: Latin; :: [^[:letter:] [:number:]] Remove; :: NFKC;</xsl:param>
     <xsl:template match="/">
         <xsl:if test="collection">
             <collection>
@@ -101,7 +104,7 @@
                         <xsl:value-of select="php:function('VuFind::stripArticles', string(dc:title[normalize-space()]))"/>
                     </field>
                 </xsl:if>
-                
+
                 <!-- DESCRIPTION -->
                 <xsl:if test="dc:description">
                     <field name="description">
@@ -132,6 +135,13 @@
                         <xsl:value-of select="dc:identifier[normalize-space()]"/>
                     </field>
                 </xsl:if>
+
+                <!-- Work Keys -->
+                <xsl:for-each select="php:function('VuFindWorkKeys::getWorkKeys', '', dc:title[normalize-space()], php:function('VuFind::stripArticles', string(dc:title[normalize-space()])), dc:creator, $workKey_include_regEx, $workKey_exclude_regEx, $workKey_transliterator_rules)/workKey">
+                    <field name="work_keys_str_mv">
+                        <xsl:value-of select="." />
+                    </field>
+                </xsl:for-each>
             </doc>
         </add>
     </xsl:template>
