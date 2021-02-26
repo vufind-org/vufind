@@ -11,16 +11,16 @@
           <a href="<?=$this->escapeHtmlAttr($bpFullUrl)?>">
             <img src="<?=$this->escapeHtmlAttr($bpThumbUrl)?>" alt="<?=$this->escapeHtmlAttr($bpAltText)?>" />
           </a>
-        <? elseif ($bpFullUrl || $bpThumbUrl):?>
+        <?php elseif ($bpFullUrl || $bpThumbUrl):?>
           <?php $bpOneUrl = !empty($bpFullUrl) ? $bpFullUrl : $bpThumbUrl ?>
           <img src="<?=$this->escapeHtmlAttr($bpOneUrl)?>" alt="<?=$this->escapeHtmlAttr($bpAltText)?>" />
-        <? endif ?>
+        <?php endif ?>
       </div>
       <?php if($bookplate['displayTitle']): ?>
         <div class="bookplate-title">
           <?=$this->escapeHtml($bpTitle);?>
         </div>
-      <? endif ?>
+      <?php endif ?>
     </div>
-  <? endforeach; ?>
+  <?php endforeach; ?>
 </div>
