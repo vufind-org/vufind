@@ -460,3 +460,23 @@ description:
   QueryFields:
     description:
       - [or, ~]
+
+Identifier:
+  DismaxFields:
+    - isbn
+    - issn
+    - other_issn_isn_mv
+    - identifier
+  QueryFields:
+    issn:
+      - [and, 100]
+      - [or, ~]
+    isbn:
+      - [and, 100]
+      - [or, ~]
+    other_issn_isn_mv:
+      - [and, 100]
+      - [or, ~]
+    identifier:
+      - [and, 100]
+      - [or, ~]
