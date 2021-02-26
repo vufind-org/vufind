@@ -1,32 +1,47 @@
 <?php
     $this->layout()->breadcrumbs = false;
     $this->backgroundTabs = $this->BackgroundTabs ?? [];
+    $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
 ?>
-<div vocab="http://schema.org/">
-  <h1><?=$this->authority()->getName($this->driver)?></h1>
+<div vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">
+  <h3 property="name"><?=$this->authority()->getName($this->driver)?></h3>
   <div class="row">
     <div class="col-sm-8">
-      <p>
-        <?php $professions = $this->authority()->getProfessions($this->driver);?>
-        <?php if ($professions != ''): ?>
-          <?=$professions?>
-        <?php endif; ?>
+      <table class="table table-striped">
+        <tbody>
+          <?php $professions = $this->authority()->getProfessions($this->driver);?>
+          <?php if ($professions != ''): ?>
+            <tr>
+              <th>Professions:</th>
+              <td><?=$professions?></td>
+            </tr>
+          <?php endif; ?>
 
-        <?php $birth = $this->authority()->getBirth($this->driver); ?>
-        <?php if ($birth != ''): ?>
-          <br/><?=$birth?>
-        <?php endif; ?>
+          <?php $birth = $this->authority()->getBirth($this->driver); ?>
+          <?php if ($birth != ''): ?>
+            <tr>
+              <th>Born:</th>
+              <td><?=$birth?></td>
+            </tr>
+          <?php endif; ?>
 
-        <?php $death = $this->authority()->getDeath($this->driver); ?>
-        <?php if ($death != ''): ?>
-          <br/><?=$death?>
-        <?php endif; ?>
+          <?php $death = $this->authority()->getDeath($this->driver); ?>
+          <?php if ($death != ''): ?>
+            <tr>
+              <th>Died:</th>
+              <td><?=$death?></td>
+            </tr>
+          <?php endif; ?>
 
-        <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
-        <?php if ($externalReferences != ''): ?>
-          <br/><?=$externalReferences?>
-        <?php endif; ?>
-      </p>
+          <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
+          <?php if ($externalReferences != ''): ?>
+            <tr>
+              <th>External references:</th>
+              <td><?=$externalReferences?></td>
+            </tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
       <?=$this->context($this)->renderInContext('related/AuthorityTitles', ['driver' => $this->driver])?>
     </div>
     <div class="col-sm-4">
@@ -63,5 +78,5 @@
   // Pick a tab to display -- Details if available, otherwise first option (if any):
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
 ?>
-<h1><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h1>
+<h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>
 <p><?=empty($tab) ? $this->transEsc('no_description') :  $this->record($this->driver)->getTab($tab)?></p>
