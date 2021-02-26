@@ -30,7 +30,7 @@ return [
          *
          * strings can be used for backwards compatibility reasons. examples:
          * - 'example.js' => same as ['file' => 'example.js']
-         * - 'example.js::lt IE 10' => same as ['file' => 'example.js', 'conditional' => 'lt IE 10']
+         * - 'example.js:lt IE 10' => same as ['file' => 'example.js', 'conditional' => 'lt IE 10']
          */
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
