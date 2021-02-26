@@ -147,7 +147,7 @@ class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
     protected function addScripts()
     {
         // Load Javascript (same ordering considerations as CSS, above):
-        $js = array_reverse($this->container->getJs($position));
+        $js = array_reverse($this->container->getJs());
         $headScript = $this->getView()->plugin('headScript');
         foreach ($js as $current) {
             $headScript()->forcePrependFile(

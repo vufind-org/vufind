@@ -189,10 +189,6 @@ class ResourceContainer
      */
     protected function addJsArrayEntry($jsEntry)
     {
-        if (!isset($jsEntry['position'])) {
-            $jsEntry['position'] = 'header';
-        }
-
         if (isset($jsEntry['priority']) && isset($jsEntry['load_after'])) {
             throw new \Exception(
                 'Using "priority" as well as "load_after" in the same entry '
