@@ -21,7 +21,7 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="1.10.8" />
+  <property name="composer_version" value="latest-2.x" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
@@ -251,7 +251,15 @@
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
-    <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <if>
+      <equals arg1="${composer_version}" arg2="latest-2.x" />
+      <then>
+        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}" filename="composer.phar" />
+      </then>
+      <else>
+        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+      </else>
+    </if>
     <echo message="Installing dependencies..." />
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
