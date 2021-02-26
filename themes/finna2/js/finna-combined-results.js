@@ -3,6 +3,7 @@ finna.combinedResults = (function finnaCombinedResults() {
   var my = {
     init: function init(container) {
       finna.layout.initTruncate();
+      finna.layout.initImagePaginators();
       finna.openUrl.initLinks(container);
       finna.itemStatus.initDedupRecordSelection(container);
       VuFind.itemStatuses.check(container);

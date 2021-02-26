@@ -25,11 +25,27 @@
       $paginatedLinks[] = $obj;
     ?>
   <?php endforeach; ?>
+  <?php if (count($paginatedLinks) > 0): ?>
+    <?php
+      $settings = [
+        'recordId' => $this->driver->getUniqueId(),
+        'recordType' => $this->driver->tryMethod('getRecordFormat'),
+        'recordSource' => $this->driver->tryMethod('getSourceIdentifier'),
+        'enableImageZoom' => $enableImageZoom,
+        'maxRows' => 3,
+        'iconlabelClass' => "format-" . $this->record($this->driver)->getFormatClass(end($formats)),
+        'isList' => $type === 'list' || $type === 'list grid',
+        'recordCovers' => 'recordcovers',
+        'displayIcon' => $displayIcon,
+        'triggerClick' => $this->imageClick ?? 'modal',
+      ];
+    ?>
+  <?php endif; ?>
   <?php if (!$this->userAgent()->isBot()): ?>
     <?php if (!empty($images[0]['urls']['medium']) || !empty($images[0]['urls']['large'])): ?>
       <div class="recordcover-container">
         <button class="next-image left" type="button"><i class="fa fa-chevron-left"></i><span class="sr-only"><?= $this->transEsc('previous_image') ?></span></button>
-        <a class="image-popup-trigger" href="<?=$this->recordLink()->getUrl($this->driver) ?>">
+        <a class="image-popup-trigger init" href="<?=$this->recordLink()->getUrl($this->driver) ?>" data-images="<?=htmlspecialchars(json_encode($paginatedLinks ?? []), ENT_QUOTES, 'UTF-8');?>" data-settings="<?=htmlspecialchars(json_encode($settings ?? []), ENT_QUOTES, 'UTF-8');?>">
           <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
           <div class="paginator-info"><span class="image-index"></span></div>
           <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
@@ -57,26 +73,5 @@
     <button type="button" class="show-more-images"><?= $this->transEsc('more') ?> <i class="fa fa-arrow-down"></i></button>
     <button type="button" class="show-less-images"><?= $this->transEsc('less') ?> <i class="fa fa-arrow-up"></i></button>
   </div>
-  <?php if (count($paginatedLinks) > 0): ?>
-    <?php
-      $settings = [
-        'recordId' => $this->driver->getUniqueId(),
-        'recordType' => $this->driver->tryMethod('getRecordFormat'),
-        'recordSource' => $this->driver->tryMethod('getSourceIdentifier'),
-        'imagesPerPage' => 8,
-        'imagesOnMobile' => $numOfImages['mobile'] ?? 4,
-        'imagesOnNormal' => $numOfImages['mobile'] ?? 8,
-        'imagesOnPopup' => $numOfImages['mobile'] ?? 8,
-        'enableImageZoom' => $enableImageZoom,
-        'displayIcon' => $displayIcon,
-        'triggerClick' => $this->imageClick ?? 'modal',
-        'maxRows' => 3,
-        'iconlabelClass' => "format-" . $this->record($this->driver)->getFormatClass(end($formats)),
-        'isList' => $type === 'list' || $type === 'list grid'
-      ];
-      $script = 'finna.imagePaginator.initPaginator(' . json_encode($paginatedLinks) . ', ' . json_encode($settings) . ');';
-      echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
-    ?>
-  <?php endif; ?>
 <?php endif;?>
 <!-- END of: finna - RecordDriver/DefaultRecord/record-image-paginator.phtml -->

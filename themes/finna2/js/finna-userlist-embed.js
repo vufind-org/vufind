@@ -45,6 +45,7 @@ finna.userListEmbed = (function userListEmbed() {
               finna.myList.init();
               finna.layout.initCondensedList(resultsContainer);
               finna.layout.initTruncate();
+              finna.layout.initImagePaginators();
               finna.openUrl.initLinks(resultsContainer);
               finna.videoPopup.initIframeEmbed(resultsContainer);
               finna.videoPopup.initVideoPopup(resultsContainer);

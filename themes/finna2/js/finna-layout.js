@@ -789,6 +789,22 @@ finna.layout = (function finnaLayout() {
     _activateLoginTab($('.login-tabs .accordion-heading.initiallyActive a').data('tab'));
   }
 
+  function setImagePaginatorTranslations() {
+    $.fn.setPaginatorTranslations({
+      image: VuFind.translate('Image'),
+      close: VuFind.translate('close'),
+      next: VuFind.translate('Next Record'),
+      previous: VuFind.translate('Previous Record'),
+      no_cover: VuFind.translate('No Cover Image')
+    });
+  }
+
+  function initImagePaginators() {
+    $('.image-popup-trigger.init').each(function initImages() {
+      $(this).finnaPaginator($(this).data('settings'), $(this).data('images'));
+    });
+  }
+
   var my = {
     getOrganisationPageLink: getOrganisationPageLink,
     isTouchDevice: isTouchDevice,
@@ -805,6 +821,7 @@ finna.layout = (function finnaLayout() {
     initLoginTabs: initLoginTabs,
     loadScripts: loadScripts,
     initToolTips: initToolTips,
+    initImagePaginators: initImagePaginators,
     init: function init() {
       initScrollRecord();
       initJumpMenus();
@@ -837,6 +854,8 @@ finna.layout = (function finnaLayout() {
       initFiltersToggle();
       initFiltersCheckbox();
       initCookieConsent();
+      setImagePaginatorTranslations();
+      initImagePaginators();
     },
     showPostLoginLightbox: showPostLoginLightbox
   };
