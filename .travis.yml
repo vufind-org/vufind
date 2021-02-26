@@ -1,11 +1,19 @@
 sudo: false
 language: php
-php:
-  - 7.3
-  - 7.4
 
 env:
-  - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
+  global:
+    - VUFIND_HOME=$PWD
+    - VUFIND_LOCAL_DIR=$PWD/local
+
+matrix:
+  include:
+    - php: 7.3
+      env:
+        - PHING_TASKS=phpunitfast
+    - php: 7.4
+      env:
+        - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass psalm-console"
 
 before_script:
   - phpenv config-rm xdebug.ini
@@ -23,4 +31,4 @@ cache:
     - $HOME/.composer/cache/files
 
 script:
-  - vendor/bin/phing eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass psalm-console
+  - vendor/bin/phing $PHING_TASKS
