@@ -98,9 +98,9 @@ class Bookplate implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $config = explode(':', $settings);
-        $configFile = $settings[0] ?? 'config';
-        $configSection = $settings[1] ?? 'Record';
+        $config = array_map('trim', explode(':', $settings));
+        $configFile = !empty($config[0]) ? $config[0] : 'config';
+        $configSection = !empty($config[1]) ? $config[1] : 'Record';
         $this->config = $this->configLoader->get($configFile)->$configSection;
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
@@ -127,7 +127,7 @@ class Bookplate implements RelatedInterface
     protected function getBookplateData($field)
     {
         if (!empty($field) && isset($this->fields[$field])) {
-            return $this->fields[$field];
+            return (array)$this->fields[$field];
         }
         return [];
     }
