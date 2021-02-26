@@ -11,14 +11,35 @@ return [
         'flex-fallback.css::lt IE 10', // flex polyfill
     ],
     'js' => [
-        'vendor/jquery.min.js',
-        'vendor/bootstrap.min.js',
-        'vendor/bootstrap-accessibility.min.js',
-        'vendor/validator.min.js',
-        'lib/form-attr-polyfill.js', // input[form] polyfill, cannot load conditionally, since we need all versions of IE
-        'lib/autocomplete.js',
-        'common.js',
-        'lightbox.js',
+        /**
+         * Entries in this section can either be specified as array or as string.
+         *
+         * Available options:
+         * - file: the path to the file
+         * - load_before: Use this to explicitly load the file before the given other file.
+         *				 This may NOT be used together with a priority setting.
+         * - load_after: Similar to load_before, but instead load the file after the given other file.
+         * - priority: an optional priority (lower value means higher priority).
+         *		Default convention for vufind's own themes:
+         *			- 1xx => vendor
+         *			- 2xx => vufind library
+         *			- 3xx => vufind scripts
+         * - conditional: 'lt IE 10'
+         *
+         * Entries with neither priority nor load_before nor load_after will be loaded after all other entries.
+         *
+         * strings can be used for backwards compatibility reasons. examples:
+         * - 'example.js' => same as ['file' => 'example.js']
+         * - 'example.js::lt IE 10' => same as ['file' => 'example.js', 'conditional' => 'lt IE 10']
+         */
+        ['file' => 'vendor/jquery.min.js', 'priority' => 110],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
+        ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
+        ['file' => 'vendor/validator.min.js', 'priority' => 140],
+        ['file' => 'lib/form-attr-polyfill.js', 'priority' => 210], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
+        ['file' => 'lib/autocomplete.js', 'priority' => 220],
+        ['file' => 'common.js', 'priority' => 310],
+        ['file' => 'lightbox.js', 'priority' => 320],
     ],
     'less' => [
         'active' => false,
