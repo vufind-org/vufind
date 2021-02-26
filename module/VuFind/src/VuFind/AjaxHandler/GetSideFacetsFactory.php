@@ -69,7 +69,7 @@ class GetSideFacetsFactory
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
-            $container->get(\VuFind\SearchRunner::class),
+            $container->get(\VuFind\Search\SearchRunner::class),
             $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('facets'),
             $container->get('ViewRenderer')

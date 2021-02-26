@@ -931,7 +931,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getYear()
     {
         if (isset($this->details['pubDate'])) {
-            if (strlen($this->details['pubDate']) > 4) {
+            $numericDate = preg_replace('/\D/', '', $this->details['pubDate']);
+            if (strlen($numericDate) > 4) {
                 try {
                     return $this->dateConverter->convertFromDisplayDate(
                         'Y', $this->details['pubDate']
@@ -941,7 +942,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                     return false;
                 }
             }
-            return preg_replace('/[^0-9]/', '', $this->details['pubDate']);
+            return $numericDate;
         }
         return false;
     }

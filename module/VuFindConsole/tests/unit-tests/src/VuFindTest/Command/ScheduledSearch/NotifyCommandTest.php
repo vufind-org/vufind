@@ -345,9 +345,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      * Create a list of fake notification objects.
      *
      * @param array     $overrides       Fields to override in the notification row.
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
@@ -389,9 +389,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock search results.
      *
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Solr\Results
      */
@@ -423,9 +423,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a minified search object
      *
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Minified
      */
@@ -524,9 +524,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      * Create a mock search table that returns a list of fake notification objects.
      *
      * @param array     $overrides       Fields to override in the notification row.
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */

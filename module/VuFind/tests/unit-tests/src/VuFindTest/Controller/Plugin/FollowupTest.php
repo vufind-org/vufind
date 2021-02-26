@@ -30,7 +30,6 @@ namespace VuFindTest\Controller\Plugin;
 
 use Laminas\Session\Container;
 use VuFind\Controller\Plugin\Followup;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * Followup controller plugin tests.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FollowupTest extends TestCase
+class FollowupTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test clear behavior

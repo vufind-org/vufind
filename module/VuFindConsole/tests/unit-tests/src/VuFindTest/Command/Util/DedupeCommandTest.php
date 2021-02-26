@@ -43,7 +43,7 @@ use VuFindConsole\Command\Util\DedupeCommand;
  */
 class DedupeCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get a mocked-out command object.

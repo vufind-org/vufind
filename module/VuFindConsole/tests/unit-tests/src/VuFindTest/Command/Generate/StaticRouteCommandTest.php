@@ -44,7 +44,7 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test that missing parameters yield an error message.

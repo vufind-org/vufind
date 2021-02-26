@@ -45,9 +45,9 @@ use VuFind\Resolver\Driver\Redi;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class RediTest extends \VuFindTest\Unit\TestCase
+class RediTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test-Config

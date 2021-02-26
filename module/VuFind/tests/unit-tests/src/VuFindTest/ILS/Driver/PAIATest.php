@@ -46,7 +46,7 @@ use VuFind\ILS\Driver\PAIA;
  */
 class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     protected $validConfig = [
         'DAIA' =>

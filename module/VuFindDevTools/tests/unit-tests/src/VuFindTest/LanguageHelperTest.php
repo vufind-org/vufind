@@ -40,7 +40,7 @@ use VuFindDevTools\LanguageHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LanguageHelperTest extends \VuFindTest\Unit\TestCase
+class LanguageHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test language mappings.
