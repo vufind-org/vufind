@@ -12,7 +12,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
      *
      * (without override, author->alphabetical->C would also contain stuff like "Europarat")
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function authorAction()
     {

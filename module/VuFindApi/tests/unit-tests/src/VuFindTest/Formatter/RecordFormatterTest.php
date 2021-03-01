@@ -75,11 +75,11 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a helper plugin manager for the RecordFormatter.
      *
-     * @return \Zend\View\HelperPluginManager
+     * @return \Laminas\View\HelperPluginManager
      */
     protected function getHelperPluginManager()
     {
-        $hm = new \Zend\View\HelperPluginManager(
+        $hm = new \Laminas\View\HelperPluginManager(
             $this->createMock(\Interop\Container\ContainerInterface::class)
         );
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());

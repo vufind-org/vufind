@@ -1,12 +1,13 @@
 <?php
 namespace IxTheo\Search\Subscriptions;
-use IxTheo\Db\Table\Subscription as SubscriptionTable,
-    VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Record\Loader,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFindSearch\Service as SearchService,
-    ZfcRbac\Service\AuthorizationServiceAwareInterface,
-    ZfcRbac\Service\AuthorizationServiceAwareTrait;
+
+
+use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Exception\ListPermission as ListPermissionException;
+use VuFind\Search\Base\Results as BaseResults;
+use IxTheo\Db\Table\Subscription as SubscriptionTable;
+
 
 class Results extends BaseResults
     implements AuthorizationServiceAwareInterface

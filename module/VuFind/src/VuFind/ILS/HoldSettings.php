@@ -49,17 +49,17 @@ class HoldSettings
     /**
      * ILS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration representing the [Catalog]
+     * @param \Laminas\Config\Config $config Configuration representing the [Catalog]
      * section of config.ini
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }

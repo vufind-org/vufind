@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
-use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
 /**
  * Factory for BrowZine backend.
@@ -51,7 +51,7 @@ class BrowZineBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -65,7 +65,7 @@ class BrowZineBackendFactory implements FactoryInterface
     /**
      * BrowZine configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $browzineConfig;
 

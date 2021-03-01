@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RelatorContainer
 {
-   private static ThreadLocal<RelatorContainer> containerCache = 
+   private static ThreadLocal<RelatorContainer> containerCache =
         new ThreadLocal<RelatorContainer>()
         {
             @Override

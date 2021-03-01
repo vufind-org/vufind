@@ -139,7 +139,7 @@ class OpenLibrarySubjects implements RecommendInterface,
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -192,8 +192,8 @@ class OpenLibrarySubjects implements RecommendInterface,
      * @param string                     $field   Name of filter field to check for
      * date limits
      * @param \VuFind\Search\Params\Base $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
-     * request.
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     *                                            request.
      *
      * @return string
      */

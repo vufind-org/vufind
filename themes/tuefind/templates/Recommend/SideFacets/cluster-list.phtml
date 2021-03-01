@@ -1,5 +1,5 @@
-<?php $idAndClass = 'id="more-narrowGroupHidden-'.$this->escapeHtmlAttr($this->title).'" class="facet narrow-toggle"'; ?>
-<?php $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($this->title).' hidden'; ?>
+<?php $idAndClass = 'id="more-narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . '" class="facet narrow-toggle more-facets"'; ?>
+<?php $moreClass = 'narrowGroupHidden-' . $this->escapeHtmlAttr($this->title) . ' hidden'; ?>
 <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
   <?php
     if(empty($thisFacet['displayText'])) {
@@ -19,7 +19,7 @@
       </a>
       <?php break; ?>
     <?php endif; ?>
-    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" onclick="return moreFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')" rel="nofollow">
+    <a <?=$idAndClass ?> href="<?=$moreUrl ?>" data-title="<?=$this->escapeHtmlAttr($this->title) ?>" rel="nofollow">
       <span class="text"><?=$this->transEsc('more')?> ...</span>
     </a>
   <?php endif; ?>
@@ -81,7 +81,7 @@
 <?php if (isset($i) && $i >= $this->facets_before_more): ?>
   <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox = $options->getFacetListAction()): ?>
     <?php
-      $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams().'&amp;facet='.$this->title.'&amp;facetop='.$thisFacet['operator'].'&amp;facetexclude='.($this->allowExclude ? 1 : 0);
+      $moreUrl = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . '&amp;facet=' . $this->title . '&amp;facetop=' . $thisFacet['operator'] . '&amp;facetexclude=' . ($this->allowExclude ? 1 : 0);
       if (!empty($this->baseUriExtra)) {
         $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
       }
@@ -90,7 +90,7 @@
       <span class="text"><?=$this->transEsc('see all')?> ...</span>
     </a>
   <?php endif; ?>
-  <a class="facet narrow-toggle <?=$moreClass ?>" href="#" onclick="return lessFacets('narrowGroupHidden-<?=$this->escapeHtmlAttr($this->title) ?>')">
+  <a class="facet narrow-toggle <?=$moreClass ?> less-facets" href="#" data-title="<?=$this->escapeHtmlAttr($this->title) ?>">
     <span class="text"><?=$this->transEsc('less')?> ...</span>
   </a>
 <?php endif; ?>

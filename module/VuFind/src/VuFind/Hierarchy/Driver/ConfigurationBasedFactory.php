@@ -27,7 +27,7 @@
  */
 namespace VuFind\Hierarchy\Driver;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Hierarchy Driver Factory Class
@@ -47,9 +47,9 @@ class ConfigurationBasedFactory
     /**
      * This constructs a hierarchy driver using VuFind's service setup.
      *
-     * @param \Zend\ServiceManager\ServiceManager $sm            Top-level service m.
-     * @param string                              $requestedName Service being built
-     * @param array|null                          $options       Name of driver class
+     * @param ServiceManager $sm            Top-level service m.
+     * @param string         $requestedName Service being built
+     * @param array|null     $options       Name of driver class
      *
      * @return object
      *

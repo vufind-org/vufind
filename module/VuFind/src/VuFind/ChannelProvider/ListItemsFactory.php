@@ -28,7 +28,7 @@
 namespace VuFind\ChannelProvider;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for ListItems channel provider.

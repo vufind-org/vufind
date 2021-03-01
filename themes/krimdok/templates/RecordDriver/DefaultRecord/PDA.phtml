@@ -1,8 +1,0 @@
-<? if ($this->driver->isAvailableForPDA()): ?>
-  <tr>
-    <th><?=$this->transEsc("PDA")?>:</th>
-    <td>
-        <a href="/Feedback/Form/AcquisitionRequest?title=<?=urlencode($this->driver->getRecordId() . ': ' . $this->driver->getTitle())?>"><?=$this->transEsc("PDASubscribe")?></a>
-    </td>
-  </tr>
-<? endif; ?>

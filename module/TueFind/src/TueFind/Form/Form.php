@@ -2,7 +2,9 @@
 
 namespace TueFind\Form;
 
+use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
+
 
 class Form extends \VuFind\Form\Form {
     public $defaultSiteConfig;
@@ -10,36 +12,38 @@ class Form extends \VuFind\Form\Form {
     // to map a form id to its (optional existing) config key in local overrides
     protected $emailReceiverLocalOverridesConfigKeys = ['AcquisitionRequest' => 'acquisition_request_receivers'];
 
-    public function __construct(YamlReader $yamlReader, array $defaultFormConfig = null, array $defaultSiteConfig = null)
+    public function __construct(YamlReader $yamlReader, HelperPluginManager $viewHelperManager,
+                                array $defaultFeedbackConfig = null, array $defaultSiteConfig = null)
     {
-        parent::__construct($yamlReader, $defaultFormConfig);
+        parent::__construct($yamlReader, $viewHelperManager, $defaultFeedbackConfig);
         $this->defaultSiteConfig = $defaultSiteConfig;
     }
 
-    public function getRecipient()
+    public function getRecipient($postParams = null)
     {
-        $recipient = $this->formConfig['recipient'] ?? null;
+        $recipient = $this->formConfig['recipient'] ?? [null];
+        $recipients = isset($recipient['email']) || isset($recipient['name'])
+            ? [$recipient] : $recipient;
 
-        $recipientEmail = $recipient['email'] ?? null;
-
-        // TueFind: local overrides / special forms
         $formId = $this->formConfig['id'];
-        if (!isset($recipientEmail) && isset($this->emailReceiverLocalOverridesConfigKeys[$formId])) {
-            $configKey = $this->emailReceiverLocalOverridesConfigKeys[$formId];
-            if (isset($this->defaultSiteConfig[$configKey]))
-                $recipientEmail = $this->defaultSiteConfig[$configKey];
+        foreach ($recipients as &$recipient) {
+            $recipientEmail = $recipient['email'] ?? null;
+
+            // TueFind: local overrides / special forms
+            if (!isset($recipient['email']) && isset($this->emailReceiverLocalOverridesConfigKeys[$formId])) {
+                $configKey = $this->emailReceiverLocalOverridesConfigKeys[$formId];
+                if (isset($this->defaultSiteConfig[$configKey]))
+                    $recipient['email'] = $this->defaultSiteConfig[$configKey];
+            }
+
+            // TueFind: local overrides / general email address
+            $recipient['email'] = $recipient['email']
+                ?? $this->defaultFormConfig['recipient_email'] ?? $this->defaultSiteConfig['email'] ?? null;
+
+            $recipient['name'] = $recipient['name']
+                ?? $this->defaultFormConfig['recipient_name'] ?? null;
         }
 
-        // TueFind: local overrides / general email address
-        $recipientEmail = $recipientEmail
-            ?? $this->defaultFormConfig['recipient_email'] ?? $this->defaultSiteConfig['email'] ?? null;
-
-        $recipientName = $recipient['name']
-            ?? $this->defaultFormConfig['recipient_name'] ?? null;
-
-        return [
-            $recipientName,
-            $recipientEmail,
-        ];
+        return $recipients;
     }
 }

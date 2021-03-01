@@ -28,8 +28,6 @@
  */
 namespace VuFindTheme;
 
-use Zend\Console\Console;
-
 /**
  * Class to generate a new mixin from a template.
  *
@@ -40,8 +38,10 @@ use Zend\Console\Console;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class MixinGenerator extends AbstractThemeUtility
+class MixinGenerator extends AbstractThemeUtility implements GeneratorInterface
 {
+    use \VuFindConsole\ConsoleOutputTrait;
+
     /**
      * Generate a new mixin from a template.
      *
@@ -57,12 +57,12 @@ class MixinGenerator extends AbstractThemeUtility
         if (realpath($baseDir . $name)) {
             return $this->setLastError('Mixin "' . $name . '" already exists');
         }
-        Console::writeLine('Creating new mixin: "' . $name . '"');
+        $this->writeln('Creating new mixin: "' . $name . '"');
         $source = $baseDir . $template;
         $dest = $baseDir . $name;
-        Console::writeLine("\tCopying $template");
-        Console::writeLine("\t\tFrom: " . $source);
-        Console::writeLine("\t\tTo: " . $dest);
+        $this->writeln("\tCopying $template");
+        $this->writeln("\t\tFrom: " . $source);
+        $this->writeln("\t\tTo: " . $dest);
         return $this->copyDir($source, $dest);
     }
 }

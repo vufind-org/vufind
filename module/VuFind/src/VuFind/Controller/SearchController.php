@@ -117,8 +117,8 @@ class SearchController extends AbstractSolrSearch
         $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('email');
         $view->url = $this->params()->fromPost(
             'url', $this->params()->fromQuery(
                 'url',
@@ -147,7 +147,7 @@ class SearchController extends AbstractSolrSearch
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
@@ -341,7 +341,7 @@ class SearchController extends AbstractSolrSearch
      */
     public function reservessearchAction()
     {
-        $request = new \Zend\Stdlib\Parameters(
+        $request = new \Laminas\Stdlib\Parameters(
             $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray()
         );
@@ -444,7 +444,7 @@ class SearchController extends AbstractSolrSearch
     /**
      * Handle OpenSearch.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function opensearchAction()
     {
@@ -471,7 +471,7 @@ class SearchController extends AbstractSolrSearch
      * Provide OpenSearch suggestions as specified at
      * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function suggestAction()
     {

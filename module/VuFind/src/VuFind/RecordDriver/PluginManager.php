@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record driver plugin manager
@@ -54,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'pazpar2' => Pazpar2::class,
         'primo' => Primo::class,
         'search2default' => Search2Default::class,
+        'solrarchivesspace' => SolrArchivesSpace::class,
         'solrauth' => SolrAuthMarc::class, // legacy name
         'solrauthdefault' => SolrAuthDefault::class,
         'solrauthmarc' => SolrAuthMarc::class,
@@ -70,7 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Default delegator factories.
      *
-     * @var string[][]|\Zend\ServiceManager\Factory\DelegatorFactoryInterface[][]
+     * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],
@@ -91,6 +92,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,
         Search2Default::class => SolrDefaultFactory::class,
+        SolrArchivesSpace::class => SolrDefaultFactory::class,
         SolrAuthDefault::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrAuthMarc::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrDefault::class => SolrDefaultFactory::class,

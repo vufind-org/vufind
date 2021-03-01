@@ -2,7 +2,7 @@
 
 namespace IxTheo\Controller\Search;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
 {
@@ -22,7 +22,7 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -83,7 +83,7 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
 
     protected function createViewModel($params_ext = null)
@@ -93,7 +93,7 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
 
     /**
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -104,7 +104,7 @@ class KeywordChainSearchController extends \VuFind\Controller\AbstractSearch
 
     public function resultsAction()
     {
-        $request = new \Zend\Stdlib\Parameters(
+        $request = new \Laminas\Stdlib\Parameters(
             $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray()
         );

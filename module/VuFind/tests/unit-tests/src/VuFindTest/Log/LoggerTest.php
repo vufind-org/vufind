@@ -30,7 +30,7 @@ namespace VuFindTest\Log;
 use VuFind\Log\Logger;
 
 /**
- * Sitemap Test Class
+ * Logger Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -85,7 +85,7 @@ CONTEXT;
         try {
             throw new \Exception('test');
         } catch (\Exception $e) {
-            $fakeServer = new \Zend\Stdlib\Parameters(
+            $fakeServer = new \Laminas\Stdlib\Parameters(
                 [
                     'REMOTE_ADDR' => '1.2.3.4',
                     'HTTP_USER_AGENT' => 'Fake browser',

@@ -41,7 +41,7 @@ class MaintenanceController extends AbstractAdmin
     /**
      * System Maintenance
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

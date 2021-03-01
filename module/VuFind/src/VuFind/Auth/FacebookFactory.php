@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FacebookFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class FacebookFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -60,8 +60,8 @@ class FacebookFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Zend\Session\Container(
-            'Facebook', $container->get(\Zend\Session\SessionManager::class)
+        $session = new \Laminas\Session\Container(
+            'Facebook', $container->get(\Laminas\Session\SessionManager::class)
         );
         return new $requestedName($session);
     }

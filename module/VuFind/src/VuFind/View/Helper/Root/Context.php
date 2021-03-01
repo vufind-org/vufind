@@ -29,8 +29,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Helper\AbstractHelper;
-use Zend\View\Renderer\RendererInterface;
+use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * Context manager (useful for using render() instead of partial() for better

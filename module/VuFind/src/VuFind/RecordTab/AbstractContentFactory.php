@@ -41,7 +41,7 @@ use VuFind\Content\PluginManager as ContentManager;
  * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractContentFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * The name of the tab being constructed.
@@ -84,11 +84,11 @@ abstract class AbstractContentFactory
      * Support method for construction of AbstractContent objects -- should we
      * hide this tab if it is empty?
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return bool
      */
-    protected function getHideSetting(\Zend\Config\Config $config)
+    protected function getHideSetting(\Laminas\Config\Config $config)
     {
         $setting = $config->Content->hide_if_empty ?? false;
         if ($setting === true || $setting === false

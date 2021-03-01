@@ -3,12 +3,11 @@
 namespace IxTheo\View\Helper\IxTheo;
 
 use Interop\Container\ContainerInterface;
-use VuFindSearch\Query\Query;
 
 /**
  * Some IxTheo specific stuff
  */
-class IxTheo extends \Zend\View\Helper\AbstractHelper
+class IxTheo extends \Laminas\View\Helper\AbstractHelper
 {
     protected $container;
     protected $cachedSubscriptions = null;
@@ -73,7 +72,7 @@ class IxTheo extends \Zend\View\Helper\AbstractHelper
 
     public function getSubscriptionBundlesTitles() {
         $runner = $this->container->get('VuFind\SearchRunner');
-        $request = new \Zend\Stdlib\Parameters([ 'lookfor' => 'format:"Subscription Bundle"' ]);
+        $request = new \Laminas\Stdlib\Parameters([ 'lookfor' => 'format:"Subscription Bundle"' ]);
         $subscription_bundles = $runner->run($request)->getResults();
         $html = $this->getView()->render('myresearch/subscription_bundles.phtml',
                                         ['subscription_bundles' =>  $subscription_bundles]);

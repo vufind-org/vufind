@@ -1,0 +1,17 @@
+[
+  {
+    "__comment" : "documentation: https://vufind.org/wiki/configuration:openurls#defining_openurl_rules",
+    "exclude" : [],
+    "include" :
+    [
+      {
+        "methods": {
+          "getCleanISSN":"*"
+        }
+      },
+      {
+        "recorddriver":"VuFind\\RecordDriver\\Pazpar2"
+      }
+    ]
+  }
+]

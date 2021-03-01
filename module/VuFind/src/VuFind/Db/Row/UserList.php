@@ -27,9 +27,9 @@
  */
 namespace VuFind\Db\Row;
 
+use Laminas\Session\Container;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\MissingField as MissingFieldException;
-use Zend\Session\Container;
 
 /**
  * Row Definition for user_list
@@ -54,8 +54,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Constructor
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
-     * @param Container                $session Session container
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
+     * @param Container                   $session Session container
      */
     public function __construct($adapter, Container $session = null)
     {
@@ -97,8 +97,8 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
-     * @param \VuFind\Db\Row\User|bool $user    Logged-in user (false if none)
-     * @param \Zend\Stdlib\Parameters  $request Request to process
+     * @param \VuFind\Db\Row\User|bool   $user    Logged-in user (false if none)
+     * @param \Laminas\Stdlib\Parameters $request Request to process
      *
      * @return int ID of newly created row
      * @throws ListPermissionException

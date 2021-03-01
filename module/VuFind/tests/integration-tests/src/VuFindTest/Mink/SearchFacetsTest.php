@@ -53,11 +53,12 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -324,7 +325,7 @@ class SearchFacetsTest extends \VuFindTest\Unit\MinkTestCase
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
-        $this->assertEquals('1/level1a/level2a/', $filter->getText());
+        $this->assertEquals('level1a/level2a', $filter->getText());
         $this->findCss($page, '#j1_2 .fa-check');
     }
 

@@ -2,7 +2,7 @@
 
 namespace TueFind\Controller;
 
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 
 class RssFeedController extends \VuFind\Controller\AbstractBase {
     /**

@@ -29,11 +29,11 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Http\Request;
+use Laminas\View\Helper\Url;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager;
 use VuFind\Search\SearchTabsHelper;
-use Zend\Http\Request;
-use Zend\View\Helper\Url;
 
 /**
  * "Search tabs" view helper
@@ -45,7 +45,7 @@ use Zend\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabs extends \Zend\View\Helper\AbstractHelper
+class SearchTabs extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Search manager

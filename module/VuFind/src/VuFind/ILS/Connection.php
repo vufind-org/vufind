@@ -31,11 +31,11 @@
  */
 namespace VuFind\ILS;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Driver\DriverInterface;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * Catalog Connection Class
@@ -72,7 +72,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * ILS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -114,23 +114,23 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Request object
      *
-     * @var \Zend\Http\Request
+     * @var \Laminas\Http\Request
      */
     protected $request;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config              $config        Configuration
+     * @param \Laminas\Config\Config           $config        Configuration
      * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
-     * @param \Zend\Http\Request               $request       Request object
+     * @param \Laminas\Http\Request            $request       Request object
      */
-    public function __construct(\Zend\Config\Config $config,
+    public function __construct(\Laminas\Config\Config $config,
         \VuFind\ILS\Driver\PluginManager $driverManager,
         \VuFind\Config\PluginManager $configReader,
-        \Zend\Http\Request $request = null
+        \Laminas\Http\Request $request = null
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -1056,13 +1056,23 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $holdings = $this->__call('getHolding', [$id, $patron, $finalOptions]);
 
         // Return all the necessary details:
-        return [
-            'total' => $holdings['total'] ?? count($holdings),
-            'holdings' => $holdings['holdings'] ?? $holdings,
-            'electronic_holdings' => $holdings['electronic_holdings'] ?? [],
-            'page' => $finalOptions['page'],
-            'itemLimit' => $finalOptions['itemLimit'],
-        ];
+        if (!isset($holdings['holdings'])) {
+            $holdings = [
+                'total' => count($holdings),
+                'holdings' => $holdings,
+                'electronic_holdings' => [],
+            ];
+        } else {
+            if (!isset($holdings['total'])) {
+                $holdings['total'] = count($holdings['holdings']);
+            }
+            if (!isset($holdings['electronic_holdings'])) {
+                $holdings['electronic_holdings'] = [];
+            }
+        }
+        $holdings['page'] = $finalOptions['page'];
+        $holdings['itemLimit'] = $finalOptions['itemLimit'];
+        return $holdings;
     }
 
     /**

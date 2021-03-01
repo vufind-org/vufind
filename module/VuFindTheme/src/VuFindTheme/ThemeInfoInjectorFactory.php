@@ -28,7 +28,7 @@
 namespace VuFindTheme;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for objects that depend on the ThemeInfo object.

@@ -105,7 +105,7 @@ public class GeoTools
                         // Note - storage in Solr follows the WENS order, but display is WSEN order
                         String result = String.format("ENVELOPE(%s,%s,%s,%s)", new Object[] { west, east, north, south });
                         geo_coordinates.add(result);
-                    } 
+                    }
                 }
             }
         }
@@ -174,7 +174,7 @@ public class GeoTools
         // output error that log file cannot be created
             logger.error("..... No coordinate error log. Check vufind.properties settings...");
         }
-  
+
     }
 
     /**

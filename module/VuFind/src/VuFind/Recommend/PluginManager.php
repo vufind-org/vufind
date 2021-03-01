@@ -27,7 +27,7 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Recommendation module plugin manager
@@ -55,6 +55,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'collectionsidefacets' => CollectionSideFacets::class,
         'doi' => DOI::class,
         'dplaterms' => DPLATerms::class,
+        'edsresults' => EDSResults::class,
+        'edsresultsdeferred' => EDSResultsDeferred::class,
         'europeanaresults' => EuropeanaResults::class,
         'europeanaresultsdeferred' => EuropeanaResultsDeferred::class,
         'expandfacets' => ExpandFacets::class,
@@ -105,6 +107,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Deprecated::class => InvokableFactory::class,
         DOI::class => InvokableFactory::class,
         DPLATerms::class => DPLATermsFactory::class,
+        EDSResults::class => InjectSearchRunnerFactory::class,
+        EDSResultsDeferred::class => InvokableFactory::class,
         EuropeanaResults::class => EuropeanaResultsFactory::class,
         EuropeanaResultsDeferred::class => InvokableFactory::class,
         ExpandFacets::class => ExpandFacetsFactory::class,

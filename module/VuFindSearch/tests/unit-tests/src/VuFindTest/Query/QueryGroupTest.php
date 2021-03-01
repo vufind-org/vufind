@@ -139,12 +139,12 @@ class QueryGroupTest extends TestCase
      * Test setting an invalid operator.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unknown or invalid boolean operator: fizz
      */
     public function testIllegalOperator()
     {
+        $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown or invalid boolean operator: fizz');
+
         $q = $this->getSampleQueryGroup();
         $q->setOperator('fizz');
     }

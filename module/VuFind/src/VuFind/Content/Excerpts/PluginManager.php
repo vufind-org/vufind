@@ -55,7 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Demo::class => \Zend\ServiceManager\Factory\InvokableFactory::class,
+        Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
         SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];

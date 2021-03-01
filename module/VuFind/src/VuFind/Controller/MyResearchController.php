@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Stdlib\Parameters;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -36,8 +38,6 @@ use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Search\RecommendListener;
-use Zend\Stdlib\Parameters;
-use Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
@@ -74,7 +74,7 @@ class MyResearchController extends AbstractBase
      * Construct an HTTP 205 (refresh) response. Useful for reporting success
      * in the lightbox without actually rendering content.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function getRefreshResponse()
     {
@@ -136,12 +136,12 @@ class MyResearchController extends AbstractBase
     /**
      * Execute the request
      *
-     * @param \Zend\Mvc\MvcEvent $event Event
+     * @param \Laminas\Mvc\MvcEvent $event Event
      *
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch(\Zend\Mvc\MvcEvent $event)
+    public function onDispatch(\Laminas\Mvc\MvcEvent $event)
     {
         // Catch any ILSExceptions thrown during processing and display a generic
         // failure message to the user (instead of going to the fatal exception
@@ -254,12 +254,12 @@ class MyResearchController extends AbstractBase
         // Password policy
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy($method);
-        // Set up reCaptcha
-        $view->useRecaptcha = $this->recaptcha()->active('newAccount');
+        // Set up Captcha
+        $view->useCaptcha = $this->captcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
         $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
@@ -392,7 +392,7 @@ class MyResearchController extends AbstractBase
     {
         $searchTable = $this->getTable('Search');
         $sessId = $this->serviceLocator
-            ->get(\Zend\Session\SessionManager::class)->getId();
+            ->get(\Laminas\Session\SessionManager::class)->getId();
         $row = $searchTable->getOwnedRowById($searchId, $sessId, $userId);
         if (empty($row)) {
             throw new ForbiddenException('Access denied.');
@@ -408,13 +408,13 @@ class MyResearchController extends AbstractBase
     /**
      * Return a session container for use in user email verification.
      *
-     * @return \Zend\Session\Container
+     * @return \Laminas\Session\Container
      */
     protected function getUserVerificationContainer()
     {
-        return new \Zend\Session\Container(
+        return new \Laminas\Session\Container(
             'user_verification',
-            $this->serviceLocator->get(\Zend\Session\SessionManager::class)
+            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
         );
     }
 
@@ -1547,9 +1547,9 @@ class MyResearchController extends AbstractBase
             $user = $table->getByUsername($username, false);
         }
         $view = $this->createViewModel();
-        $view->useRecaptcha = $this->recaptcha()->active('passwordRecovery');
+        $view->useCaptcha = $this->captcha()->active('passwordRecovery');
         // If we have a submitted form
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             if ($user) {
                 $this->sendRecoveryEmail($user, $this->getConfig());
             } else {
@@ -1759,8 +1759,8 @@ class MyResearchController extends AbstractBase
                         = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->username;
-                    $view->useRecaptcha
-                        = $this->recaptcha()->active('changePassword');
+                    $view->useCaptcha
+                        = $this->captcha()->active('changePassword');
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
@@ -1849,13 +1849,13 @@ class MyResearchController extends AbstractBase
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
-        // View, password policy and reCaptcha
+        // View, password policy and Captcha
         $view = $this->createViewModel($post);
         $view->passwordPolicy = $this->getAuthManager()
             ->getPasswordPolicy();
-        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
-        // Check reCaptcha
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        $view->useCaptcha = $this->captcha()->active('changePassword');
+        // Check Captcha
+        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
             $this->setUpAuthenticationFromRequest();
             return $this->resetNewPasswordForm($userFromHash, $view);
         }
@@ -1924,9 +1924,9 @@ class MyResearchController extends AbstractBase
         $user = $this->getUser();
         $view->email = $user->email;
         // Identification
-        $view->useRecaptcha = $this->recaptcha()->active('changeEmail');
+        $view->useCaptcha = $this->captcha()->active('changeEmail');
         // Special case: form was submitted:
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Do CSRF check
             $csrf = $this->serviceLocator->get(\VuFind\Validator\Csrf::class);
             if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
@@ -1935,7 +1935,7 @@ class MyResearchController extends AbstractBase
                 );
             }
             // Update email
-            $validator = new \Zend\Validator\EmailAddress();
+            $validator = new \Laminas\Validator\EmailAddress();
             $email = $this->params()->fromPost('email', '');
             try {
                 if (!$validator->isValid($email)) {
@@ -2005,7 +2005,7 @@ class MyResearchController extends AbstractBase
         $user->updateHash();
         $view->hash = $user->verify_hash;
         $view->setTemplate('myresearch/newpassword');
-        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
+        $view->useCaptcha = $this->captcha()->active('changePassword');
         return $view;
     }
 

@@ -36,7 +36,7 @@ namespace VuFind\Http\PhpEnvironment;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Request extends \Zend\Http\PhpEnvironment\Request
+class Request extends \Laminas\Http\PhpEnvironment\Request
 {
     /**
      * Return the parameter container responsible for query parameters or a single
@@ -47,7 +47,7 @@ class Request extends \Zend\Http\PhpEnvironment\Request
      * @param mixed|null  $default Default value to use when the parameter is
      * missing.
      *
-     * @return \Zend\Stdlib\ParametersInterface|mixed
+     * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
     public function getQuery($name = null, $default = null)
     {
@@ -63,7 +63,7 @@ class Request extends \Zend\Http\PhpEnvironment\Request
      * @param mixed|null  $default Default value to use when the parameter is
      * missing.
      *
-     * @return \Zend\Stdlib\ParametersInterface|mixed
+     * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
     public function getPost($name = null, $default = null)
     {
@@ -80,7 +80,7 @@ class Request extends \Zend\Http\PhpEnvironment\Request
      * missing.
      *
      * @see    http://www.faqs.org/rfcs/rfc3875.html
-     * @return \Zend\Stdlib\ParametersInterface|mixed
+     * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
     public function getServer($name = null, $default = null)
     {
@@ -90,13 +90,15 @@ class Request extends \Zend\Http\PhpEnvironment\Request
     /**
      * Clean up a parameter
      *
-     * @param \Zend\Stdlib\ParametersInterface|mixed $param Parameter
+     * @param \Laminas\Stdlib\ParametersInterface|mixed $param Parameter
      *
-     * @return \Zend\Stdlib\ParametersInterface|mixed
+     * @return \Laminas\Stdlib\ParametersInterface|mixed
      */
     protected function cleanup($param)
     {
-        if (is_array($param) || $param instanceof \Zend\Stdlib\ParametersInterface) {
+        if (is_array($param)
+            || $param instanceof \Laminas\Stdlib\ParametersInterface
+        ) {
             foreach ($param as $key => &$value) {
                 if (is_array($value)) {
                     $value = $this->cleanup($value);

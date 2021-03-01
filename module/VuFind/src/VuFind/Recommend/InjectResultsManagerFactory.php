@@ -40,7 +40,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class InjectResultsManagerFactory
-    implements \Zend\ServiceManager\Factory\FactoryInterface
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

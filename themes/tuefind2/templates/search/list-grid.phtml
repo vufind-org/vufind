@@ -1,9 +1,0 @@
-<div class="row">
-  <?php $it = 0; ?>
-  <?php foreach ($this->results->getResults() as $current): ?>
-    <div id="result<?=$it++ ?>" class="col-sm-3 col-xs-6 grid">
-      <?=$this->record($current)->getSearchResult('grid')?>
-    </div>
-    <?=($it%4==0)?'</div><div class="row">':''?>
-  <?php endforeach; ?>
-</div>

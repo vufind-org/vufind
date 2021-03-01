@@ -3,8 +3,6 @@
 namespace IxTheo\Controller;
 use VuFind\Search\RecommendListener,
     VuFind\Exception\ListPermission as ListPermissionException;
-use Zend\Stdlib\RequestInterface as Request;
-use Zend\Stdlib\ResponseInterface as Response;
 
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
@@ -208,7 +206,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $view;
     }
 
-    private function updateProfile(\Zend\Http\PhpEnvironment\Request $request,
+    private function updateProfile(\Laminas\Http\PhpEnvironment\Request $request,
                                    \VuFind\Db\Row\User $user,
                                    \IxTheo\Db\Row\IxTheoUser $ixTheoUser)
     {

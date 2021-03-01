@@ -28,7 +28,7 @@
 namespace VuFindApi\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for ApiController.
@@ -63,6 +63,8 @@ class ApiControllerFactory implements FactoryInterface
         }
         $controller = new $requestedName($container);
         $controller->addApi($container->get('ControllerManager')->get('SearchApi'));
+        $controller->addApi($container->get('ControllerManager')->get('Search2Api'));
+        $controller->addApi($container->get('ControllerManager')->get('WebApi'));
         return $controller;
     }
 }

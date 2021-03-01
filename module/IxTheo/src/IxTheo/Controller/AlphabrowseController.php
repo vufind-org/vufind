@@ -7,7 +7,7 @@ class AlphabrowseController extends \VuFind\Controller\AlphabrowseController
     /**
      * Gathers data for the view of the AlphaBrowser and does some initialization
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

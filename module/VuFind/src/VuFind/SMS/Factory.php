@@ -28,7 +28,7 @@
 namespace VuFind\SMS;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating SMS objects

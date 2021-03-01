@@ -47,9 +47,9 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -57,11 +57,12 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -90,6 +91,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test search history.
+     *
+     * @depends testSaveSearch
      *
      * @return void
      */
@@ -141,6 +144,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
+     * @depends       testSaveSearch
      * @retryCallback removeUsername2
      *
      * @return void
@@ -190,6 +194,8 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test that notification settings work correctly.
+     *
+     * @depends testSaveSearch
      *
      * @return void
      */
@@ -263,7 +269,7 @@ class SavedSearchesTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2']);
     }

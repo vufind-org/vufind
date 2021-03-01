@@ -28,7 +28,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for FlashMessenger controller plugin.
@@ -62,7 +62,7 @@ class FlashMessengerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $plugin = new $requestedName();
-        $sessionManager = $container->get(\Zend\Session\SessionManager::class);
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $plugin->setSessionManager($sessionManager);
         return $plugin;
     }

@@ -2,7 +2,7 @@
 
 namespace IxTheo\View\Helper\Root;
 
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class Factory
 {

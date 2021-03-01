@@ -2,7 +2,7 @@
 
 namespace IxTheo\Recommend;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 class PluginManager extends \TueFind\Recommend\PluginManager {
     public function __construct($configOrContainerInstance = null,

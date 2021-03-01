@@ -1,0 +1,27 @@
+# Key is the field name that can be requested. It has the following subkeys:
+# - vufind.method: name to call (either in the SearchApiController class or the record driver)
+# - vufind.default: true if the field is displayed by default when the request does not specify fields
+# - Swagger specification fields describing the returned data.
+#
+# See http://swagger.io/specification/ for information on the Swagger-specific fields
+#
+id:
+  vufind.method: getUniqueID
+  vufind.default: true
+  description: Record unique ID (can be used in the record endpoint)
+  type: string
+lastModified:
+  vufind.method: getLastModified
+  vufind.default: true
+  description: Last modification date
+  type: string
+title:
+  vufind.method: getTitle
+  vufind.default: true
+  description: Title including any subtitle
+  type: string
+url:
+  vufind.method: getUrl
+  vufind.default: true
+  description: URL for resource
+  type: string

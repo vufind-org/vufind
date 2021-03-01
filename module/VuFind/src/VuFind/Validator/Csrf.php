@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension of Zend\Validator\Csrf with token counting/clearing functions added.
+ * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Validator;
 
 /**
- * Extension of Zend\Validator\Csrf with token counting/clearing functions added.
+ * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *
  * @category VuFind
  * @package  Solr
@@ -36,7 +36,7 @@ namespace VuFind\Validator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Csrf extends \Zend\Validator\Csrf
+class Csrf extends \Laminas\Validator\Csrf
 {
     /**
      * How many tokens are currently stored in the session?

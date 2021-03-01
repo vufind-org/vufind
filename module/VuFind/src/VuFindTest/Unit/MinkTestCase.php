@@ -362,11 +362,12 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
 
         // Reset the modified configs list.
@@ -378,7 +379,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->stopMinkSession();
         $this->restoreConfigs();
@@ -389,7 +390,7 @@ abstract class MinkTestCase extends DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // No teardown actions at this time.
     }

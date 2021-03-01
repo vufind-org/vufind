@@ -27,11 +27,11 @@
  */
 namespace VuFind\ChannelProvider;
 
+use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
-use Zend\Mvc\Controller\Plugin\Url;
 
 /**
  * "Similar items" channel provider.

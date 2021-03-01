@@ -28,11 +28,10 @@
 namespace VuFindConsole\Generator;
 
 use Interop\Container\ContainerInterface;
-use Zend\Code\Generator\ClassGenerator;
-use Zend\Code\Generator\FileGenerator;
-use Zend\Code\Generator\MethodGenerator;
-use Zend\Code\Reflection\ClassReflection;
-use Zend\Console\Console;
+use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\FileGenerator;
+use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Reflection\ClassReflection;
 
 /**
  * Generator tools.
@@ -45,8 +44,10 @@ use Zend\Console\Console;
  */
 class GeneratorTools
 {
+    use \VuFindConsole\ConsoleOutputTrait;
+
     /**
-     * Zend Framework configuration
+     * Laminas configuration
      *
      * @var array
      */
@@ -55,7 +56,7 @@ class GeneratorTools
     /**
      * Constructor.
      *
-     * @param array $config Zend Framework configuration
+     * @param array $config Laminas configuration
      */
     public function __construct(array $config)
     {
@@ -63,26 +64,193 @@ class GeneratorTools
     }
 
     /**
+     * Determine a plugin manager name within the specified namespace.
+     *
+     * @param array  $classParts Exploded class name array
+     * @param string $namespace  Namespace to try for plugin manager
+     *
+     * @return string
+     */
+    protected function getPluginManagerForNamespace($classParts, $namespace)
+    {
+        $classParts[0] = $namespace;
+        $classParts[count($classParts) - 1] = 'PluginManager';
+        return implode('\\', $classParts);
+    }
+
+    /**
+     * Get a list of VuFind modules (only those with names beginning with VuFind,
+     * and not including the core VuFind module itself).
+     *
+     * @return array
+     */
+    protected function getVuFindExtendedModules()
+    {
+        $moduleDir = __DIR__ . '/../../../../';
+        $handle = opendir($moduleDir);
+        $results = [];
+        while ($line = readdir($handle)) {
+            if (substr($line, 0, 6) === 'VuFind' && strlen($line) > 6) {
+                $results[] = $line;
+            }
+        }
+        closedir($handle);
+        return $results;
+    }
+
+    /**
+     * Given a class name exploded into an array, figure out the appropriate plugin
+     * manager to use.
+     *
+     * @param array $classParts Exploded class name array
+     *
+     * @return string
+     */
+    protected function getPluginManagerFromExplodedClassName($classParts)
+    {
+        $pmClass = $this->getPluginManagerForNamespace($classParts, 'VuFind');
+        // Special cases: no such service; use framework core services instead:
+        if ($pmClass === 'VuFind\Controller\PluginManager') {
+            return 'ControllerManager';
+        }
+        if ($pmClass === 'VuFind\Controller\Plugin\PluginManager') {
+            return \Laminas\Mvc\Controller\PluginManager::class;
+        }
+        // Special case: no such service; check other modules:
+        if (!class_exists($pmClass)) {
+            foreach ($this->getVuFindExtendedModules() as $module) {
+                $pmClass = $this->getPluginManagerForNamespace($classParts, $module);
+                if (class_exists($pmClass)) {
+                    break;
+                }
+            }
+        }
+        return $pmClass;
+    }
+
+    /**
+     * Given a class name exploded into an array, figure out the appropriate short
+     * name to use as an alias in the service manager configuration.
+     *
+     * @param array $classParts Exploded class name array
+     *
+     * @return string
+     */
+    protected function getShortNameFromExplodedClassName($classParts)
+    {
+        $shortName = array_pop($classParts);
+        // Special case: controllers use shortened aliases
+        if (($classParts[1] ?? '') === 'Controller') {
+            return preg_replace('/Controller$/', '', $shortName);
+        }
+        return strtolower($shortName);
+    }
+
+    /**
+     * Given a plugin manager object, return the interface plugins of that type must
+     * implement.
+     *
+     * @param ContainerInterface $pm Plugin manager
+     *
+     * @return string
+     */
+    protected function getExpectedInterfaceFromPluginManager($pm)
+    {
+        // Special case: controllers
+        if ($pm instanceof \Laminas\Mvc\Controller\ControllerManager) {
+            return \VuFind\Controller\AbstractBase::class;
+        }
+
+        // Special case: controller plugins:
+        if ($pm instanceof \Laminas\Mvc\Controller\PluginManager) {
+            return \Laminas\Mvc\Controller\Plugin\AbstractPlugin::class;
+        }
+
+        // Default case: look it up:
+        if (!method_exists($pm, 'getExpectedInterface')) {
+            return null;
+        }
+
+        // Force getExpectedInterface() to be public so we can read it:
+        $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
+        $reflectionMethod->setAccessible(true);
+        return $reflectionMethod->invoke($pm);
+    }
+
+    /**
+     * Given a plugin manager class name, return the configuration path for that
+     * plugin manager.
+     *
+     * @param string $class Class name
+     *
+     * @return array
+     */
+    protected function getConfigPathForClass($class)
+    {
+        // Special case: controller
+        if ($class === \Laminas\Mvc\Controller\ControllerManager::class) {
+            return ['controllers'];
+        } elseif ($class == \Laminas\Mvc\Controller\PluginManager::class) {
+            return ['controller_plugins'];
+        } elseif ($class == \Laminas\ServiceManager\ServiceManager::class) {
+            return ['service_manager'];
+        }
+        // Default case: VuFind internal plugin manager
+        $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
+        $pmKey = $apmFactory->getConfigKey($class);
+        return ['vufind', 'plugin_managers', $pmKey];
+    }
+
+    /**
+     * Given appropriate inputs, figure out which plugin manager or service manager
+     * to use during plugin generation.
+     *
+     * @param ContainerInterface $container       Service manager
+     * @param array              $classParts      Exploded class name array
+     * @param bool               $topLevelService Set to true to build a service
+     * in the top-level container rather than a plugin in a subsidiary plugin manager
+     *
+     * @return ContainerInterface
+     */
+    protected function getPluginManagerForClassParts($container, $classParts,
+        $topLevelService
+    ) {
+        // Special case -- short-circuit for top-level service:
+        if ($topLevelService) {
+            return $container;
+        }
+        $pmClass = $this->getPluginManagerFromExplodedClassName($classParts);
+        if (!$container->has($pmClass)) {
+            throw new \Exception(
+                'Cannot find expected plugin manager: ' . $pmClass . "\n"
+                . 'You can use the --top-level option if you wish to create'
+                . ' a top-level service.'
+            );
+        }
+        return $container->get($pmClass);
+    }
+
+    /**
      * Create a plugin class.
      *
-     * @param ContainerInterface $container Service manager
-     * @param string             $class     Class name to create
-     * @param string             $factory   Existing factory to use (null to
+     * @param ContainerInterface $container       Service manager
+     * @param string             $class           Class name to create
+     * @param string             $factory         Existing factory to use (null to
      * generate a new one)
+     * @param bool               $topLevelService Set to true to build a service
+     * in the top-level container rather than a plugin in a subsidiary plugin manager
      *
      * @return bool
      * @throws \Exception
      */
     public function createPlugin(ContainerInterface $container, $class,
-        $factory = null
+        $factory = null, $topLevelService = false
     ) {
         // Derive some key bits of information from the new class name:
         $classParts = explode('\\', $class);
         $module = $classParts[0];
-        $shortName = strtolower(array_pop($classParts));
-        $classParts[0] = 'VuFind';
-        $classParts[] = 'PluginManager';
-        $pmClass = implode('\\', $classParts);
+        $shortName = $this->getShortNameFromExplodedClassName($classParts);
+
         // Set a flag for whether to generate a factory, and create class name
         // if necessary. If existing factory specified, ensure it really exists.
         if ($generateFactory = empty($factory)) {
@@ -92,20 +260,10 @@ class GeneratorTools
         }
 
         // Figure out further information based on the plugin manager:
-        if (!$container->has($pmClass)) {
-            throw new \Exception('Cannot find expected plugin manager: ' . $pmClass);
-        }
-        $pm = $container->get($pmClass);
-        if (!method_exists($pm, 'getExpectedInterface')) {
-            throw new \Exception(
-                $pmClass . ' does not implement getExpectedInterface!'
-            );
-        }
-
-        // Force getExpectedInterface() to be public so we can read it:
-        $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
-        $reflectionMethod->setAccessible(true);
-        $interface = $reflectionMethod->invoke($pm);
+        $pm = $this->getPluginManagerForClassParts(
+            $container, $classParts, $topLevelService
+        );
+        $interface = $this->getExpectedInterfaceFromPluginManager($pm);
 
         // Figure out whether the plugin requirement is an interface or a
         // parent class so we can create the right thing....
@@ -116,9 +274,7 @@ class GeneratorTools
             $parent = $interface;
             $interfaces = [];
         }
-        $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
-        $pmKey = $apmFactory->getConfigKey(get_class($pm));
-        $configPath = ['vufind', 'plugin_managers', $pmKey];
+        $configPath = $this->getConfigPathForClass(get_class($pm));
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
@@ -131,6 +287,13 @@ class GeneratorTools
         // Don't back up the config twice -- the first backup from the previous
         // write operation is sufficient.
         $this->writeNewConfig($aliasPath, $class, $module, false);
+        // Add extra lowercase alias if necessary:
+        if (strtolower($shortName) != $shortName) {
+            $lowerAliasPath = array_merge(
+                $configPath, ['aliases', strtolower($shortName)]
+            );
+            $this->writeNewConfig($lowerAliasPath, $class, $module, false);
+        }
 
         return true;
     }
@@ -148,12 +311,12 @@ class GeneratorTools
     {
         $this->createClassInModule(
             $factory, $module, null,
-            ['Zend\ServiceManager\Factory\FactoryInterface'],
+            ['Laminas\ServiceManager\Factory\FactoryInterface'],
             function ($generator) use ($class) {
                 $method = MethodGenerator::fromArray(
                     [
                         'name' => '__invoke',
-                        'body' => 'return new \\' . $class . '();',
+                        'body' => 'return new $requestedName();',
                     ]
                 );
                 $param1 = [
@@ -170,7 +333,7 @@ class GeneratorTools
                 ];
                 $method->setParameters([$param1, $param2, $param3]);
                 // Copy doc block from this class' factory:
-                $reflection = new \Zend\Code\Reflection\MethodReflection(
+                $reflection = new \Laminas\Code\Reflection\MethodReflection(
                     GeneratorToolsFactory::class, '__invoke'
                 );
                 $example = MethodGenerator::fromReflection($reflection);
@@ -441,8 +604,8 @@ class GeneratorTools
             // __callStatic and ignore the error. Any other exception should be
             // treated as a fatal error.
             if (method_exists($factoryClass, '__callStatic')) {
-                Console::writeLine('Error: ' . $e->getMessage());
-                Console::writeLine(
+                $this->writeln('Error: ' . $e->getMessage());
+                $this->writeln(
                     '__callStatic in parent factory; skipping method generation.'
                 );
             } else {
@@ -566,16 +729,16 @@ class GeneratorTools
                 throw new \Exception("$fullPath already exists.");
             }
         }
-        // TODO: this is a workaround for an apparent bug in Zend\Code which
+        // TODO: this is a workaround for an apparent bug in Laminas\Code which
         // omits the leading backslash on "extends" statements when rewriting
-        // existing classes. Can we remove this after a future Zend\Code upgrade?
+        // existing classes. Can we remove this after a future Laminas\Code upgrade?
         $code = str_replace(
             'extends VuFind\\', 'extends \\VuFind\\', $generator->generate()
         );
         if (!file_put_contents($fullPath, $code)) {
             throw new \Exception("Problem writing to $fullPath.");
         }
-        Console::writeLine("Saved file: $fullPath");
+        $this->writeln("Saved file: $fullPath");
     }
 
     /**
@@ -637,7 +800,7 @@ class GeneratorTools
         if (!copy($filename, $backup)) {
             throw new \Exception("Problem generating backup file: $backup");
         }
-        Console::writeLine("Created backup: $backup");
+        $this->writeln("Created backup: $backup");
     }
 
     /**
@@ -677,7 +840,7 @@ class GeneratorTools
         if (!file_put_contents($configPath, $generator->generate())) {
             throw new \Exception("Cannot write to $configPath");
         }
-        Console::writeLine("Successfully updated $configPath");
+        $this->writeln("Successfully updated $configPath");
     }
 
     /**

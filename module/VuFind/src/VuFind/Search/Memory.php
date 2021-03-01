@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search;
 
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  * Wrapper class to handle search memory

@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Config\Config;
 use VuFind\Record\Router;
 use VuFind\View\Helper\Root\RecordLink;
-use Zend\Config\Config;
 
 /**
  * RecordLink view helper Test Class
@@ -73,7 +73,7 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecordLink()
     {
-        $view = $this->getMockBuilder(\Zend\View\Renderer\PhpRenderer::class)
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
             ->disableOriginalConstructor()
             ->setMethods(['plugin'])
             ->getMock();
@@ -92,17 +92,17 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      */
     protected function getUrl()
     {
-        $request = $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
+        $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->setMethods(['getQuery'])->getMock();
         $request->expects($this->any())->method('getQuery')
-            ->will($this->returnValue(new \Zend\StdLib\Parameters()));
+            ->will($this->returnValue(new \Laminas\Stdlib\Parameters()));
 
         $url = new \VuFind\View\Helper\Root\Url($request);
 
         // Create router
-        $router = new \Zend\Router\Http\TreeRouteStack();
-        $router->setRequestUri(new \Zend\Uri\Http('http://localhost'));
-        $recordRoute = new \Zend\Router\Http\Segment(
+        $router = new \Laminas\Router\Http\TreeRouteStack();
+        $router->setRequestUri(new \Laminas\Uri\Http('http://localhost'));
+        $recordRoute = new \Laminas\Router\Http\Segment(
             '/Record/[:id[/[:tab]]]',
             [
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',

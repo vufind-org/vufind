@@ -2,7 +2,7 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -27,9 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Http\Headers;
 
 /**
  * Alma ILS Driver
@@ -41,7 +41,7 @@ use Zend\Http\Headers;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -185,16 +185,18 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException($e->getMessage());
         }
 
+        // Get the HTTP status code and response
+        $statusCode = $result->getStatusCode();
+        $answer = $statusCode !== 204 ? $result->getBody() : '';
+        $answer = str_replace('xmlns=', 'ns=', $answer);
+
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $code = $result->getStatusCode();
+        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
         $this->debug(
-            "[$duration] $method request for $url?$urlParams results ($code):\n"
-            . $result->getBody()
+            "[$duration] $method request for $fullUrl results ($statusCode):\n"
+            . $answer
         );
-
-        // Get the HTTP status code
-        $statusCode = $result->getStatusCode();
 
         // Check for error
         if ($result->isServerError()) {
@@ -204,8 +206,6 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('HTTP error code: ' . $statusCode, $statusCode);
         }
 
-        $answer = $result->getBody();
-        $answer = str_replace('xmlns=', 'ns=', $answer);
         try {
             $xml = simplexml_load_string($answer);
         } catch (\Exception $e) {
@@ -296,7 +296,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // The path for the API call. We call "ALL" available items, but not at once
         // as a pagination mechanism is used. If paging params are not set for some
         // reason, the first 10 items are called which is the default API behaviour.
-        $itemsPath = '/bibs/' . urlencode($id) . '/holdings/ALL/items?'
+        $itemsPath = '/bibs/' . rawurlencode($id) . '/holdings/ALL/items?'
             . $apiPagingParams
             . '&order_by=library,location,enum_a,enum_b&direction=desc'
             . '&expand=due_date';
@@ -399,9 +399,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $level = $data['level'] ?? 'copy';
         if ('copy' === $level) {
             // Call the request-options API for the logged-in user
-            $requestOptionsPath = '/bibs/' . urlencode($id)
-                . '/holdings/' . urlencode($data['holding_id']) . '/items/'
-                . urlencode($data['item_id']) . '/request-options?user_id='
+            $requestOptionsPath = '/bibs/' . rawurlencode($id)
+                . '/holdings/' . rawurlencode($data['holding_id']) . '/items/'
+                . rawurlencode($data['item_id']) . '/request-options?user_id='
                 . urlencode($patronId);
 
             // Make the API request
@@ -412,7 +412,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 return false;
             }
             // Call the request-options API for the logged-in user
-            $requestOptionsPath = '/bibs/' . urlencode($id)
+            $requestOptionsPath = '/bibs/' . rawurlencode($id)
                 . '/request-options?user_id=' . urlencode($patronId);
 
             // Make the API request
@@ -652,7 +652,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if ('email' === $loginMethod) {
             // Try to find the user in Alma by an identifier
             list($response, $status) = $this->makeRequest(
-                '/users/' . urlencode($username),
+                '/users/' . rawurlencode($username),
                 [
                     'view' => 'full'
                 ],
@@ -714,7 +714,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
             // Try to authenticate the user with Alma
             list($response, $status) = $this->makeRequest(
-                '/users/' . urlencode($username),
+                '/users/' . rawurlencode($username),
                 $getParams,
                 [],
                 'POST',
@@ -740,7 +740,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         // Check for patron in Alma
         $response = $this->makeRequest(
-            '/users/' . urlencode($patronId),
+            '/users/' . rawurlencode($patronId),
             $getParams
         );
 
@@ -770,7 +770,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyProfile($patron)
     {
         $patronId = $patron['id'];
-        $xml = $this->makeRequest('/users/' . $patronId);
+        $xml = $this->makeRequest('/users/' . rawurlencode($patronId));
         if (empty($xml)) {
             return [];
         }
@@ -959,8 +959,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 // We only can get them from an API request.
                 $requestDetails = $this->makeRequest(
                     $this->baseUrl .
-                        '/users/' . urlencode($patronId) .
-                        '/requests/' . urlencode($requestId)
+                        '/users/' . rawurlencode($patronId) .
+                        '/requests/' . rawurlencode($requestId)
                 );
 
                 $mmsId = (isset($requestDetails->mms_id))
@@ -970,8 +970,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 // Delete the request in Alma
                 $apiResult = $this->makeRequest(
                     $this->baseUrl .
-                    '/users/' . urlencode($patronId) .
-                    '/requests/' . urlencode($requestId),
+                    '/users/' . rawurlencode($patronId) .
+                    '/requests/' . rawurlencode($requestId),
                     ['reason' => 'CancelledAtPatronRequest'],
                     [],
                     'DELETE'
@@ -1250,28 +1250,25 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 );
 
                 // Add information to the renewal array
-                $blocks = false;
-                $renewal[$loanId]['success'] = true;
-                $renewal[$loanId]['new_date'] = $this->parseDate(
-                    (string)$apiResult->due_date,
-                    true
-                );
-                //$renewal[$loanId]['new_time'] = ;
-                $renewal[$loanId]['item_id'] = (string)$apiResult->loan_id;
-                $renewal[$loanId]['sysMessage'] = 'renew_success';
+                $renewal = [
+                    'success' => true,
+                    'new_date' => $this->parseDate(
+                        (string)$apiResult->due_date,
+                        true
+                    ),
+                    'item_id' => (string)$apiResult->loan_id,
+                    'sysMessage' => 'renew_success'
+                ];
 
                 // Add the renewal to the return array
-                $returnArray['details'] = $renewal;
+                $returnArray['details'][$loanId] = $renewal;
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
-                $returnArray['details'] = $renewal;
-
-                // Add a message that can be translated
-                $blocks[] = 'renew_fail';
+                $returnArray['details'][$loanId] = [
+                    'success' => false
+                ];
             }
         }
-
-        $returnArray['blocks'] = $blocks;
 
         return $returnArray;
     }
@@ -1425,7 +1422,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
             // Create HTTP client with Alma API URL for title level requests
             $client = $this->httpService->createClient(
-                $this->baseUrl . '/bibs/' . urlencode($mmsId)
+                $this->baseUrl . '/bibs/' . rawurlencode($mmsId)
                 . '/requests?apikey=' . urlencode($this->apiKey)
                 . '&user_id=' . urlencode($patronId)
                 . '&format=json'
@@ -1433,9 +1430,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         } else {
             // Create HTTP client with Alma API URL for item level requests
             $client = $this->httpService->createClient(
-                $this->baseUrl . '/bibs/' . urlencode($mmsId)
-                . '/holdings/' . urlencode($holId)
-                . '/items/' . urlencode($itmId)
+                $this->baseUrl . '/bibs/' . rawurlencode($mmsId)
+                . '/holdings/' . rawurlencode($holId)
+                . '/items/' . rawurlencode($itmId)
                 . '/requests?apikey=' . urlencode($this->apiKey)
                 . '&user_id=' . urlencode($patronId)
                 . '&format=json'
@@ -1451,7 +1448,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
 
         // Set HTTP method
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
+        $client->setMethod(\Laminas\Http\Request::METHOD_POST);
 
         // Set body
         $client->setRawBody(json_encode($body));
@@ -1790,7 +1787,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             foreach ($user->contact_info->emails->email as $email) {
                 if ('true' === (string)$email['preferred']) {
                     return isset($email->email_address)
-                        ? (string)$email->email_address : null;
+                        ? trim((string)$email->email_address) : null;
                 }
             }
             $email = $user->contact_info->emails->email[0];
