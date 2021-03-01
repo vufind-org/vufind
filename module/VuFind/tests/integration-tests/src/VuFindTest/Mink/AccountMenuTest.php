@@ -37,11 +37,12 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
+class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
-    use \VuFindTest\Unit\DemoDriverTestTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
+    use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
      * Standard setup method.

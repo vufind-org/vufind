@@ -85,6 +85,6 @@ class UserList extends AbstractHelper
      */
     public function lastUsed()
     {
-        return isset($this->session->lastUsed) ? $this->session->lastUsed : null;
+        return $this->session->lastUsed ?? null;
     }
 }

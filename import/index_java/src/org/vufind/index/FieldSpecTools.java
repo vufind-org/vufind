@@ -20,9 +20,14 @@ package org.vufind.index;
 
 import org.marc4j.marc.Record;
 import org.marc4j.marc.DataField;
+import org.marc4j.marc.Subfield;
 
+import org.solrmarc.index.extractor.formatter.FieldFormatter;
+import org.solrmarc.index.extractor.formatter.FieldFormatterBase;
+import org.solrmarc.index.extractor.formatter.FieldFormatter.eCleanVal;
 import org.solrmarc.index.SolrIndexer;
 
+import java.lang.StringBuilder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -72,15 +77,31 @@ public class FieldSpecTools
      */
     public static final Set<String> getFieldsByTagList(final Record record, final String tagList)
     {
+        return getFieldsByTagList(record, tagList, false);
+    }
+
+    /**
+     * Get field data specified by a SolrMarc tag list
+     *
+     * @param record          Record
+     * @param tagList         The field specification
+     * @param removeNonFiling Whether to remove non-filing characters
+     *
+     * @return Set
+     */
+    public static final Set<String> getFieldsByTagList(final Record record, final String tagList, Boolean removeNonFiling)
+    {
         Set<String> result = new LinkedHashSet<String>();
         final HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
         final List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
+        final FieldFormatter formatter = removeNonFiling
+            ? new FieldFormatterBase(false).addCleanVal(eCleanVal.STRIP_INDICATOR) : null;
         if (fields != null) {
             Iterator fieldsIter = fields.iterator();
             while (fieldsIter.hasNext()) {
                 DataField field = (DataField) fieldsIter.next();
                 for (String subfields : parsedTagList.get(field.getTag())) {
-                    String current = SolrIndexer.instance().getDataFromVariableField(field, "["+subfields+"]", " ", false);
+                    String current = getFieldData(field, subfields, formatter);
                     if (null != current) {
                         result.add(current);
                     }
@@ -88,5 +109,36 @@ public class FieldSpecTools
             }
         }
         return result;
+    }
+
+    /**
+     * Get subfields from a data field
+     *
+     * @param dataFiel     Data field
+     * @param subfieldCode Subfield codes to get
+     * @param formatter    Formatter to use (or null)
+     *
+     * @return Set
+     */
+    protected static final String getFieldData(DataField dataField, String subfieldCodes, FieldFormatter formatter)
+    {
+        StringBuilder result = new StringBuilder(64);
+        final List<Subfield> subfields = dataField.getSubfields();
+        for (Subfield subfield : subfields) {
+            final char subfieldCode = subfield.getCode();
+            if (subfieldCodes.indexOf(subfieldCode) != -1) {
+                if (result.length() > 0) {
+                    result.append(' ');
+                }
+                final String subfieldData = subfield.getData().trim();
+                if (null != formatter) {
+                    result.append(formatter.cleanData(dataField, 'a' == subfieldCode, subfieldData));
+                } else {
+                    result.append(subfieldData);
+                }
+            }
+        }
+
+        return result.length() > 0 ? result.toString() : null;
     }
 }

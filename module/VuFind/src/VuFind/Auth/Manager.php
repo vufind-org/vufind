@@ -438,7 +438,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|bool Object if user is logged in, false otherwise.
+     * @return UserRow|false Object if user is logged in, false otherwise.
      */
     public function isLoggedIn()
     {

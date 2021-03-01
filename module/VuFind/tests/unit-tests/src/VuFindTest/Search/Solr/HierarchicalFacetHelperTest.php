@@ -29,7 +29,6 @@
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Hierarchical Facet Helper.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase;
  * @link     https://vufind.org Main Site
  * @todo     Test buildFacetArray using url helper
  */
-class HierarchicalFacetHelperTest extends TestCase
+class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test input data.

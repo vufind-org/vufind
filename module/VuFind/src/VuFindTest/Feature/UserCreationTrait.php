@@ -1,8 +1,9 @@
 <?php
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait with utility methods for user creation/management. Depends upon the
+ * LiveDatabaseTrait for database access and the LiveDetectionTrait for
+ * identification of a live test environment.
  *
  * PHP version 7
  *
@@ -27,13 +28,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
+namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait with utility methods for user creation/management. Depends upon the
+ * LiveDatabaseTrait for database access and the LiveDetectionTrait for
+ * identification of a live test environment.
  *
  * @category VuFind
  * @package  Tests
@@ -51,14 +53,26 @@ trait UserCreationTrait
      */
     protected static function failIfUsersExist(): void
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
         $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
         if (!$test->continuousIntegrationRunning()) {
             return;
         }
+        // Fail if the test does not include the LiveDatabaseTrait.
+        if (!$test->hasLiveDatabaseTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable('User');
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
         if (count($userTable->select()) > 0) {
             self::fail(
                 'Test cannot run with pre-existing user data!'
@@ -187,14 +201,27 @@ trait UserCreationTrait
      */
     protected static function removeUsers($users)
     {
-        // If CI is not running, all tests were skipped, so no work is necessary:
         $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
         if (!$test->continuousIntegrationRunning()) {
             return;
         }
 
+        // Fail if the test does not include the LiveDatabaseTrait.
+        if (!$test->hasLiveDatabaseTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+
         // Delete test user
-        $userTable = $test->getTable('User');
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
         foreach ((array)$users as $username) {
             $user = $userTable->getByUsername($username, false);
             if (!empty($user)) {

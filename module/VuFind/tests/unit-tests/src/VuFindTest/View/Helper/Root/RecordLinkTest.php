@@ -73,12 +73,10 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecordLink()
     {
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['plugin'])
-            ->getMock();
-        $view->expects($this->any())->method('plugin')
-            ->will($this->returnValue($this->getUrl()));
+        $view = new \Laminas\View\Renderer\PhpRenderer();
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $container->set('url', $this->getUrl());
+        $view->setHelperPluginManager($container);
 
         $recordLink = new RecordLink(new Router(new Config([])));
         $recordLink->setView($view);

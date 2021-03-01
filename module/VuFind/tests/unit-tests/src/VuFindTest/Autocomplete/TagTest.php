@@ -38,7 +38,7 @@ use VuFind\Autocomplete\Tag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class TagTest extends \VuFindTest\Unit\DbTestCase
+class TagTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that missing plugin manager causes exception.
