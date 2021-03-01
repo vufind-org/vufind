@@ -26,7 +26,6 @@
   }
   $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
      . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
-  $this->layout()->title = $this->driver->getShortTitle();
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
