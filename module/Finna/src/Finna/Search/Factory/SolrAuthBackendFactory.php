@@ -48,14 +48,12 @@ use VuFindSearch\Backend\Solr\Backend;
 class SolrAuthBackendFactory
     extends \VuFind\Search\Factory\SolrAuthBackendFactory
 {
-    use SolrCachingConnectorFactoryTrait;
-
     /**
      * Solr connector class
      *
      * @var string
      */
-    protected $connectorClass = \FinnaSearch\Backend\Solr\Connector::class;
+    protected $connectorClass = \VuFindSearch\Backend\Solr\Connector::class;
 
     /**
      * Create listeners.

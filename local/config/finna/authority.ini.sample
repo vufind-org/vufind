@@ -71,3 +71,9 @@ condensed = Condensed
 
 [Advanced_Settings]
 translated_facets[] = record_type
+
+[SearchCache]
+;adapter = Memcached
+;options[servers] = "localhost:11211"
+;options[ttl] = 300
+;options[cache_dir] = "/tmp/search-cache"

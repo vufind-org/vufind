@@ -443,19 +443,6 @@ timeout = 30
 ;search_filters[] = "(.[,\s]){30,}"
 ;search_filters[] = "[^\s,.\-]{100,}"
 
-; This section provides options for caching search requests. Supported for Solr only.
-[IndexCache]
-; Supported adapters: Filesystem, Memcached. Others may also work.
-adapter = Memcached
-; Memcached servers (optional, uses localhost:11211 by default)
-;servers[] = "localhost:1234"
-; Other options. See https://docs.laminas.dev/laminas-cache/storage/adapter/ for
-; documentation on options for different adapters.
-; ttl, Time to Live, i.e. caching time in seconds. 300 seconds by default.
-;options['ttl'] = 300
-; Cache directory for Filesystem cache:
-;options[cache_dir] = "/private/tmp/cache"
-
 ; Enable/Disable searching reserves using the "reserves" Solr core.  When enabling
 ; this feature, you also need to uncomment the relevant line in solr/solr.xml and
 ; restart Solr to enable the reserves core, and you need to run the
