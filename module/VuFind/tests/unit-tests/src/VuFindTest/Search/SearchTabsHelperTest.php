@@ -29,7 +29,6 @@
 namespace VuFindTest\Search;
 
 use VuFind\Search\SearchTabsHelper;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * SearchTabsHelper unit tests.
@@ -40,7 +39,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SearchTabsHelperTest extends TestCase
+class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
 {
     protected $tabConfig = [
         'default_unfiltered' => [

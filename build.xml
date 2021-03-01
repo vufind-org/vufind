@@ -272,6 +272,14 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <property name="solr_pid_file" value="${srcdir}/local/solr-8983.pid" />
+    <!-- fail if the system is already running -->
+    <if>
+      <available file="${solr_pid_file}" />
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
+      </then>
+    </if>
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
@@ -350,9 +358,15 @@
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="touch ${srcdir}/local/vufindtest.pid" />
-    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" checkreturn="true" />
     <echo message="${LASTOUTPUT}" />
+    <!-- fail if Solr did not start up successfully: -->
+    <if>
+      <not><available file="${solr_pid_file}" /></not>
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) not detected. Solr startup failed.</fail>
+      </then>
+    </if>
 
     <if>
       <equals arg1="0" arg2="${solr_startup_sleep}" />
@@ -402,7 +416,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
@@ -525,4 +539,17 @@
     </if>
   </target>
 
+  <target name="patch-dependencies" description="apply fixes to dependencies">
+    <!-- Fix for PHP 8 incompatibility in phing 2.16.4: -->
+    <reflexive>
+      <fileset dir="vendor/phing/phing/classes/phing/tasks/system">
+        <include pattern="ChmodTask.php" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="vsprintf\([&quot;']%o[&quot;'], \$mode\)" replace="vsprintf('%o', [\$mode])" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
 </project>

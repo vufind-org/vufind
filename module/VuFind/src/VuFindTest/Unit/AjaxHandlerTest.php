@@ -40,8 +40,25 @@ use Laminas\Stdlib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AjaxHandlerTest extends MockContainerTest
+abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Mock container
+     *
+     * @var \VuFindTest\Container\MockContainer
+     */
+    protected $container;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->container = new \VuFindTest\Container\MockContainer($this);
+    }
+
     /**
      * Create mock user object.
      *

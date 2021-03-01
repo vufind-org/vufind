@@ -39,9 +39,9 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class ChannelsTest extends \VuFindTest\Unit\MinkTestCase
+class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
 
     /**
      * Get a reference to a standard search results page.

@@ -36,7 +36,6 @@ use VuFind\RecordDriver\PluginManager as RecordFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service as SearchService;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * Record loader tests.
@@ -47,7 +46,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoaderTest extends TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test exception for missing record.

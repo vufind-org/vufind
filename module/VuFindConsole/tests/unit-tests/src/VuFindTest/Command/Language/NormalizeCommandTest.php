@@ -43,7 +43,7 @@ use VuFindConsole\Command\Language\NormalizeCommand;
  */
 class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Language fixture directory
