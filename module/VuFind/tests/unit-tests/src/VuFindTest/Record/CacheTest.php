@@ -31,7 +31,6 @@
 namespace VuFindTest\Record;
 
 use VuFind\Record\Cache;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * Record cache tests.
@@ -43,7 +42,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CacheTest extends TestCase
+class CacheTest extends \PHPUnit\Framework\TestCase
 {
     protected $recordTable = [];
 

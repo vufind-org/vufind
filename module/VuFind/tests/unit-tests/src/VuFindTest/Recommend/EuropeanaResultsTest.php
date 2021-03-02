@@ -31,7 +31,6 @@ namespace VuFindTest\Recommend;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use VuFind\Recommend\EuropeanaResults;
 use VuFindHttp\HttpService;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * EuropeanaResults tests.
@@ -42,9 +41,9 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EuropeanaResultsTest extends TestCase
+class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test that the module properly parses a sample response.

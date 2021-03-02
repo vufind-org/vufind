@@ -29,9 +29,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
+namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Util\Test;
 
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
@@ -55,8 +56,8 @@ trait AutoRetryTrait
     /**
      * Count of remaining retry attempts (updated during the retry loop). This is
      * exposed as a class property rather than a local variable so that classes
-     * using the trait can be aware of the retry state. This is used, for example,
-     * in the VuFindTest\Unit\MinkTestCase class to control screenshot behavior.
+     * using the trait can be aware of the retry state. This is used, for example, in
+     * the VuFindTest\Integration\MinkTestCase class to control screenshot behavior.
      *
      * @var int
      */
@@ -77,7 +78,9 @@ trait AutoRetryTrait
         // subsequent tests, and retrying will just waste time before showing
         // the cause of the initial error. We only really want to retry if it
         // will prevent ANY failures from occurring.
-        $annotations = $this->getAnnotations();
+        $annotations = Test::parseTestMethodAnnotations(
+            static::class, $this->getName(false)
+        );
         $retryCountAnnotation = $annotations['method']['retry'][0]
             ?? $annotations['class']['retry'][0] ?? 0;
         $retryCount = !self::$failedAfterRetries && $retryCountAnnotation > 0

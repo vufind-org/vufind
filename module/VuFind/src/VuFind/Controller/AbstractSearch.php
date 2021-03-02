@@ -69,7 +69,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -446,7 +446,7 @@ class AbstractSearch extends AbstractBase
         $history = $this->getTable('Search');
         $history->saveSearch(
             $this->getResultsManager(), $results, $sessId,
-            isset($user->id) ? $user->id : null
+            $user->id ?? null
         );
     }
 
@@ -769,9 +769,7 @@ class AbstractSearch extends AbstractBase
         }
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get($options->getFacetsIni());
-        $limit = isset($config->Results_Settings->lightboxLimit)
-            ? $config->Results_Settings->lightboxLimit
-            : 50;
+        $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         $facets = $results->getPartialFieldFacets(
             [$facet], false, $limit, $sort, $page,

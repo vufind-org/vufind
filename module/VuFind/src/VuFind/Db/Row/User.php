@@ -174,7 +174,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             return isset($this->cat_pass_enc)
                 ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
         }
-        return isset($this->cat_password) ? $this->cat_password : null;
+        return $this->cat_password ?? null;
     }
 
     /**
@@ -186,8 +186,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         if (null === $this->encryptionEnabled) {
             $this->encryptionEnabled
-                = isset($this->config->Authentication->encrypt_ils_password)
-                ? $this->config->Authentication->encrypt_ils_password : false;
+                = $this->config->Authentication->encrypt_ils_password ?? false;
         }
         return $this->encryptionEnabled;
     }
@@ -223,9 +222,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $algo = isset($this->config->Authentication->ils_encryption_algo)
-            ? $this->config->Authentication->ils_encryption_algo
-            : 'blowfish';
+        $algo = $this->config->Authentication->ils_encryption_algo ?? 'blowfish';
         $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);

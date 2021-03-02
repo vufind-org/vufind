@@ -38,9 +38,9 @@ use VuFindTheme\View\Helper\ParentTemplate;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ParentTemplateTest extends \VuFindTest\Unit\TestCase
+class ParentTemplateTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Path to theme fixtures

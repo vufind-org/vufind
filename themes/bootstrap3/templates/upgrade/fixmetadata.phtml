@@ -14,8 +14,8 @@ but it will improve the user experience by allowing proper sorting of favorites 
 <br />
 
 <form method="post" action="<?=$this->url('upgrade-fixmetadata')?>">
-  <input type="submit" name="submit" value="<?=$this->transEsc('fix_metadata') ?>." /><br /><br />
-  <input type="submit" name="skip" value="<?=$this->transEsc('skip_fix_metadata') ?>." id="skip" />
+  <input type="submit" name="submit" value="<?=$this->transEscAttr('fix_metadata') ?>." /><br /><br />
+  <input type="submit" name="skip" value="<?=$this->transEscAttr('skip_fix_metadata') ?>." id="skip" />
 </form>
 <?php
 $confirmText = $this->transEsc('skip_confirm');

@@ -150,25 +150,6 @@ class Search extends Gateway
     }
 
     /**
-     * Get a query representing expired searches (this can be passed
-     * to select() or delete() for further processing).
-     *
-     * @param int $daysOld Age in days of an "expired" search.
-     *
-     * @return function
-     */
-    public function getExpiredQuery($daysOld = 2)
-    {
-        // Determine the expiration date:
-        $expireDate = date('Y-m-d', time() - $daysOld * 24 * 60 * 60);
-        $callback = function ($select) use ($expireDate) {
-            $select->where->lessThan('created', $expireDate)
-                ->equalTo('saved', 0);
-        };
-        return $callback;
-    }
-
-    /**
      * Get a single row matching a primary key value.
      *
      * @param int  $id                 Primary key value
@@ -308,22 +289,12 @@ class Search extends Gateway
      *
      * @param Select $select  Select clause
      * @param int    $daysOld Age in days of an "expired" record.
-     * @param int    $idFrom  Lowest id of rows to delete.
-     * @param int    $idTo    Highest id of rows to delete.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld, $idFrom = null,
-        $idTo = null
-    ) {
+    protected function expirationCallback($select, $daysOld)
+    {
         $expireDate = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
-        $where = $select->where->lessThan('created', $expireDate)
-            ->equalTo('saved', 0);
-        if (null !== $idFrom) {
-            $where->and->greaterThanOrEqualTo('id', $idFrom);
-        }
-        if (null !== $idTo) {
-            $where->and->lessThanOrEqualTo('id', $idTo);
-        }
+        $select->where->lessThan('created', $expireDate)->equalTo('saved', 0);
     }
 }

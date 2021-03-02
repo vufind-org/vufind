@@ -187,8 +187,7 @@ class Loader extends \VuFind\ImageLoader
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
-        $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
-            ? $config->Content->noCoverAvailableImage : null;
+        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)

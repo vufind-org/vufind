@@ -68,9 +68,9 @@ class ILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection    $connection    ILS connection to set
-     * @param \VuFind\ILS\Authenticator $authenticator ILS authenticator
-     * @param EmailAuthenticator        $emailAuth     Email authenticator
+     * @param \VuFind\ILS\Connection        $connection    ILS connection to set
+     * @param \VuFind\Auth\ILSAuthenticator $authenticator ILS authenticator
+     * @param EmailAuthenticator            $emailAuth     Email authenticator
      */
     public function __construct(
         \VuFind\ILS\Connection $connection,
@@ -371,7 +371,6 @@ class ILS extends AbstractBase
     protected function getUsernameField()
     {
         $config = $this->getConfig();
-        return isset($config->Authentication->ILS_username_field)
-            ? $config->Authentication->ILS_username_field : 'cat_username';
+        return $config->Authentication->ILS_username_field ?? 'cat_username';
     }
 }

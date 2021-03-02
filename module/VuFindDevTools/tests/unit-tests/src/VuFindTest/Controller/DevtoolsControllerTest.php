@@ -40,7 +40,7 @@ use VuFindDevTools\Controller\DevtoolsController as Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
+class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test language action.
