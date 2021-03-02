@@ -50,3 +50,4 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 ALTER TABLE vufind.user ADD tuefind_rss_feed_notification_type ENUM('rss', 'email') DEFAULT NULL;
+ALTER TABLE vufind.user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
