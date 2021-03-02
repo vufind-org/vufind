@@ -46,7 +46,7 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -1956,7 +1956,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $stmt->execute(
                 [ $newPassword_hashed, $detail['patron']['id'] ]
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [ 'success' => false, 'status' => $e->getMessage() ];
         }
         return [

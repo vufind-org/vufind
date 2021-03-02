@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Record Controller

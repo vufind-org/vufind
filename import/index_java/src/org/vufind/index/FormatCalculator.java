@@ -220,14 +220,16 @@ public class FormatCalculator
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
-                switch (marc008.getData().toLowerCase().charAt(21)) {
-                    case 'n':
-                        return "Newspaper";
-                    case 'p':
-                        return "Journal";
-                    default:
-                        if (!isConferenceProceeding(record)) {
-                            return "Serial";
+                if (marc008 != null) {
+                    switch (marc008.getData().toLowerCase().charAt(21)) {
+                        case 'n':
+                            return "Newspaper";
+                        case 'p':
+                            return "Journal";
+                        default:
+                            if (!isConferenceProceeding(record)) {
+                                return "Serial";
+                            }
                         }
                 }
                 break;

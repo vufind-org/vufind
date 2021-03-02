@@ -63,7 +63,7 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
     {
         VuFind::setServiceLocator($this->getServiceManager());
         $this->assertEquals(
-            \Zend\Config\Config::class, get_class(VuFind::getConfig())
+            \Laminas\Config\Config::class, get_class(VuFind::getConfig())
         );
     }
 
@@ -157,5 +157,68 @@ class VuFindTest extends \VuFindTest\Unit\DbTestCase
         $this->assertEquals(
             $expected, simplexml_import_dom(VuFind::explode(',', 'a,b'))->asXml()
         );
+    }
+
+    /**
+     * Test the implode helper.
+     *
+     * @return void
+     */
+    public function testImplode()
+    {
+        $domify = function ($input) {
+            return new \DOMElement('foo', $input);
+        };
+        $this->assertEquals(
+            'a.b.c',
+            VuFind::implode('.', array_map($domify, ['a', 'b', 'c']))
+        );
+    }
+
+    /**
+     * Test the extractBestDateOrRange helper.
+     *
+     * @return void
+     */
+    public function testExtractBestDateOrRange()
+    {
+        $data = [
+            '1990' => ['foo', 'bar', '1990'],
+            '1990-1991' => ['foo', '1990-1991', '1992'],
+            'foo' => ['foo', 'bar', 'baz'],
+        ];
+        $domify = function ($input) {
+            return new \DOMElement('foo', $input);
+        };
+        foreach ($data as $output => $input) {
+            $this->assertEquals(
+                $output, VuFind::extractBestDateOrRange(
+                    array_map($domify, $input)
+                )
+            );
+        }
+    }
+
+    /**
+     * Test the extractEarliestYear helper.
+     *
+     * @return void
+     */
+    public function testExtractEarliestYear()
+    {
+        $data = [
+            'October 9, 1990 (approx)' => '1990',
+            'the year 0' => '0',
+            'published 1927-1929' => '1927',
+            '2005-1999' => '1999',
+            'there is no year to be found here' => '',
+        ];
+        foreach ($data as $input => $output) {
+            $this->assertEquals(
+                $output, VuFind::extractEarliestYear(
+                    [new \DOMElement('foo', $input)]
+                )
+            );
+        }
     }
 }

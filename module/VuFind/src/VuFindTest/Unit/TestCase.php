@@ -44,7 +44,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * The service manager instance
      *
-     * @var \Zend\ServiceManager\ServiceManager
+     * @var \Laminas\ServiceManager\ServiceManager
      */
     protected $serviceManager = false;
 
@@ -137,12 +137,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get a service manager.
      *
-     * @return \Zend\ServiceManager\ServiceManager
+     * @return \Laminas\ServiceManager\ServiceManager
      */
     public function getServiceManager()
     {
         if (!$this->serviceManager) {
-            $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
+            $this->serviceManager = new \Laminas\ServiceManager\ServiceManager();
             $optionsFactory = new \VuFind\Search\Options\PluginManager(
                 $this->serviceManager,
                 [
@@ -201,7 +201,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 new \VuFind\Config\PluginManager($this->serviceManager, $cfg)
             );
             $this->serviceManager->setService(
-                'SharedEventManager', new \Zend\EventManager\SharedEventManager()
+                'SharedEventManager', new \Laminas\EventManager\SharedEventManager()
             );
             $driverManager = $this->serviceManager
                 ->get(\VuFind\RecordDriver\PluginManager::class);
@@ -212,9 +212,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 )
             );
             $this->serviceManager->setService('Config', []);
-            $factory = new \Zend\Mvc\I18n\TranslatorFactory();
+            $factory = new \Laminas\Mvc\I18n\TranslatorFactory();
             $this->serviceManager->setService(
-                \Zend\Mvc\I18n\Translator::class,
+                \Laminas\Mvc\I18n\Translator::class,
                 $factory->createService($this->serviceManager)
             );
             $this->serviceManager->setService(

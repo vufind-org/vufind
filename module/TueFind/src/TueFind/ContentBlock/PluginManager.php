@@ -2,7 +2,7 @@
 
 namespace TueFind\ContentBlock;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 class PluginManager extends \VuFind\ContentBlock\PluginManager
 {

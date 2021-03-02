@@ -7,7 +7,7 @@
 .vagrant
 .vscode/*
 /downloads
-/newsletter
+/Gruntfile.local.js
 /solr/vendor
 /vendor
 ChangeLog
@@ -15,12 +15,14 @@ TAGS
 composer.phar
 import/solrmarc.log*
 lessphp_*.list
+module/VuFind/tests/.phpunit.result.cache
 node_modules
 public/swagger-ui
 
 # CUSTOM TUEFIND IGNORES START HERE
 /import/marc_local.properties
 nbproject
+/newsletter
 
 # Schema files & links
 schema_local_types.xml

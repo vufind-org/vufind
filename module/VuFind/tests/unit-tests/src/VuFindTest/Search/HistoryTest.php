@@ -61,7 +61,7 @@ class HistoryTest extends TestCase
      */
     public function testExplicitlyDisabledScheduleOptions()
     {
-        $config = new \Zend\Config\Config(
+        $config = new \Laminas\Config\Config(
             [
                 'Account' => [
                     'schedule_searches' => false,
@@ -80,7 +80,7 @@ class HistoryTest extends TestCase
      */
     public function testDefaultScheduleOptions()
     {
-        $config = new \Zend\Config\Config(
+        $config = new \Laminas\Config\Config(
             [
                 'Account' => [
                     'schedule_searches' => true,
@@ -115,12 +115,12 @@ class HistoryTest extends TestCase
      *
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param \Zend\Config\Config                  $config         Configuration
+     * @param \Laminas\Config\Config                  $config         Configuration
      *
      * @return History
      */
     protected function getHistory($searchTable = null,
-        $resultsManager = null, \Zend\Config\Config $config = null
+        $resultsManager = null, \Laminas\Config\Config $config = null
     ) {
         return new History(
             $searchTable ?: $this->getMockBuilder(\VuFind\Db\Table\Search::class)

@@ -45,8 +45,8 @@ class TabManagerTest extends \VuFindTest\Unit\TestCase
     /**
      * Set up a tab manager for testing.
      *
-     * @param PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param ConfigManager $configManager Config manager to use (null for default)
+     * @param  PluginManager $pluginManager Plugin manager to use (null for default)
+     * @param  ConfigManager $configManager Config manager to use (null for default)
      * @return TabManager
      */
     protected function getTabManager(PluginManager $pluginManager = null,
@@ -106,7 +106,7 @@ class TabManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConfigManager()
     {
-        $iniConfig = new \Zend\Config\Config(
+        $iniConfig = new \Laminas\Config\Config(
             [
                 'VuFind\RecordDriver\EDS' => [
                     'tabs' => [

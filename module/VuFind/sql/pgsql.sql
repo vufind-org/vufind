@@ -100,10 +100,11 @@ DROP TABLE IF EXISTS "shortlinks";
 CREATE TABLE shortlinks (
 id SERIAL,
 path text,
+hash varchar(32),
 created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (id)
 );
-
+CREATE UNIQUE INDEX shortlinks_hash_idx ON shortlinks (hash);
 
 -- --------------------------------------------------------
 

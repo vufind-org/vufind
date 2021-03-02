@@ -8,11 +8,7 @@
  */
 namespace TueFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException;
-use Elasticsearch\ClientBuilder;
-use \Exception as Exception;
-use Zend\Log\Logger as Logger;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\JsonModel;
 
 
 /**
@@ -57,7 +53,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     const DOTS = '...';
 
 
-    public function __construct(\Elasticsearch\ClientBuilder $builder, \Zend\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
+    public function __construct(\Elasticsearch\ClientBuilder $builder, \Laminas\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
         $this->logger = $logger;
         $this->configLoader = $configLoader;
         $config = $configLoader->get($this->getFulltextSnippetIni());
@@ -76,7 +72,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
 
     protected function getCurrentLang() {
-        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+        $this->setTranslator($this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class));
         return $this->getTranslatorLocale();
     }
 
@@ -326,7 +322,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
 
     protected function extractSnippetTextType($hit) {
-       $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+       $this->setTranslator($this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class));
 
        if (isset($hit['_source']['text_type'])) {
            $text_type_description = $this->text_type_to_description_map[$hit['_source']['text_type']];

@@ -13,13 +13,14 @@ class FormFactory extends \VuFind\Form\FormFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $config = $container->get('VuFind\Config\PluginManager')
+        $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->toArray();
-        $yamlReader = $container->get('VuFind\Config\YamlReader');
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $viewHelperManager = $container->get('ViewHelperManager');
 
         return new $requestedName(
             // TueFind: Also pass Site config
-            $yamlReader, $config['Feedback'] ?? null, $config['Site'] ?? null
+            $yamlReader, $viewHelperManager, $config['Feedback'] ?? null, $config['Site'] ?? null
         );
     }
 }

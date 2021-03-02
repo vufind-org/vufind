@@ -27,7 +27,7 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * Relais view helper
@@ -38,7 +38,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Relais extends \Zend\View\Helper\AbstractHelper
+class Relais extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Relais configuration (or null if none found)

@@ -12,7 +12,7 @@ class Home implements \VuFind\ContentBlock\ContentBlockInterface, RequestAwareIn
         $this->target = empty($settings) ? $this->target : $settings;
     }
 
-    public function setRequest(\Zend\Http\Request $request)
+    public function setRequest(\Laminas\Http\Request $request)
     {
         $this->request = $request;
     }

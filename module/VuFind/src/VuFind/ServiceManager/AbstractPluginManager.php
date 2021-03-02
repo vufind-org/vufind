@@ -27,8 +27,8 @@
  */
 namespace VuFind\ServiceManager;
 
-use Zend\ServiceManager\AbstractPluginManager as Base;
-use Zend\ServiceManager\Exception\InvalidServiceException;
+use Laminas\ServiceManager\AbstractPluginManager as Base;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
 
 /**
  * VuFind Plugin Manager

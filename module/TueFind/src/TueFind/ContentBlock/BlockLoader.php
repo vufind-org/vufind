@@ -2,11 +2,10 @@
 
 namespace TueFind\ContentBlock;
 
-use Zend\Config\Config;
-use Zend\Http\Request as Request;
+use Laminas\Config\Config;
+use Laminas\Http\Request as Request;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\ContentBlock\PluginManager as BlockManager;
-use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
 class BlockLoader extends \VuFind\ContentBlock\BlockLoader

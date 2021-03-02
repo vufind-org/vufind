@@ -2,7 +2,7 @@
 namespace IxTheo\Db\Table;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Db\Table\PluginManager;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
@@ -11,7 +11,7 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
     /**
      * Session container for last list information.
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
@@ -20,7 +20,7 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas Framework configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
@@ -67,8 +67,8 @@ class Subscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\
     /**
      * Apply a sort parameter to a query on the resource table.
      *
-     * @param \Zend\Db\Sql\Select $query Query to modify
-     * @param string              $sort  Field to use for sorting (may include 'desc'
+     * @param \Laminas\Db\Sql\Select $query Query to modify
+     * @param string                 $sort  Field to use for sorting (may include 'desc'
      * qualifier)
      *
      * @return void

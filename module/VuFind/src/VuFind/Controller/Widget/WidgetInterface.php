@@ -28,7 +28,7 @@
  */
 namespace VuFind\Controller\Widget;
 
-use Zend\Stdlib\Parameters;
+use Laminas\Stdlib\Parameters;
 
 /**
  * Widget interface definition.

@@ -30,17 +30,17 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
+
 use VuFindSearch\Backend\Primo\Backend;
 use VuFindSearch\Backend\Primo\Connector;
 
 use VuFindSearch\Backend\Primo\QueryBuilder;
+
 use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
-
-use Zend\ServiceManager\Factory\FactoryInterface;
-
-use ZfcRbac\Service\AuthorizationService;
 
 /**
  * Factory for Primo Central backends.
@@ -56,7 +56,7 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -70,7 +70,7 @@ class PrimoBackendFactory implements FactoryInterface
     /**
      * Primo configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $primoConfig;
 

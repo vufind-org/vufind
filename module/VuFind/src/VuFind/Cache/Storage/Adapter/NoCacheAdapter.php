@@ -28,7 +28,7 @@
  */
 namespace VuFind\Cache\Storage\Adapter;
 
-use Zend\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter;
 
 /**
  * VuFind NoCacheAdapter.

@@ -29,9 +29,9 @@
  */
 namespace VuFind\Cache;
 
-use Zend\Cache\Storage\StorageInterface;
-use Zend\Cache\StorageFactory;
-use Zend\Config\Config;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Cache\StorageFactory;
+use Laminas\Config\Config;
 
 /**
  * VuFind Cache Manager
@@ -83,10 +83,10 @@ class Manager
      */
     public function __construct(Config $config, Config $searchConfig)
     {
-        // $config and $config->Cache are Zend\Config\Config objects
+        // $config and $config->Cache are Laminas\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
-        // Zend\Config\Config can be created mutable or cloned and merged, useful
+        // Laminas\Config\Config can be created mutable or cloned and merged, useful
         // for future cache-specific overrides.
         $cacheConfig = isset($config->Cache) ? $config->Cache : false;
         $this->defaults = $cacheConfig ? $cacheConfig->toArray() : false;

@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HistoryLabel extends \Zend\View\Helper\AbstractHelper
+class HistoryLabel extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Label configuration

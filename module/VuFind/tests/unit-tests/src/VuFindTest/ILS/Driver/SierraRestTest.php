@@ -59,10 +59,10 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $sessionFactory = function ($namespace) {
-            return new \Zend\Session\Container($namespace);
+            return new \Laminas\Session\Container($namespace);
         };
         $this->driver = new SierraRest(
             new \VuFind\Date\Converter(), $sessionFactory

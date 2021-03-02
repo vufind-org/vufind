@@ -28,7 +28,7 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Generic factory suitable for most ILS drivers.

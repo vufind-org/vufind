@@ -38,7 +38,7 @@ namespace VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class ImageLoader implements \Zend\Log\LoggerAwareInterface
+class ImageLoader implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

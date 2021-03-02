@@ -28,7 +28,7 @@
 namespace VuFind\ILS\Logic;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Shared factory for ILS logic classes.

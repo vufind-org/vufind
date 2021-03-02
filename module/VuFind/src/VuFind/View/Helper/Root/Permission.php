@@ -28,9 +28,9 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * Permission helper

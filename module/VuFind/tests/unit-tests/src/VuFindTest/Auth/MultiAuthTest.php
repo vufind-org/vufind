@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\Auth;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * LDAP authentication test class.
@@ -78,11 +78,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Verify that missing host causes failure.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testWithMissingMethodOrder()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $config = $this->getAuthConfig();
         unset($config->MultiAuth->method_order);
         $this->getAuthObject($config)->getConfig();
@@ -94,15 +94,15 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
@@ -110,11 +110,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with handler configured to load a service which does not exist.
      *
      * @return void
-     *
-     * @expectedException Zend\ServiceManager\Exception\ServiceNotFoundException
      */
     public function testLoginWithBadService()
     {
+        $this->expectException(\Laminas\ServiceManager\Exception\ServiceNotFoundException::class);
+
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = 'InappropriateService,Database';
 
@@ -128,11 +128,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * as an arbitrary inappropriate class).
      *
      * @return void
-     *
-     * @expectedException Zend\ServiceManager\Exception\InvalidServiceException
      */
     public function testLoginWithBadClass()
     {
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
+
         $config = $this->getAuthConfig();
         $config->MultiAuth->method_order = get_class($this) . ',Database';
 
@@ -144,11 +144,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
@@ -157,11 +157,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }

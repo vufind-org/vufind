@@ -5,7 +5,7 @@ $config = [
     'router' => [
         'routes' => [
             'classification' => [
-                'type' => 'Zend\Router\Http\Segment',
+                'type' => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/classification[/:notation]',
                     'constraints' => [
@@ -46,7 +46,7 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'IxTheo\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
-            'IxTheo\Controller\Plugin\Subscriptions' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'IxTheo\Controller\Plugin\Subscriptions' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'IxTheo\Controller\Plugin\PDASubscriptions' => 'IxTheo\Controller\Plugin\PDASubscriptionsFactory',
         ],
         'aliases' => [
@@ -74,7 +74,7 @@ $config = [
             'IxTheo\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'IxTheo\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'IxTheo\RecordTab\ItemFulltextSearch' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'IxTheo\RecordTab\ItemFulltextSearch' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
             'VuFind\AuthManager' => 'IxTheo\Auth\Manager',

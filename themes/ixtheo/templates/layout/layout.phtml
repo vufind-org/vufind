@@ -31,6 +31,9 @@
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
     <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
       if (!isset($this->renderingError)) {
         // Add translation strings
         $this->jsTranslations()->addStrings(
@@ -41,6 +44,7 @@
             'bulk_save_success' => 'bulk_save_success',
             'close' => 'close',
             'collection_empty' => 'collection_empty',
+            'eol_ellipsis' => 'eol_ellipsis',
             'error_occurred' => 'An error has occurred',
             'go_to_list' => 'go_to_list',
             'hold_available' => 'hold_available',
@@ -81,19 +85,19 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/cookies.js");
+          $this->headScript()->appendFile("vendor/js.cookie.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setDomain("' . $domain . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
           $cookiePath = $cart->getCookiePath();
           if (!empty($cookiePath)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setCookiePath("' . $cookiePath . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
+          }
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
           }
           $this->jsTranslations()->addStrings(
             [
@@ -117,8 +121,7 @@
 
       // Session keep-alive
       if ($this->keepAlive()) {
-          $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->keepAlive());
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
           $this->headScript()->appendFile("keep_alive.js");
       }
 
@@ -128,7 +131,12 @@
         $this->headScript()->appendFile("account_ajax.js");
         $this->jsTranslations()->addStrings(
           [
+            'account_checkouts_due' => 'account_checkouts_due',
+            'account_checkouts_overdue' => 'account_checkouts_overdue',
             'account_has_alerts' => 'account_has_alerts',
+            'account_normal_checkouts' => 'account_normal_checkouts',
+            'account_requests_available' => 'account_requests_available',
+            'account_requests_in_transit' => 'account_requests_in_transit',
             'Checked Out Items' => 'Checked Out Items',
             'ill_request_available' => 'ill_request_available',
             'renew_item_due_tooltip' => 'renew_item_due_tooltip',
@@ -142,12 +150,16 @@
       $root = rtrim($this->url('home'), '/');
       $translations = $this->jsTranslations()->getJSON();
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = <<<JS
+      $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
-      $this->headScript()->appendScript($setupJS);
+      $this->headScript()->appendScript(implode("\n", $appendScripts));
+
+      if ($this->config()->ajaxCoversEnabled()) {
+          $this->headScript()->appendFile("covers.js");
+      }
     ?>
     <?=$this->headScript()?>
   </head>
@@ -175,7 +187,7 @@ JS;
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs">
+    <nav class="breadcrumbs" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
       <div class="container">
         <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
@@ -210,14 +222,9 @@ JS;
     <div style="position: fixed; bottom: 0; right: 0;padding: 8px 0px">
       <a href="/Feedback/home" data-lightbox style="padding: 10px 20px; border:1px solid darkgray; border-radius: 2px;"><?=$this->transEsc("Feedback");?></a>
     </div>
-    <footer class="hidden-print">
-      <div class="container">
-        <?=$this->render('footer.phtml')?>
-        <?=$this->layout()->poweredBy ?>
-      </div>
-    </footer>
+    <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -225,13 +232,11 @@ JS;
         </div>
       </div>
     </div>
-    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa" title="<?=$this->transEsc('sidebar_expand') ?>"></i></div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <?php if ($this->recaptcha()->active()): ?>
-      <?php // TueFind: disable external JS dependency for ReCaptcha ?>
-      <?php /*print $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')*/?>
-    <?php endif; ?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+    <?php endforeach; ?>
   </body>
 </html>

@@ -8,10 +8,9 @@
  */
 namespace TueFind\Controller;
 
-use VuFind\Exception\Forbidden as ForbiddenException;
 use \Exception as Exception;
 use SimpleXMLElement;
-use Zend\Log\Logger as Logger;
+use Laminas\Log\Logger as Logger;
 
 /**
  * This controller is a proxy for requests to BSZ based GVI

@@ -37,11 +37,7 @@
 
 <?php if ($recordTotal < 1): ?>
   <p class="alert alert-danger">
-    <?php if (isset($view->overrideEmptyMessage)): ?>
-      <?=$view->overrideEmptyMessage?>
-    <?php else: ?>
-      <?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?>
-    <?php endif; ?>
+    <?=$this->slot('empty-message')->get($this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])); ?>
   </p>
   <?php if (isset($view->parseError)): ?>
     <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>

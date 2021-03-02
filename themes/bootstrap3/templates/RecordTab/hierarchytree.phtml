@@ -5,7 +5,7 @@
   $activeTree = $this->tab->getActiveTree();
 
   $this->inlineScript(
-     \Zend\View\Helper\HeadScript::SCRIPT,
+     \Laminas\View\Helper\HeadScript::SCRIPT,
      "var hierarchySettings = {\n"
      . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
      . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
@@ -16,8 +16,8 @@
      . ");\n",
      'SET'
   );
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
 <?php if (count($hierarchyTreeList) > 1): ?>

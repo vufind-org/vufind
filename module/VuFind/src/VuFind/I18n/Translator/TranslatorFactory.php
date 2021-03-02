@@ -38,7 +38,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class TranslatorFactory extends \Zend\Mvc\I18n\TranslatorFactory
+class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
 {
     /**
      * Create an object
@@ -73,7 +73,7 @@ class TranslatorFactory extends \Zend\Mvc\I18n\TranslatorFactory
             : [$config->Site->language, 'en'];
         try {
             $pm = $translator->getPluginManager();
-        } catch (\Zend\Mvc\I18n\Exception\BadMethodCallException $ex) {
+        } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $ex) {
             // If getPluginManager is missing, this means that the user has
             // disabled translation in module.config.php or PHP's intl extension
             // is missing. We can do no further configuration of the object.

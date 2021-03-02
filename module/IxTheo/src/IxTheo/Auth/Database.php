@@ -1,7 +1,7 @@
 <?php
 
 namespace IxTheo\Auth;
-use VuFind\Exception\Auth as AuthException, Zend\Crypt\Password\Bcrypt;
+use VuFind\Exception\Auth as AuthException, Laminas\Crypt\Password\Bcrypt;
 
 class Database extends \TueFind\Auth\Database
 {

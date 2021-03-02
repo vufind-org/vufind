@@ -46,7 +46,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     /**
      * Constructor
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
     public function __construct($adapter)
     {

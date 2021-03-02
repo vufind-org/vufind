@@ -5,7 +5,7 @@ use Interop\Container\ContainerInterface;
 use TueFindSearch\Backend\Solr\Backend;
 use TueFind\Search\Solr\InjectFulltextMatchIdsListener;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 
 class AbstractSolrBackendFactory extends \VuFind\Search\Factory\SolrDefaultBackendFactory {
@@ -43,7 +43,7 @@ class AbstractSolrBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacke
 //        }
     }
 
-    
+
     protected function getInjectFulltextMatchIdsListener(\VuFindSearch\Backend\BackendInterface $backend,
          Config $search
     ) {

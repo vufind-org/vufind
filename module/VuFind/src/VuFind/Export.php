@@ -27,7 +27,8 @@
  */
 namespace VuFind;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
+use Laminas\View\Renderer\RendererInterface;
 
 /**
  * Export support class
@@ -77,11 +78,9 @@ class Export
     /**
      * Get the URL for bulk export.
      *
-     * @param \Zend\View\Renderer\RendererInterface $view   View object (needed for
-     * URL generation)
-     * @param string                                $format Export format being used
-     * @param array                                 $ids    Array of IDs to export
-     * (in source|id format)
+     * @param RendererInterface $view   View object (needed for URL generation)
+     * @param string            $format Export format being used
+     * @param array             $ids    Array of IDs to export (in source|id format)
      *
      * @return string
      */

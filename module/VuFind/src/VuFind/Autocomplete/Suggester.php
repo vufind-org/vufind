@@ -27,6 +27,7 @@
  */
 namespace VuFind\Autocomplete;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
@@ -82,11 +83,9 @@ class Suggester
      * This logic is present in the factory class so that it can be easily shared
      * by multiple AJAX handlers.
      *
-     * @param \Zend\Stdlib\Parameters $request    The user request
-     * @param string                  $typeParam  Request parameter containing search
-     * type
-     * @param string                  $queryParam Request parameter containing query
-     * string
+     * @param Parameters $request    The user request
+     * @param string     $typeParam  Request parameter containing search type
+     * @param string     $queryParam Request parameter containing query string
      *
      * @return array
      */

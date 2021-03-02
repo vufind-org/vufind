@@ -1,6 +1,7 @@
 /*exported addGroup, addSearch, deleteGroup, deleteSearch */
 var nextGroup = 0;
 var groupLength = [];
+var deleteGroup, deleteSearch;
 
 function addSearch(group, _fieldValues) {
   var fieldValues = _fieldValues || {};
@@ -18,7 +19,11 @@ function addSearch(group, _fieldValues) {
     .attr('id', 'search_type' + inputID)
     .attr('name', 'type' + group + '[]');
   $newSearch.find('.adv-term-remove')
-    .attr('onClick', 'return deleteSearch(' + group + ',' + groupLength[group] + ')');
+    .data('group', group)
+    .data('groupLength', groupLength[group])
+    .click(function deleteSearchHandler() {
+      return deleteSearch($(this).data('group'), $(this).data('groupLength'));
+    });
   // Preset Values
   if (typeof fieldValues.term !== "undefined") {
     $newSearch.find('input.form-control').val(fieldValues.term);
@@ -51,7 +56,7 @@ function addSearch(group, _fieldValues) {
   return false;
 }
 
-function deleteSearch(group, sindex) {
+deleteSearch = function _deleteSearch(group, sindex) {
   for (var i = sindex; i < groupLength[group] - 1; i++) {
     var $search0 = $('#search' + group + '_' + i);
     var $search1 = $('#search' + group + '_' + (i + 1));
@@ -68,7 +73,7 @@ function deleteSearch(group, sindex) {
     }
   }
   return false;
-}
+};
 
 function addGroup(_firstTerm, _firstField, _join) {
   var firstTerm = _firstTerm || '';
@@ -84,10 +89,16 @@ function addGroup(_firstTerm, _firstField, _join) {
     .removeClass('hidden');
   $newGroup.find('.add_search_link')
     .attr('id', 'add_search_link_' + nextGroup)
-    .attr('onClick', 'return addSearch(' + nextGroup + ')')
+    .data('nextGroup', nextGroup)
+    .click(function addSearchHandler() {
+      return addSearch($(this).data('nextGroup'));
+    })
     .removeClass('hidden');
   $newGroup.find('.adv-group-close')
-    .attr('onClick', 'return deleteGroup(' + nextGroup + ')');
+    .data('nextGroup', nextGroup)
+    .click(function deleteGroupHandler() {
+      return deleteGroup($(this).data('nextGroup'));
+    });
   $newGroup.find('select.form-control')
     .attr('id', 'search_bool' + nextGroup)
     .attr('name', 'bool' + nextGroup + '[]');
@@ -110,7 +121,7 @@ function addGroup(_firstTerm, _firstField, _join) {
   return nextGroup++;
 }
 
-function deleteGroup(group) {
+deleteGroup = function _deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
   // If the last group was removed, add an empty group
@@ -121,12 +132,12 @@ function deleteGroup(group) {
     $('.adv-group .adv-group-close').addClass('hidden'); // Hide x
   }
   return false;
-}
+};
 
 $(document).ready(function advSearchReady() {
   $('.clear-btn').click(function clearBtnClick() {
     $('input[type="text"]').val('');
-    $("option:selected").removeAttr("selected");
+    $("option:selected").prop("selected", false);
     $("#illustrated_-1").click();
   });
 });

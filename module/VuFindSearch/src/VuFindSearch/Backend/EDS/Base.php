@@ -82,6 +82,13 @@ abstract class Base
     protected $contentType = 'application/json';
 
     /**
+     * Search HTTP method
+     *
+     * @var string
+     */
+    protected $searchHttpMethod = 'POST';
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Client
@@ -91,7 +98,7 @@ abstract class Base
      *    <ul>
      *      <li>debug - boolean to control debug mode</li>
      *      <li>orgid - Organization making calls to the EDS API </li>
-     *      <li>profile - EBSCO profile to use for calls to the API. </li>
+     *      <li>search_http_method - HTTP method for search API calls</li>
      *    </ul>
      */
     public function __construct($settings = [])
@@ -105,6 +112,8 @@ abstract class Base
                 case 'orgid':
                     $this->orgId = $value;
                     break;
+                case 'search_http_method':
+                    $this->searchHttpMethod = $value;
                 }
             }
         }
@@ -173,16 +182,17 @@ abstract class Base
      * @param string $sessionToken        Session token
      * @param string $highlightTerms      Comma separated list of terms to highlight
      * in the retrieved record responses
+     * @param array  $extraQueryParams    Extra query string parameters
      *
      * @return array    The requested record
      */
     public function retrieve($an, $dbId, $authenticationToken, $sessionToken,
-        $highlightTerms = null
+        $highlightTerms = null, $extraQueryParams = []
     ) {
         $this->debugPrint(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
         );
-        $qs = ['an' => $an, 'dbid' => $dbId];
+        $qs = $extraQueryParams + ['an' => $an, 'dbid' => $dbId];
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
@@ -203,11 +213,15 @@ abstract class Base
     public function search($query, $authenticationToken, $sessionToken)
     {
         // Query String Parameters
-        $qs = $query->convertToQueryStringParameterArray();
-        $this->debugPrint('Query: ' . print_r($qs, true));
+        $method = $this->searchHttpMethod;
+        $json = $method === 'GET' ? null : $query->convertToSearchRequestJSON();
+        $qs = $method === 'GET' ? $query->convertToQueryStringParameterArray() : [];
+        $this->debugPrint(
+            'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
+        );
         $url = $this->edsApiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
-        return $this->call($url, $headers, $qs);
+        return $this->call($url, $headers, $qs, $method, $json);
     }
 
     /**

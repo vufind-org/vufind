@@ -9,7 +9,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse Author
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function authorAction()
     {
@@ -33,7 +33,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -121,7 +121,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse Era
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function eraAction()
     {
@@ -138,7 +138,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse Genre
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function genreAction()
     {
@@ -265,7 +265,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse ixTheo notations
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function ixTheoClassificationAction()
     {
@@ -285,7 +285,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse Publisher
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function publisherAction()
     {
@@ -306,7 +306,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse Region
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function regionAction()
     {
@@ -335,7 +335,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
     /**
      * Browse Topic
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function topicAction()
     {
@@ -404,7 +404,7 @@ class BrowseController extends \VuFind\Controller\BrowseController
    /**
      * Browse tags
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function tagAction() {
         if (!$this->tagsEnabled()) {

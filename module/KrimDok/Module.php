@@ -8,8 +8,8 @@
  * @copyright   2015-2017 Universtitätsbibliothek Tübingen
  */
 namespace KrimDok;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
+use Laminas\ModuleManager\ModuleManager,
+    Laminas\Mvc\MvcEvent;
 
 /**
  * Template for ZF2 module for storing local overrides.
@@ -40,7 +40,7 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],

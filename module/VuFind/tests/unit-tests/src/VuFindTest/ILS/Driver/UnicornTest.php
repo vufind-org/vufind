@@ -45,7 +45,7 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = new Unicorn(new \VuFind\Date\Converter());
     }

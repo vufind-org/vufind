@@ -27,13 +27,13 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Zend\I18n\Translator\TranslatorInterface;
+use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
  * Lightweight translator aware marker interface (used as an alternative to
- * \Zend\I18n\Translator\TranslatorAwareInterface, which requires an excessive
+ * \Laminas\I18n\Translator\TranslatorAwareInterface, which requires an excessive
  * number of methods to be implemented).  If we switch to PHP 5.4 traits in the
- * future, we can eliminate this interface in favor of the default Zend version.
+ * future, we can eliminate this interface in favor of the default Laminas version.
  *
  * @category VuFind
  * @package  Translator
@@ -46,7 +46,7 @@ trait TranslatorAwareTrait
     /**
      * Translator
      *
-     * @var \Zend\I18n\Translator\TranslatorInterface
+     * @var \Laminas\I18n\Translator\TranslatorInterface
      */
     protected $translator = null;
 
@@ -66,7 +66,7 @@ trait TranslatorAwareTrait
     /**
      * Get translator object.
      *
-     * @return \Zend\I18n\Translator\TranslatorInterface
+     * @return \Laminas\I18n\Translator\TranslatorInterface
      */
     public function getTranslator()
     {
@@ -106,6 +106,9 @@ trait TranslatorAwareTrait
 
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+            if (!$str->isTranslatable()) {
+                return $str->getDisplayString();
+            }
             // On this pass, don't use the $default, since we want to fail over
             // to getDisplayString before giving up:
             $translated = $this
@@ -114,7 +117,17 @@ trait TranslatorAwareTrait
                 return $translated;
             }
             // Override $domain/$str using getDisplayString() before proceeding:
-            list($domain, $str) = $this->extractTextDomain($str->getDisplayString());
+            $str = $str->getDisplayString();
+            // Also the display string can be a TranslatableString. This makes it
+            // possible have multiple levels of translatable values while still
+            // providing a sane default string if translation is not found. Used at
+            // least with hierarchical facets where translation key can be the exact
+            // facet value (e.g. "0/Book/") or a displayable value (e.g. "Book").
+            if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+                return $this->translate($str, $tokens, $default);
+            } else {
+                list($domain, $str) = $this->extractTextDomain($str);
+            }
         }
 
         // Default case: deal with ordinary strings (or string-castable objects):
@@ -204,7 +217,9 @@ trait TranslatorAwareTrait
             }
             if ($target instanceof \VuFind\I18n\TranslatableStringInterface) {
                 $class = get_class($target);
-                $parts[1] = new $class($parts[1], $target->getDisplayString());
+                $parts[1] = new $class(
+                    $parts[1], $target->getDisplayString(), $target->isTranslatable()
+                );
             }
             return $parts;
         }

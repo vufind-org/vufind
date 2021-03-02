@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * HelpText helper factory.
@@ -61,8 +61,8 @@ class HelpTextFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $lang = $container->has(\Zend\Mvc\I18n\Translator::class)
-            ? $container->get(\Zend\Mvc\I18n\Translator::class)->getLocale()
+        $lang = $container->has(\Laminas\Mvc\I18n\Translator::class)
+            ? $container->get(\Laminas\Mvc\I18n\Translator::class)->getLocale()
             : 'en';
         $helpers = $container->get('ViewHelperManager');
         return new $requestedName($helpers->get('context'), $lang);

@@ -27,7 +27,7 @@
  */
 namespace VuFind\UrlShortener;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * URL shortener plugin manager.

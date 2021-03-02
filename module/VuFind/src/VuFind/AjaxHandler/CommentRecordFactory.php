@@ -38,7 +38,8 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CommentRecordFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class CommentRecordFactory
+    implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -68,7 +69,7 @@ class CommentRecordFactory implements \Zend\ServiceManager\Factory\FactoryInterf
         return new $requestedName(
             $tablePluginManager->get(\VuFind\Db\Table\Resource::class),
             $controllerPluginManager
-                ->get(\VuFind\Controller\Plugin\Recaptcha::class),
+                ->get(\VuFind\Controller\Plugin\Captcha::class),
             $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
             $capabilities->getCommentSetting() !== 'disabled'
         );

@@ -27,7 +27,7 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\Config\Config;
+use Laminas\Config\Config;
 
 /**
  * SideFacets Recommendations Module

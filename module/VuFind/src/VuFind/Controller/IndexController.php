@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
-use Zend\Config\Config;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -39,7 +39,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class IndexController extends \Zend\Mvc\Controller\AbstractActionController
+class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
      * VuFind configuration

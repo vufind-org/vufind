@@ -68,7 +68,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     /**
      * Deminify action
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function deminifyAction()
     {
@@ -99,7 +99,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     /**
      * Home action
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

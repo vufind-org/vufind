@@ -27,13 +27,13 @@
  */
 namespace VuFind\Auth;
 
+use Laminas\Config\Config;
+use Laminas\Session\SessionManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\Csrf;
-use Zend\Config\Config;
-use Zend\Session\SessionManager;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -44,7 +44,7 @@ use Zend\Session\SessionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
+class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
 {
     /**
      * Authentication modules
@@ -61,7 +61,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     protected $activeAuth;
 
     /**
-     * Whitelist of values allowed to be set into $activeAuth
+     * List of values allowed to be set into $activeAuth
      *
      * @var array
      */
@@ -77,7 +77,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Session container
      *
-     * @var \Zend\Session\Container
+     * @var \Laminas\Session\Container
      */
     protected $session;
 
@@ -139,7 +139,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         $this->csrf = $csrf;
 
         // Set up session:
-        $this->session = new \Zend\Session\Container('Account', $sessionManager);
+        $this->session = new \Laminas\Session\Container('Account', $sessionManager);
 
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -414,7 +414,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
             $this->sessionManager->destroy();
         } else {
             // If we don't want to destroy the session, we still need to empty it.
-            // There should be a way to do this through Zend\Session, but there
+            // There should be a way to do this through Laminas\Session, but there
             // apparently isn't (TODO -- do this better):
             $_SESSION = [];
         }
@@ -482,7 +482,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Get the identity
      *
-     * @return \ZfcRbac\Identity\IdentityInterface|null
+     * @return \LmcRbacMvc\Identity\IdentityInterface|null
      */
     public function getIdentity()
     {
@@ -534,7 +534,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Create a new user account from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * new account details.
      *
      * @throws AuthException
@@ -551,7 +551,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * password change details.
      *
      * @throws AuthException
@@ -592,7 +592,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -672,7 +672,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
         }
 
         // If this method supports switching to a different method and we haven't
-        // already initialized it, add those options to the whitelist. If the object
+        // already initialized it, add those options to the legal list. If the object
         // is already initialized, that means we've already gone through this step
         // and can save ourselves the trouble.
 
@@ -693,7 +693,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      * of the current logged-in user. Return true for valid credentials, false
      * otherwise.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException

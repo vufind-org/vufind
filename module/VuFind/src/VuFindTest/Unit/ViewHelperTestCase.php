@@ -45,11 +45,11 @@ abstract class ViewHelperTestCase extends DbTestCase
      * @param array  $plugins Custom VuFind plug-ins to register
      * @param string $theme   Theme directory to load from
      *
-     * @return \Zend\View\Renderer\PhpRenderer
+     * @return \Laminas\View\Renderer\PhpRenderer
      */
     protected function getPhpRenderer($plugins = [], $theme = 'bootstrap3')
     {
-        $resolver = new \Zend\View\Resolver\TemplatePathStack();
+        $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
         // This assumes that all themes will be testing inherit directly
         // from root with no intermediate themes.  Probably safe for most
@@ -60,7 +60,7 @@ abstract class ViewHelperTestCase extends DbTestCase
                 $this->getPathForTheme($theme)
             ]
         );
-        $renderer = new \Zend\View\Renderer\PhpRenderer();
+        $renderer = new \Laminas\View\Renderer\PhpRenderer();
         $renderer->setResolver($resolver);
         if (!empty($plugins)) {
             $pluginManager = $renderer->getHelperPluginManager();

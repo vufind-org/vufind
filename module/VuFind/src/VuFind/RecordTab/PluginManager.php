@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordTab;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record tab plugin manager
@@ -107,7 +107,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
-        $this->addInitializer('ZfcRbac\Initializer\AuthorizationServiceInitializer');
+        $this->addInitializer(
+            \LmcRbacMvc\Initializer\AuthorizationServiceInitializer::class
+        );
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

@@ -52,14 +52,16 @@ class CartTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->setMethods([])
-            ->setConstructorArgs([
+            ->setConstructorArgs(
+                [
                 $this->createMock(\VuFindSearch\Service::class),
                 $this->createMock(\VuFind\RecordDriver\PluginManager::class)
-            ])->getMock();
+                ]
+            )->getMock();
     }
 
     /**

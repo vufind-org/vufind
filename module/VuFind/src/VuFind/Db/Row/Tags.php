@@ -27,8 +27,8 @@
  */
 namespace VuFind\Db\Row;
 
+use Laminas\Db\Sql\Expression;
 use VuFind\Db\Table\Resource as ResourceTable;
-use Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for tags
@@ -46,7 +46,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
     public function __construct($adapter)
     {

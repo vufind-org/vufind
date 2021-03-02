@@ -28,7 +28,7 @@ class SolrDefaultBackendFactory extends \TueFind\Search\Factory\SolrDefaultBacke
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
-        $manager = $this->serviceLocator->get('VuFind\RecordDriver\PluginManager');
+        $manager = $this->serviceLocator->get(\VuFind\RecordDriver\PluginManager::class);
         $factory = new RecordCollectionFactory([$manager, 'getSolrRecord']);
         $backend->setRecordCollectionFactory($factory);
         return $backend;
@@ -44,7 +44,7 @@ class SolrDefaultBackendFactory extends \TueFind\Search\Factory\SolrDefaultBacke
     protected function createConnector()
     {
         $config = $this->config->get($this->mainConfig);
-        $this->setTranslator($this->serviceLocator->get('Zend\Mvc\I18n\Translator'));
+        $this->setTranslator($this->serviceLocator->get(\Laminas\Mvc\I18n\Translator::class));
         $current_lang = $this->getTranslatorLocale();
 
         // On the Solr side we use different naming scheme

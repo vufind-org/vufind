@@ -2,7 +2,7 @@
 
 namespace TueFind;
 
-use \Zend\Mvc\MvcEvent;
+use \Laminas\Mvc\MvcEvent;
 
 /**
  * Bot protection

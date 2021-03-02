@@ -5,7 +5,7 @@ $config = [
     'router' => [
         'routes' => [
             'proxy-load' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/Proxy/Load',
                     'defaults' => [
@@ -15,7 +15,7 @@ $config = [
                 ],
             ],
             'pdaproxy-load' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/PDAProxy/Load',
                     'defaults' => [
@@ -25,7 +25,7 @@ $config = [
                 ],
             ],
             'fulltextsnippetproxy-load' => [
-                'type' => 'Zend\Router\Http\Literal',
+                'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/FulltextSnippetProxy/Load',
                     'defaults' => [
@@ -35,7 +35,7 @@ $config = [
                 ],
             ],
             'wikidataproxy-load' => [
-                'type'    => 'Zend\Router\Http\Literal',
+                'type'    => 'Laminas\Router\Http\Literal',
                 'options' => [
                     'route'    => '/WikidataProxy/Load',
                     'defaults' => [
@@ -45,7 +45,7 @@ $config = [
                 ],
             ],
             'quicklink' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/r/[:id]',
                     'constraints' => [
@@ -58,7 +58,7 @@ $config = [
                 ],
             ],
             'redirect' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => '/redirect/:url[/:group]',
                     'constraints' => [
@@ -73,7 +73,7 @@ $config = [
                 ],
             ],
             'static-page' => [
-                'type'    => 'Zend\Router\Http\Segment',
+                'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
                     'route'    => "/:page",
                     'constraints' => [
@@ -134,11 +134,9 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'TueFind\Controller\Plugin\Recaptcha' => 'TueFind\Controller\Plugin\RecaptchaFactory',
-            'TueFind\Controller\Plugin\Wikidata' => 'Zend\ServiceManager\Factory\InvokableFactory',
+            'TueFind\Controller\Plugin\Wikidata' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
-            'recaptcha' => 'TueFind\Controller\Plugin\Recaptcha',
             'wikidata' => 'TueFind\Controller\Plugin\Wikidata',
         ],
     ],
@@ -146,6 +144,7 @@ $config = [
         'allow_override' => true,
         'factories' => [
             'TueFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
@@ -154,7 +153,6 @@ $config = [
             'TueFind\Form\Form' => 'TueFind\Form\FormFactory',
             'TueFind\Mailer\Mailer' => 'TueFind\Mailer\Factory',
             'TueFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'TueFind\Service\ReCaptcha' => 'Zend\ServiceManager\Factory\InvokableFactory',
             'TueFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
@@ -162,7 +160,7 @@ $config = [
             'TueFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
-            'Zend\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
+            'Laminas\Session\SessionManager' => 'TueFind\Session\ManagerFactory',
         ],
         'initializers' => [
             'TueFind\ServiceManager\ServiceInitializer',
@@ -170,6 +168,7 @@ $config = [
         'aliases' => [
             'VuFind\AuthPluginManager' => 'TueFind\Auth\PluginManager',
             'VuFind\Auth\PluginManager' => 'TueFind\Auth\PluginManager',
+            'VuFind\Captcha\PluginManager' => 'TueFind\Captcha\PluginManager',
             'VuFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoader',
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
             'VuFind\Cookie\CookieManager' => 'TueFind\Cookie\CookieManager',
@@ -181,7 +180,6 @@ $config = [
             'VuFind\Form\Form' => 'TueFind\Form\Form',
             'VuFind\Mailer\Mailer' => 'TueFind\Mailer\Mailer',
             'VuFind\MetadataVocabulary\PluginManager' => 'TueFind\MetadataVocabulary\PluginManager',
-            'VuFind\Recaptcha' => 'TueFind\Service\ReCaptcha',
             'VuFind\RecommendPluginManager' => 'TueFind\Recommend\PluginManager',
             'VuFind\Recommend\PluginManager' => 'TueFind\Recommend\PluginManager',
             'VuFind\Record\FallbackLoader\PluginManager' => 'TueFind\Record\FallbackLoader\PluginManager',
@@ -194,7 +192,6 @@ $config = [
             'VuFind\Search' => 'TueFindSearch\Service',
             'VuFind\Search\Results\PluginManager' => 'TueFind\Search\Results\PluginManager',
             'VuFindSearch\Service' => 'TueFindSearch\Service',
-            'VuFind\Service\Recaptcha' => 'TueFind\Service\ReCaptcha',
         ],
     ],
     'view_helpers' => [

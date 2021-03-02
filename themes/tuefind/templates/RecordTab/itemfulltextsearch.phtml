@@ -1,7 +1,7 @@
 <?php
     $this->headTitle($this->translate('Item Fulltext Search') . ': ' . $this->driver->getBreadcrumb())
 ?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(TueFind.HandlePassedFulltextQuery);', 'SET')?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(TueFind.HandlePassedFulltextQuery);', 'SET')?>
 <span>
   <select id="itemFTTextTypeScope" class="selectpicker">
 <?php $fulltext_types = $this->driver->getFulltextTypes();
@@ -40,7 +40,7 @@
                                                    this.searchForm_fulltext.value,
                                                    true /* be verbose, i.e. return all results*/,
                                                    document.getElementById('itemFTSearchScope').value,
-                                                   (document.getElementById('itemFTTextTypeScope').value == 'All Types' 
+                                                   (document.getElementById('itemFTTextTypeScope').value == 'All Types'
                                                    ? <?="'" . implode(',', $this->driver->getFulltextTypes()) ."'"?>
                                                    : document.getElementById('itemFTTextTypeScope').value));
                                                    TueFind.CheckWildcards(event);
