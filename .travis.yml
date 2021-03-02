@@ -16,13 +16,13 @@ matrix:
         - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass"
 
 before_script:
+  - touch solr/.disableAutomaticInstall
   - phpenv config-rm xdebug.ini
   - phpenv rehash
   - composer install
   - npm install -g eslint@"<5.0.0"
   - npm install -g jshint@"2.9.6"
   - npm install
-  - touch solr/.disableAutomaticInstall
 
 cache:
   directories:
