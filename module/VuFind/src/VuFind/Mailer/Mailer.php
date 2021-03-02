@@ -58,6 +58,13 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected $transport;
 
     /**
+     * A clone of transport that can be used for a new connection
+     *
+     * @var TransportInterface
+     */
+    protected $initialTransport;
+
+    /**
      * The maximum number of email recipients allowed (0 = no limit)
      *
      * @var int
@@ -117,7 +124,13 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         // If the transport has a disconnect method, call it:
         $transport = $this->getTransport();
         if (is_callable([$transport, 'disconnect'])) {
-            $transport->disconnect();
+            try {
+                $transport->disconnect();
+            } catch (\Exception $e) {
+                $this->setTransport($this->initialTransport);
+            }
+        } else {
+            $this->setTransport($this->initialTransport);
         }
         return $this;
     }
@@ -144,6 +157,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function setTransport($transport)
     {
         $this->transport = $transport;
+        $this->initialTransport = clone $this->transport;
     }
 
     /**
