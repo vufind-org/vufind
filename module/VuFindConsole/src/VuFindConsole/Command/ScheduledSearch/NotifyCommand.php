@@ -487,7 +487,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         }
         if (null !== $exception) {
             $this->err(
-                "Failed to send message to {$user->email}: " . $exception->getMessage()
+                "Failed to send message to {$user->email}: "
+                . $exception->getMessage()
             );
             return false;
         }
