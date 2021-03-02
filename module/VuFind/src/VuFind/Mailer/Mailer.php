@@ -58,7 +58,10 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected $transport;
 
     /**
-     * A clone of transport that can be used for a new connection
+     * A clone of $transport above. This can be used to reset the connection state
+     * in case transport doesn't support the disconnect method or it throws an
+     * exception (this can happen if the connection is stale and the connector tries
+     * to issue a QUIT message for clean disconnect).
      *
      * @var TransportInterface
      */
@@ -121,7 +124,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      */
     public function resetConnection()
     {
-        // If the transport has a disconnect method, call it:
+        // If the transport has a disconnect method, call it. Otherwise, and in case
+        // disconnect fails, revert to the transport instance clone made before a
+        // connection was made.
         $transport = $this->getTransport();
         if (is_callable([$transport, 'disconnect'])) {
             try {
@@ -157,6 +162,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function setTransport($transport)
     {
         $this->transport = $transport;
+        // Store a clone of the given transport so that we can reset the connection
+        // as necessary.
         $this->initialTransport = clone $this->transport;
     }
 
