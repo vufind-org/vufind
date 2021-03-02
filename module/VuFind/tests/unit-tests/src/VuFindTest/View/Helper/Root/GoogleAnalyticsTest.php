@@ -38,8 +38,10 @@ use VuFind\View\Helper\Root\GoogleAnalytics;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class GoogleAnalyticsTest extends \VuFindTest\Unit\ViewHelperTestCase
+class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Test the helper (old mode)
      *

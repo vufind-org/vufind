@@ -57,7 +57,9 @@
               if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
             ?>
             <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-              <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+              <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav" data-lightbox-ignore>
+                <?=$this->transEsc($desc)?>
+              </a>
             </li>
           <?php endforeach; ?>
         </ul>

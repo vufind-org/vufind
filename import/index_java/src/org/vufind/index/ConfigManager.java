@@ -243,6 +243,28 @@ public class ConfigManager
     }
 
     /**
+     * Get a Boolean setting from a VuFind configuration file; match PHP's string to Boolean logic.
+     * @param filename configuration file name
+     * @param section section name within the file
+     * @param setting setting name within the section
+     * @param default defaultValue value to use if setting is missing
+     */
+    public boolean getBooleanConfigSetting(String filename, String section, String setting, boolean defaultValue)
+    {
+        String config = getConfigSetting(filename, section, setting);
+        if (config == null) {
+            return defaultValue;
+        }
+        switch (config.trim().toLowerCase()) {
+        case "false":
+        case "0":
+        case "":
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Log an error message and throw a fatal exception.
      * @param msg message to log
      */

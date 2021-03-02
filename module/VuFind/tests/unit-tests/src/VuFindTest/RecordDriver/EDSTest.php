@@ -40,7 +40,7 @@ use VuFind\RecordDriver\EDS;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EDSTest extends \VuFindTest\Unit\TestCase
+class EDSTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getUniqueID for a record.

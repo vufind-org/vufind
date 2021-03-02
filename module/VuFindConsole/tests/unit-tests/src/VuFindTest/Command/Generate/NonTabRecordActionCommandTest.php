@@ -42,7 +42,7 @@ use VuFindConsole\Generator\GeneratorTools;
  */
 class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test that missing parameters yield an error message.

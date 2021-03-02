@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Base class for tests using a MockContainer.
+ * Mix-in for detecting whether a live test environment is currently running.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,37 +24,37 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
-
-use VuFindTest\Container\MockContainer;
+namespace VuFindTest\Feature;
 
 /**
- * Base class for tests using a MockContainer.
+ * Mix-in for detecting whether a live test environment is currently running.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class MockContainerTest extends \PHPUnit\Framework\TestCase
+trait LiveDetectionTrait
 {
     /**
-     * Mock container
+     * Flag to allow other traits to test for the presence of this one (to enforce
+     * dependencies).
      *
-     * @var MockContainer
+     * @var bool
      */
-    protected $container;
+    public $hasLiveDetectionTrait = true;
 
     /**
-     * Standard setup method.
+     * Is this test running in a continuous integration context?
      *
-     * @return void
+     * @return bool
      */
-    public function setUp(): void
+    public function continuousIntegrationRunning()
     {
-        $this->container = new MockContainer($this);
+        // We'll assume that if the CI Solr PID is present, then CI is active:
+        return file_exists(__DIR__ . '/../../../../../local/solr-8983.pid');
     }
 }

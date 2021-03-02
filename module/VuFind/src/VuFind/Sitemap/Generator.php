@@ -126,7 +126,7 @@ class Generator
     /**
      * Verbose callback
      *
-     * @var \Callable
+     * @var callable
      */
     protected $verbose = null;
 
@@ -183,10 +183,10 @@ class Generator
     /**
      * Get/set verbose callback
      *
-     * @param \Callable|null $newMode Callback for writing verbose messages (or null
+     * @param callable|null $newMode Callback for writing verbose messages (or null
      * to disable them)
      *
-     * @return \Callable|null Current verbose callback (null if disabled)
+     * @return callable|null Current verbose callback (null if disabled)
      */
     public function setVerbose($newMode = null)
     {
