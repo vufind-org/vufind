@@ -22,6 +22,7 @@ before_script:
   - npm install -g eslint@"<5.0.0"
   - npm install -g jshint@"2.9.6"
   - npm install
+  - touch solr/.disableAutomaticInstall
 
 cache:
   directories:
