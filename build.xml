@@ -198,9 +198,13 @@
         <loadfile property="existing_solr_version" file="${srcdir}/solr/vendor/.installedVersion" />
       </then>
     </if>
-    <!-- only attempt to install Solr if the desired version is not already there -->
+    <!-- only attempt to install Solr if the desired version is not already there,
+         and a marker file has not been created to disable Solr installation. -->
     <if>
-      <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+      <and>
+        <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+        <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
+      </and>
       <then>
         <!-- make sure we don't run out of memory or time during installation: -->
         <php expression="ini_set('memory_limit', '1G');" />
