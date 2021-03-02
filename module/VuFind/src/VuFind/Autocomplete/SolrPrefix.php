@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Autocomplete Module
+ * Solr Prefix Autocomplete Module
  *
  * PHP version 7
  *
