@@ -467,18 +467,27 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             $this->mailer->send($to, $from, $subject, $message);
             return true;
         } catch (\Exception $e) {
-            $this->msg(
-                'Initial email send failed; resetting connection and retrying...'
-            );
+            // Pass through
+        } catch (\RuntimeException $e) {
+            // Pass through
         }
         // If we got this far, the first attempt threw an exception; let's reset
         // the connection, then try again....
+        $this->msg(
+            'Initial email send failed; resetting connection and retrying...'
+        );
         $this->mailer->resetConnection();
+        $exception = null;
         try {
             $this->mailer->send($to, $from, $subject, $message);
         } catch (\Exception $e) {
+            $exception = $e;
+        } catch (\RuntimeException $e) {
+            $exception = $e;
+        }
+        if (null !== $exception) {
             $this->err(
-                "Failed to send message to {$user->email}: " . $e->getMessage()
+                "Failed to send message to {$user->email}: " . $exception->getMessage()
             );
             return false;
         }
