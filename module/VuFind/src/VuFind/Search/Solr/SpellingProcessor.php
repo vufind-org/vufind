@@ -72,16 +72,25 @@ class SpellingProcessor
     protected $phrase;
 
     /**
+     * Callback for normalizing text.
+     *
+     * @var callable
+     */
+    protected $normalizer;
+
+    /**
      * Constructor
      *
-     * @param Config $config Spelling configuration (optional)
+     * @param Config   $config     Spelling configuration (optional)
+     * @param callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct($config = null)
+    public function __construct($config = null, $normalizer = null)
     {
         $this->spellingLimit = $config->limit ?? 3;
         $this->spellSkipNumeric = $config->skip_numeric ?? true;
         $this->expand = $config->expand ?? true;
         $this->phrase = $config->phrase ?? false;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -230,7 +239,7 @@ class SpellingProcessor
             return true;
         }
         // We should also skip terms already contained within the query:
-        return $queryContains == $query->containsNormalizedTerm($term);
+        return $queryContains == $query->containsTerm($term, $this->normalizer);
     }
 
     /**

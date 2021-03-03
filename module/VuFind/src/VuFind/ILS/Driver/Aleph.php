@@ -1307,10 +1307,12 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     public function getMyProfile($user)
     {
         if ($this->xserver_enabled) {
-            return $this->getMyProfileX($user);
+            $profile = $this->getMyProfileX($user);
         } else {
-            return $this->getMyProfileDLF($user);
+            $profile = $this->getMyProfileDLF($user);
         }
+        $profile['cat_username'] = $profile['cat_username'] ?? $user['id'];
+        return $profile;
     }
 
     /**

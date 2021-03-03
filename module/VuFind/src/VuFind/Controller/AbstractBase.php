@@ -286,7 +286,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the user object if logged in, false otherwise.
      *
-     * @return object|bool
+     * @return \VuFind\Db\Row\User|bool
      */
     protected function getUser()
     {
