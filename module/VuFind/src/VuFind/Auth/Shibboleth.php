@@ -345,10 +345,14 @@ class Shibboleth extends AbstractBase
     {
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
-        $username = $shib['prefix'] . '.' . $this->getAttribute(
-            $request,
-            $shib['cat_username']
-        );
+        $username = $this->getAttribute($request, $shib['cat_username']);
+        if ($username == null) {
+            throw new \VuFind\Exception\LibraryCard('Missing username');
+        }
+        $prefix = $shib['prefix'] ?? '';
+        if (!empty($prefix)) {
+            $username = $shib['prefix'] . '.' . $username;
+        }
         $password = $shib['cat_password'] ?? null;
         $connectingUser->saveLibraryCard(
             null, $shib['prefix'],

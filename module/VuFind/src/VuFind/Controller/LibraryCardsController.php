@@ -78,12 +78,15 @@ class LibraryCardsController extends AbstractBase
         // Connect to the ILS for login drivers:
         $catalog = $this->getILS();
 
+        $config = $this->getConfig();
+        $shibboleth = isset($config->Catalog->shibboleth_library_cards) &&
+            $config->Catalog->shibboleth_library_cards &&
+            ($this->getAuthManager()->getAuthMethod() == 'Shibboleth');
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
                 'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
-                'shibboleth' => ($this->getAuthManager()
-                    ->getAuthMethod() == 'Shibboleth')
+                'shibboleth' => $shibboleth,
             ]
         );
     }
@@ -251,6 +254,11 @@ class LibraryCardsController extends AbstractBase
     {
         $url = $this->getServerUrl('librarycards-connectshibbolethcard');
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
+        if ($redirectUrl == null) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_technical', 'error');
+            $redirectUrl = '/LibraryCards/Home';
+        }
         return $this->redirect()->toUrl($redirectUrl);
     }
 
@@ -261,9 +269,11 @@ class LibraryCardsController extends AbstractBase
      */
     public function connectShibbolethCardAction()
     {
-        $user = $this->getUser();
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
         try {
-            $this->getAuthManager()->connectUser($this->getRequest(), $user);
+            $this->getAuthManager()->connectUserCard($this->getRequest(), $user);
         } catch (\Exception $ex) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage($ex->getMessage());
