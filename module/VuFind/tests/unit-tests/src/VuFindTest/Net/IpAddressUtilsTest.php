@@ -38,7 +38,7 @@ use VuFind\Net\IpAddressUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IpAddressUtilsTest extends \VuFindTest\Unit\TestCase
+class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test normalizeIp()

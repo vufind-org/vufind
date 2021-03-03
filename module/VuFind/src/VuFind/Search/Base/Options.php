@@ -886,6 +886,24 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Load all API-related settings from the relevant ini file(s).
+     *
+     * @return array
+     */
+    public function getAPISettings()
+    {
+        // Inherit defaults from searches.ini (if that is not already the
+        // configured search settings file):
+        $defaultConfig = $this->configLoader->get('searches')->API;
+        $defaultSettings = $defaultConfig ? $defaultConfig->toArray() : [];
+        $localIni = $this->getSearchIni();
+        $localConfig = ($localIni !== 'searches')
+            ? $this->configLoader->get($localIni)->API : null;
+        $localSettings = $localConfig ? $localConfig->toArray() : [];
+        return array_merge($defaultSettings, $localSettings);
+    }
+
+    /**
      * Load all recommendation settings from the relevant ini file.  Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
@@ -974,6 +992,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Return the callback used for normalization within this backend.
+     *
+     * @return callable
+     */
+    public function getSpellingNormalizer()
+    {
+        return new \VuFind\Normalizer\DefaultSpellingNormalizer();
     }
 
     /**

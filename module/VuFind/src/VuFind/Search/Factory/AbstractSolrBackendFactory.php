@@ -380,6 +380,25 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $this->serviceLocator->get(\VuFindHttp\HttpService::class)
             );
         }
+
+        if (!empty($searchConfig->SearchCache->adapter)) {
+            $cacheConfig = $searchConfig->SearchCache->toArray();
+            $options = $cacheConfig['options'] ?? [];
+            if (empty($options['namespace'])) {
+                $options['namespace'] = 'Index';
+            }
+            if (empty($options['ttl'])) {
+                $options['ttl'] = 300;
+            }
+            $settings = [
+                'adapter' => [
+                    'name' => $cacheConfig['adapter'],
+                    'options' => $options,
+                ]
+            ];
+            $cache = \Laminas\Cache\StorageFactory::factory($settings);
+            $connector->setCache($cache);
+        }
         return $connector;
     }
 
@@ -435,12 +454,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get a deduplication listener for the backend
      *
-     * @param BackendInterface $backend Search backend
-     * @param bool             $enabled Whether deduplication is enabled
+     * @param Backend $backend Search backend
+     * @param bool    $enabled Whether deduplication is enabled
      *
      * @return DeduplicationListener
      */
-    protected function getDeduplicationListener(BackendInterface $backend, $enabled)
+    protected function getDeduplicationListener(Backend $backend, $enabled)
     {
         return new DeduplicationListener(
             $backend,

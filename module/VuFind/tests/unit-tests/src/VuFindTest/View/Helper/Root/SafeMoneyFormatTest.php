@@ -81,10 +81,10 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
     public function testFormatting()
     {
         $escaper = new \Laminas\View\Helper\EscapeHtml();
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view->expects($this->any())->method('plugin')
-            ->with($this->equalTo('escapeHtml'))
-            ->will($this->returnValue($escaper));
+        $view = new \Laminas\View\Renderer\PhpRenderer();
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $container->set('escapeHtml', $escaper);
+        $view->setHelperPluginManager($container);
 
         // test default settings
         $smf = new SafeMoneyFormat();

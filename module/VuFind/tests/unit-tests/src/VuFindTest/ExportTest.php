@@ -204,7 +204,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         ];
         $exportConfig = [
             'anything' => ['requiredMethods' => ['getTitle']],
-            'marc' => ['requiredMethods' => ['getMarcRecord']]
+            'marc' => ['requiredMethods' => ['getMarcReader']]
         ];
         $export = $this->getExport($mainConfig, $exportConfig);
         $solrDefault = new \VuFind\RecordDriver\SolrDefault();

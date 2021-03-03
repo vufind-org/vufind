@@ -287,7 +287,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'userInstitution' => 'My Institution',
             ],
         ];
-        $renderer = $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $renderer = $this->prepareMock(
+            \Laminas\View\Renderer\PhpRenderer::class, ['render']
+        );
         $renderer->expects($this->once())->method('render')
             ->with(
                 $this->equalTo('Email/scheduled-alert.phtml'),
@@ -343,9 +345,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      * Create a list of fake notification objects.
      *
      * @param array     $overrides       Fields to override in the notification row.
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
@@ -387,9 +389,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock search results.
      *
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Solr\Results
      */
@@ -421,9 +423,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a minified search object
      *
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return \VuFind\Search\Minified
      */
@@ -474,9 +476,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     {
         $renderer = $options['renderer']
             ?? $this->prepareMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $renderer->expects($this->any())->method('plugin')
-            ->with($this->equalTo('url'))
-            ->will($this->returnValue($this->prepareMock(\Laminas\View\Helper\Url::class)));
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $container->set('url', $this->prepareMock(\Laminas\View\Helper\Url::class));
+        $renderer->setHelperPluginManager($container);
         $command = new NotifyCommand(
             $this->prepareMock(\VuFind\Crypt\HMAC::class),
             $renderer,
@@ -522,9 +524,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      * Create a mock search table that returns a list of fake notification objects.
      *
      * @param array     $overrides       Fields to override in the notification row.
-     * @param \Callable $optionsCallback Callback to set expectations on options object
-     * @param \Callable $paramsCallback  Callback to set expectations on params object
-     * @param \Callable $resultsCallback Callback to set expectations on results object
+     * @param callable $optionsCallback Callback to set expectations on options object
+     * @param callable $paramsCallback  Callback to set expectations on params object
+     * @param callable $resultsCallback Callback to set expectations on results object
      *
      * @return array
      */
@@ -561,14 +563,16 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Prepare a mock object
      *
-     * @param string $class Class to mock
+     * @param string $class   Class to mock
+     * @param array  $methods Methods to mock
      *
      * @return mixed
      */
-    protected function prepareMock($class)
+    protected function prepareMock($class, $methods = [])
     {
         return $this->getMockBuilder($class)
             ->disableOriginalConstructor()
+            ->setMethods($methods)
             ->getMock();
     }
 }

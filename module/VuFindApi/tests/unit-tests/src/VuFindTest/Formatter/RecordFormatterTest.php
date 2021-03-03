@@ -40,7 +40,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordFormatterTest extends \VuFindTest\Unit\TestCase
+class RecordFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get default configuration to use in tests when no overrides are specified.
@@ -79,13 +79,11 @@ class RecordFormatterTest extends \VuFindTest\Unit\TestCase
      */
     protected function getHelperPluginManager()
     {
-        $hm = new \Laminas\View\HelperPluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $hm = new \Laminas\View\HelperPluginManager($container);
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
-
-        $mockRecordLink = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLink::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockRecordLink
+            = $container->get(\VuFind\View\Helper\Root\RecordLink::class);
         $mockRecordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('http://record'));
         $hm->setService('recordLink', $mockRecordLink);

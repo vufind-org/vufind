@@ -238,6 +238,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $this->output = $output;
         $this->processViewAlerts();
+        // Disconnect mailer to prevent exceptions from an attempt to gracefully
+        // close the connection on teardown
+        $this->mailer->resetConnection();
         return 0;
     }
 

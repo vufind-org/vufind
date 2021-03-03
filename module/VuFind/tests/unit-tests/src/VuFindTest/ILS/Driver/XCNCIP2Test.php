@@ -43,7 +43,7 @@ use VuFind\ILS\Driver\XCNCIP2;
  */
 class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Standard setup method.

@@ -39,10 +39,11 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class BulkTest extends \VuFindTest\Unit\MinkTestCase
+class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\AutoRetryTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -213,7 +214,7 @@ class BulkTest extends \VuFindTest\Unit\MinkTestCase
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
             $result->getOuterHtml()
         );

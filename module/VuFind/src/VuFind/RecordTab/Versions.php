@@ -23,7 +23,7 @@
  * @package  RecordTabs
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
 
@@ -37,7 +37,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @package  RecordTabs
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 class Versions extends \VuFind\RecordTab\AbstractBase
     implements TranslatorAwareInterface
@@ -47,21 +47,21 @@ class Versions extends \VuFind\RecordTab\AbstractBase
     /**
      * Main configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Search options plugin manager
      *
-     * @var \VuFind\Search\Options\PluginManager;
+     * @var \VuFind\Search\Options\PluginManager
      */
     protected $searchOptionsManager;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config                  $config Configuration
+     * @param \Laminas\Config\Config               $config Configuration
      * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
      * manager
      */

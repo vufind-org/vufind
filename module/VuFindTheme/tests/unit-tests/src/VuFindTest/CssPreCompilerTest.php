@@ -39,7 +39,7 @@ use VuFindTheme\ScssCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CssPreCompilerTest extends Unit\TestCase
+class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Our brave test subject

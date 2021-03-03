@@ -40,7 +40,7 @@ use VuFind\Log\Writer\Slack;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SlackTest extends \VuFindTest\Unit\TestCase
+class SlackTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test writer functionality
