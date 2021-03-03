@@ -203,17 +203,8 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
      * @return array
      */
     public function getRssFeeds() {
-        $rssConfigPath = $this->getConfig()->General->rss_config_path;
-        $rssConfig = parse_ini_file($rssConfigPath, true, INI_SCANNER_RAW);
-
-        $rssFeeds = [];
-        foreach ($rssConfig as $rssConfigKey => $rssConfigValue) {
-            if (is_array($rssConfigValue) && isset($rssConfigValue['feed_url']))
-                $rssFeeds[$rssConfigKey] = $rssConfigValue;
-        }
-
-        ksort($rssFeeds);
-        return $rssFeeds;
+        $rssTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('rss_feed');
+        return $rssTable->getFeedsSortedByName($this->getTueFindInstance());
     }
 
     /**

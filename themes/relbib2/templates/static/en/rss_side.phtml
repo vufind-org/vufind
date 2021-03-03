@@ -1,6 +1,6 @@
 <h3>List of aggregated blogs:</h3>
 <ul>
-  <?php foreach ($this->tuefind()->getRssFeeds() as $rssFeedName => $rssFeedDetails): ?>
-    <li><a href="<?=$this->tuefind()->getRedirectUrl($rssFeedDetails['blog_url'], 'relbib-rss-full')?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeedName)?>" width="16"> <?=htmlspecialchars($rssFeedName)?></a></li>
+  <?php foreach ($this->tuefind()->getRssFeeds() as $rssFeed): ?>
+    <li><a href="<?=$this->tuefind()->getRedirectUrl($rssFeed['website_url'], 'relbib-rss-full')?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssFeed['feed_name'])?>" width="16"> <?=htmlspecialchars($rssFeed['feed_name'])?></a></li>
   <?php endforeach; ?>
 </ul>
