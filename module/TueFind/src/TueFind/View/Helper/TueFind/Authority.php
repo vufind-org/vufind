@@ -28,7 +28,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $birthDate = $driver->getBirthDateOrYear();
         if ($birthDate != '') {
-            $display .= $this->getView()->transEsc('Born: ');
             $display .= $this->getDateTimeProperty($birthDate, 'birthDate');
             $birthPlace = $driver->getBirthPlace();
             if ($birthPlace != null)
@@ -68,7 +67,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
-            $display .= $this->getView()->transEsc('Died: ');
             $display .= $this->getDateTimeProperty($deathDate, 'deathDate');
             $deathPlace = $driver->getDeathPlace();
             if ($deathPlace != null)
@@ -82,10 +80,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         if (count($references) == 0)
             return '';
 
-        $display = '<ul>';
+        $display = '';
         foreach ($references as $reference)
-            $display .= '<li><a href="' . $reference['url'] . '">' . htmlspecialchars($reference['title']) . '</a></li>';
-        $display .= '</ul>';
+            $display .= '<a href="' . $reference['url'] . '">' . htmlspecialchars($reference['title']) . '</a><br>';
 
         return $display;
     }
@@ -105,6 +102,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $professions_display .= '<span property="hasOccupation">' . $profession . '</span>';
         }
         return $professions_display;
+    }
+
+    public function getSchemaOrgType(AuthorityRecordDriver &$driver): string {
+        if ($driver->getType() == 'person')
+            return 'Person';
+        else
+            return 'Organization';
     }
 
     /**

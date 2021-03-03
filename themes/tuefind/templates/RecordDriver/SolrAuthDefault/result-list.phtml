@@ -5,33 +5,33 @@
   }
   $seeAlso = $this->driver->getSeeAlso();
   $useFor = $this->driver->getUseFor();
+  $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
   $professions = $this->authority()->getProfessions($this->driver);
   $birth = $this->authority()->getBirth($this->driver);
   $death = $this->authority()->getDeath($this->driver);
-
   $resultItemLine = 0;
 ?>
 <div class="media">
-  <div class="media-body">
+  <div class="media-body" vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">
     <div class="resultItemLine<?=++$resultItemLine?>">
       <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
+    <?php if ($professions != ''): ?>
+      <div class="resultItemLine<?=++$resultItemLine?>">
+        Professions: <?=$professions?>
+      </div>
+    <?php endif; ?>
+
     <?php if ($birth != ''): ?>
       <div class="resultItemLine<?=++$resultItemLine?>">
-        <?=$birth?>
+        Born: <?=$birth?>
       </div>
     <?php endif; ?>
 
     <?php if ($death != ''): ?>
       <div class="resultItemLine<?=++$resultItemLine?>">
-        <?=$death?>
-      </div>
-    <?php endif; ?>
-
-    <?php if ($professions != ''): ?>
-      <div class="resultItemLine<?=++$resultItemLine?>">
-        <?=$professions?>
+        Died: <?=$death?>
       </div>
     <?php endif; ?>
 
