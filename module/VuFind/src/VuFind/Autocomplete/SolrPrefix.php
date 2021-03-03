@@ -118,6 +118,9 @@ class SolrPrefix implements AutocompleteInterface
             $params->addFacet($this->facetField);
             $params->setLimit(0);
             $params->setFacetLimit($this->limit);
+            $options = $params->getOptions();
+            $options->disableHighlighting();
+            $options->spellcheckEnabled(false);
             $this->searchObject->getResults();
             $facets = $this->searchObject->getFacetList();
             if (isset($facets[$this->facetField]['list'])) {
