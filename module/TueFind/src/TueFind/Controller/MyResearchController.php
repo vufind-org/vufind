@@ -23,6 +23,16 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($user == false) {
             return $this->forceLogin();
         }
+
+        $rssSubscriptionsTable = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)->get('rss_subscription');
+        $action = $this->getRequest()->getPost('action', '');
+        $feedId = $this->getRequest()->getPost('id', '');
+        if ($action == 'add') {
+            $rssSubscriptionsTable->addSubscription($user->id, $feedId);
+        } elseif ($action == 'remove') {
+            $rssSubscriptionsTable->removeSubscription($user->id, $feedId);
+        }
+
         return $this->createViewModel(['user' => $user]);
     }
 

@@ -17,12 +17,26 @@ class RssSubscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Tab
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
 
-    public function getSubscriptionsForUserSortedByName($user) {
+    public function getSubscriptionsForUserSortedByName($user)
+    {
         $select = $this->getSql()->select();
         $select->join('tuefind_rss_feeds', 'tuefind_rss_subscriptions.rss_feeds_id = tuefind_rss_feeds.id', Select::SQL_STAR, SELECT::JOIN_LEFT);
         $select->where('user_id', $user->id);
         $select->order('feed_name ASC');
         return $this->selectWith($select);
+    }
+
+    public function addSubscription($userId, $feedId)
+    {
+        $this->insert(['user_id' => $userId, 'rss_feeds_id' => $feedId]);
+    }
+
+    public function removeSubscription($userId, $feedId)
+    {
+        $delete = $this->getSql()->delete();
+        $delete->where('user_id', $userId);
+        $delete->where('rss_feeds_id', $feedId);
+        $this->deleteWith($delete);
     }
 
 }
