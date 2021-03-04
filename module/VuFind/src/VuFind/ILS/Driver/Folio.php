@@ -1475,7 +1475,7 @@ class Folio extends AbstractAPI implements
      * in more recent code, it receives one of the KEYS from getFunds(). See getFunds
      * for additional notes.
      */
-    public function getNewItems($page = 1, $limit, $daysOld = 30, $fundID = null)
+    public function getNewItems($page, $limit, $daysOld, $fundID = null)
     {
         return [];
     }
