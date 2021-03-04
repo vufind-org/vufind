@@ -1,0 +1,41 @@
+<?php
+    $rssFeeds = $this->tuefind()->getRssFeeds();
+    $rssSubscriptions = $this->tuefind()->getRssSubscriptions($this->user);
+
+    $subscribedFeedIds = [];
+    foreach ($rssSubscriptions as $rssSubscription) {
+        $subscribedFeedIds[] = $rssSubscription['rss_feeds_id'];
+    }
+?>
+
+<div class="mainbody left">
+  <h2>RSS Feeds</h2>
+  <table class="search-history-table">
+    <tr>
+      <th>Feed</th>
+      <th>Subscribed?</th>
+    </tr>
+    <?php foreach($rssFeeds as $rssFeed): ?>
+      <tr>
+        <td><a href="<?=$rssFeed['website_url']?>" target="_blank"><?=$rssFeed['feed_name']?></a></td>
+        <td>
+          <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
+            x
+          <?php else: ?>
+            -
+          <?php endif; ?>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </table>
+
+  <?php if (count($subscribedFeedIds) > 0): ?>
+    <a href="<?=$this->url('myresearch-rssfeedpreview')?>">Show personal RSS feed</a>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=$this->context($this)->renderInContext(
+       "myresearch/menu.phtml", ['active' => 'rssFeedSettings']
+   );?>
+</div>

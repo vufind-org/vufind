@@ -1,23 +1,2 @@
-<?php $rssItems = $this->tuefind()->getRssNewsEntries();?>
-<?php if (count($rssItems) == 0):?>
-<h1><?=$this->translate('rss_news_missing')?></h1>
-<?php else:?>
-    <?php $redirectGroup = 'tuefind-rss-full'; ?>
-    <div id="tf-rss-full">
-        <?php foreach ($rssItems as $rssItem):?>
-            <div class="tf-rss-full-item">
-                <h1>
-                    <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['item_url'], $redirectGroup)?>" target="_blank"><img src="<?=$this->tuefind()->getRssFeedIcon($rssItem['feed_name'])?>" height="20">&nbsp;<?=$rssItem['item_title']?></a>
-                </h1>
-                <p>
-                    <a href="<?=$this->tuefind()->getRedirectUrl($rssItem['website_url'], $redirectGroup)?>" target="_blank"><?=$rssItem['feed_name']?></a>: <?=date('d.m.Y H:i:s', strtotime($rssItem['pub_date']))?>
-                </p>
-                <?php if (!empty($rssItem['item_description'])):?>
-                    <p>
-                        <?=$rssItem['item_description']?>
-                    </p>
-                <?php endif;?>
-            </div>
-        <?php endforeach;?>
-    </div>
-<?php endif;?>
+<?php /*This is a tuefind extension template which will be used for additional content around the table in relbib.*/?>
+<?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems])?>

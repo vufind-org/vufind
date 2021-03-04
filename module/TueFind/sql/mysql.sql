@@ -45,8 +45,10 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
 
 
 CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     rss_feeds_id INT UNSIGNED NOT NULL,
     user_id INT NOT NULL,
+    CONSTRAINT id_constraint UNIQUE (id),
     FOREIGN KEY (rss_feeds_id) REFERENCES tuefind_rss_feeds(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;

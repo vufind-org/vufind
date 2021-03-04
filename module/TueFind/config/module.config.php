@@ -85,6 +85,19 @@ $config = [
                     ],
                 ],
             ],
+            'myresearch-rssfeedraw' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/myrssfeed/:user_id",
+                    'constraints' => [
+                        'user'     => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'rssFeedRaw',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -222,7 +235,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['MyResearch/Newsletter', 'RssFeed/Full'];
+$staticRoutes = ['MyResearch/Newsletter', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
