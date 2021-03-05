@@ -59,6 +59,11 @@ class MakeLink extends AbstractHelper
     {
         // Plain text on falsey href
         if (!$href && !isset($attrs['href'])) {
+            // Don't waste passed in attributes
+            if (!empty($attrs)) {
+                return return $this->compileAttrs($text, $attrs, 'span');
+            }
+
             return $text;
         }
 
@@ -79,21 +84,22 @@ class MakeLink extends AbstractHelper
     /**
      * Turn associative array into a string of attributes in an anchor
      *
-     * @param string $text  Link contents
-     * @param array  $attrs Link attributes (associative array)
+     * @param string $text    Link contents
+     * @param array  $attrs   Link attributes (associative array)
+     * @param string $tagName HTML tag name
      *
      * @return string
      */
-    protected function compileAttrs($text, $attrs)
+    protected function compileAttrs($text, $attrs, $tagName = 'a')
     {
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
 
-        $anchor = '<a';
+        $anchor = '<' . $tagName;
         foreach ($attrs as $key => $val) {
             $anchor .= ' ' . $key . '="' . $escAttr($val) . '"';
         }
 
-        $anchor .= '>' . $text . '</a>';
+        $anchor .= '>' . $text . '</' . $tagName . '>';
         return $anchor;
     }
 }
