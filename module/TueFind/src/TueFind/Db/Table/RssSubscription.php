@@ -7,10 +7,8 @@ use VuFind\Db\Table\PluginManager;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Select;
 
-class RssSubscription extends \VuFind\Db\Table\Gateway implements \VuFind\Db\Table\DbTableAwareInterface
+class RssSubscription extends RssBase
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
-
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
         RowGateway $rowObj = null, $table = 'tuefind_rss_subscriptions'
     ) {

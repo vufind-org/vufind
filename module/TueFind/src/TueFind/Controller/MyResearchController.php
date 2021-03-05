@@ -29,7 +29,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $dbTablePluginManager = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class);
         $rssSubscriptionsTable = $dbTablePluginManager->get('rss_subscription');
         $rssFeedsTable = $dbTablePluginManager->get('rss_feed');
-        $instance = $this->serviceLocator->get('ViewHelperManager')->get('tuefind')->getTueFindInstance();
         $action = $this->getRequest()->getPost('action', '');
         $feedId = $this->getRequest()->getPost('id', '');
         if ($action == 'add') {
@@ -38,7 +37,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $rssSubscriptionsTable->removeSubscription($user->id, $feedId);
         }
 
-        return $this->createViewModel(['rssFeeds' => $rssFeedsTable->getFeedsSortedByName($instance),
+        return $this->createViewModel(['rssFeeds' => $rssFeedsTable->getFeedsSortedByName(),
                                        'rssSubscriptions' => $rssSubscriptionsTable->getSubscriptionsForUserSortedByName($user->id)]);
     }
 
