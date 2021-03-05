@@ -49,9 +49,9 @@ class MakeLink extends AbstractHelper
      * if $attrs is a string, will be treated like a class
      * > makeLink('text', 'btn-link') == makeLink('text', ['class' => 'btn-link'])
      *
-     * @param string $text  Link contents
-     * @param string $href  Link destination (skippable for (text, attrs))
-     * @param array  $attrs Link attributes (associative array)
+     * @param string       $text  Link contents
+     * @param string|array $href  Link destination (skippable for (text, attrs))
+     * @param array        $attrs Link attributes (associative array)
      *
      * @return string HTML for an anchor tag
      */
