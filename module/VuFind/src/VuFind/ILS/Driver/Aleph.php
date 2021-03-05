@@ -1199,8 +1199,10 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     ], null, "DELETE"
                 );
             } catch (AlephRestfulException $e) {
-                $statuses[$id]
-                    = ['success' => false, 'status' => 'cancel_hold_failed'];
+                $statuses[$id] = [
+                    'success' => false, 'status' => 'cancel_hold_failed',
+                    'sysMessage' => $e->getMessage(),
+                ];
             }
             if (isset($result)) {
                 $count++;
