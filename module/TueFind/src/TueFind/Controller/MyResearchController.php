@@ -55,11 +55,18 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
     public function rssFeedRawAction()
     {
-        $userId = $this->getRequest()->getQuery('user_id');
-        $rssFeedContent = shell_exec('/usr/local/bin/rss_subset_aggregator --mode=rss_xml ' . escapeshellarg($userId));
+        $userId = $this->params()->fromRoute('user_id');
+        $instance = $this->serviceLocator->get('ViewHelperManager')->get('tuefind')->getTueFindInstance();
+        $cmd = '/usr/local/bin/rss_subset_aggregator --mode=rss_xml ' . escapeshellarg($userId) . ' ' . escapeshellarg($instance);
+
+        // We need to explicitly pass through VUFIND_HOME, or database.conf cannot be found
+        putenv('VUFIND_HOME=' . getenv('VUFIND_HOME'));
+        exec($cmd, $rssFeedContentArray, $return_var);
+        $rssFeedContentString = implode('', $rssFeedContentArray);
+
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
-        $response->setContent($rssFeedContent);
+        $response->setContent($rssFeedContentString);
         return $response;
     }
 }
