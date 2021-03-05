@@ -41,21 +41,28 @@ use Laminas\View\Helper\AbstractHelper;
 class MakeLink extends AbstractHelper
 {
     /**
-     * Create an anchor tag (or just text if no href provided)
+     * Create an anchor tag
+     *
+     * if $href, will try to find an href in $attrs
+     * > makeLink('text', ['href' => '#', 'class' => 'btn-link'])
+     *
+     * if $attrs is a string, will be treated like a class
+     * > makeLink('text', 'btn-link') == makeLink('text', ['class' => 'btn-link'])
      *
      * @param string $text  Link contents
-     * @param string $href  Link destination
+     * @param string $href  Link destination (skippable for (text, attrs))
      * @param array  $attrs Link attributes (associative array)
      *
      * @return string HTML for an anchor tag
      */
     public function __invoke($text, $href = null, $attrs = [])
     {
+        // Plain text on falsey href
         if (!$href && !isset($attrs['href'])) {
             $text;
         }
 
-        // Skip href
+        // Skipped $href, treat $href like $attrs
         if (is_array($href)) {
             return $this->compileAttrs($text, $href);
         }
