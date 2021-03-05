@@ -43,10 +43,10 @@ class MakeLink extends AbstractHelper
     /**
      * Create an anchor tag
      *
-     * if $href, will try to find an href in $attrs
+     * If $href, will try to find an href in $attrs
      * > makeLink('text', ['href' => '#', 'class' => 'btn-link'])
      *
-     * if $attrs is a string, will be treated like a class
+     * If $attrs is a string, will be treated like a class
      * > makeLink('text', 'btn-link') == makeLink('text', ['class' => 'btn-link'])
      *
      * @param string       $text  Link contents
