@@ -61,8 +61,13 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getHelper();
 
         $this->assertEquals(
-            '<a href="vufind.org">text</a>',
-            $helper('text', 'vufind.org')
+            '<a href="https://vufind.org">text</a>',
+            $helper('text', 'https://vufind.org')
+        );
+
+        $this->assertEquals(
+            '<a href="/Record/id">text</a>',
+            $helper('text', '/Record/id')
         );
 
         $this->assertEquals(
