@@ -7,9 +7,6 @@
     $uLangs[] = $c;
   }
 
-  $css = '.progress{height:7px;margin-bottom:0;}';
-  $this->headstyle()->appendStyle($css);
-
   // Initialize flag -- did any languages get hidden due to missing configuration?
   $hiddenLanguages = false;
 ?>
@@ -38,10 +35,9 @@
         <td class="text-right"><?php if($row['missing'] > 0):?> <button class="btn-missing btn btn-default btn-light" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$this->escapeHtml($row['missing']) ?></td>
         <td class="text-right"><?php if($row['extra'] > 0):?> <button class="btn-extra btn btn-default btn-light" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$this->escapeHtml($row['extra']) ?></td>
         <td class="text-right">
-          <?=$this->escapeHtml($row['percent'])?>%
-          <div class="progress progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?> progress-bar-striped">
-            <div class="progress-bar" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
-              <span class="sr-only"><?=$this->escapeHtml($row['percent'])?>% Complete</span>
+          <div class="progress progress-border-<?=$this->escapeHtmlAttr($row['progresslevel'])?>">
+            <div class="progress-bar progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?>" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
+              <?=$this->escapeHtml($row['percent'])?>% <span class="sr-only">Complete</span>
             </div>
           </div>
         </td>
