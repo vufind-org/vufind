@@ -1191,23 +1191,18 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $count = 0;
         $statuses = [];
         foreach ($details['details'] as $id) {
-            $result = $this->doRestDLFRequest(
-                [
-                    'patron', $patronId, 'circulationActions', 'requests', 'holds',
-                    $id
-                ], null, "DELETE"
-            );
-            $reply_code = $result->{'reply-code'};
-            if ($reply_code != "0000") {
-                $message = $result->{'del-pat-hold'}->{'note'};
-                if ($message == null) {
-                    $message = $result->{'reply-text'};
-                }
-                $statuses[$id] = [
-                    'success' => false, 'status' => 'cancel_hold_failed',
-                    'sysMessage' => (string)$message
-                ];
-            } else {
+            try {
+                $result = $this->doRestDLFRequest(
+                    [
+                        'patron', $patronId, 'circulationActions', 'requests', 'holds',
+                        $id
+                    ], null, "DELETE"
+                );
+            } catch (AlephRestfulException $e) {
+                $statuses[$id]
+                    = ['success' => false, 'status' => 'cancel_hold_failed'];
+            }
+            if (isset($result)) {
                 $count++;
                 $statuses[$id]
                     = ['success' => true, 'status' => 'cancel_hold_ok'];
