@@ -88,7 +88,7 @@ function createDiffManager() {
     for (var i = 0; i < opArray.length; i++) {
       arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
     }
-    return '<textarea class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
+    return '<textarea readonly class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
   }
   function bindTextareaEvent() {
     $('.translation-output').click(function(e) {
