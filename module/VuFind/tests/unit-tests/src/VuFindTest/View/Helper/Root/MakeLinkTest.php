@@ -121,5 +121,19 @@ class MakeLinkTest extends \PHPUnit\Framework\TestCase
             '<a class="btn" href="#">text</a>',
             $helper('text', '#', 'btn')
         );
+
+        // No href but attributes
+        $this->assertEquals(
+            '<span class="btn">text</span>',
+            $helper('text', null, 'btn')
+        );
+        $this->assertEquals(
+            '<span class="btn">text</span>',
+            $helper('text', ['class' => 'btn'])
+        );
+        $this->assertEquals(
+            '<span class="btn">text</span>',
+            $helper('text', null, ['class' => 'btn'])
+        );
     }
 }

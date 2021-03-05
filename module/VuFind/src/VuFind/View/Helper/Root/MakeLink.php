@@ -57,27 +57,31 @@ class MakeLink extends AbstractHelper
      */
     public function __invoke($text, $href = null, $attrs = [])
     {
-        // Plain text on falsey href
-        if (!$href && !isset($attrs['href'])) {
-            // Don't waste passed in attributes
-            if (!empty($attrs)) {
-                return return $this->compileAttrs($text, $attrs, 'span');
-            }
-
-            return $text;
-        }
-
-        // Skipped $href, treat $href like $attrs
-        if (is_array($href)) {
-            return $this->compileAttrs($text, $href);
-        }
-
         // Class string
         if (is_string($attrs)) {
             $attrs = ['class' => $attrs];
         }
 
-        $attrs['href'] = $href;
+        // Skipped $href, treat $href like $attrs
+        if (is_array($href)) {
+            $attrs = $href;
+            $href = null;
+        }
+
+        // Plain text on falsey href
+        if (!$href && !isset($attrs['href'])) {
+            // Don't waste passed in attributes
+            if (!empty($attrs)) {
+                return $this->compileAttrs($text, $attrs, 'span');
+            }
+
+            return $text;
+        }
+
+        // Compile attributes
+        if ($href && !isset($attrs['href'])) {
+            $attrs['href'] = $href;
+        }
         return $this->compileAttrs($text, $attrs);
     }
 
