@@ -1194,8 +1194,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             try {
                 $result = $this->doRestDLFRequest(
                     [
-                        'patron', $patronId, 'circulationActions', 'requests', 'holds',
-                        $id
+                        'patron', $patronId, 'circulationActions', 'requests',
+                         'holds', $id
                     ], null, "DELETE"
                 );
             } catch (AlephRestfulException $e) {
