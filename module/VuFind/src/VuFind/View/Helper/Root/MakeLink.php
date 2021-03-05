@@ -59,7 +59,7 @@ class MakeLink extends AbstractHelper
     {
         // Plain text on falsey href
         if (!$href && !isset($attrs['href'])) {
-            $text;
+            return $text;
         }
 
         // Skipped $href, treat $href like $attrs
