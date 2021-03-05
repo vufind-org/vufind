@@ -1,7 +1,7 @@
 <?php if (count($rssItems) == 0):?>
   <h1><?=$this->translate('rss_news_missing')?></h1>
 <?php else:?>
-  <?php $redirectGroup = 'tuefind-rss-full'; ?>
+  <?php $redirectGroup = $this->tuefind()->getTueFindInstance() . '-rss-full'; ?>
   <div id="tf-rss-full">
     <?php foreach ($rssItems as $rssItem):?>
       <div class="tf-rss-full-item">

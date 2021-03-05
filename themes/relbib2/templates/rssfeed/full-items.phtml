@@ -58,7 +58,7 @@ function renderPagination($currentPageNo, $maxPageNo, $itemsPerPage, $helpers) {
 <?php if (count($rssItems) == 0):?>
     <h1><?=$this->translate('rss_news_missing')?></h1>
 <?php else:?>
-    <?php $redirectGroup = 'relbib-rss-full'; ?>
+    <?php $redirectGroup = $this->tuefind()->getTueFindInstance() . '-rss-full'; ?>
     <div id="tf-rss-full">
         <?php $itemsPerPage = 10;?>
         <?php $itemCount = count($rssItems)?>
