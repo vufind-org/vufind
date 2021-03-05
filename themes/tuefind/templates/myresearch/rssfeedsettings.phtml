@@ -1,7 +1,4 @@
 <?php
-    $rssFeeds = $this->tuefind()->getRssFeeds();
-    $rssSubscriptions = $this->tuefind()->getRssSubscriptions($this->user);
-
     $subscribedFeedIds = [];
     foreach ($rssSubscriptions as $rssSubscription) {
         $subscribedFeedIds[] = $rssSubscription['rss_feeds_id'];

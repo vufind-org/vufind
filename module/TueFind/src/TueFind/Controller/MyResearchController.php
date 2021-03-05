@@ -4,7 +4,8 @@ namespace TueFind\Controller;
 
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
-    public function newsletterAction() {
+    public function newsletterAction()
+    {
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
@@ -18,13 +19,17 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                                        'submitted'  => $submitted]);
     }
 
-    public function rssFeedSettingsAction() {
+    public function rssFeedSettingsAction()
+    {
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
         }
 
-        $rssSubscriptionsTable = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)->get('rss_subscription');
+        $dbTablePluginManager = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class);
+        $rssSubscriptionsTable = $dbTablePluginManager->get('rss_subscription');
+        $rssFeedsTable = $dbTablePluginManager->get('rss_feed');
+        $instance = $this->serviceLocator->get('ViewHelperManager')->get('tuefind')->getTueFindInstance();
         $action = $this->getRequest()->getPost('action', '');
         $feedId = $this->getRequest()->getPost('id', '');
         if ($action == 'add') {
@@ -33,10 +38,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $rssSubscriptionsTable->removeSubscription($user->id, $feedId);
         }
 
-        return $this->createViewModel(['user' => $user]);
+        return $this->createViewModel(['rssFeeds' => $rssFeedsTable->getFeedsSortedByName($instance),
+                                       'rssSubscriptions' => $rssSubscriptionsTable->getSubscriptionsForUserSortedByName($user->id)]);
     }
 
-    public function rssFeedPreviewAction() {
+    public function rssFeedPreviewAction()
+    {
         $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
@@ -47,9 +54,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return $this->createViewModel(['user' => $user, 'rssItems' => $rssItems]);
     }
 
-    public function rssFeedRawAction() {
+    public function rssFeedRawAction()
+    {
         $userId = $this->getRequest()->getQuery('user_id');
-        $rssFeedContent = shell_exec('/usr/local/bin/rss_subset_aggregator rss_xml ' . escapeshellarg($userId));
+        $rssFeedContent = shell_exec('/usr/local/bin/rss_subset_aggregator --mode=rss_xml ' . escapeshellarg($userId));
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
         $response->setContent($rssFeedContent);
