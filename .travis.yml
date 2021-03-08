@@ -16,6 +16,7 @@ matrix:
         - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass psalm-console"
 
 before_script:
+  - touch solr/.disableAutomaticInstall
   - phpenv config-rm xdebug.ini
   - phpenv rehash
   - composer install
@@ -25,7 +26,6 @@ before_script:
 
 cache:
   directories:
-    - downloads
     - .php_cs_cache
     - .psalm_cache
     - $HOME/.composer/cache/files
