@@ -31,6 +31,7 @@ namespace VuFindTest\Search\Solr;
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFindSearch\Backend\Solr\Response\Json\Facets;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 
 /**
  * Unit tests for Hide Facet Value Listener.
@@ -82,13 +83,12 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     /**
      * Construct a mock Solr result object.
      *
-     * @return \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
+     * @return RecordCollection
      */
-    protected function getMockResult()
+    protected function getMockResult(): RecordCollection
     {
-        $result = $this->getMockBuilder(
-            'VuFindSearch\Backend\Solr\Response\Json\RecordCollection'
-        )->disableOriginalConstructor()->getMock();
+        $result = $this->getMockBuilder(RecordCollection::class)
+            ->disableOriginalConstructor()->getMock();
         $result->expects($this->any())->method('getFacets')
             ->will($this->returnValue($this->getFacets()));
         return $result;

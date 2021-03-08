@@ -111,12 +111,13 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Return config of created markdown service environment
      *
-     * @param $config
+     * @param array $config Configuration settings
      *
      * @return mixed
+     *
      * @throws \Interop\Container\Exception\ContainerException
      */
-    protected function getMarkdownEnvironmentConfig($config)
+    protected function getMarkdownEnvironmentConfig(array $config)
     {
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);

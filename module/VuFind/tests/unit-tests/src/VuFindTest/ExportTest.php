@@ -248,9 +248,9 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getLabelForFormat
      *
-     * @ return void
+     * @return void
      */
-    public function testGetLabel()
+    public function testGetLabel(): void
     {
         $config = [
             'foo' => [],

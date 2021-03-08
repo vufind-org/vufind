@@ -48,9 +48,9 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      * @param array $config Configuration (simulated config.ini)
      * @param array $server Simulated $_SERVER superglobal data
      *
-     * @return \Interop\Container\ContainerInterface
+     * @return \VuFindTest\Container\MockContainer
      */
-    protected function getContainer($config = [], $server = ['server' => true])
+    protected function getContainer($config = [], $server = ['server' => true]): \VuFindTest\Container\MockContainer
     {
         $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
