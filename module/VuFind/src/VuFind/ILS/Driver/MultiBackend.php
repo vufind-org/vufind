@@ -145,13 +145,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             throw new ILSException('Configuration needs to be set.');
         }
         $this->drivers = $this->config['Drivers'];
-        $this->defaultDriver = isset($this->config['General']['default_driver'])
-            ? $this->config['General']['default_driver']
-            : null;
+        $this->defaultDriver = $this->config['General']['default_driver'] ?? null;
         $this->driversConfigPath
-            = isset($this->config['General']['drivers_config_path'])
-            ? $this->config['General']['drivers_config_path']
-            : null;
+            = $this->config['General']['drivers_config_path'] ?? null;
     }
 
     /**
@@ -304,9 +300,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getLoginDrivers()
     {
-        return isset($this->config['Login']['drivers'])
-            ? $this->config['Login']['drivers']
-            : [];
+        return $this->config['Login']['drivers'] ?? [];
     }
 
     /**

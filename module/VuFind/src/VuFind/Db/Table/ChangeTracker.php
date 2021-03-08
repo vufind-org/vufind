@@ -88,7 +88,7 @@ class ChangeTracker extends Gateway
      * @param int    $limit   Retrieval limit (null for no limit)
      * @param array  $columns Columns to retrieve (null for all)
      *
-     * @return \Callable
+     * @return callable
      */
     public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
         $limit = null, $columns = null

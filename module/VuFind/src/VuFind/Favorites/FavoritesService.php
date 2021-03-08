@@ -29,6 +29,7 @@ namespace VuFind\Favorites;
 
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Db\Table\UserList as UserListTable;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Record\Cache as RecordCache;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 

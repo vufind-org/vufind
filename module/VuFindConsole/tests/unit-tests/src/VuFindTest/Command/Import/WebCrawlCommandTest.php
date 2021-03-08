@@ -44,7 +44,7 @@ use VuFindConsole\Command\Import\WebCrawlCommand;
  */
 class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test the simplest possible success case.
@@ -76,16 +76,11 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $command = $this->getMockCommand($importer, $solr, $config);
-        $command->expects($this->at(0))->method('downloadFile')
-            ->with($this->equalTo('http://foo'))
-            ->will($this->returnValue($fixture1));
-        $command->expects($this->at(1))->method('downloadFile')
-            ->with($this->equalTo('http://bar'))
-            ->will($this->returnValue($fixture2));
-        $command->expects($this->at(2))->method('removeTempFile')
-            ->with($this->equalTo($fixture2));
-        $command->expects($this->at(3))->method('removeTempFile')
-            ->with($this->equalTo($fixture1));
+        $command->expects($this->exactly(2))->method('downloadFile')
+            ->withConsecutive(['http://foo'], ['http://bar'])
+            ->willReturnOnConsecutiveCalls($fixture1, $fixture2);
+        $command->expects($this->exactly(2))->method('removeTempFile')
+            ->withConsecutive([$fixture2], [$fixture1]);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(

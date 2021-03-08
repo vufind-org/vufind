@@ -38,7 +38,7 @@ use VuFind\SMS\Clickatell;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ClickatellTest extends \VuFindTest\Unit\TestCase
+class ClickatellTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Setup method

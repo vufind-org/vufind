@@ -45,7 +45,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Factory to turn data into a record object.
      *
-     * @var Callable
+     * @var callable
      */
     protected $recordFactory;
 
@@ -59,7 +59,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Callback to construct records
+     * @param callable $recordFactory   Callback to construct records
      * @param string   $collectionClass Class of collection
      *
      * @return void

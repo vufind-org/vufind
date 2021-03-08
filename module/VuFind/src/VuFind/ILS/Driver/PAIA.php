@@ -55,14 +55,14 @@ class PAIA extends DAIA
     /**
      * URL of PAIA service
      *
-     * @var
+     * @var string
      */
     protected $paiaURL;
 
     /**
      * Timeout in seconds to be used for PAIA http requests
      *
-     * @var
+     * @var int
      */
     protected $paiaTimeout = null;
 
@@ -1268,8 +1268,7 @@ class PAIA extends DAIA
      */
     protected function paiaStatusString($status)
     {
-        return isset(self::$statusStrings[$status])
-            ? self::$statusStrings[$status] : '';
+        return self::$statusStrings[$status] ?? '';
     }
 
     /**

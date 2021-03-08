@@ -42,7 +42,7 @@ use VuFindSearch\Backend\EDS\QueryBuilder;
  */
 class QueryBuilderTest extends TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Given a response, decode the JSON query objects for easier reading.

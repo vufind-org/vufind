@@ -1,10 +1,10 @@
 <?php
 /**
- * Base class for tests using a MockContainer.
+ * View helper container that produces mock objects.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,12 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-namespace VuFindTest\Unit;
-
-use VuFindTest\Container\MockContainer;
+namespace VuFindTest\Container;
 
 /**
- * Base class for tests using a MockContainer.
+ * View helper container that produces mock objects.
  *
  * @category VuFind
  * @package  Tests
@@ -38,22 +36,7 @@ use VuFindTest\Container\MockContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class MockContainerTest extends \PHPUnit\Framework\TestCase
+class MockViewHelperContainer extends \Laminas\View\HelperPluginManager
 {
-    /**
-     * Mock container
-     *
-     * @var MockContainer
-     */
-    protected $container;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $this->container = new MockContainer($this);
-    }
+    use MockContainerTrait;
 }
