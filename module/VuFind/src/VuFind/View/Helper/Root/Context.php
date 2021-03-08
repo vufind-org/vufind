@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Content\PageLocator;
 
 /**
  * Context manager (useful for using render() instead of partial() for better
@@ -45,6 +46,13 @@ use Laminas\View\Renderer\RendererInterface;
  */
 class Context extends AbstractHelper
 {
+    /**
+     * PageLocator-Instance to resolve translated pages.
+     *
+     * @var PageLocator
+     */
+    protected $pageLocator;
+
     /**
      * Set an array of variables in the view; return the previous values of those
      * variables so they can be restored.
@@ -105,6 +113,28 @@ class Context extends AbstractHelper
     }
 
     /**
+     * Search for a translated template and render it using a temporary context.
+     *
+     * @param string $pathPrefix Path where the template should be located
+     * @param string $pageName   Name of the page
+     * @param type   $context    Optional array of context variables
+     *
+     * @return string            Rendered template output
+     */
+    public function renderTranslated($pathPrefix, $pageName, $context=[])
+    {
+        $pathPrefix = 'templates/' . $pathPrefix;
+        $pageDetails = $this->pageLocator->determineTemplateAndRenderer(
+            $pathPrefix, $pageName
+        );
+        $path = preg_replace(
+            '"^.+' . $pageDetails['theme'] . '/templates/"', '',
+            $pageDetails['path']
+        );
+        return $this->renderInContext($path, $context);
+    }
+
+    /**
      * Grab the helper object so we can call methods on it.
      *
      * @param Renderer $view View object to modify.
@@ -117,5 +147,15 @@ class Context extends AbstractHelper
             $this->setView($view);
         }
         return $this;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param PageLocator $pageLocator Page locator
+     */
+    public function __construct(PageLocator $pageLocator)
+    {
+        $this->pageLocator = $pageLocator;
     }
 }

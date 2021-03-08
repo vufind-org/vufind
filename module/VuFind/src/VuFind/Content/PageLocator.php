@@ -107,12 +107,15 @@ class PageLocator
         foreach ($templates as $template) {
             foreach ($this->types as $type) {
                 $filename = "$pathPrefix$template.$type";
-                $path = $this->themeInfo->findContainingTheme($filename, true);
-                if (null != $path) {
+                $pathDetails = $this->themeInfo->findContainingTheme(
+                    $filename, $this->themeInfo::RETURN_ALL_DETAILS
+                );
+                if (null != $pathDetails) {
                     return [
                         'renderer' => $type,
-                        'path' => $path,
+                        'path' => $pathDetails['path'],
                         'page' => $template,
+                        'theme' => $pathDetails['theme'],
                     ];
                 }
             }

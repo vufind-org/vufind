@@ -62,6 +62,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                     'renderer' => 'phtml',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page1.phtml',
                     'page' => 'page1',
+                    'theme' => 'parent',
                 ],
             ],
             [
@@ -70,6 +71,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                     'renderer' => 'phtml',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page2_aa.phtml',
                     'page' => 'page2_aa',
+                    'theme' => 'parent',
                 ],
             ],
             [
@@ -78,6 +80,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                     'renderer' => 'phtml',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page3_bb.phtml',
                     'page' => 'page3_bb',
+                    'theme' => 'parent',
                 ],
             ],
             [
@@ -86,6 +89,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                     'renderer' => 'md',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page4.md',
                     'page' => 'page4',
+                    'theme' => 'parent',
                 ],
             ],
             [
@@ -94,6 +98,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                     'renderer' => 'md',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page5_aa.md',
                     'page' => 'page5_aa',
+                    'theme' => 'parent',
                 ],
             ],
             [
@@ -102,6 +107,7 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
                     'renderer' => 'md',
                     'path' => $fixturePath . 'parent/templates/page-locator-test/page6_bb.md',
                     'page' => 'page6_bb',
+                    'theme' => 'parent',
                 ],
             ],
             [

@@ -15,7 +15,7 @@ return [
             'VuFind\View\Helper\Root\Citation' => 'VuFind\View\Helper\Root\CitationFactory',
             'VuFind\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'VuFind\View\Helper\Root\ContentBlock' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Root\Context' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Root\Context' => 'VuFind\View\Helper\Root\ContextFactory',
             'VuFind\View\Helper\Root\CurrentPath' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\DateTime' => 'VuFind\View\Helper\Root\DateTimeFactory',
             'VuFind\View\Helper\Root\DisplayLanguageOption' => 'VuFind\View\Helper\Root\DisplayLanguageOptionFactory',
