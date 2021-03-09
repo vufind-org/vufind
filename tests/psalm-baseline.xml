@@ -140,9 +140,6 @@
     <InvalidThrow occurrences="1">
       <code>ContainerException</code>
     </InvalidThrow>
-    <UndefinedClass occurrences="1">
-      <code>\VuFind\SearchRunner</code>
-    </UndefinedClass>
   </file>
   <file src="module/VuFind/src/VuFind/AjaxHandler/GetUserFinesFactory.php">
     <InvalidThrow occurrences="1">
@@ -569,11 +566,6 @@
       <code>$view</code>
       <code>$view</code>
     </UndefinedVariable>
-  </file>
-  <file src="module/VuFind/src/VuFind/Controller/ExternalAuthController.php">
-    <UndefinedClass occurrences="1">
-      <code>\VuFind\Logger</code>
-    </UndefinedClass>
   </file>
   <file src="module/VuFind/src/VuFind/Controller/HierarchyController.php">
     <UndefinedConstant occurrences="4">
@@ -2152,11 +2144,6 @@
       <code>ContainerException</code>
     </InvalidThrow>
   </file>
-  <file src="module/VuFind/src/VuFind/View/Helper/Root/AuthorNotesFactory.php">
-    <InvalidThrow occurrences="1">
-      <code>ContainerException</code>
-    </InvalidThrow>
-  </file>
   <file src="module/VuFind/src/VuFind/View/Helper/Root/CaptchaFactory.php">
     <InvalidThrow occurrences="1">
       <code>ContainerException</code>
@@ -2617,16 +2604,6 @@
       <code>Connector</code>
     </UndefinedDocblockClass>
   </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/QRCode/LoaderTest.php">
-    <AssignmentToVoid occurrences="2">
-      <code>$loader</code>
-      <code>$loader</code>
-    </AssignmentToVoid>
-    <NullReference occurrences="2">
-      <code>getImage</code>
-      <code>loadQRCode</code>
-    </NullReference>
-  </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Recommend/CollectionSideFacetsTest.php">
     <InvalidParamDefault occurrences="1">
       <code>\VuFind\Search\Solr\HierarchicalFacetHelper</code>
@@ -2677,13 +2654,6 @@
       <code>$mod</code>
     </UndefinedDocblockClass>
   </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Record/CacheTest.php">
-    <UndefinedDocblockClass occurrences="3">
-      <code>PHPUnit\Framework\MockObject\MockObject</code>
-      <code>PHPUnit\Framework\MockObject\MockObject</code>
-      <code>PHPUnit\Framework\MockObject\MockObject</code>
-    </UndefinedDocblockClass>
-  </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/RecordDriver/DefaultRecordTest.php">
     <UndefinedDocblockClass occurrences="34">
       <code>$driver</code>
@@ -2722,18 +2692,6 @@
       <code>SolrDefault</code>
     </UndefinedDocblockClass>
   </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/RecordDriver/EITTest.php">
-    <UndefinedDocblockClass occurrences="8">
-      <code>$driver</code>
-      <code>$driver</code>
-      <code>$this-&gt;getDriver()</code>
-      <code>$this-&gt;getDriver()</code>
-      <code>$this-&gt;getDriver()</code>
-      <code>$this-&gt;getDriver()</code>
-      <code>$this-&gt;getDriver()</code>
-      <code>SolrDefault</code>
-    </UndefinedDocblockClass>
-  </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Resolver/Driver/AlmaTest.php">
     <UndefinedDocblockClass occurrences="3">
       <code>$conn</code>
@@ -2754,18 +2712,6 @@
       <code>$conn</code>
       <code>$conn</code>
       <code>Connector</code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Role/PermissionProvider/IpRangeTest.php">
-    <UndefinedDocblockClass occurrences="3">
-      <code>$provider</code>
-      <code>$provider</code>
-      <code>IpRegEx</code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Role/PermissionProvider/UserTest.php">
-    <UndefinedDocblockClass occurrences="1">
-      <code>UserRow</code>
     </UndefinedDocblockClass>
   </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Search/Primo/OnCampusListenerTest.php">
@@ -2860,14 +2806,6 @@
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/RecordDataFormatterTest.php">
     <UndefinedDocblockClass occurrences="1">
       <code>SolrDefault</code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/View/Helper/Root/RecordLinkTest.php">
-    <UndefinedDocblockClass occurrences="4">
-      <code>$recordLink</code>
-      <code>$recordLink</code>
-      <code>$recordLink</code>
-      <code>Record</code>
     </UndefinedDocblockClass>
   </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/XSLT/Import/VuFindGeoTest.php">
