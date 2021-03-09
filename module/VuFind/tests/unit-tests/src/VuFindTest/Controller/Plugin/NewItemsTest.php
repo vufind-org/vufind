@@ -206,7 +206,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Connection
      */
-    protected function getMockCatalog()
+    protected function getMockCatalog(): \VuFind\ILS\Connection
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
             ->setMethods(['getNewItems'])
