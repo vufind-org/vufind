@@ -54,7 +54,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 
         var inIcon = document.createElement('i');
         inIcon.className = 'fa fa-times';
-        a.appendChild(icon);
+        a.appendChild(inIcon);
         html.appendChild(a);
       }
     }
