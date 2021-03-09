@@ -198,24 +198,6 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get metadata for aggregated RSS feeds
-     *
-     * @return array
-     */
-    public function getRssFeeds() {
-        $rssTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('rss_feed');
-        return $rssTable->getFeedsSortedByName($this->getTueFindInstance());
-    }
-
-    /**
-     * Get metadata for aggregated RSS feeds, including information for the given user.
-     */
-    public function getRssSubscriptions($user) {
-        $rssTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('rss_subscription');
-        return $rssTable->getSubscriptionsForUserSortedByName($user);
-    }
-
-    /**
      * Search for specific RSS feed icon, return generic RSS icon if not found
      *
      * @param string $rssFeedId

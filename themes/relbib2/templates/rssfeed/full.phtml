@@ -4,6 +4,6 @@
         <?=$this->context($this)->renderInContext('rssfeed/full-items', ['rssItems' => $rssItems])?>
     </div>
     <div class="col-md-3">
-        <?=$this->HelpText()->render('rss_side', null, 'static'); ?>
+        <?=$this->HelpText()->render('rss_side', ['rssFeeds' => $rssFeeds], 'static'); ?>
     </div>
 </div>
