@@ -12,4 +12,12 @@ class User extends \VuFind\Db\Row\User
         $this->tuefind_subscribed_to_newsletter = intval($value);
         $this->save();
     }
+
+    public function setRssFeedSendEmails(bool $value) {
+        $this->tuefind_rss_feed_send_emails = intval($value);
+        if (true) {
+            $this->tuefind_rss_feed_last_notification = date('Y-m-d H:i:s');
+        }
+        $this->save();
+    }
 }

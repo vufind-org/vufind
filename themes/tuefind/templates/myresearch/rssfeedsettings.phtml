@@ -32,7 +32,20 @@
   </table>
 
   <?php if (count($subscribedFeedIds) > 0): ?>
-    <a href="<?=$this->url('myresearch-rssfeedpreview')?>">Show personal RSS feed</a>
+    <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>">Show personal RSS feed</a></p>
+    <p>
+      <form method="post">
+        Would you like to receive new entries via e-mail?
+        <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
+          <input type="hidden" name="action" value="unsubscribe_email">
+          <button type="submit" class="btn">Yes</button><br>
+          You will receive all entries newer than <?=$this->user->tuefind_rss_feed_last_notification?>.
+        <?php else: ?>
+          <input type="hidden" name="action" value="subscribe_email">
+          <button type="submit" class="btn">No</button>
+        <?php endif; ?>
+      </form>
+    </p>
   <?php endif; ?>
 </div>
 

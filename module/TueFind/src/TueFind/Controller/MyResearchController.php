@@ -35,10 +35,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $rssSubscriptionsTable->addSubscription($user->id, $feedId);
         } elseif ($action == 'remove') {
             $rssSubscriptionsTable->removeSubscription($user->id, $feedId);
+        } elseif ($action == 'subscribe_email') {
+            $user->setRssFeedSendEmails(true);
+        } elseif ($action == 'unsubscribe_email') {
+            $user->setRssFeedSendEmails(false);
         }
 
         return $this->createViewModel(['rssFeeds' => $rssFeedsTable->getFeedsSortedByName(),
-                                       'rssSubscriptions' => $rssSubscriptionsTable->getSubscriptionsForUserSortedByName($user->id)]);
+                                       'rssSubscriptions' => $rssSubscriptionsTable->getSubscriptionsForUserSortedByName($user->id),
+                                       'user' => $user]);
     }
 
     public function rssFeedPreviewAction()
