@@ -4,7 +4,7 @@ namespace IxTheo\Controller;
 use VuFind\Search\RecommendListener,
     VuFind\Exception\ListPermission as ListPermissionException;
 
-class MyResearchController extends \VuFind\Controller\MyResearchController
+class MyResearchController extends \TueFind\Controller\MyResearchController
 {
     function pdasubscriptionsAction() {
 

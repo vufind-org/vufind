@@ -198,25 +198,6 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get metadata for aggregated RSS feeds
-     *
-     * @return array
-     */
-    public function getRssFeeds() {
-        $rssConfigPath = $this->getConfig()->General->rss_config_path;
-        $rssConfig = parse_ini_file($rssConfigPath, true, INI_SCANNER_RAW);
-
-        $rssFeeds = [];
-        foreach ($rssConfig as $rssConfigKey => $rssConfigValue) {
-            if (is_array($rssConfigValue) && isset($rssConfigValue['feed_url']))
-                $rssFeeds[$rssConfigKey] = $rssConfigValue;
-        }
-
-        ksort($rssFeeds);
-        return $rssFeeds;
-    }
-
-    /**
      * Search for specific RSS feed icon, return generic RSS icon if not found
      *
      * @param string $rssFeedId
@@ -277,45 +258,33 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
     /**
      * Parse the RSS feed and return a short overview of the first few entries
      *
-     * @param int  $max_item_count            Max items to read from file
-     * @param bool $only_newest_item_per_feed Only the newest item per feed will be returned.
+     * @param int  $maxItemCount            Max items to read from file
+     * @param bool $onlyNewestItemPerFeed   Only the newest item per feed will be returned.
      *
      * @return array
      */
-    public function getRssNewsEntries(int $max_item_count=null, bool $only_newest_item_per_feed=false) {
-        $rss_feed_path = $this->getConfig()->General->rss_feed_path;
-        $rss_items = [];
+    public function getRssNewsEntries(int $maxItemCount=null, bool $onlyNewestItemPerFeed=false) {
+        $rssTable = $this->container->get(\VuFind\Db\Table\PluginManager::class)->get('rss_item');
+        $rssItems = $rssTable->getItemsSortedByPubDate($this->getTueFindInstance());
 
-        $dom = new \DOMDocument();
-        if (@$dom->load($rss_feed_path)) {
-            $items = $dom->getElementsByTagName('item');
-            $i = 0;
-            $processed_feeds = [];
-            foreach ($items as $item) {
-                if ($max_item_count !== null && $i >= $max_item_count)
-                    break;
+        $rssItemsToReturn = [];
+        $i = 0;
+        $processedFeeds = [];
+        foreach ($rssItems as $rssItem) {
+            if ($maxItemCount !== null && $i >= $maxItemCount)
+                break;
 
-                $rss_item = [];
-                $child = $item->firstChild;
-                while ($child != null) {
-                    if ($child instanceof \DOMElement) {
-                        $value = htmlspecialchars_decode($child->nodeValue);
-                        if ($child->tagName == 'description')
-                            $value = $this->filterRssItemDescription($value);
-                        $rss_item[$child->tagName] = $value;
-                    }
-                    $child = $child->nextSibling;
-                }
+            $rssItem['item_description'] = $this->filterRssItemDescription($rssItem['item_description']);
+            // Do certain items need to be decoded with htmlspecialchars_decode?
 
-                if ($only_newest_item_per_feed === false || !in_array($rss_item['tuefind:rss_title'], $processed_feeds)) {
-                    $rss_items[] = $rss_item;
-                    ++$i;
-                }
-                $processed_feeds[] = $rss_item['tuefind:rss_title'];
+            if ($onlyNewestItemPerFeed === false || !in_array($rssItem['feed_name'], $processedFeeds)) {
+                $rssItemsToReturn[] = $rssItem;
+                ++$i;
             }
+            $processedFeeds[] = $rssItem['feed_name'];
         }
 
-        return $rss_items;
+        return $rssItemsToReturn;
     }
 
     /**

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_feeds (
 
 
 CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     rss_feeds_id INT UNSIGNED NOT NULL,
     item_id VARCHAR(768) NOT NULL,
     item_url VARCHAR(1000) NOT NULL,
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
     pub_date DATETIME NOT NULL,
     insertion_time TIMESTAMP DEFAULT NOW() NOT NULL,
     FOREIGN KEY (rss_feeds_id) REFERENCES vufind.tuefind_rss_feeds(id) ON DELETE CASCADE,
+    CONSTRAINT id_constraint UNIQUE (id),
     CONSTRAINT tuefind_rss_items_item_id UNIQUE (item_id),
     INDEX tuefind_rss_items_item_id_index(item_id(768)),
     INDEX tuefind_rss_items_item_url_index(item_url(768)),
@@ -43,8 +45,10 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
 
 
 CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     rss_feeds_id INT UNSIGNED NOT NULL,
     user_id INT NOT NULL,
+    CONSTRAINT id_constraint UNIQUE (id),
     FOREIGN KEY (rss_feeds_id) REFERENCES tuefind_rss_feeds(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
