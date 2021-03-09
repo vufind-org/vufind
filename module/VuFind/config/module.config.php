@@ -653,7 +653,7 @@ $staticRoutes = [
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
     'LibraryCards/Home', 'LibraryCards/SelectCard',
-    'LibraryCards/ConnectShibbolethCard', 'LibraryCards/ConnectNewShibbolethCard',
+    'LibraryCards/ConnectShibbolethCard', 'LibraryCards/ConnectShibbolethCardLogin',
     'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',

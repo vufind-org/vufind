@@ -737,10 +737,10 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     public function connectUserCard($request, $user)
     {
         $auth = $this->getAuth();
-        if (!is_callable([$auth, 'connectUser'])) {
+        if (!is_callable([$auth, 'connectUserCard'])) {
             throw new \Exception("Connecting of library cards is not supported");
         }
-        $auth->connectUser($request, $user);
+        $auth->connectUserCard($request, $user);
     }
 
     /**

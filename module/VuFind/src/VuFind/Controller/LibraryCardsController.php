@@ -79,8 +79,7 @@ class LibraryCardsController extends AbstractBase
         $catalog = $this->getILS();
 
         $config = $this->getConfig();
-        $shibboleth = isset($config->Catalog->shibboleth_library_cards) &&
-            $config->Catalog->shibboleth_library_cards &&
+        $shibboleth = !empty($config->Catalog->shibboleth_library_cards) &&
             ($this->getAuthManager()->getAuthMethod() == 'Shibboleth');
         return $this->createViewModel(
             [
@@ -250,14 +249,17 @@ class LibraryCardsController extends AbstractBase
      *
      * @return \Laminas\Http\Response
      */
-    public function connectNewShibbolethCardAction()
+    public function connectShibbolethCardLoginAction()
     {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
         $url = $this->getServerUrl('librarycards-connectshibbolethcard');
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
-        if ($redirectUrl == null) {
+        if (!$redirectUrl) {
             $this->flashMessenger()
                 ->addMessage('authentication_error_technical', 'error');
-            $redirectUrl = '/LibraryCards/Home';
+            return $this->redirect()->toRoute('librarycards-home');
         }
         return $this->redirect()->toUrl($redirectUrl);
     }

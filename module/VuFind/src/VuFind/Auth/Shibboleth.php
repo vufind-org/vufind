@@ -341,12 +341,12 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    public function connectUser($request, $connectingUser)
+    public function connectUserCard($request, $connectingUser)
     {
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);
         $username = $this->getAttribute($request, $shib['cat_username']);
-        if ($username == null) {
+        if (!$username) {
             throw new \VuFind\Exception\LibraryCard('Missing username');
         }
         $prefix = $shib['prefix'] ?? '';
