@@ -27,7 +27,7 @@
  */
 namespace VuFind\UrlShortener;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory to construct the configured UrlShortener service.

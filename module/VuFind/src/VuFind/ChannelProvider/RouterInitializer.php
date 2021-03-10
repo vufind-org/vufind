@@ -27,7 +27,7 @@
  */
 namespace VuFind\ChannelProvider;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Initializer\InitializerInterface;
 
 /**

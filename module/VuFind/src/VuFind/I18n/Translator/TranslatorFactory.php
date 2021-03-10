@@ -27,8 +27,8 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 

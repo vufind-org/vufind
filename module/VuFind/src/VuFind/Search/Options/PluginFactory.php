@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Options;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Search options plugin factory

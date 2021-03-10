@@ -27,7 +27,7 @@
  */
 namespace VuFind\Role;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 

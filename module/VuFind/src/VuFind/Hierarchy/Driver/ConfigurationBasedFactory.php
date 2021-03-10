@@ -27,7 +27,7 @@
  */
 namespace VuFind\Hierarchy\Driver;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Hierarchy Driver Factory Class

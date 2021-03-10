@@ -27,8 +27,8 @@
  */
 namespace VuFind\Search\Base;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;

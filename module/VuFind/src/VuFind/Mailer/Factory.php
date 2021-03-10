@@ -27,8 +27,8 @@
  */
 namespace VuFind\Mailer;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Laminas\Mail\Transport\InMemory;
 use Laminas\Mail\Transport\Smtp;
 use Laminas\Mail\Transport\SmtpOptions;

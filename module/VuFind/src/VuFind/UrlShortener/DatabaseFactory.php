@@ -28,7 +28,7 @@
 namespace VuFind\UrlShortener;
 
 use Exception;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for local database-driven URL shortener.

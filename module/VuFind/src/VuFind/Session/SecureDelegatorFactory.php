@@ -29,7 +29,7 @@
  */
 namespace VuFind\Session;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 
