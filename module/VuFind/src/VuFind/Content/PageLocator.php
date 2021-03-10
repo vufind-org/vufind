@@ -100,11 +100,11 @@ class PageLocator
         // 2.) Default language suffix
         // 3.) No language suffix
         $templates = [
-            "{$pageName}_$this->language",
-            "{$pageName}_$this->defaultLanguage",
-            $pageName,
+            'language' => "{$pageName}_$this->language",
+            'defaultLanguage' => "{$pageName}_$this->defaultLanguage",
+            'pageName' => $pageName,
         ];
-        foreach ($templates as $template) {
+        foreach ($templates as $resultType => $template) {
             foreach ($this->types as $type) {
                 $filename = "$pathPrefix$template.$type";
                 $pathDetails = $this->themeInfo->findContainingTheme(
@@ -116,6 +116,7 @@ class PageLocator
                         'path' => $pathDetails['path'],
                         'page' => $template,
                         'theme' => $pathDetails['theme'],
+                        'type' => $resultType,
                     ];
                 }
             }

@@ -30,7 +30,6 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Content\PageLocator;
-use VuFind\View\Helper\Root\Context;
 
 /**
  * Content View Helper to resolve translated pages.
@@ -61,14 +60,15 @@ class Content extends AbstractHelper
     /**
      * Search for a translated template and render it using a temporary context.
      *
-     * @param string $pageName   Name of the page
-     * @param string $pathPrefix Path where the template should be located
-     * @param type   $context    Optional array of context variables
+     * @param string $pageName    Name of the page
+     * @param string $pathPrefix  Path where the template should be located
+     * @param array  $context     Optional array of context variables
+     * @param array  $pageDetails Optional output variable for additional info
      *
      * @return string            Rendered template output
      */
     public function renderTranslated($pageName, $pathPrefix='content',
-        $context=[]
+        $context=[], &$pageDetails=[]
     ) {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';
