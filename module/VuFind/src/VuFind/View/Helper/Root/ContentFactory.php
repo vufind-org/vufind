@@ -1,6 +1,6 @@
 <?php
 /**
- * Context helper factory.
+ * Content helper factory.
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Context helper factory.
+ * Content helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -39,7 +39,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ContextFactory implements FactoryInterface
+class ContentFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -62,7 +62,8 @@ class ContextFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Content\PageLocator::class)
+            $container->get(\VuFind\Content\PageLocator::class),
+            $container->get('ViewHelperManager')->get('context'),
         );
     }
 }
