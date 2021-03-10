@@ -1723,6 +1723,12 @@ class MyResearchController extends AbstractBase
      */
     protected function sendChangeNotificationEmail($user)
     {
+        // Don't send the notification if the existing email is not valid:
+        $validator = new \Laminas\Validator\EmailAddress();
+        if (!$validator->isValid($user->email)) {
+            return;
+        }
+
         $config = $this->getConfig();
         $renderer = $this->getViewRenderer();
         // Custom template for emails (text-only)
