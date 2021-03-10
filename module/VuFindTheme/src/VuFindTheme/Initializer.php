@@ -27,7 +27,7 @@
  */
 namespace VuFindTheme;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
@@ -61,7 +61,7 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     protected $serviceManager;
 

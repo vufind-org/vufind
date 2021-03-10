@@ -28,7 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\View\Helper\AbstractHelper;

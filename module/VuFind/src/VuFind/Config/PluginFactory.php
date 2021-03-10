@@ -27,7 +27,7 @@
  */
 namespace VuFind\Config;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Config\Reader\Ini as IniReader;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
