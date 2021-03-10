@@ -49,6 +49,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       if (allowExclude) {
         var excludeUrl = currentPath + facet.exclude;
         var a = document.createElement('a');
+        a.className = 'exclude';
         a.setAttribute('href', excludeUrl);
         a.setAttribute('title', excludeTitle);
 
