@@ -1780,15 +1780,13 @@ class MyResearchController extends AbstractBase
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
-                    $method = $this->getAuthManager()->getAuthMethod();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/verify-email.phtml',
                         [
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verifyemail')
-                                . '?hash='
-                                . $user->verify_hash . '&auth_method=' . $method
+                                . '?hash=' . urlencode($user->verify_hash)
                         ]
                     );
                     // If the user is setting up a new account, use the main email
@@ -1888,15 +1886,14 @@ class MyResearchController extends AbstractBase
                         $user->pending_email = '';
                     }
                     $user->saveEmailVerified();
-                    $this->setUpAuthenticationFromRequest();
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
-                    return $this->forwardTo('MyResearch', 'Login');
+                    return $this->redirect()->toRoute('myresearch-userlogin');
                 }
             }
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
-        return $this->forwardTo('MyResearch', 'Login');
+        return $this->redirect()->toRoute('myresearch-userlogin');
     }
 
     /**
