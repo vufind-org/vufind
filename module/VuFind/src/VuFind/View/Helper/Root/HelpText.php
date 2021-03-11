@@ -94,6 +94,7 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
             'HelpTranslations',
             $context,
             $pageDetails,
+            '%pathPrefix%/%language%/%pageName%',
         );
 
         if (!$html) {

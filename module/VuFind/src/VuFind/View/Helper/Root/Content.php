@@ -64,18 +64,19 @@ class Content extends AbstractHelper
      * @param string $pathPrefix  Path where the template should be located
      * @param array  $context     Optional array of context variables
      * @param array  $pageDetails Optional output variable for additional info
+     * @param string $pattern     Optional file system pattern to search page
      *
      * @return string            Rendered template output
      */
     public function renderTranslated($pageName, $pathPrefix='content',
-        $context=[], &$pageDetails=[]
+        $context=[], &$pageDetails=[], $pattern=null
     ) {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';
         }
         $pathPrefix = 'templates/' . $pathPrefix;
         $pageDetails = $this->pageLocator->determineTemplateAndRenderer(
-            $pathPrefix, $pageName
+            $pathPrefix, $pageName, $pattern
         );
         $path = preg_replace(
             '"^.+' . $pageDetails['theme'] . '/templates/"', '',

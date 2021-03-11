@@ -85,28 +85,76 @@ class PageLocator
     }
 
     /**
+     * Generate a template from a file search pattern. Examples:
+     * - %pathPrefix%/%pageName%{_%language%} => content/help_en
+     * - %pathPrefix%/%language%/%pageName% => HelpTranslations/en/search
+     *
+     * @param string $pathPrefix Subdirectory where the template should be located
+     * @param string $pageName   Page name
+     * @param string $pattern    Filesystem pattern
+     * @param string $language   Language
+     *
+     * @return string
+     */
+    protected function generateTemplateFromPattern(
+        $pathPrefix, $pageName, $pattern, $language=null
+    ) {
+        $template = $pattern;
+        $template = str_replace('%pathPrefix%', $pathPrefix, $template);
+        $template = str_replace('%pageName%', $pageName, $template);
+        $languagePatternExtended = '"\\{(.*)(%language%)(.*)\\}"';
+        if (isset($language)) {
+            $template = preg_replace(
+                $languagePatternExtended,
+                "\\1$language\\3",
+                $template
+            );
+        } else {
+            $template = preg_replace($languagePatternExtended, '', $template);
+        }
+        $template = str_replace('%language%', $language, $template);
+        $template = str_replace('//', '/', $template);
+        return $template;
+    }
+
+    /**
      * Try to find template information about desired page
      *
      * @param string $pathPrefix Subdirectory where the template should be located
      * @param string $pageName   Template name
+     * @param string $pattern    Optional filesystem pattern
      *
      * @return array|null Null if template is not found or array with keys renderer
      * (type of template), path (full path of template), page (page name)
      */
-    public function determineTemplateAndRenderer($pathPrefix, $pageName)
-    {
+    public function determineTemplateAndRenderer(
+        $pathPrefix, $pageName, $pattern=null
+    ) {
+        if (!isset($pattern)) {
+            $pattern = '%pathPrefix%/%pageName%{_%language%}';
+        }
+
         // Try to find a template using
         // 1.) Current language suffix
         // 2.) Default language suffix
         // 3.) No language suffix
         $templates = [
-            'language' => "{$pageName}_$this->language",
-            'defaultLanguage' => "{$pageName}_$this->defaultLanguage",
-            'pageName' => $pageName,
+            'language' => $this->generateTemplateFromPattern(
+                $pathPrefix, $pageName, $pattern, $this->language
+            ),
+            'defaultLanguage' => $this->generateTemplateFromPattern(
+                $pathPrefix, $pageName, $pattern, $this->defaultLanguage
+            ),
+            'pageName' => $this->generateTemplateFromPattern(
+                $pathPrefix,
+                $pageName,
+                $pattern
+            ),
         ];
+
         foreach ($templates as $resultType => $template) {
             foreach ($this->types as $type) {
-                $filename = "$pathPrefix$template.$type";
+                $filename = "$template.$type";
                 $pathDetails = $this->themeInfo->findContainingTheme(
                     $filename, $this->themeInfo::RETURN_ALL_DETAILS
                 );
@@ -114,7 +162,7 @@ class PageLocator
                     return [
                         'renderer' => $type,
                         'path' => $pathDetails['path'],
-                        'page' => $template,
+                        'page' => basename($template),
                         'theme' => $pathDetails['theme'],
                         'type' => $resultType,
                     ];
