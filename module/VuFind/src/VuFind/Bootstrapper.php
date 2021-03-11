@@ -92,7 +92,7 @@ class Bootstrapper
      *
      * @return void
      */
-    public function bootstrap()
+    public function bootstrap(): void
     {
         // automatically call all methods starting with "init":
         $methods = get_class_methods($this);
@@ -108,7 +108,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initTestMode()
+    protected function initTestMode(): void
     {
         // If we're in test mode (as determined by the config.ini property installed
         // by the build.xml startup process), set a cookie so the front-end code can
@@ -125,7 +125,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initSystemStatus()
+    protected function initSystemStatus(): void
     {
         // If the system is unavailable and we're not in the console, forward to the
         // unavailable page.
@@ -146,7 +146,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initLocaleAndTimeZone()
+    protected function initLocaleAndTimeZone(): void
     {
         // Try to set the locale to UTF-8, but fail back to the exact string from
         // the config file if this doesn't work -- different systems may vary in
@@ -167,7 +167,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initContext()
+    protected function initContext(): void
     {
         $callback = function ($event) {
             if (PHP_SAPI !== 'cli') {
@@ -194,7 +194,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initHeadTitle()
+    protected function initHeadTitle(): void
     {
         $callback = function ($event) {
             $helperManager = $this->container->get('ViewHelperManager');
@@ -208,16 +208,16 @@ class Bootstrapper
 
     /**
      * Support method for initLanguage(): process HTTP_ACCEPT_LANGUAGE value.
-     * Returns browser-requested language string or false if none found.
+     * Returns browser-requested language string or null if none found.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function detectBrowserLanguage()
+    public function detectBrowserLanguage(): ?string
     {
         if (isset($this->config->Site->browserDetectLanguage)
             && false == $this->config->Site->browserDetectLanguage
         ) {
-            return false;
+            return null;
         }
 
         // break up string into pieces (languages and q factors)
@@ -228,7 +228,7 @@ class Bootstrapper
         );
 
         if (!count($langParse[1])) {
-            return false;
+            return null;
         }
 
         // create a list like "en" => 0.8
@@ -261,7 +261,7 @@ class Bootstrapper
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -269,7 +269,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initLanguage()
+    protected function initLanguage(): void
     {
         // Language not supported in CLI mode:
         if (PHP_SAPI == 'cli') {
@@ -292,7 +292,7 @@ class Bootstrapper
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
             } else {
-                $language = (false !== $validBrowserLanguage)
+                $language = (null !== $validBrowserLanguage)
                     ? $validBrowserLanguage : $config->Site->language;
             }
 
@@ -341,7 +341,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initTheme()
+    protected function initTheme(): void
     {
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
@@ -359,7 +359,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initExceptionBasedHttpStatuses()
+    protected function initExceptionBasedHttpStatuses(): void
     {
         // HTTP statuses not needed in console mode:
         if (PHP_SAPI == 'cli') {
@@ -385,7 +385,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initSearch()
+    protected function initSearch(): void
     {
         $bm = $this->container->get(\VuFind\Search\BackendManager::class);
         $events = $this->container->get('SharedEventManager');
@@ -397,7 +397,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initErrorLogging()
+    protected function initErrorLogging(): void
     {
         $callback = function ($event) {
             if ($this->container->has(\VuFind\Log\Logger::class)) {
@@ -424,7 +424,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initRenderErrorEvent()
+    protected function initRenderErrorEvent(): void
     {
         // When a render.error is triggered, as a high priority, set a flag in the
         // layout that can be used to suppress actions in the layout templates that
@@ -442,7 +442,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initContentSecurityPolicy()
+    protected function initContentSecurityPolicy(): void
     {
         if (PHP_SAPI === 'cli') {
             return;
