@@ -24,6 +24,7 @@ return [
          *          - 1xx => vendor (third-party code)
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
+         * - position: 'header' (default) or 'footer'
          * - conditional: e.g. 'lt IE 10'
          *
          * Entries with neither priority nor load_after will be loaded after all

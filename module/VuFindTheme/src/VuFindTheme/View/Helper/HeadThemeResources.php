@@ -1,6 +1,6 @@
 <?php
 /**
- * View helper for loading theme-related resources in the header.
+ * View helper for loading theme-related resources.
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@
 namespace VuFindTheme\View\Helper;
 
 /**
- * View helper for loading theme-related resources in the header.
+ * View helper for loading theme-related resources.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -39,122 +39,19 @@ namespace VuFindTheme\View\Helper;
 class HeadThemeResources extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Theme resource container
+     * Set up items based on contents of theme resource container.
      *
-     * @var \VuFindTheme\ResourceContainer
-     */
-    protected $container;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFindTheme\ResourceContainer $container Theme resource container
-     */
-    public function __construct(\VuFindTheme\ResourceContainer $container)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * Set up header items based on contents of theme resource container.
+     * @deprecated Deprecated, use ThemeResources.
      *
      * @return void
      */
     public function __invoke()
     {
-        // Add various types of content to the header:
-        $this->addMetaTags();
-        $this->addLinks();
-        $this->addScripts();
-    }
-
-    /**
-     * Add meta tags to header.
-     *
-     * @return void
-     */
-    protected function addMetaTags()
-    {
-        // Set up encoding:
-        $headMeta = $this->getView()->plugin('headMeta');
-        $headMeta()->prependHttpEquiv(
-            'Content-Type', 'text/html; charset=' . $this->container->getEncoding()
+        trigger_error(
+            'Deprecated headThemeResources view helper called; ' .
+            'check configuration.',
+            E_USER_DEPRECATED
         );
-
-        // Set up generator:
-        $generator = $this->container->getGenerator();
-        if (!empty($generator)) {
-            $headMeta()->appendName('Generator', $generator);
-        }
-    }
-
-    /**
-     * Add links to header.
-     *
-     * @return void
-     */
-    protected function addLinks()
-    {
-        // Convenient shortcut to view helper:
-        $headLink = $this->getView()->plugin('headLink');
-
-        // Load CSS (make sure we prepend them in the appropriate order; theme
-        // resources should load before extras added by individual templates):
-        foreach (array_reverse($this->container->getCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            // Special case for media with paretheses
-            // ie. (min-width: 768px)
-            if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
-                $parts[1] .= ':' . $parts[2];
-                array_splice($parts, 2, 1);
-            }
-            $headLink()->forcePrependStylesheet(
-                trim($parts[0]),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
-            );
-        }
-
-        // Compile and load LESS (make sure we prepend them in the appropriate order
-        // theme resources should load before extras added by individual templates):
-        foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            $headLink()->forcePrependStylesheet(
-                $headLink()->addLessStylesheet(trim($parts[0])),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
-            );
-        }
-
-        // If we have a favicon, load it now:
-        $favicon = $this->container->getFavicon();
-        if (!empty($favicon)) {
-            $imageLink = $this->getView()->plugin('imageLink');
-            $headLink(
-                [
-                    'href' => $imageLink($favicon),
-                    'type' => 'image/x-icon', 'rel' => 'shortcut icon'
-                ]
-            );
-        }
-    }
-
-    /**
-     * Add scripts to header.
-     *
-     * @return void
-     */
-    protected function addScripts()
-    {
-        // Load Javascript (same ordering considerations as CSS, above):
-        $js = array_reverse($this->container->getJs());
-        $headScript = $this->getView()->plugin('headScript');
-        foreach ($js as $current) {
-            $headScript()->forcePrependFile(
-                $current['file'],
-                'text/javascript',
-                $current['attributes'] ?? []
-            );
-        }
+        $this->view->plugin('themeResources')('header');
     }
 }

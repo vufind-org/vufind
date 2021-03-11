@@ -90,7 +90,7 @@ class Module
         return [
             'factories' => [
                 View\Helper\HeadThemeResources::class =>
-                    View\Helper\HeadThemeResourcesFactory::class,
+                    InvokableFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
                 View\Helper\HeadLink::class =>
                     View\Helper\PipelineInjectorFactory::class,
@@ -104,6 +104,8 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\TemplatePath::class =>
                     View\Helper\TemplatePathFactory::class,
+                View\Helper\ThemeResources::class =>
+                    View\Helper\ThemeResourcesFactory::class,
             ],
             'aliases' => [
                 'headThemeResources' => View\Helper\HeadThemeResources::class,
@@ -116,6 +118,7 @@ class Module
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,
+                'themeResources' => View\Helper\ThemeResources::class,
             ],
         ];
     }
