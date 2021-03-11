@@ -550,7 +550,7 @@ class Folio extends AbstractAPI implements
                 $locationId = $item->effectiveLocationId;
                 $locationName = $this->getLocationName($locationId);
                 // concatenate enumeration fields if present
-                $enum = join(
+                $enum = implode(
                     ' ', array_filter(
                         [
                             $item->volume ?? null,
@@ -563,7 +563,7 @@ class Folio extends AbstractAPI implements
                     'item_id' => $item->id,
                     'holding_id' => $holding->id,
                     'number' => count($items) + 1,
-                    'enumchron' => $enum ?? '',
+                    'enumchron' => $enum,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
                     'availability' => $item->status->name == 'Available',
