@@ -126,9 +126,9 @@ class EITTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Fixture fields to override.
      *
-     * @return SolrDefault
+     * @return EIT
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = []): EIT
     {
         // Simulate empty response for now:
         $fixture = ['response' => ['docs' => [[]]]];

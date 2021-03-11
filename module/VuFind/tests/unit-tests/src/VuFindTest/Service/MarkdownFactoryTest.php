@@ -47,9 +47,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      * service
      *
      * @return void
-     * @throws \Interop\Container\Exception\ContainerException
      */
-    public function testConfig()
+    public function testConfig(): void
     {
         $defaultConfig = [];
         $defaultEnvironment = [
@@ -111,12 +110,11 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Return config of created markdown service environment
      *
-     * @param $config
+     * @param array $config Configuration settings
      *
-     * @return mixed
-     * @throws \Interop\Container\Exception\ContainerException
+     * @return array
      */
-    protected function getMarkdownEnvironmentConfig($config)
+    protected function getMarkdownEnvironmentConfig(array $config): array
     {
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);

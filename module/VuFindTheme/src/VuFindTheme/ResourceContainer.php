@@ -135,7 +135,7 @@ class ResourceContainer
             foreach ($js as $current) {
                 $this->addJsEntry($current);
             }
-        } elseif ($js == []) {
+        } elseif ($js === []) {
             return;
         } else {
             throw new \Exception("Invalid JS entry format: " . print_r($js, true));
@@ -204,7 +204,7 @@ class ResourceContainer
             if ($existingEntry['file'] == $jsEntry['file']) {
 
                 // If we have the same settings as before, just skip this entry.
-                if (count(array_diff($existingEntry, $jsEntry)) > 0) {
+                if ($existingEntry == $jsEntry) {
                     return;
                 }
 
@@ -240,7 +240,7 @@ class ResourceContainer
                         return;
                     }
                 } elseif (isset($entry['load_after'])) {
-                    if ($entry['load_after'] == $array[$i]['file']) {
+                    if ($entry['load_after'] === $array[$i]['file']) {
                         array_splice($array, $i + 1, 0, [$entry]);
                         return;
                     }
@@ -310,6 +310,8 @@ class ResourceContainer
      */
     public function parseSetting($current)
     {
+        // TODO: replace this method with a deprecation warning when all configs
+        // have been converted to arrays
         $parts = explode(':', $current);
         // Special case: don't explode URLs:
         if (($parts[0] === 'http' || $parts[0] === 'https')

@@ -51,7 +51,7 @@ class UserListTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockBuilder(UserList::class)
             ->setMethods(['createRow'])
             ->disableOriginalConstructor()->getMock();
-        $rowCallback = function () {
+        $rowCallback = function (): \VuFind\Db\Row\UserList {
             return $this->getMockBuilder(\VuFind\Db\Row\UserList::class)
                 ->setMethods(null)
                 ->disableOriginalConstructor()->getMock();

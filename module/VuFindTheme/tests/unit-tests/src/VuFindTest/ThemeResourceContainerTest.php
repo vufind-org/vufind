@@ -90,19 +90,21 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container->addJs(['file' => 'd2', 'load_after' => 'd1']);
         $container->addJs([]);
 
-        $expectedResult = [['file' => 'p1', 'priority' => 110, 'position' => 'header'],
-                           ['file' => 'p2', 'priority' => 220, 'position' => 'header'],
-                           ['file' => 'a', 'position' => 'header'],
-                           ['file' => 'b', 'position' => 'header'],
-                           ['file' => 'c', 'position' => 'header'],
-                           ['file' => 'd', 'position' => 'header'],
-                           ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
-                           ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
-                           ['file' => 'http://foo/bar',
-                            'position' => 'header',
-                            'attributes' => ['conditional' => 'lt IE 7']
-                           ],
-                        ];
+        $expectedResult = [
+            ['file' => 'p1', 'priority' => 110, 'position' => 'header'],
+            ['file' => 'p2', 'priority' => 220, 'position' => 'header'],
+            ['file' => 'a', 'position' => 'header'],
+            ['file' => 'b', 'position' => 'header'],
+            ['file' => 'c', 'position' => 'header'],
+            ['file' => 'd', 'position' => 'header'],
+            ['file' => 'd1', 'load_after' => 'd', 'position' => 'header'],
+            ['file' => 'd2', 'load_after' => 'd1', 'position' => 'header'],
+            [
+                'file' => 'http://foo/bar',
+                'position' => 'header',
+                'attributes' => ['conditional' => 'lt IE 7']
+            ],
+        ];
 
         $this->assertEquals($expectedResult, $container->getJs());
     }
@@ -159,5 +161,24 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container = new ResourceContainer();
         $container->setGenerator('fake');
         $this->assertEquals('fake', $container->getGenerator());
+    }
+
+    /**
+     * Test configuration parsing.
+     *
+     * @return void
+     */
+    public function testConfigParsing()
+    {
+        $container = new ResourceContainer();
+        $tests = [
+            'foo:bar:baz' => ['foo', 'bar', 'baz'],
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+        ];
+        foreach ($tests as $test => $expected) {
+            $this->assertEquals(
+                $expected, $container->parseSetting($test)
+            );
+        }
     }
 }

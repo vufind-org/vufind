@@ -13,25 +13,27 @@ return [
     'js' => [
         /**
          * Entries in this section can either be specified as array or as string.
+         * Array format is preferred.
          *
-         * Available options:
+         * Available array options:
          * - file: the path to the file
-         * - load_before: Use this to explicitly load the file before the given other file.
-         *				 This may NOT be used together with a priority setting.
-         * - load_after: Similar to load_before, but instead load the file after the given other file.
+         * - load_after: Use this to explicitly load the file after the given other
+         *   file. This may NOT be used together with a priority setting.
          * - priority: an optional priority (lower value means higher priority).
-         *		Default convention for vufind's own themes:
-         *			- 1xx => vendor
-         *			- 2xx => vufind library
-         *			- 3xx => vufind scripts
+         *      Default convention for VuFind's own themes:
+         *          - 1xx => vendor (third-party code)
+         *          - 2xx => VuFind library (general-purpose code)
+         *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - position: 'header' (default) or 'footer'
-         * - conditional: 'lt IE 10'
+         * - conditional: e.g. 'lt IE 10'
          *
-         * Entries with neither priority nor load_before nor load_after will be loaded after all other entries.
+         * Entries with neither priority nor load_after will be loaded after all
+         * other entries.
          *
-         * strings can be used for backwards compatibility reasons. examples:
+         * Strings are supported for backwards compatibility reasons. examples:
          * - 'example.js' => same as ['file' => 'example.js']
-         * - 'example.js::lt IE 10' => same as ['file' => 'example.js', 'conditional' => 'lt IE 10']
+         * - 'example.js:lt IE 10' => same as
+         *   ['file' => 'example.js', 'conditional' => 'lt IE 10']
          */
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
