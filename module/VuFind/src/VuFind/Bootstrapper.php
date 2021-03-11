@@ -190,23 +190,6 @@ class Bootstrapper
     }
 
     /**
-     * Set up headTitle view helper -- we always want to set, not append, titles.
-     *
-     * @return void
-     */
-    protected function initHeadTitle(): void
-    {
-        $callback = function ($event) {
-            $helperManager = $this->container->get('ViewHelperManager');
-            $headTitle = $helperManager->get('headtitle');
-            $headTitle->setDefaultAttachOrder(
-                \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET
-            );
-        };
-        $this->events->attach('dispatch', $callback);
-    }
-
-    /**
      * Support method for initLanguage(): process HTTP_ACCEPT_LANGUAGE value.
      * Returns browser-requested language string or null if none found.
      *
