@@ -58,6 +58,19 @@ class Content extends AbstractHelper
     protected $contextHelper;
 
     /**
+     * Constructor
+     *
+     * @param PageLocator $pageLocator   Page locator
+     * @param Context     $contextHelper Context view helper
+     */
+    public function __construct(PageLocator $pageLocator,
+        Context $contextHelper
+    ) {
+        $this->pageLocator = $pageLocator;
+        $this->contextHelper = $contextHelper;
+    }
+
+    /**
      * Search for a translated template and render it using a temporary context.
      *
      * @param string $pageName    Name of the page
@@ -83,18 +96,5 @@ class Content extends AbstractHelper
             $pageDetails['path']
         );
         return $this->contextHelper->renderInContext($path, $context);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param PageLocator $pageLocator   Page locator
-     * @param Context     $contextHelper Context view helper
-     */
-    public function __construct(PageLocator $pageLocator,
-        Context $contextHelper
-    ) {
-        $this->pageLocator = $pageLocator;
-        $this->contextHelper = $contextHelper;
     }
 }
