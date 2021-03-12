@@ -38,7 +38,7 @@ use LmcRbacMvc\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserTest extends \VuFindTest\Unit\TestCase
+class UserTest extends \PHPUnit\Framework\TestCase
 {
     protected $userValueMap = [
         'testuser1' =>
@@ -137,9 +137,9 @@ class UserTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a mock user object
      *
-     * @return UserRow
+     * @return \VuFind\Db\Row\User
      */
-    protected function getMockUser()
+    protected function getMockUser(): \VuFind\Db\Row\User
     {
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()

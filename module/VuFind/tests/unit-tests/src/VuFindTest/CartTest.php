@@ -184,12 +184,9 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testCookieWrite()
     {
         $manager = $this->getMockCookieManager();
-        $manager->expects($this->at(0))
+        $manager->expects($this->exactly(2))
             ->method('set')
-            ->with($this->equalTo('vufind_cart'), $this->equalTo('Aa'));
-        $manager->expects($this->at(1))
-            ->method('set')
-            ->with($this->equalTo('vufind_cart_src'), $this->equalTo('Solr'));
+            ->withConsecutive(['vufind_cart', 'Aa'], ['vufind_cart_src', 'Solr']);
         $cart = $this->getCart(100, true, $manager);
         $cart->addItem('Solr|a');
     }

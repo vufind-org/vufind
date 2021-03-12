@@ -709,9 +709,8 @@ class BrowseController extends AbstractBase
     protected function getAlphabetList()
     {
         // Get base alphabet:
-        $chars = isset($this->config->Browse->alphabet_letters)
-            ? $this->config->Browse->alphabet_letters
-            : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $chars = $this->config->Browse->alphabet_letters
+            ?? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         // Put numbers in the front for Era since years are important:
         if ($this->getCurrentAction() == 'Era') {

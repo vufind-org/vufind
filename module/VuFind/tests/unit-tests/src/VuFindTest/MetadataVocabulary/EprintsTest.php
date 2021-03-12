@@ -38,7 +38,7 @@ use VuFind\MetadataVocabulary\Eprints;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EprintsTest extends \VuFindTest\Unit\TestCase
+class EprintsTest extends \PHPUnit\Framework\TestCase
 {
     use FakeDriverTrait;
 

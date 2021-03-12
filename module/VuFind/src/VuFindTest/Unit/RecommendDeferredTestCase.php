@@ -37,7 +37,7 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class RecommendDeferredTestCase extends TestCase
+abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a fully configured module

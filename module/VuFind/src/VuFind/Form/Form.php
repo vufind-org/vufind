@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Form
@@ -776,7 +776,12 @@ class Form extends \Laminas\Form\Form implements
                         'options' => [
                             'callback' => function ($value, $context) use ($el) {
                                 return
-                                    !empty(array_intersect($el['options'], $value));
+                                    !empty(
+                                        array_intersect(
+                                            array_keys($el['options']),
+                                            $value
+                                        )
+                                    );
                             }
                          ]
                     ];
@@ -789,7 +794,7 @@ class Form extends \Laminas\Form\Form implements
                                 => $this->getValidationMessage('empty')
                             ],
                             'strict' => true,
-                            'token' => array_values($el['options'])
+                            'token' => array_keys($el['options'])
                         ]
                     ];
                 }

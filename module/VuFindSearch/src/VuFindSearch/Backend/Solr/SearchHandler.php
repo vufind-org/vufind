@@ -525,8 +525,8 @@ class SearchHandler
                     $this->munge($clausearray, $mungeValues, $internalJoin) .
                     ')';
                 // ...and add a weight if we have one
-                $weight = $sw[1];
-                if (null !== $weight && $weight && $weight > 0) {
+                $weight = intval($sw[1] ?? 0);
+                if ($weight > 0) {
                     $sstring .= '^' . $weight;
                 }
                 // push it onto the stack of clauses
@@ -539,8 +539,8 @@ class SearchHandler
                     $sstring = $field . ':(' . $mungeValues[$spec[0]] . ')';
                     // Add the weight if we have one. Yes, I know, it's redundant
                     // code.
-                    $weight = $spec[1];
-                    if (null !== $weight && $weight && $weight > 0) {
+                    $weight = intval($spec[1] ?? 0);
+                    if ($weight > 0) {
                         $sstring .= '^' . $weight;
                     }
                     // ..and push it on the stack of clauses

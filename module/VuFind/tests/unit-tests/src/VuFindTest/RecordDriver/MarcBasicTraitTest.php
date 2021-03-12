@@ -36,9 +36,9 @@ namespace VuFindTest\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MarcBasicTraitTest extends \VuFindTest\Unit\TestCase
+class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test methods in MarcBasicTrait.
@@ -48,11 +48,11 @@ class MarcBasicTraitTest extends \VuFindTest\Unit\TestCase
     public function testMarcBasicTrait()
     {
         $xml = $this->getFixture('marc/marctraits.xml');
-        $record = (new \File_MARCXML($xml, \File_MARCXML::SOURCE_STRING))->next();
+        $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
-            ->onlyMethods(['getMarcRecord'])->getMock();
+            ->onlyMethods(['getMarcReader'])->getMock();
         $obj->expects($this->any())
-            ->method('getMarcRecord')
+            ->method('getMarcReader')
             ->will($this->returnValue($record));
 
         $this->assertEquals(

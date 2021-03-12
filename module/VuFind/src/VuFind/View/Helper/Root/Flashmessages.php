@@ -84,7 +84,8 @@ class Flashmessages extends AbstractHelper
                 $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
             );
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
-                $html .= '<div class="' . $this->getClassForNamespace($ns) . '"';
+                $html .= '<div role="alert" class="'
+                    . $this->getClassForNamespace($ns) . '"';
                 if (isset($msg['dataset'])) {
                     foreach ($msg['dataset'] as $attr => $value) {
                         $html .= ' data-' . $attr . '="'

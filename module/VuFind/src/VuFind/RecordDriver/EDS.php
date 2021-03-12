@@ -579,9 +579,9 @@ class EDS extends DefaultRecord
                 if (in_array($group, $allowed_searchlink_groups)) {
                     $type = strtoupper($group);
                     $link_xml = '/<searchLink fieldCode="([^\"]*)" '
-                        . 'term="%22([^\"]*)%22">/';
-                    $link_html
-                        = "<a href=\"../EDS/Search?lookfor=$2&amp;type={$type}\">";
+                        . 'term="(%22[^\"]*%22)">/';
+                    $link_html = '<a href="../EDS/Search?lookfor=$2&amp;type='
+                        . urlencode($type) . '">';
                     $data = preg_replace($link_xml, $link_html, $data);
                     $data = str_replace('</searchLink>', '</a>', $data);
                 }

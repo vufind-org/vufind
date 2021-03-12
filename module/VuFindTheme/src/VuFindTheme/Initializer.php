@@ -59,9 +59,9 @@ class Initializer
     protected $event;
 
     /**
-     * Top-level service manager
+     * Top-level service container
      *
-     * @var \Laminas\ServiceManager\ServiceManager
+     * @var \Interop\Container\ContainerInterface
      */
     protected $serviceManager;
 

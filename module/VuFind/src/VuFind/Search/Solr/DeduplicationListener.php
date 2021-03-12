@@ -34,10 +34,10 @@
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\BackendInterface;
+use Psr\Container\ContainerInterface;
+
+use VuFindSearch\Backend\Solr\Backend;
 
 /**
  * Solr merged record handling listener.
@@ -54,14 +54,14 @@ class DeduplicationListener
     /**
      * Backend.
      *
-     * @var BackendInterface
+     * @var Backend
      */
     protected $backend;
 
     /**
      * Superior service manager.
      *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $serviceLocator;
 
@@ -89,18 +89,18 @@ class DeduplicationListener
     /**
      * Constructor.
      *
-     * @param BackendInterface        $backend          Search backend
-     * @param ServiceLocatorInterface $serviceLocator   Service locator
-     * @param string                  $searchConfig     Search config file id
-     * @param string                  $dataSourceConfig Data source file id
-     * @param bool                    $enabled          Whether deduplication is
+     * @param Backend            $backend          Search backend
+     * @param ContainerInterface $serviceLocator   Service locator
+     * @param string             $searchConfig     Search config file id
+     * @param string             $dataSourceConfig Data source file id
+     * @param bool               $enabled          Whether deduplication is
      * enabled
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        ServiceLocatorInterface $serviceLocator,
+        Backend $backend,
+        ContainerInterface $serviceLocator,
         $searchConfig, $dataSourceConfig = 'datasources', $enabled = true
     ) {
         $this->backend = $backend;
@@ -161,7 +161,7 @@ class DeduplicationListener
     /**
      * Check search parameters for child records filter
      *
-     * @param array|ArrayAccess $params Search parameters
+     * @param \VuFindSearch\ParamBag $params Search parameters
      *
      * @return bool
      */
@@ -358,7 +358,7 @@ class DeduplicationListener
     /**
      * Function that determines the priority for buildings
      *
-     * @param object $params Query parameters
+     * @param \VuFindSearch\ParamBag $params Query parameters
      *
      * @return array Array keyed by building with priority as the value
      */

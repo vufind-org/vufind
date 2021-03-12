@@ -38,6 +38,7 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * OverdriveConnector
