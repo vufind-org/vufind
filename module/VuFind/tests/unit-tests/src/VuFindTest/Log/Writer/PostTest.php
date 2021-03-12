@@ -44,8 +44,10 @@ class PostTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test writer functionality
+     *
+     * @return void
      */
-    public function testWriter()
+    public function testWriter(): void
     {
         // Set up data and expectations:
         $fakeUri = 'http://fake';

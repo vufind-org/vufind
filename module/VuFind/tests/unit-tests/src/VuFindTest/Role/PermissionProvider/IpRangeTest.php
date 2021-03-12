@@ -47,9 +47,9 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
      * @param string         $ipAddr IP address to send to provider.
      * @param IpAddressUtils $utils  IP address utils to use
      *
-     * @return IpRegEx
+     * @return IpRange
      */
-    protected function getPermissionProvider($ipAddr, IpAddressUtils $utils)
+    protected function getPermissionProvider($ipAddr, IpAddressUtils $utils): IpRange
     {
         $mockRequestClass = $this->getMockClass(
             \Laminas\Http\PhpEnvironment\Request::class

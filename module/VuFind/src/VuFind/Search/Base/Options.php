@@ -995,6 +995,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Return the callback used for normalization within this backend.
+     *
+     * @return callable
+     */
+    public function getSpellingNormalizer()
+    {
+        return new \VuFind\Normalizer\DefaultSpellingNormalizer();
+    }
+
+    /**
      * Configure autocomplete preferences from an .ini file.
      *
      * @param Config $searchSettings Object representation of .ini file

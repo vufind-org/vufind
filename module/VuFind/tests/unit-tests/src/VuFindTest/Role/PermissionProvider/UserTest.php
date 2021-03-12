@@ -137,9 +137,9 @@ class UserTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock user object
      *
-     * @return UserRow
+     * @return \VuFind\Db\Row\User
      */
-    protected function getMockUser()
+    protected function getMockUser(): \VuFind\Db\Row\User
     {
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()

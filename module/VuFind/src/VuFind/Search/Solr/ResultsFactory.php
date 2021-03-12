@@ -64,7 +64,10 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $solr->setSpellingProcessor(
-            new \VuFind\Search\Solr\SpellingProcessor($config->Spelling ?? null)
+            new \VuFind\Search\Solr\SpellingProcessor(
+                $config->Spelling ?? null,
+                $solr->getOptions()->getSpellingNormalizer()
+            )
         );
         $solr->setHierarchicalFacetHelper(
             $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class)

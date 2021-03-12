@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'channels' => Channels::class,
+        'bookplate' => Bookplate::class,
         'editions' => Deprecated::class,
         'similar' => Similar::class,
         'worldcateditions' => Deprecated::class,
@@ -60,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Channels::class => InvokableFactory::class,
+        Bookplate::class => BookplateFactory::class,
         Deprecated::class => InvokableFactory::class,
         Similar::class => SimilarFactory::class,
         WorldCatSimilar::class => SimilarFactory::class,

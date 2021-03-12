@@ -316,9 +316,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function clickHierarchyFacet($page)
     {
-        $this->findCss($page, '#j1_1.jstree-closed .jstree-icon');
-        $session = $this->getMinkSession();
-        $session->executeScript("$('#j1_1.jstree-closed .jstree-icon').click();");
+        $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
+        $this->snooze();
         $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
         $this->clickCss($page, '#j1_2 a');
         $this->snooze();

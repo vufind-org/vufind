@@ -88,7 +88,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSend()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && 'body' == $message->getBody()
@@ -107,7 +107,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendWithAddressObjectInSender()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && 'Sender TextName <from@example.com>' == $fromString
@@ -128,7 +128,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendWithAddressObjectInRecipient()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
@@ -149,7 +149,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendWithAddressListObjectInRecipient()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return 'Recipient TextName <to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
@@ -171,7 +171,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendWithFromOverride()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<me@example.com>' == $message->getReplyTo()->current()->toString()
@@ -194,7 +194,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendWithReplyTo()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
@@ -217,7 +217,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendWithFromOverrideAndReplyTo()
     {
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<reply-to@example.com>' == $message->getReplyTo()->current()->toString()
@@ -348,7 +348,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendLink()
     {
-        $viewCallback = function ($in) {
+        $viewCallback = function ($in): bool {
             return $in['msgUrl'] == 'http://foo'
                 && $in['to'] == 'to@example.com;to2@example.com'
                 && $in['from'] == 'from@example.com'
@@ -360,7 +360,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
 
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $to = $message->getTo();
             return $to->has('to@example.com')
                 && $to->has('to2@example.com')
@@ -390,7 +390,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
 
-        $viewCallback = function ($in) use ($driver) {
+        $viewCallback = function ($in) use ($driver): bool {
             return $in['driver'] == $driver
                 && $in['to'] == 'to@example.com'
                 && $in['from'] == 'from@example.com'
@@ -402,7 +402,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
 
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && 'body' == $message->getBody()
@@ -437,7 +437,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->html = '<!DOCTYPE html><head><title>html</title></head><body>html body part</body></html>';
         $this->text = 'this is the text part';
-        $callback = function ($message) {
+        $callback = function ($message): bool {
             $fromString = $message->getFrom()->current()->toString();
             return '<to@example.com>' == $message->getTo()->current()->toString()
                 && 'Sender TextName <from@example.com>' == $fromString
