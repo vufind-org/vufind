@@ -112,9 +112,38 @@ class PageLocator
         } else {
             $template = preg_replace($languagePatternExtended, '', $template);
         }
-        $template = str_replace('%language%', $language, $template);
+        $template = str_replace('%language%', $language ?? '', $template);
         $template = str_replace('//', '/', $template);
         return $template;
+    }
+
+    /**
+     * Try to find a template using
+     * 1) Current language suffix
+     * 2) Default language suffix
+     * 3) No language suffix
+     *
+     * @param string $pathPrefix Subdirectory where the template should be located
+     * @param string $pageName   Template name
+     * @param string $pattern    Filesystem pattern
+     *
+     * @return array Array with template options
+     */
+    protected function getTemplateOptionsFromPattern(
+        $pathPrefix, $pageName, $pattern
+    ) {
+        $templates = ['language' => $this->generateTemplateFromPattern(
+            $pathPrefix, $pageName, $pattern, $this->language
+        )];
+        if ($this->language != $this->defaultLanguage) {
+            $templates['defaultLanguage'] = $this->generateTemplateFromPattern(
+                $pathPrefix, $pageName, $pattern, $this->defaultLanguage
+            );
+        }
+        $templates['pageName'] = $this->generateTemplateFromPattern(
+            $pathPrefix, $pageName, $pattern
+        );
+        return $templates;
     }
 
     /**
@@ -134,23 +163,9 @@ class PageLocator
             $pattern = '%pathPrefix%/%pageName%{_%language%}';
         }
 
-        // Try to find a template using
-        // 1.) Current language suffix
-        // 2.) Default language suffix
-        // 3.) No language suffix
-        $templates = [
-            'language' => $this->generateTemplateFromPattern(
-                $pathPrefix, $pageName, $pattern, $this->language
-            ),
-            'defaultLanguage' => $this->generateTemplateFromPattern(
-                $pathPrefix, $pageName, $pattern, $this->defaultLanguage
-            ),
-            'pageName' => $this->generateTemplateFromPattern(
-                $pathPrefix,
-                $pageName,
-                $pattern
-            ),
-        ];
+        $templates = $this->getTemplateOptionsFromPattern(
+            $pathPrefix, $pageName, $pattern
+        );
 
         foreach ($templates as $resultType => $template) {
             foreach ($this->types as $type) {
@@ -164,7 +179,7 @@ class PageLocator
                         'path' => $pathDetails['path'],
                         'page' => basename($template),
                         'theme' => $pathDetails['theme'],
-                        'type' => $resultType,
+                        'resultType' => $resultType,
                     ];
                 }
             }

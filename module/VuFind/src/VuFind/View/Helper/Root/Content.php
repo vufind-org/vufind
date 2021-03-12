@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -91,8 +91,9 @@ class Content extends AbstractHelper
         $pageDetails = $this->pageLocator->determineTemplateAndRenderer(
             $pathPrefix, $pageName, $pattern
         );
-        $path = preg_replace(
-            '"^.+' . $pageDetails['theme'] . '/templates/"', '',
+        $path = str_replace(
+            APPLICATION_PATH . '/themes/' . $pageDetails['theme'] . '/templates/',
+            '',
             $pageDetails['path']
         );
         return $this->contextHelper->renderInContext($path, $context);

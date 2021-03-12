@@ -86,11 +86,11 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
     {
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.
-        $safe_topic = preg_replace('/[^\w]/', '', $name);
+        $safeTopic = preg_replace('/[^\w]/', '', $name);
 
         $this->warnings = [];
         $html = $this->contentHelper->renderTranslated(
-            $safe_topic,
+            $safeTopic,
             'HelpTranslations',
             $context,
             $pageDetails,
@@ -98,9 +98,8 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
         );
 
         if (!$html) {
-            $this->warnings[] = 'Sorry, but the help you requested is '
-                . 'not available.';
-        } elseif ($pageDetails['type'] != 'language') {
+            $this->warnings[] = 'help_page_missing';
+        } elseif ($pageDetails['resultType'] != 'language') {
             $this->warnings[] = 'Sorry, but the help you requested is '
                 . 'unavailable in your language.';
         }
