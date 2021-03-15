@@ -99,7 +99,7 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
 
         if (!$html) {
             $this->warnings[] = 'help_page_missing';
-        } elseif ($pageDetails['resultType'] != 'language') {
+        } elseif ($pageDetails['matchType'] != 'language') {
             $this->warnings[] = 'Sorry, but the help you requested is '
                 . 'unavailable in your language.';
         }

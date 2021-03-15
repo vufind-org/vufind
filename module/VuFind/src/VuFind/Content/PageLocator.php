@@ -127,7 +127,7 @@ class PageLocator
      * @param string $pageName   Template name
      * @param string $pattern    Filesystem pattern
      *
-     * @return array Array with template options
+     * @return array Array with template options (key equals matchType)
      */
     protected function getTemplateOptionsFromPattern(
         $pathPrefix, $pageName, $pattern
@@ -167,7 +167,7 @@ class PageLocator
             $pathPrefix, $pageName, $pattern
         );
 
-        foreach ($templates as $resultType => $template) {
+        foreach ($templates as $matchType => $template) {
             foreach ($this->types as $type) {
                 $filename = "$template.$type";
                 $pathDetails = $this->themeInfo->findContainingTheme(
@@ -179,7 +179,7 @@ class PageLocator
                         'path' => $pathDetails['path'],
                         'page' => basename($template),
                         'theme' => $pathDetails['theme'],
-                        'resultType' => $resultType,
+                        'matchType' => $matchType,
                     ];
                 }
             }
