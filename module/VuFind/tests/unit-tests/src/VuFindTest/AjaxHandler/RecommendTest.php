@@ -48,6 +48,44 @@ use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
     /**
+     * Get a mock params object.
+     *
+     * @param \VuFindSearch\Query\Query $query Query to include in container.
+     *
+     * @return \VuFind\Search\Solr\Params
+     */
+    protected function getMockParams($query = null)
+    {
+        if (null === $query) {
+            $query = new \VuFindSearch\Query\Query('foo', 'bar');
+        }
+        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
+            ->disableOriginalConstructor()->getMock();
+        $params->expects($this->any())->method('getQuery')
+            ->will($this->returnValue($query));
+        return $params;
+    }
+
+    /**
+     * Get a mock results object.
+     *
+     * @param \VuFind\Search\Solr\Params $params Params to include in container.
+     *
+     * @return \VuFind\Search\Solr\Results
+     */
+    protected function getMockResults($params = null)
+    {
+        if (null === $params) {
+            $params = $this->getMockParams();
+        }
+        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
+            ->disableOriginalConstructor()->getMock();
+        $results->expects($this->any())->method('getParams')
+            ->will($this->returnValue($params));
+        return $results;
+    }
+
+    /**
      * Test the AJAX handler's basic response.
      *
      * @return void
@@ -71,7 +109,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->createMock(ResultsManager::class, ['get']);
         $resultsManager->expects($this->once())->method('get')
             ->with($this->equalTo('Solr'))
-            ->will($this->returnValue($this->container->createMock(Results::class)));
+            ->will($this->returnValue($this->getMockResults()));
         $this->container->set(ResultsManager::class, $resultsManager);
 
         // Set up view helper and renderer:
