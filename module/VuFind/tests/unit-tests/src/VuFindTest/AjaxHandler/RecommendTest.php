@@ -104,12 +104,14 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->will($this->returnValue($mockPlugin));
         $this->container->set(PluginManager::class, $rm);
 
-        // Set up results plugin manager:
+        // Set up results and results plugin manager:
+        $results = $this->getMockResults();
+        $results->getParams()->expects($this->once())->method('initFromRequest');
         $resultsManager = $this->container
             ->createMock(ResultsManager::class, ['get']);
         $resultsManager->expects($this->once())->method('get')
             ->with($this->equalTo('Solr'))
-            ->will($this->returnValue($this->getMockResults()));
+            ->will($this->returnValue($results));
         $this->container->set(ResultsManager::class, $resultsManager);
 
         // Set up view helper and renderer:
