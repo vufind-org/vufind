@@ -139,17 +139,17 @@ var TueFind = {
                     // example for embedding, see:
                     // https://commons.wikimedia.org/wiki/File:Angela_Merkel._Tallinn_Digital_Summit.jpg
                     // => "Use this file on the web"
-                    let artist = request.getResponseHeader('artist');
+                    let artist = TueFind.StripHtmlTags(request.getResponseHeader('artist'));
                     let license = request.getResponseHeader('link');
                     let title = '&copy; ' + TueFind.EscapeHTML(artist);
                     if (license != null) {
                         let pattern = /<([^>]+)>;\s*rel="license";\s*title="([^"]+)"/;
                         let match = pattern.exec(license);
-                        title += '[' + match[2] + ' by ' + match[1]+ ']';
+                        title += ' <a href="' + match[1] + '" target="_blank">' + match[2] + '</a>';
                     }
                     title += ', via Wikimedia Commons';
                     let content = '<figure style="max-width: 200px;">';
-                    content += '<img src="' + imageUrl + '" title="' + title + '">';
+                    content += '<img src="' + imageUrl + '" title="' + TueFind.StripHtmlTags(title) + '">';
                     content += '<figcaption style="text-align: center;">' + title + '</figcaption>';
                     content += '</figure>';
                     $(placeholder).append(content);
@@ -236,6 +236,12 @@ var TueFind = {
             this.focus();
             this.setSelectionRange(this.value.length, this.value.length);
         });
+    },
+
+    StripHtmlTags: function(html) {
+        let temporalDivElement = document.createElement("div");
+        temporalDivElement.innerHTML = html;
+        return temporalDivElement.textContent || temporalDivElement.innerText || "";
     },
 
     HandlePassedFulltextQuery : function() {
