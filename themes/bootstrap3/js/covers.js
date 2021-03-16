@@ -2,16 +2,15 @@
 function loadCoverByElement(data, element) {
   var url = VuFind.path + '/AJAX/JSON?method=' + 'getRecordCover';
   var img = element.find('img');
-  var spinner = element.children('div.spinner');
-  var container = element.children('div.cover-container');
-  var source = element.children('.cover-source');
+  var spinner = element.find('div.spinner');
+  var container = element.find('div.cover-container');
+  var source = element.find('.cover-source');
   function coverCallback(response) {
-    spinner.hide();
-    container.show();
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
-      container.children().not("img").hide();
-      if (typeof response.data.backlink_text !== 'undefined' && element.parents().is('.template-dir-record')) {
+      container.find('.cover-source').hide();
+      var inlink = element.parent().children().first().is('a');
+      if (typeof response.data.backlink_text !== 'undefined' && inlink === false) {
         var link = element.find('.cover-backlink');
         var span = element.find('.cover-source-text');
         if (typeof response.data.backlink_url !== 'undefined') {
@@ -23,6 +22,11 @@ function loadCoverByElement(data, element) {
           link.remove();
         }
         element.find('.cover-source').show();
+      } else {
+        var medium = img.parents('.media-left, .media-right, .carousel-item');
+        img.detach();
+        medium.children('a').append(img);
+        container.parents('.ajaxcover').remove();
       }
     } else {
       img.remove();
@@ -33,6 +37,8 @@ function loadCoverByElement(data, element) {
         container.html();
       }
     }
+    spinner.hide();
+    container.show();
   }
   $.ajax({
     dataType: "json",
