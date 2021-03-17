@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f554af83d25ff597521f9f06ee6bdfdb",
+    "content-hash": "08545ecbd1c345cd9ecbecc51f57bd1f",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -5564,6 +5564,74 @@
             "time": "2020-01-13T21:36:48+00:00"
         },
         {
+            "name": "slm/locale",
+            "version": "v0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/basz/SlmLocale.git",
+                "reference": "7357acd8db5c3cec57198e3b301cf8dfd1ae7814"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/basz/SlmLocale/zipball/7357acd8db5c3cec57198e3b301cf8dfd1ae7814",
+                "reference": "7357acd8db5c3cec57198e3b301cf8dfd1ae7814",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "laminas/laminas-eventmanager": "^3.1",
+                "laminas/laminas-http": "^2.7",
+                "laminas/laminas-modulemanager": "^2.8.2",
+                "laminas/laminas-router": "^3.0",
+                "laminas/laminas-servicemanager": "^3.2",
+                "laminas/laminas-stdlib": "^3.2.1",
+                "laminas/laminas-view": "^2.9.0",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16.1",
+                "laminas/laminas-console": "^2.6",
+                "laminas/laminas-mvc": "^3.1",
+                "laminas/laminas-mvc-console": "^1.1.9",
+                "phpunit/phpunit": "^8.5.1",
+                "satooshi/php-coveralls": "^1.1.0"
+            },
+            "suggest": {
+                "laminas/laminas-mvc": "For using the router in the UriPath strategy"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SlmLocale\\": "src/SlmLocale/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Jurian Sluiman",
+                    "email": "jurian@juriansluiman.nl",
+                    "homepage": "http://juriansluiman.nl"
+                }
+            ],
+            "description": "Automatic detection of locales for Laminas",
+            "homepage": "https://github.com/juriansluiman/SlmLocale",
+            "keywords": [
+                "Zend Framework",
+                "i18n",
+                "laminas",
+                "locale",
+                "zf"
+            ],
+            "support": {
+                "issues": "https://github.com/basz/SlmLocale/issues",
+                "source": "https://github.com/basz/SlmLocale/tree/v0.5.0"
+            },
+            "time": "2020-09-09T06:16:25+00:00"
+        },
+        {
             "name": "swagger-api/swagger-ui",
             "version": "v3.40.0",
             "source": {
@@ -10808,5 +10876,5 @@
     "platform-overrides": {
         "php": "7.3.0"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

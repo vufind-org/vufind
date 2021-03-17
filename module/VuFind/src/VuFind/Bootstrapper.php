@@ -30,6 +30,7 @@ namespace VuFind;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * VuFind Bootstrapper
@@ -190,61 +191,17 @@ class Bootstrapper
     }
 
     /**
-     * Support method for initLanguage(): process HTTP_ACCEPT_LANGUAGE value.
-     * Returns browser-requested language string or null if none found.
+     * Set up the initial view model.
      *
-     * @return ?string
+     * @return void
      */
-    public function detectBrowserLanguage(): ?string
+    protected function initViewModel(): void
     {
-        if (isset($this->config->Site->browserDetectLanguage)
-            && false == $this->config->Site->browserDetectLanguage
-        ) {
-            return null;
-        }
-
-        // break up string into pieces (languages and q factors)
-        preg_match_all(
-            '/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i',
-            $this->event->getRequest()->getServer()->get('HTTP_ACCEPT_LANGUAGE'),
-            $langParse
-        );
-
-        if (!count($langParse[1])) {
-            return null;
-        }
-
-        // create a list like "en" => 0.8
-        $langs = array_combine($langParse[1], $langParse[4]);
-
-        // set default to 1 for any without q factor
-        foreach ($langs as $lang => $val) {
-            if (empty($val)) {
-                $langs[$lang] = 1;
-            }
-        }
-
-        // sort list based on value
-        arsort($langs, SORT_NUMERIC);
-
-        $validLanguages = array_keys($this->config->Languages->toArray());
-
-        // return first valid language
-        foreach (array_keys($langs) as $language) {
-            // Make sure language code is valid
-            $language = strtolower($language);
-            if (in_array($language, $validLanguages)) {
-                return $language;
-            }
-
-            // Make sure language code is valid, reset to default if bad:
-            $langStrip = current(explode("-", $language));
-            if (in_array($langStrip, $validLanguages)) {
-                return $langStrip;
-            }
-        }
-
-        return null;
+        $settings = $this->container->get(LocaleSettings::class);
+        $viewModel = $this->container->get('HttpViewManager')->getViewModel();
+        $viewModel->setVariable('userLang', $locale = $settings->getUserLocale());
+        $viewModel->setVariable('allLangs', $settings->getEnabledLocales());
+        $viewModel->setVariable('rtl', $settings->isRightToLeftLocale($locale));
     }
 
     /**
@@ -259,30 +216,9 @@ class Bootstrapper
             return;
         }
 
-        $config = & $this->config;
-        $browserCallback = [$this, 'detectBrowserLanguage'];
-        $callback = function ($event) use ($config, $browserCallback) {
-            $validBrowserLanguage = call_user_func($browserCallback);
-
-            // Setup Translator
-            $request = $event->getRequest();
-            if (($language = $request->getPost()->get('mylang', false))
-                || ($language = $request->getQuery()->get('lng', false))
-            ) {
-                $cookieManager = $this->container
-                    ->get(\VuFind\Cookie\CookieManager::class);
-                $cookieManager->set('language', $language);
-            } elseif (!empty($request->getCookie()->language)) {
-                $language = $request->getCookie()->language;
-            } else {
-                $language = (null !== $validBrowserLanguage)
-                    ? $validBrowserLanguage : $config->Site->language;
-            }
-
-            // Make sure language code is valid, reset to default if bad:
-            if (!in_array($language, array_keys($config->Languages->toArray()))) {
-                $language = $config->Site->language;
-            }
+        $callback = function ($event) {
+            $settings = $this->container->get(LocaleSettings::class);
+            $language = $settings->getUserLocale();
             try {
                 $translator = $this->container
                     ->get(\Laminas\Mvc\I18n\Translator::class);
@@ -295,6 +231,7 @@ class Bootstrapper
                         . ' Please disable translation or install the extension.'
                     );
                 }
+                throw $e;
             }
 
             // Store last selected language in user account, if applicable:
@@ -304,16 +241,6 @@ class Bootstrapper
             ) {
                 $user->updateLastLanguage($language);
             }
-
-            // Send key values to view:
-            $viewModel = $this->container->get('ViewManager')->getViewModel();
-            $viewModel->setVariable('userLang', $language);
-            $viewModel->setVariable('allLangs', $config->Languages);
-            $rtlLangs = isset($config->LanguageSettings->rtl_langs)
-                ? array_map(
-                    'trim', explode(',', $config->LanguageSettings->rtl_langs)
-                ) : [];
-            $viewModel->setVariable('rtl', in_array($language, $rtlLangs));
         };
         $this->events->attach('dispatch.error', $callback, 10000);
         $this->events->attach('dispatch', $callback, 10000);
