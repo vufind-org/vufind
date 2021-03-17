@@ -103,11 +103,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      * a URL (true) or simply return false (false)?
      * @param bool         $testLoadImage  If true the function will try to load the
      * cover image in advance and returns false in case no image could be loaded
+     * @param bool         $ajax           True if the function is called from ajax
+     * handler
      *
      * @return false|array|null
      */
     public function getMetadata(RecordDriver $driver, $size = 'small',
-        $resolveDynamic = true, $testLoadImage = false
+        $resolveDynamic = true, $testLoadImage = false, $ajax = false
     ) {
         // Try to build thumbnail:
         $thumb = $driver->tryMethod('getThumbnail', [$size]);
@@ -133,6 +135,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
 
         foreach ($handlers as $handler) {
+            if ($handler['handler']->isBacklinkMandatory() && !$ajax) {
+                $this->logWarning(
+                    'Cover provider ' . get_class($handler['handler'])
+                    . ' needs ajaxcovers setting to be on'
+                );
+                continue;
+            }
             try {
                 // Is the current provider appropriate for the available data?
                 if ($handler['handler']->supports($ids)

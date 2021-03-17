@@ -96,6 +96,20 @@ abstract class AbstractCover
     protected $directUrls = false;
 
     /**
+     * Are baclinks to source of cover mandatory?
+     *
+     * @var bool
+     */
+    protected $mandatoryBacklinks = false;
+
+    /**
+     * Show backlinks to cover source also on search results?
+     *
+     * @var bool
+     */
+    protected $backlinksOnResults = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @return bool
@@ -161,5 +175,25 @@ abstract class AbstractCover
     {
         $url = $this->getUrl($key, $size, $ids);
         return $url ? ['url' => $url] : [];
+    }
+
+    /**
+     * Is mandatory to show backlink to cover source?
+     *
+     * @return bool
+     */
+    public function isBacklinkMandatory(): bool
+    {
+        return $this->mandatoryBacklinks;
+    }
+
+    /**
+     * Show backlinks to cover source also on search results
+     *
+     * @return bool
+     */
+    public function showBacklinksOnResults(): bool
+    {
+        return $this->backlinksOnResults;
     }
 }
