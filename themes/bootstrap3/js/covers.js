@@ -21,7 +21,7 @@ function loadCoverByElement(data, element) {
           span.html(response.data.backlink_text);
           link.remove();
         }
-        if (inlink === true) {
+        if (inlink === true && response.data.backlink_on_results === true) {
           var falseLink = source.children('a').not('.cover-backlink');
           falseLink.replaceWith(falseLink.text());
           medium.append(source);
