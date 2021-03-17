@@ -90,7 +90,7 @@ $config = [
                 'options' => [
                     'route'    => "/myrssfeed/:user_id",
                     'constraints' => [
-                        'user'     => '[0-9]+',
+                        'user_id'     => '[0-9]+',
                     ],
                     'defaults' => [
                         'controller' => 'MyResearch',
