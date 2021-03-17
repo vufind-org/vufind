@@ -8,9 +8,9 @@ function loadCoverByElement(data, element) {
   function coverCallback(response) {
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
-      container.find('.cover-source').hide();
       var inlink = element.parent().children().first().is('a');
-      if (typeof response.data.backlink_text !== 'undefined' && inlink === false) {
+      var medium = img.parents('.media-left, .media-right, .carousel-item');
+      if (typeof response.data.backlink_text !== 'undefined') {
         var link = element.find('.cover-backlink');
         var span = element.find('.cover-source-text');
         if (typeof response.data.backlink_url !== 'undefined') {
@@ -21,11 +21,15 @@ function loadCoverByElement(data, element) {
           span.html(response.data.backlink_text);
           link.remove();
         }
-        element.find('.cover-source').show();
-      } else {
-        var medium = img.parents('.media-left, .media-right, .carousel-item');
+        if (inlink === true) {
+          var falseLink = source.children('a').not('.cover-backlink');
+          falseLink.replaceWith(falseLink.text());
+          medium.append(source);
+        }
+      }
+      if (inlink === true) {
         img.detach();
-        medium.children('a').append(img);
+        medium.children('a').prepend(img);
         container.parents('.ajaxcover').remove();
       }
     } else {
