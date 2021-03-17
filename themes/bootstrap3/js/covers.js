@@ -23,7 +23,7 @@ function loadCoverByElement(data, element) {
         }
         if (inlink === true && response.data.backlink_on_results === true) {
           var falseLink = source.children('a').not('.cover-backlink');
-          falseLink.replaceWith(falseLink.text());
+          falseLink.replaceWith('<span>' + falseLink.text() + '</span>');
           medium.append(source);
         }
       }
