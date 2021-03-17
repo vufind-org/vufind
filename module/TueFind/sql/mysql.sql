@@ -54,4 +54,5 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 ALTER TABLE vufind.user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE INDEX tuefind_rss_feed_send_emails_index ON vufind.user (tuefind_rss_feed_send_emails);
 ALTER TABLE vufind.user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
