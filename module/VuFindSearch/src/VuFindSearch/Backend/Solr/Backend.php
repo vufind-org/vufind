@@ -32,9 +32,11 @@ use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
+use VuFindSearch\Backend\QueryHelperInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\GetIdsInterface;
+use VuFindSearch\Feature\GetQueryHelperInterface;
 use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -59,7 +61,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
  */
 class Backend extends AbstractBackend
     implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface, WorkExpressionsInterface
+    GetIdsInterface, WorkExpressionsInterface, GetQueryHelperInterface
 {
     /**
      * Limit for records per query in a batch retrieval.
@@ -464,6 +466,16 @@ class Backend extends AbstractBackend
     public function getConnector()
     {
         return $this->connector;
+    }
+
+    /**
+     * Get query helper.
+     *
+     * @return QueryHelperInterface
+     */
+    public function getQueryHelper()
+    {
+        return $this->getQueryBuilder()->getQueryHelper();
     }
 
     /// Internal API

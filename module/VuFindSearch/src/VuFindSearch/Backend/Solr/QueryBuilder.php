@@ -30,6 +30,7 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
+use VuFindSearch\Backend\QueryHelperInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
@@ -87,11 +88,11 @@ class QueryBuilder implements QueryBuilderInterface
     protected $createSpellingQuery = false;
 
     /**
-     * Lucene syntax helper
+     * Query helper
      *
-     * @var LuceneSyntaxHelper
+     * @var QueryHelper
      */
-    protected $luceneHelper = null;
+    protected $queryHelper = null;
 
     /**
      * Constructor.
@@ -252,16 +253,26 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * Get query helper
+     *
+     * @return QueryHelperInterface
+     */
+    public function getQueryHelper()
+    {
+        if (null === $this->queryHelper) {
+            $this->queryHelper = new QueryHelper();
+        }
+        return $this->queryHelper;
+    }
+
+    /**
      * Get Lucene syntax helper
      *
      * @return LuceneSyntaxHelper
      */
     public function getLuceneHelper()
     {
-        if (null === $this->luceneHelper) {
-            $this->luceneHelper = new LuceneSyntaxHelper();
-        }
-        return $this->luceneHelper;
+        return $this->getQueryHelper()->getLuceneHelper();
     }
 
     /**
@@ -273,7 +284,7 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function setLuceneHelper(LuceneSyntaxHelper $helper)
     {
-        $this->luceneHelper = $helper;
+        $this->getQueryHelper()->setLuceneHelper($helper);
     }
 
     /// Internal API

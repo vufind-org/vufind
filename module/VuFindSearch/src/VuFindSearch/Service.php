@@ -34,7 +34,9 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Backend\QueryHelperInterface;
 use VuFindSearch\Feature\GetIdsInterface;
+use VuFindSearch\Feature\GetQueryHelperInterface;
 use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -386,6 +388,38 @@ class Service
             }
             $response = $backendInstance
                 ->workExpressions($id, $args['workKeys'], $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+        return $response;
+    }
+
+    /**
+     * Return backend query helper.
+     *
+     * @param string        $backend Search backend identifier
+     * @param ParamBag|null $params  Search backend parameters
+     *
+     * @return QueryHelperInterface|null
+     */
+    public function getQueryHelper(string $backend, ParamBag $params = null)
+    {
+        $params  = $params ?: new ParamBag();
+        $context = __FUNCTION__;
+        $args = compact('backend', 'params', 'context');
+        $backendInstance = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backendInstance;
+
+        $this->triggerPre($backendInstance, $args);
+        try {
+            if (!($backendInstance instanceof GetQueryHelperInterface)) {
+                throw new BackendException(
+                    "$backend does not support getQueryHelper()"
+                );
+            }
+            $response = $backendInstance->getQueryHelper();
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;
