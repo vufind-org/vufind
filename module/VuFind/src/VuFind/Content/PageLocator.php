@@ -131,21 +131,18 @@ class PageLocator
      */
     protected function getTemplateOptionsFromPattern(
         string $pathPrefix, string $pageName, string $pattern
-    ): array {
-        $templates = [
-            'language' => $this->generateTemplateFromPattern(
-                $pathPrefix, $pageName, $pattern, $this->language
-            )
-        ];
+    ): \Generator {
+        yield 'language' => $this->generateTemplateFromPattern(
+            $pathPrefix, $pageName, $pattern, $this->language
+        );
         if ($this->language != $this->defaultLanguage) {
-            $templates['defaultLanguage'] = $this->generateTemplateFromPattern(
+            yield 'defaultLanguage' => $this->generateTemplateFromPattern(
                 $pathPrefix, $pageName, $pattern, $this->defaultLanguage
             );
         }
-        $templates['pageName'] = $this->generateTemplateFromPattern(
+        yield 'pageName' => $this->generateTemplateFromPattern(
             $pathPrefix, $pageName, $pattern
         );
-        return $templates;
     }
 
     /**
