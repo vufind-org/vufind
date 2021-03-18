@@ -43,8 +43,6 @@ use VuFind\I18n\Locale\LocaleSettings;
  */
 class Bootstrapper
 {
-    use \VuFind\I18n\Translator\LanguageInitializerTrait;
-
     /**
      * Main VuFind configuration
      *
@@ -205,45 +203,21 @@ class Bootstrapper
     }
 
     /**
-     * Set up language handling.
+     * Update language in user account, as needed.
      *
      * @return void
      */
-    protected function initLanguage(): void
+    protected function initUserLanguage(): void
     {
-        // Language not supported in CLI mode:
-        if (PHP_SAPI == 'cli') {
-            return;
+        // Store last selected language in user account, if applicable:
+        $settings = $this->container->get(LocaleSettings::class);
+        $language = $settings->getUserLocale();
+        $authManager = $this->container->get(\VuFind\Auth\Manager::class);
+        if (($user = $authManager->isLoggedIn())
+            && $user->last_language != $language
+        ) {
+            $user->updateLastLanguage($language);
         }
-
-        $callback = function ($event) {
-            $settings = $this->container->get(LocaleSettings::class);
-            $language = $settings->getUserLocale();
-            try {
-                $translator = $this->container
-                    ->get(\Laminas\Mvc\I18n\Translator::class);
-                $translator->setLocale($language);
-                $this->addLanguageToTranslator($translator, $language);
-            } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
-                if (!extension_loaded('intl')) {
-                    throw new \Exception(
-                        'Translation broken due to missing PHP intl extension.'
-                        . ' Please disable translation or install the extension.'
-                    );
-                }
-                throw $e;
-            }
-
-            // Store last selected language in user account, if applicable:
-            $authManager = $this->container->get(\VuFind\Auth\Manager::class);
-            if (($user = $authManager->isLoggedIn())
-                && $user->last_language != $language
-            ) {
-                $user->updateLastLanguage($language);
-            }
-        };
-        $this->events->attach('dispatch.error', $callback, 10000);
-        $this->events->attach('dispatch', $callback, 10000);
     }
 
     /**
