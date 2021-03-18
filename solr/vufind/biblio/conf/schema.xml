@@ -245,6 +245,10 @@
    <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="false" />
    <dynamicField name="*_geo_mv" type="geo" indexed="true" stored="true" multiValued="true" />
    <dynamicField name="*_autocomplete" type="text_autocomplete" indexed="true" stored="true" multiValued="false"/>
+   <!-- Standalone linked fields -->
+   <field name="alt_title" type="text" indexed="true" stored="true"/>
+   <field name="alt_title_sub" type="text" indexed="true" stored="true"/>
+   <field name="alt_title_short" type="text" indexed="true" stored="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
  <!-- CopyFields for Spelling -->

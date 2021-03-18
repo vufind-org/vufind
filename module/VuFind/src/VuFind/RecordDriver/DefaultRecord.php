@@ -854,6 +854,19 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get an alternate display title.
+     *
+     * @return string
+     */
+    public function getAlternateDisplayTitle()
+    {
+        $format = '%s %s';
+        $short = $this->fields['alt_title_short'] ?? '';
+        $sub = $this->fields['alt_title_sub'] ?? '';
+        return sprintf($short, $sub);
+    }
+
+    /**
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *

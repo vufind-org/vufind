@@ -253,6 +253,21 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
     }
 
     /**
+     * Get a highlighted title string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedAltTitle()
+    {
+        // Don't check for highlighted values if highlighting is disabled:
+        if (!$this->highlight) {
+            return '';
+        }
+        return (isset($this->highlightDetails['alt_title'][0]))
+            ? $this->highlightDetails['alt_title'][0] : '';
+    }
+
+    /**
      * Attach a Search Results Plugin Manager connection and related logic to
      * the driver
      *

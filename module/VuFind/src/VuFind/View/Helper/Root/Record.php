@@ -298,6 +298,37 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Formats the title. This method will return both the regular title and an
+     * alternate title if both are present, otherwise it will return either the
+     * regular title or the alternate title if only one is present. This method
+     * tries to return the highlighted title first but will return the unhighlighted
+     * title if a one is not present. Returns 'Title not available' if there is no
+     * title.
+     *
+     * @param string $title               Title not highlighted
+     * @param string $altTitle            Alternate title not highlighted
+     * @param string $highlightedTitle    Highlighted title
+     * @param string $highlightedAltTitle Alternate highlighted title
+     *
+     * @return string
+     */
+    protected function formatTitle(
+        $title, $altTitle, $highlightedTitle, $highlightedAltTitle
+    ) {
+        $format = '%s<br/>%s';
+        $title = !empty($highlightedTitle) ? $highlightedTitle : $title;
+        $altTitle = !empty($highlightedAltTitle) ? $highlightedAltTitle : $altTitle;
+        if ($title && $altTitle) {
+            return sprintf($format, $title, $altTitle);
+        }
+        if ($title || $altTitle) {
+            return $title ?? $altTitle;
+        }
+        $transEsc = $this->getView()->plugin('transEsc');
+        return $transEsc('Title not available');
+    }
+
+    /**
      * Get HTML to render a title.
      *
      * @param int $maxLength Maximum length of non-highlighted title.
@@ -307,19 +338,26 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getTitleHtml($maxLength = 180)
     {
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
+        $highlightedAltTitle = $this->driver->tryMethod('getHighlightedAltTitle');
+        $altTitle = trim($this->driver->tryMethod('getAlternateDisplayTitle'));
         $title = trim($this->driver->tryMethod('getTitle'));
-        if (!empty($highlightedTitle)) {
+        if (!empty($highlightedTitle) || !empty($highlightedAltTitle)) {
             $highlight = $this->getView()->plugin('highlight');
             $addEllipsis = $this->getView()->plugin('addEllipsis');
-            return $highlight($addEllipsis($highlightedTitle, $title));
+            $highlightedTitle = $highlightedTitle
+                ? $highlight($addEllipsis($highlightedTitle, $title)) : '';
+            $highlightedAltTitle = $highlightedAltTitle
+                ? $highlight($addEllipsis($highlightedAltTitle, $altTitle)) : '';
         }
-        if (!empty($title)) {
+        if (!empty($title) || !empty($altTitle)) {
             $escapeHtml = $this->getView()->plugin('escapeHtml');
             $truncate = $this->getView()->plugin('truncate');
-            return $escapeHtml($truncate($title, $maxLength));
+            $title = $escapeHtml($truncate($title, $maxLength)) ?? '';
+            $altTitle = $escapeHtml($truncate($altTitle, $maxLength)) ?? '';
         }
-        $transEsc = $this->getView()->plugin('transEsc');
-        return $transEsc('Title not available');
+        return $this->formatTitle(
+            $title, $altTitle, $highlightedTitle, $highlightedAltTitle
+        );
     }
 
     /**
