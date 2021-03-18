@@ -104,6 +104,10 @@ class LocaleSettings
      */
     public function getUserLocale(): string
     {
+        if (!class_exists(\Locale::class)) {
+            error_log('Locale class is missing; please enable intl extension.');
+            return $this->getDefaultLocale();
+        }
         return \Locale::getDefault();
     }
 
