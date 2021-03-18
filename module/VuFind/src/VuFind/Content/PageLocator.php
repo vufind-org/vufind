@@ -97,8 +97,8 @@ class PageLocator
      * @return string
      */
     protected function generateTemplateFromPattern(
-        $pathPrefix, $pageName, $pattern, $language = ''
-    ) {
+        string $pathPrefix, string $pageName, string $pattern, string $language = ''
+    ): string {
         $template = $pattern;
         $template = str_replace('%pathPrefix%', $pathPrefix, $template);
         $template = str_replace('%pageName%', $pageName, $template);
@@ -130,8 +130,8 @@ class PageLocator
      * @return array Array with template options (key equals matchType)
      */
     protected function getTemplateOptionsFromPattern(
-        $pathPrefix, $pageName, $pattern
-    ) {
+        string $pathPrefix, string $pageName, string $pattern
+    ): array {
         $templates = [
             'language' => $this->generateTemplateFromPattern(
                 $pathPrefix, $pageName, $pattern, $this->language
@@ -156,7 +156,9 @@ class PageLocator
      * @param string $pattern    Optional filesystem pattern
      *
      * @return array|null Null if template is not found or array with keys renderer
-     * (type of template), path (full path of template), page (page name)
+     * (type of template), path (full path of template), relativePath (relative
+     * path within the templates directory), page (page name), theme,
+     * matchType (see getTemplateOptionsFromPattern)
      */
     public function determineTemplateAndRenderer(
         $pathPrefix, $pageName, $pattern = null
@@ -176,9 +178,13 @@ class PageLocator
                     $filename, $this->themeInfo::RETURN_ALL_DETAILS
                 );
                 if (null != $pathDetails) {
+                    $relativeTemplatePath = str_replace(
+                        'templates/', '', $pathDetails['relativePath']
+                    );
                     return [
                         'renderer' => $type,
                         'path' => $pathDetails['path'],
+                        'relativePath' => $relativeTemplatePath,
                         'page' => basename($template),
                         'theme' => $pathDetails['theme'],
                         'matchType' => $matchType,

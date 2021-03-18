@@ -81,8 +81,9 @@ class Content extends AbstractHelper
      *
      * @return string            Rendered template output
      */
-    public function renderTranslated($pageName, $pathPrefix='content',
-        $context=[], &$pageDetails=[], $pattern=null
+    public function renderTranslated(string $pageName,
+        string $pathPrefix = 'content', array $context = [],
+        array &$pageDetails = [], ?string $pattern = null
     ) {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';
@@ -91,11 +92,8 @@ class Content extends AbstractHelper
         $pageDetails = $this->pageLocator->determineTemplateAndRenderer(
             $pathPrefix, $pageName, $pattern
         );
-        $path = str_replace(
-            APPLICATION_PATH . '/themes/' . $pageDetails['theme'] . '/templates/',
-            '',
-            $pageDetails['path']
+        return $this->contextHelper->renderInContext(
+            $pageDetails['relativePath'], $context
         );
-        return $this->contextHelper->renderInContext($path, $context);
     }
 }
