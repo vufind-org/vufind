@@ -35,7 +35,7 @@ use VuFindSearch\Backend\QueryHelperInterface;
  *
  * @category VuFind
  * @package  Search
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
