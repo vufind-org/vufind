@@ -73,6 +73,13 @@ class LocaleSettings
     protected $rightToLeftLocales;
 
     /**
+     * Array of locales that have been initialized.
+     *
+     * @var string[]
+     */
+    protected $initializedLocales = [];
+
+    /**
      * Constructor
      *
      * @param Config $config Configuration object
@@ -192,5 +199,29 @@ class LocaleSettings
     {
         $value = trim($config->LanguageSettings->rtl_langs ?? '', ',');
         return $value ? array_map('trim', explode(',', $value)) : [];
+    }
+
+    /**
+     * Mark a locale as initialized.
+     *
+     * @param string $locale Locale code
+     *
+     * @return void
+     */
+    public function markLocaleInitialized($locale)
+    {
+        $this->initializedLocales[] = $locale;
+    }
+
+    /**
+     * Is the locale already initialized?
+     *
+     * @param string $locale Locale code
+     *
+     * @return bool
+     */
+    public function isLocaleInitialized($locale)
+    {
+        return in_array($locale, $this->initializedLocales);
     }
 }

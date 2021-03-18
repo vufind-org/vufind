@@ -79,7 +79,7 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
         $pm->setService('ExtendedIni', $this->getExtendedIni($settings));
         $this->enableCaching($translator, $container);
         $translator->setLocale($language);
-        $this->addLanguageToTranslator($translator, $language);
+        $this->addLanguageToTranslator($translator, $settings, $language);
 
         return $translator;
     }

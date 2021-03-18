@@ -336,7 +336,9 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             $language = $userLang;
         }
         $this->translator->setLocale($language);
-        $this->addLanguageToTranslator($this->translator, $language);
+        $this->addLanguageToTranslator(
+            $this->translator, $this->localeSettings, $language
+        );
     }
 
     /**
