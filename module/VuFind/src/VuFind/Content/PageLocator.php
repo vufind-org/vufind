@@ -97,31 +97,31 @@ class PageLocator
      * @return string
      */
     protected function generateTemplateFromPattern(
-        $pathPrefix, $pageName, $pattern, $language=null
+        $pathPrefix, $pageName, $pattern, $language = ''
     ) {
         $template = $pattern;
         $template = str_replace('%pathPrefix%', $pathPrefix, $template);
         $template = str_replace('%pageName%', $pageName, $template);
-        $languagePatternExtended = '"\\{(.*)(%language%)(.*)\\}"';
-        if (isset($language)) {
+        $languagePatternExtended = '"\\{(.*)%language%(.*)\\}"';
+        if ($language) {
             $template = preg_replace(
                 $languagePatternExtended,
-                "\\1$language\\3",
+                "\\1$language\\2",
                 $template
             );
         } else {
             $template = preg_replace($languagePatternExtended, '', $template);
         }
-        $template = str_replace('%language%', $language ?? '', $template);
+        $template = str_replace('%language%', $language, $template);
         $template = str_replace('//', '/', $template);
         return $template;
     }
 
     /**
      * Try to find a template using
-     * 1) Current language suffix
-     * 2) Default language suffix
-     * 3) No language suffix
+     * 1) Current language
+     * 2) Default language
+     * 3) No language
      *
      * @param string $pathPrefix Subdirectory where the template should be located
      * @param string $pageName   Template name
@@ -132,9 +132,11 @@ class PageLocator
     protected function getTemplateOptionsFromPattern(
         $pathPrefix, $pageName, $pattern
     ) {
-        $templates = ['language' => $this->generateTemplateFromPattern(
-            $pathPrefix, $pageName, $pattern, $this->language
-        )];
+        $templates = [
+            'language' => $this->generateTemplateFromPattern(
+                $pathPrefix, $pageName, $pattern, $this->language
+            )
+        ];
         if ($this->language != $this->defaultLanguage) {
             $templates['defaultLanguage'] = $this->generateTemplateFromPattern(
                 $pathPrefix, $pageName, $pattern, $this->defaultLanguage
@@ -157,9 +159,9 @@ class PageLocator
      * (type of template), path (full path of template), page (page name)
      */
     public function determineTemplateAndRenderer(
-        $pathPrefix, $pageName, $pattern=null
+        $pathPrefix, $pageName, $pattern = null
     ) {
-        if (!isset($pattern)) {
+        if ($pattern === null) {
             $pattern = '%pathPrefix%/%pageName%{_%language%}';
         }
 
