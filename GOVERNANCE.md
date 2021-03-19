@@ -197,7 +197,7 @@ additional responsibilities as described below.
 
 The VuFind Project Management Committee (PMC) consists of those
 individuals identified on the [VuFind
-website](https://vufind.org/vufind/). The PMC has additional
+website](https://vufind.org/wiki/community:roles_and_responsibilities#project_management_committee). The PMC has additional
 responsibilities over and above those of a committer. These
 responsibilities ensure the smooth running of the project. PMC members
 are expected to review code contributions, participate in strategic
