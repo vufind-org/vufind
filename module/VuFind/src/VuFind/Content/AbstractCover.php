@@ -96,7 +96,7 @@ abstract class AbstractCover
     protected $directUrls = false;
 
     /**
-     * Are baclinks to source of cover mandatory?
+     * Are backlinks to source of cover mandatory?
      *
      * @var bool
      */
