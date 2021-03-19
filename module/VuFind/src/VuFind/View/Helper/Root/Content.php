@@ -83,7 +83,7 @@ class Content extends AbstractHelper
      */
     public function renderTranslated(string $pageName,
         string $pathPrefix = 'content', array $context = [],
-        array &$pageDetails = [], ?string $pattern = null
+        ?array &$pageDetails = [], ?string $pattern = null
     ) {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';

@@ -99,22 +99,23 @@ class PageLocator
     protected function generateTemplateFromPattern(
         string $pathPrefix, string $pageName, string $pattern, string $language = ''
     ): string {
-        $template = $pattern;
-        $template = str_replace('%pathPrefix%', $pathPrefix, $template);
-        $template = str_replace('%pageName%', $pageName, $template);
+        $standardReplacements = [
+            '%pathPrefix%' => $pathPrefix,
+            '%pageName%' => $pageName,
+            '%language%' => $language,
+            '//' => '/'
+        ];
         $languagePatternExtended = '"\\{(.*)%language%(.*)\\}"';
-        if ($language) {
-            $template = preg_replace(
+        $languagePatternExtendedReplacement = $language ? "\\1$language\\2" : '';
+        return str_replace(
+            array_keys($standardReplacements),
+            array_values($standardReplacements),
+            preg_replace(
                 $languagePatternExtended,
-                "\\1$language\\2",
-                $template
-            );
-        } else {
-            $template = preg_replace($languagePatternExtended, '', $template);
-        }
-        $template = str_replace('%language%', $language, $template);
-        $template = str_replace('//', '/', $template);
-        return $template;
+                $languagePatternExtendedReplacement,
+                $pattern
+            )
+        );
     }
 
     /**
