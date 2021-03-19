@@ -82,7 +82,7 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string|bool
      */
-    public function render($name, $context=[])
+    public function render($name, $context = [])
     {
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.
