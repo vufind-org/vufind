@@ -100,9 +100,13 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
     protected function getStrategies(): \Generator
     {
         yield new LocaleDetectorParamStrategy();
-        yield $queryStrategy = new QueryStrategy();
-        yield $cookieStrategy = new CookieStrategy();
+
+        $queryStrategy = new QueryStrategy();
         $queryStrategy->setOptions(['query_key' => 'lng']);
+        yield $queryStrategy;
+
+        $cookieStrategy = new CookieStrategy();
         $cookieStrategy->setCookieName('language');
+        yield $cookieStrategy;
     }
 }
