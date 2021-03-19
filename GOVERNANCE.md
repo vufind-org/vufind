@@ -5,7 +5,7 @@ Adopted March 8, 2021.
 Developed and drafted by the VuFind Community Planning Group
 (alphabetically: Oliver Goldschmidt, Leila Gonzales, Christopher
 Hallberg, Demian Katz, André Lahmann, Craig Murdoch, Mohan Pradhan,
-Leander Seige, Hajo Seng); see [**Acknowledgements**](##acknowledgements) below for additional
+Leander Seige, Hajo Seng); see [**Acknowledgements**](#acknowledgements) below for additional
 attributions.
 
 ## Overview
