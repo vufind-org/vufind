@@ -127,7 +127,8 @@ class PageLocator
      * @param string $pageName   Template name
      * @param string $pattern    Filesystem pattern
      *
-     * @return array Array with template options (key equals matchType)
+     * @return \Generator Array generator with template options
+     *                    (key equals matchType)
      */
     protected function getTemplateOptionsFromPattern(
         string $pathPrefix, string $pageName, string $pattern
@@ -175,8 +176,8 @@ class PageLocator
                     $filename, $this->themeInfo::RETURN_ALL_DETAILS
                 );
                 if (null != $pathDetails) {
-                    $relativeTemplatePath = str_replace(
-                        'templates/', '', $pathDetails['relativePath']
+                    $relativeTemplatePath = preg_replace(
+                        '"^templates/"', '', $pathDetails['relativePath']
                     );
                     return [
                         'renderer' => $type,
