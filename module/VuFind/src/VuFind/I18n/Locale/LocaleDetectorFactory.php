@@ -108,5 +108,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $cookieStrategy = new CookieStrategy();
         $cookieStrategy->setCookieName('language');
         yield $cookieStrategy;
+
+        yield new \SlmLocale\Strategy\HttpAcceptLanguageStrategy();
     }
 }
