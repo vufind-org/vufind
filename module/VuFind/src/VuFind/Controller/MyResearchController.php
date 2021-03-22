@@ -566,6 +566,8 @@ class MyResearchController extends AbstractBase
         $view->accountDeletion
             = !empty($config->Authentication->account_deletion);
 
+        $this->addPendingEmailChangeMessage($user);
+
         return $view;
     }
 
@@ -2046,21 +2048,7 @@ class MyResearchController extends AbstractBase
             $this->flashMessenger()
                 ->addMessage('change_email_verification_reminder', 'info');
         }
-        if (!empty($user->pending_email)) {
-            $url = $this->url()->fromRoute('myresearch-emailnotverified')
-                . '?reverify=true';
-            $this->flashMessenger()->addMessage(
-                [
-                    'html' => true,
-                    'msg' => 'email_change_pending_html',
-                    'tokens' => [
-                        '%%pending%%' => $user->pending_email,
-                        '%%url%%' => $url,
-                    ],
-                ],
-                'info'
-            );
-        }
+        $this->addPendingEmailChangeMessage($user);
         return $view;
     }
 
@@ -2257,5 +2245,33 @@ class MyResearchController extends AbstractBase
             }
         }
         return $accountStatus;
+    }
+
+    /**
+     * Add a message about any pending email change to the flash messenger
+     *
+     * @param \VuFind\Db\Row\User $user User
+     *
+     * @return void
+     */
+    protected function addPendingEmailChangeMessage($user)
+    {
+        if (!empty($user->pending_email)) {
+            $url = $this->url()->fromRoute(
+                'myresearch-emailnotverified',
+                [],
+                ['query' => ['reverify' => 'true']]
+            );
+            $this->flashMessenger()->addInfoMessage(
+                [
+                    'html' => true,
+                    'msg' => 'email_change_pending_html',
+                    'tokens' => [
+                        '%%pending%%' => $user->pending_email,
+                        '%%url%%' => $url,
+                    ],
+                ]
+            );
+        }
     }
 }
