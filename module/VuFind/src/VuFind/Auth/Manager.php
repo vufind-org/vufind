@@ -583,9 +583,12 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
         if ($this->config->Authentication->verify_email ?? false) {
-            $user->pending_email = $email;
+            // If new email address is the current address, just reset any pending
+            // email address:
+            $user->pending_email = ($email === $user->email) ? '' : $email;
         } else {
             $user->updateEmail($email, true);
+            $user->pending_email = '';
         }
         $user->save();
         $this->updateSession($user);
