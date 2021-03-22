@@ -1107,10 +1107,9 @@ class DefaultRecord extends AbstractBase
     public function getSeries()
     {
         // Only use the contents of the series2 field if the series field is empty
-        if (!empty($this->fields['series'])) {
-            return (array)($this->fields['series']);
-        }
-        return (array)($this->fields['series2'] ?? []);
+        return !empty($this->fields['series'])
+            ? (array)$this->fields['series']
+            : (array)($this->fields['series2'] ?? []);
     }
 
     /**
