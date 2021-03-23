@@ -33,7 +33,7 @@ $(function() {
         let index = url.indexOf("#");
         if (index !== -1) {
             let anchor = url.substring(index+1);
-            let element = $('[href=#' + anchor + ']');
+            let element = $('[href="#' + anchor + '"]');
             if (element.attr('data-toggle') == 'collapse')
                 element.click();
         }
