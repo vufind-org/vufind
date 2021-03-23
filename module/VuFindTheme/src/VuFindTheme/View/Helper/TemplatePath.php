@@ -55,6 +55,13 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
     protected $pathPost;
 
     /**
+     * Template path stack
+     *
+     * @var TemplatePathStack
+     */
+    protected $templatePathStack;
+
+    /**
      * Constructor
      *
      * @param TemplatePathStack $templateStack Inheritance stack of template paths
