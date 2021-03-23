@@ -119,12 +119,10 @@ class UserTest extends \PHPUnit\Framework\TestCase
             : 'testuser1';
 
         $auth = $this->getMockAuthorizationService();
-        $this->permissionProvider
-            = new \VuFind\Role\PermissionProvider\User($auth);
+        $permissionProvider = new \VuFind\Role\PermissionProvider\User($auth);
 
         $this->assertEquals(
-            $roles,
-            $this->permissionProvider->getPermissions($options)
+            $roles, $permissionProvider->getPermissions($options)
         );
     }
 
