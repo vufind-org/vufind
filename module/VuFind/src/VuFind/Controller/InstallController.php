@@ -855,7 +855,7 @@ class InstallController extends AbstractBase
      * @param array $config Setting(s) to add to [Http] section of config.ini.
      * @param int   $try    Which config index are we trying right now?
      *
-     * @return void
+     * @return \Laminas\Http\Response
      */
     protected function testSslCertConfig($config, $try)
     {

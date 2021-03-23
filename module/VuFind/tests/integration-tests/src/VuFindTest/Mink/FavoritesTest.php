@@ -450,7 +450,7 @@ class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Login and go to account home
      *
-     * @return void
+     * @return \Behat\Mink\Element\DocumentElement
      */
     protected function setupBulkTest()
     {
