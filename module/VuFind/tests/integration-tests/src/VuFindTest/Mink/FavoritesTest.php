@@ -41,7 +41,6 @@ use Behat\Mink\Element\Element;
  */
 class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -450,7 +449,7 @@ class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Login and go to account home
      *
-     * @return void
+     * @return \Behat\Mink\Element\DocumentElement
      */
     protected function setupBulkTest()
     {

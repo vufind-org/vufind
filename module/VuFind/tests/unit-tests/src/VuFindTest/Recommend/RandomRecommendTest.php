@@ -46,6 +46,13 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
+     * Random recommendation module class
+     *
+     * @var Random
+     */
+    protected $recommend;
+
+    /**
      * Standard setup method.
      *
      * @return void

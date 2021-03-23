@@ -34,7 +34,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Vufind\Auth\Shibboleth\ConfigurationLoaderInterface;
+use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**

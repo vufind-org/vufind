@@ -106,7 +106,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $ca = $this->getChoiceAuth($pm);
         try {
             $ca->authenticate($request);
-            return $this->fail('Expected exception not thrown.');
+            $this->fail('Expected exception not thrown.');
         } catch (\VuFind\Exception\Auth $e) {
             $this->assertEquals($exception, $e);
             $this->assertEquals(false, $ca->getSelectedAuthOption());

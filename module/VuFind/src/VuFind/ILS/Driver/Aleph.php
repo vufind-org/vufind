@@ -52,6 +52,34 @@ use VuFind\Exception\ILS as ILSException;
 class AlephTranslator
 {
     /**
+     * Character set
+     *
+     * @var string
+     */
+    protected $charset;
+
+    /**
+     * Table 15 configuration
+     *
+     * @var array
+     */
+    protected $table15;
+
+    /**
+     * Table 40 configuration
+     *
+     * @var array
+     */
+    protected $table40;
+
+    /**
+     * Sub library configuration table
+     *
+     * @var array
+     */
+    protected $table_sub_library;
+
+    /**
      * Constructor
      *
      * @param array $configArray Aleph configuration
@@ -79,7 +107,7 @@ class AlephTranslator
      * @param string $file     Input file
      * @param string $callback Callback routine for parsing
      *
-     * @return string
+     * @return array
      */
     public function parsetable($file, $callback)
     {
@@ -340,6 +368,112 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      * @var string
      */
     protected $dlfbaseurl = null;
+
+    /**
+     * Aleph server
+     *
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * Bibliographic bases
+     *
+     * @var array
+     */
+    protected $bib;
+
+    /**
+     * User library
+     *
+     * @var string
+     */
+    protected $useradm;
+
+    /**
+     * Item library
+     *
+     * @var string
+     */
+    protected $admlib;
+
+    /**
+     * X server user name
+     *
+     * @var string
+     */
+    protected $wwwuser;
+
+    /**
+     * X server user password
+     *
+     * @var string
+     */
+    protected $wwwpasswd;
+
+    /**
+     * Is X server enabled?
+     *
+     * @var bool
+     */
+    protected $xserver_enabled;
+
+    /**
+     * X server port (defaults to 80)
+     *
+     * @var int
+     */
+    protected $xport;
+
+    /**
+     * DLF REST API port
+     *
+     * @var int
+     */
+    protected $dlfport;
+
+    /**
+     * Statuse considered as available
+     *
+     * @var array
+     */
+    protected $available_statuses;
+
+    /**
+     * List of patron hoe libraries
+     *
+     * @var array
+     */
+    protected $sublibadm;
+
+    /**
+     * If enabled and Xserver is disabled, slower RESTful API is used for
+     * availability check.
+     *
+     * @var bool
+     */
+    protected $quick_availability;
+
+    /**
+     * Is debug mode enabled?
+     *
+     * @var bool
+     */
+    protected $debug_enabled;
+
+    /**
+     * Preferred pickup locations
+     *
+     * @var array
+     */
+    protected $preferredPickUpLocations;
+
+    /**
+     * Patron id used when no specific patron defined
+     *
+     * @var string
+     */
+    protected $defaultPatronId;
 
     /**
      * Constructor
@@ -1191,23 +1325,20 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $count = 0;
         $statuses = [];
         foreach ($details['details'] as $id) {
-            $result = $this->doRestDLFRequest(
-                [
-                    'patron', $patronId, 'circulationActions', 'requests', 'holds',
-                    $id
-                ], null, "DELETE"
-            );
-            $reply_code = $result->{'reply-code'};
-            if ($reply_code != "0000") {
-                $message = $result->{'del-pat-hold'}->{'note'};
-                if ($message == null) {
-                    $message = $result->{'reply-text'};
-                }
+            try {
+                $result = $this->doRestDLFRequest(
+                    [
+                        'patron', $patronId, 'circulationActions', 'requests',
+                         'holds', $id
+                    ], null, "DELETE"
+                );
+            } catch (AlephRestfulException $e) {
                 $statuses[$id] = [
                     'success' => false, 'status' => 'cancel_hold_failed',
-                    'sysMessage' => (string)$message
+                    'sysMessage' => $e->getMessage(),
                 ];
-            } else {
+            }
+            if (isset($result)) {
                 $count++;
                 $statuses[$id]
                     = ['success' => true, 'status' => 'cancel_hold_ok'];

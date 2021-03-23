@@ -45,7 +45,7 @@ class GetUserTransactions extends AbstractIlsAndUserAction
      *
      * @var \VuFind\ILS\PaginationHelper
      */
-    protected $paginator = null;
+    protected $paginationHelper = null;
 
     /**
      * Handle a request.

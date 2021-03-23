@@ -55,6 +55,6 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         // Otherwise use standard parent behavior:
-        return parent::initFilters($request);
+        parent::initFilters($request);
     }
 }

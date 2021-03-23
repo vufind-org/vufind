@@ -29,6 +29,7 @@ namespace VuFind;
 
 use Laminas\Mvc\MvcEvent;
 use Laminas\Router\Http\RouteMatch;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Bootstrapper
@@ -48,7 +49,14 @@ class Bootstrapper
      *
      * @var \Laminas\Config\Config
      */
-    protected $config = null;
+    protected $config;
+
+    /**
+     * Service manager
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Current MVC event
@@ -72,7 +80,11 @@ class Bootstrapper
     public function __construct(MvcEvent $event)
     {
         $this->event = $event;
-        $this->events = $event->getApplication()->getEventManager();
+        $app = $event->getApplication();
+        $this->events = $app->getEventManager();
+        $this->container = $app->getServiceManager();
+        $this->config = $this->container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
     }
 
     /**
@@ -80,7 +92,7 @@ class Bootstrapper
      *
      * @return void
      */
-    public function bootstrap()
+    public function bootstrap(): void
     {
         // automatically call all methods starting with "init":
         $methods = get_class_methods($this);
@@ -92,33 +104,18 @@ class Bootstrapper
     }
 
     /**
-     * Set up configuration manager.
-     *
-     * @return void
-     */
-    protected function initConfig()
-    {
-        // Create the configuration manager:
-        $app = $this->event->getApplication();
-        $sm = $app->getServiceManager();
-        $this->config = $sm->get(\VuFind\Config\PluginManager::class)->get('config');
-    }
-
-    /**
      * Set up cookie to flag test mode.
      *
      * @return void
      */
-    protected function initTestMode()
+    protected function initTestMode(): void
     {
         // If we're in test mode (as determined by the config.ini property installed
         // by the build.xml startup process), set a cookie so the front-end code can
         // act accordingly. (This is needed to work around a problem where opening
         // print dialogs during testing stalls the automated test process).
         if ($this->config->System->runningTestSuite ?? false) {
-            $app = $this->event->getApplication();
-            $sm = $app->getServiceManager();
-            $cm = $sm->get(\VuFind\Cookie\CookieManager::class);
+            $cm = $this->container->get(\VuFind\Cookie\CookieManager::class);
             $cm->set('VuFindTestSuiteRunning', '1', 0, false);
         }
     }
@@ -128,7 +125,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initSystemStatus()
+    protected function initSystemStatus(): void
     {
         // If the system is unavailable and we're not in the console, forward to the
         // unavailable page.
@@ -149,7 +146,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initLocaleAndTimeZone()
+    protected function initLocaleAndTimeZone(): void
     {
         // Try to set the locale to UTF-8, but fail back to the exact string from
         // the config file if this doesn't work -- different systems may vary in
@@ -170,12 +167,11 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initContext()
+    protected function initContext(): void
     {
         $callback = function ($event) {
-            $serviceManager = $event->getApplication()->getServiceManager();
             if (PHP_SAPI !== 'cli') {
-                $viewModel = $serviceManager->get('ViewManager')->getViewModel();
+                $viewModel = $this->container->get('ViewManager')->getViewModel();
 
                 // Grab the template name from the first child -- we can use this to
                 // figure out the current template context.
@@ -194,35 +190,17 @@ class Bootstrapper
     }
 
     /**
-     * Set up headTitle view helper -- we always want to set, not append, titles.
-     *
-     * @return void
-     */
-    protected function initHeadTitle()
-    {
-        $callback = function ($event) {
-            $serviceManager = $event->getApplication()->getServiceManager();
-            $helperManager = $serviceManager->get('ViewHelperManager');
-            $headTitle = $helperManager->get('headtitle');
-            $headTitle->setDefaultAttachOrder(
-                \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET
-            );
-        };
-        $this->events->attach('dispatch', $callback);
-    }
-
-    /**
      * Support method for initLanguage(): process HTTP_ACCEPT_LANGUAGE value.
-     * Returns browser-requested language string or false if none found.
+     * Returns browser-requested language string or null if none found.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function detectBrowserLanguage()
+    public function detectBrowserLanguage(): ?string
     {
         if (isset($this->config->Site->browserDetectLanguage)
             && false == $this->config->Site->browserDetectLanguage
         ) {
-            return false;
+            return null;
         }
 
         // break up string into pieces (languages and q factors)
@@ -233,7 +211,7 @@ class Bootstrapper
         );
 
         if (!count($langParse[1])) {
-            return false;
+            return null;
         }
 
         // create a list like "en" => 0.8
@@ -266,7 +244,7 @@ class Bootstrapper
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -274,7 +252,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initLanguage()
+    protected function initLanguage(): void
     {
         // Language not supported in CLI mode:
         if (PHP_SAPI == 'cli') {
@@ -288,16 +266,16 @@ class Bootstrapper
 
             // Setup Translator
             $request = $event->getRequest();
-            $sm = $event->getApplication()->getServiceManager();
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
-                $cookieManager = $sm->get(\VuFind\Cookie\CookieManager::class);
+                $cookieManager = $this->container
+                    ->get(\VuFind\Cookie\CookieManager::class);
                 $cookieManager->set('language', $language);
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
             } else {
-                $language = (false !== $validBrowserLanguage)
+                $language = (null !== $validBrowserLanguage)
                     ? $validBrowserLanguage : $config->Site->language;
             }
 
@@ -306,7 +284,8 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
             try {
-                $translator = $sm->get(\Laminas\Mvc\I18n\Translator::class);
+                $translator = $this->container
+                    ->get(\Laminas\Mvc\I18n\Translator::class);
                 $translator->setLocale($language);
                 $this->addLanguageToTranslator($translator, $language);
             } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
@@ -319,14 +298,15 @@ class Bootstrapper
             }
 
             // Store last selected language in user account, if applicable:
-            if (($user = $sm->get(\VuFind\Auth\Manager::class)->isLoggedIn())
+            $authManager = $this->container->get(\VuFind\Auth\Manager::class);
+            if (($user = $authManager->isLoggedIn())
                 && $user->last_language != $language
             ) {
                 $user->updateLastLanguage($language);
             }
 
             // Send key values to view:
-            $viewModel = $sm->get('ViewManager')->getViewModel();
+            $viewModel = $this->container->get('ViewManager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
             $rtlLangs = isset($config->LanguageSettings->rtl_langs)
@@ -344,7 +324,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initTheme()
+    protected function initTheme(): void
     {
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
@@ -362,7 +342,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initExceptionBasedHttpStatuses()
+    protected function initExceptionBasedHttpStatuses(): void
     {
         // HTTP statuses not needed in console mode:
         if (PHP_SAPI == 'cli') {
@@ -388,12 +368,13 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initSearch()
+    protected function initSearch(): void
     {
-        $sm     = $this->event->getApplication()->getServiceManager();
-        $bm     = $sm->get(\VuFind\Search\BackendManager::class);
-        $events = $sm->get('SharedEventManager');
-        $events->attach('VuFindSearch', 'resolve', [$bm, 'onResolve']);
+        $bm = $this->container->get(\VuFind\Search\BackendManager::class);
+        $events = $this->container->get('SharedEventManager');
+        $events->attach(
+            'VuFindSearch', \VuFindSearch\Service::EVENT_RESOLVE, [$bm, 'onResolve']
+        );
     }
 
     /**
@@ -401,12 +382,11 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initErrorLogging()
+    protected function initErrorLogging(): void
     {
         $callback = function ($event) {
-            $sm = $event->getApplication()->getServiceManager();
-            if ($sm->has(\VuFind\Log\Logger::class)) {
-                $log = $sm->get(\VuFind\Log\Logger::class);
+            if ($this->container->has(\VuFind\Log\Logger::class)) {
+                $log = $this->container->get(\VuFind\Log\Logger::class);
                 if (is_callable([$log, 'logException'])) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
@@ -429,15 +409,14 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initRenderErrorEvent()
+    protected function initRenderErrorEvent(): void
     {
         // When a render.error is triggered, as a high priority, set a flag in the
         // layout that can be used to suppress actions in the layout templates that
         // might trigger exceptions -- this will greatly increase the odds of showing
         // a user-friendly message instead of a fatal error.
         $callback = function ($event) {
-            $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('ViewManager')->getViewModel();
+            $viewModel = $this->container->get('ViewManager')->getViewModel();
             $viewModel->renderingError = true;
         };
         $this->events->attach('render.error', $callback, 10000);
@@ -448,14 +427,14 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initContentSecurityPolicy()
+    protected function initContentSecurityPolicy(): void
     {
         if (PHP_SAPI === 'cli') {
             return;
         }
-        $sm = $this->event->getApplication()->getServiceManager();
         $headers = $this->event->getResponse()->getHeaders();
-        $cspHeaderGenerator = $sm->get(\VuFind\Security\CspHeaderGenerator::class);
+        $cspHeaderGenerator = $this->container
+            ->get(\VuFind\Security\CspHeaderGenerator::class);
         if ($cspHeader = $cspHeaderGenerator->getHeader()) {
             $headers->addHeader($cspHeader);
         }

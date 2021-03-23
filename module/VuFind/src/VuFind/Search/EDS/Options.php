@@ -363,12 +363,6 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultSort = $searchSettings->General->default_sort;
         }
 
-        if (isset($searchSettings->General->default_amount)
-            && isset($this->amountOptions[$searchSettings->General->default_amount])
-        ) {
-            $this->defaultAmount = $searchSettings->General->default_amount;
-        }
-
         if (isset($searchSettings->General->default_mode)
             && isset($this->modeOptions[$searchSettings->General->default_mode])
         ) {

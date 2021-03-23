@@ -84,6 +84,13 @@ class Folio extends AbstractAPI implements
     protected $sessionCache;
 
     /**
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -506,20 +513,14 @@ class Folio extends AbstractAPI implements
             'query' => '(instanceId=="' . $instance->id
                 . '" NOT discoverySuppress==true)'
         ];
-        $holdingResponse = $this->makeRequest(
-            'GET',
-            '/holdings-storage/holdings',
-            $query
-        );
-        $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
-        foreach ($holdingBody->holdingsRecords as $holding) {
+        foreach ($this->getPagedResults(
+            'holdingsRecords', '/holdings-storage/holdings', $query
+        ) as $holding) {
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
                     . '" NOT discoverySuppress==true)'
             ];
-            $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
-            $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
                 return !($note->staffOnly ?? false)
                     && !empty($note->note) ? $note->note : '';
@@ -547,7 +548,9 @@ class Folio extends AbstractAPI implements
                 $textFormatter,
                 $holding->holdingsStatementsForIndexes ?? []
             );
-            foreach ($itemBody->items as $item) {
+            foreach ($this->getPagedResults(
+                'items', '/item-storage/items', $query
+            ) as $item) {
                 $itemNotes = array_filter(
                     array_map($notesFormatter, $item->notes ?? [])
                 );
