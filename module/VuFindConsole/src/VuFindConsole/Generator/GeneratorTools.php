@@ -693,7 +693,7 @@ class GeneratorTools
         if (is_callable($callback)) {
             $callback($generator);
         }
-        return $this->writeClass($generator, $module);
+        $this->writeClass($generator, $module);
     }
 
     /**
