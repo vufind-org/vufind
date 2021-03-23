@@ -435,7 +435,21 @@ class SolrMarc extends SolrDefault
                 }
             }
         }
-        return $issns_and_additional_information;
+        if (!empty($issns_and_additional_information))
+            return $issns_and_additional_information;
+
+        // Fall back to the ISSN of the parallel (print) edition
+        $_776fields = $this->getMarcRecord()->getFields('776');
+        foreach ($_776fields as $_776field) {
+            $subfield_x = $_776field->getSubfield('x') ? $_776field->getSubfield('x')->getData() : '';
+            $issn = $this->cleanISSN($subfield_x);
+            if (!empty($issn)) {
+                $issns_and_additional_information[$issn] = '';
+                return $issns_and_additional_information;
+            }
+
+        }
+        return [];
     }
 
     public function getSuperiorFrom773a() {
