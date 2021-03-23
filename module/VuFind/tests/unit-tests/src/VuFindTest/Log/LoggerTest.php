@@ -47,7 +47,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
      */
     public function testLogException()
     {
-        $callback = function ($a) {
+        $callback = function ($a): bool {
             $expectedContext = <<<CONTEXT
 Server Context:
 Array

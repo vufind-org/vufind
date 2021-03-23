@@ -70,7 +70,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
         $logger = new class {
             protected $messages = [];
 
-            public function log($msg)
+            public function log($msg): void
             {
                 $this->messages[] = $msg;
             }

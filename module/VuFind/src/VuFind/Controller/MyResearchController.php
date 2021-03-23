@@ -1717,12 +1717,19 @@ class MyResearchController extends AbstractBase
      * When a request to change a user's email address has been received, we should
      * send a notification to the old email address for the user's information.
      *
-     * @param \VuFind\Db\Row\User $user User object we're recovering
+     * @param \VuFind\Db\Row\User $user     User whose email address is being changed
+     * @param string              $newEmail New email address
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendChangeNotificationEmail($user)
+    protected function sendChangeNotificationEmail($user, $newEmail)
     {
+        // Don't send the notification if the existing email is not valid:
+        $validator = new \Laminas\Validator\EmailAddress();
+        if (!$validator->isValid($user->email)) {
+            return;
+        }
+
         $config = $this->getConfig();
         $renderer = $this->getViewRenderer();
         // Custom template for emails (text-only)
@@ -1732,6 +1739,7 @@ class MyResearchController extends AbstractBase
                 'library' => $config->Site->title,
                 'url' => $this->getServerUrl('home'),
                 'email' => $config->Site->email,
+                'newEmail' => $newEmail
             ]
         );
         // If the user is setting up a new account, use the main email
@@ -1774,15 +1782,13 @@ class MyResearchController extends AbstractBase
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
-                    $method = $this->getAuthManager()->getAuthMethod();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/verify-email.phtml',
                         [
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verifyemail')
-                                . '?hash='
-                                . $user->verify_hash . '&auth_method=' . $method
+                                . '?hash=' . urlencode($user->verify_hash)
                         ]
                     );
                     // If the user is setting up a new account, use the main email
@@ -1802,7 +1808,7 @@ class MyResearchController extends AbstractBase
                     // If this is an email change, send a notification to the old
                     // email address as well.
                     if ($change) {
-                        $this->sendChangeNotificationEmail($user);
+                        $this->sendChangeNotificationEmail($user, $to);
                     }
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -1882,15 +1888,14 @@ class MyResearchController extends AbstractBase
                         $user->pending_email = '';
                     }
                     $user->saveEmailVerified();
-                    $this->setUpAuthenticationFromRequest();
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
-                    return $this->forwardTo('MyResearch', 'Login');
+                    return $this->redirect()->toRoute('myresearch-userlogin');
                 }
             }
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
-        return $this->forwardTo('MyResearch', 'Login');
+        return $this->redirect()->toRoute('myresearch-userlogin');
     }
 
     /**

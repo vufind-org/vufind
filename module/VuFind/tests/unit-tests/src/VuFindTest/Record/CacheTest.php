@@ -229,11 +229,11 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     /**
      * Create Record Table
      *
-     * @return PHPUnit\Framework\MockObject\MockObject
+     * @return \VuFind\Db\Table\Record
      */
-    protected function getRecordTable()
+    protected function getRecordTable(): \VuFind\Db\Table\Record
     {
-        $findRecordsCallback = function ($ids, $source) {
+        $findRecordsCallback = function (array $ids, string $source): array {
             $results = [];
             foreach ($this->recordTable as $row) {
                 if (in_array($row['record_id'], $ids)
@@ -263,7 +263,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         $recordTable->method('findRecord')
             ->will($this->returnCallback($findRecordCallback));
 
-        $updateRecordCallback = function ($recordId, $source, $rawData) {
+        $updateRecordCallback = function ($recordId, $source, $rawData): void {
             $this->recordTable[] = [
                 'record_id' => $recordId,
                 'source' => $source,
@@ -280,9 +280,9 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a Record Factory Manager
      *
-     * @return PHPUnit\Framework\MockObject\MockObject
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getRecordFactoryManager()
+    protected function getRecordFactoryManager(): \PHPUnit\Framework\MockObject\MockObject
     {
         $recordFactoryManager = $this->createMock(
             'VuFind\RecordDriver\PluginManager'
@@ -320,10 +320,11 @@ class CacheTest extends \PHPUnit\Framework\TestCase
      * @param string $id     id
      * @param string $source source
      *
-     * @return PHPUnit\Framework\MockObject\MockObject
+     * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected function getDriver($id = 'test', $source = 'Solr')
-    {
+    protected function getDriver(
+        $id = 'test', $source = 'Solr'
+    ): \VuFind\RecordDriver\AbstractBase {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())
             ->method('getUniqueId')
