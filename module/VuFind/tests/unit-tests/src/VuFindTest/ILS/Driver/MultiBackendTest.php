@@ -709,7 +709,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $return = [
             'count' => 2,
-            'results' => ['id' => '1', 'id' => '2']
+            'results' => [['id' => '1'], ['id' => '2']]
         ];
 
         $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
@@ -729,7 +729,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $expected = [
             'count' => 2,
-            'results' => ['id' => 'd1.1', 'id' => 'd1.2']
+            'results' => [['id' => 'd1.1'], ['id' => 'd1.2']]
         ];
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getNewItems(1, 10, 5, 0);
