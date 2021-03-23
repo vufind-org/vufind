@@ -78,7 +78,7 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        $namespaces = ['error', 'info', 'success'];
+        $namespaces = ['default', 'success', 'warning', 'error', 'info'];
         foreach ($namespaces as $ns) {
             $messages = array_merge(
                 $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
