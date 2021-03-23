@@ -340,13 +340,12 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
         try {
             $result = [];
             $sqlStmt = sybase_query($sql);
-            $expire = $row[3]; // empty ?
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
                 $result[] = [
                     'id'       => $this->prfz($row[0]),
                     'create'   => $row[2],
-                    'expire'   => $expire,
+                    'expire'   => $row[3], // empty ?,
                     //'location' => $row[4],
                     'title'    => $title
                 ];
