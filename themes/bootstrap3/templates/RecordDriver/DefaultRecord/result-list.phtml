@@ -23,6 +23,11 @@
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
+        <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
+          <div class="title-alt">
+            <?=$this->escapeHtml($altTitle)?>
+          </div>
+        <?php endforeach; ?>
       </div>
 
       <div>
