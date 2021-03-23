@@ -608,7 +608,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
@@ -654,7 +653,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
             return addcslashes($id, '":()');
