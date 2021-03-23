@@ -104,7 +104,7 @@ class NewGenLib extends AbstractBase
                 "' and document_library_id='" . $holding[$i]['library_id'] .
                 "' and status='A'";
             try {
-                $sqlStmt2 = $this->_db->prepare($duedateql);
+                $sqlStmt2 = $this->db->prepare($duedateql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
                 throw new ILSException($e1->getMessage());
