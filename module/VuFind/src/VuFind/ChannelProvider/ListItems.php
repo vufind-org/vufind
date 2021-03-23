@@ -30,7 +30,6 @@ namespace VuFind\ChannelProvider;
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 
 /**
@@ -338,29 +337,6 @@ class ListItems extends AbstractChannelProvider
             'icon' => 'fa-list',
             'url' => $this->url->fromRoute('userList', ['id' => $list->id])
         ];
-        return $retVal;
-    }
-
-    /**
-     * Add a new filter to an existing search results object to populate a
-     * channel.
-     *
-     * @param Params $params Search parameter object
-     *
-     * @return array
-     */
-    protected function buildChannelFromParams(Params $params)
-    {
-        $retVal = [
-            'title' => $this->translate('random_recommendation_title'),
-            'providerId' => $this->providerId,
-        ];
-        $query = $params->getQuery();
-        $paramBag = $params->getBackendParameters();
-        $random = $this->searchService->random(
-            $params->getSearchClassId(), $query, $this->channelSize, $paramBag
-        )->getRecords();
-        $retVal['contents'] = $this->summarizeRecordDrivers($random);
         return $retVal;
     }
 }
