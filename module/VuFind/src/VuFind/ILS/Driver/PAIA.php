@@ -2017,6 +2017,18 @@ class PAIA extends DAIA
     }
 
     /**
+     * Get notification identifier from message identifier
+     *
+     * @param string $messageId Message identifier
+     *
+     * @return string
+     */
+    protected function getPaiaNotificationsId($messageId)
+    {
+        return $messageId;
+    }
+
+    /**
      * DELETE data on foreign host
      *
      * @param string $file         DELETE target URL
