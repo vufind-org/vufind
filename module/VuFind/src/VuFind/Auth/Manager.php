@@ -117,6 +117,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $currentUser = false;
 
     /**
+     * CSRF validator
+     *
+     * @var Csrf
+     */
+    protected $csrf;
+
+    /**
      * Constructor
      *
      * @param Config         $config         VuFind configuration

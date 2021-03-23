@@ -40,6 +40,18 @@ use LmcRbacMvc\Service\AuthorizationService;
  */
 class UserTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Current test user
+     *
+     * @var string
+     */
+    protected $testuser = 'testuser1';
+
+    /**
+     * User test data for testing.
+     *
+     * @var array
+     */
     protected $userValueMap = [
         'testuser1' =>
         [

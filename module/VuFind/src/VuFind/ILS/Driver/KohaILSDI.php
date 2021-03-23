@@ -120,6 +120,32 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $validatePasswords;
 
     /**
+     * Authorised values category for location, defaults to 'LOC'
+     *
+     * @var string
+     */
+    protected $locationAuthorisedValuesCategory;
+
+    /**
+     * Default terms for block types, can be overridden by configuration
+     *
+     * @var array
+     */
+    protected $blockTerms = [
+        'SUSPENSION' => 'Account Suspended',
+        'OVERDUES' => 'Account Blocked (Overdue Items)',
+        'MANUAL' => 'Account Blocked',
+        'DISCHARGE' => 'Account Blocked for Discharge',
+    ];
+
+    /**
+     * Display comments for patron debarments, see KohaILSDI.ini
+     *
+     * @var array
+     */
+    protected $showBlockComments;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -178,14 +204,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("ILS URL: " . $this->ilsBaseUrl);
         $this->debug("Locations: " . $this->locations);
         $this->debug("Default Location: " . $this->defaultLocation);
-
-        // Set our default terms for block types
-        $this->blockTerms = [
-            'SUSPENSION' => 'Account Suspended',
-            'OVERDUES' => 'Account Blocked (Overdue Items)',
-            'MANUAL' => 'Account Blocked',
-            'DISCHARGE' => 'Account Blocked for Discharge',
-        ];
 
         // Now override the default with any defined in the `KohaILSDI.ini` config
         // file
