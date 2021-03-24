@@ -103,11 +103,13 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
         }
         if (isset($this->config['Catalog']['database'])) {
             putenv("SYBASE=" . $this->config['Catalog']['sybpath']);
+            /* @phpstan-ignore-next-line */
             $this->db = sybase_connect(
                 $this->config['Catalog']['sybase'],
                 $this->config['Catalog']['username'],
                 $this->config['Catalog']['password']
             );
+            /* @phpstan-ignore-next-line */
             sybase_select_db($this->config['Catalog']['database']);
         } else {
             throw new ILSException('No Database.');
@@ -169,8 +171,8 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
              . " + 8*ascii(substring(convert(char(12),'" . $pin . "',104),8,1))";
         try {
             $result = [];
-            $sqlStmt = sybase_query($sql);
-            $row = sybase_fetch_row($sqlStmt);
+            $sqlStmt = sybase_query($sql); // @phpstan-ignore-line
+            $row = sybase_fetch_row($sqlStmt); // @phpstan-ignore-line
             if ($row) {
                 $result = ['id' => $barcode,
                               'firstname' => $row[1],
@@ -224,8 +226,8 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
              . "   order by a.address_code asc";
         try {
             $result = [];
-            $sqlStmt = sybase_query($sql);
-            $row = sybase_fetch_row($sqlStmt);
+            $sqlStmt = sybase_query($sql); // @phpstan-ignore-line
+            $row = sybase_fetch_row($sqlStmt); // @phpstan-ignore-line
             if ($row) {
                 $result = [
                           'firstname' => $row[1],
@@ -243,7 +245,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
                 } elseif ($row[6] == '30') {
                     $result['group'] = $this->translate('Residents');
                 }
-                $row = sybase_fetch_row($sqlStmt);
+                $row = sybase_fetch_row($sqlStmt); // @phpstan-ignore-line
                 if ($row) {
                     if ($row[8] == $row[13]) { //reminder address first
                         $result['address2'] = $result['address1'];
@@ -284,7 +286,8 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
         try {
             $result = [];
             $count = 0;
-            $sqlStmt = sybase_query($sql);
+            $sqlStmt = sybase_query($sql); // @phpstan-ignore-line
+            /* @phpstan-ignore-next-line */
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $result[$count] = [
                     'id' => $row[0],
@@ -339,7 +342,8 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
             . "";
         try {
             $result = [];
-            $sqlStmt = sybase_query($sql);
+            $sqlStmt = sybase_query($sql); // @phpstan-ignore-line
+            /* @phpstan-ignore-next-line */
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
                 $result[] = [
@@ -417,7 +421,8 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
             . "";
         try {
             $result = [];
-            $sqlStmt = sybase_query($sql);
+            $sqlStmt = sybase_query($sql); // @phpstan-ignore-line
+            /* @phpstan-ignore-next-line */
             while ($row = sybase_fetch_row($sqlStmt)) {
                 //$fine = $this->translate(('3'==$row[1])?'Overdue':'Dues');
                 $fine = $this->picaRecode($row[5]);
