@@ -32,7 +32,7 @@ use Behat\Mink\Element\Element;
 /**
  * List views (i.e. tabs/accordion) test class.
  *
- * Class must be final due to use of "new static()" by UserCreationTrait.
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
  * @category VuFind
  * @package  Tests

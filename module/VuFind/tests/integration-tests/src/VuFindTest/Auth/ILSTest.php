@@ -34,7 +34,7 @@ use VuFind\Db\Table\User;
 /**
  * ILS authentication test class.
  *
- * Class must be final due to use of "new static()" by UserCreationTrait.
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,6 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.

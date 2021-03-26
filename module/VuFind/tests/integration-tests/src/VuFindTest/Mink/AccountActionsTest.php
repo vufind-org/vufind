@@ -30,7 +30,7 @@ namespace VuFindTest\Mink;
 /**
  * Mink account actions test class.
  *
- * Class must be final due to use of "new static()" by UserCreationTrait.
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
  * @category VuFind
  * @package  Tests
