@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink account ajax menu test class.
  *
+ * Class must be final due to use of "new static()" by UserCreationTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,7 +39,7 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
+final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
