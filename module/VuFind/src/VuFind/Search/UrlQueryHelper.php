@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search;
 
-use VuFind\Search\Base\Options;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
