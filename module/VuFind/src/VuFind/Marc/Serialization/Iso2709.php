@@ -66,12 +66,6 @@ class Iso2709 implements SerializationInterface
      */
     public static function fromString(string $marc): array
     {
-        // When indexing over HTTP, SolrMarc may use entities instead of
-        // certain control characters; we should normalize these:
-        $marc = str_replace(
-            ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
-        );
-
         $leader = substr($marc, 0, 24);
         $fields = [];
         $dataStart = 0 + (int)substr($marc, 12, 5);
