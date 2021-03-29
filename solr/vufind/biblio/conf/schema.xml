@@ -112,6 +112,8 @@
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
     <!-- add geo field to handle geographic search and display capabilities -->
     <fieldType name="geo" class="solr.SpatialRecursivePrefixTreeFieldType" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
+    <!-- add fieldType ignored to ignore fields, see dynamicField *_ignored_mv -->
+    <fieldType name="ignored" class="solr.StrField" indexed="false" stored="false" docValues="false" />
   </types>
  <fields>
    <!-- Required by Solr 4.x -->
@@ -245,6 +247,7 @@
    <dynamicField name="*_geo" type="geo" indexed="true" stored="true" multiValued="false" />
    <dynamicField name="*_geo_mv" type="geo" indexed="true" stored="true" multiValued="true" />
    <dynamicField name="*_autocomplete" type="text_autocomplete" indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="*_ignored_mv" type="ignored" multiValued="true" />
  </fields>
  <uniqueKey>id</uniqueKey>
  <!-- CopyFields for Spelling -->
