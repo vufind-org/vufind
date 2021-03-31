@@ -17,10 +17,13 @@ Disallow: /Alphabrowse
 Disallow: /Author
 Disallow: /Browse
 Disallow: /Combined
+Disallow: /Feedback
 Disallow: /fulltextsnippetproxy
+Disallow: /Keywordchainsearch
 Disallow: /pdaproxy
 Disallow: /proxy
 Disallow: /RssFeed
+Disallow: /Search/Advanced
 Disallow: /Search/Results
 Disallow: /Search2
 Disallow: /Summon
