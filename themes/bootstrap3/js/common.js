@@ -38,6 +38,21 @@ var VuFind = (function VuFind() {
       }
     }
   };
+
+  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
+    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
+      var $form = $(this);
+      // Disable submit elements via setTimeout so that the submit button value gets
+      // included in the submitted data before being disabled:
+      setTimeout(
+        function disableSubmit() {
+          $form.find('[type=submit]').prop('disabled', true);
+        },
+        0
+      );
+    });
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -45,6 +60,8 @@ var VuFind = (function VuFind() {
       }
     }
     _initialized = true;
+
+    initDisableSubmitOnClick();
   };
 
   var addTranslations = function addTranslations(s) {
