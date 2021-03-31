@@ -1,0 +1,56 @@
+<?php
+    $subscribedFeedIds = [];
+    foreach ($rssSubscriptions as $rssSubscription) {
+        $subscribedFeedIds[] = $rssSubscription['rss_feeds_id'];
+    }
+?>
+
+<div class="mainbody left">
+  <h2>RSS Feeds</h2>
+  <table class="search-history-table">
+    <tr>
+      <th>Feed</th>
+      <th>Subscribed?</th>
+    </tr>
+    <?php foreach($rssFeeds as $rssFeed): ?>
+      <tr>
+        <td><a href="<?=$rssFeed['website_url']?>" target="_blank"><?=$rssFeed['feed_name']?></a></td>
+        <td>
+          <form method="post">
+            <input type="hidden" name="id" value="<?=$rssFeed['id']?>">
+            <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
+              <input type="hidden" name="action" value="remove">
+              <button type="submit" class="btn">Remove</button>
+            <?php else: ?>
+              <input type="hidden" name="action" value="add">
+              <button type="submit" class="btn">Add</button>
+            <?php endif; ?>
+          </form>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </table>
+
+  <?php if (count($subscribedFeedIds) > 0): ?>
+    <p><a href="<?=$this->url('myresearch-rssfeedpreview')?>">Show personal RSS feed</a></p>
+    <p>
+      <form method="post">
+        Would you like to receive new entries via e-mail?
+        <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
+          <input type="hidden" name="action" value="unsubscribe_email">
+          <button type="submit" class="btn">Yes</button><br>
+          You will receive all entries newer than <?=$this->user->tuefind_rss_feed_last_notification?>.
+        <?php else: ?>
+          <input type="hidden" name="action" value="subscribe_email">
+          <button type="submit" class="btn">No</button>
+        <?php endif; ?>
+      </form>
+    </p>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=$this->context($this)->renderInContext(
+       "myresearch/menu.phtml", ['active' => 'rssFeedSettings']
+   );?>
+</div>
