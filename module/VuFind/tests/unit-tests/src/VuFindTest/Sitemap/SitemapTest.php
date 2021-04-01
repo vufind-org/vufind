@@ -70,4 +70,45 @@ class SitemapTest extends \PHPUnit\Framework\TestCase
 XML;
         $this->assertEquals($expected, $sm->toString());
     }
+
+    /**
+     * Test toString() with multiple languages.
+     *
+     * @return void
+     */
+    public function testToStringWithLanguages()
+    {
+        $sm = new Sitemap();
+        $sm->setLanguages(['en', 'en-gb', 'fi']);
+        $sm->addUrl('http://foo');
+        $sm->addUrl('http://bar?t=1');
+        $expected = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+   xmlns:xhtml="http://www.w3.org/1999/xhtml"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<url>
+  <loc>http://foo</loc>
+  <changefreq>weekly</changefreq>
+  <xhtml:link rel="alternate" hreflang="x-default">http://foo</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="en">http://foo?lng=en</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="en-GB">http://foo?lng=en-gb</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="fi">http://foo?lng=fi</xhtml:link>
+</url>
+<url>
+  <loc>http://bar?t=1</loc>
+  <changefreq>weekly</changefreq>
+  <xhtml:link rel="alternate" hreflang="x-default">http://bar?t=1</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="en">http://bar?t=1&amp;lng=en</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="en-GB">http://bar?t=1&amp;lng=en-gb</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="fi">http://bar?t=1&amp;lng=fi</xhtml:link>
+</url>
+</urlset>
+XML;
+        $this->assertEquals($expected, $sm->toString());
+    }
 }

@@ -65,12 +65,13 @@ class GeneratorFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configLoader->get('config');
         return new $requestedName(
             $container->get(\VuFind\Search\BackendManager::class),
             $container->get(\VuFindSearch\Service::class),
-            $config->Site->url,
-            $configLoader->get('sitemap')
+            $configLoader->get('sitemap'),
+            $configLoader->get('config'),
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get('HttpRouter')
         );
     }
 }

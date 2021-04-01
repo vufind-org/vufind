@@ -46,6 +46,13 @@ class Sitemap extends AbstractFile
     protected $frequency;
 
     /**
+     * Alternative languages
+     *
+     * @var array
+     */
+    protected $alternativeLanguages = [];
+
+    /**
      * Constructor
      *
      * @param string $frequency Frequency of URL updates
@@ -57,6 +64,19 @@ class Sitemap extends AbstractFile
     }
 
     /**
+     * Set languages to use for the entries
+     *
+     * @param array $allLanguages All available languages
+     *
+     * @return void
+     */
+    public function setLanguages(array $allLanguages): void
+    {
+        $this->alternativeLanguages = $allLanguages;
+        $this->extraNamespaces[] = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
+    }
+
+    /**
      * Translate a URL into an appropriate entry for this sitemap file.
      *
      * @param string $url URL
@@ -65,11 +85,57 @@ class Sitemap extends AbstractFile
      */
     protected function getEntry($url)
     {
-        $loc = htmlspecialchars($url);
+        $alternativeLinks = '';
+        if ($this->alternativeLanguages) {
+            $lngParam = strpos($url, '?') === false ? '?lng=' : '&lng=';
+            $links = [
+                '<xhtml:link rel="alternate" hreflang="x-default">'
+                . htmlspecialchars($url)
+                . '</xhtml:link>'
+            ];
+            foreach ($this->alternativeLanguages as $lng) {
+                $links[] = '<xhtml:link rel="alternate" hreflang="'
+                    . $this->getLanguageAttr($lng) . '">'
+                    . htmlspecialchars($url . $lngParam . urlencode($lng))
+                    . '</xhtml:link>';
+                $parts = explode('-', $lng, 2);
+                if (!empty($parts[1])
+                    && !in_array($parts[0], $this->alternativeLanguages)
+                ) {
+                    // Add fallback for non-locale specific language:
+                    $links[] = '<xhtml:link rel="alternate" hreflang="'
+                        . $this->getLanguageAttr($parts[0]) . '">'
+                        . htmlspecialchars($url . $lngParam . urlencode($lng))
+                        . '</xhtml:link>';
+                }
+            }
+
+            $alternativeLinks = '  ' . implode("\n  ", $links) . "\n";
+        } else {
+            $locs[] = '<loc>' . htmlspecialchars($url) . '</loc>';
+        }
+        $url = htmlspecialchars($url);
         $freq = htmlspecialchars($this->frequency);
-        return '<url>' . "\n"
-            . '  <loc>' . $loc . '</loc>' . "\n"
-            . '  <changefreq>' . $freq . '</changefreq>' . "\n"
-            . '</url>' . "\n";
+        return "<url>\n"
+            . "  <loc>$url</loc>\n"
+            . "  <changefreq>$freq</changefreq>\n"
+            . $alternativeLinks
+            . "</url>\n";
+    }
+
+    /**
+     * Get a language attribute for alternative language links
+     *
+     * @param string $language VuFind language code
+     *
+     * @return string
+     */
+    protected function getLanguageAttr(string $language): string
+    {
+        $parts = explode('-', $language, 2);
+        if (!empty($parts[1])) {
+            return $parts[0] . '-' . strtoupper($parts[1]);
+        }
+        return $language;
     }
 }

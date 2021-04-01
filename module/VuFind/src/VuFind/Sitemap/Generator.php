@@ -28,12 +28,14 @@
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
+use Laminas\Router\RouteStackInterface;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Class for generating sitemaps
@@ -82,11 +84,32 @@ class Generator
     protected $backendSettings;
 
     /**
+     * Main VuFind configuration (config.ini)
+     *
+     * @var Config
+     */
+    protected $mainConfig;
+
+    /**
      * Sitemap configuration (sitemap.ini)
      *
      * @var Config
      */
     protected $config;
+
+    /**
+     * Theme informations
+     *
+     * @var ThemeInfo
+     */
+    protected $themeInfo;
+
+    /**
+     * Router
+     *
+     * @var RouteStackInterface
+     */
+    protected $router;
 
     /**
      * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
@@ -138,21 +161,37 @@ class Generator
     protected $retrievalMode = 'search';
 
     /**
+     * Files ignored when indexing content pages
+     *
+     * @var array
+     */
+    protected $ignoredContentPages = [
+        'templates/content/content.phtml', // Content main page
+        'templates/content/markdown.phtml', // Content main page for Markdown
+    ];
+
+    /**
      * Constructor
      *
-     * @param BackendManager $bm      Search backend manaver
-     * @param SearchService  $ss      Search manager
-     * @param string         $baseUrl VuFind base URL
-     * @param Config         $config  Sitemap configuration settings
+     * @param BackendManager      $bm         Search backend manaver
+     * @param SearchService       $ss         Search manager
+     * @param Config              $config     Sitemap configuration settings
+     * @param Config              $mainConfig Main VuFind configuration
+     * @param ThemeInfo           $themeInfo  Theme info
+     * @param RouteStackInterface $router     Router
      */
-    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
-        Config $config
+    public function __construct(BackendManager $bm, SearchService $ss,
+        Config $config, Config $mainConfig, ThemeInfo $themeInfo,
+        RouteStackInterface $router
     ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
         $this->searchService = $ss;
-        $this->baseUrl = $baseUrl;
+        $this->mainConfig = $mainConfig;
         $this->config = $config;
+        $this->themeInfo = $themeInfo;
+        $this->router = $router;
+        $this->baseUrl = $mainConfig->Site->url;
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
@@ -169,14 +208,13 @@ class Generator
         // Store other key config settings:
         $this->frequency = $this->config->Sitemap->frequency;
         $this->countPerPage = $this->config->Sitemap->countPerPage;
-        $this->fileStart = $this->config->Sitemap->fileLocation . '/' .
-            $this->config->Sitemap->fileName;
+        $this->fileLocation = $this->config->Sitemap->fileLocation;
+        $this->fileStart = $this->config->Sitemap->fileName;
         if (isset($this->config->Sitemap->retrievalMode)) {
             $this->retrievalMode = $this->config->Sitemap->retrievalMode;
         }
         if (isset($this->config->SitemapIndex->indexFileName)) {
-            $this->indexFile = $this->config->Sitemap->fileLocation . '/' .
-                $this->config->SitemapIndex->indexFileName . '.xml';
+            $this->indexFile = $this->config->SitemapIndex->indexFileName . '.xml';
         }
     }
 
@@ -241,6 +279,21 @@ class Generator
     }
 
     /**
+     * Get/set output file path
+     *
+     * @param string $newLocation New path
+     *
+     * @return string Current or new path
+     */
+    public function setFileLocation(?string $newLocation = null): string
+    {
+        if (null !== $newLocation) {
+            $this->fileLocation = $newLocation;
+        }
+        return $this->fileLocation;
+    }
+
+    /**
      * Get the current microtime, formatted to a number.
      *
      * @return float
@@ -261,6 +314,11 @@ class Generator
         // Start timer:
         $startTime = $this->getTime();
 
+        $additionalSitemaps = [];
+        if ($filename = $this->generateForPages()) {
+            $additionalSitemaps[] = $filename;
+        }
+
         // Initialize variable
         $currentPage = 1;
 
@@ -276,7 +334,7 @@ class Generator
         }
 
         // Set-up Sitemap Index
-        $this->buildIndex($currentPage - 1);
+        $this->buildIndex($currentPage - 1, $additionalSitemaps);
 
         // Display total elapsed time in verbose mode:
         $this->verboseMsg(
@@ -295,6 +353,72 @@ class Generator
     }
 
     /**
+     * Generate a sitemap for pages enabled in configuration.
+     *
+     * Returns a filename if anything was written to it.
+     *
+     * @return string
+     */
+    protected function generateForPages(): string
+    {
+        if (!$this->config->Sitemap->indexStartPage
+            && !$this->config->Sitemap->indexContentPages
+        ) {
+            return '';
+        }
+
+        $smf = $this->getNewSitemap();
+        if ($this->config->Sitemap->indexStartPage) {
+            $this->verboseMsg('Adding start page ' . $this->baseUrl);
+            $smf->addUrl($this->baseUrl);
+        }
+
+        if ($this->config->Sitemap->indexContentPages) {
+            $files = $this->themeInfo->findInThemes(
+                [
+                    'templates/content/*.phtml',
+                    'templates/content/*.md',
+                ]
+            );
+            $nonLanguageFiles = [];
+            $languages = array_keys($this->mainConfig->Languages->toArray());
+            // Check each file for language suffix and combine the files into a
+            // non-language specific array
+            foreach ($files as $fileInfo) {
+                if (in_array($fileInfo['relativeFile'], $this->ignoredContentPages)
+                ) {
+                    continue;
+                }
+                $baseName = pathinfo($fileInfo['relativeFile'], PATHINFO_FILENAME);
+                // Check the filename for a known language suffix
+                $p = strrpos($baseName, '_');
+                if ($p > 0) {
+                    $fileLanguage = substr($baseName, $p + 1);
+                    if (in_array($fileLanguage, $languages)) {
+                        $baseName = substr($baseName, 0, $p);
+                    }
+                }
+                $nonLanguageFiles[$baseName] = true;
+            }
+
+            foreach (array_keys($nonLanguageFiles) as $fileName) {
+                $url = $this->baseUrl . $this->router->assemble(
+                    ['page' => $fileName],
+                    ['name' => 'content-page']
+                );
+                $this->verboseMsg("Adding content page $url");
+                $smf->addUrl($url);
+            }
+        }
+
+        $filename = $this->getFilenameForPage('pages');
+        if (false === $smf->write($filename)) {
+            throw new \Exception("Problem writing $filename.");
+        }
+        return $filename;
+    }
+
+    /**
      * Generate sitemap files for a single search backend.
      *
      * @param Backend $backend     Search backend
@@ -305,6 +429,11 @@ class Generator
      */
     protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
     {
+        $this->verboseMsg(
+            'Adding records from ' . $backend->getIdentifier()
+            . " with record base url $recordUrl"
+        );
+
         // Starting offset varies depending on retrieval mode:
         $currentOffset = ($this->retrievalMode === 'terms') ? '' : '*';
         $recordCount = 0;
@@ -470,11 +599,12 @@ class Generator
     /**
      * Write a sitemap index if requested.
      *
-     * @param int $totalPages Total number of sitemap pages generated.
+     * @param int   $totalPages         Total number of sitemap pages generated.
+     * @param array $additionalSitemaps Additional files to add to the index.
      *
      * @return void
      */
-    protected function buildIndex($totalPages)
+    protected function buildIndex($totalPages, $additionalSitemaps)
     {
         // Only build index file if requested:
         if ($this->indexFile !== false) {
@@ -483,21 +613,26 @@ class Generator
 
             // Add a <sitemap /> group for a static sitemap file.
             // See sitemap.ini for more information on this option.
-            if (isset($this->config->SitemapIndex->baseSitemapFileName)) {
-                $baseSitemapFile = $this->config->Sitemap->fileLocation . '/' .
-                    $this->config->SitemapIndex->baseSitemapFileName . '.xml';
+            $baseSitemapFileName = $this->config->SitemapIndex->baseSitemapFileName
+                ?? '';
+            if ($baseSitemapFileName) {
+                $baseSitemapFilePath = $this->fileLocation . '/' .
+                    $baseSitemapFileName;
                 // Only add the <sitemap /> group if the file exists
                 // in the directory where the other sitemap files
                 // are saved, i.e. ['Sitemap']['fileLocation']
-                if (file_exists($baseSitemapFile)) {
-                    $file = "{$this->config->SitemapIndex->baseSitemapFileName}.xml";
-                    $smf->addUrl($baseUrl . '/' . $file);
+                if (file_exists($baseSitemapFilePath)) {
+                    $smf->addUrl($baseUrl . '/' . $baseSitemapFileName);
                 } else {
                     $this->warnings[] = "WARNING: Can't open file "
-                        . $baseSitemapFile . '. '
+                        . $baseSitemapFilePath . '. '
                         . 'The sitemap index will be generated '
                         . 'without this sitemap file.';
                 }
+            }
+
+            foreach ($additionalSitemaps ?? [] as $additional) {
+                $smf->addUrl($baseUrl . '/' . $additional);
             }
 
             // Add <sitemap /> group for each sitemap file generated.
@@ -507,7 +642,8 @@ class Generator
                 $smf->addUrl($baseUrl . '/' . $file);
             }
 
-            if (false === $smf->write($this->indexFile)) {
+            if (false === $smf->write($this->fileLocation . '/' . $this->indexFile)
+            ) {
                 throw new \Exception("Problem writing $this->indexFile.");
             }
         }
@@ -530,19 +666,26 @@ class Generator
      */
     protected function getNewSitemap()
     {
-        return new Sitemap($this->frequency);
+        $sitemap = new Sitemap($this->frequency);
+        if ($this->config->Sitemap->indexLanguageVersions) {
+            $sitemap->setLanguages(
+                array_keys($this->mainConfig->Languages->toArray())
+            );
+        }
+        return $sitemap;
     }
 
     /**
-     * Get the filename for the specified page number.
+     * Get the filename for the specified page number or name.
      *
-     * @param int $page Page number
+     * @param int|string $page Page number or name
      *
      * @return string
      */
     protected function getFilenameForPage($page)
     {
-        return $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';
+        return $this->fileLocation . '/' . $this->fileStart
+            . ($page == 1 ? '' : '-' . $page) . '.xml';
     }
 
     /**

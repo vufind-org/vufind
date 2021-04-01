@@ -53,6 +53,13 @@ abstract class AbstractFile
     protected $urls = [];
 
     /**
+     * Any extra namespace declarations
+     *
+     * @var array
+     */
+    protected $extraNamespaces = [];
+
+    /**
      * Add a URL to the map.
      *
      * @param string $url URL
@@ -81,9 +88,13 @@ abstract class AbstractFile
     public function toString()
     {
         // Start XML:
+        $extraNamespaces = $this->extraNamespaces
+            ? ('   ' . implode("\n   ", array_unique($this->extraNamespaces)) . "\n")
+            : '';
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
             '<' . $this->topTag . "\n" .
             '   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n" .
+            $extraNamespaces .
             '   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n" .
             "   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9\n" .
             '   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n\n";
