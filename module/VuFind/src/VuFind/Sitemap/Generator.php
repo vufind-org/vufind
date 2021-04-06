@@ -459,6 +459,7 @@ class Generator
             $this->countPerPage,
             $params
         );
+        $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);
         }
