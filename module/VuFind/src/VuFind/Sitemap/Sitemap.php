@@ -38,6 +38,8 @@ namespace VuFind\Sitemap;
  */
 class Sitemap extends AbstractFile
 {
+    const XHTML_NAMESPACE = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
+
     /**
      * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
      *
@@ -72,8 +74,25 @@ class Sitemap extends AbstractFile
      */
     public function setLanguages(array $allLanguages): void
     {
-        $this->alternativeLanguages = $allLanguages;
-        $this->extraNamespaces[] = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
+        $this->alternativeLanguages = [];
+
+        // Add languages and fallbacks for non-locale specific languages:
+        foreach ($allLanguages as $language) {
+            $parts = explode('-', $language, 2);
+            if (empty($parts[1])) {
+                $this->alternativeLanguages[$language] = $language;
+            } else {
+                $this->alternativeLanguages[$language]
+                    = $parts[0] . '-' . strtoupper($parts[1]);
+                $this->alternativeLanguages[$parts[0]] = $parts[0];
+            }
+        }
+
+        if ($this->alternativeLanguages) {
+            if (!in_array(Sitemap::XHTML_NAMESPACE, $this->extraNamespaces)) {
+                $this->extraNamespaces[] = Sitemap::XHTML_NAMESPACE;
+            }
+        }
     }
 
     /**
@@ -93,21 +112,11 @@ class Sitemap extends AbstractFile
                 . htmlspecialchars($url)
                 . '</xhtml:link>'
             ];
-            foreach ($this->alternativeLanguages as $lng) {
+            foreach ($this->alternativeLanguages as $vufindLng => $sitemapLng) {
                 $links[] = '<xhtml:link rel="alternate" hreflang="'
-                    . $this->getLanguageAttr($lng) . '">'
-                    . htmlspecialchars($url . $lngParam . urlencode($lng))
+                    . htmlspecialchars($sitemapLng) . '">'
+                    . htmlspecialchars($url . $lngParam . urlencode($vufindLng))
                     . '</xhtml:link>';
-                $parts = explode('-', $lng, 2);
-                if (!empty($parts[1])
-                    && !in_array($parts[0], $this->alternativeLanguages)
-                ) {
-                    // Add fallback for non-locale specific language:
-                    $links[] = '<xhtml:link rel="alternate" hreflang="'
-                        . $this->getLanguageAttr($parts[0]) . '">'
-                        . htmlspecialchars($url . $lngParam . urlencode($lng))
-                        . '</xhtml:link>';
-                }
             }
 
             $alternativeLinks = '  ' . implode("\n  ", $links) . "\n";
@@ -121,21 +130,5 @@ class Sitemap extends AbstractFile
             . "  <changefreq>$freq</changefreq>\n"
             . $alternativeLinks
             . "</url>\n";
-    }
-
-    /**
-     * Get a language attribute for alternative language links
-     *
-     * @param string $language VuFind language code
-     *
-     * @return string
-     */
-    protected function getLanguageAttr(string $language): string
-    {
-        $parts = explode('-', $language, 2);
-        if (!empty($parts[1])) {
-            return $parts[0] . '-' . strtoupper($parts[1]);
-        }
-        return $language;
     }
 }

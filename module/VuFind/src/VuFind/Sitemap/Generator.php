@@ -668,9 +668,14 @@ class Generator
     {
         $sitemap = new Sitemap($this->frequency);
         if ($this->config->Sitemap->indexLanguageVersions) {
-            $sitemap->setLanguages(
-                array_keys($this->mainConfig->Languages->toArray())
-            );
+            $languages = array_keys($this->mainConfig->Languages->toArray());
+            if (!empty($this->config->Sitemap->allowedLanguages)) {
+                $languages = array_intersect(
+                    $languages,
+                    $this->config->Sitemap->allowedLanguages->toArray()
+                );
+            }
+            $sitemap->setLanguages($languages);
         }
         return $sitemap;
     }
