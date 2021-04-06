@@ -72,6 +72,7 @@
     <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
+    <phingcall target="phpstan-checkstyle"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
@@ -106,6 +107,9 @@
   </target>
 
   <!-- Phpstan -->
+  <target name="phpstan-checkstyle">
+    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --error-format=checkstyle analyse &gt; ${builddir}/reports/phpstan-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
   <target name="phpstan-console">
     <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon analyse" escape="false" passthru="true" checkreturn="true" />
   </target>
