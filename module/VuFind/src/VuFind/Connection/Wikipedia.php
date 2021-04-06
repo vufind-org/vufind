@@ -135,7 +135,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @param string $infoboxStr Infobox text
      *
-     * @return string
+     * @return array Array with two values values: image name and image caption
      */
     protected function extractImageFromInfoBox($infoboxStr)
     {
