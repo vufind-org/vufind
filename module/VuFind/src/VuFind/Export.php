@@ -86,8 +86,7 @@ class Export
      */
     public function getBulkUrl($view, $format, $ids)
     {
-        $params = [];
-        $params[] = 'f=' . urlencode($format);
+        $params = ['f=' . urlencode($format)];
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
         }
@@ -320,12 +319,9 @@ class Export
     public function getBulkExportType($format)
     {
         // if exportType is set on per-format basis in export.ini then use it
-        if (isset($this->exportConfig->$format->bulkExportType)) {
-            return $this->exportConfig->$format->bulkExportType;
-        }
-
         // else check if export type is set in config.ini
-        return $this->mainConfig->BulkExport->defaultType ?? 'link';
+        return $this->exportConfig->$format->bulkExportType
+            ?? $this->mainConfig->BulkExport->defaultType ?? 'link';
     }
 
     /**
