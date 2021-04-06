@@ -133,6 +133,23 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     }
 
     /**
+     * Get options for the selected driver.
+     *
+     * @param string $driver Driver name
+     *
+     * @return array
+     */
+    protected function getDriverOptions($driver)
+    {
+        switch ($driver) {
+        case 'mysqli':
+            return ($this->config->Database->verify_server_certificate ?? false)
+                ? [] : [MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT];
+        }
+        return [];
+    }
+
+    /**
      * Obtain a Laminas\DB connection using an option array.
      *
      * @param array $options Options for building adapter
@@ -200,17 +217,28 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $username = null !== $overrideUser ? $overrideUser : $username;
         $password = null !== $overridePass ? $overridePass : $password;
 
+        $driverName = $this->getDriverName($type);
+        $driverOptions = $this->getDriverOptions($driverName);
+
         // Set up default options:
         $options = [
-            'driver' => $this->getDriverName($type),
+            'driver' => $driverName,
             'hostname' => $host ?? null,
             'username' => $username,
             'password' => $password,
-            'database' => $dbName
+            'database' => $dbName,
+            'use_ssl' => $this->config->Database->use_ssl ?? false,
+            'driver_options' => $driverOptions,
         ];
         if (!empty($port)) {
             $options['port'] = $port;
         }
-        return $this->getAdapterFromOptions($options);
+        // Get extra custom options from config:
+        $extraOptions = isset($this->config->Database->extra_options)
+            ? $this->config->Database->extra_options->toArray()
+            : [];
+        // Note: $options takes precedence over $extraOptions -- we don't want users
+        // using extended settings to override values from core settings.
+        return $this->getAdapterFromOptions($options + $extraOptions);
     }
 }

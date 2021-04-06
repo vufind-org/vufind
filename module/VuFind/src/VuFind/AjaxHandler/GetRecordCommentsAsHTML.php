@@ -59,7 +59,7 @@ class GetRecordCommentsAsHTML extends AbstractBase
     /**
      * Constructor
      *
-     * @param Connection        $loader   Record loader
+     * @param Loader            $loader   Record loader
      * @param RendererInterface $renderer View renderer
      */
     public function __construct(Loader $loader, RendererInterface $renderer)

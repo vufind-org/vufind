@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
+namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
@@ -44,8 +44,11 @@ use VuFind\Config\Writer as ConfigWriter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class MinkTestCase extends DbTestCase
+abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutoRetryTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
+
     /**
      * Modified configurations
      *
@@ -386,10 +389,9 @@ abstract class MinkTestCase extends DbTestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
-        // AutoRetryTrait when it is use, and we'll default it to 0 to cover
-        // cases where that trait is not in play):
+        // AutoRetryTrait):
         if ($this->hasFailed() && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
-            && ($this->retriesLeft ?? 0) === 0
+            && $this->retriesLeft === 0
         ) {
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
             if (!empty($imageData)) {

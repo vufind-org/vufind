@@ -43,7 +43,7 @@ use VuFindConsole\Command\Language\NormalizeCommand;
  */
 class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Language fixture directory
@@ -131,31 +131,6 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
             "{$target} does not exist.\n", $commandTester->getDisplay()
         );
         $this->assertEquals(1, $commandTester->getStatusCode());
-    }
-
-    /**
-     * Get a mock command object
-     *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param array                 $methods     Methods to mock
-     *
-     * @return AddUsingTemplateCommand
-     */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
-        array $methods = ['writeFileToDisk']
-    ) {
-        return $this->getMockBuilder(DeleteCommand::class)
-            ->setConstructorArgs(
-                [
-                    $normalizer ?? $this->getMockNormalizer(),
-                    $reader ?? $this->getMockReader(),
-                    $languageDir ?? $this->languageFixtureDir,
-                ]
-            )->setMethods($methods)
-            ->getMock();
     }
 
     /**

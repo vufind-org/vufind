@@ -30,7 +30,6 @@ namespace VuFindTest\Controller\Plugin;
 
 use Laminas\Config\Config;
 use VuFind\Controller\Plugin\NewItems;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * New items controller plugin tests.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NewItemsTest extends TestCase
+class NewItemsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test ILS bib ID retrieval.
@@ -207,7 +206,7 @@ class NewItemsTest extends TestCase
      *
      * @return \VuFind\ILS\Connection
      */
-    protected function getMockCatalog()
+    protected function getMockCatalog(): \VuFind\ILS\Connection
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
             ->setMethods(['getNewItems'])

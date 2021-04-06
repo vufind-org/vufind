@@ -44,7 +44,7 @@ use VuFindTheme\ThemeInfo;
  */
 class RecordTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Theme to use for testing purposes.
@@ -556,7 +556,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock resolver object
      *
-     * @return
+     * @return \Laminas\View\Resolver\ResolverInterface
      */
     protected function getMockResolver()
     {

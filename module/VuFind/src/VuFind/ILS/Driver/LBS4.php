@@ -271,7 +271,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -313,7 +313,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array Array of the patron's holds on success.
      */
@@ -340,13 +340,12 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
         try {
             $result = [];
             $sqlStmt = sybase_query($sql);
-            $expire = $row[3]; // empty ?
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
                 $result[] = [
                     'id'       => $this->prfz($row[0]),
                     'create'   => $row[2],
-                    'expire'   => $expire,
+                    'expire'   => $row[3], // empty ?,
                     //'location' => $row[4],
                     'title'    => $title
                 ];
@@ -382,7 +381,7 @@ class LBS4 extends DAIA implements TranslatorAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */

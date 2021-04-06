@@ -55,14 +55,14 @@ class PAIA extends DAIA
     /**
      * URL of PAIA service
      *
-     * @var
+     * @var string
      */
     protected $paiaURL;
 
     /**
      * Timeout in seconds to be used for PAIA http requests
      *
-     * @var
+     * @var int
      */
     protected $paiaTimeout = null;
 
@@ -2014,6 +2014,18 @@ class PAIA extends DAIA
         }
 
         return true;
+    }
+
+    /**
+     * Get notification identifier from message identifier
+     *
+     * @param string $messageId Message identifier
+     *
+     * @return string
+     */
+    protected function getPaiaNotificationsId($messageId)
+    {
+        return $messageId;
     }
 
     /**

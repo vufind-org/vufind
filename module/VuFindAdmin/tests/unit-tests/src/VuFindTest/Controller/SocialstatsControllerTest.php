@@ -37,7 +37,7 @@ namespace VuFindTest\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SocialstatsControllerTest extends \VuFindTest\Unit\TestCase
+class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test language mappings.

@@ -45,6 +45,41 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
+     * API profile
+     *
+     * @var string
+     */
+    protected $wsProfile;
+
+    /**
+     * API URL
+     *
+     * @var string
+     */
+    protected $wsURL;
+
+    /**
+     * Available pickup locations for holds
+     *
+     * @var array
+     */
+    protected $wsPickUpLocations;
+
+    /**
+     * Defaut pickup location for holds
+     *
+     * @var string
+     */
+    protected $wsDefaultPickUpLocation;
+
+    /**
+     * Date format used by API
+     *
+     * @var string
+     */
+    protected $wsDateFormat;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to

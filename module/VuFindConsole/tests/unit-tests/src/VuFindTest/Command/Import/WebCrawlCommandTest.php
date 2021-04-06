@@ -44,7 +44,7 @@ use VuFindConsole\Command\Import\WebCrawlCommand;
  */
 class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test the simplest possible success case.

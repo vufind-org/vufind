@@ -40,7 +40,7 @@ use VuFind\Solr\Writer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class WriterTest extends \VuFindTest\Unit\TestCase
+class WriterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test commit
@@ -98,7 +98,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
     {
         $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
-        $callback = function ($i) {
+        $callback = function ($i): bool {
             return trim($i->asXML()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));
@@ -115,7 +115,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
     {
         $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
-        $callback = function ($i) {
+        $callback = function ($i): bool {
             return trim($i->asXML()) == "<?xml version=\"1.0\"?>\n<delete><id>foo</id><id>bar</id></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));

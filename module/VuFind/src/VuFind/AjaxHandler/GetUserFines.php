@@ -46,6 +46,13 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
 class GetUserFines extends AbstractIlsAndUserAction
 {
     /**
+     * Money formatting view helper
+     *
+     * @var SafeMoneyFormat
+     */
+    protected $safeMoneyFormat;
+
+    /**
      * Constructor
      *
      * @param SessionSettings  $ss               Session settings

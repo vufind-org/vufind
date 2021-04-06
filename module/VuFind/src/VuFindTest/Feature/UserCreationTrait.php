@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait with utility methods for user creation/management.
  *
  * PHP version 7
  *
@@ -27,13 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\Unit;
+namespace VuFindTest\Feature;
 
 use Behat\Mink\Element\Element;
 
 /**
- * Trait with utility methods for user creation/management. Assumes that it
- * will be applied to a subclass of DbTestCase.
+ * Trait with utility methods for user creation/management.
  *
  * @category VuFind
  * @package  Tests
@@ -43,30 +41,6 @@ use Behat\Mink\Element\Element;
  */
 trait UserCreationTrait
 {
-    /**
-     * Static setup support function to fail if users already exist in the database.
-     * We want to ensure a clean state for each test!
-     *
-     * @return void
-     */
-    protected static function failIfUsersExist(): void
-    {
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new static();   // create instance of current class
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-        // Fail if there are already users in the database (we don't want to run this
-        // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable('User');
-        if (count($userTable->select()) > 0) {
-            self::fail(
-                'Test cannot run with pre-existing user data!'
-            );
-            return;
-        }
-    }
-
     /**
      * Mink support function: assert a warning message in the lightbox.
      *
@@ -173,33 +147,5 @@ trait UserCreationTrait
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
         $this->snooze();
-    }
-
-    /**
-     * Static teardown support function to destroy user accounts. Accounts are
-     * expected to exist, and the method will fail if they are missing.
-     *
-     * @param array|string $users User(s) to delete
-     *
-     * @return void
-     *
-     * @throws \Exception
-     */
-    protected static function removeUsers($users)
-    {
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        $test = new static();   // create instance of current class
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-
-        // Delete test user
-        $userTable = $test->getTable('User');
-        foreach ((array)$users as $username) {
-            $user = $userTable->getByUsername($username, false);
-            if (!empty($user)) {
-                $user->delete();
-            }
-        }
     }
 }

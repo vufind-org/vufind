@@ -39,9 +39,9 @@ use VuFindSearch\Backend\BrowZine\Connector;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class BrowZineTest extends \VuFindTest\Unit\TestCase
+class BrowZineTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Get a mock connector
@@ -49,7 +49,7 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
      * @param string $doi      DOI expected by connector
      * @param array  $response Response for connector to return
      *
-     * @return void
+     * @return Connector
      */
     protected function getMockConnector($doi, $response)
     {

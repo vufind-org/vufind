@@ -31,8 +31,6 @@ namespace VuFindTest\Search;
 use Laminas\EventManager\SharedEventManager;
 use VuFind\Search\BackendManager;
 
-use VuFindTest\Unit\TestCase as TestCase;
-
 /**
  * BackendManager unit tests.
  *
@@ -42,8 +40,10 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class BackendManagerTest extends TestCase
+class BackendManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test that get() throws on a non-object.
      *

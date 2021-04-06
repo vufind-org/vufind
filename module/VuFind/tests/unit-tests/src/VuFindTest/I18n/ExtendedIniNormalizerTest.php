@@ -39,7 +39,7 @@ use VuFind\I18n\ExtendedIniNormalizer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExtendedIniNormalizerTest extends \VuFindTest\Unit\TestCase
+class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test consistent normalization of translation files on disk. This tests not

@@ -34,7 +34,6 @@ use VuFindSearch\Backend\Primo\Backend;
 
 use VuFindSearch\Backend\Primo\Connector;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for OnCampus listener.
@@ -45,7 +44,7 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class OnCampusListenerTest extends TestCase
+class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Backend.
@@ -89,7 +88,7 @@ class OnCampusListenerTest extends TestCase
      */
     public function testAttachWithParameter()
     {
-        $mockPermController = $this->getMockBuilder(\PrimoPermissionHandler::class)
+        $mockPermController = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $listener = new InjectOnCampusListener($mockPermController);

@@ -42,6 +42,13 @@ namespace VuFind\Cookie;
 class CookieManager
 {
     /**
+     * Cookie array to work with
+     *
+     * @var array
+     */
+    protected $cookies;
+
+    /**
      * Cookie base path
      *
      * @var string
