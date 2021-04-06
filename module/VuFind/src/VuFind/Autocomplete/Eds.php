@@ -84,6 +84,7 @@ class Eds implements AutocompleteInterface
      */
     public function getSuggestions($query)
     {
+        $results = null;
         try {
             // Perform the autocomplete search:
             $results = $this->backend->autocomplete($query, $this->domain);

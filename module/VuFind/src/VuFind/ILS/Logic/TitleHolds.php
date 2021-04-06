@@ -284,6 +284,7 @@ class TitleHolds
      */
     protected function getHoldDetails($data, $HMACKeys)
     {
+        $queryString = [];
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $data);
 

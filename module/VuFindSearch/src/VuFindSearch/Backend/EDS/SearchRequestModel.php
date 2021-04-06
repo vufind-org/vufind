@@ -145,6 +145,8 @@ class SearchRequestModel
      */
     protected function formatDateLimiter($filter)
     {
+        $start = null;
+        $end = null;
         // PublicationDate:[xxxx TO xxxx]
         $dates = substr($filter, 17);
         $dates = substr($dates, 0, strlen($dates) - 1);

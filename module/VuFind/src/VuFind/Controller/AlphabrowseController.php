@@ -51,6 +51,7 @@ class AlphabrowseController extends AbstractBase
      */
     public function homeAction()
     {
+        $result = [];
         $config = $this->getConfig();
 
         // Load browse types from config file, or use defaults if unavailable:

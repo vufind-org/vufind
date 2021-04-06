@@ -359,6 +359,7 @@ class GeneratorTools
     public function extendClass(ContainerInterface $container, $class, $target,
         $extendFactory = false
     ) {
+        $configPath = null;
         // Set things up differently depending on whether this is a top-level
         // service or a class in a plugin manager.
         $cm = $container->get('ControllerManager');

@@ -91,6 +91,7 @@ class MarcReader
      */
     public function setData(string $data): void
     {
+        $leader = null;
         $valid = false;
         foreach ($this->serializations as $serialization) {
             if ($serialization::canParse($data)) {

@@ -102,6 +102,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     protected function getIds($id)
     {
+        $itemRecords = [];
         $get_record_ids_query
             = "SELECT bib_record_item_record_link.item_record_id, bib_view.id "
             . "FROM sierra_view.bib_view "
@@ -222,6 +223,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function getCourses()
     {
+        $courses = [];
         try {
             // Sierra allows for multiple names for a course. Only the first name
             // will be included here; all others will be ignored. If you absolutely
@@ -322,6 +324,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function findReserves($course, $instructor, $department)
     {
+        $reserves = [];
         try {
             if ($course != null) {
                 $coursenum = $course;

@@ -178,6 +178,7 @@ XML;
      */
     public function testHighlightDetails()
     {
+        $details = [];
         $details['author'] = 'test';
         $driver = $this->getDriver();
         $driver->setHighlightDetails($details);

@@ -181,6 +181,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     public function getAccess($refresh = false)
     {
+        $result = null;
         if (!$user = $this->getUser()) {
             return $this->getResultObject(false, "User not logged in.");
         }
@@ -1225,6 +1226,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected function callPatronUrl(
         $patronBarcode, $patronPin, $url, $params = null, $requestType = "GET"
     ) {
+        $postData = null;
         $this->debug("calling patronURL: $url");
         if ($this->connectToPatronAPI($patronBarcode, $patronPin, false)) {
             $patronTokenData = $this->getSessionContainer()->patronTokenData;

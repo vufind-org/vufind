@@ -122,6 +122,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testDisabledVersionsTab()
     {
+        $extraConfigs = [];
         // Disable versions tab:
         $extraConfigs['RecordTabs']['VuFind\RecordDriver\SolrMarc'] = [
             'tabs[Versions]' => false
@@ -158,6 +159,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testDisabledVersions()
     {
+        $extraConfigs = [];
         // Disable versions:
         $extraConfigs['searches']['General'] = ['display_versions' => false];
         $this->changeConfigs($extraConfigs);

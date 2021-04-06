@@ -1074,6 +1074,7 @@ class PAIA extends DAIA
      */
     public function placeHold($holdDetails)
     {
+        $post_data = [];
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)) {
@@ -1282,6 +1283,7 @@ class PAIA extends DAIA
      */
     protected function paiaGetItems($patron, $filter = [])
     {
+        $itemsResponse = [];
         // check if user has appropriate scope (refer to scope declaration above for
         // further details)
         if (!$this->paiaCheckScope(self::SCOPE_READ_ITEMS)) {
@@ -1895,6 +1897,7 @@ class PAIA extends DAIA
      */
     protected function paiaGetSystemMessages($patron)
     {
+        $cacheKey = null;
         // check if user has appropriate scope
         if (!$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)) {
             throw new ILSException('You are not entitled to read notifications.');

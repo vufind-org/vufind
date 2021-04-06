@@ -212,6 +212,7 @@ class ChannelLoader
     public function getHomeContext($token = null, $activeChannel = null,
         $activeSource = null
     ) {
+        $cache = null;
         // Load appropriate channel objects:
         $defaultSource = $this->config->General->default_home_source
             ?? DEFAULT_SEARCH_BACKEND;

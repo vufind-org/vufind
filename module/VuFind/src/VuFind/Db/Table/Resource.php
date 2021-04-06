@@ -233,6 +233,7 @@ class Resource extends Gateway
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
+        $tableObjects = [];
         if ($oldId !== $newId
             && $resource = $this->findResource($oldId, $source)
         ) {

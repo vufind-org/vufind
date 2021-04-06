@@ -879,6 +879,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function getLiveStatuses($ids)
     {
+        $items = [];
         foreach ($ids as $id) {
             $items[$id] = [];
         }

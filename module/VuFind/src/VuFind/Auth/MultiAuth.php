@@ -205,6 +205,7 @@ class MultiAuth extends AbstractBase
      */
     protected function authUser($request)
     {
+        $exception = null;
         $manager = $this->getPluginManager();
 
         // Try authentication methods until we find one that works:

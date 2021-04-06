@@ -336,6 +336,7 @@ class Backend extends AbstractBackend
     public function alphabeticBrowse($source, $from, $page, $limit = 20,
         $params = null, $offsetDelta = 0
     ) {
+        $response = null;
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 

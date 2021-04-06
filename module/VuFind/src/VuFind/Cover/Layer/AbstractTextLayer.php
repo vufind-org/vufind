@@ -86,6 +86,7 @@ abstract class AbstractTextLayer extends AbstractLayer
     protected function drawText($im, $settings, $text, $y, $font, $fontSize, $mcolor,
         $scolor = false, $align = null
     ) {
+        $x = null;
         // In case the text contains non-normalized UTF-8, fix that for proper
         // display:
         $text = \Normalizer::normalize($text);

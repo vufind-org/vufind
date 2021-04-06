@@ -499,6 +499,7 @@ class Holds
      */
     protected function getRequestDetails($details, $HMACKeys, $action)
     {
+        $queryString = [];
         // Include request type in the details
         $details['requestType'] = $action;
 

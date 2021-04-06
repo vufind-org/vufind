@@ -135,6 +135,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $allowedErrors = [],
         $returnStatus = false
     ) {
+        $url = null;
         // Set some variables
         $result = null;
         $statusCode = null;
@@ -271,6 +272,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getHolding($id, $patron = null, array $options = [])
     {
+        $results = [];
         // Prepare result array with default values. If no API result can be received
         // these will be returned.
         $results['total'] = 0;

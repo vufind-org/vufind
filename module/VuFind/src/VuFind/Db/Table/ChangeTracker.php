@@ -95,6 +95,12 @@ class ChangeTracker extends Gateway
     ) {
         $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
         return function ($select) use ($params) {
+            $columns = null;
+            $core = null;
+            $from = null;
+            $until = null;
+            $offset = null;
+            $limit = null;
             extract($params);
             if ($columns !== null) {
                 $select->columns($columns);

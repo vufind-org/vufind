@@ -227,6 +227,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     public function recordAction()
     {
+        $results = [];
         // Disable session writes
         $this->disableSessionWrites();
 

@@ -703,6 +703,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function processAdvancedCheckboxes($params, $savedSearch = false)
     {
+        $flipCheckboxes = null;
         // Set defaults for missing parameters:
         $config = $params[0] ?? 'facets';
         $section = $params[1] ?? 'CheckboxFacets';

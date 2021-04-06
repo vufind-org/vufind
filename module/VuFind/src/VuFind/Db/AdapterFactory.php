@@ -197,6 +197,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getAdapterFromConnectionString($connectionString,
         $overrideUser = null, $overridePass = null
     ) {
+        $host = null;
+        $port = null;
         [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = $matches[1] ?? null;

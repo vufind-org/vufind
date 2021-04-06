@@ -59,6 +59,9 @@ class SearchController extends AbstractSolrSearch
      */
     public function editmemoryAction()
     {
+        $field = null;
+        $value = null;
+        $operator = null;
         // Get the user's referer, with the home page as a fallback; we'll
         // redirect here after the work is done.
         $from = $this->getRequest()->getServer()->get('HTTP_REFERER')

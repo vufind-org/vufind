@@ -1054,6 +1054,7 @@ class MyResearchController extends AbstractBase
      */
     public function emailNotVerifiedAction()
     {
+        $change = null;
         if ($this->params()->fromQuery('reverify')) {
             $table = $this->getTable('User');
             // Case 1: new user:

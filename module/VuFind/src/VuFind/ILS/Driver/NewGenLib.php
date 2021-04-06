@@ -300,6 +300,7 @@ class NewGenLib extends AbstractBase
      */
     public function getMyProfile($patron)
     {
+        $profile = null;
         $catusr = $patron['cat_username'];
         $catpswd = $patron['cat_password'];
         $sql = "select p.patron_id as patron_id,p.user_password as " .
@@ -499,6 +500,7 @@ class NewGenLib extends AbstractBase
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
+        $retVal = [];
         // Do some initial work in solr so we aren't repeating it inside this loop.
         $retVal[][] = [];
 

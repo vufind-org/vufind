@@ -154,6 +154,7 @@ class Initializer
      */
     public function init()
     {
+        $error = null;
         // Make sure to initialize the theme just once
         if (self::$themeInitialized) {
             return;
@@ -198,6 +199,7 @@ class Initializer
      */
     protected function pickTheme(?Request $request)
     {
+        $selectedUI = null;
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
         if (PHP_SAPI == 'cli') {
@@ -386,6 +388,7 @@ class Initializer
      */
     protected function updateTranslator($themes)
     {
+        $theme = null;
         $pathStack = [];
         foreach (array_keys($themes) as $theme) {
             $dir = APPLICATION_PATH . '/themes/' . $theme . '/languages';

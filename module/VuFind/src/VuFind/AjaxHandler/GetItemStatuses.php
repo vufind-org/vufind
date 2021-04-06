@@ -424,6 +424,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
      */
     public function handleRequest(Params $params)
     {
+        $results = [];
         $this->disableSessionWrites();  // avoid session write timing bug
         $ids = $params->fromPost('id', $params->fromQuery('id', []));
         try {

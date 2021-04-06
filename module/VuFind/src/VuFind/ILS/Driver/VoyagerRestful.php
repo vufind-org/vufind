@@ -686,6 +686,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $pickResponse = [];
         $params = [];
         if ($this->ws_pickUpLocations) {
             foreach ($this->ws_pickUpLocations as $code => $library) {
@@ -1012,6 +1013,7 @@ EOT;
     protected function makeRequest($hierarchy, $params = false, $mode = 'GET',
         $xml = false
     ) {
+        $hierarchyString = [];
         // Build Url Base
         $urlParams = "http://{$this->ws_host}:{$this->ws_port}/{$this->ws_app}";
 
@@ -2435,6 +2437,8 @@ EOT;
      */
     public function placeStorageRetrievalRequest($details)
     {
+        $xml = [];
+        $response = [];
         $patron = $details['patron'];
         $level = isset($details['level']) && !empty($details['level'])
             ? $details['level'] : 'copy';

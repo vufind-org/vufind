@@ -499,6 +499,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function init()
     {
+        $cache = null;
         // Validate config
         $required = [
             'host', 'bib', 'useradm', 'admlib', 'dlfport', 'available_statuses'
@@ -1520,6 +1521,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileDLF($user)
     {
+        $recordList = [];
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
@@ -1678,6 +1680,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
+        $details = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
                 $patron['id'], $holdInfo['id'], $holdInfo['item_id']
@@ -1712,6 +1715,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function placeHold($details)
     {
+        $comment2 = null;
         [$bib, $sys_no] = $this->parseId($details['id']);
         $recordId = $bib . $sys_no;
         $itemId = $details['item_id'];

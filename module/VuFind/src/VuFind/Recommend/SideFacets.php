@@ -151,6 +151,7 @@ class SideFacets extends AbstractFacets
      */
     public function setConfig($settings)
     {
+        $flipCheckboxes = null;
         // Parse the additional settings:
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
@@ -380,6 +381,7 @@ class SideFacets extends AbstractFacets
      */
     public function getShowMoreSetting($facetName)
     {
+        $val = null;
         // Look for either facet-specific configuration or else a configured
         // default. If neither is found, initialize return value to 0.
         if (isset($this->showMoreSettings[$facetName])) {
