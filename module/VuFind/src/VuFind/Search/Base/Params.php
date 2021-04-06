@@ -702,8 +702,7 @@ class Params
      */
     public function getView()
     {
-        return null === $this->view
-            ? $this->getOptions()->getDefaultView() : $this->view;
+        return $this->view ?? $this->getOptions()->getDefaultView();
     }
 
     /**
@@ -1218,7 +1217,7 @@ class Params
     {
         // Make sure date is valid; default to wildcard otherwise:
         $date = SolrUtils::sanitizeDate($date);
-        return $date === null ? '*' : $date;
+        return $date ?? '*';
     }
 
     /**

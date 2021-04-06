@@ -152,7 +152,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     {
         $name = array_pop($this->stack);
         $ret = $this->build($name);
-        return $ret === null ? $default : $ret;
+        return $ret ?? $default;
     }
 
     /**

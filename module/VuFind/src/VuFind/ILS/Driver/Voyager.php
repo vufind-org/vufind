@@ -475,8 +475,7 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            $rowId = null !== $row['ITEM_ID']
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (!isset($data[$rowId])) {
                 $data[$rowId] = [
                     'id' => $row['BIB_ID'],

@@ -85,8 +85,7 @@ class CollectionsController extends AbstractBase
      */
     public function homeAction()
     {
-        $browseType = (isset($this->config->Collections->browseType))
-            ? $this->config->Collections->browseType : 'Index';
+        $browseType = $this->config->Collections->browseType ?? 'Index';
         return ($browseType == 'Alphabetic')
             ? $this->showBrowseAlphabetic() : $this->showBrowseIndex();
     }

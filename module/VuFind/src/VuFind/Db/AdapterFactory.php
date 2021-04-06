@@ -214,8 +214,8 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             $username = $credentials;
             $password = null;
         }
-        $username = null !== $overrideUser ? $overrideUser : $username;
-        $password = null !== $overridePass ? $overridePass : $password;
+        $username = $overrideUser ?? $username;
+        $password = $overridePass ?? $password;
 
         $driverName = $this->getDriverName($type);
         $driverOptions = $this->getDriverOptions($driverName);
