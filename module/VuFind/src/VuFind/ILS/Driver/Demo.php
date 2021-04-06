@@ -472,7 +472,6 @@ class Demo extends AbstractBase
                 "expire"   => $this->dateConverter->convertToDisplayDate(
                     'U', strtotime("now + 30 days")
                 ),
-                "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,
                 "reqnum" => $i
             ];
