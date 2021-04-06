@@ -472,6 +472,7 @@ class Demo extends AbstractBase
                 "expire"   => $this->dateConverter->convertToDisplayDate(
                     'U', strtotime("now + 30 days")
                 ),
+                "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,
                 "reqnum" => $i
             ];
@@ -1078,6 +1079,7 @@ class Demo extends AbstractBase
                         = $this->getRandomBibIdAndTitle();
                     $transList[$i]['source'] = $this->getRecordSource();
                 } else {
+                    $transList[$i]['id'] = "demo_nonexistent_$i";
                     $transList[$i]['title'] = 'Demo Title ' . $i;
                 }
             }
