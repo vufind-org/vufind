@@ -1010,6 +1010,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
             $barcode = (string)$z30->{'z30-barcode'};
+            // Secondary, Aleph-specific identifier that may be useful for
+            // local customizations
             $adm_id = (string)$z30->{'z30-doc-number'};
 
             $transList[] = [
