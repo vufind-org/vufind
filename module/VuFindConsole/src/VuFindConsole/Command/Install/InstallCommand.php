@@ -306,7 +306,7 @@ class InstallCommand extends Command
      *
      * @param string $dir Path to attempt to initialize
      *
-     * @return void
+     * @return bool|string
      */
     protected function initializeOverrideDir($dir)
     {

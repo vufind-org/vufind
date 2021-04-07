@@ -39,6 +39,13 @@ namespace VuFind\Search\Primo;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
+     * Facet details:
+     *
+     * @var array
+     */
+    protected $responseFacets = null;
+
+    /**
      * Search backend identifier.
      *
      * @var string

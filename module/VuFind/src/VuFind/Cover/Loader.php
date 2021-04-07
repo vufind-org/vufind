@@ -360,7 +360,7 @@ class Loader extends \VuFind\ImageLoader
     public function loadUnavailable()
     {
         $this->hasLoadedUnavailable = true;
-        return parent::loadUnavailable();
+        parent::loadUnavailable();
     }
 
     /**
@@ -378,7 +378,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @param array $ids IDs returned by getIdentifiers() method
      *
-     * @return void
+     * @return string
      */
     protected function determineLocalFile($ids)
     {

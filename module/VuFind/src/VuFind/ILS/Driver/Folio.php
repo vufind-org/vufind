@@ -84,6 +84,13 @@ class Folio extends AbstractAPI implements
     protected $sessionCache;
 
     /**
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object

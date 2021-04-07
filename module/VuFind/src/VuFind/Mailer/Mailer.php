@@ -348,7 +348,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg
             ]
         );
-        return $this->send($to, $from, $subject, $body, $cc, $replyTo);
+        $this->send($to, $from, $subject, $body, $cc, $replyTo);
     }
 
     /**
@@ -394,7 +394,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg
             ]
         );
-        return $this->send($to, $from, $subject, $body, $cc, $replyTo);
+        $this->send($to, $from, $subject, $body, $cc, $replyTo);
     }
 
     /**

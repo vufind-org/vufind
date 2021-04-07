@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink bulk action test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,9 +41,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class BulkTest extends \VuFindTest\Integration\MinkTestCase
+final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 

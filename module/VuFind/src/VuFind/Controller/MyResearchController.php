@@ -1711,7 +1711,7 @@ class MyResearchController extends AbstractBase
     protected function sendFirstVerificationEmail($user)
     {
         if (empty($user->verify_hash)) {
-            return $this->sendVerificationEmail($user);
+            $this->sendVerificationEmail($user);
         }
     }
 

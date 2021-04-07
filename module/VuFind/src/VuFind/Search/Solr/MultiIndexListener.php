@@ -86,7 +86,6 @@ class MultiIndexListener
         array $stripfields, array $specs
     ) {
         $this->specs       = $specs;
-        $this->active      = [];
         $this->backend     = $backend;
         $this->shards      = $shards;
         $this->stripfields = $stripfields;
