@@ -293,31 +293,7 @@ class Generator
         // Start timer:
         $startTime = $this->getTime();
 
-        $additionalSitemaps = [];
-        if ($plugins = $this->config->Sitemap->plugins) {
-            $pluginSitemaps = [];
-            foreach ($plugins->toArray() as $pluginName) {
-                $plugin = $this->getPlugin($pluginName);
-                $sitemapName = $plugin->getSitemapName();
-                $this->verboseMsg(
-                    "Generating sitemap '$sitemapName' with $pluginName"
-                );
-                if (!isset($pluginSitemaps[$sitemapName])) {
-                    $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
-                }
-                $plugin->addUrls($pluginSitemaps[$sitemapName]);
-            }
-
-            foreach ($pluginSitemaps as $sitemapName => $sitemap) {
-                if (!$sitemap->isEmpty()) {
-                    $filename = $this->getFilenameForPage($sitemapName);
-                    if (false === $sitemap->write($filename)) {
-                        throw new \Exception("Problem writing $filename.");
-                    }
-                    $additionalSitemaps[] = $filename;
-                }
-            }
-        }
+        $additionalSitemaps = $this->generateWithPlugins();
 
         // Initialize variable
         $currentPage = 1;
@@ -340,6 +316,41 @@ class Generator
         $this->verboseMsg(
             'Elapsed time (in seconds): ' . round($this->getTime() - $startTime)
         );
+    }
+
+    /**
+     * Generate sitemaps with any enabled plugins
+     *
+     * @return array
+     */
+    protected function generateWithPlugins(): array
+    {
+        $additionalSitemaps = [];
+        if ($plugins = $this->config->Sitemap->plugins) {
+            $pluginSitemaps = [];
+            foreach ($plugins->toArray() as $pluginName) {
+                $plugin = $this->getPlugin($pluginName);
+                $sitemapName = $plugin->getSitemapName();
+                $this->verboseMsg(
+                    "Generating sitemap '$sitemapName' with '$pluginName'"
+                );
+                if (!isset($pluginSitemaps[$sitemapName])) {
+                    $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
+                }
+                $plugin->addUrls($pluginSitemaps[$sitemapName]);
+            }
+
+            foreach ($pluginSitemaps as $sitemapName => $sitemap) {
+                if (!$sitemap->isEmpty()) {
+                    $filename = $this->getFilenameForPage($sitemapName);
+                    if (false === $sitemap->write($filename)) {
+                        throw new \Exception("Problem writing $filename.");
+                    }
+                    $additionalSitemaps[] = $filename;
+                }
+            }
+        }
+        return $additionalSitemaps;
     }
 
     /**
