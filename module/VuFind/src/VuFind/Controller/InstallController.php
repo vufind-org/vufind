@@ -225,8 +225,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.2.0:
-        return PHP_VERSION_ID >= 70200;
+        // We need at least PHP v7.3.0:
+        return PHP_VERSION_ID >= 70300;
     }
 
     /**
