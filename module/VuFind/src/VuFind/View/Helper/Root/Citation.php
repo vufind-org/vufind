@@ -156,7 +156,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
         // Find subtitle in title if they're not separated:
         if (empty($subtitle) && strstr($title, ':')) {
-            list($title, $subtitle) = explode(':', $title, 2);
+            [$title, $subtitle] = explode(':', $title, 2);
         }
 
         // Extract the additional details from the record driver:
@@ -305,7 +305,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
 
         // If we got this far, it's the default article case:
-        list($apa['volume'], $apa['issue'], $apa['date'])
+        [$apa['volume'], $apa['issue'], $apa['date']]
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();

@@ -282,7 +282,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $page->find('css', '#addFormCheckboxSelectAll')->check();
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)

@@ -840,7 +840,7 @@ EOT;
         }
         // Deduplicate data and format it:
         foreach (array_unique($raw) as $current) {
-            list($holdings_id, $issue) = explode('||', $current, 2);
+            [$holdings_id, $issue] = explode('||', $current, 2);
             $processed[] = compact('issue', 'holdings_id');
         }
         return $processed;
@@ -2575,7 +2575,7 @@ EOT;
             $sql = $sql['string'];
         }
         if ($this->logger) {
-            list(, $caller) = debug_backtrace(false);
+            [, $caller] = debug_backtrace(false);
             $this->debugSQL($caller['function'], $sql, $bind);
         }
         $sqlStmt = $this->getDb()->prepare($sql);

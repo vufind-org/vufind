@@ -420,7 +420,7 @@ class Wikipedia implements TranslatorAwareInterface
         }
 
         // Check for redirects; get some basic information:
-        list($name, $redirectTo, $bodyArr) = $this->checkForRedirect($rawBody);
+        [$name, $redirectTo, $bodyArr] = $this->checkForRedirect($rawBody);
 
         // Recurse if we only found redirects:
         if ($redirectTo) {
@@ -442,11 +442,11 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Try to find an image in either the infobox or the body:
         if ($infoboxStr) {
-            list($imageName, $imageCaption)
+            [$imageName, $imageCaption]
                 = $this->extractImageFromInfoBox($infoboxStr);
         }
         if (!isset($imageName)) {
-            list($imageName, $imageCaption) = $this->extractImageFromBody($bodyArr);
+            [$imageName, $imageCaption] = $this->extractImageFromBody($bodyArr);
         }
 
         // Given an image name found above, look up the associated URL and add it to

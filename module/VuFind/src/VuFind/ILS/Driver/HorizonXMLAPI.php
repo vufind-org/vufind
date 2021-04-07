@@ -767,7 +767,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $userPassword = $cancelDetails['patron']['cat_password'];
 
         foreach ($details as $cancelItem) {
-            list($bibID, $itemID) = explode("|", $cancelItem);
+            [$bibID, $itemID] = explode("|", $cancelItem);
             $cancelIDs[]  = ["bib_id" =>  $bibID, "item_id" => $itemID];
         }
 
@@ -862,7 +862,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             if ($origData) {
                 // Build Params
                 foreach ($renewals as $item) {
-                    list($itemID, $barcode) = explode("|", $item);
+                    [$itemID, $barcode] = explode("|", $item);
                     $renewItemKeys[] = $barcode;
                     $renewIDs[] = $itemID;
                 }

@@ -664,7 +664,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $finalResult = ['details' => []];
 
         foreach ($renewDetails['details'] as $details) {
-            list($checkoutId, $itemId) = explode('|', $details);
+            [$checkoutId, $itemId] = explode('|', $details);
             $result = $this->makeRequest(
                 [
                     'path' => ['v1', 'checkouts', $checkoutId, 'renewal'],

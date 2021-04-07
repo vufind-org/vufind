@@ -569,7 +569,7 @@ class GeneratorTools
         ) {
             throw new \Exception('Unexpected factory configuration format.');
         }
-        list($factoryClass, $factoryMethod) = $parts;
+        [$factoryClass, $factoryMethod] = $parts;
         $newFactoryClass = $this->generateLocalClassName($factoryClass, $module);
         if (!class_exists($newFactoryClass)) {
             $this->createSubclassInModule($factoryClass, $module);

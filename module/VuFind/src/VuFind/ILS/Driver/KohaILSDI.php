@@ -1589,7 +1589,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($details as $renewItem) {
             $rsp = $this->makeRequest($request_prefix . $renewItem);
             if ($rsp->{'success'} != '0') {
-                list($date, $time)
+                [$date, $time]
                     = explode(" ", $this->getField($rsp->{'date_due'}));
                 $retVal['details'][$renewItem] = [
                     "success"  => true,

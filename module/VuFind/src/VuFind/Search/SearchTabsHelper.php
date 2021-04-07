@@ -160,7 +160,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
      */
     public function extractClassName($tabId)
     {
-        list($class) = explode(':', $tabId, 2);
+        [$class] = explode(':', $tabId, 2);
         return $class;
     }
 
@@ -224,7 +224,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
         $params = $results->getParams();
         $result = [];
         foreach ($filters as $filter) {
-            list($field, $value) = $params->parseFilter($filter);
+            [$field, $value] = $params->parseFilter($filter);
             $result[$field][] = $value;
         }
         return $result;

@@ -185,7 +185,7 @@ class CollectionsController extends AbstractBase
 
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result as $rkey => $collection) {
-            list($name, $id) = explode($delimiter, $collection['value'], 2);
+            [$name, $id] = explode($delimiter, $collection['value'], 2);
             $result[$rkey]['displayText'] = $name;
             $result[$rkey]['value'] = $id;
         }

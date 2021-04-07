@@ -1194,7 +1194,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            list($lastname, $firstname)
+            [$lastname, $firstname]
                 = explode(', ', $result->patronInfo->displayName);
 
             $profile = [

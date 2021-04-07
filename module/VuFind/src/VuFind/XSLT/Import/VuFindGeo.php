@@ -71,7 +71,7 @@ class VuFindGeo
         foreach ($parts as $part) {
             $chunks = array_map('trim', explode('=', $part, 2));
             if (count($chunks) == 2) {
-                list($key, $value) = $chunks;
+                [$key, $value] = $chunks;
                 $parsed[$key] = $value;
             }
         }

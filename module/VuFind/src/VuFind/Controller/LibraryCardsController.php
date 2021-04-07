@@ -122,7 +122,7 @@ class LibraryCardsController extends AbstractBase
         $loginSettings = $this->getILSLoginSettings();
         // Split target and username if multiple login targets are available:
         if ($loginSettings['targets'] && strstr($username, '.')) {
-            list($target, $username) = explode('.', $username, 2);
+            [$target, $username] = explode('.', $username, 2);
         }
 
         $cardName = $this->params()->fromPost('card_name', $card->card_name);
