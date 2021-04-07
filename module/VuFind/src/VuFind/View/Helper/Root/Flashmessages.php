@@ -48,10 +48,9 @@ class Flashmessages extends AbstractHelper
      */
     protected $fm;
 
-
     /**
      * Flash messenger namespaces
-     * 
+     *
      * @var string[]
      */
     protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
