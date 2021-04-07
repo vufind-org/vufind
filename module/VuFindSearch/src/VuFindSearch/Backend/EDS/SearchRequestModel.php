@@ -84,7 +84,7 @@ class SearchRequestModel
     /**
      * Expanders to use. Comma separated.
      *
-     * @var string
+     * @var array
      */
     protected $expanders = [];
 
