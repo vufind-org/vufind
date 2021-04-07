@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink favorites test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,9 +41,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
+final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -450,7 +451,7 @@ class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Login and go to account home
      *
-     * @return void
+     * @return \Behat\Mink\Element\DocumentElement
      */
     protected function setupBulkTest()
     {

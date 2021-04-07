@@ -108,7 +108,7 @@ class Backend extends AbstractBackend
     protected $orgId;
 
     /**
-     * Vufind Authentication manager
+     * VuFind Authentication manager
      *
      * @var \VuFind\Auth\Manager
      */

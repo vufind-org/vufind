@@ -204,7 +204,7 @@ class ILSAuthenticator
 
         try {
             $patron = $this->emailAuthenticator->authenticate($hash);
-        } catch (\Vufind\Exception\Auth $e) {
+        } catch (\VuFind\Exception\Auth $e) {
             return false;
         }
         $this->updateUser($patron['cat_username'], '', $patron);

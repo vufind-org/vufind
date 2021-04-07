@@ -545,7 +545,7 @@ class Upgrade
         // If [Statistics] is present, warn the user about its deprecation.
         if (isset($newConfig['Statistics'])) {
             $this->addWarning(
-                'The Statistics module has been removed from Vufind. ' .
+                'The Statistics module has been removed from VuFind. ' .
                 'For usage tracking, please configure Google Analytics or Piwik.'
             );
             unset($newConfig['Statistics']);

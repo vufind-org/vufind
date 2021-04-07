@@ -42,6 +42,13 @@ namespace VuFind\Cookie;
 class CookieManager
 {
     /**
+     * Cookie array to work with
+     *
+     * @var array
+     */
+    protected $cookies;
+
+    /**
      * Cookie base path
      *
      * @var string
@@ -198,12 +205,6 @@ class CookieManager
         // Special case: in CLI -- don't actually write headers!
         if ('cli' === PHP_SAPI) {
             return true;
-        }
-        if (PHP_VERSION_ID < 70300) {
-            return setcookie(
-                $key, $value, $expire, "$path; samesite=$sameSite", $domain, $secure,
-                $httpOnly
-            );
         }
         return setcookie(
             $key,

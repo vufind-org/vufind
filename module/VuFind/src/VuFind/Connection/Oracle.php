@@ -86,8 +86,6 @@ class Oracle
         $tmp = error_reporting(1);
         if ($this->dbHandle = @oci_connect($username, $password, $tns)) {
             error_reporting($tmp);
-            $this->audit_id = 0;
-            $this->detail_id = 0;
         } else {
             error_reporting($tmp);
             $this->handleError('connect', oci_error());

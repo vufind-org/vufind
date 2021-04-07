@@ -1385,7 +1385,7 @@ class Params
      */
     protected function initDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'daterange', [$this, 'formatYearForDateRange'],
             [$this, 'buildDateRangeFilter']
         );
@@ -1403,7 +1403,7 @@ class Params
      */
     protected function initFullDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'fulldaterange', [$this, 'formatDateForFullDateRange'],
             [$this, 'buildFullDateRangeFilter']
         );
@@ -1421,7 +1421,7 @@ class Params
      */
     protected function initNumericRangeFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'numericrange', [$this, 'formatValueForNumericRange'],
             [$this, 'buildNumericRangeFilter']
         );

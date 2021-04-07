@@ -709,7 +709,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $return = [
             'count' => 2,
-            'results' => ['id' => '1', 'id' => '2']
+            'results' => [['id' => '1'], ['id' => '2']]
         ];
 
         $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
@@ -729,7 +729,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $expected = [
             'count' => 2,
-            'results' => ['id' => 'd1.1', 'id' => 'd1.2']
+            'results' => [['id' => 'd1.1'], ['id' => 'd1.2']]
         ];
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getNewItems(1, 10, 5, 0);
@@ -1066,6 +1066,35 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $this->expectException('VuFind\Exception\ILS');
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getMyFines($this->getPatron('username', 'invalid'));
+    }
+
+    /**
+     * Testing method for getMyHolds
+     *
+     * @return void
+     */
+    public function testGetHoldLink()
+    {
+        $expected1 = 'http://driver1/1';
+        $expected2 = 'http://driver2/1';
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getHoldLink',
+            [1, []],
+            $expected1,
+            $expected2
+        );
+
+        $result1 = $driver->getHoldLink('d1.1', []);
+        $this->assertEquals($expected1, $result1);
+
+        $result2 = $driver->getHoldLink('d2.1', []);
+        $this->assertEquals($expected2, $result2);
+
+        $this->expectException('VuFind\Exception\ILS');
+        $this->expectExceptionMessage('No suitable backend driver found');
+        $driver->getHoldLink('invalid.1', []);
     }
 
     /**

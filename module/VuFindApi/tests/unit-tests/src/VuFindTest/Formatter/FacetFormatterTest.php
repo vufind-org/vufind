@@ -101,7 +101,6 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
         ];
         if (!$includeOr) {
             unset($data['xyzzy']);
-            unset($data['hierarchical_xyzzy']);
         }
         return $data;
     }

@@ -94,7 +94,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
         $expectedWarnings = [
-            'The Statistics module has been removed from Vufind. '
+            'The Statistics module has been removed from VuFind. '
             . 'For usage tracking, please configure Google Analytics or Piwik.'
         ];
         if ((float)$version < 1.3) {

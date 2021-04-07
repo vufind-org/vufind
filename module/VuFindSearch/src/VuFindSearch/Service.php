@@ -364,7 +364,7 @@ class Service
     public function workExpressions($backend, $id, $workKeys = null,
         ParamBag $params = null
     ) {
-        $params  = $params ?: new \VufindSearch\ParamBag();
+        $params  = $params ?: new \VuFindSearch\ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context', 'workKeys');
         $backendInstance = $this->resolve($backend, $args);

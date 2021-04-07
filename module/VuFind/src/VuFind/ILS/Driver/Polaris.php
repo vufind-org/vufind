@@ -72,6 +72,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $ws_api_key;
 
     /**
+     * Default pick up location
+     *
+     * @var string
+     */
+    protected $defaultPickUpLocation;
+
+    /**
      * Web services requesting organization ID
      *
      * @var string
