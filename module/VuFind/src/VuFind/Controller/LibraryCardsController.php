@@ -85,7 +85,7 @@ class LibraryCardsController extends AbstractBase
             [
                 'libraryCards' => $user->getLibraryCards(),
                 'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
-                'shibboleth' => $shibboleth,
+                'allowShibbolethCards' => $shibboleth,
             ]
         );
     }
