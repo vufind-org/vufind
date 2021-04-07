@@ -1963,8 +1963,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             }
             // nothing found or preferredPickUpLocations is empty? Return the first
             // locationId in pickupLocations array
-            reset($pickupLocations);
-            return key($pickupLocations);
+            return array_key_first($pickupLocations);
         } elseif (isset($this->preferredPickUpLocations)) {
             return $this->preferredPickUpLocations[0];
         } else {
