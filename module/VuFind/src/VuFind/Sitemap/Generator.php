@@ -117,6 +117,13 @@ class Generator
     protected $countPerPage;
 
     /**
+     * Output file path
+     *
+     * @var string
+     */
+    protected $fileLocation;
+
+    /**
      * Base path to sitemap files, including base filename
      *
      * @var string
