@@ -112,17 +112,17 @@ class PAIA extends DAIA
      * paiaLogin() might have succeeded. Any other scope not being available for the
      * patron will be handled more or less gracefully through exception handling.
      */
-    const SCOPE_READ_PATRON = 'read_patron';
-    const SCOPE_UPDATE_PATRON = 'update_patron';
-    const SCOPE_UPDATE_PATRON_NAME = 'update_patron_name';
-    const SCOPE_UPDATE_PATRON_EMAIL = 'update_patron_email';
-    const SCOPE_UPDATE_PATRON_ADDRESS = 'update_patron_address';
-    const SCOPE_READ_FEES = 'read_fees';
-    const SCOPE_READ_ITEMS = 'read_items';
-    const SCOPE_WRITE_ITEMS = 'write_items';
-    const SCOPE_CHANGE_PASSWORD = 'change_password';
-    const SCOPE_READ_NOTIFICATIONS = 'read_notifications';
-    const SCOPE_DELETE_NOTIFICATIONS = 'delete_notifications';
+    public const SCOPE_READ_PATRON = 'read_patron';
+    public const SCOPE_UPDATE_PATRON = 'update_patron';
+    public const SCOPE_UPDATE_PATRON_NAME = 'update_patron_name';
+    public const SCOPE_UPDATE_PATRON_EMAIL = 'update_patron_email';
+    public const SCOPE_UPDATE_PATRON_ADDRESS = 'update_patron_address';
+    public const SCOPE_READ_FEES = 'read_fees';
+    public const SCOPE_READ_ITEMS = 'read_items';
+    public const SCOPE_WRITE_ITEMS = 'write_items';
+    public const SCOPE_CHANGE_PASSWORD = 'change_password';
+    public const SCOPE_READ_NOTIFICATIONS = 'read_notifications';
+    public const SCOPE_DELETE_NOTIFICATIONS = 'delete_notifications';
 
     /**
      * Constructor

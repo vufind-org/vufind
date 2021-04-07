@@ -45,7 +45,7 @@ use VuFindHttp\HttpServiceAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
-    const HOLDINGS_LINE_NUMBER = 40;
+    public const HOLDINGS_LINE_NUMBER = 40;
 
     use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {

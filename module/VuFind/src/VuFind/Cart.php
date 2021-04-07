@@ -84,9 +84,9 @@ class Cart
      */
     protected $cookieManager;
 
-    const CART_COOKIE = 'vufind_cart';
-    const CART_COOKIE_SOURCES = 'vufind_cart_src';
-    const CART_COOKIE_DELIM = "\t";
+    public const CART_COOKIE = 'vufind_cart';
+    public const CART_COOKIE_SOURCES = 'vufind_cart_src';
+    public const CART_COOKIE_DELIM = "\t";
 
     /**
      * Constructor

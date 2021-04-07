@@ -43,9 +43,9 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
      *
      * @const string
      */
-    const SET   = 'SET';
-    const PREPEND = 'PREPEND';
-    const APPEND = 'APPEND';
+    public const SET   = 'SET';
+    public const PREPEND = 'PREPEND';
+    public const APPEND = 'APPEND';
 
     /**
      * Storage for strings to be concatinated to the front of a block
