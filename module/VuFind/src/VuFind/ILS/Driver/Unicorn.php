@@ -1386,7 +1386,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $decoded_holding = '';
             foreach ($field->getSubfields() as $subfield) {
-                if (strpos('68x', $subfield->getCode()) !== false) {
+                if (strpos('68x', (string)$subfield->getCode()) !== false) {
                     continue;
                 }
                 $decoded_holding .= ' ' . $subfield->getData();
