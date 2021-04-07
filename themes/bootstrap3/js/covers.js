@@ -5,6 +5,7 @@ function loadCoverByElement(data, element) {
   var spinner = element.find('div.spinner');
   var container = element.find('div.cover-container');
   var source = $('<p class="cover-source">' + VuFind.translate('cover_source_label') + ' </p>');
+  var context = data.context;
   function coverCallback(response) {
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
@@ -19,16 +20,18 @@ function loadCoverByElement(data, element) {
           source.append(span);
         }
         var backlink_locations = response.data.backlink_locations;
-        if (inlink === true && backlink_locations.indexOf('results') >= 0) {
-          medium.append(source);
+        if (backlink_locations.indexOf(context) >= 0) {
+          if (inlink === true) {
+            medium.append(source);
+          } else {
+            container.append(source);
+          }
         }
       }
       if (inlink === true) {
         img.detach();
         medium.children('a').prepend(img);
         container.parents('.ajaxcover').remove();
-      } else if ($('.cover-source').length === 0) {
-        container.append(source);
       }
     } else {
       img.remove();
@@ -58,7 +61,8 @@ function loadCovers() {
     var data = {
       source: img.data('recordsource'),
       recordId: img.data('recordid'),
-      size: img.data('coversize')
+      size: img.data('coversize'),
+      context: img.data('context'),
     };
     loadCoverByElement(data, $(this));
   });

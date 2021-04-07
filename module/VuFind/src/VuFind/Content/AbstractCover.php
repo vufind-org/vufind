@@ -171,8 +171,9 @@ abstract class AbstractCover
     }
 
     /**
-     * Which location are mandatory for backlinks, available locations are: detail,
-     * results
+     * Which location are mandatory for backlinks, available locations are the same
+     * as used for cover size determination, see
+     * https://github.com/vufind-org/vufind/blob/dev/config/vufind/config.ini#L864-L873
      *
      * @return array
      */
