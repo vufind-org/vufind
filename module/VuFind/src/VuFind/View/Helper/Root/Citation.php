@@ -605,7 +605,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // For good measure, strip out any remaining date ranges lurking in
         // non-standard places.
         return preg_replace(
-            '/\s+(\d{4}-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
+            '/\s+(\d{4}\-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
         );
     }
 
