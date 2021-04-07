@@ -1510,7 +1510,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_loans=1"
         );
         $end = microtime(true);
-        $requestTimes[] = $end - $start;
+        $requestTimes = [$end - $start];
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
