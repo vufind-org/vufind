@@ -336,9 +336,7 @@ class LibraryCardsController extends AbstractBase
                 $info['cat_username'],
                 ' '
             );
-        } catch (\VuFind\Exception\Auth $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
-        } catch (\VuFind\Exception\LibraryCard $e) {
+        } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
 

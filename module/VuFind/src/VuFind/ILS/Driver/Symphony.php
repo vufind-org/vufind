@@ -1376,9 +1376,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
 
             return $fineList;
-        } catch (SoapFault $e) {
-            throw new ILSException($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (SoapFault | \Exception $e) {
             throw new ILSException($e->getMessage());
         }
     }
