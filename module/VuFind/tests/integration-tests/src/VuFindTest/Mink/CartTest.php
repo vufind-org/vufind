@@ -753,7 +753,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         ];
         // Expected
         $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
-        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions'], $combo);
+        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions']);
         $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
         $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
         $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
