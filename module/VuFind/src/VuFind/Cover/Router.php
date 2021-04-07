@@ -151,8 +151,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                     $nextMetadata = $handler['handler']
                         ->getMetadata($handler['key'], $size, $ids);
                     if ($nextMetadata !== false) {
-                        $nextMetadata['backlink_on_results']
-                            = in_array('results', $backlinkLocations);
+                        $nextMetadata['backlink_locations'] = $backlinkLocations;
                         $metadata = $nextMetadata;
                         break;
                     }

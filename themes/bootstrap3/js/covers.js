@@ -18,7 +18,8 @@ function loadCoverByElement(data, element) {
           var span = $('<span class="cover-source-text"' + response.data.backlink_text + '</span>');
           source.append(span);
         }
-        if (inlink === true && response.data.backlink_on_results === true) {
+        var backlink_locations = response.data.backlink_locations;
+        if (inlink === true && backlink_locations.indexOf('results') >= 0) {
           medium.append(source);
         }
       }
