@@ -167,7 +167,8 @@ class Iso2709 implements SerializationInterface
         }
         $directory .= self::END_OF_FIELD;
         $data .= self::END_OF_RECORD;
-        $dataStart = strlen($leader) + strlen($directory);
+        $leader = str_pad(substr($leader, 0, 24), 24);
+        $dataStart = 24 + strlen($directory);
         $recordLen = $dataStart + strlen($data);
         if ($recordLen > 99999) {
             return '';
