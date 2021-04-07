@@ -133,9 +133,10 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             : ['size' => $size];
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
-
         foreach ($handlers as $handler) {
-            if ($handler['handler']->isBacklinkMandatory() && !$ajax) {
+            $backlinkLocations
+                = $handler['handler']->getMandatoryBacklinkLocations();
+            if (!empty($backlinkLocations) && !$ajax) {
                 $this->logWarning(
                     'Cover provider ' . get_class($handler['handler'])
                     . ' needs ajaxcovers setting to be on'
@@ -151,7 +152,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                         ->getMetadata($handler['key'], $size, $ids);
                     if ($nextMetadata !== false) {
                         $nextMetadata['backlink_on_results']
-                            = $handler['handler']->showBacklinksOnResults();
+                            = in_array('results', $backlinkLocations);
                         $metadata = $nextMetadata;
                         break;
                     }

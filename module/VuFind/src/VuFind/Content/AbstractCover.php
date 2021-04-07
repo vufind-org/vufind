@@ -98,16 +98,9 @@ abstract class AbstractCover
     /**
      * Are backlinks to source of cover mandatory?
      *
-     * @var bool
+     * @var array
      */
-    protected $mandatoryBacklinks = false;
-
-    /**
-     * Show backlinks to cover source also on search results?
-     *
-     * @var bool
-     */
-    protected $backlinksOnResults = false;
+    protected $mandatoryBacklinkLocations = [];
 
     /**
      * Are we allowed to cache images from this source?
@@ -178,22 +171,13 @@ abstract class AbstractCover
     }
 
     /**
-     * Is mandatory to show backlink to cover source?
+     * Which location are mandatory for backlinks, available locations are: detail,
+     * results
      *
-     * @return bool
+     * @return array
      */
-    public function isBacklinkMandatory(): bool
+    public function getMandatoryBacklinkLocations(): array
     {
-        return $this->mandatoryBacklinks;
-    }
-
-    /**
-     * Show backlinks to cover source also on search results
-     *
-     * @return bool
-     */
-    public function showBacklinksOnResults(): bool
-    {
-        return $this->backlinksOnResults;
+        return $this->mandatoryBacklinkLocations;
     }
 }
