@@ -127,4 +127,14 @@ abstract class AbstractFile
         }
         return file_put_contents($file, $this->toString());
     }
+
+    /**
+     * Check if the sitemap is empty
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return !$this->urls;
+    }
 }

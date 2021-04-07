@@ -28,14 +28,12 @@
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
-use Laminas\Router\RouteStackInterface;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
-use VuFindTheme\ThemeInfo;
 
 /**
  * Class for generating sitemaps
@@ -98,18 +96,11 @@ class Generator
     protected $config;
 
     /**
-     * Theme informations
+     * Generator plugin manager
      *
-     * @var ThemeInfo
+     * @var PluginManager
      */
-    protected $themeInfo;
-
-    /**
-     * Router
-     *
-     * @var RouteStackInterface
-     */
-    protected $router;
+    protected $pluginManager;
 
     /**
      * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
@@ -161,36 +152,24 @@ class Generator
     protected $retrievalMode = 'search';
 
     /**
-     * Files ignored when indexing content pages
-     *
-     * @var array
-     */
-    protected $ignoredContentPages = [
-        'templates/content/content.phtml', // Content main page
-        'templates/content/markdown.phtml', // Content main page for Markdown
-    ];
-
-    /**
      * Constructor
      *
-     * @param BackendManager      $bm         Search backend manaver
-     * @param SearchService       $ss         Search manager
-     * @param Config              $config     Sitemap configuration settings
-     * @param Config              $mainConfig Main VuFind configuration
-     * @param ThemeInfo           $themeInfo  Theme info
-     * @param RouteStackInterface $router     Router
+     * @param BackendManager $bm         Search backend manaver
+     * @param SearchService  $ss         Search manager
+     * @param Config         $config     Sitemap configuration settings
+     * @param Config         $mainConfig Main VuFind configuration
+     * @param PluginManager  $pm         Generator plugin manager
      */
     public function __construct(BackendManager $bm, SearchService $ss,
-        Config $config, Config $mainConfig, ThemeInfo $themeInfo,
-        RouteStackInterface $router
+        Config $config, Config $mainConfig, PluginManager $pm
     ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
         $this->searchService = $ss;
         $this->mainConfig = $mainConfig;
         $this->config = $config;
-        $this->themeInfo = $themeInfo;
-        $this->router = $router;
+        $this->pluginManager = $pm;
+
         $this->baseUrl = $mainConfig->Site->url;
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
@@ -315,8 +294,29 @@ class Generator
         $startTime = $this->getTime();
 
         $additionalSitemaps = [];
-        if ($filename = $this->generateForPages()) {
-            $additionalSitemaps[] = $filename;
+        if ($plugins = $this->config->Sitemap->plugins) {
+            $pluginSitemaps = [];
+            foreach ($plugins->toArray() as $pluginName) {
+                $plugin = $this->getPlugin($pluginName);
+                $sitemapName = $plugin->getSitemapName();
+                $this->verboseMsg(
+                    "Generating sitemap '$sitemapName' with $pluginName"
+                );
+                if (!isset($pluginSitemaps[$sitemapName])) {
+                    $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
+                }
+                $plugin->addUrls($pluginSitemaps[$sitemapName]);
+            }
+
+            foreach ($pluginSitemaps as $sitemapName => $sitemap) {
+                if (!$sitemap->isEmpty()) {
+                    $filename = $this->getFilenameForPage($sitemapName);
+                    if (false === $sitemap->write($filename)) {
+                        throw new \Exception("Problem writing $filename.");
+                    }
+                    $additionalSitemaps[] = $filename;
+                }
+            }
         }
 
         // Initialize variable
@@ -350,72 +350,6 @@ class Generator
     public function getWarnings()
     {
         return $this->warnings;
-    }
-
-    /**
-     * Generate a sitemap for pages enabled in configuration.
-     *
-     * Returns a filename if anything was written to it.
-     *
-     * @return string
-     */
-    protected function generateForPages(): string
-    {
-        if (!$this->config->Sitemap->indexStartPage
-            && !$this->config->Sitemap->indexContentPages
-        ) {
-            return '';
-        }
-
-        $smf = $this->getNewSitemap();
-        if ($this->config->Sitemap->indexStartPage) {
-            $this->verboseMsg('Adding start page ' . $this->baseUrl);
-            $smf->addUrl($this->baseUrl);
-        }
-
-        if ($this->config->Sitemap->indexContentPages) {
-            $files = $this->themeInfo->findInThemes(
-                [
-                    'templates/content/*.phtml',
-                    'templates/content/*.md',
-                ]
-            );
-            $nonLanguageFiles = [];
-            $languages = array_keys($this->mainConfig->Languages->toArray());
-            // Check each file for language suffix and combine the files into a
-            // non-language specific array
-            foreach ($files as $fileInfo) {
-                if (in_array($fileInfo['relativeFile'], $this->ignoredContentPages)
-                ) {
-                    continue;
-                }
-                $baseName = pathinfo($fileInfo['relativeFile'], PATHINFO_FILENAME);
-                // Check the filename for a known language suffix
-                $p = strrpos($baseName, '_');
-                if ($p > 0) {
-                    $fileLanguage = substr($baseName, $p + 1);
-                    if (in_array($fileLanguage, $languages)) {
-                        $baseName = substr($baseName, 0, $p);
-                    }
-                }
-                $nonLanguageFiles[$baseName] = true;
-            }
-
-            foreach (array_keys($nonLanguageFiles) as $fileName) {
-                $url = $this->baseUrl . $this->router->assemble(
-                    ['page' => $fileName],
-                    ['name' => 'content-page']
-                );
-                $this->verboseMsg("Adding content page $url");
-                $smf->addUrl($url);
-            }
-        }
-
-        $filename = $this->getFilenameForPage('pages');
-        if (false === $smf->write($filename)) {
-            throw new \Exception("Problem writing $filename.");
-        }
-        return $filename;
     }
 
     /**
@@ -702,5 +636,28 @@ class Generator
     {
         // Pick the appropriate base URL based on the configuration files:
         return $this->baseSitemapUrl;
+    }
+
+    /**
+     * Create and setup a plugin
+     *
+     * @param string $pluginName Plugin name
+     *
+     * @return Plugin\GeneratorPluginInterface
+     */
+    protected function getPlugin(string $pluginName): Plugin\GeneratorPluginInterface
+    {
+        $plugin = $this->pluginManager->get($pluginName);
+        $verboseCallback = function (string $msg): void {
+            $this->verboseMsg($msg);
+        };
+        $plugin->setOptions(
+            [
+                'baseUrl' => $this->baseUrl,
+                'baseSitemapUrl' => $this->baseSitemapUrl,
+                'verboseMessageCallback' => $verboseCallback
+            ]
+        );
+        return $plugin;
     }
 }
