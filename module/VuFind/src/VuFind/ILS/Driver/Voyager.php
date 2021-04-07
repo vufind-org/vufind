@@ -37,7 +37,6 @@ use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use Yajra\Pdo\Oci8;
 
 /**
  * Voyager ILS Driver
@@ -61,7 +60,7 @@ class Voyager extends AbstractBase
     /**
      * Lazily instantiated database connection. Use getDb() to access it.
      *
-     * @var Oci8
+     * @var \Yajra\Pdo\Oci8
      */
     protected $lazyDb;
 
@@ -187,7 +186,29 @@ class Voyager extends AbstractBase
                      ')' .
                    ')';
             try {
-                $this->lazyDb = new Oci8(
+                if ((!defined('PHP_MAJOR_VERSION ') || PHP_MAJOR_VERSION >= 8)
+                    && empty($this->config['Catalog']['forceOCI8Support'])
+                ) {
+                    $this->error(
+                        <<<EOT
+Voyager connection is only supported on PHP 7 by default. To enable support, you
+will need to manually update the yajra/laravel-pdo-via-oci8 package using the
+following command:
+
+php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
+
+Then force the Voyager driver to connect by adding the following setting to
+Voyager.ini or VoyagerRestful.ini:
+
+[Catalog]
+forceOCI8Support = true
+
+EOT
+                    );
+                    throw new ILSException('Unsupported PHP version');
+                }
+                // @phpstan-ignore-next-line
+                $this->lazyDb = new \Yajra\Pdo\Oci8(
                     "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
                     $this->config['Catalog']['password']
