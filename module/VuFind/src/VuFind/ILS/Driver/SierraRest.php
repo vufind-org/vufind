@@ -1369,18 +1369,21 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      *
      * Makes a request to the Sierra REST API
      *
-     * @param array  $hierarchy Array of values to embed in the URL path of
-     * the request
-     * @param array  $params    A keyed array of query data
-     * @param string $method    The http request method to use (Default is GET)
-     * @param array  $patron    Patron information, if available
+     * @param array  $hierarchy    Array of values to embed in the URL path of the
+     * request
+     * @param array  $params       A keyed array of query data
+     * @param string $method       The http request method to use (Default is GET)
+     * @param array  $patron       Patron information, if available
+     * @param bool   $returnStatus Whether to return HTTP status code and response
+     * as a keyed array instead of just the response
      *
      * @throws ILSException
-     * @return mixed JSON response decoded to an associative array or null on
-     * authentication error
+     * @return mixed JSON response decoded to an associative array, an array of HTTP
+     * status code and JSON response when $returnStatus is true or null on
+     * authentication error when using patron-specific access
      */
     protected function makeRequest($hierarchy, $params = false, $method = 'GET',
-        $patron = false
+        $patron = false, $returnStatus = false
     ) {
         // Clear current access token if it's not specific to the given patron
         if ($patron
@@ -1448,8 +1451,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             throw new ILSException('Problem with Sierra REST API.', 0, $e);
         }
-        // If we get a 401, we need to renew the access token and try again
-        if ($response->getStatusCode() == 401) {
+        // If we get a 401 with patron-specific access, we need to renew the access
+        // token and try again
+        if ($response->getStatusCode() == 401 && $this->isPatronSpecificAccess()) {
             if (!$this->renewAccessToken($patron)) {
                 return null;
             }
@@ -1482,7 +1486,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             throw new ILSException('Problem with Sierra REST API.');
         }
 
-        return $decodedResult;
+        return $returnStatus
+            ? [
+                'statusCode' => $response->getStatusCode(),
+                'response' => $decodedResult
+            ] : $decodedResult;
     }
 
     /**
@@ -2462,14 +2470,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $result = $this->makeRequest(
                     ['v5', 'patrons', 'validate'],
                     json_encode($request),
-                    'POST'
+                    'POST',
+                    false,
+                    true
                 );
             } catch (ILSException $e) {
                 return null;
             }
-            // patrons/validate returns null if validation passed and an error
-            // code otherwise
-            if (null !== $result) {
+            if (!$result || $result['statusCode'] != 204) {
                 return null;
             }
         }
