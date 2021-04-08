@@ -411,34 +411,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // authentication as the credentials are verified when the access token is
         // requested.
         if ($this->isPatronSpecificAccess()) {
-            $credentials = [
-                'cat_username' => $username,
-                'cat_password' => $password
-            ];
-
-            $result = $this->makeRequest(
-                [$this->apiBase, 'info', 'token'],
-                [],
-                'GET',
-                $credentials
-            );
-            if (null === $result) {
+            $patron = $this->getPatronInformationFromAuthToken($username, $password);
+            if (!$patron) {
                 return null;
             }
-            if (empty($result['patronId'])) {
-                throw new ILSException('No patronId in token response');
-            }
-
-            $result = $this->makeRequest(
-                [$this->apiBase, 'patrons', $result['patronId']],
-                ['fields' => 'names,emails'],
-                'GET',
-                $credentials
-            );
-            if (null === $result || !empty($result['code'])) {
-                return null;
-            }
-            $patron = $result;
         } else {
             $patron = $this->authenticatePatron($username, $password);
             if (!$patron) {
@@ -2414,6 +2390,47 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Get patron information via authentication token when using patron-specific
+     * access
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return array
+     */
+    protected function getPatronInformationFromAuthToken(string $username,
+        string $password
+    ): array {
+        $credentials = [
+            'cat_username' => $username,
+            'cat_password' => $password
+        ];
+        $result = $this->makeRequest(
+            [$this->apiBase, 'info', 'token'],
+            [],
+            'GET',
+            $credentials
+        );
+        if (null === $result) {
+            return [];
+        }
+        if (empty($result['patronId'])) {
+            throw new ILSException('No patronId in token response');
+        }
+
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons', $result['patronId']],
+            ['fields' => 'names,emails'],
+            'GET',
+            $credentials
+        );
+        if (null === $result || !empty($result['code'])) {
+            return [];
+        }
+        return $result;
+    }
+
+    /**
      * Authenticate a patron
      *
      * Returns patron information on success and null on failure
@@ -2428,27 +2445,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $authMethod = $this->config['Authentication']['method'] ?? 'native';
         // patrons/auth endpoint is only supported on API version >= 6
         if ($this->apiVersion >= 6 && null !== $password) {
-            $request = [
-                'authMethod' => $authMethod,
-                'patronId' => $username,
-                'patronSecret' => $password,
-            ];
-            $result = $this->makeRequest(
-                ['v6', 'patrons', 'auth'],
-                json_encode($request),
-                'POST'
-            );
-            if (!$result || !empty($result['code'])) {
-                return null;
-            }
-            $result = $this->makeRequest(
-                [$this->apiBase, 'patrons', $result],
-                ['fields' => 'names,emails']
-            );
-            if (!$result || !empty($result['code'])) {
-                return null;
-            }
-            return $result;
+            return $this->authenticatePatronV6($username, $password, $authMethod);
         }
 
         if ('native' !== $authMethod) {
@@ -2458,6 +2455,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             throw new ILSException('API level set too low');
         }
+
+        return $this->authenticatePatronV5($username, $password);
+    }
+
+    /**
+     * Authenticate a patron using the API version 5 endpoints
+     *
+     * Returns patron information on success and null on failure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     *
+     * @return array|null
+     */
+    protected function authenticatePatronV5(string $username, ?string $password
+    ): ?array {
         // Validate a password unless it's null
         if (null !== $password) {
             $request = [
@@ -2494,6 +2507,43 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return null;
         }
 
+        return $result;
+    }
+
+    /**
+     * Authenticate a patron using the API version 6 patrons/auth endpoint
+     *
+     * Returns patron information on success and null on failure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     * @param string $method   Authentication method
+     *
+     * @return array|null
+     */
+    protected function authenticatePatronV6(string $username, string $password,
+        string $method
+    ): ?array {
+        $request = [
+            'authMethod' => $method,
+            'patronId' => $username,
+            'patronSecret' => $password,
+        ];
+        $result = $this->makeRequest(
+            ['v6', 'patrons', 'auth'],
+            json_encode($request),
+            'POST'
+        );
+        if (!$result || !empty($result['code'])) {
+            return null;
+        }
+        $result = $this->makeRequest(
+            [$this->apiBase, 'patrons', $result],
+            ['fields' => 'names,emails']
+        );
+        if (!$result || !empty($result['code'])) {
+            return null;
+        }
         return $result;
     }
 }
