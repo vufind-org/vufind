@@ -194,6 +194,8 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                 'templates/content/*.md'
             ]
         );
+        $this->assertIsArray($files);
+        $this->assertEquals(3, count($files));
         $this->assertEquals('parent', $files[0]['theme']);
         $this->assertEquals(
             'templates/content/page1.phtml',
