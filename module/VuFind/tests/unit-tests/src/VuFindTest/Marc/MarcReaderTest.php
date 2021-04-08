@@ -90,6 +90,60 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
             ['Foo test', 'Bar test again'],
             $reader->getFieldsSubfields(650, ['a', 'g'])
         );
+
+        $this->assertEquals([], $reader->getFieldsSubfields('008', ['a']));
+    }
+
+    /**
+     * Test empty subfield in ISO2709
+     *
+     * @return void
+     */
+    public function testEmptySubfieldInSO2709()
+    {
+        $marc = "00047       00037       245000900000\x1e  \x1faFoo\x1f\x1e\x1d";
+
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $field = $reader->getField('245');
+        $this->assertEquals([], $reader->getSubfields($field, 'b'));
+    }
+
+    /**
+     * Test empty subfield in MARCXML serialization
+     *
+     * @return void
+     */
+    public function testEmptySubfieldInMarcXmlSerialization()
+    {
+//        $marc = "00047       00037       245000900000\x1e  \x1faFoo\x1f\x1e\x1d";
+        $input = <<<EOT
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>00047       00037       </leader>
+    <datafield tag="245" ind1=" " ind2=" ">
+      <subfield code="a">Foo</subfield>
+      <subfield code="b"></subfield>
+    </datafield>
+  </record>
+</collection>
+EOT;
+
+        $expected = <<<EOT
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>00047       00037       </leader>
+    <datafield tag="245" ind1=" " ind2=" ">
+      <subfield code="a">Foo</subfield>
+    </datafield>
+  </record>
+</collection>
+EOT;
+
+        $reader = new \VuFind\Marc\MarcReader($input);
+        $this->assertXmlStringEqualsXmlString(
+            $expected,
+            $reader->toFormat('MARCXML')
+        );
     }
 
     /**
@@ -120,5 +174,94 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
             '/Invalid MARC record \(end of field not found\)/'
         );
         new \VuFind\Marc\MarcReader($marc);
+    }
+
+    /**
+     * Test records too large for ISO2709
+     *
+     * @return void
+     */
+    public function testTooLargeForISO2709()
+    {
+        // A single too long field
+        $longField = str_pad('Foo', 10000) . 'Bar';
+        $marc = '<record><datafield tag="245"><subfield code="a">' . $longField
+            . '</subfield></datafield></record>';
+
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals('', $reader->toFormat('ISO2709'));
+        $this->assertTrue($reader->toFormat('MARCXML') !== '');
+
+        // Fields that together are too long
+        $longishField = str_pad('Foo', 9980) . 'Bar';
+        $marc = '<record>';
+        $marc .= str_repeat('<datafield tag="650"><subfield code="a">'
+            . $longishField . '</subfield></datafield>', 12);
+        $marc .= '</record>';
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals('', $reader->toFormat('ISO2709'));
+        $this->assertTrue($reader->toFormat('MARCXML') !== '');
+
+        // Fields that would fit, but exceed maximum record length when leader and
+        // directory are included
+        $longishField = str_pad('Foo', 9980) . 'Bar';
+        $marc = '<record>';
+        $marc .= str_repeat('<datafield tag="650"><subfield code="a">'
+            . $longishField . '</subfield></datafield>', 10);
+        $marc .= '</record>';
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals('', $reader->toFormat('ISO2709'));
+        $this->assertTrue($reader->toFormat('MARCXML') !== '');
+    }
+
+    /**
+     * Test invalid record format
+     *
+     * @return void
+     */
+    public function testBadInputFormat()
+    {
+        $marc = 'title: foo';
+
+        $this->expectExceptionMessage('MARC record format not recognized');
+        new \VuFind\Marc\MarcReader($marc);
+    }
+
+    /**
+     * Test requesting bad format
+     *
+     * @return void
+     */
+    public function testBadOutputFormat()
+    {
+        $marc = '<record></record>';
+
+        $this->expectExceptionMessage("Unknown MARC format 'foo' requested");
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $reader->toFormat('foo');
+    }
+
+    /**
+     * Test ISO2709 serialization of an invalid field tag
+     *
+     * @return void
+     */
+    public function testInvalidTagSerialization()
+    {
+        $marc = <<<EOT
+<record>
+  <datafield tag="12">
+    <subfield code="a">Foo</subfield>
+  </datafield>
+  <datafield tag="245">
+    <subfield code="a">Bar</subfield>
+  </datafield>
+</record>
+EOT;
+
+        $reader = new \VuFind\Marc\MarcReader($marc);
+        $this->assertEquals(['Foo'], $reader->getFieldsSubfields('12', ['a']));
+        $reader2 = new \VuFind\Marc\MarcReader($reader->toFormat('ISO2709'));
+        $this->assertEquals([], $reader2->getFieldsSubfields('12', ['a']));
     }
 }

@@ -197,25 +197,25 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getAdapterFromConnectionString($connectionString,
         $overrideUser = null, $overridePass = null
     ) {
-        list($type, $details) = explode('://', $connectionString);
+        [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = $matches[1] ?? null;
         if (isset($matches[2])) {
             if (strpos($matches[2], ':') !== false) {
-                list($host, $port) = explode(':', $matches[2]);
+                [$host, $port] = explode(':', $matches[2]);
             } else {
                 $host = $matches[2];
             }
         }
         $dbName = $matches[3] ?? null;
         if (strstr($credentials, ':')) {
-            list($username, $password) = explode(':', $credentials, 2);
+            [$username, $password] = explode(':', $credentials, 2);
         } else {
             $username = $credentials;
             $password = null;
         }
-        $username = null !== $overrideUser ? $overrideUser : $username;
-        $password = null !== $overridePass ? $overridePass : $password;
+        $username = $overrideUser ?? $username;
+        $password = $overridePass ?? $password;
 
         $driverName = $this->getDriverName($type);
         $driverOptions = $this->getDriverOptions($driverName);

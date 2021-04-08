@@ -664,7 +664,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $finalResult = ['details' => []];
 
         foreach ($renewDetails['details'] as $details) {
-            list($checkoutId, $itemId) = explode('|', $details);
+            [$checkoutId, $itemId] = explode('|', $details);
             $result = $this->makeRequest(
                 [
                     'path' => ['v1', 'checkouts', $checkoutId, 'renewal'],
@@ -2257,13 +2257,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function translateLocation($location, $default = null)
     {
         if (empty($location)) {
-            return null !== $default ? $default : '';
+            return $default ?? '';
         }
         $prefix = 'location_';
         return $this->translate(
             "$prefix$location",
             null,
-            null !== $default ? $default : $location
+            $default ?? $location
         );
     }
 

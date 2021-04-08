@@ -84,9 +84,11 @@ class SearchController extends AbstractSolrSearch
                 $query = $query->addFilter($filter);
             }
         } elseif ($removeFacet) {
-            $defaults = ['operator' => 'AND', 'field' => '', 'value' => ''];
-            extract($removeFacet + $defaults);
-            $query = $initialParams->removeFacet($field, $value, $operator);
+            $query = $initialParams->removeFacet(
+                $removeFacet['field'] ?? '',
+                $removeFacet['value'] ?? '',
+                $removeFacet['operator'] ?? 'AND'
+            );
         } elseif ($removeFilter) {
             $query = $initialParams->removeFilter($removeFilter);
         } else {

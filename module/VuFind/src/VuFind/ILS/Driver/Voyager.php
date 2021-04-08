@@ -475,8 +475,7 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            $rowId = null !== $row['ITEM_ID']
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (!isset($data[$rowId])) {
                 $data[$rowId] = [
                     'id' => $row['BIB_ID'],
@@ -841,7 +840,7 @@ EOT;
         }
         // Deduplicate data and format it:
         foreach (array_unique($raw) as $current) {
-            list($holdings_id, $issue) = explode('||', $current, 2);
+            [$holdings_id, $issue] = explode('||', $current, 2);
             $processed[] = compact('issue', 'holdings_id');
         }
         return $processed;
@@ -871,7 +870,7 @@ EOT;
                     if ($subfields = $field->getSubfields()) {
                         $line = '';
                         foreach ($subfields as $code => $subfield) {
-                            if (false === strpos($subfieldCodes, $code)) {
+                            if (false === strpos($subfieldCodes, (string)$code)) {
                                 continue;
                             }
                             if ($line) {
@@ -2576,7 +2575,7 @@ EOT;
             $sql = $sql['string'];
         }
         if ($this->logger) {
-            list(, $caller) = debug_backtrace(false);
+            [, $caller] = debug_backtrace(false);
             $this->debugSQL($caller['function'], $sql, $bind);
         }
         $sqlStmt = $this->getDb()->prepare($sql);

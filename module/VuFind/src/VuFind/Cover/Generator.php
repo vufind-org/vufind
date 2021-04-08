@@ -135,7 +135,7 @@ class Generator
         if (count($parts) < 2) {
             $settings['width'] = $settings['height'] = $parts[0];
         } else {
-            list($settings['width'], $settings['height']) = $parts;
+            [$settings['width'], $settings['height']] = $parts;
         }
 
         // Store the results as an object:

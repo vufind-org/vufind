@@ -133,8 +133,8 @@ class CopyStringCommand extends AbstractCommand
         $replaceDelimiter = $input->getOption('replaceDelimiter');
         $replaceRule = empty($replace) ? [] : explode($replaceDelimiter, $replace);
 
-        list($sourceDomain, $sourceKey) = $this->extractTextDomain($source);
-        list($targetDomain, $targetKey) = $this->extractTextDomain($target);
+        [$sourceDomain, $sourceKey] = $this->extractTextDomain($source);
+        [$targetDomain, $targetKey] = $this->extractTextDomain($target);
 
         if (!($sourceDir = $this->getLangDir($output, $sourceDomain))
             || !($targetDir = $this->getLangDir($output, $targetDomain, true))

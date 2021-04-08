@@ -2316,7 +2316,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $driver = new MultiBackend(
             $this->getPluginManager(), $this->getMockILSAuthenticator(),
-            $sm === null ? $this->getMockSM() : $sm
+            $sm ?? $this->getMockSM()
         );
         $driver->setConfig(
             [
@@ -2413,7 +2413,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
-        $sm->expects($times === null ? $this->any() : $times)
+        $sm->expects($times ?? $this->any())
             ->method('get')
             ->with($driver)
             ->will($this->returnValue($return));

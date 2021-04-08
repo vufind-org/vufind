@@ -109,7 +109,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         // test object
         $helper->__invoke('array')->clear();
         $ret = $helper->__invoke('array')->set(new \SplStack());
-        $this->assertEquals('SplStack', get_class($ret));
+        $this->assertEquals(\SplStack::class, get_class($ret));
 
         // test shortcuts
         $ret = $helper->__invoke('short', 'SUCCESS');
