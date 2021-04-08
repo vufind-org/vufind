@@ -212,7 +212,7 @@ class ChangeTracker extends Gateway
     {
         $oldTz = date_default_timezone_get();
         date_default_timezone_set('UTC');
-        $date = date($this->dateFormat, null === $ts ? time() : $ts);
+        $date = date($this->dateFormat, $ts ?? time());
         date_default_timezone_set($oldTz);
         return $date;
     }

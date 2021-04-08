@@ -248,8 +248,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
         if (!$this->highlight) {
             return '';
         }
-        return (isset($this->highlightDetails['title'][0]))
-            ? $this->highlightDetails['title'][0] : '';
+        return $this->highlightDetails['title'][0] ?? '';
     }
 
     /**

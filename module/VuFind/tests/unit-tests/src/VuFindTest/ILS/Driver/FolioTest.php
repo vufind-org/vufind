@@ -73,7 +73,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         // Run preRequest
         $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
-        list($httpHeaders, $params) = $this->driver->preRequest($httpHeaders, $params);
+        [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
         // Log request
         $this->testRequestLog[] = [
             'method' => $method,

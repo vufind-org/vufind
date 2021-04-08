@@ -166,7 +166,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
 
         // Use user A's delete link, but try to execute it as user B:
-        list($base, $params) = explode('?', $delete);
+        [$base, $params] = explode('?', $delete);
         $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
         $page = $session->getPage();
         $this->clickCss($page, '.createAccountLink');

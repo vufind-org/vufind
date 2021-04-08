@@ -56,7 +56,7 @@ class Shibboleth extends AbstractBase
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
-    const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
+    public const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
 
     /**
      * This is array of attributes which $this->authenticate()
@@ -234,7 +234,7 @@ class Shibboleth extends AbstractBase
                 } elseif ($attribute == 'cat_password') {
                     $catPassword = $value;
                 } else {
-                    $user->$attribute = ($value === null) ? '' : $value;
+                    $user->$attribute = $value ?? '';
                 }
             }
         }

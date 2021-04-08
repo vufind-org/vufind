@@ -275,8 +275,7 @@ class Bootstrapper
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
             } else {
-                $language = (null !== $validBrowserLanguage)
-                    ? $validBrowserLanguage : $config->Site->language;
+                $language = $validBrowserLanguage ?? $config->Site->language;
             }
 
             // Make sure language code is valid, reset to default if bad:

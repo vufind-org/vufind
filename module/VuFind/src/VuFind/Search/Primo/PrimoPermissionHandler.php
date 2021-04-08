@@ -249,8 +249,7 @@ class PrimoPermissionHandler
      */
     protected function getDefaultCode()
     {
-        return (isset($this->primoConfig['defaultCode']))
-            ? $this->primoConfig['defaultCode'] : false;
+        return $this->primoConfig['defaultCode'] ?? false;
     }
 
     /**

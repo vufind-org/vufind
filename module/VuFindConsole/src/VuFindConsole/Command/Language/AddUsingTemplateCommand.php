@@ -86,7 +86,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         $template = $input->getArgument('template');
 
         // Make sure a valid target has been specified:
-        list($targetDomain, $targetKey) = $this->extractTextDomain($target);
+        [$targetDomain, $targetKey] = $this->extractTextDomain($target);
         if (!($targetDir = $this->getLangDir($output, $targetDomain, true))) {
             return 1;
         }
@@ -96,7 +96,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         $lookups = [];
         foreach ($matches[0] as $current) {
             $key = trim($current, '|');
-            list($sourceDomain, $sourceKey) = $this->extractTextDomain($key);
+            [$sourceDomain, $sourceKey] = $this->extractTextDomain($key);
             $lookups[$sourceDomain][$current] = [
                 'key' => $sourceKey,
                 'translations' => []

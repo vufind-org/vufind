@@ -163,7 +163,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
             // If URL is already a string but we don't want anchors, strip
             // the anchor now:
             if (!$includeAnchor) {
-                list($finalUrl) = explode('#', $url);
+                [$finalUrl] = explode('#', $url);
             } else {
                 $finalUrl = $url;
             }

@@ -573,7 +573,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function validateAndMoveTempFile($image, $tempFile, $finalFile)
     {
-        list($width, $height, $type) = @getimagesize($tempFile);
+        [$width, $height, $type] = @getimagesize($tempFile);
 
         // File too small -- delete it and report failure.
         if ($width < 2 && $height < 2) {

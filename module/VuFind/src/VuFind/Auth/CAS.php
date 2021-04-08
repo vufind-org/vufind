@@ -145,7 +145,7 @@ class CAS extends AbstractBase
                 if ($attribute == 'email') {
                     $user->updateEmail($value);
                 } elseif ($attribute != 'cat_password') {
-                    $user->$attribute = ($value === null) ? '' : $value;
+                    $user->$attribute = $value ?? '';
                 } else {
                     $catPassword = $value;
                 }

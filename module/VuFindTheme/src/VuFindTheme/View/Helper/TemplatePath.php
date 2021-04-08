@@ -73,7 +73,7 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
         $paths = $this->templatePathStack->getPaths();
         // split for easy replacement later
         preg_match('/\/themes\/([^\/]+)/', $paths->current(), $matches);
-        list($this->pathPre, $this->pathPost)
+        [$this->pathPre, $this->pathPost]
             = explode($matches[1], $paths->current());
     }
 

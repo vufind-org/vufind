@@ -102,7 +102,7 @@ trait TranslatorAwareTrait
     public function translate($target, $tokens = [], $default = null)
     {
         // Figure out the text domain for the string:
-        list($domain, $str) = $this->extractTextDomain($target);
+        [$domain, $str] = $this->extractTextDomain($target);
 
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
@@ -126,7 +126,7 @@ trait TranslatorAwareTrait
             if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
                 return $this->translate($str, $tokens, $default);
             } else {
-                list($domain, $str) = $this->extractTextDomain($str);
+                [$domain, $str] = $this->extractTextDomain($str);
             }
         }
 

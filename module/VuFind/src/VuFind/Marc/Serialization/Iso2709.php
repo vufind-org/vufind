@@ -38,10 +38,10 @@ namespace VuFind\Marc\Serialization;
  */
 class Iso2709 implements SerializationInterface
 {
-    const SUBFIELD_INDICATOR = "\x1F";
-    const END_OF_FIELD = "\x1E";
-    const END_OF_RECORD = "\x1D";
-    const LEADER_LEN = 24;
+    public const SUBFIELD_INDICATOR = "\x1F";
+    public const END_OF_FIELD = "\x1E";
+    public const END_OF_RECORD = "\x1D";
+    public const LEADER_LEN = 24;
 
     /**
      * Check if this class can parse the given MARC string
