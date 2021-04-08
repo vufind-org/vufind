@@ -2481,10 +2481,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
         }
 
+        $varField = $this->config['Authentication']['patron_lookup_field'] ?? 'b';
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', 'find'],
             [
-                'varFieldTag' => 'b',
+                'varFieldTag' => $varField,
                 'varFieldContent' => $username,
                 'fields' => 'names,emails'
             ]
