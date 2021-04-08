@@ -2471,8 +2471,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function authenticatePatronV5(string $username, ?string $password
     ): ?array {
-        // Validate a password unless it's null
-        if (null !== $password) {
+        $validationField = $this->config['Authentication']['patron_validation_field']
+            ?? null;
+        // Validate a password unless it's null or a different validation mechanism
+        // has been configured:
+        if (null !== $password && empty($validationField)) {
             $request = [
                 'barcode' => $username,
                 'pin' => $password,
@@ -2505,6 +2508,21 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         );
         if (!$result || !empty($result['code'])) {
             return null;
+        }
+        // Perform extra validation of retrieved user, if configured to do so:
+        switch ($validationField) {
+        case 'email':
+        case 'name':
+            if (!in_array($password, $result[$validationField . 's'] ?? [])) {
+                return null;
+            }
+            break;
+        default:
+            if (!empty($validationField)) {
+                throw new \Exception(
+                    "Unexpected patron_validation_field: $validationField"
+                );
+            }
         }
 
         return $result;
