@@ -2443,8 +2443,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function authenticatePatron(string $username, ?string $password
     ): ?array {
         $authMethod = $this->config['Authentication']['method'] ?? 'native';
-        // patrons/auth endpoint is only supported on API version >= 6
-        if ($this->apiVersion >= 6 && null !== $password) {
+        $validationField = $this->config['Authentication']['patron_validation_field']
+            ?? null;
+        // patrons/auth endpoint is only supported on API version >= 6, without
+        // custom validation configured:
+        if ($this->apiVersion >= 6 && null !== $password
+            && empty($validationField)
+        ) {
             return $this->authenticatePatronV6($username, $password, $authMethod);
         }
 
@@ -2456,7 +2461,40 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             throw new ILSException('API level set too low');
         }
 
-        return $this->authenticatePatronV5($username, $password);
+        // Depending on validation settings, use either normal PIN-based auth,
+        // or bypass PIN check and validate a different field.
+        return empty($validationField)
+            ? $this->authenticatePatronV5($username, $password)
+            : $this->validatePatron(
+                $this->authenticatePatronV5($username, null),
+                $validationField,
+                $password
+            );
+    }
+
+    /**
+     * Perform extra validation of retrieved user, if configured to do so. Returns
+     * patron data if value, null otherwise.
+     *
+     * @param ?array  $patron          Output of authenticatePatronV5()
+     * @param string  $validationField Field to use for validation
+     * @param ?string $password        Value to use in validation
+     *
+     * @return ?array
+     * @throws \Exception
+     */
+    protected function validatePatron(?array $patron, string $validationField,
+        ?string $password
+    ): ?array {
+        // If the validation field is a valid, supported value, perform validation:
+        if (in_array($validationField, ['email', 'name'])) {
+            return in_array($password, $patron[$validationField . 's'] ?? [])
+                ? $patron : null;
+        }
+        // Throw an exception if we got an unexpected configuration:
+        throw new \Exception(
+            "Unexpected patron_validation_field: $validationField"
+        );
     }
 
     /**
@@ -2471,11 +2509,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function authenticatePatronV5(string $username, ?string $password
     ): ?array {
-        $validationField = $this->config['Authentication']['patron_validation_field']
-            ?? null;
-        // Validate a password unless it's null or a different validation mechanism
-        // has been configured:
-        if (null !== $password && empty($validationField)) {
+        // Validate a password unless it's null:
+        if (null !== $password) {
             $request = [
                 'barcode' => $username,
                 'pin' => $password,
@@ -2509,22 +2544,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!$result || !empty($result['code'])) {
             return null;
         }
-        // Perform extra validation of retrieved user, if configured to do so:
-        switch ($validationField) {
-        case 'email':
-        case 'name':
-            if (!in_array($password, $result[$validationField . 's'] ?? [])) {
-                return null;
-            }
-            break;
-        default:
-            if (!empty($validationField)) {
-                throw new \Exception(
-                    "Unexpected patron_validation_field: $validationField"
-                );
-            }
-        }
-
         return $result;
     }
 
