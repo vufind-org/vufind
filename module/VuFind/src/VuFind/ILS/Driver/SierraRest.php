@@ -1451,9 +1451,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             );
             throw new ILSException('Problem with Sierra REST API.', 0, $e);
         }
-        // If we get a 401 with patron-specific access, we need to renew the access
-        // token and try again
-        if ($response->getStatusCode() == 401 && $this->isPatronSpecificAccess()) {
+        // If we get a 401, we need to renew the access token and try again
+        if ($response->getStatusCode() == 401) {
             if (!$this->renewAccessToken($patron)) {
                 return null;
             }
