@@ -500,8 +500,8 @@ class NewGenLib extends AbstractBase
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        $retVal = [];
         // Do some initial work in solr so we aren't repeating it inside this loop.
+        $retVal = [];
         $retVal[][] = [];
 
         $offset = ($page - 1) * $limit;
