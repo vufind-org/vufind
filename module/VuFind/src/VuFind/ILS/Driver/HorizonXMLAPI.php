@@ -801,8 +801,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function processRenewals($renewIDs, $origData, $renewData)
     {
-        $response = [];
-        $response['ids'] = $renewIDs;
+        $response = ['ids' => $renewIDs];
         $i = 0;
         foreach ($origData->itemout as $item) {
             $ikey = (string)$item->ikey;
