@@ -283,7 +283,7 @@ class Demo extends AbstractBase
      */
     protected function getRandomBibId()
     {
-        list($id) = $this->getRandomBibIdAndTitle();
+        [$id] = $this->getRandomBibIdAndTitle();
         return $id;
     }
 
@@ -486,7 +486,7 @@ class Demo extends AbstractBase
                 $currentItem['institution_dbkey'] = 'ill_institution';
             } else {
                 if ($this->idsInMyResearch) {
-                    list($currentItem['id'], $currentItem['title'])
+                    [$currentItem['id'], $currentItem['title']]
                         = $this->getRandomBibIdAndtitle();
                     $currentItem['source'] = $this->getRecordSource();
                 } else {
@@ -898,7 +898,7 @@ class Demo extends AbstractBase
                 // Some fines will have no id or title:
                 if (rand() % 3 != 1) {
                     if ($this->idsInMyResearch) {
-                        list($fineList[$i]['id'], $fineList[$i]['title'])
+                        [$fineList[$i]['id'], $fineList[$i]['title']]
                             = $this->getRandomBibIdAndTitle();
                         $fineList[$i]['source'] = $this->getRecordSource();
                     } else {
@@ -1074,7 +1074,7 @@ class Demo extends AbstractBase
             } else {
                 $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
                 if ($this->idsInMyResearch) {
-                    list($transList[$i]['id'], $transList[$i]['title'])
+                    [$transList[$i]['id'], $transList[$i]['title']]
                         = $this->getRandomBibIdAndTitle();
                     $transList[$i]['source'] = $this->getRecordSource();
                 } else {
@@ -1197,7 +1197,7 @@ class Demo extends AbstractBase
                 'item_id' => $i,
             ];
             if ($this->idsInMyResearch) {
-                list($transList[$i]['id'], $transList[$i]['title'])
+                [$transList[$i]['id'], $transList[$i]['title']]
                     = $this->getRandomBibIdAndTitle();
                 $transList[$i]['source'] = $this->getRecordSource();
             } else {

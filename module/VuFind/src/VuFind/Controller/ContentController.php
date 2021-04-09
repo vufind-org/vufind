@@ -71,7 +71,7 @@ class ContentController extends AbstractBase
 
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
-            : $this->notFoundAction($this->getResponse());
+            : $this->notFoundAction();
     }
 
     /**

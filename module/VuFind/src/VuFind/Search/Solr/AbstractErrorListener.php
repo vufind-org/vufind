@@ -51,7 +51,7 @@ abstract class AbstractErrorListener
      *
      * @var string
      */
-    const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
+    public const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
 
     /**
      * Backends to listen for.

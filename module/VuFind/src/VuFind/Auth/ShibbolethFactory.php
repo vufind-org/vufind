@@ -45,7 +45,7 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
  */
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-    const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+    public const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
 
     /**
      * Create an object

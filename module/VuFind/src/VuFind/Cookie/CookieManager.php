@@ -206,12 +206,6 @@ class CookieManager
         if ('cli' === PHP_SAPI) {
             return true;
         }
-        if (PHP_VERSION_ID < 70300) {
-            return setcookie(
-                $key, $value, $expire, "$path; samesite=$sameSite", $domain, $secure,
-                $httpOnly
-            );
-        }
         return setcookie(
             $key,
             $value,
