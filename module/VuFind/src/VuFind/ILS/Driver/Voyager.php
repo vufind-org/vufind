@@ -187,7 +187,7 @@ class Voyager extends AbstractBase
                      ')' .
                    ')';
             try {
-                if ((!defined('PHP_MAJOR_VERSION ') || PHP_MAJOR_VERSION >= 8)
+                if ((!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
                     && empty($this->config['Catalog']['forceOCI8Support'])
                 ) {
                     $this->error(
