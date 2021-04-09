@@ -91,7 +91,7 @@ class Eds implements AutocompleteInterface
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }
-        return is_array($results ?? null) ? array_unique($results) : [];
+        return is_array($results) ? array_unique($results) : [];
     }
 
     /**
