@@ -197,11 +197,10 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getAdapterFromConnectionString($connectionString,
         $overrideUser = null, $overridePass = null
     ) {
-        $host = null;
-        $port = null;
         [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = $matches[1] ?? null;
+        $host = $port = null;
         if (isset($matches[2])) {
             if (strpos($matches[2], ':') !== false) {
                 [$host, $port] = explode(':', $matches[2]);
@@ -225,7 +224,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         // Set up default options:
         $options = [
             'driver' => $driverName,
-            'hostname' => $host ?? null,
+            'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName,
