@@ -48,8 +48,8 @@ class SearchRunner
      *
      * @var string
      */
-    const EVENT_CONFIGURED = 'configured';
-    const EVENT_COMPLETE = 'complete';
+    public const EVENT_CONFIGURED = 'configured';
+    public const EVENT_COMPLETE = 'complete';
 
     /**
      * Event manager.

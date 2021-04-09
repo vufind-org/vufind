@@ -1,10 +1,11 @@
 <?php
 /**
- * AJAX handler interface
+ * Locale Detector Strategy for VuFind POST Parameter
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018,
+ *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,39 +21,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  I18n\Locale
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-namespace VuFind\AjaxHandler;
+namespace VuFind\I18n\Locale;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use SlmLocale\LocaleEvent;
+use SlmLocale\Strategy\AbstractStrategy;
 
 /**
- * AJAX handler interface
+ * Locale Detector Strategy for VuFind POST Parameter
  *
  * @category VuFind
- * @package  AJAX
+ * @package  I18n\Locale
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-interface AjaxHandlerInterface
+class LocaleDetectorParamStrategy extends AbstractStrategy
 {
-    // define some status constants
-    public const STATUS_HTTP_BAD_REQUEST = 400; // bad request
-    public const STATUS_HTTP_NEED_AUTH = 401;   // must login first
-    public const STATUS_HTTP_FORBIDDEN = 403;   // method is unavailable
-    public const STATUS_HTTP_ERROR = 500;       // an error occurred
-    public const STATUS_HTTP_UNAVAILABLE = 503; // temporarily unavailable
+    const PARAM_NAME = 'mylang';
 
     /**
-     * Handle a request.
+     * Attempt to detect the locale from a POST parameter.
      *
-     * @param Params $params Parameter helper from controller
+     * @param LocaleEvent $event Event
      *
-     * @return array [response data, HTTP status code]
+     * @return ?string
      */
-    public function handleRequest(Params $params);
+    public function detect(LocaleEvent $event)
+    {
+        $request = $event->getRequest();
+        $locale = $request->getPost(self::PARAM_NAME);
+        if (in_array($locale, $event->getSupported())) {
+            return $locale;
+        }
+    }
 }

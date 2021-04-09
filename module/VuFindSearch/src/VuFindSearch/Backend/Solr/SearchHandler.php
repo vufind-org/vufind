@@ -153,7 +153,7 @@ class SearchHandler
         $boostQuery = [];
         if ($this->hasDismax()) {
             foreach ($this->getDismaxParams() as $param) {
-                list($name, $value) = $param;
+                [$name, $value] = $param;
                 if ($name === 'bq') {
                     $boostQuery[] = $value;
                 } elseif ($name === 'bf') {

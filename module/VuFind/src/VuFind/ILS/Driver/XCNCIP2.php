@@ -1442,7 +1442,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
-        list($pickUpAgency, $pickUpLocation) = explode("|", $pickUpLocation);
+        [$pickUpAgency, $pickUpLocation] = explode("|", $pickUpLocation);
         $lastInterestDate = $details['requiredBy'];
         $lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
             . substr($lastInterestDate, 0, 5);
@@ -1512,7 +1512,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
 
         foreach ($details as $detail) {
-            list($itemAgencyId, $requestId, $itemId) = explode("|", $detail);
+            [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
             $request = $this->getCancelRequest(
                 $username, $password, $patronAgency,
                 $itemAgencyId, $requestId, $type,
@@ -1639,7 +1639,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $details = [];
         foreach ($renewDetails['details'] as $detail) {
-            list($agencyId, $itemId) = explode("|", $detail);
+            [$agencyId, $itemId] = explode("|", $detail);
             $failureReturn = [
                 "success" => false,
                 "item_id" => $itemId,

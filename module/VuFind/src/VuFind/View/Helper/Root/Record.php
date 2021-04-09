@@ -468,7 +468,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 }
             }
             if ($details['size'] === false) {
-                list($details['size']) = explode(':', $preferredSize);
+                [$details['size']] = explode(':', $preferredSize);
             }
             $details['html'] = $this->renderTemplate('cover.phtml', $details);
         }

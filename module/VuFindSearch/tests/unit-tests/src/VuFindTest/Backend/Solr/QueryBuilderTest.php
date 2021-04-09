@@ -92,7 +92,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
+            [$input, $output] = $test;
             $q = new Query($input);
             $response = $qb->build($q);
             $processedQ = $response->get('q');
@@ -148,7 +148,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      */
     protected function runBasicQuestionTest($qb, $handler, $test)
     {
-        list($input, $output, $flags) = $test;
+        [$input, $output, $flags] = $test;
         if ($handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
@@ -179,7 +179,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      */
     protected function runAdvancedQuestionTest($qb, $handler, $test)
     {
-        list($input, $output, $flags) = $test;
+        [$input, $output, $flags] = $test;
         if ($handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {

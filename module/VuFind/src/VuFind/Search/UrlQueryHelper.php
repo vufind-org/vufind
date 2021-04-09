@@ -430,7 +430,7 @@ class UrlQueryHelper
         $newFilter = [];
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
-                list($currentField, $currentValue)
+                [$currentField, $currentValue]
                     = $this->parseFilter($current);
                 if (!in_array($currentField, $fieldAliases)
                     || $currentValue != $value
@@ -461,7 +461,7 @@ class UrlQueryHelper
     public function removeFilter($filter)
     {
         // Treat this as a special case of removeFacet:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
         return $this->removeFacet($field, $value);
     }
 

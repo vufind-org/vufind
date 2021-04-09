@@ -62,9 +62,8 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
             $this->translator->setLocale('native');
         } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $e) {
             if (!extension_loaded('intl')) {
-                throw new \Exception(
+                error_log(
                     'Translation broken due to missing PHP intl extension.'
-                    . ' Please disable translation or install the extension.'
                 );
             }
         }

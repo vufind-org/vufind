@@ -68,7 +68,7 @@ class ThemeInfo
     protected $allThemeInfo = null;
 
     // Constant for use with findContainingTheme:
-    const RETURN_ALL_DETAILS = 'all';
+    public const RETURN_ALL_DETAILS = 'all';
 
     /**
      * Constructor

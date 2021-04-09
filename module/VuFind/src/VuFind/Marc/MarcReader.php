@@ -94,7 +94,7 @@ class MarcReader
         $valid = false;
         foreach ($this->serializations as $serialization) {
             if ($serialization::canParse($data)) {
-                list($leader, $this->fields) = $serialization::fromString($data);
+                [$leader, $this->fields] = $serialization::fromString($data);
                 $valid = true;
                 break;
             }

@@ -329,7 +329,7 @@ class Solr implements AutocompleteInterface
     {
         $terms = preg_split("/\s+/", $query);
         foreach ($terms as $term) {
-            if (stripos($data, $term) === false) {
+            if (stripos($data, (string)$term) === false) {
                 return false;
             }
         }

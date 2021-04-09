@@ -22,6 +22,7 @@ $rules = [
     'indentation_type' => true,
     'is_null' => true,
     'line_ending' => true,
+    'list_syntax' => ['syntax' => 'short'],
     'lowercase_cast' => true,
     'lowercase_constants' => true,
     'lowercase_keywords' => true,

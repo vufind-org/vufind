@@ -127,7 +127,7 @@ class Options extends \VuFind\Search\Base\Options
             'list|detailed' => 'Detailed View'
         ];
         $this->apiInfo = $apiInfo;
-        $this->setOptionsFromApi($searchSettings);
+        $this->setOptionsFromApi();
         $this->setOptionsFromConfig($searchSettings);
         $facetConf = $configLoader->get($this->facetsIni);
         if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
