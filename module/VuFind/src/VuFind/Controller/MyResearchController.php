@@ -1054,8 +1054,8 @@ class MyResearchController extends AbstractBase
      */
     public function emailNotVerifiedAction()
     {
-        $change = null;
         if ($this->params()->fromQuery('reverify')) {
+            $change = false;
             $table = $this->getTable('User');
             // Case 1: new user:
             $user = $table
@@ -1067,7 +1067,7 @@ class MyResearchController extends AbstractBase
                     $change = true;
                 }
             }
-            $this->sendVerificationEmail($user, $change ?? false);
+            $this->sendVerificationEmail($user, $change);
         } else {
             $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
