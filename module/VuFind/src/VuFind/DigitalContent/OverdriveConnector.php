@@ -181,7 +181,6 @@ class OverdriveConnector implements LoggerAwareInterface,
      */
     public function getAccess($refresh = false)
     {
-        $result = null;
         if (!$user = $this->getUser()) {
             return $this->getResultObject(false, "User not logged in.");
         }
