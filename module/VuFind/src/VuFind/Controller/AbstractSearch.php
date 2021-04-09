@@ -703,7 +703,6 @@ class AbstractSearch extends AbstractBase
      */
     protected function processAdvancedCheckboxes($params, $savedSearch = false)
     {
-        $flipCheckboxes = null;
         // Set defaults for missing parameters:
         $config = $params[0] ?? 'facets';
         $section = $params[1] ?? 'CheckboxFacets';
@@ -713,13 +712,14 @@ class AbstractSearch extends AbstractBase
             ->get($config);
 
         // Process checkbox settings in config:
+        $flipCheckboxes = false;
         if (substr($section, 0, 1) == '~') {        // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
         $checkboxFacets = ($section && isset($config->$section))
             ? $config->$section->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
 
