@@ -46,7 +46,7 @@ class AuthHash extends Gateway
 {
     use ExpirationTrait;
 
-    const TYPE_EMAIL = 'email'; // EmailAuthenticator
+    public const TYPE_EMAIL = 'email'; // EmailAuthenticator
 
     /**
      * Constructor

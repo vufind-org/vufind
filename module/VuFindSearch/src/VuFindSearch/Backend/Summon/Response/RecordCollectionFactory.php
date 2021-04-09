@@ -46,7 +46,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Factory to turn data into a record object.
      *
-     * @var Callable
+     * @var callable
      */
     protected $recordFactory;
 
@@ -76,9 +76,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
-        $this->collectionClass = (null === $collectionClass)
-            ? 'VuFindSearch\Backend\Summon\Response\RecordCollection'
-            : $collectionClass;
+        $this->collectionClass = $collectionClass ?? RecordCollection::class;
     }
 
     /**

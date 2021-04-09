@@ -1,10 +1,10 @@
 <?php
 /**
- * Auth helper factory.
+ * HeadTitle helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,9 +32,10 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Helper\Placeholder\Container\AbstractContainer;
 
 /**
- * Auth helper factory.
+ * HeadTitle helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,7 +43,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AuthFactory implements FactoryInterface
+class HeadTitleFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,9 +65,9 @@ class AuthFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Auth\Manager::class),
-            $container->get(\VuFind\Auth\ILSAuthenticator::class)
-        );
+        $helper = new $requestedName();
+        // In VuFind, we always want to set, not append, titles:
+        $helper->setDefaultAttachOrder(AbstractContainer::SET);
+        return $helper;
     }
 }

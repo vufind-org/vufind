@@ -6,6 +6,10 @@ $modules = [
     'Laminas\Mvc\I18n', 'SlmLocale', 'VuFindTheme', 'VuFindSearch',
     'VuFind', 'VuFindAdmin', 'VuFindApi'
 ];
+if (!extension_loaded('intl')) {
+    // Disable SlmLocale module if intl extension is missing:
+    $modules = array_diff($modules, ['SlmLocale']);
+}
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }

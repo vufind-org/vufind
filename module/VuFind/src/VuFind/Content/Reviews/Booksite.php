@@ -36,7 +36,7 @@ namespace VuFind\Content\Reviews;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BookSite extends \VuFind\Content\AbstractBase
+class Booksite extends \VuFind\Content\AbstractBase
 {
     /**
      * Base URL for Booksite

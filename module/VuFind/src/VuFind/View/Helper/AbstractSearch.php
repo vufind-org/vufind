@@ -76,6 +76,7 @@ abstract class AbstractSearch extends AbstractHelper
 
         $html = '<div class="' . $this->getContainerClass() . '">';
         $html .= $msg;
+        $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
             $html .= '<br/>' . $view->escapeHtml($term) . ' &raquo; ';
             $i = 0;
@@ -87,7 +88,7 @@ abstract class AbstractSearch extends AbstractHelper
                     ->replaceTerm(
                         $term,
                         $data['new_term'],
-                        true
+                        $normalizer
                     )->getParams();
                 $html .= '<a href="' . $href . '">' . $view->escapeHtml($word)
                     . '</a>';
@@ -96,7 +97,7 @@ abstract class AbstractSearch extends AbstractHelper
                         ->replaceTerm(
                             $term,
                             $data['expand_term'],
-                            true
+                            $normalizer
                         )->getParams();
                     $html .= $this->renderExpandLink($url, $view);
                 }

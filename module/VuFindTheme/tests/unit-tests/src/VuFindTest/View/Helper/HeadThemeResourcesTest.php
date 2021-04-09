@@ -39,8 +39,10 @@ use VuFindTheme\View\Helper\HeadThemeResources;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
+class HeadThemeResourcesTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test the helper.
      *
@@ -51,25 +53,6 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
         $helper = new HeadThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
         $helper->__invoke();
-    }
-
-    /**
-     * Test configuration parsing.
-     *
-     * @return void
-     */
-    public function testConfigParsing()
-    {
-        $helper = new HeadThemeResources($this->getResourceContainer());
-        $tests = [
-            'foo:bar:baz' => ['foo', 'bar', 'baz'],
-            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
-        ];
-        foreach ($tests as $test => $expected) {
-            $this->assertEquals(
-                $expected, $this->callMethod($helper, 'parseSetting', [$test])
-            );
-        }
     }
 
     /**
@@ -108,7 +91,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockHeadMeta()
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadMeta::class)
+        $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
             ->setMethods(['__invoke', 'prependHttpEquiv', 'appendName'])
             ->getMock();

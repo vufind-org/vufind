@@ -112,7 +112,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
-        return parent::addFacet($parts[0], $newAlias, $ored);
+        parent::addFacet($parts[0], $newAlias, $ored);
     }
 
     /**
@@ -181,7 +181,7 @@ class Params extends \VuFind\Search\Base\Params
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
         foreach ($facets as $i => $facet) {
-            list($field) = explode(':', $facet['filter']);
+            [$field] = explode(':', $facet['filter']);
             if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
                 $facets[$i]['alwaysVisible'] = true;
             }
@@ -221,7 +221,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getOptions()->getTranslator()->getLocale();
+        $lang = $this->getOptions()->getTranslatorLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {

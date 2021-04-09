@@ -40,7 +40,7 @@ use VuFind\Auth\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
+class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test validation of empty create request.

@@ -38,7 +38,7 @@ use VuFind\Log\Logger;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoggerTest extends \VuFindTest\Unit\TestCase
+class LoggerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test logException()
@@ -47,7 +47,7 @@ class LoggerTest extends \VuFindTest\Unit\TestCase
      */
     public function testLogException()
     {
-        $callback = function ($a) {
+        $callback = function ($a): bool {
             $expectedContext = <<<CONTEXT
 Server Context:
 Array

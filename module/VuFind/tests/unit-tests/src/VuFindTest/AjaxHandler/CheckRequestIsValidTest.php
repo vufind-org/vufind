@@ -92,7 +92,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Generic support function for successful request tests.
      *
-     * @return void
+     * @return array
      */
     protected function runSuccessfulTest($ilsMethod, $requestType = null)
     {

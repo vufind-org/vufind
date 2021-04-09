@@ -57,10 +57,10 @@ class Service
      *
      * @var string
      */
-    const EVENT_PRE     = 'pre';
-    const EVENT_POST    = 'post';
-    const EVENT_ERROR   = 'error';
-    const EVENT_RESOLVE = 'resolve';
+    public const EVENT_PRE     = 'pre';
+    public const EVENT_POST    = 'post';
+    public const EVENT_ERROR   = 'error';
+    public const EVENT_RESOLVE = 'resolve';
 
     /**
      * Event manager.
@@ -364,7 +364,7 @@ class Service
     public function workExpressions($backend, $id, $workKeys = null,
         ParamBag $params = null
     ) {
-        $params  = $params ?: new \VufindSearch\ParamBag();
+        $params  = $params ?: new \VuFindSearch\ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context', 'workKeys');
         $backendInstance = $this->resolve($backend, $args);

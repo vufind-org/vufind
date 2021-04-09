@@ -156,7 +156,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
         // Find subtitle in title if they're not separated:
         if (empty($subtitle) && strstr($title, ':')) {
-            list($title, $subtitle) = explode(':', $title, 2);
+            [$title, $subtitle] = explode(':', $title, 2);
         }
 
         // Extract the additional details from the record driver:
@@ -305,7 +305,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         }
 
         // If we got this far, it's the default article case:
-        list($apa['volume'], $apa['issue'], $apa['date'])
+        [$apa['volume'], $apa['issue'], $apa['date']]
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
@@ -605,7 +605,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // For good measure, strip out any remaining date ranges lurking in
         // non-standard places.
         return preg_replace(
-            '/\s+(\d{4}-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
+            '/\s+(\d{4}\-\d{4}|b\. \d{4}|\d{4}-)[,.]*$/', '', $name
         );
     }
 
@@ -931,7 +931,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getYear()
     {
         if (isset($this->details['pubDate'])) {
-            if (strlen($this->details['pubDate']) > 4) {
+            $numericDate = preg_replace('/\D/', '', $this->details['pubDate']);
+            if (strlen($numericDate) > 4) {
                 try {
                     return $this->dateConverter->convertFromDisplayDate(
                         'Y', $this->details['pubDate']
@@ -941,7 +942,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
                     return false;
                 }
             }
-            return preg_replace('/[^0-9]/', '', $this->details['pubDate']);
+            return $numericDate;
         }
         return false;
     }

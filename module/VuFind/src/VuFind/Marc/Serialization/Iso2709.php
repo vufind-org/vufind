@@ -38,10 +38,10 @@ namespace VuFind\Marc\Serialization;
  */
 class Iso2709 implements SerializationInterface
 {
-    const SUBFIELD_INDICATOR = "\x1F";
-    const END_OF_FIELD = "\x1E";
-    const END_OF_RECORD = "\x1D";
-    const LEADER_LEN = 24;
+    public const SUBFIELD_INDICATOR = "\x1F";
+    public const END_OF_FIELD = "\x1E";
+    public const END_OF_RECORD = "\x1D";
+    public const LEADER_LEN = 24;
 
     /**
      * Check if this class can parse the given MARC string
@@ -80,7 +80,7 @@ class Iso2709 implements SerializationInterface
         $offset = 0;
         while ($offset < $dirLen) {
             $tag = substr($marc, self::LEADER_LEN + $offset, 3);
-            $len = substr($marc, self::LEADER_LEN + $offset + 3, 4);
+            $len = (int)substr($marc, self::LEADER_LEN + $offset + 3, 4);
             $dataOffset
                 = (int)substr($marc, self::LEADER_LEN + $offset + 7, 5);
 
@@ -167,7 +167,8 @@ class Iso2709 implements SerializationInterface
         }
         $directory .= self::END_OF_FIELD;
         $data .= self::END_OF_RECORD;
-        $dataStart = strlen($leader) + strlen($directory);
+        $leader = str_pad(substr($leader, 0, 24), 24);
+        $dataStart = 24 + strlen($directory);
         $recordLen = $dataStart + strlen($data);
         if ($recordLen > 99999) {
             return '';

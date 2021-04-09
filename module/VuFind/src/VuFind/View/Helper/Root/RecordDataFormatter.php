@@ -182,15 +182,15 @@ class RecordDataFormatter extends AbstractHelper
      * Set default configuration.
      *
      * @param string         $key    Key for configuration to set.
-     * @param array|Callable $values Defaults to store (either an array, or a
-     * Callable returning an array).
+     * @param array|callable $values Defaults to store (either an array, or a
+     * callable returning an array).
      *
      * @return void
      */
     public function setDefaults($key, $values)
     {
         if (!is_array($values) && !is_callable($values)) {
-            throw new \Exception('$values must be array or Callable');
+            throw new \Exception('$values must be array or callable');
         }
         $this->defaults[$key] = $values;
     }

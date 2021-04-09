@@ -827,7 +827,7 @@ class DbUpgrade extends AbstractPlugin
         if ($type == 'int' || $type == 'tinyint' || $type == 'smallint'
             || $type == 'mediumint' || $type == 'bigint'
         ) {
-            list($expectedType) = explode('(', $expectedType);
+            [$expectedType] = explode('(', $expectedType);
         }
 
         return $type == $expectedType;

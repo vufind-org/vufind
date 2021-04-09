@@ -13,7 +13,7 @@ class LoaderFactory implements FactoryInterface
         $proxyConf = $container->get('ProxyManager\Configuration');
         return (new Factory($proxyConf))->createProxy(LoaderInterface::class,
             function (& $loader, $proxy, $method, $params, & $initializer) use ($container) {
-                list($loader, $initializer) = [$this->create($container), null];
+                [$loader, $initializer] = [$this->create($container), null];
             });
     }
 

@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client\Adapter\AdapterInterface;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
@@ -45,8 +46,6 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 use VuFindSearch\ParamBag;
-
-use VuFindSearch\Query\Query;
 
 /**
  * SOLR connector.
@@ -72,7 +71,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @var int
      */
-    const MAX_GET_URL_LENGTH = 2048;
+    public const MAX_GET_URL_LENGTH = 2048;
 
     /**
      * URL or an array of alternative URLs of the SOLR core.
@@ -117,6 +116,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @var string|AdapterInterface
      */
     protected $adapter = 'Laminas\Http\Client\Adapter\Socket';
+
+    /**
+     * Request cache
+     *
+     * @var StorageInterface
+     */
+    protected $cache = null;
 
     /**
      * Constructor
@@ -183,7 +189,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
 
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -203,7 +209,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -217,7 +223,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -232,7 +238,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
 
-        return $this->query($handler, $params);
+        return $this->query($handler, $params, true);
     }
 
     /**
@@ -334,17 +340,30 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->adapter = $adapter;
     }
 
+    /**
+     * Set the cache storage
+     *
+     * @param StorageInterface $cache Cache
+     *
+     * @return void
+     */
+    public function setCache(StorageInterface $cache)
+    {
+        $this->cache = $cache;
+    }
+
     /// Internal API
 
     /**
      * Send query to SOLR and return response body.
      *
-     * @param string   $handler SOLR request handler to use
-     * @param ParamBag $params  Request parameters
+     * @param string   $handler   SOLR request handler to use
+     * @param ParamBag $params    Request parameters
+     * @param bool     $cacheable Whether the query is cacheable
      *
      * @return string Response body
      */
-    public function query($handler, ParamBag $params)
+    public function query($handler, ParamBag $params, bool $cacheable = false)
     {
         $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
@@ -362,7 +381,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         }
 
         $this->debug(sprintf('Query %s', $paramString));
-        return $this->trySolrUrls($method, $urlSuffix, $callback);
+        return $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
     }
 
     /**
@@ -404,26 +423,71 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @param string   $method    HTTP method to use
      * @param string   $urlSuffix Suffix to append to all URLs tried
      * @param callable $callback  Callback to configure client (null for none)
+     * @param bool     $cacheable Whether the request is cacheable
      *
      * @return string Response body
      *
      * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
      * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
      */
-    protected function trySolrUrls($method, $urlSuffix, $callback = null)
-    {
+    protected function trySolrUrls($method, $urlSuffix, $callback = null,
+        bool $cacheable = false
+    ) {
         // This exception should never get thrown; it's just a safety in case
         // something unanticipated occurs.
         $exception = new \Exception('Unexpected exception.');
 
         // Loop through all base URLs and try them in turn until one works.
+        $cacheKey = null;
         foreach ((array)$this->url as $base) {
             $client = $this->createClient($base . $urlSuffix, $method);
             if (is_callable($callback)) {
                 $callback($client);
             }
+            // Always create the cache key from the first server, and only after any
+            // callback has been called above.
+            if ($cacheable && $this->cache && null === $cacheKey) {
+                $cacheKey = md5($client->getRequest()->toString());
+                try {
+                    if ($result = $this->cache->getItem($cacheKey)) {
+                        $this->debug('Returning cached results');
+                        return $result;
+                    }
+                } catch (\Exception $ex) {
+                    $this->logWarning('Cache getItem failed: ' . $ex->getMessage());
+                }
+            }
             try {
-                return $this->send($client);
+                $result = $this->send($client);
+
+                if ($cacheKey) {
+                    try {
+                        $this->cache->setItem($cacheKey, $result);
+                    } catch (\Laminas\Cache\Exception\RuntimeException $ex) {
+                        // Try to determine if caching failed due to response size
+                        // and log the case accordingly.
+                        // Unfortunately Laminas Cache does not translate exceptions
+                        // to any common error codes, so we must check codes and/or
+                        // message for adapter-specific values.
+                        // 'ITEM TOO BIG' is the message from the Memcached adapter
+                        // and comes directly from libmemcached.
+                        if ($ex->getMessage() === 'ITEM TOO BIG') {
+                            $this->debug(
+                                'Cache setItem failed: ' . $ex->getMessage()
+                            );
+                        } else {
+                            $this->logWarning(
+                                'Cache setItem failed: ' . $ex->getMessage()
+                            );
+                        }
+                    } catch (\Exception $ex) {
+                        $this->logWarning(
+                            'Cache setItem failed: ' . $ex->getMessage()
+                        );
+                    }
+                }
+
+                return $result;
             } catch (\Exception $ex) {
                 if ($this->isRethrowableSolrException($ex)) {
                     throw $this->forceToBackendException($ex);

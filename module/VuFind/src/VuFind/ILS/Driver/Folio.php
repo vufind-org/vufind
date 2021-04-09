@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -72,7 +72,7 @@ class Folio extends AbstractAPI implements
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
 
@@ -82,6 +82,13 @@ class Folio extends AbstractAPI implements
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
+
+    /**
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
 
     /**
      * Constructor
@@ -355,7 +362,6 @@ class Folio extends AbstractAPI implements
      *
      * @param string $bibId Bib-level id
      *
-     * @throw
      * @return array
      */
     protected function getInstanceByBibId($bibId)
@@ -507,20 +513,14 @@ class Folio extends AbstractAPI implements
             'query' => '(instanceId=="' . $instance->id
                 . '" NOT discoverySuppress==true)'
         ];
-        $holdingResponse = $this->makeRequest(
-            'GET',
-            '/holdings-storage/holdings',
-            $query
-        );
-        $holdingBody = json_decode($holdingResponse->getBody());
         $items = [];
-        foreach ($holdingBody->holdingsRecords as $holding) {
+        foreach ($this->getPagedResults(
+            'holdingsRecords', '/holdings-storage/holdings', $query
+        ) as $holding) {
             $query = [
                 'query' => '(holdingsRecordId=="' . $holding->id
                     . '" NOT discoverySuppress==true)'
             ];
-            $itemResponse = $this->makeRequest('GET', '/item-storage/items', $query);
-            $itemBody = json_decode($itemResponse->getBody());
             $notesFormatter = function ($note) {
                 return !($note->staffOnly ?? false)
                     && !empty($note->note) ? $note->note : '';
@@ -548,7 +548,9 @@ class Folio extends AbstractAPI implements
                 $textFormatter,
                 $holding->holdingsStatementsForIndexes ?? []
             );
-            foreach ($itemBody->items as $item) {
+            foreach ($this->getPagedResults(
+                'items', '/item-storage/items', $query
+            ) as $item) {
                 $itemNotes = array_filter(
                     array_map($notesFormatter, $item->notes ?? [])
                 );
@@ -1476,7 +1478,7 @@ class Folio extends AbstractAPI implements
      * in more recent code, it receives one of the KEYS from getFunds(). See getFunds
      * for additional notes.
      */
-    public function getNewItems($page = 1, $limit, $daysOld = 30, $fundID = null)
+    public function getNewItems($page, $limit, $daysOld, $fundID = null)
     {
         return [];
     }

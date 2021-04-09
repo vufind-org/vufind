@@ -1,11 +1,10 @@
 <?php
 /**
- * VuFind I18n Locale Settings Factory
+ * Related record plugin factory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018,
- *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,41 +20,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  I18n\Locale
+ * @package  Related_Records
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
-namespace VuFind\I18n\Locale;
+namespace VuFind\Related;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use VuFind\Config\PluginManager as ConfigManager;
 
 /**
- * Creates a Locale settings instance.
+ * Related record plugin factory
  *
  * @category VuFind
- * @package  I18n\Locale
+ * @package  Related_Records
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
-class LocaleSettingsFactory implements FactoryInterface
+class BookplateFactory implements FactoryInterface
 {
     /**
-     * Creates an initializer instance.
+     * Create an object
      *
-     * @param ContainerInterface $container Container
-     * @param string $requestedName Requested name
-     * @param array|null $options Options
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return LocaleSettings
+     * @return object
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
-        return new $requestedName($container->get(ConfigManager::class)->get('config'));
+    public function __invoke(ContainerInterface $container, $requestedName,
+        array $options = null
+    ) {
+        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        return new $requestedName($configManager);
     }
 }

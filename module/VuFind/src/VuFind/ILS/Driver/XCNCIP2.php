@@ -615,7 +615,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $patron Patron data
      * @param array  $ids    The (consortial) source records for the record id
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -708,7 +708,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -836,7 +836,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -933,7 +933,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -997,7 +997,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron The patron array from patronLogin
      * @param array $types  Request types
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1075,7 +1075,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1442,7 +1442,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
-        list($pickUpAgency, $pickUpLocation) = explode("|", $pickUpLocation);
+        [$pickUpAgency, $pickUpLocation] = explode("|", $pickUpLocation);
         $lastInterestDate = $details['requiredBy'];
         $lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
             . substr($lastInterestDate, 0, 5);
@@ -1512,7 +1512,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
 
         foreach ($details as $detail) {
-            list($itemAgencyId, $requestId, $itemId) = explode("|", $detail);
+            [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
             $request = $this->getCancelRequest(
                 $username, $password, $patronAgency,
                 $itemAgencyId, $requestId, $type,
@@ -1639,7 +1639,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $details = [];
         foreach ($renewDetails['details'] as $detail) {
-            list($agencyId, $itemId) = explode("|", $detail);
+            [$agencyId, $itemId] = explode("|", $detail);
             $failureReturn = [
                 "success" => false,
                 "item_id" => $itemId,

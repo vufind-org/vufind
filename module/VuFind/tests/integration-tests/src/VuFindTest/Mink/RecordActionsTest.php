@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink record actions test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,10 +39,10 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
+final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -512,7 +514,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
 
         // Make sure we're printing
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals('print=1', $params);
     }
 

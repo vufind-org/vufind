@@ -38,6 +38,7 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * OverdriveConnector
@@ -202,7 +203,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 if ($conf->noAccessString) {
                     if (strpos(
                         $this->getSessionContainer()->odAccessMessage,
-                        $conf->noAccessString
+                        (string)$conf->noAccessString
                     ) !== false
                     ) {
                         // this user should not have access to OD

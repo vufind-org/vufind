@@ -39,16 +39,16 @@ use VuFind\I18n\Translator\Loader\ExtendedIniType;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExtendedIniTest extends \VuFindTest\Unit\TestCase
+class ExtendedIniTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * @var string
      */
     protected $path = __DIR__ . '/../../../../../../fixtures/language';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->path = realpath($this->path);
     }

@@ -44,7 +44,7 @@ use VuFindTheme\ThemeInfo;
  */
 class RecordTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Theme to use for testing purposes.
@@ -534,27 +534,16 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         if (null === $context) {
             $context = $this->getMockContext();
         }
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['render', 'plugin', 'resolver'])
-            ->getMock();
-        $pluginCallback = function ($helper) use ($context, $url, $serverurl) {
-            switch ($helper) {
-            case 'context':
-                return $context;
-            case 'serverurl':
-                return $serverurl ? $this->getMockServerUrl() : false;
-            case 'url':
-                return $url ? $this->getMockUrl($url) : $url;
-            case 'searchTabs':
-                return $this->getMockSearchTabs();
-            default:
-                return null;
-            }
-        };
-        $view->expects($this->any())->method('plugin')
-            ->will($this->returnCallback($pluginCallback));
-
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $view = $container->get(
+            \Laminas\View\Renderer\PhpRenderer::class,
+            ['render', 'resolver']
+        );
+        $container->set('context', $context);
+        $container->set('serverurl', $serverurl ? $this->getMockServerUrl() : false);
+        $container->set('url', $url ? $this->getMockUrl($url) : $url);
+        $container->set('searchTabs', $this->getMockSearchTabs());
+        $view->setHelperPluginManager($container);
         $view->expects($this->any())->method('resolver')
             ->will($this->returnValue($this->getMockResolver()));
         $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
@@ -567,7 +556,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock resolver object
      *
-     * @return
+     * @return \Laminas\View\Resolver\ResolverInterface
      */
     protected function getMockResolver()
     {
