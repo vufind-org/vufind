@@ -187,6 +187,27 @@ class Voyager extends AbstractBase
                      ')' .
                    ')';
             try {
+                if ((!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
+                    && empty($this->config['Catalog']['forceOCI8Support'])
+                ) {
+                    $this->error(
+                        <<<EOT
+Voyager connection is only supported on PHP 7 by default. To enable support, you
+will need to manually update the yajra/laravel-pdo-via-oci8 package using the
+following command:
+
+php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
+
+Then force the Voyager driver to connect by adding the following setting to
+Voyager.ini or VoyagerRestful.ini:
+
+[Catalog]
+forceOCI8Support = true
+
+EOT
+                    );
+                    throw new ILSException('Unsupported PHP version');
+                }
                 $this->lazyDb = new Oci8(
                     "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
