@@ -60,7 +60,7 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
             return $cv;
         } else {
             // If no callnumber, random
-            return ceil(rand(pow(2, 4), pow(2, 32)));
+            return ceil(rand(2 ** 4, 2 ** 32));
         }
     }
 

@@ -65,6 +65,7 @@ $rules = [
     'php_unit_method_casing' => true,
     'php_unit_mock' => true,
     'php_unit_no_expectation_annotation' => true,
+    'pow_to_exponentiation' => true,
     'single_blank_line_at_eof' => true,
     'single_class_element_per_statement' => true,
     'single_import_per_statement' => true,
