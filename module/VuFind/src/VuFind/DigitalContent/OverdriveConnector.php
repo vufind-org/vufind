@@ -192,7 +192,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $user["cat_password"], true
             )
             ) {
-                $this->getSessionContainer()->odAccess
+                $result = $this->getSessionContainer()->odAccess
                     = $this->getResultObject(true);
             } else {
                 $result = $this->getResultObject();
