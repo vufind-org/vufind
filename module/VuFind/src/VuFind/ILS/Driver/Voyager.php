@@ -37,6 +37,7 @@ use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use Yajra\Pdo\Oci8;
 
 /**
  * Voyager ILS Driver
@@ -60,7 +61,7 @@ class Voyager extends AbstractBase
     /**
      * Lazily instantiated database connection. Use getDb() to access it.
      *
-     * @var \Yajra\Pdo\Oci8
+     * @var Oci8
      */
     protected $lazyDb;
 
@@ -207,8 +208,7 @@ EOT
                     );
                     throw new ILSException('Unsupported PHP version');
                 }
-                // @phpstan-ignore-next-line
-                $this->lazyDb = new \Yajra\Pdo\Oci8(
+                $this->lazyDb = new Oci8(
                     "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
                     $this->config['Catalog']['password']
