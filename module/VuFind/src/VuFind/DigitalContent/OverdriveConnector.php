@@ -1225,7 +1225,6 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected function callPatronUrl(
         $patronBarcode, $patronPin, $url, $params = null, $requestType = "GET"
     ) {
-        $postData = null;
         $this->debug("calling patronURL: $url");
         if ($this->connectToPatronAPI($patronBarcode, $patronPin, false)) {
             $patronTokenData = $this->getSessionContainer()->patronTokenData;
@@ -1257,8 +1256,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                 }
                 $postData = json_encode($jsonData);
                 $client->setRawBody($postData);
+                $this->debug("patronURL data sent: $postData");
             }
-            $this->debug("patronURL data sent: $postData");
             $this->debug("patronURL method: " . $client->getMethod());
             $this->debug("client: " . $client->getRequest());
             try {
