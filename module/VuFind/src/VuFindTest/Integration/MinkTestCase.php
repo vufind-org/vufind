@@ -46,6 +46,7 @@ use VuFind\Config\Writer as ConfigWriter;
  */
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
@@ -388,10 +389,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
-        // AutoRetryTrait when it is use, and we'll default it to 0 to cover
-        // cases where that trait is not in play):
+        // AutoRetryTrait):
         if ($this->hasFailed() && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
-            && ($this->retriesLeft ?? 0) === 0
+            && $this->retriesLeft === 0
         ) {
             $imageData = $this->getMinkSession()->getDriver()->getScreenshot();
             if (!empty($imageData)) {

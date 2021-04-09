@@ -28,7 +28,7 @@
 namespace VuFind;
 
 use Laminas\Config\Config;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
 
 /**
  * Export support class
@@ -78,9 +78,9 @@ class Export
     /**
      * Get the URL for bulk export.
      *
-     * @param RendererInterface $view   View object (needed for URL generation)
-     * @param string            $format Export format being used
-     * @param array             $ids    Array of IDs to export (in source|id format)
+     * @param PhpRenderer $view   View object (needed for URL generation)
+     * @param string      $format Export format being used
+     * @param array       $ids    Array of IDs to export (in source|id format)
      *
      * @return string
      */

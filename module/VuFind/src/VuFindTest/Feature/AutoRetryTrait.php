@@ -61,7 +61,7 @@ trait AutoRetryTrait
      *
      * @var int
      */
-    protected $retriesLeft;
+    protected $retriesLeft = 0;
 
     /**
      * Override PHPUnit's main run method, introducing annotation-based retry

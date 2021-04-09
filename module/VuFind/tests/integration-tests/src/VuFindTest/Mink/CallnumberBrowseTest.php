@@ -39,8 +39,6 @@ namespace VuFindTest\Mink;
  */
 class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Record ID to use in testing.
      *

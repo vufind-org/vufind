@@ -84,7 +84,7 @@ class SearchRequestModel
     /**
      * Expanders to use. Comma separated.
      *
-     * @var string
+     * @var array
      */
     protected $expanders = [];
 
@@ -232,7 +232,7 @@ class SearchRequestModel
 
         if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
             $formatFilter = function ($raw) {
-                list($field, $value) = explode(':', $raw, 2);
+                [$field, $value] = explode(':', $raw, 2);
                 return $field . ':' . static::escapeSpecialCharacters($value);
             };
             $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
@@ -310,8 +310,8 @@ class SearchRequestModel
         if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
             $json->SearchCriteria->FacetFilters = [];
             foreach ($this->facetFilters as $currentFilter) {
-                list($id, $filter) = explode(',', $currentFilter, 2);
-                list($field, $value) = explode(':', $filter, 2);
+                [$id, $filter] = explode(',', $currentFilter, 2);
+                [$field, $value] = explode(':', $filter, 2);
                 $filterObj = new \stdClass();
                 $filterObj->FilterId = $id;
                 $valueObj = new \stdClass();
@@ -325,7 +325,7 @@ class SearchRequestModel
         if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
             foreach ($this->limiters as $limiter) {
-                list($id, $values) = explode(':', $limiter, 2);
+                [$id, $values] = explode(':', $limiter, 2);
                 $limiterObj = new \stdClass();
                 $limiterObj->Id = $id;
                 $limiterObj->Values = explode(',', $values);

@@ -86,7 +86,7 @@ class ExtendedIni implements FileLoaderInterface
     ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales ? (array)$fallbackLocales : [];
-        $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
+        $this->reader = $reader ?? new ExtendedIniReader();
     }
 
     /**

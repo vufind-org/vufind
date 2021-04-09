@@ -51,7 +51,7 @@ class LuceneSyntaxHelper
      *
      * @var string
      */
-    const SOLR_RANGE_RE = '/(\[.+\s+TO\s+.+\])|(\{.+\s+TO\s+.+\})/';
+    public const SOLR_RANGE_RE = '/(\[.+\s+TO\s+.+\])|(\{.+\s+TO\s+.+\})/';
 
     /**
      * Lookahead that detects whether or not we are inside quotes.

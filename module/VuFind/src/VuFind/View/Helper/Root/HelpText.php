@@ -105,7 +105,7 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
         // Set up the needed context in the view:
         $this->contextHelper->__invoke($this->getView());
         $oldContext = $this->contextHelper
-            ->apply(null === $context ? [] : $context);
+            ->apply($context ?? []);
 
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.

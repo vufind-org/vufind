@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search;
 
-use VuFind\Search\Base\Options;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
@@ -67,6 +66,10 @@ class UrlQueryHelper
     /**
      * Constructor
      *
+     * Note that the constructor is final here, because this class relies on
+     * "new static()" to build instances, and we must ensure that child classes
+     * have consistent constructor signatures.
+     *
      * @param array         $urlParams             Array of URL query parameters.
      * @param AbstractQuery $query                 Query object to use to update
      * URL query.
@@ -76,7 +79,7 @@ class UrlQueryHelper
      * on the contents of $query to $urlParams (true) or are they already there
      * (false)?
      */
-    public function __construct(array $urlParams, AbstractQuery $query,
+    final public function __construct(array $urlParams, AbstractQuery $query,
         array $options = [], $regenerateQueryParams = true
     ) {
         $this->config = $options;
@@ -427,7 +430,7 @@ class UrlQueryHelper
         $newFilter = [];
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
-                list($currentField, $currentValue)
+                [$currentField, $currentValue]
                     = $this->parseFilter($current);
                 if (!in_array($currentField, $fieldAliases)
                     || $currentValue != $value
@@ -458,7 +461,7 @@ class UrlQueryHelper
     public function removeFilter($filter)
     {
         // Treat this as a special case of removeFacet:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
         return $this->removeFacet($field, $value);
     }
 

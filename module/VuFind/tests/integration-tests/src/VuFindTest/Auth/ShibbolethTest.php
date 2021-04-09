@@ -36,17 +36,18 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 /**
  * Shibboleth authentication test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ShibbolethTest extends \PHPUnit\Framework\TestCase
+final class ShibbolethTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\UserCreationTrait;
 
     protected $user1 = [
         'Shib-Identity-Provider' => 'https://idp1.example.org/',

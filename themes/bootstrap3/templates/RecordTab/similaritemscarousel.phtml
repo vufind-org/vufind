@@ -17,7 +17,7 @@
         <?php foreach ($similarRecords as $index => $data): ?>
           <div class="carousel-item">
             <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
-              <?=$this->record($data)->getCoverDetails('core', 'large')['html']?>
+              <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
               <div class="content">
                 <?php $formats = $data->getFormats(); ?>
                 <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>

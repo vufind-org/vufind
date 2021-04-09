@@ -536,7 +536,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
 
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
                 $user = [
                     'id' => $username,
                     'firstname' => $firstname,
@@ -845,7 +845,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
                 $profile = [
                     'lastname' => $lastname,
                     'firstname' => $firstname,
