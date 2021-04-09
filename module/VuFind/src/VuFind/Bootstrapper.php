@@ -196,8 +196,9 @@ class Bootstrapper
     protected function initViewModel(): void
     {
         $settings = $this->container->get(LocaleSettings::class);
+        $locale = $settings->getUserLocale();
         $viewModel = $this->container->get('HttpViewManager')->getViewModel();
-        $viewModel->setVariable('userLang', $locale = $settings->getUserLocale());
+        $viewModel->setVariable('userLang', $locale);
         $viewModel->setVariable('allLangs', $settings->getEnabledLocales());
         $viewModel->setVariable('rtl', $settings->isRightToLeftLocale($locale));
     }
