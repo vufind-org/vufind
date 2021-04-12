@@ -63,10 +63,10 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         // See RFC 5988 + http://www.otsukare.info/2011/07/12/using-http-link-header-for-cc-licenses
         // In addition, we use htmlspecialchars_decode(htmlentities()) because HTTP headers only support ASCII.
         // This way we can keep HTML special characters without breaking non-ascii-characters.
-        if ($image['licenseUrl'] !== null)
+        if (isset($image['licenseUrl']))
             $response->getHeaders()->addHeaderLine('Link', htmlspecialchars_decode(htmlentities('<'.$image['licenseUrl'].'>; rel="license"; title="'.$image['license'].'"')));
-        if ($image['artist'] !== null)
-            $response->getHeaders()->addHeaderLine('Artist', htmlspecialchars_decode(htmlentities($image['artist'])));
+        if (isset($image['artist']))
+            $response->getHeaders()->addHeaderLine('Artist', htmlspecialchars_decode(htmlentities(trim(strip_tags($image['artist'])))));
         $response->setContent($image['image']);
         return $response;
     }
