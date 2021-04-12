@@ -9,7 +9,7 @@ function loadCoverByElement(data, element) {
   function coverCallback(response) {
     if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
       img.attr("src", response.data.url);
-      var inlink = element.parent().is('a.record-link');
+      var inlink = element.parent().is('a.record-cover-link');
       var medium = img.parents('.media-left, .media-right, .carousel-item');
       if (typeof response.data.backlink_text !== 'undefined') {
         if (typeof response.data.backlink_url !== 'undefined') {
