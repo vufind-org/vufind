@@ -82,11 +82,11 @@ class Generator
     protected $backendSettings = [];
 
     /**
-     * Locales enabled for sitemaps
+     * Languages enabled for sitemaps
      *
      * @var array
      */
-    protected $locales;
+    protected $languages;
 
     /**
      * Sitemap configuration (sitemap.ini)
@@ -178,7 +178,12 @@ class Generator
         $this->pluginManager = $pm;
         $this->baseUrl = $baseUrl;
 
-        $this->locales = $locales;
+        $this->languages = $this->getSitemapLanguages(
+            $locales,
+            $this->config->Sitemap->allowedLanguages
+                ? $this->config->Sitemap->allowedLanguages->toArray()
+                : []
+        );
 
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
@@ -343,12 +348,12 @@ class Generator
             $index = $sitemapIndexes[$name] ?? 0;
             ++$index;
             $sitemapIndexes[$name] = $index;
-            $filename = "sitemap-$name-$index";
-            $filePath = $this->getFilenameForPage($filename);
+            $pageName = "$name-$index";
+            $filePath = $this->getFilenameForPage($pageName);
             if (false === $sitemap->write($filePath)) {
                 throw new \Exception("Problem writing $filePath.");
             }
-            $sitemapFiles[] = "$filename.xml";
+            $sitemapFiles[] = "sitemap-$pageName.xml";
         };
 
         if ($plugins = $this->config->Sitemap->plugins) {
@@ -362,8 +367,8 @@ class Generator
                 if (!isset($pluginSitemaps[$sitemapName])) {
                     $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
                 }
-                $languages = $plugin->supportsVuFindLanguages() ?
-                    $this->getSitemapLanguages() : [];
+                $languages = $plugin->supportsVuFindLanguages()
+                    ? $this->languages : [];
                 $frequency = $plugin->getFrequency();
                 $sitemap = &$pluginSitemaps[$sitemapName];
                 $count = $sitemap->getCount();
@@ -713,13 +718,19 @@ class Generator
     /**
      * Get languages for a sitemap
      *
+     * @param array $locales Enabled VuFind locales
+     * @param array $allowed Locales allowed in sitemap configuration
+     *
      * @return array
      */
-    public function getSitemapLanguages(): array
+    protected function getSitemapLanguages(array $locales, array $allowed): array
     {
         $result = [];
         // Add languages and fallbacks for non-locale specific languages:
-        foreach ($this->locales as $locale) {
+        if ($allowed) {
+            $locales = array_intersect($locales, $allowed);
+        }
+        foreach ($locales as $locale) {
             $parts = explode('-', $locale, 2);
             if (empty($parts[1])) {
                 $result[$locale] = $locale;
