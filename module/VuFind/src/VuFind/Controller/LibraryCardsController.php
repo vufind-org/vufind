@@ -122,7 +122,7 @@ class LibraryCardsController extends AbstractBase
         $loginSettings = $this->getILSLoginSettings();
         // Split target and username if multiple login targets are available:
         if ($loginSettings['targets'] && strstr($username, '.')) {
-            list($target, $username) = explode('.', $username, 2);
+            [$target, $username] = explode('.', $username, 2);
         }
 
         $cardName = $this->params()->fromPost('card_name', $card->card_name);
@@ -336,9 +336,7 @@ class LibraryCardsController extends AbstractBase
                 $info['cat_username'],
                 ' '
             );
-        } catch (\VuFind\Exception\Auth $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
-        } catch (\VuFind\Exception\LibraryCard $e) {
+        } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
 

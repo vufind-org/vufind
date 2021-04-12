@@ -603,7 +603,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->selectAllItemsInList($page);
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals('print=true', $params);
     }
 

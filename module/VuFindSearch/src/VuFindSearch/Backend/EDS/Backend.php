@@ -283,7 +283,7 @@ class Backend extends AbstractBackend
                     'Retrieval id is not in the correct format.'
                 );
             }
-            list($dbId, $an) = $parts;
+            [$dbId, $an] = $parts;
             $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
             $extras = [];

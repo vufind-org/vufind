@@ -47,9 +47,9 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
-    const CONTEXT_DISABLED = '';
-    const CONTEXT_DEFAULT = 'Default';
-    const CONTEXT_FAVORITE = 'Favorite';
+    public const CONTEXT_DISABLED = '';
+    public const CONTEXT_DEFAULT = 'Default';
+    public const CONTEXT_FAVORITE = 'Favorite';
 
     /**
      * RecordCache.ini contents

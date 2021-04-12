@@ -287,7 +287,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             }
             $name = $from->getName();
             if (!$name) {
-                list($fromPre) = explode('@', $from->getEmail());
+                [$fromPre] = explode('@', $from->getEmail());
                 $name = $fromPre ? $fromPre : null;
             }
             $from = new Address($this->fromAddressOverride, $name);

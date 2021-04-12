@@ -45,7 +45,7 @@ use VuFindHttp\HttpServiceAwareInterface;
 class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     HttpServiceAwareInterface, LoggerAwareInterface
 {
-    const HOLDINGS_LINE_NUMBER = 40;
+    public const HOLDINGS_LINE_NUMBER = 40;
 
     use CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -658,7 +658,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $finalResult = ['details' => []];
 
         foreach ($renewDetails['details'] as $details) {
-            list($checkoutId, $itemId) = explode('|', $details);
+            [$checkoutId, $itemId] = explode('|', $details);
             $result = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
                 [],
@@ -1809,7 +1809,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
             foreach ($result['entries'] as $item) {
                 $location = $this->translateLocation($item['location']);
-                list($status, $duedate, $notes) = $this->getItemStatus($item);
+                [$status, $duedate, $notes] = $this->getItemStatus($item);
                 $available = $status == $this->mapStatusCode('-');
                 // OPAC message
                 if (isset($item['fixedFields']['108'])) {
@@ -1988,7 +1988,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $line = [];
                     foreach ($subfields as $subfield) {
                         if ($subfieldCodes
-                            && false === strpos($subfieldCodes, $subfield['tag'])
+                            && false === strpos(
+                                $subfieldCodes, (string)$subfield['tag']
+                            )
                         ) {
                             continue;
                         }
@@ -2175,7 +2177,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function isHoldable($item)
     {
         if (!empty($this->validHoldStatuses)) {
-            list($status) = $this->getItemStatus($item);
+            [$status] = $this->getItemStatus($item);
             if (!in_array($status, $this->validHoldStatuses)) {
                 return false;
             }

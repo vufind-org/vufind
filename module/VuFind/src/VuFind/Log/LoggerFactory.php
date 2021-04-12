@@ -152,7 +152,7 @@ class LoggerFactory implements FactoryInterface
     ) {
         $options = [];
         // Get config
-        list($channel, $error_types) = explode(':', $config->Logging->slack);
+        [$channel, $error_types] = explode(':', $config->Logging->slack);
         if ($error_types == null) {
             $error_types = $channel;
             $channel = null;

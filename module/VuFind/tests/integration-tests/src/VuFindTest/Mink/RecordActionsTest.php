@@ -514,7 +514,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
 
         // Make sure we're printing
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals('print=1', $params);
     }
 

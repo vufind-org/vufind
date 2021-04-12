@@ -85,8 +85,7 @@ class CollectionsController extends AbstractBase
      */
     public function homeAction()
     {
-        $browseType = (isset($this->config->Collections->browseType))
-            ? $this->config->Collections->browseType : 'Index';
+        $browseType = $this->config->Collections->browseType ?? 'Index';
         return ($browseType == 'Alphabetic')
             ? $this->showBrowseAlphabetic() : $this->showBrowseIndex();
     }
@@ -186,7 +185,7 @@ class CollectionsController extends AbstractBase
 
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result as $rkey => $collection) {
-            list($name, $id) = explode($delimiter, $collection['value'], 2);
+            [$name, $id] = explode($delimiter, $collection['value'], 2);
             $result[$rkey]['displayText'] = $name;
             $result[$rkey]['value'] = $id;
         }

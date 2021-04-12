@@ -181,7 +181,7 @@ class Params extends \VuFind\Search\Base\Params
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
         foreach ($facets as $i => $facet) {
-            list($field) = explode(':', $facet['filter']);
+            [$field] = explode(':', $facet['filter']);
             if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
                 $facets[$i]['alwaysVisible'] = true;
             }
