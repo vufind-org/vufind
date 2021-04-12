@@ -307,7 +307,7 @@ jobs that support the project's success, ranging from newsletter editing
 to release management. Because these roles may grow and evolve over
 time, it is impractical to try to capture all of them in this document;
 they are instead listed on the [Community Roles and
-Responsibilities](https://vufind.org/wiki/community:roles_and_responsibilities)
+Responsibilities](https://vufind.org/wiki/community:roles_and_responsibilities#other_specific_roles)
 web page. The assignment of individuals to these roles is accomplished
 by vote of the PMC.
 
