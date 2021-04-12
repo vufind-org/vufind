@@ -380,7 +380,7 @@ class Generator
                         $sitemap->clear();
                         $count = 1;
                     }
-                    if ($languages || $frequency) {
+                    if (($languages || $frequency) && is_string($url)) {
                         $sitemap->addUrl(
                             [
                                 'url' => $url,

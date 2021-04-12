@@ -90,6 +90,9 @@ abstract class AbstractGeneratorPlugin implements GeneratorPluginInterface
     /**
      * Generate urls for the sitemap.
      *
+     * May yield a string per URL or an array that defines language versions and/or
+     * frequency in addition to url.
+     *
      * @return \Generator
      */
     abstract public function getUrls(): \Generator;
