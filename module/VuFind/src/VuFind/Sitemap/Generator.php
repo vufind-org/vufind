@@ -79,7 +79,7 @@ class Generator
      *
      * @var array
      */
-    protected $backendSettings;
+    protected $backendSettings = [];
 
     /**
      * Locales enabled for sitemaps
@@ -185,13 +185,15 @@ class Generator
 
         // Process backend configuration:
         $backendConfig = $this->config->Sitemap->index ?? ['Solr,/Record/'];
-        $backendConfig = is_callable([$backendConfig, 'toArray'])
-            ? $backendConfig->toArray() : (array)$backendConfig;
-        $callback = function ($n) {
-            $parts = array_map('trim', explode(',', $n));
-            return ['id' => $parts[0], 'url' => $parts[1]];
-        };
-        $this->backendSettings = array_map($callback, $backendConfig);
+        if ($backendConfig) {
+            $backendConfig = is_callable([$backendConfig, 'toArray'])
+                ? $backendConfig->toArray() : (array)$backendConfig;
+            $callback = function ($n) {
+                $parts = array_map('trim', explode(',', $n));
+                return ['id' => $parts[0], 'url' => $parts[1]];
+            };
+            $this->backendSettings = array_map($callback, $backendConfig);
+        }
 
         // Store other key config settings:
         $this->frequency = $this->config->Sitemap->frequency;
