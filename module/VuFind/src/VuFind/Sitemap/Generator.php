@@ -353,7 +353,7 @@ class Generator
             if (false === $sitemap->write($filePath)) {
                 throw new \Exception("Problem writing $filePath.");
             }
-            $sitemapFiles[] = "sitemap-$pageName.xml";
+            $sitemapFiles[] = $this->getFilenameForPage($pageName, false);
         };
 
         if ($plugins = $this->config->Sitemap->plugins) {
@@ -671,14 +671,15 @@ class Generator
     /**
      * Get the filename for the specified page number or name.
      *
-     * @param int|string $page Page number or name
+     * @param int|string $page        Page number or name
+     * @param bool       $includePath Whether to include the path name
      *
      * @return string
      */
-    protected function getFilenameForPage($page)
+    protected function getFilenameForPage($page, $includePath = true)
     {
-        return $this->fileLocation . '/' . $this->fileStart
-            . ($page == 1 ? '' : '-' . $page) . '.xml';
+        return ($includePath ? $this->fileLocation . '/' : '')
+            . $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';
     }
 
     /**
