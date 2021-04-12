@@ -76,12 +76,23 @@ XML;
      *
      * @return void
      */
-    public function testToStringWithLanguages()
+    public function testToStringWithLanguagesAndFrequencies()
     {
         $sm = new Sitemap();
-        $sm->setLanguages(['en', 'en-gb', 'fi']);
-        $sm->addUrl('http://foo');
-        $sm->addUrl('http://bar?t=1');
+        $sm->addUrl(
+          [
+            'url' => 'http://foo',
+            'languages' => ['en' => 'en', 'en-gb' => 'en-GB', 'fi' => 'fi']
+          ]
+        );
+        $sm->addUrl(
+          [
+            'url' => 'http://bar?t=1',
+            'languages' => ['en' => 'en', 'en-gb' => 'en-GB', 'fi' => 'fi'],
+            'frequency' => 'daily'
+          ]
+        );
+        $sm->addUrl('http://baz');
         $expected = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
@@ -101,11 +112,15 @@ XML;
 </url>
 <url>
   <loc>http://bar?t=1</loc>
-  <changefreq>weekly</changefreq>
+  <changefreq>daily</changefreq>
   <xhtml:link rel="alternate" hreflang="x-default">http://bar?t=1</xhtml:link>
   <xhtml:link rel="alternate" hreflang="en">http://bar?t=1&amp;lng=en</xhtml:link>
   <xhtml:link rel="alternate" hreflang="en-GB">http://bar?t=1&amp;lng=en-gb</xhtml:link>
   <xhtml:link rel="alternate" hreflang="fi">http://bar?t=1&amp;lng=fi</xhtml:link>
+</url>
+<url>
+  <loc>http://baz</loc>
+  <changefreq>weekly</changefreq>
 </url>
 </urlset>
 XML;

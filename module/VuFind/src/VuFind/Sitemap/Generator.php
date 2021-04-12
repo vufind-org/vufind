@@ -82,11 +82,11 @@ class Generator
     protected $backendSettings;
 
     /**
-     * Main VuFind configuration (config.ini)
+     * Locales enabled for sitemaps
      *
-     * @var Config
+     * @var array
      */
-    protected $mainConfig;
+    protected $locales;
 
     /**
      * Sitemap configuration (sitemap.ini)
@@ -161,23 +161,25 @@ class Generator
     /**
      * Constructor
      *
-     * @param BackendManager $bm         Search backend manaver
-     * @param SearchService  $ss         Search manager
-     * @param Config         $config     Sitemap configuration settings
-     * @param Config         $mainConfig Main VuFind configuration
-     * @param PluginManager  $pm         Generator plugin manager
+     * @param BackendManager $bm      Search backend manaver
+     * @param SearchService  $ss      Search manager
+     * @param Config         $config  Sitemap configuration settings
+     * @param string         $baseUrl Base URL for the site
+     * @param array          $locales Enabled locales
+     * @param PluginManager  $pm      Generator plugin manager
      */
     public function __construct(BackendManager $bm, SearchService $ss,
-        Config $config, Config $mainConfig, PluginManager $pm
+        Config $config, string $baseUrl, array $locales, PluginManager $pm
     ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
         $this->searchService = $ss;
-        $this->mainConfig = $mainConfig;
         $this->config = $config;
         $this->pluginManager = $pm;
+        $this->baseUrl = $baseUrl;
 
-        $this->baseUrl = $mainConfig->Site->url;
+        $this->locales = $locales;
+
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
 
@@ -332,7 +334,20 @@ class Generator
      */
     protected function generateWithPlugins(): array
     {
-        $additionalSitemaps = [];
+        $sitemapFiles = [];
+        $sitemapIndexes = [];
+        $writeMap = function ($sitemap, $name) use (&$sitemapFiles, &$sitemapIndexes
+        ) {
+            $index = $sitemapIndexes[$name] ?? 0;
+            ++$index;
+            $sitemapIndexes[$name] = $index;
+            $filename = $this->getFilenameForPage($name . '-' . $index);
+            if (false === $sitemap->write($filename)) {
+                throw new \Exception("Problem writing $filename.");
+            }
+            $sitemapFiles[] = $filename;
+        };
+
         if ($plugins = $this->config->Sitemap->plugins) {
             $pluginSitemaps = [];
             foreach ($plugins->toArray() as $pluginName) {
@@ -344,20 +359,43 @@ class Generator
                 if (!isset($pluginSitemaps[$sitemapName])) {
                     $pluginSitemaps[$sitemapName] = $this->getNewSitemap();
                 }
-                $plugin->addUrls($pluginSitemaps[$sitemapName]);
+                $languages = $plugin->supportsVuFindLanguages() ?
+                    $this->getSitemapLanguages() : [];
+                $frequency = $plugin->getFrequency();
+                $sitemap = &$pluginSitemaps[$sitemapName];
+                $count = $sitemap->getCount();
+                foreach ($plugin->getUrls() as $url) {
+                    ++$count;
+                    if ($count > $this->countPerPage) {
+                        // Write the current sitemap and clear all entries from it:
+                        $writeMap($sitemap, $sitemapName);
+                        $sitemap->clear();
+                        $count = 1;
+                    }
+                    if ($languages || $frequency) {
+                        $sitemap->addUrl(
+                            [
+                                'url' => $url,
+                                'languages' => $languages,
+                                'frequency' => $frequency,
+                            ]
+                        );
+                    } else {
+                        $sitemap->addUrl($url);
+                    }
+                }
+                // Unset the reference:
+                unset($sitemap);
             }
 
+            // Write remaining sitemaps:
             foreach ($pluginSitemaps as $sitemapName => $sitemap) {
                 if (!$sitemap->isEmpty()) {
-                    $filename = $this->getFilenameForPage($sitemapName);
-                    if (false === $sitemap->write($filename)) {
-                        throw new \Exception("Problem writing $filename.");
-                    }
-                    $additionalSitemaps[] = $filename;
+                    $writeMap($sitemap, $sitemapName);
                 }
             }
         }
-        return $additionalSitemaps;
+        return $sitemapFiles;
     }
 
     /**
@@ -568,8 +606,9 @@ class Generator
             $baseSitemapFileName = $this->config->SitemapIndex->baseSitemapFileName
                 ?? '';
             if ($baseSitemapFileName) {
-                $baseSitemapFilePath = $this->fileLocation . '/' .
-                    $baseSitemapFileName;
+                $baseSitemapFileName .= '.xml';
+                $baseSitemapFilePath = $this->fileLocation . '/'
+                    . $baseSitemapFileName;
                 // Only add the <sitemap /> group if the file exists
                 // in the directory where the other sitemap files
                 // are saved, i.e. ['Sitemap']['fileLocation']
@@ -618,18 +657,7 @@ class Generator
      */
     protected function getNewSitemap()
     {
-        $sitemap = new Sitemap($this->frequency);
-        if ($this->config->Sitemap->indexLanguageVersions) {
-            $languages = array_keys($this->mainConfig->Languages->toArray());
-            if (!empty($this->config->Sitemap->allowedLanguages)) {
-                $languages = array_intersect(
-                    $languages,
-                    $this->config->Sitemap->allowedLanguages->toArray()
-                );
-            }
-            $sitemap->setLanguages($languages);
-        }
-        return $sitemap;
+        return new Sitemap($this->frequency);
     }
 
     /**
@@ -677,5 +705,26 @@ class Generator
             ]
         );
         return $plugin;
+    }
+
+    /**
+     * Get languages for a sitemap
+     *
+     * @return array
+     */
+    public function getSitemapLanguages(): array
+    {
+        $result = [];
+        // Add languages and fallbacks for non-locale specific languages:
+        foreach ($this->locales as $locale) {
+            $parts = explode('-', $locale, 2);
+            if (empty($parts[1])) {
+                $result[$locale] = $locale;
+            } else {
+                $result[$locale] = $parts[0] . '-' . strtoupper($parts[1]);
+                $result[$parts[0]] = $parts[0];
+            }
+        }
+        return $result;
     }
 }

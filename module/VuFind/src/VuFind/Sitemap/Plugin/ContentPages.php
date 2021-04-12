@@ -130,13 +130,11 @@ class ContentPages extends AbstractGeneratorPlugin
     }
 
     /**
-     * Add urls to the sitemap.
+     * Generate urls for the sitemap.
      *
-     * @param Sitemap $sitemap Sitemap to add to
-     *
-     * @return void
+     * @return \Generator
      */
-    public function addUrls(Sitemap $sitemap): void
+    public function getUrls(): \Generator
     {
         $files = $this->themeInfo->findInThemes($this->includedFiles);
         $nonLanguageFiles = [];
@@ -166,7 +164,7 @@ class ContentPages extends AbstractGeneratorPlugin
                 ['name' => 'content-page']
             );
             $this->verboseMsg("Adding content page $url");
-            $sitemap->addUrl($url);
+            yield $url;
         }
     }
 }

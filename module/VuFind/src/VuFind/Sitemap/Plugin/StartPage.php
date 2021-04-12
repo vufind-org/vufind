@@ -71,17 +71,15 @@ class StartPage extends AbstractGeneratorPlugin
     }
 
     /**
-     * Add urls to the sitemap.
+     * Generate urls for the sitemap.
      *
-     * @param Sitemap $sitemap Sitemap to add to
-     *
-     * @return void
+     * @return \Generator
      */
-    public function addUrls(Sitemap $sitemap): void
+    public function getUrls(): \Generator
     {
         if ($this->baseUrl) {
             $this->verboseMsg('Adding start page ' . $this->baseUrl);
-            $sitemap->addUrl($this->baseUrl);
+            yield $this->baseUrl;
         }
     }
 }

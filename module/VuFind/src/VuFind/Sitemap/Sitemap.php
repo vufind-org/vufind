@@ -38,7 +38,7 @@ namespace VuFind\Sitemap;
  */
 class Sitemap extends AbstractFile
 {
-    const XHTML_NAMESPACE = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
+    public const XHTML_NAMESPACE = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
 
     /**
      * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
@@ -55,6 +55,13 @@ class Sitemap extends AbstractFile
     protected $alternativeLanguages = [];
 
     /**
+     * Whether the XHTML namespace is needed
+     *
+     * @var bool
+     */
+    protected $xhtmlNamespaceNeeded = false;
+
+    /**
      * Constructor
      *
      * @param string $frequency Frequency of URL updates
@@ -66,69 +73,63 @@ class Sitemap extends AbstractFile
     }
 
     /**
-     * Set languages to use for the entries
-     *
-     * @param array $allLanguages All available languages
-     *
-     * @return void
-     */
-    public function setLanguages(array $allLanguages): void
-    {
-        $this->alternativeLanguages = [];
-
-        // Add languages and fallbacks for non-locale specific languages:
-        foreach ($allLanguages as $language) {
-            $parts = explode('-', $language, 2);
-            if (empty($parts[1])) {
-                $this->alternativeLanguages[$language] = $language;
-            } else {
-                $this->alternativeLanguages[$language]
-                    = $parts[0] . '-' . strtoupper($parts[1]);
-                $this->alternativeLanguages[$parts[0]] = $parts[0];
-            }
-        }
-
-        if ($this->alternativeLanguages) {
-            if (!in_array(Sitemap::XHTML_NAMESPACE, $this->extraNamespaces)) {
-                $this->extraNamespaces[] = Sitemap::XHTML_NAMESPACE;
-            }
-        }
-    }
-
-    /**
      * Translate a URL into an appropriate entry for this sitemap file.
      *
-     * @param string $url URL
+     * @param string|array $url URL as a string or as an associative array
      *
      * @return string XML fragment
      */
     protected function getEntry($url)
     {
+        if (is_array($url)) {
+            $link = $url['url'];
+            $languages = $url['languages'] ?? [];
+            $frequency = $url['frequency'] ?? '';
+        } else {
+            $link = $url;
+            $languages = [];
+            $frequency = '';
+        }
         $alternativeLinks = '';
-        if ($this->alternativeLanguages) {
-            $lngParam = strpos($url, '?') === false ? '?lng=' : '&lng=';
+        if ($languages) {
+            $lngParam = strpos($link, '?') === false ? '?lng=' : '&lng=';
             $links = [
                 '<xhtml:link rel="alternate" hreflang="x-default">'
-                . htmlspecialchars($url)
+                . htmlspecialchars($link)
                 . '</xhtml:link>'
             ];
-            foreach ($this->alternativeLanguages as $vufindLng => $sitemapLng) {
+            foreach ($languages as $vufindLng => $sitemapLng) {
                 $links[] = '<xhtml:link rel="alternate" hreflang="'
                     . htmlspecialchars($sitemapLng) . '">'
-                    . htmlspecialchars($url . $lngParam . urlencode($vufindLng))
+                    . htmlspecialchars($link . $lngParam . urlencode($vufindLng))
                     . '</xhtml:link>';
             }
 
             $alternativeLinks = '  ' . implode("\n  ", $links) . "\n";
+            $this->xhtmlNamespaceNeeded = true;
         } else {
-            $locs[] = '<loc>' . htmlspecialchars($url) . '</loc>';
+            $locs[] = '<loc>' . htmlspecialchars($link) . '</loc>';
         }
-        $url = htmlspecialchars($url);
-        $freq = htmlspecialchars($this->frequency);
+        $link = htmlspecialchars($link);
+        $freq = htmlspecialchars($frequency ?: $this->frequency);
         return "<url>\n"
-            . "  <loc>$url</loc>\n"
+            . "  <loc>$link</loc>\n"
             . "  <changefreq>$freq</changefreq>\n"
             . $alternativeLinks
             . "</url>\n";
+    }
+
+    /**
+     * Get any extra namespace declarations needed for the sitemap
+     *
+     * @return array
+     */
+    protected function getExtraNamespaces()
+    {
+        $result = parent::getExtraNamespaces();
+        if ($this->xhtmlNamespaceNeeded) {
+            $result[] = Sitemap::XHTML_NAMESPACE;
+        }
+        return $result;
     }
 }
