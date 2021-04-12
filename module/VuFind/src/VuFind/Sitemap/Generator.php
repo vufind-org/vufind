@@ -343,11 +343,12 @@ class Generator
             $index = $sitemapIndexes[$name] ?? 0;
             ++$index;
             $sitemapIndexes[$name] = $index;
-            $filename = $this->getFilenameForPage($name . '-' . $index);
-            if (false === $sitemap->write($filename)) {
-                throw new \Exception("Problem writing $filename.");
+            $filename = "sitemap-$name-$index";
+            $filePath = $this->getFilenameForPage($filename);
+            if (false === $sitemap->write($filePath)) {
+                throw new \Exception("Problem writing $filePath.");
             }
-            $sitemapFiles[] = $filename;
+            $sitemapFiles[] = "$filename.xml";
         };
 
         if ($plugins = $this->config->Sitemap->plugins) {
