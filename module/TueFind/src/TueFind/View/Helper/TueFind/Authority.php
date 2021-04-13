@@ -80,6 +80,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         if (count($references) == 0)
             return '';
 
+        usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
         $display = '';
         foreach ($references as $reference)
             $display .= '<a href="' . $reference['url'] . '">' . htmlspecialchars($reference['title']) . '</a><br>';
