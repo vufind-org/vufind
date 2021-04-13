@@ -67,7 +67,11 @@ class GoogleAnalyticsFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $key = $config->GoogleAnalytics->apiKey ?? false;
-        $universal = $config->GoogleAnalytics->universal ?? false;
-        return new $requestedName($key, $universal);
+        $options = [
+            'create_options_js' =>
+                $config->GoogleAnalytics->create_options_js ?? null,
+            'universal' => $config->GoogleAnalytics->universal ?? false,
+        ];
+        return new $requestedName($key, $options);
     }
 }
