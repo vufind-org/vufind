@@ -97,13 +97,38 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function getProfessions(AuthorityRecordDriver &$driver): string {
         $professions = $driver->getProfessions();
-        $professions_display = '';
+        $professionsDisplay = '';
         foreach ($professions as $profession) {
-            if ($professions_display != '')
-                $professions_display .= '/';
-            $professions_display .= '<span property="hasOccupation">' . $profession . '</span>';
+            if ($professionsDisplay != '')
+                $professionsDisplay .= '/';
+            $professionsDisplay .= '<span property="hasOccupation">' . $profession . '</span>';
         }
-        return $professions_display;
+        return $professionsDisplay;
+    }
+
+    public function getRelations(AuthorityRecordDriver &$driver): string {
+        $relations = $driver->getRelations();
+        $relationsDisplay = '';
+        foreach ($relations as $relation) {
+            if ($relationsDisplay != '')
+                $relationsDisplay .= '<br>';
+
+            $relationsDisplay .= '<span property="relatedTo">';
+
+            if (isset($relation['id']))
+                $relationsDisplay .= '<a href="/Authority/Record?id=' . urlencode($relation['id']) . '">';
+
+            $relationsDisplay .= $relation['name'];
+
+            if (isset($relation['type']))
+                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+
+            if (isset($relation['id']))
+                $relationsDisplay .= '</a>';
+
+            $relationsDisplay .= '</span>';
+        }
+        return $relationsDisplay;
     }
 
     public function getSchemaOrgType(AuthorityRecordDriver &$driver): string {

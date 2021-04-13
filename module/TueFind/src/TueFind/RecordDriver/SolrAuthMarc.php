@@ -211,4 +211,32 @@ class SolrAuthMarc extends SolrAuthDefault {
             $names[] = $alias;
         return $names;
     }
+
+    public function getRelations(): array {
+        $relations = [];
+
+        $fields = $this->getMarcRecord()->getFields('500');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+
+                if ($nameSubfield !== false) {
+                    $relation = ['name' => $nameSubfield->getData()];
+
+                    $idPrefixPattern = '/^\(DE-627\)/';
+                    $idSubfield = $field->getSubfield('0', $idPrefixPattern);
+                    if ($idSubfield !== false)
+                        $relation['id'] = preg_replace($idPrefixPattern, '', $idSubfield->getData());
+
+                    $typeSubfield = $field->getSubfield('9');
+                    if ($typeSubfield !== false)
+                        $relation['type'] = preg_replace('/^v:/', '', $typeSubfield->getData());
+
+                    $relations[] = $relation;
+                }
+            }
+        }
+
+        return $relations;
+    }
 }
