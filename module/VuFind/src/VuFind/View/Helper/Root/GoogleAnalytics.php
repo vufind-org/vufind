@@ -62,8 +62,11 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param string|bool $key       API key (false if disabled)
-     * @param bool|array  $universal Are we using Universal Analytics?
+     * @param string|bool $key     API key (false if disabled)
+     * @param bool|array  $options Configuration options (supported options:
+     * 'universal' and 'create_options_js'). If a boolean is provided instead of
+     * an array, that value is used as the 'universal' setting and no other options
+     * are set (for backward compatibility).
      */
     public function __construct($key, $options = [])
     {
