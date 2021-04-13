@@ -180,6 +180,40 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test findInThemes()
+     *
+     * @return void
+     */
+    public function testFindInThemes()
+    {
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('child');
+        $files = $ti->findInThemes(
+            [
+                'templates/content/*.phtml',
+                'templates/content/*.md'
+            ]
+        );
+        $this->assertIsArray($files);
+        $this->assertEquals(3, count($files));
+        $this->assertEquals('parent', $files[0]['theme']);
+        $this->assertEquals(
+            'templates/content/page1.phtml',
+            $files[0]['relativeFile']
+        );
+        $this->assertEquals('child', $files[1]['theme']);
+        $this->assertEquals(
+            'templates/content/page2.phtml',
+            $files[1]['relativeFile']
+        );
+        $this->assertEquals('parent', $files[2]['theme']);
+        $this->assertEquals(
+            'templates/content/page3.md',
+            $files[2]['relativeFile']
+        );
+    }
+
+    /**
      * Get a test object
      *
      * @return ThemeInfo
