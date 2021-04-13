@@ -16,6 +16,8 @@
 </p>
 <p>
   <button type="button" id="copyPermalink" class="btn btn-primary hidden"><?=$this->translate("copy_to_clipboard_button_label")?></button>
+  <span id="copySuccessMessage" class="copyMessage hidden text-success"><small><?=$this->translate("copy_to_clipboard_success_message");?></small></span>
+  <span id="copyFailureMessage" class="copyMessage hidden text-danger"><small><?=$this->translate("copy_to_clipboard_failure_message");?></small></span>
 </p>
 <?php
 $script = <<<JS
@@ -24,7 +26,16 @@ $script = <<<JS
       const button = $("#copyPermalink");
       button.removeClass('hidden');
       button.click(function copyToClipboard() {
-        navigator.clipboard.writeText($("#permalink").text());
+        navigator.clipboard.writeText($("#permalink").text()).then(
+            function copySuccess() {
+                $("#copyFailureMessage").addClass("hidden");
+                $("#copySuccessMessage").removeClass("hidden");
+            },
+            function copyFailure() {
+                $("#copySuccessMessage").addClass("hidden");
+                $("#copyFailureMessage").removeClass("hidden");
+            }
+        );
       });
     }
   });
