@@ -12,5 +12,23 @@
 ?>
 <h2><?=$this->transEsc('permanent_link') ?></h2>
 <p>
-  <pre><?=$link?></pre>
+  <pre id="permalink"><?=$link?></pre>
 </p>
+<p>
+  <button type="button" id="copyPermalink" class="btn btn-primary hidden"><?=$this->translate("copy_to_clipboard_button_label")?></button>
+</p>
+<?php
+$script = <<<JS
+  $(document).ready(function copyPermalink() {
+    if (navigator.clipboard) {
+      const button = $("#copyPermalink");
+      button.removeClass('hidden');
+      button.click(function copyToClipboard() {
+        navigator.clipboard.writeText($("#permalink").text());
+      });
+    }
+  });
+JS;
+// Inline the script for lightbox compatibility
+echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+?>
