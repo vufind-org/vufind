@@ -68,7 +68,7 @@ class ThemeInfo
     protected $allThemeInfo = null;
 
     // Constant for use with findContainingTheme:
-    const RETURN_ALL_DETAILS = 'all';
+    public const RETURN_ALL_DETAILS = 'all';
 
     /**
      * Constructor
@@ -231,5 +231,57 @@ class ThemeInfo
         }
 
         return null;
+    }
+
+    /**
+     * Search the themes for a file pattern. Returns all matching files.
+     *
+     * Note that for any matching file the last match in the theme hierarchy is
+     * returned.
+     *
+     * @param string|array $relativePathPattern Relative path pattern (or array of
+     * patterns) to search within themes
+     *
+     * @return array
+     */
+    public function findInThemes($relativePathPattern)
+    {
+        $basePath = $this->getBaseDir();
+        $allPaths = (array)$relativePathPattern;
+
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
+
+        $allThemes = [];
+        while (!empty($currentTheme)) {
+            $allThemes = array_merge(
+                $allThemes,
+                (array)$currentTheme,
+                $allThemeInfo[$currentTheme]['mixins'] ?? []
+            );
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
+        }
+
+        // Start from the base theme so that we can find any overrides properly
+        $allThemes = array_reverse($allThemes);
+        $results = [];
+        foreach ($allThemes as $theme) {
+            $themePath = "$basePath/$theme/";
+            foreach ($allPaths as $currentPath) {
+                $path = $themePath . $currentPath;
+                foreach (glob($path) as $file) {
+                    if (filetype($file) === 'dir') {
+                        continue;
+                    }
+                    $relativeFile = substr($file, strlen($themePath));
+                    $results[$relativeFile] = [
+                        'theme' => $theme,
+                        'file' => $file,
+                        'relativeFile' => $relativeFile,
+                    ];
+                }
+            }
+        }
+        return array_values($results);
     }
 }

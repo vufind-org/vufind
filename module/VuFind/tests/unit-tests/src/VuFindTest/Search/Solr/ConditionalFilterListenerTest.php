@@ -35,7 +35,6 @@ use VuFindSearch\Backend\Solr\Connector;
 
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
 
 /**
  * Unit tests for Conditional Filter listener.
@@ -46,7 +45,7 @@ use VuFindTest\Unit\TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ConditionalFilterListenerTest extends TestCase
+class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Sample configuration for ConditionalFilters.
@@ -130,7 +129,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag(
             [
-                'fq' => ['fulltext:Vufind', 'field2:novalue'],
+                'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
         $listener = new InjectConditionalFilterListener(self::$searchConfig);
@@ -140,7 +139,7 @@ class ConditionalFilterListenerTest extends TestCase
 
         $fq   = $params->get('fq');
         $this->assertEquals(
-            [0 => 'fulltext:Vufind',
+            [0 => 'fulltext:VuFind',
             1 => 'field2:novalue'], $fq
         );
     }
@@ -176,7 +175,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag(
             [
-                'fq' => ['fulltext:Vufind', 'field2:novalue'],
+                'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
         $listener = new InjectConditionalFilterListener(self::$emptySearchConfig);
@@ -190,7 +189,7 @@ class ConditionalFilterListenerTest extends TestCase
 
         $fq   = $params->get('fq');
         $this->assertEquals(
-            [0 => 'fulltext:Vufind',
+            [0 => 'fulltext:VuFind',
             1 => 'field2:novalue'], $fq
         );
     }
@@ -257,7 +256,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag(
             [
-                'fq' => ['fulltext:Vufind', 'field2:novalue'],
+                'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
 
@@ -274,7 +273,7 @@ class ConditionalFilterListenerTest extends TestCase
 
         $fq   = $params->get('fq');
         $this->assertEquals(
-            [0 => 'fulltext:Vufind',
+            [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => '(NOT institution:"MyInst")'
             ], $fq
@@ -291,7 +290,7 @@ class ConditionalFilterListenerTest extends TestCase
     {
         $params   = new ParamBag(
             [
-                'fq' => ['fulltext:Vufind', 'field2:novalue'],
+                'fq' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
 
@@ -308,7 +307,7 @@ class ConditionalFilterListenerTest extends TestCase
 
         $fq   = $params->get('fq');
         $this->assertEquals(
-            [0 => 'fulltext:Vufind',
+            [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => 'institution:"MyInst"'
             ], $fq

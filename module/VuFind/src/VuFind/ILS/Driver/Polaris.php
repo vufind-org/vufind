@@ -72,6 +72,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $ws_api_key;
 
     /**
+     * Default pick up location
+     *
+     * @var string
+     */
+    protected $defaultPickUpLocation;
+
+    /**
      * Web services requesting organization ID
      *
      * @var string
@@ -100,8 +107,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $this->ws_api_key = $this->config['PAPI']['ws_api_key'];
         $this->ws_requestingorgid    = $this->config['PAPI']['ws_requestingorgid'];
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation'] : null;
+            = $this->config['Holds']['defaultPickUpLocation'] ?? null;
     }
 
     /**

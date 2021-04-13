@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink favorites test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,10 +41,10 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
+final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -449,7 +451,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Login and go to account home
      *
-     * @return void
+     * @return \Behat\Mink\Element\DocumentElement
      */
     protected function setupBulkTest()
     {
@@ -601,7 +603,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->selectAllItemsInList($page);
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals('print=true', $params);
     }
 

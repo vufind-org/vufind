@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://app.vagrantup.com/boxes/search
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/focal64"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
   # Network configuration to forward ports.
   config.vm.network :forwarded_port, guest: 80, host: 4567
   config.vm.network :forwarded_port, guest: 8983, host: 4568
-  config.vm.synced_folder ".", "/vagrant", :owner => 'ubuntu'
+  config.vm.synced_folder ".", "/vagrant", :owner => 'vagrant'
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
@@ -50,13 +50,12 @@ Vagrant.configure("2") do |config|
     php -r "if (hash_file('SHA384', 'composer-setup.php') === trim(file_get_contents('https://composer.github.io/installer.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
     php composer-setup.php
     php -r "unlink('composer-setup.php');"
-    php composer.phar self-update --1
     mv composer.phar /usr/local/bin/composer
 
     # Check out and set up VuFind.
     mkdir -p /vufindlocal/cache/cli /vufindlocal/config/vufind
-    chown -R ubuntu:ubuntu /vufindlocal
-    su - ubuntu -c 'cd /vagrant && composer install && php install.php --non-interactive --overridedir=/vufindlocal'
+    chown -R vagrant:vagrant /vufindlocal
+    su - vagrant -c 'cd /vagrant && composer install && php install.php --non-interactive --overridedir=/vufindlocal'
     ln -s /vufindlocal/httpd-vufind.conf /etc/apache2/conf-enabled/vufind.conf
     a2enmod rewrite
     systemctl restart apache2

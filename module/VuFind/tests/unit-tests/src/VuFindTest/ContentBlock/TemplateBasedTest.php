@@ -38,7 +38,7 @@ namespace VuFindTest\ContentBlock;
  */
 class TemplateBasedTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test basic functionality of .phtml content block.
@@ -56,6 +56,24 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
         $this->assertEquals(['templateName' => 'foo'], $block->getContext());
+    }
+
+    /**
+     * Test functionality of .phtml content block w/ i18n.
+     *
+     * @return void
+     */
+    public function testI18nPhtmlFunctionality()
+    {
+        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+            ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
+            ->will($this->returnValue(['renderer' => 'phtml', 'page' => 'foo_en', 'path' => '/path/to/foo_en.phtml']));
+        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block->setConfig('foo');
+        $this->assertEquals(['templateName' => 'foo_en'], $block->getContext());
     }
 
     /**

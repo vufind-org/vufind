@@ -59,9 +59,9 @@ class Initializer
     protected $event;
 
     /**
-     * Top-level service manager
+     * Top-level service container
      *
-     * @var \Laminas\ServiceManager\ServiceManager
+     * @var \Interop\Container\ContainerInterface
      */
     protected $serviceManager;
 
@@ -210,8 +210,7 @@ class Initializer
         if (isset($request)) {
             $selectedUI = $request->getPost()->get(
                 'ui', $request->getQuery()->get(
-                    'ui', isset($request->getCookie()->ui)
-                    ? $request->getCookie()->ui : null
+                    'ui', $request->getCookie()->ui ?? null
                 )
             );
         }

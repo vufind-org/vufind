@@ -4,7 +4,7 @@
   echo $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
@@ -22,7 +22,7 @@ JS;
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
   <div class="form-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
-    <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control"/>
+    <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control"/>
     <div class="help-block with-errors"></div>
   </div>
   <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
@@ -41,6 +41,6 @@ JS;
   <?php endif; ?>
   <?=$this->captcha()->html($this->useCaptcha) ?>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Send Text')?>"/>
   </div>
 </form>

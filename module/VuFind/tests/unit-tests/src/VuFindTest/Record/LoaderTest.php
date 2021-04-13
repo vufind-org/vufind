@@ -36,7 +36,6 @@ use VuFind\RecordDriver\PluginManager as RecordFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service as SearchService;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * Record loader tests.
@@ -47,7 +46,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoaderTest extends TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test exception for missing record.
@@ -177,24 +176,13 @@ class LoaderTest extends TestCase
             ->will($this->returnValue($missing));
 
         $service = $this->createMock(\VuFindSearch\Service::class);
-        $service->expects($this->at(0))->method('retrieveBatch')
-            ->with(
-                $this->equalTo('Solr'), $this->equalTo(['test1', 'test2']),
-                $this->equalTo($solrParams)
+        $service->expects($this->exactly(3))->method('retrieveBatch')
+            ->withConsecutive(
+                ['Solr', ['test1', 'test2'], $solrParams],
+                ['Summon', ['test3'], null],
+                ['WorldCat', ['test4'], $worldCatParams]
             )
-            ->will($this->returnValue($collection1));
-        $service->expects($this->at(1))->method('retrieveBatch')
-            ->with(
-                $this->equalTo('Summon'), $this->equalTo(['test3']),
-                $this->equalTo(null)
-            )
-            ->will($this->returnValue($collection2));
-        $service->expects($this->at(2))->method('retrieveBatch')
-            ->with(
-                $this->equalTo('WorldCat'), $this->equalTo(['test4']),
-                $this->equalTo($worldCatParams)
-            )
-            ->will($this->returnValue($collection3));
+            ->willReturnOnConsecutiveCalls($collection1, $collection2, $collection3);
 
         $loader = $this->getLoader($service, $factory);
         $input = [
@@ -227,18 +215,11 @@ class LoaderTest extends TestCase
         $solrParams->set('fq', 'id:test1');
 
         $service = $this->createMock(\VuFindSearch\Service::class);
-        $service->expects($this->at(0))->method('retrieveBatch')
-            ->with(
-                $this->equalTo('Solr'), $this->equalTo(['test1', 'test2']),
-                $this->equalTo($solrParams)
-            )
-            ->will($this->returnValue($collection1));
-        $service->expects($this->at(1))->method('retrieveBatch')
-            ->with(
-                $this->equalTo('Summon'), $this->equalTo(['test3']),
-                $this->equalTo(null)
-            )
-            ->will($this->returnValue($collection2));
+        $service->expects($this->exactly(2))->method('retrieveBatch')
+            ->withConsecutive(
+                ['Solr', ['test1', 'test2'], $solrParams],
+                ['Summon', ['test3'], null]
+            )->willReturnOnConsecutiveCalls($collection1, $collection2);
 
         $fallbackLoader = $this->getFallbackLoader([$driver3]);
         $loader = $this->getLoader($service, null, null, $fallbackLoader);

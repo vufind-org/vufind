@@ -34,15 +34,18 @@ use VuFind\Db\Table\User;
 /**
  * ILS authentication test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSTest extends \VuFindTest\Unit\DbTestCase
+final class ILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
      * Standard setup method.
@@ -100,7 +103,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         }
         $authenticator = $this->getMockILSAuthenticator($patron);
         $driverManager = new \VuFind\ILS\Driver\PluginManager(
-            $this->getServiceManager()
+            new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
@@ -113,9 +116,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             ),
             $authenticator
         );
-        $auth->setDbTableManager(
-            $this->getServiceManager()->get(\VuFind\Db\Table\PluginManager::class)
-        );
+        $auth->setDbTableManager($this->getLiveTableManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }

@@ -223,7 +223,7 @@ class DAIA extends AbstractBase implements
      */
     public function getConfig($function)
     {
-        return isset($this->config[$function]) ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -493,7 +493,7 @@ class DAIA extends AbstractBase implements
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     )
                 );
-                list($responseMediaType) = array_pad(
+                [$responseMediaType] = array_pad(
                     explode(
                         ';',
                         $result->getHeaders()->get('Content-type')->getFieldValue(),

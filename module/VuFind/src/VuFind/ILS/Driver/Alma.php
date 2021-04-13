@@ -647,7 +647,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $patronId = $username;
         if ('email' === $loginMethod) {
             // Try to find the user in Alma by an identifier
-            list($response, $status) = $this->makeRequest(
+            [$response, $status] = $this->makeRequest(
                 '/users/' . rawurlencode($username),
                 [
                     'view' => 'full'
@@ -709,7 +709,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ];
 
             // Try to authenticate the user with Alma
-            list($response, $status) = $this->makeRequest(
+            [$response, $status] = $this->makeRequest(
                 '/users/' . rawurlencode($username),
                 $getParams,
                 [],

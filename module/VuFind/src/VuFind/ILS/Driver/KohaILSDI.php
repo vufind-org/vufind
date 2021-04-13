@@ -120,6 +120,32 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $validatePasswords;
 
     /**
+     * Authorised values category for location, defaults to 'LOC'
+     *
+     * @var string
+     */
+    protected $locationAuthorisedValuesCategory;
+
+    /**
+     * Default terms for block types, can be overridden by configuration
+     *
+     * @var array
+     */
+    protected $blockTerms = [
+        'SUSPENSION' => 'Account Suspended',
+        'OVERDUES' => 'Account Blocked (Overdue Items)',
+        'MANUAL' => 'Account Blocked',
+        'DISCHARGE' => 'Account Blocked for Discharge',
+    ];
+
+    /**
+     * Display comments for patron debarments, see KohaILSDI.ini
+     *
+     * @var array
+     */
+    protected $showBlockComments;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -145,26 +171,21 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         // Base for API address
-        $this->host = isset($this->config['Catalog']['host']) ?
-            $this->config['Catalog']['host'] : "localhost";
+        $this->host = $this->config['Catalog']['host'] ?? "localhost";
 
         // Storing the base URL of ILS
-        $this->ilsBaseUrl = isset($this->config['Catalog']['url'])
-            ? $this->config['Catalog']['url'] : "";
+        $this->ilsBaseUrl = $this->config['Catalog']['url'] ?? "";
 
         // Default location defined in 'KohaILSDI.ini'
         $this->defaultLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation'] : null;
+            = $this->config['Holds']['defaultPickUpLocation'] ?? null;
 
         $this->pickupEnableBranchcodes
-            = isset($this->config['Holds']['pickupLocations'])
-            ? $this->config['Holds']['pickupLocations'] : [];
+            = $this->config['Holds']['pickupLocations'] ?? [];
 
         // Locations that should default to available, defined in 'KohaILSDI.ini'
         $this->availableLocationsDefault
-            = isset($this->config['Other']['availableLocations'])
-            ? $this->config['Other']['availableLocations'] : [];
+            = $this->config['Other']['availableLocations'] ?? [];
 
         // If we are using SAML/Shibboleth for authentication for both ourselves
         // and Koha then we can't validate the patrons passwords against Koha as
@@ -176,23 +197,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         // The Authorised Values Category use for locations should default to 'LOC'
         $this->locationAuthorisedValuesCategory
-            = isset($this->config['Catalog']['locationAuthorisedValuesCategory'])
-            ? $this->config['Catalog']['locationAuthorisedValuesCategory']
-            : 'LOC';
+            = $this->config['Catalog']['locationAuthorisedValuesCategory'] ?? 'LOC';
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
         $this->debug("ILS URL: " . $this->ilsBaseUrl);
         $this->debug("Locations: " . $this->locations);
         $this->debug("Default Location: " . $this->defaultLocation);
-
-        // Set our default terms for block types
-        $this->blockTerms = [
-            'SUSPENSION' => 'Account Suspended',
-            'OVERDUES' => 'Account Blocked (Overdue Items)',
-            'MANUAL' => 'Account Blocked',
-            'DISCHARGE' => 'Account Blocked for Discharge',
-        ];
 
         // Now override the default with any defined in the `KohaILSDI.ini` config
         // file
@@ -331,7 +342,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $contents string to be checked
      * @param string $default  value to return if $contents is ""
      *
-     * @return $contents or $default
+     * @return string
      */
     protected function getField($contents, $default = "Unknown")
     {
@@ -459,7 +470,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $end = microtime(true);
         $time2 = $end - $start;
-        echo "\t$time1 - $time2";
+        $this->debug("Request times: $time1 - $time2");
         return $result;
     }
 
@@ -523,9 +534,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => 'checkout desc'
             ];
         }
-        return isset($this->config[$function])
-            ? $this->config[$function]
-            : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -1494,7 +1503,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getMyTransactions($patron)
     {
-        echo "<!--";
         $id = $patron['id'];
         $transactionLst = [];
         $start = microtime(true);
@@ -1502,7 +1510,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_loans=1"
         );
         $end = microtime(true);
-        $requestTimes[] = $end - $start;
+        $requestTimes = [$end - $start];
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
@@ -1535,9 +1543,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
         foreach ($requestTimes as $time) {
-            echo "\n$time\n";
+            $this->debug("Request time: $time");
         }
-        echo "-->";
         return $transactionLst;
     }
 
@@ -1580,7 +1587,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($details as $renewItem) {
             $rsp = $this->makeRequest($request_prefix . $renewItem);
             if ($rsp->{'success'} != '0') {
-                list($date, $time)
+                [$date, $time]
                     = explode(" ", $this->getField($rsp->{'date_due'}));
                 $retVal['details'][$renewItem] = [
                     "success"  => true,

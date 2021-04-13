@@ -117,6 +117,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $currentUser = false;
 
     /**
+     * CSRF validator
+     *
+     * @var Csrf
+     */
+    protected $csrf;
+
+    /**
      * Constructor
      *
      * @param Config         $config         VuFind configuration
@@ -438,7 +445,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserRow|bool Object if user is logged in, false otherwise.
+     * @return UserRow|false Object if user is logged in, false otherwise.
      */
     public function isLoggedIn()
     {
@@ -583,9 +590,12 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         // Depending on verification setting, either do a direct update or else
         // put the new address into a pending state.
         if ($this->config->Authentication->verify_email ?? false) {
-            $user->pending_email = $email;
+            // If new email address is the current address, just reset any pending
+            // email address:
+            $user->pending_email = ($email === $user->email) ? '' : $email;
         } else {
             $user->updateEmail($email, true);
+            $user->pending_email = '';
         }
         $user->save();
         $this->updateSession($user);

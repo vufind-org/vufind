@@ -145,13 +145,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             throw new ILSException('Configuration needs to be set.');
         }
         $this->drivers = $this->config['Drivers'];
-        $this->defaultDriver = isset($this->config['General']['default_driver'])
-            ? $this->config['General']['default_driver']
-            : null;
+        $this->defaultDriver = $this->config['General']['default_driver'] ?? null;
         $this->driversConfigPath
-            = isset($this->config['General']['drivers_config_path'])
-            ? $this->config['General']['drivers_config_path']
-            : null;
+            = $this->config['General']['drivers_config_path'] ?? null;
     }
 
     /**
@@ -304,9 +300,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getLoginDrivers()
     {
-        return isset($this->config['Login']['drivers'])
-            ? $this->config['Login']['drivers']
-            : [];
+        return $this->config['Login']['drivers'] ?? [];
     }
 
     /**
@@ -591,6 +585,29 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver) {
             $fines = $driver->getMyFines($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes($fines, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     * @throws ILSException
+     */
+    public function getHoldLink($id, $details)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->getHoldLink($this->getLocalId($id), $details);
         }
         throw new ILSException('No suitable backend driver found');
     }

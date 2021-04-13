@@ -39,9 +39,9 @@ use VuFind\ILS\Driver\Folio;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FolioTest extends \VuFindTest\Unit\TestCase
+class FolioTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     protected $testConfig = [
         'API' => [
@@ -73,7 +73,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Run preRequest
         $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
-        list($httpHeaders, $params) = $this->driver->preRequest($httpHeaders, $params);
+        [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
         // Log request
         $this->testRequestLog[] = [
             'method' => $method,

@@ -38,8 +38,10 @@ use VuFind\Recommend\RecommendInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recommend extends AbstractClassBasedTemplateRenderer
+class Recommend extends \Laminas\View\Helper\AbstractHelper
 {
+    use ClassBasedTemplateRendererTrait;
+
     /**
      * Render the output of a recommendation module.
      *

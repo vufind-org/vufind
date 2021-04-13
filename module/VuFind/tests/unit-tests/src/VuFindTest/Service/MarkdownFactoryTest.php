@@ -30,7 +30,6 @@ namespace VuFindTest\Service;
 
 use Laminas\Config\Config;
 use VuFind\Service\MarkdownFactory;
-use VuFindTest\Unit\MockContainerTest;
 
 /**
  * MarkdownFactory Test Class
@@ -41,16 +40,15 @@ use VuFindTest\Unit\MockContainerTest;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MarkdownFactoryTest extends MockContainerTest
+class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test to ensure the markdown factory is using right config for markdown
      * service
      *
      * @return void
-     * @throws \Interop\Container\Exception\ContainerException
      */
-    public function testConfig()
+    public function testConfig(): void
     {
         $defaultConfig = [];
         $defaultEnvironment = [
@@ -112,23 +110,22 @@ class MarkdownFactoryTest extends MockContainerTest
     /**
      * Return config of created markdown service environment
      *
-     * @param $config
+     * @param array $config Configuration settings
      *
-     * @return mixed
-     * @throws \Interop\Container\Exception\ContainerException
+     * @return array
      */
-    protected function getMarkdownEnvironmentConfig($config)
+    protected function getMarkdownEnvironmentConfig(array $config): array
     {
         $config = new Config($config);
-        $configManager = $this->container->createMock(
-            \VuFind\Config\PluginManager::class, ['get']
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $configManager = $container
+            ->createMock(\VuFind\Config\PluginManager::class, ['get']);
         $configManager->expects($this->any())->method('get')
             ->will($this->returnValue($config));
-        $this->container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $markdownFactory = new MarkdownFactory();
         $markdown = $markdownFactory->__invoke(
-            $this->container, \League\CommonMark\MarkdownConverterInterface::class
+            $container, \League\CommonMark\MarkdownConverterInterface::class
         );
         return $markdown->getEnvironment()->getConfig();
     }

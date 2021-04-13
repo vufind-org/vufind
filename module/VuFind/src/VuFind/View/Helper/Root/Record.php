@@ -38,8 +38,10 @@ use VuFind\Cover\Router as CoverRouter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Record extends AbstractClassBasedTemplateRenderer
+class Record extends \Laminas\View\Helper\AbstractHelper
 {
+    use ClassBasedTemplateRendererTrait;
+
     /**
      * Context view helper
      *
@@ -97,15 +99,17 @@ class Record extends AbstractClassBasedTemplateRenderer
      * @param array  $context Variables needed for rendering template; these will
      * be temporarily added to the global view context, then reverted after the
      * template is rendered (default = record driver only).
+     * @param bool   $throw   If true (default), an exception is thrown if the
+     * template is not found. Otherwise an empty string is returned.
      *
      * @return string
      */
-    public function renderTemplate($name, $context = null)
+    public function renderTemplate($name, $context = null, $throw = true)
     {
         $template = 'RecordDriver/%s/' . $name;
         $className = get_class($this->driver);
         return $this->renderClassTemplate(
-            $template, $className, $context ?? ['driver' => $this->driver]
+            $template, $className, $context ?? ['driver' => $this->driver], $throw
         );
     }
 
@@ -464,7 +468,7 @@ class Record extends AbstractClassBasedTemplateRenderer
                 }
             }
             if ($details['size'] === false) {
-                list($details['size']) = explode(':', $preferredSize);
+                [$details['size']] = explode(':', $preferredSize);
             }
             $details['html'] = $this->renderTemplate('cover.phtml', $details);
         }
@@ -488,8 +492,7 @@ class Record extends AbstractClassBasedTemplateRenderer
             return false;
         }
         // check for context-specific overrides
-        return isset($this->config->Content->coversize[$context])
-            ? $this->config->Content->coversize[$context] : $default;
+        return $this->config->Content->coversize[$context] ?? $default;
     }
 
     /**

@@ -29,46 +29,6 @@
       $appendScripts = [];
 
       if (!isset($this->renderingError)) {
-        // Add translation strings
-        $this->jsTranslations()->addStrings(
-          [
-            'add_tag_success' => 'add_tag_success',
-            'bulk_email_success' => 'bulk_email_success',
-            'bulk_noitems_advice' => 'bulk_noitems_advice',
-            'bulk_save_success' => 'bulk_save_success',
-            'close' => 'close',
-            'collection_empty' => 'collection_empty',
-            'eol_ellipsis' => 'eol_ellipsis',
-            'error_occurred' => 'An error has occurred',
-            'go_to_list' => 'go_to_list',
-            'hold_available' => 'hold_available',
-            'libphonenumber_invalid' => 'libphonenumber_invalid',
-            'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
-            'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
-            'libphonenumber_notanumber' => 'libphonenumber_notanumber',
-            'libphonenumber_toolong' => 'libphonenumber_toolong',
-            'libphonenumber_tooshort' => 'libphonenumber_tooshort',
-            'libphonenumber_tooshortidd' => 'libphonenumber_tooshortidd',
-            'loading' => 'Loading',
-            'more' => 'more',
-            'number_thousands_separator' => [
-                'number_thousands_separator', null, ','
-            ],
-            'sms_success' => 'sms_success'
-          ]
-        );
-        // Add libphonenumber.js strings
-        $this->jsTranslations()->addStrings(
-          [
-            "Phone number invalid" => 'libphonenumber_invalid',
-            "Invalid country calling code" => 'libphonenumber_invalidcountry',
-            "Invalid region code" => 'libphonenumber_invalidregion',
-            "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
-            "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
-            "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
-            "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
-          ]
-        );
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
@@ -86,20 +46,6 @@
           if (null !== $cookieSameSite) {
             $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
           }
-          $this->jsTranslations()->addStrings(
-            [
-              'addBookBag' => 'Add to Book Bag',
-              'bookbagFull' => 'bookbag_full_msg',
-              'bookbagMax' => $cart->getMaxSize(),
-              'bookbagStatusFull' => 'bookbag_full',
-              'confirmDelete' => 'confirm_delete',
-              'confirmEmpty' => 'bookbag_confirm_empty',
-              'itemsAddBag' => 'items_added_to_bookbag',
-              'itemsInBag' => 'items_already_in_bookbag',
-              'removeBookBag' => 'Remove from Book Bag',
-              'viewBookBag' => 'View Book Bag'
-            ]
-          );
         }
         $this->headScript()->prependScript(
           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
@@ -116,20 +62,10 @@
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
         $this->headScript()->appendFile("account_ajax.js");
-        $this->jsTranslations()->addStrings(
-          [
-            'account_checkouts_due' => 'account_checkouts_due',
-            'account_checkouts_overdue' => 'account_checkouts_overdue',
-            'account_has_alerts' => 'account_has_alerts',
-            'account_normal_checkouts' => 'account_normal_checkouts',
-            'account_requests_available' => 'account_requests_available',
-            'account_requests_in_transit' => 'account_requests_in_transit',
-          ]
-        );
       }
 
       $root = rtrim($this->url('home'), '/');
-      $translations = $this->jsTranslations()->getJSON();
+      $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
@@ -162,7 +98,7 @@ JS;
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs" aria-label="<?=$this->transEsc('Breadcrumbs') ?>">
+    <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
       <div class="container">
         <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
@@ -200,7 +136,7 @@ JS;
       <div class="modal-dialog">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal">
-            <svg aria-label="<?=$this->transEsc('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+            <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
           <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
         </div>

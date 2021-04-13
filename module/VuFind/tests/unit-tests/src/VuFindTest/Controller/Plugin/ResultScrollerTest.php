@@ -30,7 +30,6 @@ namespace VuFindTest\Controller\Plugin;
 
 use Laminas\Session\Container;
 use VuFind\Controller\Plugin\ResultScroller;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * ResultScroller controller plugin tests.
@@ -41,7 +40,7 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ResultScrollerTest extends TestCase
+class ResultScrollerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test next_prev_nav bug
@@ -348,11 +347,11 @@ class ResultScrollerTest extends TestCase
      * @param bool   $firstLast Turn on first/last config?
      * @param string $sort      Sort type (null for default)
      *
-     * @return \VuFind\Search\Base\Results
+     * @return \VuFindTest\Search\TestHarness\Results
      */
     protected function getMockResults($page = 1, $limit = 20, $total = 0,
         $firstLast = true, $sort = null
-    ) {
+    ): \VuFindTest\Search\TestHarness\Results {
         $pm = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->disableOriginalConstructor()->getMock();
         $config = new \Laminas\Config\Config(
             $firstLast ? $this->getFirstLastConfig() : []
@@ -382,9 +381,9 @@ class ResultScrollerTest extends TestCase
      * (null to ignore)
      * @param array                       $methods Methods to mock
      *
-     * @return ResultScroller
+     * @return ResultScrollerMock
      */
-    protected function getMockResultScroller($results)
+    protected function getMockResultScroller($results): ResultScrollerMock
     {
         $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
             ->disableOriginalConstructor()->getMock();

@@ -83,7 +83,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     /**
      * Get the callback function for processing authors.
      *
-     * @return Callable
+     * @return callable
      */
     protected function getAuthorFunction()
     {

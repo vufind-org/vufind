@@ -28,9 +28,9 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
+use Interop\Container\ContainerInterface;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
-use Laminas\ServiceManager\ServiceManager;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -69,13 +69,13 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     /**
      * Set up custom extensions (should be called by factory).
      *
-     * @param ServiceManager $sm Service manager.
+     * @param ContainerInterface $container Service container
      *
      * @return void
      */
-    public function registerExtensions(ServiceManager $sm)
+    public function registerExtensions(ContainerInterface $container)
     {
-        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($sm);
+        $manager = new \Laminas\Feed\Writer\ExtensionPluginManager($container);
         $manager->setInvokableClass(
             'DublinCore\Renderer\Entry',
             'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'

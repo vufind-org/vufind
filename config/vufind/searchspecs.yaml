@@ -431,3 +431,9 @@ oclc_num:
   QueryFields:
     oclc_num:
       - [oclc_num, ~]
+
+WorkKeys:
+  QueryFields:
+    work_keys_str_mv:
+      - [and, 100]
+      - [or, ~]

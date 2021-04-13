@@ -39,9 +39,10 @@ use VuFind\Config\Upgrade;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UpgradeTest extends \VuFindTest\Unit\TestCase
+class UpgradeTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Target upgrade version
@@ -93,7 +94,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
         $expectedWarnings = [
-            'The Statistics module has been removed from Vufind. '
+            'The Statistics module has been removed from VuFind. '
             . 'For usage tracking, please configure Google Analytics or Piwik.'
         ];
         if ((float)$version < 1.3) {
@@ -133,7 +134,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
-                'CallNumber' => ['TopFacets:ResultsTop']
+                'CallNumber' => ['TopFacets:ResultsTop'],
+                'WorkKeys' => ['']
             ],
             $results['searches.ini']['TopRecommendations']
         );

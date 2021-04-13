@@ -41,8 +41,10 @@ use VuFind\View\Helper\Root\ProxyUrl;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LinkifyTest extends \VuFindTest\Unit\ViewHelperTestCase
+class LinkifyTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Get view helper to test.
      *

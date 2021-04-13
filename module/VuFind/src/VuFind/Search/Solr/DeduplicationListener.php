@@ -9,7 +9,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2013.
- * Copyright (C) The National Library of Finland 2013.
+ * Copyright (C) The National Library of Finland 2013-2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -34,10 +34,10 @@
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\BackendInterface;
+use Psr\Container\ContainerInterface;
+
+use VuFindSearch\Backend\Solr\Backend;
 
 /**
  * Solr merged record handling listener.
@@ -54,14 +54,14 @@ class DeduplicationListener
     /**
      * Backend.
      *
-     * @var BackendInterface
+     * @var Backend
      */
     protected $backend;
 
     /**
      * Superior service manager.
      *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $serviceLocator;
 
@@ -89,18 +89,18 @@ class DeduplicationListener
     /**
      * Constructor.
      *
-     * @param BackendInterface        $backend          Search backend
-     * @param ServiceLocatorInterface $serviceLocator   Service locator
-     * @param string                  $searchConfig     Search config file id
-     * @param string                  $dataSourceConfig Data source file id
-     * @param bool                    $enabled          Whether deduplication is
+     * @param Backend            $backend          Search backend
+     * @param ContainerInterface $serviceLocator   Service locator
+     * @param string             $searchConfig     Search config file id
+     * @param string             $dataSourceConfig Data source file id
+     * @param bool               $enabled          Whether deduplication is
      * enabled
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        ServiceLocatorInterface $serviceLocator,
+        Backend $backend,
+        ContainerInterface $serviceLocator,
         $searchConfig, $dataSourceConfig = 'datasources', $enabled = true
     ) {
         $this->backend = $backend;
@@ -137,7 +137,8 @@ class DeduplicationListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             $context = $event->getParam('context');
-            if ($params && in_array($context, ['search', 'similar', 'getids'])) {
+            $contexts = ['search', 'similar', 'getids', 'workExpressions'];
+            if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
                 if ($this->enabled && 'getids' !== $context
@@ -160,7 +161,7 @@ class DeduplicationListener
     /**
      * Check search parameters for child records filter
      *
-     * @param array|ArrayAccess $params Search parameters
+     * @param \VuFindSearch\ParamBag $params Search parameters
      *
      * @return bool
      */
@@ -186,7 +187,8 @@ class DeduplicationListener
             return $event;
         }
         $context = $event->getParam('context');
-        if ($this->enabled && ($context == 'search' || $context == 'similar')) {
+        $contexts = ['search', 'similar', 'workExpressions'];
+        if ($this->enabled && in_array($context, $contexts)) {
             $this->fetchLocalRecords($event);
         }
         return $event;
@@ -228,7 +230,7 @@ class DeduplicationListener
             $dedupData = [];
             foreach ($localIds as $localId) {
                 $localPriority = null;
-                list($source) = explode('.', $localId, 2);
+                [$source] = explode('.', $localId, 2);
                 // Ignore ID if source is not in the list of allowed record sources:
                 if ($recordSources && !in_array($source, $recordSources)) {
                     continue;
@@ -356,7 +358,7 @@ class DeduplicationListener
     /**
      * Function that determines the priority for buildings
      *
-     * @param object $params Query parameters
+     * @param \VuFindSearch\ParamBag $params Query parameters
      *
      * @return array Array keyed by building with priority as the value
      */

@@ -14,6 +14,7 @@
 namespace VuFind\Controller;
 
 use Laminas\Mail\Address;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 
@@ -39,7 +40,7 @@ class FeedbackController extends AbstractBase
     /**
      * Display Feedback home form.
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ViewModel
      */
     public function homeAction()
     {
@@ -50,7 +51,7 @@ class FeedbackController extends AbstractBase
      * Handles rendering and submit of dynamic forms.
      * Form configurations are specified in FeedbackForms.json
      *
-     * @return void
+     * @return mixed
      */
     public function formAction()
     {
@@ -93,13 +94,13 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        list($messageParams, $template)
+        [$messageParams, $template]
             = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
             $template, ['fields' => $messageParams]
         );
 
-        list($senderName, $senderEmail) = $this->getSender();
+        [$senderName, $senderEmail] = $this->getSender();
 
         $replyToName = $params->fromPost(
             'name',
@@ -116,7 +117,7 @@ class FeedbackController extends AbstractBase
 
         $sendSuccess = true;
         foreach ($recipients as $recipient) {
-            list($success, $errorMsg) = $this->sendEmail(
+            [$success, $errorMsg] = $this->sendEmail(
                 $recipient['name'], $recipient['email'], $senderName, $senderEmail,
                 $replyToName, $replyToEmail, $emailSubject, $emailMessage
             );
@@ -195,10 +196,10 @@ class FeedbackController extends AbstractBase
     /**
      * Show response after form submit.
      *
-     * @param View    $view     View
-     * @param Form    $form     Form
-     * @param boolean $success  Was email sent successfully?
-     * @param string  $errorMsg Error message (optional)
+     * @param ViewModel $view     View
+     * @param Form      $form     Form
+     * @param boolean   $success  Was email sent successfully?
+     * @param string    $errorMsg Error message (optional)
      *
      * @return array with name, email
      */

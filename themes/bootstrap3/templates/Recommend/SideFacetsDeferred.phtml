@@ -61,7 +61,7 @@
     </div>
   <?php endif; ?>
 <?php endif; ?>
-<?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 <?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
@@ -85,7 +85,7 @@
               data-path=""
               data-exclude="<?=$allowExclude?>"
               data-operator="<?=$this->recommend->getFacetOperator($field)?>"
-              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-exclude-title="<?=$this->transEscAttr('exclude_facet')?>"
               data-sort="<?=$hierarchicalFacetSortOptions[$field] ?? ''?>">
           </div>
         <?php endif; ?>

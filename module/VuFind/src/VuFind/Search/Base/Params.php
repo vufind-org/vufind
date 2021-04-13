@@ -702,8 +702,7 @@ class Params
      */
     public function getView()
     {
-        return null === $this->view
-            ? $this->getOptions()->getDefaultView() : $this->view;
+        return $this->view ?? $this->getOptions()->getDefaultView();
     }
 
     /**
@@ -806,7 +805,7 @@ class Params
     public function hasFilter($filter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
 
         // Check all of the relevant fields for matches:
         foreach ($this->getAliasesForFacetField($field) as $current) {
@@ -832,7 +831,7 @@ class Params
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
             // Extract field and value from filter string:
-            list($field, $value) = $this->parseFilter($newFilter);
+            [$field, $value] = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
     }
@@ -867,7 +866,7 @@ class Params
     public function removeFilter($oldFilter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($oldFilter);
+        [$field, $value] = $this->parseFilter($oldFilter);
 
         // Make sure the field exists
         if (isset($this->filterList[$field])) {
@@ -956,7 +955,7 @@ class Params
     {
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
-        list($fieldName) = explode(':', $filter);
+        [$fieldName] = explode(':', $filter);
         $this->checkboxFacets[$fieldName][$filter]
             = ['desc' => $desc, 'filter' => $filter];
     }
@@ -983,9 +982,8 @@ class Params
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
         }
-        return isset($this->extraFacetLabels[$field])
-            ? $this->extraFacetLabels[$field]
-            : ($default ?: 'unrecognized_facet_label');
+        return $this->extraFacetLabels[$field]
+            ?? ($default ?: 'unrecognized_facet_label');
     }
 
     /**
@@ -1036,7 +1034,7 @@ class Params
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
-            list($operator, $field) = $this->parseOperatorAndFieldName($field);
+            [$operator, $field] = $this->parseOperatorAndFieldName($field);
             $translate = in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
@@ -1128,7 +1126,7 @@ class Params
         $list = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $current) {
-                list($field, $value) = $this->parseFilter($current['filter']);
+                [$field, $value] = $this->parseFilter($current['filter']);
                 if (!isset($list[$field])) {
                     $list[$field] = [];
                 }
@@ -1219,7 +1217,7 @@ class Params
     {
         // Make sure date is valid; default to wildcard otherwise:
         $date = SolrUtils::sanitizeDate($date);
-        return $date === null ? '*' : $date;
+        return $date ?? '*';
     }
 
     /**
@@ -1279,9 +1277,9 @@ class Params
      * representing user request.
      * @param string                     $requestParam    Name of parameter
      * containing names of range filter fields.
-     * @param Callable                   $valueFilter     Optional callback to
+     * @param callable                   $valueFilter     Optional callback to
      * process values in the range.
-     * @param Callable                   $filterGenerator Optional callback to create
+     * @param callable                   $filterGenerator Optional callback to create
      * a filter query from the range values.
      *
      * @return void
@@ -1386,7 +1384,7 @@ class Params
      */
     protected function initDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'daterange', [$this, 'formatYearForDateRange'],
             [$this, 'buildDateRangeFilter']
         );
@@ -1404,7 +1402,7 @@ class Params
      */
     protected function initFullDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'fulldaterange', [$this, 'formatDateForFullDateRange'],
             [$this, 'buildFullDateRangeFilter']
         );
@@ -1422,7 +1420,7 @@ class Params
      */
     protected function initNumericRangeFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'numericrange', [$this, 'formatValueForNumericRange'],
             [$this, 'buildNumericRangeFilter']
         );
@@ -1506,7 +1504,7 @@ class Params
     public function hasHiddenFilter($filter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
 
         if (isset($this->hiddenFilters[$field])
             && in_array($value, $this->hiddenFilters[$field])
@@ -1529,7 +1527,7 @@ class Params
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasHiddenFilter($newFilter)) {
             // Extract field and value from filter string:
-            list($field, $value) = $this->parseFilter($newFilter);
+            [$field, $value] = $this->parseFilter($newFilter);
             if (!empty($field) && '' !== $value) {
                 $this->hiddenFilters[$field][] = $value;
             }

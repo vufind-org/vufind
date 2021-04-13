@@ -93,7 +93,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function __construct($mainConfig = null, $recordConfig = null)
     {
         $this->mainConfig = $mainConfig;
-        $this->recordConfig = (null === $recordConfig) ? $mainConfig : $recordConfig;
+        $this->recordConfig = $recordConfig ?? $mainConfig;
     }
 
     /**
@@ -372,7 +372,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getExtraDetail($key)
     {
-        return isset($this->extraDetails[$key]) ? $this->extraDetails[$key] : null;
+        return $this->extraDetails[$key] ?? null;
     }
 
     /**

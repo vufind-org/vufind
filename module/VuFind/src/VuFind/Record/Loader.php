@@ -309,9 +309,10 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                 $currentIds, $source, $tolerateBackendExceptions, $sourceParams
             );
             foreach ($records as $current) {
-                $position = $list->getRecordPosition($current);
-                if ($position !== false) {
-                    $retVal[$position] = $current;
+                foreach ($list->getRecordPositions($current) as $i => $position) {
+                    // If we have multiple positions, create a clone of the driver
+                    // for positions after 0, to avoid shared-reference problems:
+                    $retVal[$position] = $i == 0 ? $current : clone $current;
                 }
             }
         }
