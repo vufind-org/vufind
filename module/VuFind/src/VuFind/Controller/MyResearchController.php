@@ -1365,7 +1365,10 @@ class MyResearchController extends AbstractBase
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
             ? $this->renewals()->processRenewals(
-                $this->getRequest()->getPost(), $catalog, $patron
+                $this->getRequest()->getPost(),
+                $catalog,
+                $patron,
+                $this->serviceLocator->get(\VuFind\Validator\Csrf::class)
             )
             : [];
 
