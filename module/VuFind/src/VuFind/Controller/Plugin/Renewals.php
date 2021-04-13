@@ -106,10 +106,10 @@ class Renewals extends AbstractPlugin
                     $flashMsg->addErrorMessage('csrf_validation_failed');
                     return [];
                 }
+                // After successful token verification, clear list to shrink session
+                // and prevent double submit:
+                $csrfValidator->trimTokenList(0);
             }
-            // After successful token verification, clear list to shrink session
-            // and prevent double submit:
-            $csrfValidator->trimTokenList(0);
 
             $renewResult = $catalog->renewMyItems(
                 ['details' => $ids, 'patron' => $patron]
