@@ -414,6 +414,8 @@ class Wikipedia implements TranslatorAwareInterface
      */
     protected function parseWikipedia($rawBody)
     {
+        $imageName = null;
+        $imageCaption = null;
         // Check if data exists or not
         if (isset($rawBody['query']['pages']['-1'])) {
             return null;
@@ -471,6 +473,7 @@ class Wikipedia implements TranslatorAwareInterface
      */
     protected function getWikipediaImageURL($imageName)
     {
+        $imageUrl = null;
         $url = "http://{$this->lang}.wikipedia.org/w/api.php" .
                '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=php' .
                '&titles=Image:' . urlencode($imageName);

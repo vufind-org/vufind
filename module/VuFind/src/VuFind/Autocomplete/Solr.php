@@ -190,6 +190,7 @@ class Solr implements AutocompleteInterface
      */
     public function getSuggestions($query)
     {
+        $results = null;
         if (!is_object($this->searchObject)) {
             throw new \Exception('Please set configuration first.');
         }

@@ -344,6 +344,7 @@ class Backend extends AbstractBackend
         $params->set('rows', $limit);
         $params->set('source', $source);
 
+        $response = null;
         try {
             $response = $this->connector->query('browse', $params);
         } catch (RemoteErrorException $e) {

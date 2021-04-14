@@ -1256,8 +1256,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                 }
                 $postData = json_encode($jsonData);
                 $client->setRawBody($postData);
+                $this->debug("patronURL data sent: $postData");
             }
-            $this->debug("patronURL data sent: $postData");
             $this->debug("patronURL method: " . $client->getMethod());
             $this->debug("client: " . $client->getRequest());
             try {

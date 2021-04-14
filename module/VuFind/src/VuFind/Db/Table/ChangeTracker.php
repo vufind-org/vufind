@@ -93,9 +93,9 @@ class ChangeTracker extends Gateway
     public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
         $limit = null, $columns = null
     ) {
-        $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
-        return function ($select) use ($params) {
-            extract($params);
+        return function ($select) use ($core, $from, $until, $offset, $limit,
+            $columns
+        ) {
             if ($columns !== null) {
                 $select->columns($columns);
             }

@@ -236,13 +236,13 @@ class Resource extends Gateway
         if ($oldId !== $newId
             && $resource = $this->findResource($oldId, $source)
         ) {
+            $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
             if ($newResource = $this->findResource($newId, $source)) {
                 // Special case: merge new ID and old ID:
-                $tableObjects = [];
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
                     $tableObjects[$table] = $this->getDbTable($table);
                     $tableObjects[$table]->update(

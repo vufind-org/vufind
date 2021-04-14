@@ -178,6 +178,7 @@ class AlphaBrowse extends AbstractChannelProvider
      */
     public function getFromSearch(Results $results, $channelToken = null)
     {
+        $driver = null;
         $channels = [];
         foreach ($results->getResults() as $driver) {
             // If we have a token and it doesn't match the current driver, skip

@@ -544,6 +544,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
+            $cache = null;
             if (isset($this->config['Cache']['type'])
                 && null !== $this->cacheManager
             ) {
@@ -1460,7 +1461,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileX($user)
     {
-        $recordList = [];
         if (!isset($user['college'])) {
             $user['college'] = $this->useradm;
         }
@@ -1491,8 +1491,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if ($credit_sign == null) {
             $credit_sign = "C";
         }
-        $recordList['firstname'] = $firstname;
-        $recordList['lastname'] = $lastname;
+        $recordList = compact('firstname', 'lastname');
         if (isset($user['email'])) {
             $recordList['email'] = $user['email'];
         }
@@ -1520,6 +1519,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileDLF($user)
     {
+        $recordList = [];
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
@@ -1678,6 +1678,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
+        $details = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
                 $patron['id'], $holdInfo['id'], $holdInfo['item_id']
@@ -1723,6 +1724,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $comment = $details['comment'];
         if (strlen($comment) <= 50) {
             $comment1 = $comment;
+            $comment2 = null;
         } else {
             $comment1 = substr($comment, 0, 50);
             $comment2 = substr($comment, 50, 50);
