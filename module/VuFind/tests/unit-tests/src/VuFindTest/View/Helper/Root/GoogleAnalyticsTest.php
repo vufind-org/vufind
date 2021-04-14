@@ -47,7 +47,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOldSetup()
+    public function testOldSetup(): void
     {
         $output = $this->renderGA('myfakekey', false);
         $this->assertTrue(false !== strstr($output, 'ga.js'));
@@ -60,7 +60,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNewSetup()
+    public function testNewSetup(): void
     {
         $output = $this->renderGA('myfakekey', true);
         $this->assertTrue(false !== strstr($output, 'analytics.js'));
@@ -69,11 +69,43 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test custom create options.
+     *
+     * @return void
+     */
+    public function testCustomCreateOptions(): void
+    {
+        $createJs = "{cookieFlags: 'max-age=7200;secure;samesite=none'}";
+        $options = [
+            'universal' => true,
+            'create_options_js' => $createJs
+        ];
+        $output = $this->renderGA('myfakekey', $options);
+        // Confirm that the custom JS appears in the output, and that the
+        // default 'auto' does not:
+        $this->assertTrue(false !== strstr($output, $createJs));
+        $this->assertFalse(strstr($output, "'auto'"));
+    }
+
+    /**
+     * Test default create options.
+     *
+     * @return void
+     */
+    public function testDefaultCreateOptions(): void
+    {
+        $output = $this->renderGA('myfakekey', true);
+        // Confirm that the default JS appears in the output:
+        $expectedJs = "ga('create', 'myfakekey', 'auto');";
+        $this->assertTrue(false !== strstr($output, $expectedJs));
+    }
+
+    /**
      * Test the helper (disabled mode)
      *
      * @return void
      */
-    public function testDisabled()
+    public function testDisabled(): void
     {
         $this->assertEquals('', $this->renderGA(false));
     }
@@ -81,14 +113,14 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     /**
      * Render the GA code
      *
-     * @param string $key GA key (false for disabled)
-     * @param bool   $uni Universal mode?
+     * @param string     $key     GA key (false for disabled)
+     * @param array|bool $options Options for GA helper
      *
      * @return string
      */
-    protected function renderGA($key, $uni = false)
+    protected function renderGA(string $key, $options = []): string
     {
-        $helper = new GoogleAnalytics($key, $uni);
+        $helper = new GoogleAnalytics($key, $options);
         $helper->setView($this->getPhpRenderer());
         return (string)$helper();
     }
