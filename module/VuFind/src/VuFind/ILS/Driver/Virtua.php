@@ -461,11 +461,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $holding[] = $temp;
         }
 
-        if (count($holding) != 0 && $patron['id'] != null) {
-            return $this->checkHoldAllowed($patron['id'], $holding);
-        } else {
-            return $holding;
-        }
+        return (count($holding) != 0 && $patron['id'] != null)
+            ? $this->checkHoldAllowed($patron['id'], $holding) : $holding;
     }
 
     /**
