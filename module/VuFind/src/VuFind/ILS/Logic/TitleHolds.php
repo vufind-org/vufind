@@ -284,11 +284,11 @@ class TitleHolds
      */
     protected function getHoldDetails($data, $HMACKeys)
     {
-        $queryString = [];
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $data);
 
         // Add Params
+        $queryString = [];
         foreach ($data as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
