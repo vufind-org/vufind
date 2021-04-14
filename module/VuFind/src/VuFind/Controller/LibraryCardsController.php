@@ -79,13 +79,16 @@ class LibraryCardsController extends AbstractBase
         $catalog = $this->getILS();
 
         $config = $this->getConfig();
-        $shibboleth = !empty($config->Catalog->shibboleth_library_cards) &&
+        $allowConnectingCards = !empty(
+            $config->Catalog
+                ->auth_based_library_cards
+        ) &&
             ($this->getAuthManager()->getAuthMethod() == 'Shibboleth');
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
                 'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
-                'allowShibbolethCards' => $shibboleth,
+                'allowConnectingCards' => $allowConnectingCards,
             ]
         );
     }
@@ -245,16 +248,16 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Redirects to Shibboleth authentication to connect a new library card
+     * Redirects to authentication to connect a new library card
      *
      * @return \Laminas\Http\Response
      */
-    public function connectShibbolethCardLoginAction()
+    public function connectCardLoginAction()
     {
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
-        $url = $this->getServerUrl('librarycards-connectshibbolethcard');
+        $url = $this->getServerUrl('librarycards-connectcard');
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
         if (!$redirectUrl) {
             $this->flashMessenger()
@@ -265,11 +268,11 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Connects a new library card for shibboleth authenticated user
+     * Connects a new library card for authenticated user
      *
      * @return \Laminas\Http\Response
      */
-    public function connectShibbolethCardAction()
+    public function connectCardAction()
     {
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
