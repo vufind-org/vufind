@@ -9,11 +9,11 @@
     <div class="col-sm-8">
       <table class="table table-striped">
         <tbody>
-          <?php $professions = $this->authority()->getProfessions($this->driver);?>
-          <?php if ($professions != ''): ?>
+          <?php $occupations = $this->authority()->getOccupations($this->driver);?>
+          <?php if ($occupations != ''): ?>
             <tr>
-              <th>Professions:</th>
-              <td><?=$professions?></td>
+              <th>Occupations:</th>
+              <td><?=$occupations?></td>
             </tr>
           <?php endif; ?>
 

@@ -95,15 +95,15 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return '<span property="name">' . $name . '</span>';
     }
 
-    public function getProfessions(AuthorityRecordDriver &$driver): string {
-        $professions = $driver->getProfessions();
-        $professionsDisplay = '';
-        foreach ($professions as $profession) {
-            if ($professionsDisplay != '')
-                $professionsDisplay .= '/';
-            $professionsDisplay .= '<span property="hasOccupation">' . $profession . '</span>';
+    public function getOccupations(AuthorityRecordDriver &$driver): string {
+        $occupations = $driver->getOccupations();
+        $occupationsDisplay = '';
+        foreach ($occupations as $occupation) {
+            if ($occupationsDisplay != '')
+                $occupationsDisplay .= '/';
+            $occupationsDisplay .= '<span property="hasOccupation">' . $occupation . '</span>';
         }
-        return $professionsDisplay;
+        return $occupationsDisplay;
     }
 
     public function getRelations(AuthorityRecordDriver &$driver): string {

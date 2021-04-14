@@ -6,7 +6,7 @@
   $seeAlso = $this->driver->getSeeAlso();
   $useFor = $this->driver->getUseFor();
   $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
-  $professions = $this->authority()->getProfessions($this->driver);
+  $occupations = $this->authority()->getOccupations($this->driver);
   $birth = $this->authority()->getBirth($this->driver);
   $death = $this->authority()->getDeath($this->driver);
   $resultItemLine = 0;
@@ -17,9 +17,9 @@
       <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
-    <?php if ($professions != ''): ?>
+    <?php if ($occupations != ''): ?>
       <div class="resultItemLine<?=++$resultItemLine?>">
-        Professions: <?=$professions?>
+        <?=$this->transEsc('Occupation')?>: <?=$occupations?>
       </div>
     <?php endif; ?>
 

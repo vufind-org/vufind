@@ -21,8 +21,8 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['orcid'] ?? null;
     }
 
-    public function getProfessions() {
-        return $this->fields['profession'] ?? [];
+    public function getOccupations() {
+        return $this->fields['occupation'] ?? [];
     }
 
     public function getVIAF() {
