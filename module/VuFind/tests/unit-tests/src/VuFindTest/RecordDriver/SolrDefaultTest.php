@@ -178,8 +178,7 @@ XML;
      */
     public function testHighlightDetails()
     {
-        $details = [];
-        $details['author'] = 'test';
+        $details = ['author' => 'test'];
         $driver = $this->getDriver();
         $driver->setHighlightDetails($details);
         $this->assertEquals($details, $driver->getHighlightDetails());
