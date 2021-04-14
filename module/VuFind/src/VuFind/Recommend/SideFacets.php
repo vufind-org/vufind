@@ -151,7 +151,6 @@ class SideFacets extends AbstractFacets
      */
     public function setConfig($settings)
     {
-        $flipCheckboxes = null;
         // Parse the additional settings:
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
@@ -186,6 +185,7 @@ class SideFacets extends AbstractFacets
         }
 
         // Checkbox facets:
+        $flipCheckboxes = false;
         if (substr($checkboxSection, 0, 1) == '~') {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
@@ -193,7 +193,7 @@ class SideFacets extends AbstractFacets
         $this->checkboxFacets
             = ($checkboxSection && isset($config->$checkboxSection))
             ? $config->$checkboxSection->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
 
@@ -381,9 +381,9 @@ class SideFacets extends AbstractFacets
      */
     public function getShowMoreSetting($facetName)
     {
-        $val = null;
         // Look for either facet-specific configuration or else a configured
         // default. If neither is found, initialize return value to 0.
+        $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
             $val = intval($this->showMoreSettings[$facetName]);
         } elseif (isset($this->showMoreSettings['*'])) {
