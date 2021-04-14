@@ -2437,8 +2437,6 @@ EOT;
      */
     public function placeStorageRetrievalRequest($details)
     {
-        $xml = [];
-        $response = [];
         $patron = $details['patron'];
         $level = isset($details['level']) && !empty($details['level'])
             ? $details['level'] : 'copy';
@@ -2475,6 +2473,7 @@ EOT;
             'view' => 'full'
         ];
 
+        $xml = [];
         if ('title' == $level) {
             $xml['call-slip-title-parameters'] = [
                 'comment' => $comment,
@@ -2517,6 +2516,7 @@ EOT;
                 ? trim((string)$result->$responseNode->note) : false;
 
             // Valid Response
+            $response = [];
             if ($reply == 'ok' && $note == 'Your request was successful.') {
                 $response['success'] = true;
                 $response['status'] = 'storage_retrieval_request_place_success';
