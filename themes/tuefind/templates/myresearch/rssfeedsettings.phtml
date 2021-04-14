@@ -18,13 +18,16 @@
         <td>
           <form method="post">
             <input type="hidden" name="id" value="<?=$rssFeed['id']?>">
-            <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
-              <input type="hidden" name="action" value="remove">
-              <button type="submit" class="btn">Remove</button>
-            <?php else: ?>
-              <input type="hidden" name="action" value="add">
-              <button type="submit" class="btn">Add</button>
-            <?php endif; ?>
+            <label class="switch" onclick="this.form.submit()">
+              <?php if (in_array($rssFeed['id'], $subscribedFeedIds)): ?>
+                <input type="hidden" name="action" value="remove">
+                <input type="checkbox" checked>
+              <?php else: ?>
+                <input type="hidden" name="action" value="add">
+                <input type="checkbox">
+              <?php endif; ?>
+              <span class="slider round"></span>
+            </label>
           </form>
         </td>
       </tr>
@@ -36,13 +39,19 @@
     <p>
       <form method="post">
         Would you like to receive new entries via e-mail?
+        <label class="switch" onclick="this.form.submit()">
+          <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
+            <input type="hidden" name="action" value="unsubscribe_email">
+            <input type="checkbox" checked>
+          <?php else: ?>
+            <input type="hidden" name="action" value="subscribe_email">
+            <input type="checkbox">
+          <?php endif; ?>
+          <span class="slider round"></span>
+        </label>
+
         <?php if ($this->user->tuefind_rss_feed_send_emails): ?>
-          <input type="hidden" name="action" value="unsubscribe_email">
-          <button type="submit" class="btn">Yes</button><br>
-          You will receive all entries newer than <?=$this->user->tuefind_rss_feed_last_notification?>.
-        <?php else: ?>
-          <input type="hidden" name="action" value="subscribe_email">
-          <button type="submit" class="btn">No</button>
+            <br>You will receive all entries newer than <?=$this->user->tuefind_rss_feed_last_notification?>.
         <?php endif; ?>
       </form>
     </p>
