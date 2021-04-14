@@ -336,7 +336,6 @@ class Backend extends AbstractBackend
     public function alphabeticBrowse($source, $from, $page, $limit = 20,
         $params = null, $offsetDelta = 0
     ) {
-        $response = null;
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
@@ -345,6 +344,7 @@ class Backend extends AbstractBackend
         $params->set('rows', $limit);
         $params->set('source', $source);
 
+        $response = null;
         try {
             $response = $this->connector->query('browse', $params);
         } catch (RemoteErrorException $e) {

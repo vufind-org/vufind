@@ -148,9 +148,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function call($qs, $method = 'GET')
     {
-        $baseUrl = null;
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
+        $baseUrl = null;
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;
         } elseif ($method == 'POST') {

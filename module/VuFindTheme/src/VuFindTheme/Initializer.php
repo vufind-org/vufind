@@ -154,7 +154,6 @@ class Initializer
      */
     public function init()
     {
-        $error = null;
         // Make sure to initialize the theme just once
         if (self::$themeInitialized) {
             return;
@@ -170,6 +169,7 @@ class Initializer
         $this->sendThemeOptionsToView();
 
         // Make sure the current theme is set correctly in the tools object:
+        $error = null;
         try {
             $this->tools->setTheme($currentTheme);
         } catch (\Exception $error) {
@@ -199,7 +199,6 @@ class Initializer
      */
     protected function pickTheme(?Request $request)
     {
-        $selectedUI = null;
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
         if (PHP_SAPI == 'cli') {
@@ -209,6 +208,7 @@ class Initializer
             ? $this->config->mobile_theme : false;
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
+        $selectedUI = null;
         if (isset($request)) {
             $selectedUI = $request->getPost()->get(
                 'ui', $request->getQuery()->get(

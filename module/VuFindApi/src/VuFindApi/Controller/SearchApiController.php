@@ -227,7 +227,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
      */
     public function recordAction()
     {
-        $results = [];
         // Disable session writes
         $this->disableSessionWrites();
 
@@ -245,6 +244,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         }
 
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $results = [];
         try {
             if (is_array($request['id'])) {
                 $results = $loader->loadBatchForSource(
