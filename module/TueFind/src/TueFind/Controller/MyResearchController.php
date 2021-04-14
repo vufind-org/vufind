@@ -55,14 +55,24 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $rssTable = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)->get('rss_item');
         $rssItems = $rssTable->getItemsForUserSortedByPubDate($user->id);
-        return $this->createViewModel(['user' => $user, 'rssItems' => $rssItems]);
+        return $this->createViewModel(['user' => $user,
+                                       'rssItems' => $rssItems,
+                                       'page' => $this->params()->fromQuery('page') ?? 1]);
     }
 
+    /**
+     * This method can be used to access a user's personal RSS feed without a login,
+     * for use in e.g. a RSS reader. Instead of using the user_id, we rather use the uuid
+     * for privacy reasons:
+     * - The user_id might be shown to other users in hyperlinks (e.g. if tags are enabled)
+     * - The user_id might be guessed more easily by a brute force attack
+     */
     public function rssFeedRawAction()
     {
-        $userId = $this->params()->fromRoute('user_id');
+        $userUuid = $this->params()->fromRoute('user_uuid');
+        $user = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)->get('user')->getByUuid($userUuid);
         $instance = $this->serviceLocator->get('ViewHelperManager')->get('tuefind')->getTueFindInstance();
-        $cmd = '/usr/local/bin/rss_subset_aggregator --mode=rss_xml ' . escapeshellarg($userId) . ' ' . escapeshellarg($instance);
+        $cmd = '/usr/local/bin/rss_subset_aggregator --mode=rss_xml ' . escapeshellarg($user->id) . ' ' . escapeshellarg($instance);
 
         // We need to explicitly pass through VUFIND_HOME, or database.conf cannot be found
         putenv('VUFIND_HOME=' . getenv('VUFIND_HOME'));

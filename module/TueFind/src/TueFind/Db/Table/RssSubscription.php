@@ -19,7 +19,7 @@ class RssSubscription extends RssBase
     {
         $select = $this->getSql()->select();
         $select->join('tuefind_rss_feeds', 'tuefind_rss_subscriptions.rss_feeds_id = tuefind_rss_feeds.id', Select::SQL_STAR, SELECT::JOIN_LEFT);
-        $select->where('user_id', $userId);
+        $select->where(['user_id' => $userId]);
         $select->order('feed_name ASC');
         return $this->selectWith($select);
     }
@@ -32,8 +32,7 @@ class RssSubscription extends RssBase
     public function removeSubscription($userId, $feedId)
     {
         $delete = $this->getSql()->delete();
-        $delete->where('user_id', $userId);
-        $delete->where('rss_feeds_id', $feedId);
+        $delete->where(['user_id' => $userId, 'rss_feeds_id' => $feedId]);
         $this->deleteWith($delete);
     }
 

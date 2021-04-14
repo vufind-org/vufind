@@ -88,9 +88,10 @@ $config = [
             'myresearch-rssfeedraw' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
-                    'route'    => "/myrssfeed/:user_id",
+                    'route'    => "/myrssfeed/:user_uuid",
                     'constraints' => [
-                        'user_id'     => '[0-9]+',
+                        //example: 134b5a64-97ab-11eb-baff-309c23c4daa6
+                        'user_uuid'     => '.{8}(-.{4}){3}-.{12}',
                     ],
                     'defaults' => [
                         'controller' => 'MyResearch',
