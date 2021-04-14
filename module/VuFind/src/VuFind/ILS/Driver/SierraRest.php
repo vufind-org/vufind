@@ -1362,7 +1362,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $patron = false, $returnStatus = false
     ) {
         // Clear current access token if it's not specific to the given patron
-        if ($patron
+        if ($patron && $this->isPatronSpecificAccess()
             && $this->sessionCache->accessTokenPatron != $patron['cat_username']
         ) {
             $this->sessionCache->accessToken = null;
