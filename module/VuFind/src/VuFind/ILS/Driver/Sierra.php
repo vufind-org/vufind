@@ -102,7 +102,6 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     protected function getIds($id)
     {
-        $itemRecords = [];
         $get_record_ids_query
             = "SELECT bib_record_item_record_link.item_record_id, bib_view.id "
             . "FROM sierra_view.bib_view "
@@ -115,6 +114,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         $record_ids = pg_query_params(
             $this->db, $get_record_ids_query, [$this->idStrip($id)]
         );
+        $itemRecords = [];
         while ($record = pg_fetch_row($record_ids)) {
             $itemRecords[] = $record[0];
         }
@@ -223,7 +223,6 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function getCourses()
     {
-        $courses = [];
         try {
             // Sierra allows for multiple names for a course. Only the first name
             // will be included here; all others will be ignored. If you absolutely
@@ -235,6 +234,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "varfield_type_code = 'r' AND occ_num = '0' "
                 . "ORDER BY field_content;";
             $results = pg_query($query);
+            $courses = [];
             while ($row = pg_fetch_row($results)) {
                 $courses[$row[1]] = $row[0];
             }
