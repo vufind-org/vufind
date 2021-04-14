@@ -564,6 +564,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'records' => []
             ];
         }
+
+        $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
             $transaction = [
@@ -584,21 +586,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $transaction['message']
                     = $this->translate('item_recalled', ['%%date%%' => $date]);
             }
-            // Fetch item information
-            $item = $this->makeRequest(
-                [$this->apiBase, 'items', $transaction['item_id']],
-                ['fields' => 'bibIds,varFields'],
-                'GET',
-                $patron
-            );
-            $transaction['volume'] = $this->extractVolume($item);
-            if (!empty($item['bibIds'])) {
-                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
-
-                // Fetch bib information
-                $bib = $this->getBibRecord(
-                    $transaction['id'], 'title,publishYear', $patron
-                );
+            $item = $items[$transaction['item_id']] ?? null;
+            $transaction['volume'] = $item ? $this->extractVolume($item) : '';
+            if (!empty($item['bib'])) {
+                $bib = $item['bib'];
+                $transaction['id'] = $this->formatBibId($bib['id']);
                 if (!empty($bib['title'])) {
                     $transaction['title'] = $bib['title'];
                 }
@@ -713,6 +705,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     : 'ils_connection_failed'
             ];
         }
+
+        $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
             $transaction = [
@@ -722,21 +716,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d', $entry['outDate']
                 )
             ];
-            // Fetch item information
-            $item = $this->makeRequest(
-                [$this->apiBase, 'items', $transaction['item_id']],
-                ['fields' => 'bibIds,varFields'],
-                'GET',
-                $patron
-            );
-            $transaction['volume'] = $this->extractVolume($item);
-            if (!empty($item['bibIds'])) {
-                $transaction['id'] = $this->formatBibId($item['bibIds'][0]);
+            $item = $items[$transaction['item_id']] ?? null;
+            $transaction['volume'] = $item ? $this->extractVolume($item) : '';
+            if (!empty($item['bib'])) {
+                $bib = $item['bib'];
+                $transaction['id'] = $this->formatBibId($bib['id']);
 
-                // Fetch bib information
-                $bib = $this->getBibRecord(
-                    $transaction['id'], 'title,publishYear', $patron
-                );
                 if (!empty($bib['title'])) {
                     $transaction['title'] = $bib['title'];
                 }
@@ -2584,5 +2569,56 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             return null;
         }
         return $result;
+    }
+
+    /**
+     * Get items and their bibs for an array of transactions
+     *
+     * @param array $transactions Transaction list
+     * @param array $patron       The patron array from patronLogin
+     *
+     * @return array
+     */
+    protected function getItemsWithBibsForTransactions(array $transactions,
+        array $patron
+    ): array {
+        // Fetch items
+        $itemIds = [];
+        foreach ($transactions as $transaction) {
+            $itemIds[] = $this->extractId($transaction['item']);
+        }
+        $itemsResult = $this->makeRequest(
+            [$this->apiBase, 'items'],
+            [
+                'id' => implode(',', $itemIds),
+                'fields' => 'bibIds,varFields'
+            ],
+            'GET',
+            $patron
+        );
+        $items = [];
+        $bibIdsToItems = [];
+        foreach ($itemsResult['entries'] as $item) {
+            $items[(string)$item['id']] = $item;
+            if (!empty($item['bibIds'][0])) {
+                $bibIdsToItems[(string)$item['bibIds'][0]] = (string)$item['id'];
+            }
+        }
+        // Fetch bibs for the items
+        $bibsResult = $this->makeRequest(
+            [$this->apiBase, 'bibs'],
+            [
+                'id' => implode(',', array_keys($bibIdsToItems)),
+                'fields' => 'title,publishYear'
+            ],
+            'GET',
+            $patron
+        );
+        foreach ($bibsResult['entries'] as $bib) {
+            // Add bib data to the items
+            $items[$bibIdsToItems[(string)$bib['id']]]['bib'] = $bib;
+        }
+
+        return $items;
     }
 }
