@@ -55,7 +55,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $rssTable = $this->serviceLocator->get(\VuFind\Db\Table\PluginManager::class)->get('rss_item');
         $rssItems = $rssTable->getItemsForUserSortedByPubDate($user->id);
-        return $this->createViewModel(['user' => $user, 'rssItems' => $rssItems]);
+        return $this->createViewModel(['user' => $user,
+                                       'rssItems' => $rssItems,
+                                       'page' => $this->params()->fromQuery('page') ?? 1]);
     }
 
     /**
