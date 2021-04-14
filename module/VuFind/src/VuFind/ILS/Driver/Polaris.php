@@ -126,7 +126,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function makeRequest($api_query, $http_method = "GET",
         $patronpassword = "", $json = false
     ) {
-        $json_data = null;
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
         date_default_timezone_set('GMT');
@@ -152,6 +151,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $client = $this->httpService->createClient($url);
 
             // Attach JSON if necessary
+            $json_data = null;
             if ($json !== false) {
                 $json_data = json_encode($json);
                 $client->setRawBody($json_data);
@@ -853,7 +853,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCheckoutHistory($patron)
     {
-        $checkouts = [];
         // get number of pages, only get most recent max 200 items (last 2 pages)
         // TODO: use real pagination, not just recent items.
         $items_per_page = 100;
@@ -880,6 +879,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $page_offset = $pages;
         }
 
+        $checkouts = [];
         while ($page_offset <= $pages) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/readinghistory?rowsperpage="
