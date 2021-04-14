@@ -337,7 +337,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getHolding($id, array $patron = null, array $options = [])
     {
-        $holding = [];
         // Strip off the prefix from vtls exports
         $db_id = str_replace("vtls", "", $id);
         $fields = ["bib_id:string" => $db_id];
@@ -403,6 +402,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Build Holdings Array
+        $holding = [];
         foreach ($result as $row) {
             // If it's reserved or has a due date... not available
             if ($row['DUE_DATE'] != null || $row['REQ_COUNT'] != null) {
@@ -670,8 +670,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function renderPartSubPattern($data)
     {
-        $end_time = null;
-        $start_string = null;
+        $end_time = $start_string = null;
+
         // Handle empty patterns
         if (count($data) == 0) {
             return "";
