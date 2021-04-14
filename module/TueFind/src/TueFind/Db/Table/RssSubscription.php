@@ -32,8 +32,7 @@ class RssSubscription extends RssBase
     public function removeSubscription($userId, $feedId)
     {
         $delete = $this->getSql()->delete();
-        $delete->where('user_id', $userId);
-        $delete->where('rss_feeds_id', $feedId);
+        $delete->where(['user_id' => $userId, 'rss_feeds_id' => $feedId]);
         $this->deleteWith($delete);
     }
 
