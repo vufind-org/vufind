@@ -459,8 +459,9 @@ class Folio extends AbstractAPI implements
             foreach ($this->getPagedResults(
                 'locations', '/locations'
             ) as $location) {
-                $locationMap[$location->id]
-                    = $location->discoveryDisplayName ?? $location->name;
+                $name = $location->discoveryDisplayName ?? $location->name;
+                $code = $location->code;
+                $locationMap[$location->id] = [$name, $code];
             }
         }
         $this->putCachedData($cacheKey, $locationMap);
@@ -472,14 +473,16 @@ class Folio extends AbstractAPI implements
      *
      * @param string $locationId UUID of item location
      *
-     * @return string $locationName display name of location
+     * @return array with the display name and code of location
      */
-    protected function getLocationName($locationId)
+    protected function getLocationData($locationId)
     {
         $locationMap = $this->getLocations();
         $locationName = '';
+        $locationCode = '';
         if (array_key_exists($locationId, $locationMap)) {
-            $locationName = $locationMap[$locationId];
+            $locationName = $locationMap[$locationId][0];
+            $locationCode = $locationMap[$locationId][1];
         } else {
             // if key is not found in cache, the location could have
             // been added before the cache expired so check again
@@ -489,10 +492,11 @@ class Folio extends AbstractAPI implements
             if ($locationResponse->isSuccess()) {
                 $location = json_decode($locationResponse->getBody());
                 $locationName = $location->discoveryDisplayName ?? $location->name;
+                $locationCode = $location->code;
             }
         }
 
-        return $locationName;
+        return [$locationName, $locationCode];
     }
 
     /**
@@ -555,7 +559,9 @@ class Folio extends AbstractAPI implements
                     array_map($notesFormatter, $item->notes ?? [])
                 );
                 $locationId = $item->effectiveLocationId;
-                $locationName = $this->getLocationName($locationId);
+                $locationData = $this->getLocationData($locationId);
+                $locationName = $locationData[0];
+                $locationCode = $locationData[1];
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -572,6 +578,7 @@ class Folio extends AbstractAPI implements
                     'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
+                    'location_code' => $locationCode,
                     'reserve' => 'TODO',
                     'addLink' => true
                 ];
