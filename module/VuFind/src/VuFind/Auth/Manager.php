@@ -738,7 +738,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     }
 
     /**
-     * Connect user authenticated by shibboleth as library card to his account.
+     * Connect authenticated user as library card to his account.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object
      * containing account credentials.

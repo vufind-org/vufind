@@ -312,9 +312,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function supportsConnectingLibraryCard()
     {
-        // By default, connecting library card of currently authenticated user
-        // is not supported.
-        return false;
+        return method_exists($this, 'connectLibraryCard');
     }
 
     /**

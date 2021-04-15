@@ -332,17 +332,6 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Does this authentication method support connecting library card of
-     * currently authenticated user
-     *
-     * @return bool
-     */
-    public function supportsConnectingLibraryCard()
-    {
-        return true;
-    }
-
-    /**
      * Connect user authenticated by Shibboleth to library card.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
