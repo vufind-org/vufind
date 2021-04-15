@@ -332,6 +332,17 @@ class Shibboleth extends AbstractBase
     }
 
     /**
+     * Does this authentication method support connecting library card of
+     * currently authenticated user
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard()
+    {
+        return true;
+    }
+
+    /**
      * Connect user authenticated by shibboleth to library card.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
@@ -341,7 +352,7 @@ class Shibboleth extends AbstractBase
      *
      * @return void
      */
-    public function connectUserCard($request, $connectingUser)
+    public function connectLibraryCard($request, $connectingUser)
     {
         $entityId = $this->getCurrentEntityId($request);
         $shib = $this->getConfigurationLoader()->getConfiguration($entityId);

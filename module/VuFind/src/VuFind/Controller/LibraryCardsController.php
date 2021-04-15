@@ -79,16 +79,12 @@ class LibraryCardsController extends AbstractBase
         $catalog = $this->getILS();
 
         $config = $this->getConfig();
-        $allowConnectingCards = !empty(
-            $config->Catalog
-                ->auth_based_library_cards
-        ) &&
-            ($this->getAuthManager()->getAuthMethod() == 'Shibboleth');
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
                 'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
-                'allowConnectingCards' => $allowConnectingCards,
+                'allowConnectingCards' => $this->getAuthManager()
+                    ->supportsConnectingLibraryCard(),
             ]
         );
     }
@@ -257,6 +253,14 @@ class LibraryCardsController extends AbstractBase
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
+        if (!$this->getAuthManager()->supportsConnectingLibraryCard()) {
+            $this->flashMessenger()
+                ->addMessage(
+                    'Connecting of library cards is not supported',
+                    'error'
+                );
+            return $this->redirect()->toRoute('librarycards-home');
+        }
         $url = $this->getServerUrl('librarycards-connectcard');
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
         if (!$redirectUrl) {
@@ -277,13 +281,21 @@ class LibraryCardsController extends AbstractBase
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
+        if (!$this->getAuthManager()->supportsConnectingLibraryCard()) {
+            $this->flashMessenger()
+                ->addMessage(
+                    'Connecting of library cards is not supported',
+                    'error'
+                );
+            return $this->redirect()->toRoute('librarycards-home');
+        }
         try {
-            $this->getAuthManager()->connectUserCard($this->getRequest(), $user);
+            $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
         } catch (\Exception $ex) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage($ex->getMessage());
         }
-        return $this->redirect()->toUrl('/LibraryCards/Home');
+        return $this->redirect()->toRoute('librarycards-home');
     }
 
     /**

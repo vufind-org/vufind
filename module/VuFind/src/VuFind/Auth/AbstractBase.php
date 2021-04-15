@@ -305,6 +305,19 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Does this authentication method support connecting library card of
+     * currently authenticated user?
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard()
+    {
+        // By default, connecting library card of currently authenticated user
+        // is not supported.
+        return false;
+    }
+
+    /**
      * Return a canned password policy hint when available
      *
      * @param string $pattern Current policy pattern

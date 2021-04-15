@@ -237,6 +237,20 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     }
 
     /**
+     * Is connecting library card allowed and supported?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard($authMethod = null)
+    {
+        return ($this->config->Catalog->auth_based_library_cards ?? false)
+            && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than
@@ -734,13 +748,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      * @return void
      * @throws \Exception
      */
-    public function connectUserCard($request, $user)
+    public function connectLibraryCard($request, $user)
     {
         $auth = $this->getAuth();
-        if (!is_callable([$auth, 'connectUserCard'])) {
+        if (!$auth->supportsConnectingLibraryCard()) {
             throw new \Exception("Connecting of library cards is not supported");
         }
-        $auth->connectUserCard($request, $user);
+        $auth->connectLibraryCard($request, $user);
     }
 
     /**
