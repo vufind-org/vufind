@@ -316,6 +316,36 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getPostField()
+     *
+     * @return void
+     */
+    public function testGetPostField(): void
+    {
+        $exportConfig = ['foo' => ['postField' => 'postField']];
+        $export = $this->getExport([], $exportConfig);
+        // Test configured method:
+        $this->assertEquals('postField', $export->getPostField('foo'));
+        // Test default:
+        $this->assertEquals('ImportData', $export->getPostField('bar'));
+    }
+
+    /**
+     * Test getTargetWindow()
+     *
+     * @return void
+     */
+    public function testGetTargetWindow(): void
+    {
+        $exportConfig = ['foo' => ['targetWindow' => 'window']];
+        $export = $this->getExport([], $exportConfig);
+        // Test configured method:
+        $this->assertEquals('window', $export->getTargetWindow('foo'));
+        // Test default:
+        $this->assertEquals('barMain', $export->getTargetWindow('bar'));
+    }
+
+    /**
      * Get a fake MARCXML record
      *
      * @param string $id ID to put in record.
