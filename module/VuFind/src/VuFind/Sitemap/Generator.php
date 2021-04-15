@@ -735,6 +735,9 @@ class Generator
      */
     protected function getSitemapLanguages(array $locales, array $allowed): array
     {
+        if (empty($this->config->Sitemap->indexLanguageVersions)) {
+            return [];
+        }
         $result = [];
         // Add languages and fallbacks for non-locale specific languages:
         if ($allowed) {
