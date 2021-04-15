@@ -453,7 +453,16 @@ class Generator
                 if (strpos($loc, 'http') === false) {
                     $loc = 'http://' . $loc;
                 }
-                $smf->addUrl($loc);
+                if ($this->languages) {
+                    $smf->addUrl(
+                        [
+                            'url' => $loc,
+                            'languages' => $this->languages
+                        ]
+                    );
+                } else {
+                    $smf->addUrl($loc);
+                }
             }
             $filename = $this->getFilenameForPage($currentPage);
             if (false === $smf->write($filename)) {
