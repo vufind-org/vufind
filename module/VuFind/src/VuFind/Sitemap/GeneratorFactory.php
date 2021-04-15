@@ -72,8 +72,8 @@ class GeneratorFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFind\Search\BackendManager::class),
             $container->get(\VuFindSearch\Service::class),
-            $configLoader->get('sitemap'),
             $configLoader->get('config')->Site->url ?? '',
+            $configLoader->get('sitemap'),
             $enabledLocales,
             $container->get(\VuFind\Sitemap\PluginManager::class)
         );

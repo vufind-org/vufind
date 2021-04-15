@@ -163,20 +163,20 @@ class Generator
      *
      * @param BackendManager $bm      Search backend manaver
      * @param SearchService  $ss      Search manager
+     * @param string         $baseUrl VuFind base URL
      * @param Config         $config  Sitemap configuration settings
-     * @param string         $baseUrl Base URL for the site
      * @param array          $locales Enabled locales
      * @param PluginManager  $pm      Generator plugin manager
      */
-    public function __construct(BackendManager $bm, SearchService $ss,
-        Config $config, string $baseUrl, array $locales, PluginManager $pm
+    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
+        Config $config, array $locales, PluginManager $pm
     ) {
         // Save incoming parameters:
         $this->backendManager = $bm;
         $this->searchService = $ss;
+        $this->baseUrl = $baseUrl;
         $this->config = $config;
         $this->pluginManager = $pm;
-        $this->baseUrl = $baseUrl;
 
         $this->languages = $this->getSitemapLanguages(
             $locales,
