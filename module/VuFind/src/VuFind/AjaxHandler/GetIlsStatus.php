@@ -86,6 +86,7 @@ class GetIlsStatus extends AbstractBase
      */
     public function handleRequest(Params $params)
     {
+        $html = null;
         $this->disableSessionWrites();
         if ($this->ils->getOfflineMode(true) == 'ils-offline') {
             $offlineModeMsg = $params->fromPost(

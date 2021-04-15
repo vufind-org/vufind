@@ -716,6 +716,7 @@ class Folio extends AbstractAPI implements
      */
     public function patronLogin($username, $password)
     {
+        $profile = null;
         $doOkapiLogin = $this->config['User']['okapi_login'] ?? false;
         $usernameField = $this->config['User']['username_field'] ?? 'username';
 
@@ -1035,8 +1036,8 @@ class Folio extends AbstractAPI implements
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         try {
-            $requiredBy = date_create_from_format(
-                'm-d-Y',
+            $requiredBy = $this->dateConverter->convertFromDisplayDate(
+                'Y-m-d',
                 $holdDetails['requiredBy']
             );
         } catch (Exception $e) {
@@ -1049,7 +1050,7 @@ class Folio extends AbstractAPI implements
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
             'fulfilmentPreference' => 'Hold Shelf',
-            'requestExpirationDate' => date_format($requiredBy, 'Y-m-d'),
+            'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
         $response = $this->makeRequest(

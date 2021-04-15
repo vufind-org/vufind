@@ -506,6 +506,7 @@ class Holds
         $HMACkey = $this->hmac->generate($HMACKeys, $details);
 
         // Add Params
+        $queryString = [];
         foreach ($details as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {

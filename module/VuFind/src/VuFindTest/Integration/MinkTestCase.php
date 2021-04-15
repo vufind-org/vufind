@@ -263,6 +263,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function clickCss(Element $page, $selector, $timeout = 1000)
     {
+        $e = null;
         $result = $this->findCss($page, $selector, $timeout);
         for ($tries = 0; $tries < 3; $tries++) {
             try {

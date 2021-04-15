@@ -59,6 +59,7 @@ class MaintenanceController extends AbstractAdmin
      */
     public function clearcacheAction()
     {
+        $cache = null;
         $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();

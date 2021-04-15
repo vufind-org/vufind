@@ -136,6 +136,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $returnStatus = false
     ) {
         // Set some variables
+        $url = null;
         $result = null;
         $statusCode = null;
         $returnValue = null;
@@ -273,8 +274,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // Prepare result array with default values. If no API result can be received
         // these will be returned.
-        $results['total'] = 0;
-        $results['holdings'] = [];
+        $results = ['total' => 0, 'holdings' => []];
 
         // Correct copy count in case of paging
         $copyCount = $options['offset'] ?? 0;
