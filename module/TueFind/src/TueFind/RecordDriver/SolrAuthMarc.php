@@ -30,12 +30,30 @@ class SolrAuthMarc extends SolrAuthDefault {
         $gndNumber = $this->getGNDNumber();
         if ($gndNumber != null)
             $references[] = ['title' => 'GND',
-                             'url' => 'http://d-nb.info/gnd/' . $gndNumber];
+                             'url' => 'http://d-nb.info/gnd/' . urlencode($gndNumber)];
+
+        $isni = $this->getISNI();
+        if ($isni != null)
+            $references[] = ['title' => 'ISNI',
+                             'url' => 'https://isni.org/isni/' . urlencode(str_replace(' ', '', $isni))];
+
+        $orcid = $this->getORCID();
+        if ($orcid != null)
+            $references[] = ['title' => 'ORCID',
+                             'url' => 'https://orcid.org/' . urlencode($orcid)];
+
+        $viaf = $this->getVIAF();
+        if ($viaf != null)
+            $references[] = ['title' => 'VIAF',
+                             'url' => 'https://viaf.org/viaf/' . urlencode($viaf)];
 
         $fields = $this->getMarcRecord()->getFields('670');
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
+                if (in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'ORCID', 'VIAF']))
+                    continue;
+
                 $urlSubfield = $field->getSubfield('u');
 
                 if ($nameSubfield !== false && $urlSubfield !== false)
