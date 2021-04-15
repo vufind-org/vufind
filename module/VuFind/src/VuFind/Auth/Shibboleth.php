@@ -343,7 +343,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Connect user authenticated by shibboleth to library card.
+     * Connect user authenticated by Shibboleth to library card.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
      * containing account credentials.
@@ -384,7 +384,7 @@ class Shibboleth extends AbstractBase
     /**
      * Extract required user attributes from the configuration.
      *
-     * @param array $config shibboleth configuration
+     * @param array $config Shibboleth configuration
      *
      * @return array      Only username and attribute-related values
      * @throws AuthException
