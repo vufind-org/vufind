@@ -37,6 +37,11 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'ISNI',
                              'url' => 'https://isni.org/isni/' . urlencode(str_replace(' ', '', $isni))];
 
+        $lccn = $this->getLCCN();
+        if ($lccn != null)
+            $references[] = ['title' => 'LOC',
+                             'url' => 'https://lccn.loc.gov/' . urlencode($lccn)];
+
         $orcid = $this->getORCID();
         if ($orcid != null)
             $references[] = ['title' => 'ORCID',
@@ -47,11 +52,16 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'VIAF',
                              'url' => 'https://viaf.org/viaf/' . urlencode($viaf)];
 
+        $wikidataId = $this->getWikidataId();
+        if ($wikidataId != null)
+            $references[] = ['title' => 'Wikidata',
+                             'url' => 'https:////www.wikidata.org/wiki/' . urlencode($wikidataId)];
+
         $fields = $this->getMarcRecord()->getFields('670');
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
-                if (in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'ORCID', 'VIAF']))
+                if (in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata']))
                     continue;
 
                 $urlSubfield = $field->getSubfield('u');

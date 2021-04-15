@@ -225,7 +225,6 @@ $config = [
         'recorddriver_tabs' => [
             'VuFind\RecordDriver\SolrAuthMarc' => [
                 'tabs' => [
-                    'ExternalAuthorityDatabases' => 'ExternalAuthorityDatabases',
                     'Details' => 'StaffViewMARC',
                 ],
                 'defaultTab' => null,
