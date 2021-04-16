@@ -92,7 +92,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         // getMetadata could return null or false, that is the reason we are
         // respecting the returned value - in case it is not empty array to be on
         // safe side and not return bad type here
-        return $metadata['url'] ?? (!empty($metadata) ? $metadata : false);
+        return $metadata['url'] ?? (!is_array($metadata) ? $metadata : false);
     }
 
     /**
