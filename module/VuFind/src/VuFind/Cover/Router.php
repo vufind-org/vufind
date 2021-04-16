@@ -81,7 +81,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
      * @param bool         $testLoadImage  If true the function will try to load the
      * cover image in advance and returns false in case no image could be loaded
      *
-     * @return string|bool
+     * @return string|false|null
      */
     public function getUrl(RecordDriver $driver, $size = 'small',
         $resolveDynamic = true, $testLoadImage = false
@@ -89,7 +89,10 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         $metadata = $this->getMetadata(
             $driver, $size, $resolveDynamic, $testLoadImage
         );
-        return $metadata['url'] ?? $metadata;
+        // getMetadata could return null or false, that is the reason we are
+        // respecting the returned value - in case it is not empty array to be on
+        // safe side and not return bad type here
+        return $metadata['url'] ?? (!empty($metadata) ? $metadata : false);
     }
 
     /**
