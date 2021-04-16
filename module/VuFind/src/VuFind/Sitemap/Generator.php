@@ -351,7 +351,7 @@ class Generator
             $sitemapFiles[] = $this->getFilenameForPage($pageName, false);
         };
 
-        if ($plugins = $this->config->Sitemap->plugins) {
+        if ($plugins = $this->config->Sitemap->plugins ?? []) {
             $pluginSitemaps = [];
             foreach ($plugins->toArray() as $pluginName) {
                 $plugin = $this->getPlugin($pluginName);
@@ -641,7 +641,7 @@ class Generator
             // Add <sitemap /> group for each sitemap file generated.
             for ($i = 1; $i <= $totalPages; $i++) {
                 $sitemapNumber = ($i == 1) ? "" : "-" . $i;
-                $file = $this->config->Sitemap->fileName . $sitemapNumber . '.xml';
+                $file = $this->fileStart . $sitemapNumber . '.xml';
                 $smf->addUrl($baseUrl . '/' . $file);
             }
 
