@@ -196,10 +196,10 @@ class Generator
         }
 
         // Store other key config settings:
-        $this->frequency = $this->config->Sitemap->frequency;
-        $this->countPerPage = $this->config->Sitemap->countPerPage;
-        $this->fileLocation = $this->config->Sitemap->fileLocation;
-        $this->fileStart = $this->config->Sitemap->fileName;
+        $this->frequency = $this->config->Sitemap->frequency ?? 'weekly';
+        $this->countPerPage = $this->config->Sitemap->countPerPage ?? 10000;
+        $this->fileLocation = $this->config->Sitemap->fileLocation ?? '/tmp';
+        $this->fileStart = $this->config->Sitemap->fileName ?? 'sitemap';
         if (isset($this->config->Sitemap->retrievalMode)) {
             $this->retrievalMode = $this->config->Sitemap->retrievalMode;
         }
