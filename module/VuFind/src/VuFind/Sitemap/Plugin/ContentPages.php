@@ -29,7 +29,6 @@ namespace VuFind\Sitemap\Plugin;
 
 use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
-use VuFind\Sitemap\Sitemap;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -138,7 +137,9 @@ class ContentPages extends AbstractGeneratorPlugin
     {
         $files = $this->themeInfo->findInThemes($this->includedFiles);
         $nonLanguageFiles = [];
-        $languages = array_keys($this->config->Languages->toArray());
+        $languages = isset($this->config->Languages)
+            ? array_keys($this->config->Languages->toArray())
+            : [];
         // Check each file for language suffix and combine the files into a
         // non-language specific array
         foreach ($files as $fileInfo) {
