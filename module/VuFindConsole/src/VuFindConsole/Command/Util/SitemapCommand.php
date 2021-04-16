@@ -85,13 +85,18 @@ class SitemapCommand extends Command
                 'baseurl',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'base URL (overrides the url setting in Site section of config.ini)'
+                'Base URL (overrides the url setting in Site section of config.ini)'
             )->addOption(
                 'basesitemapurl',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'base sitemap URL (overrides the url setting in Site section of '
+                'Base sitemap URL (overrides the url setting in Site section of '
                 . 'config.ini, or baseSitemapUrl in sitemap.ini)'
+            )->addOption(
+                'filelocation',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Output path (overrides the fileLocation setting in sitemap.ini)'
             );
     }
 
@@ -113,6 +118,9 @@ class SitemapCommand extends Command
         }
         if ($sitemapUrl = $input->getOption('basesitemapurl')) {
             $this->generator->setBaseSitemapUrl($sitemapUrl);
+        }
+        if ($fileLocation = $input->getOption('filelocation')) {
+            $this->generator->setFileLocation($fileLocation);
         }
         $this->generator->generate();
         foreach ($this->generator->getWarnings() as $warning) {

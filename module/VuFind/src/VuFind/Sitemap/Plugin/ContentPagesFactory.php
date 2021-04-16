@@ -1,10 +1,10 @@
 <?php
 /**
- * Sitemap Generator factory.
+ * Content pages generator plugin factory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,12 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Sitemap
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-namespace VuFind\Sitemap;
+namespace VuFind\Sitemap\Plugin;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
@@ -34,15 +34,15 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Sitemap Generator factory.
+ * Content pages generator plugin factory
  *
  * @category VuFind
- * @package  Service
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Sitemap
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GeneratorFactory implements FactoryInterface
+class ContentPagesFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,17 +65,10 @@ class GeneratorFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $enabledLocales = array_keys(
-            $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
-                ->getEnabledLocales()
-        );
         return new $requestedName(
-            $container->get(\VuFind\Search\BackendManager::class),
-            $container->get(\VuFindSearch\Service::class),
-            $configLoader->get('config')->Site->url ?? '',
-            $configLoader->get('sitemap'),
-            $enabledLocales,
-            $container->get(\VuFind\Sitemap\PluginManager::class)
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get('HttpRouter'),
+            $configLoader->get('config')
         );
     }
 }
