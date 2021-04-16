@@ -115,7 +115,7 @@ $config = [
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\RedirectController' => 'TueFind\Controller\RedirectControllerFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
-            'TueFind\Controller\ShortlinkController' => 'VuFind\Controller\AbstractBaseFactory',
+            'TueFind\Controller\ShortlinkController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
