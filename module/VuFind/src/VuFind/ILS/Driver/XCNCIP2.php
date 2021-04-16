@@ -1435,10 +1435,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
         [$pickUpAgency, $pickUpLocation] = explode("|", $pickUpLocation);
-        $lastInterestDate = $details['requiredBy'];
-        $lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
-            . substr($lastInterestDate, 0, 5);
-        $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
+
+        $convertedDate = $this->dateConverter->convertFromDisplayDate(
+            'U', $details['requiredBy']
+        );
+        $lastInterestDate = \DateTime::createFromFormat('U', $convertedDate);
+        $lastInterestDate->setTime(23, 59, 59);
+        $lastInterestDateStr = $lastInterestDate->format('c');
         $successReturn = [
             'success' => true,
             'sysMessage' => $msgPrefix . 'Request Successful.'
@@ -1451,7 +1454,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $request = $this->getRequest(
             $username, $password, $bibId, $itemId,
             $details['patron']['patronAgencyId'], $details['item_agency_id'],
-            $type, "Item", $lastInterestDate, $pickUpLocation
+            $type, "Item", $lastInterestDateStr, $pickUpLocation
         );
         $response = $this->sendRequest($request);
 
