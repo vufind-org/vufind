@@ -93,15 +93,13 @@ class Sitemap extends AbstractFile
         $alternativeLinks = '';
         if ($languages) {
             $lngParam = strpos($link, '?') === false ? '?lng=' : '&lng=';
-            $links = [
-                '<xhtml:link rel="alternate" hreflang="x-default">'
-                . htmlspecialchars($link)
-                . '</xhtml:link>'
-            ];
-            foreach ($languages as $vufindLng => $sitemapLng) {
+            $links = [];
+            foreach ($languages as $sitemapLng => $vufindLng) {
+                $lngLink = $vufindLng
+                    ? $link . $lngParam . urlencode($vufindLng) : $link;
                 $links[] = '<xhtml:link rel="alternate" hreflang="'
                     . htmlspecialchars($sitemapLng) . '">'
-                    . htmlspecialchars($link . $lngParam . urlencode($vufindLng))
+                    . htmlspecialchars($lngLink)
                     . '</xhtml:link>';
             }
 

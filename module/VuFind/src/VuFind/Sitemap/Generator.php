@@ -178,12 +178,7 @@ class Generator
         $this->config = $config;
         $this->pluginManager = $pm;
 
-        $this->languages = $this->getSitemapLanguages(
-            $locales,
-            $this->config->Sitemap->allowedLanguages
-                ? $this->config->Sitemap->allowedLanguages->toArray()
-                : []
-        );
+        $this->languages = $this->getSitemapLanguages($locales);
 
         $this->baseSitemapUrl = empty($this->config->SitemapIndex->baseSitemapUrl)
             ? $this->baseUrl : $this->config->SitemapIndex->baseSitemapUrl;
@@ -728,30 +723,53 @@ class Generator
     /**
      * Get languages for a sitemap
      *
+     * Returns an array with sitemap languages as keys and VuFind languages as
+     * values.
+     *
      * @param array $locales Enabled VuFind locales
-     * @param array $allowed Locales allowed in sitemap configuration
      *
      * @return array
      */
-    protected function getSitemapLanguages(array $locales, array $allowed): array
+    protected function getSitemapLanguages(array $locales): array
     {
         if (empty($this->config->Sitemap->indexLanguageVersions)) {
             return [];
         }
+        if (trim($this->config->Sitemap->indexLanguageVersions) === '*') {
+            $filter = [];
+        } else {
+            $filter = array_map(
+                'trim',
+                explode(',', $this->config->Sitemap->indexLanguageVersions)
+            );
+        }
         $result = [];
         // Add languages and fallbacks for non-locale specific languages:
-        if ($allowed) {
-            $locales = array_intersect($locales, $allowed);
+        if ($filter) {
+            $locales = array_intersect($locales, $filter);
         }
         foreach ($locales as $locale) {
             $parts = explode('-', $locale, 2);
-            if (empty($parts[1])) {
+            $langPart = $parts[0];
+            $regionPart = $parts[1] ?? '';
+            if (!$regionPart) {
                 $result[$locale] = $locale;
             } else {
-                $result[$locale] = $parts[0] . '-' . strtoupper($parts[1]);
-                $result[$parts[0]] = $parts[0];
+                $sitemapLocale = $langPart . '-' . strtoupper($regionPart);
+                $result[$sitemapLocale] = $locale;
+                // If the fallback language is not enabled in VuFind, add the
+                // locale-specific language as the fallback:
+                if (!in_array($langPart, $locales)) {
+                    $result[$langPart] = $locale;
+                }
             }
         }
+        // If any languages are active, add the sitemap default language without a
+        // target language code to the list as well:
+        if ($result) {
+            $result['x-default'] = null;
+        }
+
         return $result;
     }
 }

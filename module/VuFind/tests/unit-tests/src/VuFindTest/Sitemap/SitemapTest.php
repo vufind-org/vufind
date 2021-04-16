@@ -82,13 +82,17 @@ XML;
         $sm->addUrl(
           [
             'url' => 'http://foo',
-            'languages' => ['en' => 'en', 'en-gb' => 'en-GB', 'fi' => 'fi']
+            'languages' => [
+              'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+            ]
           ]
         );
         $sm->addUrl(
           [
             'url' => 'http://bar?t=1',
-            'languages' => ['en' => 'en', 'en-gb' => 'en-GB', 'fi' => 'fi'],
+            'languages' => [
+              'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+            ],
             'frequency' => 'daily'
           ]
         );
@@ -105,18 +109,18 @@ XML;
 <url>
   <loc>http://foo</loc>
   <changefreq>weekly</changefreq>
-  <xhtml:link rel="alternate" hreflang="x-default">http://foo</xhtml:link>
   <xhtml:link rel="alternate" hreflang="en">http://foo?lng=en</xhtml:link>
   <xhtml:link rel="alternate" hreflang="en-GB">http://foo?lng=en-gb</xhtml:link>
   <xhtml:link rel="alternate" hreflang="fi">http://foo?lng=fi</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="x-default">http://foo</xhtml:link>
 </url>
 <url>
   <loc>http://bar?t=1</loc>
   <changefreq>daily</changefreq>
-  <xhtml:link rel="alternate" hreflang="x-default">http://bar?t=1</xhtml:link>
   <xhtml:link rel="alternate" hreflang="en">http://bar?t=1&amp;lng=en</xhtml:link>
   <xhtml:link rel="alternate" hreflang="en-GB">http://bar?t=1&amp;lng=en-gb</xhtml:link>
   <xhtml:link rel="alternate" hreflang="fi">http://bar?t=1&amp;lng=fi</xhtml:link>
+  <xhtml:link rel="alternate" hreflang="x-default">http://bar?t=1</xhtml:link>
 </url>
 <url>
   <loc>http://baz</loc>
@@ -124,6 +128,6 @@ XML;
 </url>
 </urlset>
 XML;
-        $this->assertEquals($expected, $sm->toString());
+        $this->assertXmlStringEqualsXmlString($expected, $sm->toString());
     }
 }
