@@ -655,7 +655,7 @@ class Generator
     /**
      * Get a fresh SitemapIndex object.
      *
-     * @return IndexWriter
+     * @return SitemapIndex
      */
     protected function getNewSitemapIndex()
     {
@@ -665,7 +665,7 @@ class Generator
     /**
      * Get a fresh Sitemap object.
      *
-     * @return SitemapWriter
+     * @return Sitemap
      */
     protected function getNewSitemap()
     {
