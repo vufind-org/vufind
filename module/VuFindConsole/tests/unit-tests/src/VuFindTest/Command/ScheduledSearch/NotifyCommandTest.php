@@ -303,7 +303,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('My Site: translated text'),
                 $this->equalTo($message)
             );
-        $translator = $this->prepareMock(\Laminas\I18n\Translator\Translator::class);
+        $translator = $this->prepareMock(\Laminas\Mvc\I18n\Translator::class);
         $translator->expects($this->once())->method('translate')
             ->with($this->equalTo('Scheduled Alert Results'))
             ->will($this->returnValue('translated text'));
@@ -495,10 +495,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ),
             $options['mailer'] ?? $this->prepareMock(\VuFind\Mailer\Mailer::class),
             $options['searchTable'] ?? $this->prepareMock(\VuFind\Db\Table\Search::class),
-            $options['userTable'] ?? $this->prepareMock(\VuFind\Db\Table\User::class)
+            $options['userTable'] ?? $this->prepareMock(\VuFind\Db\Table\User::class),
+            $options['localeSettings'] ?? $this->prepareMock(\VuFind\I18n\Locale\LocaleSettings::class)
         );
         $command->setTranslator(
-            $options['translator'] ?? $this->prepareMock(\Laminas\I18n\Translator\Translator::class)
+            $options['translator'] ?? $this->prepareMock(\Laminas\Mvc\I18n\Translator::class)
         );
         return $command;
     }

@@ -313,7 +313,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     protected function getDateFromArray($dateArray)
     {
-        list($d, $m, $y) = $dateArray;
+        [$d, $m, $y] = $dateArray;
         return mktime(
             0, 0, 0, date('m') + $m, date('d') + $d, date('Y') + $y
         );

@@ -27,6 +27,9 @@
  */
 namespace VuFind\I18n\Translator;
 
+use Laminas\Mvc\I18n\Translator;
+use VuFind\I18n\Locale\LocaleSettings;
+
 /**
  * Logic for initializing a language within a translator used by VuFind.
  *
@@ -38,13 +41,6 @@ namespace VuFind\I18n\Translator;
  */
 trait LanguageInitializerTrait
 {
-    /**
-     * Array of flags to indicate which languages have already been initialized.
-     *
-     * @var array
-     */
-    protected $initializedI18nLanguages = [];
-
     /**
      * Look up all text domains.
      *
@@ -72,18 +68,20 @@ trait LanguageInitializerTrait
     /**
      * Configure a translator to support the requested language.
      *
-     * @param \Laminas\Mvc\I18n\Translator $translator Translator
-     * @param string                       $language   Language to set up
+     * @param Translator     $translator Translator
+     * @param LocaleSettings $settings   Locale settings
+     * @param string         $language   Language to set up
      *
      * @return void
      */
-    protected function addLanguageToTranslator($translator, $language)
-    {
+    protected function addLanguageToTranslator(
+        Translator $translator, LocaleSettings $settings, string $language
+    ): void {
         // Don't double-initialize languages:
-        if (isset($this->initializedI18nLanguages[$language])) {
+        if ($settings->isLocaleInitialized($language)) {
             return;
         }
-        $this->initializedI18nLanguages[$language] = true;
+        $settings->markLocaleInitialized($language);
 
         // If we got this far, we need to set everything up:
         $translator->addTranslationFile('ExtendedIni', null, 'default', $language);

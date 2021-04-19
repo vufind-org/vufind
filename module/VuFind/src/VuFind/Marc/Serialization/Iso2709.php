@@ -38,10 +38,10 @@ namespace VuFind\Marc\Serialization;
  */
 class Iso2709 implements SerializationInterface
 {
-    const SUBFIELD_INDICATOR = "\x1F";
-    const END_OF_FIELD = "\x1E";
-    const END_OF_RECORD = "\x1D";
-    const LEADER_LEN = 24;
+    public const SUBFIELD_INDICATOR = "\x1F";
+    public const END_OF_FIELD = "\x1E";
+    public const END_OF_RECORD = "\x1D";
+    public const LEADER_LEN = 24;
 
     /**
      * Check if this class can parse the given MARC string
@@ -66,12 +66,6 @@ class Iso2709 implements SerializationInterface
      */
     public static function fromString(string $marc): array
     {
-        // When indexing over HTTP, SolrMarc may use entities instead of
-        // certain control characters; we should normalize these:
-        $marc = str_replace(
-            ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
-        );
-
         $leader = substr($marc, 0, 24);
         $fields = [];
         $dataStart = 0 + (int)substr($marc, 12, 5);
@@ -167,7 +161,8 @@ class Iso2709 implements SerializationInterface
         }
         $directory .= self::END_OF_FIELD;
         $data .= self::END_OF_RECORD;
-        $dataStart = strlen($leader) + strlen($directory);
+        $leader = str_pad(substr($leader, 0, 24), 24);
+        $dataStart = 24 + strlen($directory);
         $recordLen = $dataStart + strlen($data);
         if ($recordLen > 99999) {
             return '';

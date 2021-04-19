@@ -712,13 +712,14 @@ class AbstractSearch extends AbstractBase
             ->get($config);
 
         // Process checkbox settings in config:
+        $flipCheckboxes = false;
         if (substr($section, 0, 1) == '~') {        // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
         $checkboxFacets = ($section && isset($config->$section))
             ? $config->$section->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
 

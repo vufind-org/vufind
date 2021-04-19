@@ -78,7 +78,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
         $factory = new UserIpReaderFactory();
         $container = $this->getContainer();
         $reader = $factory($container, UserIpReader::class);
-        list($server, $allowForwardedIps, $ipFilter) = $reader->args;
+        [$server, $allowForwardedIps, $ipFilter] = $reader->args;
         $this->assertEquals(['server' => true], $server->toArray());
         $this->assertFalse($allowForwardedIps);
         $this->assertEquals([], $ipFilter);
@@ -101,7 +101,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $reader = $factory($container, UserIpReader::class);
-        list($server, $allowForwardedIps, $ipFilter) = $reader->args;
+        [$server, $allowForwardedIps, $ipFilter] = $reader->args;
         $this->assertEquals(['server' => true], $server->toArray());
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4'], $ipFilter);
@@ -124,7 +124,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $reader = $factory($container, UserIpReader::class);
-        list($server, $allowForwardedIps, $ipFilter) = $reader->args;
+        [$server, $allowForwardedIps, $ipFilter] = $reader->args;
         $this->assertEquals(['server' => true], $server->toArray());
         $this->assertTrue($allowForwardedIps);
         $this->assertEquals(['1.2.3.4', '5.6.7.8'], $ipFilter);

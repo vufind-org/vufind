@@ -131,12 +131,12 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        $url = $this->coverRouter->getUrl(
-            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail
+        $metadata = $this->coverRouter->getMetadata(
+            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail, true
         );
 
-        return ($url || !$this->renderer || !$this->useCoverFallbacksOnFail)
-            ? $this->formatResponse(compact('url', 'size'))
+        return ($metadata || !$this->renderer || !$this->useCoverFallbacksOnFail)
+            ? $this->formatResponse(array_merge($metadata, compact('size')))
             : $this->formatResponse(
                 [
                     'html' => $this->renderer->render(

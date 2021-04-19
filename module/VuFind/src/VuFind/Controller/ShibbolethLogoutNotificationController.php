@@ -119,7 +119,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
      */
     protected function getWsdl()
     {
-        list($uri) = explode('?', $this->getRequest()->getUriString());
+        [$uri] = explode('?', $this->getRequest()->getUriString());
         return <<<EOT
 <?xml version ="1.0" encoding ="UTF-8" ?>
 <definitions name="LogoutNotification"

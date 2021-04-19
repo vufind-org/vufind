@@ -544,6 +544,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
+            $cache = null;
             if (isset($this->config['Cache']['type'])
                 && null !== $this->cacheManager
             ) {
@@ -847,7 +848,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $ids = [];
         $holdings = [];
         foreach ($idList as $id) {
-            list($bib, $sys_no) = $this->parseId($id);
+            [$bib, $sys_no] = $this->parseId($id);
             $ids[$bib][] = $sys_no;
         }
         foreach ($ids as $key => $values) {
@@ -880,7 +881,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $holding = [];
-        list($bib, $sys_no) = $this->parseId($id);
+        [$bib, $sys_no] = $this->parseId($id);
         $resource = $bib . $sys_no;
         $params = ['view' => 'full'];
         if (!empty($patron['id'])) {
@@ -1144,10 +1145,14 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $author = (string)$z13->{'z13-author'};
             $isbn = (string)$z13->{'z13-isbn-issn'};
             $barcode = (string)$z30->{'z30-barcode'};
+            // Secondary, Aleph-specific identifier that may be useful for
+            // local customizations
+            $adm_id = (string)$z30->{'z30-doc-number'};
 
             $transList[] = [
                 //'type' => $type,
                 'id' => $this->barcodeToID($barcode),
+                'adm_id'   => $adm_id,
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,
@@ -1456,7 +1461,6 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileX($user)
     {
-        $recordList = [];
         if (!isset($user['college'])) {
             $user['college'] = $this->useradm;
         }
@@ -1479,7 +1483,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $credit_sign = (string)$xml->z305->{'z305-credit-debit'};
         $name = (string)$xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastname, $firstname) = explode(",", $name);
+            [$lastname, $firstname] = explode(",", $name);
         } else {
             $lastname = $name;
             $firstname = "";
@@ -1487,8 +1491,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if ($credit_sign == null) {
             $credit_sign = "C";
         }
-        $recordList['firstname'] = $firstname;
-        $recordList['lastname'] = $lastname;
+        $recordList = compact('firstname', 'lastname');
         if (isset($user['email'])) {
             $recordList['email'] = $user['email'];
         }
@@ -1516,6 +1519,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getMyProfileDLF($user)
     {
+        $recordList = [];
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
@@ -1535,7 +1539,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $recordList['lastname'] = $address2;
             $recordList['firstname'] = "";
         } else {
-            list($recordList['lastname'], $recordList['firstname'])
+            [$recordList['lastname'], $recordList['firstname']]
                 = explode(",", $address2);
         }
         $recordList['address1'] = $address2;
@@ -1593,7 +1597,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $patron = [];
         $name = $xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastName, $firstName) = explode(",", $name);
+            [$lastName, $firstName] = explode(",", $name);
         } else {
             $lastName = $name;
             $firstName = "";
@@ -1631,7 +1635,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getHoldingInfoForItem($patronId, $id, $group)
     {
-        list($bib, $sys_no) = $this->parseId($id);
+        [$bib, $sys_no] = $this->parseId($id);
         $resource = $bib . $sys_no;
         $xml = $this->doRestDLFRequest(
             ['patron', $patronId, 'record', $resource, 'items', $group]
@@ -1651,7 +1655,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $requests = 0;
         $str = $xml->xpath('//item/queue/text()');
         if ($str != null) {
-            list($requests) = explode(' ', trim($str[0]));
+            [$requests] = explode(' ', trim($str[0]));
         }
         $date = $xml->xpath('//last-interest-date/text()');
         $date = $date[0];
@@ -1674,6 +1678,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
+        $details = [];
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
                 $patron['id'], $holdInfo['id'], $holdInfo['item_id']
@@ -1708,7 +1713,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     public function placeHold($details)
     {
-        list($bib, $sys_no) = $this->parseId($details['id']);
+        [$bib, $sys_no] = $this->parseId($details['id']);
         $recordId = $bib . $sys_no;
         $itemId = $details['item_id'];
         $patron = $details['patron'];
@@ -1719,6 +1724,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $comment = $details['comment'];
         if (strlen($comment) <= 50) {
             $comment1 = $comment;
+            $comment2 = null;
         } else {
             $comment1 = substr($comment, 0, 50);
             $comment2 = substr($comment, 50, 50);
@@ -1959,8 +1965,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             }
             // nothing found or preferredPickUpLocations is empty? Return the first
             // locationId in pickupLocations array
-            reset($pickupLocations);
-            return key($pickupLocations);
+            return array_key_first($pickupLocations);
         } elseif (isset($this->preferredPickUpLocations)) {
             return $this->preferredPickUpLocations[0];
         } else {
