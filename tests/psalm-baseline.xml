@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.6.1@e93e532e4eaad6d68c4d7b606853800eaceccc72">
+<files psalm-version="4.7.0@d4377c0baf3ffbf0b1ec6998e8d1be2a40971005">
   <file src="config/application.config.php">
     <UndefinedConstant occurrences="3">
       <code>APPLICATION_ENV</code>
@@ -1060,11 +1060,6 @@
       <code>VuFind\Date\DateException</code>
     </UndefinedDocblockClass>
   </file>
-  <file src="module/VuFind/src/VuFind/ILS/Driver/Folio.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$bibId</code>
-    </ParamNameMismatch>
-  </file>
   <file src="module/VuFind/src/VuFind/ILS/Driver/FolioFactory.php">
     <InvalidThrow occurrences="1">
       <code>ContainerException</code>
@@ -1169,27 +1164,6 @@
       <code>ContainerException</code>
     </InvalidThrow>
   </file>
-  <file src="module/VuFind/src/VuFind/ILS/Driver/LBS4.php">
-    <UndefinedDocblockClass occurrences="3">
-      <code>VuFind\Date\DateException</code>
-      <code>VuFind\Date\DateException</code>
-      <code>VuFind\Date\DateException</code>
-    </UndefinedDocblockClass>
-    <UndefinedFunction occurrences="13">
-      <code>sybase_fetch_row($sqlStmt)</code>
-      <code>sybase_fetch_row($sqlStmt)</code>
-      <code>sybase_fetch_row($sqlStmt)</code>
-      <code>sybase_fetch_row($sqlStmt)</code>
-      <code>sybase_fetch_row($sqlStmt)</code>
-      <code>sybase_fetch_row($sqlStmt)</code>
-      <code>sybase_query($sql)</code>
-      <code>sybase_query($sql)</code>
-      <code>sybase_query($sql)</code>
-      <code>sybase_query($sql)</code>
-      <code>sybase_query($sql)</code>
-      <code>sybase_select_db($this-&gt;config['Catalog']['database'])</code>
-    </UndefinedFunction>
-  </file>
   <file src="module/VuFind/src/VuFind/ILS/Driver/MultiBackend.php">
     <InvalidParamDefault occurrences="2">
       <code>array</code>
@@ -1208,9 +1182,6 @@
     </InvalidThrow>
   </file>
   <file src="module/VuFind/src/VuFind/ILS/Driver/NewGenLib.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$RecordID</code>
-    </ParamNameMismatch>
     <UndefinedDocblockClass occurrences="4">
       <code>VuFind\Date\DateException</code>
       <code>VuFind\Date\DateException</code>
@@ -2027,11 +1998,6 @@
       <code>ContainerException</code>
     </InvalidThrow>
   </file>
-  <file src="module/VuFind/src/VuFind/ServiceManager/LowerCaseServiceNameTrait.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$name</code>
-    </ParamNameMismatch>
-  </file>
   <file src="module/VuFind/src/VuFind/Session/AbstractBaseFactory.php">
     <InvalidThrow occurrences="1">
       <code>ContainerException</code>
@@ -2057,17 +2023,6 @@
     <InvalidThrow occurrences="1">
       <code>ContainerException</code>
     </InvalidThrow>
-  </file>
-  <file src="module/VuFind/src/VuFind/Sitemap/Generator.php">
-    <UndefinedDocblockClass occurrences="7">
-      <code>$smf</code>
-      <code>$smf</code>
-      <code>$smf</code>
-      <code>$smf</code>
-      <code>$smf</code>
-      <code>IndexWriter</code>
-      <code>SitemapWriter</code>
-    </UndefinedDocblockClass>
   </file>
   <file src="module/VuFind/src/VuFind/Sitemap/GeneratorFactory.php">
     <InvalidThrow occurrences="1">
@@ -2415,11 +2370,6 @@
       <code>string|DOMElement</code>
     </UndefinedDocblockClass>
   </file>
-  <file src="module/VuFind/src/VuFind/XSLT/Importer.php">
-    <UndefinedClass occurrences="1">
-      <code>$class::setServiceLocator($this-&gt;serviceLocator)</code>
-    </UndefinedClass>
-  </file>
   <file src="module/VuFind/src/VuFind/XSLT/Processor.php">
     <InvalidParamDefault occurrences="1">
       <code>string</code>
@@ -2429,11 +2379,6 @@
       <code>APPLICATION_PATH</code>
       <code>LOCAL_OVERRIDE_DIR</code>
     </UndefinedConstant>
-  </file>
-  <file src="module/VuFind/src/VuFindTest/Container/MockContainerTrait.php">
-    <ParamNameMismatch occurrences="1">
-      <code>$rawId</code>
-    </ParamNameMismatch>
   </file>
   <file src="module/VuFind/src/VuFindTest/Feature/LiveDatabaseTrait.php">
     <UndefinedConstant occurrences="1">
@@ -2466,16 +2411,6 @@
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/AjaxHandler/CheckRequestIsValidTest.php">
     <UndefinedDocblockClass occurrences="1">
       <code>User|bool</code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Auth/MultiAuthTest.php">
-    <UndefinedDocblockClass occurrences="6">
-      <code>$this-&gt;getAuthObject($config)</code>
-      <code>$this-&gt;getAuthObject($config)</code>
-      <code>$this-&gt;getAuthObject($config)</code>
-      <code>$this-&gt;getAuthObject()</code>
-      <code>$this-&gt;getAuthObject()</code>
-      <code>LDAP</code>
     </UndefinedDocblockClass>
   </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/Auth/SIP2Test.php">
@@ -2511,10 +2446,6 @@
       <code>bool</code>
       <code>object</code>
     </InvalidParamDefault>
-    <ParamNameMismatch occurrences="2">
-      <code>$holdDetails</code>
-      <code>$patron</code>
-    </ParamNameMismatch>
   </file>
   <file src="module/VuFind/tests/unit-tests/src/VuFindTest/ILS/Driver/PAIATest.php">
     <UndefinedDocblockClass occurrences="18">
@@ -2754,9 +2685,6 @@
     </InvalidThrow>
   </file>
   <file src="module/VuFindApi/src/VuFindApi/Controller/ApiTrait.php">
-    <UndefinedConstant occurrences="1">
-      <code>self::STATUS_ERROR</code>
-    </UndefinedConstant>
     <UndefinedDocblockClass occurrences="1">
       <code>Exception\DomainException</code>
     </UndefinedDocblockClass>
@@ -3061,9 +2989,6 @@
     </UndefinedDocblockClass>
   </file>
   <file src="module/VuFindSearch/tests/unit-tests/src/VuFindTest/Backend/Solr/BackendTest.php">
-    <AssignmentToVoid occurrences="1">
-      <code>$rec</code>
-    </AssignmentToVoid>
     <UndefinedDocblockClass occurrences="19">
       <code>$conn</code>
       <code>$conn</code>
