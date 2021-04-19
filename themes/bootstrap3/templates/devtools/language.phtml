@@ -92,7 +92,28 @@ function createDiffManager() {
     }
     return '<textarea readonly class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
   }
+
+  function copyContents(e) {
+    navigator.clipboard.writeText(
+      $(".translation-output").text()
+    );
+
+    $(copyBtn).tooltip("show");
+    setTimeout(function() {
+      $(copyBtn).tooltip("hide");
+    }, 3000);
+  }
+  let copyBtn = document.createElement("button");
+  copyBtn.className = "pull-right btn btn-default";
+  copyBtn.innerText = "Copy";
+  copyBtn.addEventListener("click", copyContents, false);
+  $(copyBtn).tooltip({
+    trigger: "manual",
+    title: VuFind.translate("copy_success") + "!"
+  });
+
   function bindTextareaEvent() {
+    $(".modal-body h2").prepend(copyBtn);
     $('.translation-output').click(function(e) {
       this.select();
     });
@@ -107,6 +128,7 @@ function createDiffManager() {
     bindTextareaEvent();
     return false;
   }
+
   return {
     showExtra: showExtra,
     showMissing: showMissing
