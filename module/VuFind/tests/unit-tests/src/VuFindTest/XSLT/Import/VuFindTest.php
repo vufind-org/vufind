@@ -183,7 +183,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      */
     public function testImplode()
     {
-        $domify = function ($input) {
+        $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
         $this->assertEquals(
@@ -204,7 +204,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
             '1990-1991' => ['foo', '1990-1991', '1992'],
             'foo' => ['foo', 'bar', 'baz'],
         ];
-        $domify = function ($input) {
+        $domify = function ($input): \DOMElement {
             return new \DOMElement('foo', $input);
         };
         foreach ($data as $output => $input) {

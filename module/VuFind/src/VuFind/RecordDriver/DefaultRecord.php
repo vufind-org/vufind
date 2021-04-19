@@ -228,13 +228,13 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get all call numbers associated with the record (empty string if none).
+     * Get all call numbers associated with the record.
      *
      * @return array
      */
     public function getCallNumbers()
     {
-        return $this->fields['callnumber-raw'] ?? [];
+        return (array)($this->fields['callnumber-raw'] ?? []);
     }
 
     /**
@@ -245,8 +245,7 @@ class DefaultRecord extends AbstractBase
     public function getCleanDOI()
     {
         $field = 'doi_str_mv';
-        return (isset($this->fields[$field][0]) && !empty($this->fields[$field][0]))
-            ? $this->fields[$field][0] : false;
+        return !empty($this->fields[$field][0]) ? $this->fields[$field][0] : false;
     }
 
     /**
@@ -349,7 +348,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCorporateAuthors()
     {
-        return $this->fields['author_corporate'] ?? [];
+        return (array)($this->fields['author_corporate'] ?? []);
     }
 
     /**
@@ -359,7 +358,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCorporateAuthorsRoles()
     {
-        return $this->fields['author_corporate_role'] ?? [];
+        return (array)($this->fields['author_corporate_role'] ?? []);
     }
 
     /**
@@ -371,7 +370,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getDateSpan()
     {
-        return $this->fields['dateSpan'] ?? [];
+        return (array)($this->fields['dateSpan'] ?? []);
     }
 
     /**
@@ -455,7 +454,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getFormats()
     {
-        return $this->fields['format'] ?? [];
+        return (array)($this->fields['format'] ?? []);
     }
 
     /**
@@ -560,7 +559,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getInstitutions()
     {
-        return $this->fields['institution'] ?? [];
+        return (array)($this->fields['institution'] ?? []);
     }
 
     /**
@@ -570,10 +569,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getISBNs()
     {
-        // If ISBN is in the index, it should automatically be an array... but if
-        // it's not set at all, we should normalize the value to an empty array.
-        return isset($this->fields['isbn']) && is_array($this->fields['isbn']) ?
-            $this->fields['isbn'] : [];
+        return (array)($this->fields['isbn'] ?? []);
     }
 
     /**
@@ -583,10 +579,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getISSNs()
     {
-        // If ISSN is in the index, it should automatically be an array... but if
-        // it's not set at all, we should normalize the value to an empty array.
-        return isset($this->fields['issn']) && is_array($this->fields['issn']) ?
-            $this->fields['issn'] : [];
+        return (array)($this->fields['issn'] ?? []);
     }
 
     /**
@@ -596,7 +589,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getLanguages()
     {
-        return $this->fields['language'] ?? [];
+        return (array)($this->fields['language'] ?? []);
     }
 
     /**
@@ -651,7 +644,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getNewerTitles()
     {
-        return $this->fields['title_new'] ?? [];
+        return (array)($this->fields['title_new'] ?? []);
     }
 
     /**
@@ -661,7 +654,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getOCLC()
     {
-        return $this->fields['oclc_num'] ?? [];
+        return (array)($this->fields['oclc_num'] ?? []);
     }
 
     /**
@@ -900,7 +893,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPhysicalDescriptions()
     {
-        return $this->fields['physical'] ?? [];
+        return (array)($this->fields['physical'] ?? []);
     }
 
     /**
@@ -932,7 +925,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPreviousTitles()
     {
-        return $this->fields['title_old'] ?? [];
+        return (array)($this->fields['title_old'] ?? []);
     }
 
     /**
@@ -953,8 +946,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPrimaryAuthors()
     {
-        return isset($this->fields['author'])
-            ? (array)$this->fields['author'] : [];
+        return (array)($this->fields['author'] ?? []);
     }
 
     /**
@@ -965,7 +957,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPrimaryAuthorsRoles()
     {
-        return $this->fields['author_role'] ?? [];
+        return (array)($this->fields['author_role'] ?? []);
     }
 
     /**
@@ -986,7 +978,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPublicationDates()
     {
-        return $this->fields['publishDate'] ?? [];
+        return (array)($this->fields['publishDate'] ?? []);
     }
 
     /**
@@ -1046,7 +1038,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getPublishers()
     {
-        return $this->fields['publisher'] ?? [];
+        return (array)($this->fields['publisher'] ?? []);
     }
 
     /**
@@ -1091,7 +1083,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getSecondaryAuthors()
     {
-        return $this->fields['author2'] ?? [];
+        return (array)($this->fields['author2'] ?? []);
     }
 
     /**
@@ -1102,7 +1094,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getSecondaryAuthorsRoles()
     {
-        return $this->fields['author2_role'] ?? [];
+        return (array)($this->fields['author2_role'] ?? []);
     }
 
     /**
@@ -1115,10 +1107,9 @@ class DefaultRecord extends AbstractBase
     public function getSeries()
     {
         // Only use the contents of the series2 field if the series field is empty
-        if (isset($this->fields['series']) && !empty($this->fields['series'])) {
-            return $this->fields['series'];
-        }
-        return $this->fields['series2'] ?? [];
+        return !empty($this->fields['series'])
+            ? (array)$this->fields['series']
+            : (array)($this->fields['series2'] ?? []);
     }
 
     /**
@@ -1171,18 +1162,9 @@ class DefaultRecord extends AbstractBase
     public function getSummary()
     {
         // We need to return an array, so if we have a description, turn it into an
-        // array as needed (it should be a flat string according to the default
-        // schema, but we might as well support the array case just to be on the safe
-        // side:
-        if (isset($this->fields['description'])
-            && !empty($this->fields['description'])
-        ) {
-            return is_array($this->fields['description'])
-                ? $this->fields['description'] : [$this->fields['description']];
-        }
-
-        // If we got this far, no description was found:
-        return [];
+        // array (it should be a flat string according to the default schema, but we
+        // might as well support the array case just to be on the safe side:
+        return (array)($this->fields['description'] ?? []);
     }
 
     /**
@@ -1209,7 +1191,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
-        if (isset($this->fields['thumbnail']) && $this->fields['thumbnail']) {
+        if (!empty($this->fields['thumbnail'])) {
             return $this->fields['thumbnail'];
         }
         $arr = [
@@ -1291,7 +1273,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getTOC()
     {
-        return $this->fields['contents'] ?? [];
+        return (array)($this->fields['contents'] ?? []);
     }
 
     /**
@@ -1312,7 +1294,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getUPC()
     {
-        return $this->fields['upc_str_mv'] ?? [];
+        return (array)($this->fields['upc_str_mv'] ?? []);
     }
 
     /**
@@ -1331,15 +1313,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getURLs()
     {
-        // If non-empty, map internal URL array to expected return format;
-        // otherwise, return empty array:
-        if (isset($this->fields['url']) && is_array($this->fields['url'])) {
-            $filter = function ($url) {
-                return ['url' => $url];
-            };
-            return array_map($filter, $this->fields['url']);
-        }
-        return [];
+        $filter = function ($url) {
+            return ['url' => $url];
+        };
+        return array_map($filter, (array)($this->fields['url'] ?? []));
     }
 
     /**
@@ -1666,7 +1643,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getGeoLocation()
     {
-        return $this->fields['long_lat'] ?? [];
+        return (array)($this->fields['long_lat'] ?? []);
     }
 
     /**
@@ -1676,7 +1653,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getDisplayCoordinates()
     {
-        return $this->fields['long_lat_display'] ?? [];
+        return (array)($this->fields['long_lat_display'] ?? []);
     }
 
     /**
@@ -1686,6 +1663,6 @@ class DefaultRecord extends AbstractBase
      */
     public function getCoordinateLabels()
     {
-        return $this->fields['long_lat_label'] ?? [];
+        return (array)($this->fields['long_lat_label'] ?? []);
     }
 }

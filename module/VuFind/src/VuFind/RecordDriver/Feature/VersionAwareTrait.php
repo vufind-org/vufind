@@ -46,6 +46,13 @@ trait VersionAwareTrait
     protected $otherVersionsCount = null;
 
     /**
+     * Cached result of other versions (work expressions)
+     *
+     * @var \VuFindSearch\Response\RecordCollectionInterface
+     */
+    protected $otherVersions;
+
+    /**
      * Return count of other versions available
      *
      * @return int

@@ -44,9 +44,9 @@ use Symfony\Component\Console\Question\Question;
  */
 class InstallCommand extends Command
 {
-    const MULTISITE_NONE = 0;
-    const MULTISITE_DIR_BASED = 1;
-    const MULTISITE_HOST_BASED = 2;
+    public const MULTISITE_NONE = 0;
+    public const MULTISITE_DIR_BASED = 1;
+    public const MULTISITE_HOST_BASED = 2;
 
     /**
      * The name of the command (the part after "public/index.php")
@@ -306,7 +306,7 @@ class InstallCommand extends Command
      *
      * @param string $dir Path to attempt to initialize
      *
-     * @return void
+     * @return bool|string
      */
     protected function initializeOverrideDir($dir)
     {

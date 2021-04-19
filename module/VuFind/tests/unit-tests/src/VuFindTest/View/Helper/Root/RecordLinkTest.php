@@ -69,9 +69,9 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a RecordLink object ready for testing.
      *
-     * @return Record
+     * @return RecordLink
      */
-    protected function getRecordLink()
+    protected function getRecordLink(): RecordLink
     {
         $view = new \Laminas\View\Renderer\PhpRenderer();
         $container = new \VuFindTest\Container\MockViewHelperContainer($this);

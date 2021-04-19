@@ -301,7 +301,7 @@ abstract class Options implements TranslatorAwareInterface
             ) {
                 $this->facetSortOptions[$facet] = [];
                 foreach (explode(',', $sortOptions) as $fieldAndLabel) {
-                    list($field, $label) = explode('=', $fieldAndLabel);
+                    [$field, $label] = explode('=', $fieldAndLabel);
                     $this->facetSortOptions[$facet][$field] = $label;
                 }
             }

@@ -566,6 +566,8 @@ class MyResearchController extends AbstractBase
         $view->accountDeletion
             = !empty($config->Authentication->account_deletion);
 
+        $this->addPendingEmailChangeMessage($user);
+
         return $view;
     }
 
@@ -1053,6 +1055,7 @@ class MyResearchController extends AbstractBase
     public function emailNotVerifiedAction()
     {
         if ($this->params()->fromQuery('reverify')) {
+            $change = false;
             $table = $this->getTable('User');
             // Case 1: new user:
             $user = $table
@@ -1064,7 +1067,7 @@ class MyResearchController extends AbstractBase
                     $change = true;
                 }
             }
-            $this->sendVerificationEmail($user, $change ?? false);
+            $this->sendVerificationEmail($user, $change);
         } else {
             $this->flashMessenger()->addMessage('verification_email_sent', 'info');
         }
@@ -1363,7 +1366,10 @@ class MyResearchController extends AbstractBase
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
             ? $this->renewals()->processRenewals(
-                $this->getRequest()->getPost(), $catalog, $patron
+                $this->getRequest()->getPost(),
+                $catalog,
+                $patron,
+                $this->serviceLocator->get(\VuFind\Validator\Csrf::class)
             )
             : [];
 
@@ -1709,7 +1715,7 @@ class MyResearchController extends AbstractBase
     protected function sendFirstVerificationEmail($user)
     {
         if (empty($user->verify_hash)) {
-            return $this->sendVerificationEmail($user);
+            $this->sendVerificationEmail($user);
         }
     }
 
@@ -1717,12 +1723,19 @@ class MyResearchController extends AbstractBase
      * When a request to change a user's email address has been received, we should
      * send a notification to the old email address for the user's information.
      *
-     * @param \VuFind\Db\Row\User $user User object we're recovering
+     * @param \VuFind\Db\Row\User $user     User whose email address is being changed
+     * @param string              $newEmail New email address
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendChangeNotificationEmail($user)
+    protected function sendChangeNotificationEmail($user, $newEmail)
     {
+        // Don't send the notification if the existing email is not valid:
+        $validator = new \Laminas\Validator\EmailAddress();
+        if (!$validator->isValid($user->email)) {
+            return;
+        }
+
         $config = $this->getConfig();
         $renderer = $this->getViewRenderer();
         // Custom template for emails (text-only)
@@ -1732,6 +1745,7 @@ class MyResearchController extends AbstractBase
                 'library' => $config->Site->title,
                 'url' => $this->getServerUrl('home'),
                 'email' => $config->Site->email,
+                'newEmail' => $newEmail
             ]
         );
         // If the user is setting up a new account, use the main email
@@ -1774,15 +1788,13 @@ class MyResearchController extends AbstractBase
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
-                    $method = $this->getAuthManager()->getAuthMethod();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/verify-email.phtml',
                         [
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verifyemail')
-                                . '?hash='
-                                . $user->verify_hash . '&auth_method=' . $method
+                                . '?hash=' . urlencode($user->verify_hash)
                         ]
                     );
                     // If the user is setting up a new account, use the main email
@@ -1802,7 +1814,7 @@ class MyResearchController extends AbstractBase
                     // If this is an email change, send a notification to the old
                     // email address as well.
                     if ($change) {
-                        $this->sendChangeNotificationEmail($user);
+                        $this->sendChangeNotificationEmail($user, $to);
                     }
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getMessage(), 'error');
@@ -1882,15 +1894,14 @@ class MyResearchController extends AbstractBase
                         $user->pending_email = '';
                     }
                     $user->saveEmailVerified();
-                    $this->setUpAuthenticationFromRequest();
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
-                    return $this->forwardTo('MyResearch', 'Login');
+                    return $this->redirect()->toRoute('myresearch-userlogin');
                 }
             }
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
-        return $this->forwardTo('MyResearch', 'Login');
+        return $this->redirect()->toRoute('myresearch-userlogin');
     }
 
     /**
@@ -2041,21 +2052,7 @@ class MyResearchController extends AbstractBase
             $this->flashMessenger()
                 ->addMessage('change_email_verification_reminder', 'info');
         }
-        if (!empty($user->pending_email)) {
-            $url = $this->url()->fromRoute('myresearch-emailnotverified')
-                . '?reverify=true';
-            $this->flashMessenger()->addMessage(
-                [
-                    'html' => true,
-                    'msg' => 'email_change_pending_html',
-                    'tokens' => [
-                        '%%pending%%' => $user->pending_email,
-                        '%%url%%' => $url,
-                    ],
-                ],
-                'info'
-            );
-        }
+        $this->addPendingEmailChangeMessage($user);
         return $view;
     }
 
@@ -2252,5 +2249,33 @@ class MyResearchController extends AbstractBase
             }
         }
         return $accountStatus;
+    }
+
+    /**
+     * Add a message about any pending email change to the flash messenger
+     *
+     * @param \VuFind\Db\Row\User $user User
+     *
+     * @return void
+     */
+    protected function addPendingEmailChangeMessage($user)
+    {
+        if (!empty($user->pending_email)) {
+            $url = $this->url()->fromRoute(
+                'myresearch-emailnotverified',
+                [],
+                ['query' => ['reverify' => 'true']]
+            );
+            $this->flashMessenger()->addInfoMessage(
+                [
+                    'html' => true,
+                    'msg' => 'email_change_pending_html',
+                    'tokens' => [
+                        '%%pending%%' => $user->pending_email,
+                        '%%url%%' => $url,
+                    ],
+                ]
+            );
+        }
     }
 }

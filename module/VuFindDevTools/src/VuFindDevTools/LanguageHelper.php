@@ -27,7 +27,6 @@
  */
 namespace VuFindDevTools;
 
-use Laminas\Config\Config;
 use Laminas\I18n\Translator\TextDomain;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 
@@ -50,22 +49,22 @@ class LanguageHelper
     protected $loader;
 
     /**
-     * Configuration
+     * Configured languages (code => description)
      *
-     * @var Config
+     * @var string[]
      */
-    protected $config;
+    protected $configuredLanguages;
 
     /**
      * Constructor
      *
      * @param ExtendedIni $loader Language loader
-     * @param Config      $config Config
+     * @param array       $langs  Configured languages (code => description)
      */
-    public function __construct(ExtendedIni $loader, Config $config)
+    public function __construct(ExtendedIni $loader, array $langs = [])
     {
         $this->loader = $loader;
-        $this->config = $config;
+        $this->configuredLanguages = $langs;
     }
 
     /**
@@ -157,8 +156,8 @@ class LanguageHelper
      */
     public function getLangName($lang)
     {
-        if (isset($this->config->Languages->$lang)) {
-            return $this->config->Languages->$lang;
+        if (isset($this->configuredLanguages[$lang])) {
+            return $this->configuredLanguages[$lang];
         }
         switch ($lang) {
         case 'en-gb':

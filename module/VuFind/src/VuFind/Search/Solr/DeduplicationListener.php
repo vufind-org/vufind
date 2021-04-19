@@ -230,7 +230,7 @@ class DeduplicationListener
             $dedupData = [];
             foreach ($localIds as $localId) {
                 $localPriority = null;
-                list($source) = explode('.', $localId, 2);
+                [$source] = explode('.', $localId, 2);
                 // Ignore ID if source is not in the list of allowed record sources:
                 if ($recordSources && !in_array($source, $recordSources)) {
                     continue;

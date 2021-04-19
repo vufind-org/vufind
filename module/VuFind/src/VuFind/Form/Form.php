@@ -329,7 +329,7 @@ class Form extends \Laminas\Form\Form implements
 
             $settings = [];
             if (isset($el['settings'])) {
-                foreach ($el['settings'] as list($settingId, $settingVal)) {
+                foreach ($el['settings'] as [$settingId, $settingVal]) {
                     $settingId = trim($settingId);
                     $settingVal = trim($settingVal);
                     if ($settingId === 'placeholder') {

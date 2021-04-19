@@ -86,9 +86,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      * @param ThemeInfo  $theme  Theme info object (null to create default)
      * @param array|bool $mock   Array of functions to mock, or false for real object
      *
-     * @return void
+     * @return Loader
      */
-    protected function getLoader($config = [], $theme = null, $mock = false)
+    protected function getLoader($config = [], $theme = null, $mock = false): Loader
     {
         $config = new Config($config);
         if (null === $theme) {

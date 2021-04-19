@@ -113,7 +113,7 @@ class QueryBuilderTest extends TestCase
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
-            list($input, $output) = $test;
+            [$input, $output] = $test;
             $q = unserialize($this->getFixture("eds/query/$input", 'VuFindSearch'));
             $response = $qb->build($q);
             $this->assertEquals(

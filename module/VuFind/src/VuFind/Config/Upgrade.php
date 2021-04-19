@@ -545,7 +545,7 @@ class Upgrade
         // If [Statistics] is present, warn the user about its deprecation.
         if (isset($newConfig['Statistics'])) {
             $this->addWarning(
-                'The Statistics module has been removed from Vufind. ' .
+                'The Statistics module has been removed from VuFind. ' .
                 'For usage tracking, please configure Google Analytics or Piwik.'
             );
             unset($newConfig['Statistics']);
@@ -1033,9 +1033,10 @@ class Upgrade
         // prior to 2.3.
         if ((float)$this->from < 2.3) {
             $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
-            if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
+            $specialFacets = $cfg['special_facets'] ?? null;
+            if (empty($specialFacets)) {
                 $cfg['special_facets'] = 'checkboxes:Summon';
-            } elseif (false === strpos('checkboxes', $cfg['special_facets'])) {
+            } elseif (false === strpos('checkboxes', (string)$specialFacets)) {
                 $cfg['special_facets'] .= ',checkboxes:Summon';
             }
         }

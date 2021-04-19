@@ -45,6 +45,41 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
+     * API profile
+     *
+     * @var string
+     */
+    protected $wsProfile;
+
+    /**
+     * API URL
+     *
+     * @var string
+     */
+    protected $wsURL;
+
+    /**
+     * Available pickup locations for holds
+     *
+     * @var array
+     */
+    protected $wsPickUpLocations;
+
+    /**
+     * Defaut pickup location for holds
+     *
+     * @var string
+     */
+    protected $wsDefaultPickUpLocation;
+
+    /**
+     * Date format used by API
+     *
+     * @var string
+     */
+    protected $wsDateFormat;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -61,16 +96,13 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $this->wsProfile = $this->config['Webservices']['profile'];
         $this->wsURL = $this->config['Webservices']['HIPurl'];
         $this->wsPickUpLocations
-            = (isset($this->config['pickUpLocations']))
-            ? $this->config['pickUpLocations'] : false;
+            = $this->config['pickUpLocations'] ?? false;
 
         $this->wsDefaultPickUpLocation
-            = (isset($this->config['Holds']['defaultPickUpLocation']))
-            ? $this->config['Holds']['defaultPickUpLocation'] : false;
+            = $this->config['Holds']['defaultPickUpLocation'] ?? false;
 
         $this->wsDateFormat
-            = (isset($this->config['Webservices']['dateformat']))
-            ? $this->config['Webservices']['dateformat'] : 'd/m/Y';
+            = $this->config['Webservices']['dateformat'] ?? 'd/m/Y';
     }
 
     /**
@@ -312,6 +344,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function makeRequest($params = false, $mode = "GET")
     {
+        $queryString = [];
         // Build Url Base
         $urlParams = $this->wsURL;
 
@@ -730,12 +763,13 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function cancelHolds($cancelDetails)
     {
+        $cancelIDs = [];
         $details = $cancelDetails['details'];
         $userBarcode = $cancelDetails['patron']['id'];
         $userPassword = $cancelDetails['patron']['cat_password'];
 
         foreach ($details as $cancelItem) {
-            list($bibID, $itemID) = explode("|", $cancelItem);
+            [$bibID, $itemID] = explode("|", $cancelItem);
             $cancelIDs[]  = ["bib_id" =>  $bibID, "item_id" => $itemID];
         }
 
@@ -767,7 +801,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function processRenewals($renewIDs, $origData, $renewData)
     {
-        $response['ids'] = $renewIDs;
+        $response = ['ids' => $renewIDs];
         $i = 0;
         foreach ($origData->itemout as $item) {
             $ikey = (string)$item->ikey;
@@ -819,6 +853,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function renewMyItems($renewDetails)
     {
+        $renewItemKeys = [];
+        $renewIDs = [];
         $renewals = $renewDetails['details'];
         $userBarcode = $renewDetails['patron']['id'];
         $userPassword = $renewDetails['patron']['cat_password'];
@@ -830,7 +866,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             if ($origData) {
                 // Build Params
                 foreach ($renewals as $item) {
-                    list($itemID, $barcode) = explode("|", $item);
+                    [$itemID, $barcode] = explode("|", $item);
                     $renewItemKeys[] = $barcode;
                     $renewIDs[] = $itemID;
                 }

@@ -108,7 +108,7 @@ class Backend extends AbstractBackend
     protected $orgId;
 
     /**
-     * Vufind Authentication manager
+     * VuFind Authentication manager
      *
      * @var \VuFind\Auth\Manager
      */
@@ -269,6 +269,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
             $authenticationToken = $this->getAuthenticationToken();
             // check to see if the profile is overridden
@@ -283,7 +284,7 @@ class Backend extends AbstractBackend
                     'Retrieval id is not in the correct format.'
                 );
             }
-            list($dbId, $an) = $parts;
+            [$dbId, $an] = $parts;
             $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
             $extras = [];

@@ -80,7 +80,7 @@ function enableVuFindProfiling($profilerBaseUrl)
             foreach (headers_list() as $header) {
                 $parts = explode(': ', $header, 2);
                 if (isset($parts[1]) && strtolower($parts[0]) === 'content-type') {
-                    list($contentType) = explode('; ', $parts[1]);
+                    [$contentType] = explode('; ', $parts[1]);
                     break;
                 }
             }
