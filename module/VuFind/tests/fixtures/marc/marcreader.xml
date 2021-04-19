@@ -30,6 +30,9 @@
     <subfield code="7">null</subfield>
   </datafield>
   <datafield tag="880" ind1="0" ind2="4">
+    <subfield code="a">Missing subfield 6</subfield>
+  </datafield>
+  <datafield tag="880" ind1="0" ind2="4">
     <subfield code="6">245-01/Foo</subfield>
     <subfield code="a">tHE fOO:</subfield>
     <subfield code="b">bAR!</subfield>

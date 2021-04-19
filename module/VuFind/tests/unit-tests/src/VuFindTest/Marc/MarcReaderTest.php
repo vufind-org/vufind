@@ -125,6 +125,8 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
             ],
             $reader->getSubfields($altNote)
         );
+        $this->assertEquals([], $reader->getLinkedField('880', '500', '4'));
+        $this->assertEquals([], $reader->getLinkedField('008', '900'));
     }
 
     /**
