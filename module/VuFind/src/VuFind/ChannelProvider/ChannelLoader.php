@@ -226,6 +226,7 @@ class ChannelLoader
             $cache = $this->cacheManager->getCache('object', 'homeChannels');
         } else {
             $cacheKey = false;
+            $cache = null;
         }
 
         // Fetch channel data from cache, or populate cache if necessary:

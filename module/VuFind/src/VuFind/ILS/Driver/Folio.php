@@ -459,8 +459,9 @@ class Folio extends AbstractAPI implements
             foreach ($this->getPagedResults(
                 'locations', '/locations'
             ) as $location) {
-                $locationMap[$location->id]
-                    = $location->discoveryDisplayName ?? $location->name;
+                $name = $location->discoveryDisplayName ?? $location->name;
+                $code = $location->code;
+                $locationMap[$location->id] = compact('name', 'code');
             }
         }
         $this->putCachedData($cacheKey, $locationMap);
@@ -472,14 +473,15 @@ class Folio extends AbstractAPI implements
      *
      * @param string $locationId UUID of item location
      *
-     * @return string $locationName display name of location
+     * @return array with the display name and code of location
      */
-    protected function getLocationName($locationId)
+    protected function getLocationData($locationId)
     {
         $locationMap = $this->getLocations();
-        $locationName = '';
+        $name = '';
+        $code = '';
         if (array_key_exists($locationId, $locationMap)) {
-            $locationName = $locationMap[$locationId];
+            return $locationMap[$locationId];
         } else {
             // if key is not found in cache, the location could have
             // been added before the cache expired so check again
@@ -488,11 +490,12 @@ class Folio extends AbstractAPI implements
             );
             if ($locationResponse->isSuccess()) {
                 $location = json_decode($locationResponse->getBody());
-                $locationName = $location->discoveryDisplayName ?? $location->name;
+                $name = $location->discoveryDisplayName ?? $location->name;
+                $code = $location->code;
             }
         }
 
-        return $locationName;
+        return compact('name', 'code');
     }
 
     /**
@@ -555,7 +558,9 @@ class Folio extends AbstractAPI implements
                     array_map($notesFormatter, $item->notes ?? [])
                 );
                 $locationId = $item->effectiveLocationId;
-                $locationName = $this->getLocationName($locationId);
+                $locationData = $this->getLocationData($locationId);
+                $locationName = $locationData['name'];
+                $locationCode = $locationData['code'];
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -572,6 +577,7 @@ class Folio extends AbstractAPI implements
                     'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
+                    'location_code' => $locationCode,
                     'reserve' => 'TODO',
                     'addLink' => true
                 ];
@@ -716,6 +722,7 @@ class Folio extends AbstractAPI implements
      */
     public function patronLogin($username, $password)
     {
+        $profile = null;
         $doOkapiLogin = $this->config['User']['okapi_login'] ?? false;
         $usernameField = $this->config['User']['username_field'] ?? 'username';
 
@@ -1035,8 +1042,8 @@ class Folio extends AbstractAPI implements
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         try {
-            $requiredBy = date_create_from_format(
-                'm-d-Y',
+            $requiredBy = $this->dateConverter->convertFromDisplayDate(
+                'Y-m-d',
                 $holdDetails['requiredBy']
             );
         } catch (Exception $e) {
@@ -1049,7 +1056,7 @@ class Folio extends AbstractAPI implements
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
             'fulfilmentPreference' => 'Hold Shelf',
-            'requestExpirationDate' => date_format($requiredBy, 'Y-m-d'),
+            'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
         $response = $this->makeRequest(

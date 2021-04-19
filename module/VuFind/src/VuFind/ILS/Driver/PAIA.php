@@ -1090,6 +1090,7 @@ class PAIA extends DAIA
         if ($confirm = $this->getConfirmations($holdDetails)) {
             $doc["confirm"] = $confirm;
         }
+        $post_data = [];
         $post_data['doc'][] = $doc;
 
         try {
@@ -1289,9 +1290,8 @@ class PAIA extends DAIA
         }
 
         // check for existing data in cache
-        if ($this->paiaCacheEnabled) {
-            $itemsResponse = $this->getCachedData($patron['cat_username']);
-        }
+        $itemsResponse = $this->paiaCacheEnabled
+            ? $this->getCachedData($patron['cat_username']) : null;
 
         if (!isset($itemsResponse) || $itemsResponse == null) {
             $itemsResponse = $this->paiaGetAsArray(
@@ -1900,6 +1900,7 @@ class PAIA extends DAIA
             throw new ILSException('You are not entitled to read notifications.');
         }
 
+        $cacheKey = null;
         if ($this->paiaCacheEnabled) {
             $cacheKey = $this->getCacheKey(
                 'notifications_' . $patron['cat_username']

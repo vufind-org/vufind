@@ -81,7 +81,9 @@ class LibraryCardsController extends AbstractBase
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
-                'multipleTargets' => $catalog->checkCapability('getLoginDrivers')
+                'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
+                'allowConnectingCards' => $this->getAuthManager()
+                    ->supportsConnectingLibraryCard(),
             ]
         );
     }
@@ -238,6 +240,45 @@ class LibraryCardsController extends AbstractBase
             return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));
         }
         return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
+     * Redirects to authentication to connect a new library card
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectCardLoginAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+        $url = $this->getServerUrl('librarycards-connectcard');
+        $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
+        if (!$redirectUrl) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_technical', 'error');
+            return $this->redirect()->toRoute('librarycards-home');
+        }
+        return $this->redirect()->toUrl($redirectUrl);
+    }
+
+    /**
+     * Connects a new library card for authenticated user
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectCardAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+        try {
+            $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
+        } catch (\Exception $ex) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($ex->getMessage());
+        }
+        return $this->redirect()->toRoute('librarycards-home');
     }
 
     /**

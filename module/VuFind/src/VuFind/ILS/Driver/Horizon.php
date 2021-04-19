@@ -145,6 +145,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     protected function parseStatus($status)
     {
+        $duedate = null;
         $statuses = $this->config['Statuses'][$status] ?? null;
 
         // query the config file for the item status if there are
@@ -698,6 +699,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getMyHolds($patron)
     {
+        $holdList = [];
         $sqlArray = $this->getHoldsSQL($patron);
         $sql      = $this->buildSqlFromArray($sqlArray);
 

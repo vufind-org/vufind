@@ -269,6 +269,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
+        $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
             $authenticationToken = $this->getAuthenticationToken();
             // check to see if the profile is overridden

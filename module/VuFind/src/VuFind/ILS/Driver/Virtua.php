@@ -402,6 +402,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Build Holdings Array
+        $holding = [];
         foreach ($result as $row) {
             // If it's reserved or has a due date... not available
             if ($row['DUE_DATE'] != null || $row['REQ_COUNT'] != null) {
@@ -461,11 +462,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $holding[] = $temp;
         }
 
-        if (count($holding) != 0 && $patron['id'] != null) {
-            return $this->checkHoldAllowed($patron['id'], $holding);
-        } else {
-            return $holding;
-        }
+        return (count($holding) != 0 && $patron['id'] != null)
+            ? $this->checkHoldAllowed($patron['id'], $holding) : $holding;
     }
 
     /**
@@ -669,6 +667,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function renderPartSubPattern($data)
     {
+        $end_time = $start_string = null;
+
         // Handle empty patterns
         if (count($data) == 0) {
             return "";
