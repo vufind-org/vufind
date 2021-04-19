@@ -51,7 +51,7 @@ class FeedbackController extends AbstractBase
      * Handles rendering and submit of dynamic forms.
      * Form configurations are specified in FeedbackForms.json
      *
-     * @return void
+     * @return mixed
      */
     public function formAction()
     {
@@ -94,13 +94,13 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        list($messageParams, $template)
+        [$messageParams, $template]
             = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
             $template, ['fields' => $messageParams]
         );
 
-        list($senderName, $senderEmail) = $this->getSender();
+        [$senderName, $senderEmail] = $this->getSender();
 
         $replyToName = $params->fromPost(
             'name',
@@ -117,7 +117,7 @@ class FeedbackController extends AbstractBase
 
         $sendSuccess = true;
         foreach ($recipients as $recipient) {
-            list($success, $errorMsg) = $this->sendEmail(
+            [$success, $errorMsg] = $this->sendEmail(
                 $recipient['name'], $recipient['email'], $senderName, $senderEmail,
                 $replyToName, $replyToEmail, $emailSubject, $emailMessage
             );

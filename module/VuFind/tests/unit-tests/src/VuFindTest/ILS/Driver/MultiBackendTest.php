@@ -709,7 +709,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $return = [
             'count' => 2,
-            'results' => ['id' => '1', 'id' => '2']
+            'results' => [['id' => '1'], ['id' => '2']]
         ];
 
         $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
@@ -729,7 +729,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $expected = [
             'count' => 2,
-            'results' => ['id' => 'd1.1', 'id' => 'd1.2']
+            'results' => [['id' => 'd1.1'], ['id' => 'd1.2']]
         ];
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getNewItems(1, 10, 5, 0);
@@ -2316,7 +2316,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $driver = new MultiBackend(
             $this->getPluginManager(), $this->getMockILSAuthenticator(),
-            $sm === null ? $this->getMockSM() : $sm
+            $sm ?? $this->getMockSM()
         );
         $driver->setConfig(
             [
@@ -2413,7 +2413,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
-        $sm->expects($times === null ? $this->any() : $times)
+        $sm->expects($times ?? $this->any())
             ->method('get')
             ->with($driver)
             ->will($this->returnValue($return));

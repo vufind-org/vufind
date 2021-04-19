@@ -58,6 +58,13 @@ abstract class AbstractCommand extends Command
     protected $reader;
 
     /**
+     * Language directory
+     *
+     * @var string
+     */
+    protected $languageDir;
+
+    /**
      * Constructor
      *
      * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files

@@ -29,7 +29,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\DB\Table\AuthHash as AuthHashTable;
+use VuFind\Db\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
 
 /**

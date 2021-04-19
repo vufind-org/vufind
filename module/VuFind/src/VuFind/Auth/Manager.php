@@ -117,6 +117,13 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     protected $currentUser = false;
 
     /**
+     * CSRF validator
+     *
+     * @var Csrf
+     */
+    protected $csrf;
+
+    /**
      * Constructor
      *
      * @param Config         $config         VuFind configuration
@@ -234,6 +241,20 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     {
         return ($this->config->Authentication->change_password ?? false)
             && $this->getAuth($authMethod)->supportsPasswordChange();
+    }
+
+    /**
+     * Is connecting library card allowed and supported?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return bool
+     */
+    public function supportsConnectingLibraryCard($authMethod = null)
+    {
+        return ($this->config->Catalog->auth_based_library_cards ?? false)
+            && $this->getAuth($authMethod)->supportsConnectingLibraryCard();
     }
 
     /**
@@ -724,6 +745,26 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
             return $auth->getILSLoginMethod($target);
         }
         return false;
+    }
+
+    /**
+     * Connect authenticated user as library card to his account.
+     *
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
+     * containing account credentials.
+     * @param \VuFind\Db\Row\User                  $user    Connect newly created
+     * library card to this user.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function connectLibraryCard($request, $user)
+    {
+        $auth = $this->getAuth();
+        if (!$auth->supportsConnectingLibraryCard()) {
+            throw new \Exception("Connecting of library cards is not supported");
+        }
+        $auth->connectLibraryCard($request, $user);
     }
 
     /**

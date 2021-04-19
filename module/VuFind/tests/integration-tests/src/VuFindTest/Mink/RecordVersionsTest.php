@@ -39,8 +39,6 @@ namespace VuFindTest\Mink;
  */
 class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Standard setup method.
      *
@@ -125,8 +123,12 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testDisabledVersionsTab()
     {
         // Disable versions tab:
-        $extraConfigs['RecordTabs']['VuFind\RecordDriver\SolrMarc'] = [
-            'tabs[Versions]' => false
+        $extraConfigs = [
+            'RecordTabs' => [
+                'VuFind\RecordDriver\SolrMarc' => [
+                    'tabs[Versions]' => false
+                ]
+            ]
         ];
         $this->changeConfigs($extraConfigs);
         // Search for an item known to have other versions in test data:
@@ -161,7 +163,13 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testDisabledVersions()
     {
         // Disable versions:
-        $extraConfigs['searches']['General'] = ['display_versions' => false];
+        $extraConfigs = [
+            'searches' => [
+                'General' => [
+                    'display_versions' => false
+                ]
+            ]
+        ];
         $this->changeConfigs($extraConfigs);
 
         // Search for an item known to have other versions in test data:

@@ -493,7 +493,7 @@ class DAIA extends AbstractBase implements
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     )
                 );
-                list($responseMediaType) = array_pad(
+                [$responseMediaType] = array_pad(
                     explode(
                         ';',
                         $result->getHeaders()->get('Content-type')->getFieldValue(),
@@ -732,6 +732,7 @@ class DAIA extends AbstractBase implements
      */
     protected function parseDaiaArray($id, $daiaArray)
     {
+        $result = [];
         $doc_id = null;
         $doc_href = null;
         if (isset($daiaArray['id'])) {
@@ -797,6 +798,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemStatus($item)
     {
+        $return = [];
         $availability = false;
         $duedate = null;
         $serviceLink = '';

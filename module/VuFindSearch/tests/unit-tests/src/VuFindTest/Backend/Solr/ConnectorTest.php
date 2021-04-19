@@ -149,7 +149,7 @@ class ConnectorTest extends TestCase
     {
         $conn = $this->createConnector('single-record');
 
-        list(, $expectedBody) = explode("\n\n", $this->response);
+        [, $expectedBody] = explode("\n\n", $this->response);
         $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);

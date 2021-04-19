@@ -32,6 +32,7 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * Abstract FacetCache Factory.
@@ -83,8 +84,7 @@ class FacetCacheFactory implements FactoryInterface
         $requestedNamespace = $parts[count($parts) - 2];
         $results = $this->getResults($container, $requestedNamespace);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $language = $container->get(\Laminas\Mvc\I18n\Translator::class)
-            ->getLocale();
+        $language = $container->get(LocaleSettings::class)->getUserLocale();
         return new $requestedName($results, $cacheManager, $language);
     }
 }

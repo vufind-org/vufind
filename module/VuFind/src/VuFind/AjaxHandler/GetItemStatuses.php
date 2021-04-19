@@ -347,7 +347,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         }
 
         // Build list split out by location:
-        $locationList = false;
+        $locationList = [];
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
@@ -424,6 +424,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
      */
     public function handleRequest(Params $params)
     {
+        $results = [];
         $this->disableSessionWrites();  // avoid session write timing bug
         $ids = $params->fromPost('id', $params->fromQuery('id', []));
         try {

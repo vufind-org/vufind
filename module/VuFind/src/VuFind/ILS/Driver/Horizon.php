@@ -145,6 +145,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     protected function parseStatus($status)
     {
+        $duedate = null;
         $statuses = $this->config['Statuses'][$status] ?? null;
 
         // query the config file for the item status if there are
@@ -536,7 +537,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
 
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
                 $user = [
                     'id' => $username,
                     'firstname' => $firstname,
@@ -698,6 +699,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getMyHolds($patron)
     {
+        $holdList = [];
         $sqlArray = $this->getHoldsSQL($patron);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
@@ -845,7 +847,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
                 $profile = [
                     'lastname' => $lastname,
                     'firstname' => $firstname,

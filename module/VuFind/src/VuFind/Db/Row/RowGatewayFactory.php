@@ -61,6 +61,6 @@ class RowGatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         array $options = null
     ) {
         $adapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
-        return new $requestedName($adapter, ...($options !== null ? $options : []));
+        return new $requestedName($adapter, ...($options ?? []));
     }
 }

@@ -136,7 +136,7 @@ class Router
             $source = $driver->getSourceIdentifier();
             $id = $driver->getUniqueId();
         } else {
-            list($source, $id) = $this->extractSourceAndId($driver);
+            [$source, $id] = $this->extractSourceAndId($driver);
         }
 
         // Build URL parameters:

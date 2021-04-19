@@ -32,6 +32,7 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * ReCaptcha CAPTCHA factory.
@@ -66,7 +67,7 @@ class ReCaptchaFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Service\ReCaptcha::class),
-            $container->get(\Laminas\Mvc\I18n\Translator::class)->getLocale()
+            $container->get(LocaleSettings::class)->getUserLocale()
         );
     }
 }
