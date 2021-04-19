@@ -18,10 +18,10 @@
   <thead>
     <tr>
       <th scope="col">Language</th>
-      <th scope="col" class="text-right">Missing Lines</th>
-      <th scope="col" class="text-right">Extra Lines</th>
-      <th scope="col" class="text-right">Percent Translated</th>
-      <th scope="col" class="text-right">Extra Help Files</th>
+      <th scope="col">Percent Translated</th>
+      <th scope="col">Missing Lines</th>
+      <th scope="col">Extra Lines</th>
+      <th scope="col">Extra Help Files</th>
     </tr>
   </thead>
   <tbody>
@@ -32,16 +32,22 @@
       ?>
       <tr class="<?=$this->escapeHtmlAttr($row['lang'])?> <?=$languageActive ? '' : 'hide'?>">
         <td><?=$this->escapeHtml($row['langtitle'])?></td>
-        <td class="text-right"><?php if($row['missing'] > 0):?> <button class="btn-missing btn btn-default btn-light" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$this->escapeHtml($row['missing']) ?></td>
-        <td class="text-right"><?php if($row['extra'] > 0):?> <button class="btn-extra btn btn-default btn-light" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?> <?=$this->escapeHtml($row['extra']) ?></td>
-        <td class="text-right">
+        <td>
           <div class="progress progress-border-<?=$this->escapeHtmlAttr($row['progresslevel'])?>">
             <div class="progress-bar progress-bar-<?=$this->escapeHtmlAttr($row['progresslevel'])?>" role="progressbar" aria-valuenow="<?=$this->escapeHtmlAttr($row['percent'])?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$row['percent']?>%;">
               <?=$this->escapeHtml($row['percent'])?>% <span class="sr-only">Complete</span>
             </div>
           </div>
         </td>
-        <td class="text-right">
+        <td>
+          <?=$this->escapeHtml($row['missing']) ?>
+          <?php if($row['missing'] > 0):?> <button class="btn-missing btn btn-default" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+        <td>
+          <?=$this->escapeHtml($row['extra']) ?>
+          <?php if($row['extra'] > 0):?> <button class="btn-extra btn btn-default" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+        </td>
+        <td>
           <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
             <div class="btn-group">
               <button type="button" class="btn btn-default btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dmb-<?=$this->escapeHtmlAttr($row['lang'])?>">
