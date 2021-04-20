@@ -101,7 +101,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
      * @param ?RouteStackInterface $router    Router object
      * @param ?ThemeInfo           $themeInfo ThemeInfo object
      *
-     * @return ContentPage
+     * @return ContentPages
      */
     protected function getContentPages(array $config = [],
         ?RouteStackInterface $router = null,
