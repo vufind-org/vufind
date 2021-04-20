@@ -49,10 +49,12 @@ class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke(string $elementSelector)
     {
+        static $buttonNumber = 0;
+        $buttonNumber++;
         $view = $this->getView();
         return $view->render(
             'Helpers/copy-to-clipboard-button.phtml',
-            ['selector' => $elementSelector]
+            ['selector' => $elementSelector, 'buttonNumber' => $buttonNumber]
         );
     }
 }
