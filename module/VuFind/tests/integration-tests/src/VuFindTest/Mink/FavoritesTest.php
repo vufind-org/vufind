@@ -155,7 +155,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -208,7 +208,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Future List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -218,7 +218,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Login Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -299,7 +299,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -353,7 +353,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Future List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -363,7 +363,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Login Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -435,7 +435,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Tagged List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -506,7 +506,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function selectAllItemsInList(Element $page)
     {
-        $selectAll = $this->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
+        $selectAll = $this
+            ->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
         $selectAll->check();
     }
 
