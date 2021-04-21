@@ -43,7 +43,7 @@ use VuFind\Config\PluginManager as ConfigManager;
 class Icon extends AbstractHelper
 {
     /**
-     * AddThis key (false if disabled)
+     * Icons config (icons.ini)
      *
      * @var Config
      */
@@ -59,7 +59,7 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param string|bool $config AddThis config (false if disabled)
+     * @param Config $config Icons config (icons.ini)
      */
     public function __construct(Config $config)
     {
@@ -68,7 +68,10 @@ class Icon extends AbstractHelper
     }
 
     /**
-     * Returns AddThis API key (if AddThis is active) or false if not.
+     * Returns inline HTML for icon
+     *
+     * @param string $icon  Which icon?
+     * @param array  $extra Just extra HTML attributes for now
      *
      * @return string|bool
      */
