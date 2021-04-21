@@ -1,0 +1,10 @@
+.icon--svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentColor;
+    vertical-align: text-top;
+}
+
+.btn .icon--svg {
+    margin-bottom: 2px;
+}
