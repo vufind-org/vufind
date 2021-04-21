@@ -43,7 +43,7 @@ that are not aligned to this Code of Conduct, or to ban temporarily or
 permanently any Contributor for other behaviors that they deem inappropriate,
 threatening, offensive, or harmful.
 
-For more information on the various roles and responsibilities, [visit our wiki](https://vufind.org/wiki/community:roles_and_responsibilities).
+For more information on the various roles and responsibilities, see our [governance document](https://github.com/vufind-org/vufind/blob/dev/GOVERNANCE.md) or [visit our wiki](https://vufind.org/wiki/community:roles_and_responsibilities).
 
 ## Scope
 
@@ -57,7 +57,7 @@ further defined and clarified by project maintainers.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting current [VuFind Community Manager](https://vufind.org/wiki/community:roles_and_responsibilities#critical_administrative_roles) or the project team at vufind-conduct@villanova.onmicrosoft.com.
+reported by contacting the current [VuFind Community Manager](https://vufind.org/wiki/community:roles_and_responsibilities#critical_administrative_roles) or the project team at vufind-conduct@villanova.onmicrosoft.com.
 All complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
