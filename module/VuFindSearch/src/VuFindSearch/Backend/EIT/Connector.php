@@ -154,6 +154,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     protected function call($method = 'GET', $params = null)
     {
+        $queryString = null;
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {

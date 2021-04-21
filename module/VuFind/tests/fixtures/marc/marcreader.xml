@@ -15,6 +15,9 @@
     <subfield code="a">The Foo:</subfield>
     <subfield code="b">Bar!</subfield>
   </datafield>
+  <datafield tag="505" ind1="8" ind2=" ">
+    <subfield code="a">Screenwriting Tip #30;</subfield>
+  </datafield>
   <datafield tag="650" ind1=" " ind2=" ">
     <subfield code="a">Foo</subfield>
     <subfield code="g">test</subfield>

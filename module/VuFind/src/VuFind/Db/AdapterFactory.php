@@ -78,7 +78,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -200,6 +200,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = $matches[1] ?? null;
+        $host = $port = null;
         if (isset($matches[2])) {
             if (strpos($matches[2], ':') !== false) {
                 [$host, $port] = explode(':', $matches[2]);
@@ -223,7 +224,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         // Set up default options:
         $options = [
             'driver' => $driverName,
-            'hostname' => $host ?? null,
+            'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName,

@@ -80,6 +80,9 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([], $empty);
         $this->assertEquals([], $reader->getSubfields($empty, 'a'));
 
+        $field505a = $reader->getFieldsSubfields('505', ['a']);
+        $this->assertEquals(['Screenwriting Tip #30;'], $field505a);
+
         $subjects = $reader->getFields('650');
         $this->assertTrue(is_array($subjects));
         $this->assertEquals(2, count($subjects));

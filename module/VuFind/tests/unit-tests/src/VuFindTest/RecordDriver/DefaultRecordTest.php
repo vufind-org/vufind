@@ -251,7 +251,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPhysicalDescriptions()
     {
-        $physical[0] = "296 p. : ill. ; 24 cm.";
+        $physical = ["296 p. : ill. ; 24 cm."];
         $this->assertEquals($physical, $this->getDriver()->getPhysicalDescriptions());
     }
 

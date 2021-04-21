@@ -149,6 +149,7 @@ class SearchRequestModel
         $dates = substr($filter, 17);
         $dates = substr($dates, 0, strlen($dates) - 1);
         $parts = explode(' TO ', $dates, 2);
+        $start = $end = null;
         if (count($parts) == 2) {
             $start = trim($parts[0]);
             $end = trim($parts[1]);

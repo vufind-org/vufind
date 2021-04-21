@@ -344,6 +344,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function makeRequest($params = false, $mode = "GET")
     {
+        $queryString = [];
         // Build Url Base
         $urlParams = $this->wsURL;
 
@@ -762,6 +763,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function cancelHolds($cancelDetails)
     {
+        $cancelIDs = [];
         $details = $cancelDetails['details'];
         $userBarcode = $cancelDetails['patron']['id'];
         $userPassword = $cancelDetails['patron']['cat_password'];
@@ -799,7 +801,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function processRenewals($renewIDs, $origData, $renewData)
     {
-        $response['ids'] = $renewIDs;
+        $response = ['ids' => $renewIDs];
         $i = 0;
         foreach ($origData->itemout as $item) {
             $ikey = (string)$item->ikey;
@@ -851,6 +853,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function renewMyItems($renewDetails)
     {
+        $renewItemKeys = [];
+        $renewIDs = [];
         $renewals = $renewDetails['details'];
         $userBarcode = $renewDetails['patron']['id'];
         $userPassword = $renewDetails['patron']['cat_password'];
