@@ -86,7 +86,7 @@ class Icon extends AbstractHelper
         }
 
         return $this->getView()->render(
-            'icons/' . $this->config->use,
+            'Helpers/icons/' . $this->config->use,
             ['icon' => $mappedIcon, 'attrs' => $attrs]
         );
     }
