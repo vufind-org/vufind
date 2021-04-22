@@ -186,7 +186,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
         $ids = ['bar', 'baz'];
-        $backend->expects($this->once(0))->method('retrieveBatch')
+        $backend->expects($this->once())->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->returnValue('response'));
         $em = $service->getEventManager();
@@ -242,7 +242,7 @@ class SearchServiceTest extends TestCase
         $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
         $ids = ['bar', 'baz'];
-        $backend->expects($this->once(0))->method('retrieveBatch')
+        $backend->expects($this->once())->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();

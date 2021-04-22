@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Mix-in for accessing a real database during testing.
+ * Mix-in for accessing a real database during testing. Some user-related
+ * functionality depends upon the LiveDetectionTrait for identification of a live
+ * test environment.
  *
  * PHP version 7
  *
@@ -102,5 +104,68 @@ trait LiveDatabaseTrait
     public function getTable($table)
     {
         return $this->getLiveTableManager()->get($table);
+    }
+
+    /**
+     * Static setup support function to fail if users already exist in the database.
+     * We want to ensure a clean state for each test!
+     *
+     * @return void
+     */
+    protected static function failIfUsersExist(): void
+    {
+        $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
+        // Fail if there are already users in the database (we don't want to run this
+        // on a real system -- it's only meant for the continuous integration server)
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
+        if (count($userTable->select()) > 0) {
+            self::fail(
+                'Test cannot run with pre-existing user data!'
+            );
+            return;
+        }
+    }
+
+    /**
+     * Static teardown support function to destroy user accounts. Accounts are
+     * expected to exist, and the method will fail if they are missing.
+     *
+     * @param array|string $users User(s) to delete
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected static function removeUsers($users)
+    {
+        $test = new static();   // create instance of current class
+        // Fail if the test does not include the LiveDetectionTrait.
+        if (!$test->hasLiveDetectionTrait ?? false) {
+            self::fail(
+                'Test requires LiveDatabaseTrait, but it is not used.'
+            );
+        }
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
+        // Delete test user
+        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
+        foreach ((array)$users as $username) {
+            $user = $userTable->getByUsername($username, false);
+            if (!empty($user)) {
+                $user->delete();
+            }
+        }
     }
 }

@@ -152,7 +152,7 @@ class LoggerFactory implements FactoryInterface
     ) {
         $options = [];
         // Get config
-        list($channel, $error_types) = explode(':', $config->Logging->slack);
+        [$channel, $error_types] = explode(':', $config->Logging->slack);
         if ($error_types == null) {
             $error_types = $channel;
             $channel = null;
@@ -409,7 +409,7 @@ class LoggerFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null

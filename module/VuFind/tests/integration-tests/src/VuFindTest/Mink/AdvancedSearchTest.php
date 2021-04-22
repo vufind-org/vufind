@@ -41,8 +41,6 @@ use Behat\Mink\Element\Element;
  */
 class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
-
     /**
      * Test persistent
      *

@@ -32,6 +32,7 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * HelpText helper factory.
@@ -56,7 +57,7 @@ class HelpTextFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null

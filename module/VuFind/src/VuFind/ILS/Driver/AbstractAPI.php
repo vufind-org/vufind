@@ -114,7 +114,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
         $req_headers->addHeaders($headers);
-        list($req_headers, $params) = $this->preRequest($req_headers, $params);
+        [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
             $this->debugRequest($method, $path, $params, $req_headers);

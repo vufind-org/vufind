@@ -44,6 +44,10 @@ html { font-size: 14px; } // Root font size from Bootstrap, allows consistent us
 a,
 label { cursor: pointer; }
 .alert.alert-info a { text-decoration: underline; }
+.alert-default {
+    border-color: @well-border;
+    background-color: @well-bg;
+}
 
 // Improve contrast
 .btn.disabled:active,
@@ -233,6 +237,9 @@ footer {
   padding: 10px 15px;
   &:hover,
   &:focus { background-color: @nav-link-hover-bg; }
+  &.user-list-link i {
+    margin-left: 0.5rem;
+  }
 }
 .myresearch-menu .flex { display: flex; }
 .myresearch-menu a:hover {

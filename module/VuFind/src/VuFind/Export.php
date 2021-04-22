@@ -28,7 +28,7 @@
 namespace VuFind;
 
 use Laminas\Config\Config;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
 
 /**
  * Export support class
@@ -78,16 +78,15 @@ class Export
     /**
      * Get the URL for bulk export.
      *
-     * @param RendererInterface $view   View object (needed for URL generation)
-     * @param string            $format Export format being used
-     * @param array             $ids    Array of IDs to export (in source|id format)
+     * @param PhpRenderer $view   View object (needed for URL generation)
+     * @param string      $format Export format being used
+     * @param array       $ids    Array of IDs to export (in source|id format)
      *
      * @return string
      */
     public function getBulkUrl($view, $format, $ids)
     {
-        $params = [];
-        $params[] = 'f=' . urlencode($format);
+        $params = ['f=' . urlencode($format)];
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
         }
@@ -320,12 +319,9 @@ class Export
     public function getBulkExportType($format)
     {
         // if exportType is set on per-format basis in export.ini then use it
-        if (isset($this->exportConfig->$format->bulkExportType)) {
-            return $this->exportConfig->$format->bulkExportType;
-        }
-
         // else check if export type is set in config.ini
-        return $this->mainConfig->BulkExport->defaultType ?? 'link';
+        return $this->exportConfig->$format->bulkExportType
+            ?? $this->mainConfig->BulkExport->defaultType ?? 'link';
     }
 
     /**

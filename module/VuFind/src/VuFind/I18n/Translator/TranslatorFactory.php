@@ -29,8 +29,10 @@ namespace VuFind\I18n\Translator;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use Laminas\Mvc\I18n\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * Translator factory.
@@ -43,6 +45,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  */
 class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
 {
+    use \VuFind\I18n\Translator\LanguageInitializerTrait;
+
     /**
      * Create an object
      *
@@ -55,7 +59,7 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -63,29 +67,35 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
         array $options = null
     ) {
         $translator = parent::__invoke($container, $requestedName, $options);
-
-        // Set up the ExtendedIni plugin:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $pathStack = [
-            APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages'
-        ];
-        $fallbackLocales = $config->Site->language == 'en'
-            ? 'en'
-            : [$config->Site->language, 'en'];
-        try {
-            $pm = $translator->getPluginManager();
-        } catch (\Laminas\Mvc\I18n\Exception\BadMethodCallException $ex) {
-            // If getPluginManager is missing, this means that the user has
-            // disabled translation in module.config.php or PHP's intl extension
-            // is missing. We can do no further configuration of the object.
+        if (!extension_loaded('intl')) {
+            error_log(
+                'Translation broken due to missing PHP intl extension.'
+            );
             return $translator;
         }
-        $pm->setService(
-            'ExtendedIni', new Loader\ExtendedIni($pathStack, $fallbackLocales)
-        );
+        $pm = $translator->getPluginManager();
+        $settings = $container->get(LocaleSettings::class);
+        $language = $settings->getUserLocale();
+        $pm->setService('ExtendedIni', $this->getExtendedIni($settings));
+        $this->enableCaching($translator, $container);
+        $translator->setLocale($language);
+        $this->addLanguageToTranslator($translator, $settings, $language);
 
+        return $translator;
+    }
+
+    /**
+     * Add caching to a translator object
+     *
+     * @param Translator         $translator Translator object
+     * @param ContainerInterface $container  Service manager
+     *
+     * @return void
+     */
+    protected function enableCaching(
+        Translator $translator,
+        ContainerInterface $container
+    ): void {
         // Set up language caching for better performance:
         try {
             $translator->setCache(
@@ -100,7 +110,22 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
                 . $e->getMessage()
             );
         }
+    }
 
-        return $translator;
+    /**
+     * Get the ExtendedIni loader.
+     *
+     * @param LocaleSettings $settings Locale settings object
+     *
+     * @return Loader\ExtendedIni
+     */
+    protected function getExtendedIni(LocaleSettings $settings): Loader\ExtendedIni
+    {
+        $pathStack = [
+            APPLICATION_PATH . '/languages',
+            LOCAL_OVERRIDE_DIR . '/languages'
+        ];
+        $fallbackLocales = $settings->getFallbackLocales();
+        return new Loader\ExtendedIni($pathStack, $fallbackLocales);
     }
 }

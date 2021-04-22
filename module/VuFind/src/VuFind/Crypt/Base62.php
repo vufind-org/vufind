@@ -44,9 +44,9 @@ use Exception;
  */
 class Base62
 {
-    const BASE62_ALPHABET
+    public const BASE62_ALPHABET
         = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const BASE62_BASE = 62;
+    public const BASE62_BASE = 62;
 
     /**
      * Common base62 encoding function.
