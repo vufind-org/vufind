@@ -63,8 +63,9 @@ class Icon extends AbstractHelper
      */
     public function __construct(Config $config)
     {
-        $this->config = $config->Config;
-        $this->iconMap = $config[$config->Config->use];
+        $this->config = $config->Config ?? new Config([]);
+        $this->iconMap
+            = $config[$config->Config->use ?? 'FontAwesome'] ?? new Config([]);
     }
 
     /**
