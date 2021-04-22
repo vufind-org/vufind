@@ -1,6 +1,6 @@
 <?php
 /**
- * Captcha helper factory.
+ * Icon helper factory.
  *
  * PHP version 7
  *
@@ -35,7 +35,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Captcha helper factory.
+ * Icon helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
