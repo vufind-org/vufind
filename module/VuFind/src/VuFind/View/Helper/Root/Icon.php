@@ -54,7 +54,7 @@ class Icon extends AbstractHelper
      *
      * @var array
      */
-    protected $iconMap;
+    protected $nameMap;
 
     /**
      * Constructor
@@ -71,14 +71,20 @@ class Icon extends AbstractHelper
     /**
      * Returns inline HTML for icon
      *
-     * @param string $icon  Which icon?
+     * @param string $name  Which icon?
      * @param array  $extra Just extra HTML attributes for now
      *
      * @return string|bool
      */
-    public function __invoke($icon, $extra = [])
+    public function __invoke($name, $extra = [])
     {
-        $mappedIcon = $this->iconMap[$icon] ?? $icon;
+        $icon = $this->iconMap[$name] ?? $name;
+        $template = $this->config->use;
+
+        // Override template from config (ie. FontAwesome:icon)
+        if (strpos($icon, ':') !== false) {
+            list($template, $icon) = explode(':', $icon, 2);
+        }
 
         $attrs = '';
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
@@ -87,8 +93,8 @@ class Icon extends AbstractHelper
         }
 
         return $this->getView()->render(
-            'Helpers/icons/' . $this->config->use,
-            ['icon' => $mappedIcon, 'attrs' => $attrs]
+            'Helpers/icons/' . $template,
+            ['icon' => $icon, 'attrs' => $attrs]
         );
     }
 }
