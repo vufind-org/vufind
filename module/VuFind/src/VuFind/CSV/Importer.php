@@ -75,7 +75,7 @@ class Importer
         $testMode = false
     ) {
         // Process the file:
-        list ($fields, $csv) = $this->generateCSV($csvFile, $iniFile);
+        [$fields, $csv] = $this->generateCSV($csvFile, $iniFile);
         $params = new ParamBag(['fieldnames' => $fields]);
 
         // Save the results (or just display them, if in test mode):
