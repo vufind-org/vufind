@@ -88,7 +88,9 @@
         <div class="well"> <?= $this->transEsc('od_info_unavail')?></div>
     <?php elseif(count($this->holds) == 0): ?>
         <div class="well"> <?= $this->transEsc('od_none_found')?></div>
-    <?php else:
+    <?php else: ?>
+      <ul class="record-list">
+      <?php
         $i = 0; foreach ($this->holds as $resource):
           $od_id = $resource['record']->getOverdriveID();
           $rec_id = $resource['record']->getUniqueID();
@@ -97,7 +99,7 @@
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
   ?>
-    <div id="record<?=$rec_id?>" class="result">
+    <li id="record<?=$rec_id?>" class="result">
         <?php
           if ($cover):
             ob_start(); ?>
@@ -136,8 +138,9 @@
                 </div>
              </div>
            </div>
-    </div>
+    </li>
   <?php endforeach;?>
+  </ul>
     <?php endif;?>
 <!--
   <h3><?= $this->transEsc('od_history')?></h3>

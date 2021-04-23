@@ -75,9 +75,10 @@
       <?php endif; ?>
     <?php endforeach; ?>
 
+    <ul class="record-list">
     <?php $i = 0; foreach ($this->transactions as $resource): ?>
       <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
+      <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
         <?php if ($this->renewForm): ?>
           <div class="checkbox">
             <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
@@ -201,8 +202,9 @@
           <?php endif ?>
         </div>
         <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
-      </div>
+      </li>
     <?php endforeach; ?>
+    </ul>
     <?php if ($this->renewForm): ?></form><?php endif; ?>
     <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', compact('params')) : ''?>
   <?php else: ?>
