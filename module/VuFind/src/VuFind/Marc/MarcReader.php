@@ -295,11 +295,8 @@ class MarcReader
     ): array {
         $results
             = $this->getLinkedFields($fieldTag, $linkedFieldTag, $subfieldCodes);
-        if ('' === $occurrence) {
-            return $results[0] ?? [];
-        }
         foreach ($results as $field) {
-            if ($occurrence === $field['link']['occurrence']) {
+            if (empty($occurrence) || $occurrence === $field['link']['occurrence']) {
                 return $field;
             }
         }
@@ -420,7 +417,7 @@ class MarcReader
     /**
      * Return first subfield with the given code in the internal MARC field
      *
-     * @param array  $field        Result from MarcReader::getFields
+     * @param array  $field        Internal MARC field
      * @param string $subfieldCode The MARC subfield code to get
      *
      * @return string

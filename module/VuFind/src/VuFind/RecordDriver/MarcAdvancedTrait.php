@@ -953,7 +953,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the full title of the record in alternative scripts.
+     * Get the full titles of the record in alternative scripts.
      *
      * @return array
      */
@@ -964,7 +964,8 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the full title of the record in alternative scripts.
+     * Get the full titles of the record including section and part information in
+     * alternative scripts.
      *
      * @return array
      */
