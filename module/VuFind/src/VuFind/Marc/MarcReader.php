@@ -358,7 +358,7 @@ class MarcReader
      * Return an array of all values extracted from the specified linked
      * field/subfield combination.  If multiple subfields are specified and $concat
      * is true, they will be concatenated together in the order listed -- each entry
-     * in the array  will correspond with a single MARC field.  If $concat is false,
+     * in the array will correspond with a single MARC field.  If $concat is false,
      * the return array will contain separate entries for separate subfields.
      *
      * @param string $fieldTag       The MARC field that contains the linked fields
