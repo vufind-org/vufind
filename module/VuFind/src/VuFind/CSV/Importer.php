@@ -1,10 +1,10 @@
 <?php
 /**
- * VuFind CSV importer
+ * VuFind CSV importer configuration
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,7 +33,7 @@ use VuFindSearch\Backend\Solr\Document\RawCSVDocument;
 use VuFindSearch\ParamBag;
 
 /**
- * VuFind CSV importer
+ * VuFind CSV importer configuration
  *
  * @category VuFind
  * @package  CSV
@@ -48,7 +48,7 @@ class Importer
      *
      * @var ServiceLocatorInterface
      */
-    protected $serviceLocator;
+    protected ServiceLocatorInterface $serviceLocator;
 
     /**
      * Constructor
@@ -71,9 +71,9 @@ class Importer
      * @throws \Exception
      * @return string            Transformed XML
      */
-    public function save($csvFile, $iniFile, $index = 'Solr',
-        $testMode = false
-    ) {
+    public function save(string $csvFile, string $iniFile,
+        string $index = 'Solr', bool $testMode = false
+    ): string {
         // Process the file:
         [$fields, $csv] = $this->generateCSV($csvFile, $iniFile);
         $params = new ParamBag(['fieldnames' => $fields]);
@@ -90,27 +90,77 @@ class Importer
     }
 
     /**
+     * Process the header row, and generate a configuration.
+     *
+     * @param ImporterConfig $config Configuration to be updated
+     * @param resource       $in     File handle to CSV
+     * @param string         $mode   Header processing mode (fields/none/skip)
+     *
+     * @return void
+     */
+    protected function processHeader(ImporterConfig $config, $in, string $mode): void
+    {
+        switch (strtolower(trim($mode))) {
+        case 'fields':
+            // Load configuration from the header row:
+            $row = fgetcsv($in);
+            foreach ($row as $i => $field) {
+                $config->configureColumn($i, ['field' => $field]);
+            }
+            break;
+        case 'skip':
+            //  Just skip a row:
+            fgetcsv($in);
+            break;
+        case 'none':
+        default:
+            // Do nothing.
+            break;
+        }
+    }
+
+    /**
      * Determine the list of fields that will be loaded.
      *
      * @param array    $options Configuration
      * @param resource $in      File handle to input file
      *
-     * @return string
+     * @throws \Exception
+     * @return ImporterConfig
      */
-    protected function determineFieldList($options, $in)
+    protected function processConfiguration(array $options, $in): ImporterConfig
     {
-        return 'TODO';
+        $config = new ImporterConfig();
+        $this->processHeader($config, $in, $options['General']['header'] ?? 'none');
+        foreach ($options as $section => $settings) {
+            if (strpos($section, ':') !== false) {
+                [$type, $details] = explode(':', $section);
+                switch (strtolower(trim($type))) {
+                case 'column':
+                    $config->configureColumn($details, $settings);
+                    break;
+                case 'field':
+                    $config->configureField($details, $settings);
+                    break;
+                default:
+                    throw new \Exception('Unexpected config section: ' . $section);
+                }
+            }
+        }
+        return $config;
     }
 
     /**
      * Process a single line of the CSV file.
      *
-     * @param array $line Line to process.
+     * @param array          $line   Line to process.
+     * @param ImporterConfig $config Configuration object.
      *
      * @return array
      */
-    protected function processLine($line)
+    protected function processLine(array $line, ImporterConfig $config): array
     {
+        // TODO: apply configuration
         return $line;
     }
 
@@ -123,7 +173,7 @@ class Importer
      * @throws \Exception
      * @return array
      */
-    protected function generateCSV($csvFile, $iniFile)
+    protected function generateCSV(string $csvFile, string $iniFile): array
     {
         // Load properties file:
         $ini = ConfigLocator::getConfigPath($iniFile, 'import');
@@ -136,10 +186,10 @@ class Importer
         if (!$in) {
             throw new \Exception("Cannot open CSV file: {$csvFile}.");
         }
-        $fields = $this->determineFieldList($options, $in);
+        $config = $this->processConfiguration($options, $in);
         $out = fopen('php://temp', 'r+');
         while ($line = fgetcsv($in)) {
-            fputcsv($out, $this->processLine($line));
+            fputcsv($out, $this->processLine($line, $config));
         }
         fclose($in);
         rewind($out);
@@ -149,6 +199,6 @@ class Importer
         }
         fclose($out);
 
-        return [$fields, $csv];
+        return [$config->getAllFields(), $csv];
     }
 }
