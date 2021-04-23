@@ -63,6 +63,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
         $this->supportsOclc = true;
         $this->supportsUpc = true;
         $this->supportsNbn = true;
+        $this->supportsRecordid = true;
         $this->cacheAllowed = false;
         $this->directUrls = true;
         $this->mandatoryBacklinkLocations = ['core'];

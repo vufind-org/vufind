@@ -81,6 +81,13 @@ abstract class AbstractCover
     protected $supportsNbn = false;
 
     /**
+     * Does this plugin support getting cover by local id?
+     *
+     * @var bool
+     */
+    protected $supportsRecordid = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @var bool
@@ -137,7 +144,8 @@ abstract class AbstractCover
             || ($this->supportsIsmn && isset($ids['ismn']))
             || ($this->supportsOclc && isset($ids['oclc']))
             || ($this->supportsUpc && isset($ids['upc']))
-            || ($this->supportsNbn && isset($ids['nbn']));
+            || ($this->supportsNbn && isset($ids['nbn']))
+            || ($this->supportsRecordid && isset($ids['recordid']));
     }
 
     /**

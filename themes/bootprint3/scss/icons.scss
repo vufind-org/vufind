@@ -42,6 +42,8 @@ i.fa-external-link { background-image: url("#{$bp3-icon-path}/link_go.png"); @ex
 .btn-type-minus::before,
 i.fa-minus-circle,
 i.fa-minus-sign { background-image: url("#{$bp3-icon-path}/delete.png"); @extend .bp-icon; }
+.btn-type-permalink::before,
+i.fa-link { background-image: url("#{$bp3-icon-path}/link.png"); @extend .bp-icon; }
 .btn-type-phone::before,
 i.fa-mobile { background-image: url("#{$bp3-icon-path}/phone.png"); @extend .bp-icon; }
 .btn-type-print::before,
