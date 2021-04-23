@@ -148,11 +148,11 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         ];
 
         // Initialize cache manager.
-        if (isset($configArray['PolicyCache']['type'])
+        if (isset($this->config['PolicyCache']['type'])
             && $this->cacheManager
         ) {
             $this->policyCache = $this->cacheManager
-                ->getCache($configArray['PolicyCache']['type']);
+                ->getCache($this->config['PolicyCache']['type']);
         }
     }
 
@@ -307,9 +307,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             )
         ) {
             $login    = $this->config['WebServices']['login'];
-            $password = isset($this->config['WebServices']['password'])
-                ? $this->config['WebServices']['password']
-                : null;
+            $password = $this->config['WebServices']['password'] ?? null;
         } else {
             $login    = null;
             $password = null;
@@ -615,8 +613,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         date('F j, Y', strtotime($itemInfo->recallDueDate)) :
                         $duedate;
 
-                $requests_placed = isset($itemInfo->numberOfHolds) ?
-                            $itemInfo->numberOfHolds : 0;
+                $requests_placed = $itemInfo->numberOfHolds ?? 0;
 
                 // Handle item notes
                 $notes = [];
@@ -645,8 +642,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         )
                         : null;
 
-                $transitReason = isset($itemInfo->transitReason) ?
-                    $itemInfo->transitReason : null;
+                $transitReason = $itemInfo->transitReason ?? null;
 
                 $transitDate = isset($itemInfo->transitDate) ?
                      date('F j, Y', strtotime($itemInfo->transitDate)) : null;
@@ -883,6 +879,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function getLiveStatuses($ids)
     {
+        $items = [];
         foreach ($ids as $id) {
             $items[$id] = [];
         }
@@ -1198,7 +1195,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            list($lastname, $firstname)
+            [$lastname, $firstname]
                 = explode(', ', $result->patronInfo->displayName);
 
             $profile = [
@@ -1380,9 +1377,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
 
             return $fineList;
-        } catch (SoapFault $e) {
-            throw new ILSException($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (SoapFault | \Exception $e) {
             throw new ILSException($e->getMessage());
         }
     }

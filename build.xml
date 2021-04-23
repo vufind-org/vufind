@@ -21,18 +21,18 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="1.10.8" />
+  <property name="composer_version" value="latest-2.x" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
   <property name="selenium_browser" value="firefox" />
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
-  <property name="solr_version" value="7.3.1" />
+  <property name="solr_version" value="7.7.3" />
   <property name="skip_phpdoc" value="false" />
-  <property name="phpdoc_version" value="3.0.0-alpha.4" />
+  <property name="phpdoc_version" value="3.0.0" />
 
-  <property name="version" value="7.0.1" />
+  <property name="version" value="7.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
@@ -72,6 +72,7 @@
     <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
+    <phingcall target="phpstan-checkstyle"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
@@ -103,6 +104,14 @@
   </target>
   <target name="phpcs-console">
     <exec command="${srcdir}/vendor/bin/phpcs --standard=${srcdir}/tests/phpcs.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
+
+  <!-- Phpstan -->
+  <target name="phpstan-checkstyle">
+    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G --error-format=checkstyle analyse &gt; ${builddir}/reports/phpstan-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+  </target>
+  <target name="phpstan-console">
+    <exec command="${srcdir}/vendor/bin/phpstan --configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G analyse" escape="false" passthru="true" checkreturn="true" />
   </target>
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
@@ -177,7 +186,7 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} ${srcdir}/vendor/bin/phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
@@ -198,12 +207,17 @@
         <loadfile property="existing_solr_version" file="${srcdir}/solr/vendor/.installedVersion" />
       </then>
     </if>
-    <!-- only attempt to install Solr if the desired version is not already there -->
+    <!-- only attempt to install Solr if the desired version is not already there,
+         and a marker file has not been created to disable Solr installation. -->
     <if>
-      <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+      <and>
+        <not><equals arg1="${existing_solr_version}" arg2="${solr_version}" /></not>
+        <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
+      </and>
       <then>
-        <!-- make sure we don't run out of memory during installation: -->
+        <!-- make sure we don't run out of memory or time during installation: -->
         <php expression="ini_set('memory_limit', '1G');" />
+        <php expression="ini_set('default_socket_timeout', '600');" />
 
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
@@ -250,13 +264,29 @@
   </target>
 
   <target name="composer" description="Install dependencies with Composer">
-    <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+    <if>
+      <equals arg1="${composer_version}" arg2="latest-2.x" />
+      <then>
+        <httpget url="https://getcomposer.org/composer-2.phar" sslVerifyPeer="false" dir="${srcdir}" filename="composer.phar" />
+      </then>
+      <else>
+        <httpget url="https://getcomposer.org/download/${composer_version}/composer.phar" sslVerifyPeer="false" dir="${srcdir}" />
+      </else>
+    </if>
     <echo message="Installing dependencies..." />
     <exec command="php ${srcdir}/composer.phar install ${composer_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
+    <property name="solr_pid_file" value="${srcdir}/local/solr-8983.pid" />
+    <!-- fail if the system is already running -->
+    <if>
+      <available file="${solr_pid_file}" />
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
+      </then>
+    </if>
     <!-- run extra cleanup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
@@ -335,9 +365,15 @@
     <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="touch ${srcdir}/local/vufindtest.pid" />
-    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh restart" outputProperty="LASTOUTPUT" checkreturn="true" />
     <echo message="${LASTOUTPUT}" />
+    <!-- fail if Solr did not start up successfully: -->
+    <if>
+      <not><available file="${solr_pid_file}" /></not>
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) not detected. Solr startup failed.</fail>
+      </then>
+    </if>
 
     <if>
       <equals arg1="0" arg2="${solr_startup_sleep}" />
@@ -387,7 +423,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="SOLR_PID_DIR=${srcdir}/local VUFIND_HOME=${srcdir} ${srcdir}/solr.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
@@ -510,4 +546,17 @@
     </if>
   </target>
 
+  <target name="patch-dependencies" description="apply fixes to dependencies">
+    <!-- Fix for PHP 8 incompatibility in phing 2.16.4: -->
+    <reflexive>
+      <fileset dir="vendor/phing/phing/classes/phing/tasks/system">
+        <include pattern="ChmodTask.php" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="vsprintf\([&quot;']%o[&quot;'], \$mode\)" replace="vsprintf('%o', [\$mode])" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
 </project>

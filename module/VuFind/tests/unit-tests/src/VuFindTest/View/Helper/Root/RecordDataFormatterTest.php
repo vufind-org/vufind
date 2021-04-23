@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
+use Interop\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -39,8 +40,11 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
+class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Get a mock record router.
      *
@@ -60,9 +64,11 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Get view helpers needed by test.
      *
+     * @param ContainerInterface $container Mock service container
+     *
      * @return array
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers($container)
     {
         $context = new \VuFind\View\Helper\Root\Context();
         return [
@@ -76,7 +82,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
             'recordLink' => new \VuFind\View\Helper\Root\RecordLink($this->getMockRecordRouter()),
-            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($this->getServiceManager())),
+            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
             'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
@@ -119,14 +125,7 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue($authors));
 
         // Load record data from fixture file:
-        $fixture = json_decode(
-            file_get_contents(
-                realpath(
-                    VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/testbug2.json'
-                )
-            ),
-            true
-        );
+        $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }
@@ -140,12 +139,14 @@ class RecordDataFormatterTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
-        $formatter = $factory->__invoke(
-            $this->getServiceManager(), RecordDataFormatter::class
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(
+            \VuFind\Config\PluginManager::class, new \VuFind\Config\PluginManager($container)
         );
+        $formatter = $factory->__invoke($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers();
+        $helpers = $this->getViewHelpers($container);
         $view = $this->getPhpRenderer($helpers);
 
         // Mock out the router to avoid errors:

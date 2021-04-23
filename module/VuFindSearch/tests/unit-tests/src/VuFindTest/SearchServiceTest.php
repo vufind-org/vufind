@@ -74,10 +74,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response]);
         $service->retrieve('foo', 'bar', $params);
     }
 
@@ -99,10 +97,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->retrieve('foo', 'bar', $params);
     }
 
@@ -122,10 +118,8 @@ class SearchServiceTest extends TestCase
         $backend->expects($this->once())->method('search')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->search('foo', new Query('test'));
     }
 
@@ -147,10 +141,8 @@ class SearchServiceTest extends TestCase
         $backend->expects($this->once())->method('search')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->getIds('foo', new Query('test'));
     }
 
@@ -175,10 +167,8 @@ class SearchServiceTest extends TestCase
         $backend->expects($this->once())->method('getIds')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->getIds('foo', new Query('test'));
     }
 
@@ -196,14 +186,12 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
         $ids = ['bar', 'baz'];
-        $backend->expects($this->once(0))->method('retrieveBatch')
+        $backend->expects($this->once())->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->returnValue('response'));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo('response'));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', 'response']);
         $service->retrieveBatch('foo', $ids, $params);
 
         // Put the backend back to the default:
@@ -227,17 +215,12 @@ class SearchServiceTest extends TestCase
         $response2->expects($this->once())->method('first')
             ->will($this->returnValue($mockRecord));
         $params = new ParamBag(['x' => 'y']);
-        $backend->expects($this->at(0))->method('retrieve')
-            ->with($this->equalTo('bar'), $this->equalTo($params))
-            ->will($this->returnValue($response1));
-        $backend->expects($this->at(1))->method('retrieve')
-            ->with($this->equalTo('baz'), $this->equalTo($params))
-            ->will($this->returnValue($response2));
+        $backend->expects($this->exactly(2))->method('retrieve')
+            ->withConsecutive(['bar', $params], ['baz', $params])
+            ->willReturnOnConsecutiveCalls($response1, $response2);
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response1));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response1]);
         $service->retrieveBatch('foo', ['bar', 'baz'], $params);
     }
 
@@ -259,14 +242,12 @@ class SearchServiceTest extends TestCase
         $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
         $ids = ['bar', 'baz'];
-        $backend->expects($this->once(0))->method('retrieveBatch')
+        $backend->expects($this->once())->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->retrieveBatch('foo', $ids, $params);
 
         // Put the backend back to the default:
@@ -292,10 +273,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->retrieveBatch('foo', ['bar'], $params);
     }
 
@@ -324,10 +303,8 @@ class SearchServiceTest extends TestCase
                 $this->returnValue($response)
             );
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response]);
         $service->random('foo', $query, "10", $params);
 
         // Put the backend back to the default:
@@ -361,10 +338,8 @@ class SearchServiceTest extends TestCase
             )->will($this->throwException($exception));
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, "10", $params);
 
         // Put the backend back to the default:
@@ -383,42 +358,31 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
 
         $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
+        $inputs = [[$query, "0", "0", $params]];
+        $outputs = [$responseForZero];
 
         for ($i = 1; $i < $limit + 1; $i++) {
             $response = $this->getRecordCollection();
             $response->expects($this->any())->method('first')
                 ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordInterface::class)));
-            $backend->expects($this->at($i))->method('search')
-                ->with(
-                    $this->equalTo($query),
-                    $this->anything(),
-                    $this->equalTo("1"),
-                    $this->equalTo($params)
-                )->will(
-                    $this->returnValue($response)
-                );
+            $inputs[] = [$query, $this->anything(), "1", $params];
+            $outputs[] = $response;
         }
 
+        $backend->expects($this->exactly(count($inputs)))->method('search')
+            ->withConsecutive(...$inputs)
+            ->willReturnOnConsecutiveCalls(...$outputs);
+
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->anything());
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $this->anything()]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -452,10 +416,8 @@ class SearchServiceTest extends TestCase
             ->will($this->returnValue($total));
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($responseForZero));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $responseForZero]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -471,38 +433,23 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
         $response = $this->getRecordCollection();
+        $response->expects($this->once())->method('shuffle');
 
         $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
-
         // Second search grabs all the records and calls shuffle
-        $backend->expects($this->at(1))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo($limit),
-                $this->equalTo($params)
-            )->will($this->returnValue($response));
-        $response->expects($this->once())->method('shuffle');
+        $backend->expects($this->exactly(2))->method('search')
+            ->withConsecutive([$query, "0", "0", $params], [$query, "0", $limit, $params])
+            ->willReturnOnConsecutiveCalls($responseForZero, $response);
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($responseForZero));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $responseForZero]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -526,10 +473,8 @@ class SearchServiceTest extends TestCase
         $backend->expects($this->once())->method('search')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, "10", $params);
     }
 
@@ -548,31 +493,22 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
         $exception = new BackendException('test');
 
         $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
-
         // Exception at item search
-        $backend->expects($this->at(1))->method('search')
-            ->will($this->throwException($exception));
+        $backend->expects($this->exactly(2))->method('search')
+            ->withConsecutive([$query, "0", "0", $params], [$this->anything()])
+            ->willReturnOnConsecutiveCalls($responseForZero, $this->throwException($exception));
+
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, "10", $params);
     }
 
@@ -591,6 +527,8 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
         $response = $this->getRecordCollection();
         $exception = new BackendException('test');
 
@@ -598,26 +536,14 @@ class SearchServiceTest extends TestCase
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
-
         // Second search grabs all the records
-        $backend->expects($this->at(1))->method('search')
-            ->will($this->throwException($exception));
+        $backend->expects($this->exactly(2))->method('search')
+            ->withConsecutive([$query, "0", "0", $params], [$this->anything()])
+            ->willReturnOnConsecutiveCalls($responseForZero, $this->throwException($exception));
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -639,10 +565,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response]);
         $service->similar('foo', 'bar', $params);
 
         // Put the backend back to the default:
@@ -685,10 +609,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->similar('foo', 'bar', $params);
 
         // Put the backend back to the default:

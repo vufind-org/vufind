@@ -32,6 +32,10 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
 
+  <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
+    <strong><i class="fa fa-globe"></i> <?=$this->transEsc('public_list_indicator') ?></strong>
+  <?php endif; ?>
+
   <?=$this->flashmessages()?>
 
   <nav class="search-header hidden-print">

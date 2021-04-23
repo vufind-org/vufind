@@ -84,9 +84,9 @@ class Cart
      */
     protected $cookieManager;
 
-    const CART_COOKIE = 'vufind_cart';
-    const CART_COOKIE_SOURCES = 'vufind_cart_src';
-    const CART_COOKIE_DELIM = "\t";
+    public const CART_COOKIE = 'vufind_cart';
+    public const CART_COOKIE_SOURCES = 'vufind_cart_src';
+    public const CART_COOKIE_DELIM = "\t";
 
     /**
      * Constructor
@@ -202,7 +202,7 @@ class Cart
     /**
      * Get cart size.
      *
-     * @return string The maximum cart size
+     * @return int The maximum cart size
      */
     public function getMaxSize()
     {
@@ -297,7 +297,7 @@ class Cart
 
         foreach ($this->items as $item) {
             // Break apart the source and the ID:
-            list($source, $id) = explode('|', $item, 2);
+            [$source, $id] = explode('|', $item, 2);
 
             // Add the source to the source array if it is not already there:
             $sourceIndex = array_search($source, $sources);

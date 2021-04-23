@@ -79,6 +79,13 @@ class Params extends \VuFind\Search\Base\Params
     public $isSetupOnly = false;
 
     /**
+     * Facet settings
+     *
+     * @var array
+     */
+    protected $fullFacetSettings = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -234,7 +241,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
-        return parent::addFacet($parts[0], $newAlias, $ored);
+        parent::addFacet($parts[0], $newAlias, $ored);
     }
 
     /**
@@ -245,7 +252,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getFullFacetSettings()
     {
-        return isset($this->fullFacetSettings) ? $this->fullFacetSettings : [];
+        return $this->fullFacetSettings;
     }
 
     /**

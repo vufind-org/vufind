@@ -39,15 +39,17 @@ use VuFindSearch\Backend\BrowZine\Connector;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class BrowZineTest extends \VuFindTest\Unit\TestCase
+class BrowZineTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Get a mock connector
      *
      * @param string $doi      DOI expected by connector
      * @param array  $response Response for connector to return
      *
-     * @return void
+     * @return Connector
      */
     protected function getMockConnector($doi, $response)
     {
@@ -68,11 +70,7 @@ class BrowZineTest extends \VuFindTest\Unit\TestCase
      */
     public function testApiSuccess()
     {
-        $fixture = realpath(
-            __DIR__
-            . '/../../../../../tests/fixtures/browzine/doi.json'
-        );
-        $rawData = json_decode(file_get_contents($fixture), true);
+        $rawData = $this->getJsonFixture('browzine/doi.json');
         $testData = [
             [
                 'config' => [],

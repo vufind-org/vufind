@@ -34,6 +34,7 @@
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
+use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
@@ -76,9 +77,16 @@ class Demo extends AbstractBase
     /**
      * Factory function for constructing the SessionContainer.
      *
-     * @var Callable
+     * @var callable
      */
     protected $sessionFactory;
+
+    /**
+     * HTTP Request object (if available).
+     *
+     * @var ?HttpRequest
+     */
+    protected $request;
 
     /**
      * Should we return bib IDs in MyResearch responses?
@@ -120,12 +128,13 @@ class Demo extends AbstractBase
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param SearchService          $ss             Search service
-     * @param Callable               $sessionFactory Factory function returning
-     * SessionContainer object
-     * fake data to simulate consistency and reduce Solr hits
+     * @param callable               $sessionFactory Factory function returning
+     * SessionContainer object for fake data to simulate consistency and reduce Solr
+     * hits
+     * @param HttpRequest            $request        HTTP request object (optional)
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        SearchService $ss, $sessionFactory
+        SearchService $ss, $sessionFactory, HttpRequest $request = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
@@ -133,6 +142,7 @@ class Demo extends AbstractBase
             throw new \Exception('Invalid session factory passed to constructor.');
         }
         $this->sessionFactory = $sessionFactory;
+        $this->request = $request;
     }
 
     /**
@@ -183,8 +193,7 @@ class Demo extends AbstractBase
         // Method may come in like Class::Method, we just want the Method part
         $parts = explode('::', $method);
         $key = array_pop($parts);
-        $probability = isset($this->failureProbabilities[$key])
-            ? $this->failureProbabilities[$key] : $default;
+        $probability = $this->failureProbabilities[$key] ?? $default;
         return rand(1, 100) <= $probability;
     }
 
@@ -274,7 +283,7 @@ class Demo extends AbstractBase
      */
     protected function getRandomBibId()
     {
-        list($id) = $this->getRandomBibIdAndTitle();
+        [$id] = $this->getRandomBibIdAndTitle();
         return $id;
     }
 
@@ -286,8 +295,7 @@ class Demo extends AbstractBase
     protected function getRandomBibIdAndTitle()
     {
         $source = $this->getRecordSource();
-        $query = isset($this->config['Records']['query'])
-            ? $this->config['Records']['query'] : '*:*';
+        $query = $this->config['Records']['query'] ?? '*:*';
         $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
             throw new \Exception("Problem retrieving random record from $source.");
@@ -303,8 +311,7 @@ class Demo extends AbstractBase
      */
     protected function getRecordSource()
     {
-        return isset($this->config['Records']['source'])
-            ? $this->config['Records']['source'] : DEFAULT_SEARCH_BACKEND;
+        return $this->config['Records']['source'] ?? DEFAULT_SEARCH_BACKEND;
     }
 
     /**
@@ -465,7 +472,6 @@ class Demo extends AbstractBase
                 "expire"   => $this->dateConverter->convertToDisplayDate(
                     'U', strtotime("now + 30 days")
                 ),
-                "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,
                 "reqnum" => $i
             ];
@@ -480,7 +486,7 @@ class Demo extends AbstractBase
                 $currentItem['institution_dbkey'] = 'ill_institution';
             } else {
                 if ($this->idsInMyResearch) {
-                    list($currentItem['id'], $currentItem['title'])
+                    [$currentItem['id'], $currentItem['title']]
                         = $this->getRandomBibIdAndtitle();
                     $currentItem['source'] = $this->getRecordSource();
                 } else {
@@ -574,7 +580,12 @@ class Demo extends AbstractBase
             $factory = $this->sessionFactory;
             $this->session[$selectedPatron] = $factory($selectedPatron);
         }
-        return $this->session[$selectedPatron];
+        $result = $this->session[$selectedPatron];
+        // Special case: check for clear_demo request parameter to reset:
+        if ($this->request && $this->request->getQuery('clear_demo')) {
+            $result->exchangeArray([]);
+        }
+        return $result;
     }
 
     /**
@@ -887,7 +898,7 @@ class Demo extends AbstractBase
                 // Some fines will have no id or title:
                 if (rand() % 3 != 1) {
                     if ($this->idsInMyResearch) {
-                        list($fineList[$i]['id'], $fineList[$i]['title'])
+                        [$fineList[$i]['id'], $fineList[$i]['title']]
                             = $this->getRandomBibIdAndTitle();
                         $fineList[$i]['source'] = $this->getRecordSource();
                     } else {
@@ -1063,7 +1074,7 @@ class Demo extends AbstractBase
             } else {
                 $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
                 if ($this->idsInMyResearch) {
-                    list($transList[$i]['id'], $transList[$i]['title'])
+                    [$transList[$i]['id'], $transList[$i]['title']]
                         = $this->getRandomBibIdAndTitle();
                     $transList[$i]['source'] = $this->getRecordSource();
                 } else {
@@ -1186,7 +1197,7 @@ class Demo extends AbstractBase
                 'item_id' => $i,
             ];
             if ($this->idsInMyResearch) {
-                list($transList[$i]['id'], $transList[$i]['title'])
+                [$transList[$i]['id'], $transList[$i]['title']]
                     = $this->getRandomBibIdAndTitle();
                 $transList[$i]['source'] = $this->getRecordSource();
             } else {
@@ -2335,9 +2346,8 @@ class Demo extends AbstractBase
             ];
         }
         if ($function == 'changePassword') {
-            return isset($this->config['changePassword'])
-                ? $this->config['changePassword']
-                : ['minLength' => 4, 'maxLength' => 20];
+            return $this->config['changePassword']
+                ?? ['minLength' => 4, 'maxLength' => 20];
         }
         if ($function == 'getMyTransactionHistory') {
             if (empty($this->config['TransactionHistory']['enabled'])) {

@@ -55,7 +55,7 @@ abstract class AbstractFile
     /**
      * Add a URL to the map.
      *
-     * @param string $url URL
+     * @param string|array $url URL as a string or as an associative array
      *
      * @return void
      */
@@ -67,7 +67,7 @@ abstract class AbstractFile
     /**
      * Translate a URL into an appropriate entry for this sitemap file.
      *
-     * @param string $url URL
+     * @param string|array $url URL as a string or as an associative array
      *
      * @return string XML fragment
      */
@@ -80,21 +80,26 @@ abstract class AbstractFile
      */
     public function toString()
     {
-        // Start XML:
+        // Create entries first as they may affect the required namespaces:
+        $entries = '';
+        foreach ($this->urls as $url) {
+            $entries .= $this->getEntry($url);
+        }
+
+        // Construct XML:
+        $extraNs = $this->getExtraNamespaces();
+        $extraNamespaces = $extraNs
+            ? ('   ' . implode("\n   ", array_unique($extraNs)) . "\n")
+            : '';
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
             '<' . $this->topTag . "\n" .
             '   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n" .
+            $extraNamespaces .
             '   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n" .
             "   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9\n" .
-            '   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n\n";
-
-        // Fill in the guts:
-        foreach ($this->urls as $url) {
-            $xml .= $this->getEntry($url);
-        }
-
-        // Close XML:
-        $xml .= '</' . $this->topTag . '>';
+            '   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n\n" .
+            $entries .
+            '</' . $this->topTag . '>';
 
         // Send it all back
         return $xml;
@@ -115,5 +120,45 @@ abstract class AbstractFile
             mkdir($dirname, 0755, true);
         }
         return file_put_contents($file, $this->toString());
+    }
+
+    /**
+     * Check if the sitemap is empty
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return !$this->urls;
+    }
+
+    /**
+     * Get the count of items
+     *
+     * @return int
+     */
+    public function getCount(): int
+    {
+        return count($this->urls);
+    }
+
+    /**
+     * Remove all entries
+     *
+     * @return void
+     */
+    public function clear(): void
+    {
+        $this->urls = [];
+    }
+
+    /**
+     * Get any extra namespace declarations needed for the sitemap
+     *
+     * @return array
+     */
+    protected function getExtraNamespaces()
+    {
+        return [];
     }
 }

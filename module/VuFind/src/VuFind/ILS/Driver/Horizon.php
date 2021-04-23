@@ -145,8 +145,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     protected function parseStatus($status)
     {
-        $statuses = isset($this->config['Statuses'][$status])
-            ? $this->config['Statuses'][$status] : null;
+        $duedate = null;
+        $statuses = $this->config['Statuses'][$status] ?? null;
 
         // query the config file for the item status if there are
         // config values, use the configuration otherwise execute the switch
@@ -336,7 +336,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -537,7 +537,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
 
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
                 $user = [
                     'id' => $username,
                     'firstname' => $firstname,
@@ -635,7 +635,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @param array $row An sql row
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @return array Keyed data
      */
     protected function processHoldsRow($row)
@@ -693,12 +693,13 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
     public function getMyHolds($patron)
     {
+        $holdList = [];
         $sqlArray = $this->getHoldsSQL($patron);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
@@ -727,7 +728,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -846,7 +847,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                list($lastname, $firstname) = explode(', ', $row['FULLNAME']);
+                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
                 $profile = [
                     'lastname' => $lastname,
                     'firstname' => $firstname,
@@ -938,7 +939,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @param array $row An array of keyed data
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @return array Keyed data for display by template files
      */
     protected function processTransactionsRow($row)
@@ -984,7 +985,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */

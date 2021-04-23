@@ -48,6 +48,8 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  */
 class ConnectorTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Current response.
      *
@@ -139,6 +141,46 @@ class ConnectorTest extends TestCase
     }
 
     /**
+     * Test caching.
+     *
+     * @return void
+     */
+    public function testCaching()
+    {
+        $conn = $this->createConnector('single-record');
+
+        [, $expectedBody] = explode("\n\n", $this->response);
+        $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
+
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $cache->expects($this->exactly(3))
+            ->method('getItem')
+            ->with($keyConstraint)
+            ->willReturnOnConsecutiveCalls(null, $expectedBody, 'foo');
+        $cache->expects($this->exactly(1))
+            ->method('setItem')
+            ->with($keyConstraint, $expectedBody)
+            ->will($this->returnValue(true));
+
+        $conn->setCache($cache);
+
+        $resp = $conn->retrieve('id');
+        $this->assertEquals($expectedBody, $resp);
+        $resp = $conn->retrieve('id');
+        $this->assertEquals($expectedBody, $resp);
+        $resp = $conn->retrieve('id');
+        $this->assertEquals('foo', $resp);
+
+        // Make sure that write() doesn't access the cache.
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $cache->expects($this->never())->method('getItem');
+        $cache->expects($this->never())->method('setItem');
+        $conn->setCache($cache);
+        $doc = new \VuFindSearch\Backend\Solr\Document\UpdateDocument();
+        $conn->write($doc);
+    }
+
+    /**
      * Test simple getters.
      *
      * @return void
@@ -176,11 +218,8 @@ class ConnectorTest extends TestCase
     protected function createConnector($fixture = null)
     {
         if ($fixture) {
-            $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-            }
-            $this->response = file_get_contents($file);
+            $this->response
+                = $this->getFixture("solr/response/$fixture", 'VuFindSearch');
         }
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);

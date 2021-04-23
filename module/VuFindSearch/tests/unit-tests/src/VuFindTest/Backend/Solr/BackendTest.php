@@ -49,6 +49,8 @@ use VuFindSearch\Query\Query;
  */
 class BackendTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -124,15 +126,9 @@ class BackendTest extends TestCase
         $resp2 = $this->loadResponse('multi-record-part2');
         $resp3 = $this->loadResponse('multi-record-part3');
         $conn = $this->getConnectorMock(['search']);
-        $conn->expects($this->at(0))
+        $conn->expects($this->exactly(3))
             ->method('search')
-            ->will($this->returnValue($resp1->getBody()));
-        $conn->expects($this->at(1))
-            ->method('search')
-            ->will($this->returnValue($resp2->getBody()));
-        $conn->expects($this->at(2))
-            ->method('search')
-            ->will($this->returnValue($resp3->getBody()));
+            ->willReturnOnConsecutiveCalls($resp1->getBody(), $resp2->getBody(), $resp3->getBody());
 
         $back = new Backend($conn);
         $back->setPageSize(1);
@@ -410,11 +406,9 @@ class BackendTest extends TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-        }
-        return Response::fromString(file_get_contents($file));
+        return Response::fromString(
+            $this->getFixture("solr/response/$fixture", 'VuFindSearch')
+        );
     }
 
     /**

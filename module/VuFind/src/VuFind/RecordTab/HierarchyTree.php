@@ -171,7 +171,7 @@ class HierarchyTree extends AbstractBase
      */
     public function renderTree($baseUrl, $id = null, $context = 'Record')
     {
-        $id = (null === $id) ? $this->getActiveTree() : $id;
+        $id = $id ?? $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {
@@ -202,8 +202,7 @@ class HierarchyTree extends AbstractBase
     public function getSearchLimit()
     {
         $config = $this->getConfig();
-        return isset($config->Hierarchy->treeSearchLimit)
-            ? $config->Hierarchy->treeSearchLimit : -1;
+        return $config->Hierarchy->treeSearchLimit ?? -1;
     }
 
     /**

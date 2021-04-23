@@ -82,6 +82,21 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the subtitle (if any) of the record.
+     *
+     * @return string
+     */
+    public function getSubtitle()
+    {
+        $title = $this->getTitle();
+        if (null == $title) {
+            return '';
+        }
+        $parts = explode(':', $title, 2);
+        return count($parts) > 1 ? trim(array_pop($parts)) : '';
+    }
+
+    /**
      * Get the abstract (summary) of the record.
      *
      * @return string
@@ -445,12 +460,11 @@ class EDS extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        return array_unique(
-            $this->extractEbscoDataFromRecordInfo(
-                'BibRecord/BibRelationships/HasContributorRelationships/*/'
+        $authors = $this->extractEbscoDataFromRecordInfo(
+            'BibRecord/BibRelationships/HasContributorRelationships/*/'
                 . 'PersonEntity/Name/NameFull'
-            )
         );
+        return array_unique(array_filter($authors));
     }
 
     /**
@@ -565,9 +579,9 @@ class EDS extends DefaultRecord
                 if (in_array($group, $allowed_searchlink_groups)) {
                     $type = strtoupper($group);
                     $link_xml = '/<searchLink fieldCode="([^\"]*)" '
-                        . 'term="%22([^\"]*)%22">/';
-                    $link_html
-                        = "<a href=\"../EDS/Search?lookfor=$2&amp;type={$type}\">";
+                        . 'term="(%22[^\"]*%22)">/';
+                    $link_html = '<a href="../EDS/Search?lookfor=$2&amp;type='
+                        . urlencode($type) . '">';
                     $data = preg_replace($link_xml, $link_html, $data);
                     $data = str_replace('</searchLink>', '</a>', $data);
                 }
@@ -783,6 +797,29 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get the end page of the item that contains this record.
+     *
+     * @return string
+     */
+    public function getContainerEndPage()
+    {
+        // EBSCO doesn't make this information readily available, but in some
+        // cases we can abstract it from an OpenURL.
+        $startPage = $this->getContainerStartPage();
+        if (!empty($startPage)) {
+            $regex = "/&pages={$startPage}-(\d+)/";
+            foreach ($this->getFTCustomLinks() as $link) {
+                if (preg_match($regex, $link['Url'] ?? '', $matches)) {
+                    if (isset($matches[1])) {
+                        return $matches[1];
+                    }
+                }
+            }
+        }
+        return '';
+    }
+
+    /**
      * Returns an array of formats based on publication type.
      *
      * @return array
@@ -867,13 +904,13 @@ class EDS extends DefaultRecord
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
                 $placeParts = explode('.', $matches[1]);
-                list($place, $pub, $date)
+                [$place, $pub, $date]
                     = [trim($matches[1]), trim($matches[2]), $matches[3]];
             } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
-                list($place, $pub, $date)
+                [$place, $pub, $date]
                     = [trim($matches[1]), trim($matches[2]), ''];
             } else {
-                list($place, $pub, $date) = ['', $pub['Data'], ''];
+                [$place, $pub, $date] = ['', $pub['Data'], ''];
             }
 
             // In some cases, the place may have noise on the front that needs
@@ -900,7 +937,7 @@ class EDS extends DefaultRecord
     {
         $result = [];
         foreach ($selectors as $selector) {
-            list($method, $params) = explode(':', $selector, 2);
+            [$method, $params] = explode(':', $selector, 2);
             $fullMethod = 'extractEbscoDataFrom' . ucwords($method);
             if (!is_callable([$this, $fullMethod])) {
                 throw new \Exception('Undefined method: ' . $fullMethod);

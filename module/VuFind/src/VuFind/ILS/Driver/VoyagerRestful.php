@@ -248,29 +248,22 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->ws_dbKey = $this->config['WebServices']['dbKey'];
         $this->ws_patronHomeUbId = $this->config['WebServices']['patronHomeUbId'];
         $this->ws_pickUpLocations
-            = (isset($this->config['pickUpLocations']))
-            ? $this->config['pickUpLocations'] : false;
+            = $this->config['pickUpLocations'] ?? false;
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation']
-            : '';
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
         $this->holdCheckLimit
-            = isset($this->config['Holds']['holdCheckLimit'])
-            ? $this->config['Holds']['holdCheckLimit'] : '15';
+            = $this->config['Holds']['holdCheckLimit'] ?? '15';
         $this->callSlipCheckLimit
-            = isset($this->config['StorageRetrievalRequests']['checkLimit'])
-            ? $this->config['StorageRetrievalRequests']['checkLimit'] : '15';
+            = $this->config['StorageRetrievalRequests']['checkLimit'] ?? '15';
 
         $this->recallsEnabled
-            = isset($this->config['Holds']['enableRecalls'])
-            ? $this->config['Holds']['enableRecalls'] : true;
+            = $this->config['Holds']['enableRecalls'] ?? true;
 
         $this->itemHoldsEnabled
-            = isset($this->config['Holds']['enableItemHolds'])
-            ? $this->config['Holds']['enableItemHolds'] : true;
+            = $this->config['Holds']['enableItemHolds'] ?? true;
 
         $this->requestGroupsEnabled
             = isset($this->config['Holds']['extraHoldFields'])
@@ -279,31 +272,25 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 explode(':', $this->config['Holds']['extraHoldFields'])
             );
         $this->defaultRequestGroup
-            = isset($this->config['Holds']['defaultRequestGroup'])
-            ? $this->config['Holds']['defaultRequestGroup'] : false;
+            = $this->config['Holds']['defaultRequestGroup'] ?? false;
         if ($this->defaultRequestGroup === 'user-selected') {
             $this->defaultRequestGroup = false;
         }
         $this->pickupLocationsInRequestGroup
-            = isset($this->config['Holds']['pickupLocationsInRequestGroup'])
-            ? $this->config['Holds']['pickupLocationsInRequestGroup'] : false;
+            = $this->config['Holds']['pickupLocationsInRequestGroup'] ?? false;
 
         $this->checkItemsExist
-            = isset($this->config['Holds']['checkItemsExist'])
-            ? $this->config['Holds']['checkItemsExist'] : false;
+            = $this->config['Holds']['checkItemsExist'] ?? false;
         $this->checkItemsNotAvailable
-            = isset($this->config['Holds']['checkItemsNotAvailable'])
-            ? $this->config['Holds']['checkItemsNotAvailable'] : false;
+            = $this->config['Holds']['checkItemsNotAvailable'] ?? false;
         $this->checkLoans
-            = isset($this->config['Holds']['checkLoans'])
-            ? $this->config['Holds']['checkLoans'] : false;
+            = $this->config['Holds']['checkLoans'] ?? false;
         $this->excludedItemLocations
             = isset($this->config['Holds']['excludedItemLocations'])
             ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
             : '';
         $this->allowCancelingAvailableRequests
-            = isset($this->config['Holds']['allowCancelingAvailableRequests'])
-            ? $this->config['Holds']['allowCancelingAvailableRequests'] : true;
+            = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
     }
 
     /**
@@ -699,6 +686,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $pickResponse = [];
         $params = [];
         if ($this->ws_pickUpLocations) {
             foreach ($this->ws_pickUpLocations as $code => $library) {
@@ -749,8 +737,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Do we need to sort pickup locations? If the setting is false, don't
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
-        $orderSetting = isset($this->config['Holds']['pickUpLocationOrder'])
-            ? $this->config['Holds']['pickUpLocationOrder'] : 'default';
+        $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
         if (count($pickResponse) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
@@ -1026,6 +1013,7 @@ EOT;
     protected function makeRequest($hierarchy, $params = false, $mode = 'GET',
         $xml = false
     ) {
+        $hierarchyString = [];
         // Build Url Base
         $urlParams = "http://{$this->ws_host}:{$this->ws_port}/{$this->ws_app}";
 
@@ -1056,8 +1044,7 @@ EOT;
         }
 
         // Set timeout value
-        $timeout = isset($this->config['Catalog']['http_timeout'])
-            ? $this->config['Catalog']['http_timeout'] : 30;
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
         $client->setOptions(['timeout' => $timeout]);
 
         // Attach XML if necessary
@@ -1271,7 +1258,7 @@ EOT;
             $itemIdentifiers = '';
 
             foreach ($renewDetails['details'] as $renewID) {
-                list($dbKey, $loanId) = explode('|', $renewID);
+                [$dbKey, $loanId] = explode('|', $renewID);
                 if (!$dbKey) {
                     $dbKey = $this->ws_dbKey;
                 }
@@ -2067,7 +2054,7 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($itemId, $cancelCode) = explode('|', $cancelDetails);
+            [$itemId, $cancelCode] = explode('|', $cancelDetails);
 
             // Create Rest API Cancel Key
             $cancelID = $this->ws_dbKey . '|' . $cancelCode;
@@ -2378,7 +2365,7 @@ EOT;
 
         $replyCode = (string)$results->{'reply-code'};
         if ($replyCode != 0 && $replyCode != 8) {
-            throw new Exception('System error fetching call slips');
+            throw new \Exception('System error fetching call slips');
         }
         $requests = [];
         if (isset($results->callslips->institution)) {
@@ -2486,6 +2473,7 @@ EOT;
             'view' => 'full'
         ];
 
+        $xml = [];
         if ('title' == $level) {
             $xml['call-slip-title-parameters'] = [
                 'comment' => $comment,
@@ -2528,6 +2516,7 @@ EOT;
                 ? trim((string)$result->$responseNode->note) : false;
 
             // Valid Response
+            $response = [];
             if ($reply == 'ok' && $note == 'Your request was successful.') {
                 $response['success'] = true;
                 $response['status'] = 'storage_retrieval_request_place_success';
@@ -2561,7 +2550,7 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($dbKey, $itemId, $cancelCode) = explode('|', $cancelDetails);
+            [$dbKey, $itemId, $cancelCode] = explode('|', $cancelDetails);
 
             // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;
@@ -2652,14 +2641,14 @@ EOT;
             $this->putCachedData($cacheId, false);
             return false;
         }
-        list($source, $patronId) = explode('.', $patron['id'], 2);
+        [$source, $patronId] = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             $this->debug("getUBRequestDetails: source '$source' unknown");
             $this->putCachedData($cacheId, false);
             return false;
         }
 
-        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
+        [, $catUsername] = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2916,12 +2905,12 @@ EOT;
             return false;
         }
 
-        list($source, $patronId) = explode('.', $patron['id'], 2);
+        [$source, $patronId] = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             return $this->holdError('ill_request_unknown_patron_source');
         }
 
-        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
+        [, $catUsername] = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2989,12 +2978,12 @@ EOT;
     public function placeILLRequest($details)
     {
         $patron = $details['patron'];
-        list($source, $patronId) = explode('.', $patron['id'], 2);
+        [$source, $patronId] = explode('.', $patron['id'], 2);
         if (!isset($this->config['ILLRequestSources'][$source])) {
             return $this->holdError('ill_request_error_unknown_patron_source');
         }
 
-        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
+        [, $catUsername] = explode('.', $patron['cat_username'], 2);
         $patronId = htmlspecialchars($patronId, ENT_COMPAT, 'UTF-8');
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -3156,7 +3145,7 @@ EOT;
         $response = [];
 
         foreach ($details as $cancelDetails) {
-            list($dbKey, $itemId, $type, $cancelCode) = explode('|', $cancelDetails);
+            [$dbKey, $itemId, $type, $cancelCode] = explode('|', $cancelDetails);
 
             // Create Rest API Cancel Key
             $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . '|' . $cancelCode;

@@ -88,8 +88,7 @@ class AlphabrowseController extends AbstractBase
         $rows_before = isset($config->AlphaBrowse->rows_before)
             && is_numeric($config->AlphaBrowse->rows_before)
             ? (int)$config->AlphaBrowse->rows_before : 0;
-        $highlighting = isset($config->AlphaBrowse->highlighting)
-            ? $config->AlphaBrowse->highlighting : false;
+        $highlighting = $config->AlphaBrowse->highlighting ?? false;
         $limit  = isset($config->AlphaBrowse->page_size)
             && is_numeric($config->AlphaBrowse->page_size)
             ? (int)$config->AlphaBrowse->page_size : 20;
@@ -118,6 +117,7 @@ class AlphabrowseController extends AbstractBase
         $view = $this->createViewModel();
 
         // If required parameters are present, load results:
+        $result = [];
         if ($source && $from !== false) {
             // Load Solr data or die trying:
             $result = $db->alphabeticBrowse(
@@ -147,7 +147,7 @@ class AlphabrowseController extends AbstractBase
         }
 
         // set up highlighting: page 0 contains match location
-        if ($highlighting && $page == 0) {
+        if ($highlighting && $page == 0 && isset($result['Browse'])) {
             $startRow = $result['Browse']['startRow'];
             // solr counts rows from 1; adjust to array position style
             $startRow_adj = $startRow - 1;

@@ -38,7 +38,7 @@ use VuFind\Recommend\SwitchQuery;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SwitchQueryTest extends \VuFindTest\Unit\TestCase
+class SwitchQueryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test "getResults"

@@ -417,7 +417,8 @@ class Params extends \VuFind\Search\Base\Params
 
         // Special case -- no IDs to set:
         if (empty($ids)) {
-            return $this->setOverrideQuery('NOT *:*');
+            $this->setOverrideQuery('NOT *:*');
+            return;
         }
 
         $callback = function ($i) {
@@ -436,8 +437,7 @@ class Params extends \VuFind\Search\Base\Params
     public function getQueryIDLimit()
     {
         $config = $this->configLoader->get($this->getOptions()->getMainIni());
-        return isset($config->Index->maxBooleanClauses)
-            ? $config->Index->maxBooleanClauses : 1024;
+        return $config->Index->maxBooleanClauses ?? 1024;
     }
 
     /**

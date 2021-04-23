@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Oliver Goldschmidt <@o.goldschmidt@tuhh.de>
+ * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -34,11 +34,11 @@ use VuFind\Role\PermissionDeniedManager;
  *
  * @category VuFind
  * @package  Tests
- * @author   Oliver Goldschmidt <@o.goldschmidt@tuhh.de>
+ * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PermissionDeniedManagerTest extends \VuFindTest\Unit\TestCase
+class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Sample configuration with varios config options.

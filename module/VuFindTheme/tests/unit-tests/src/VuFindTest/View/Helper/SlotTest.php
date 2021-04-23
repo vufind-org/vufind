@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\View\Helper;
 
-use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\Slot;
 
 /**
@@ -39,7 +38,7 @@ use VuFindTheme\View\Helper\Slot;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SlotTest extends \VuFindTest\Unit\TestCase
+class SlotTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test the helper.
@@ -110,7 +109,7 @@ class SlotTest extends \VuFindTest\Unit\TestCase
         // test object
         $helper->__invoke('array')->clear();
         $ret = $helper->__invoke('array')->set(new \SplStack());
-        $this->assertEquals('SplStack', get_class($ret));
+        $this->assertEquals(\SplStack::class, get_class($ret));
 
         // test shortcuts
         $ret = $helper->__invoke('short', 'SUCCESS');
@@ -299,22 +298,9 @@ class SlotTest extends \VuFindTest\Unit\TestCase
      */
     protected function getHelper()
     {
-        $helper = new Slot($this->getResourceContainer());
+        $helper = new Slot();
         $helper->setView($this->getMockView());
         return $helper;
-    }
-
-    /**
-     * Get a populated resource container for testing.
-     *
-     * @return ResourceContainer
-     */
-    protected function getResourceContainer()
-    {
-        $rc = new ResourceContainer();
-        $rc->setEncoding('utf-8');
-        $rc->setGenerator('fake-generator');
-        return $rc;
     }
 
     /**

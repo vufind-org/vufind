@@ -187,8 +187,7 @@ class Loader extends \VuFind\ImageLoader
     ) {
         $this->setThemeInfo($theme);
         $this->config = $config;
-        $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
-            ? $config->Content->noCoverAvailableImage : null;
+        $this->configuredFailImage = $config->Content->noCoverAvailableImage ?? null;
         $this->apiManager = $manager;
         $this->httpService = $httpService;
         $this->baseDir = (null === $baseDir)
@@ -361,7 +360,7 @@ class Loader extends \VuFind\ImageLoader
     public function loadUnavailable()
     {
         $this->hasLoadedUnavailable = true;
-        return parent::loadUnavailable();
+        parent::loadUnavailable();
     }
 
     /**
@@ -379,7 +378,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @param array $ids IDs returned by getIdentifiers() method
      *
-     * @return void
+     * @return string
      */
     protected function determineLocalFile($ids)
     {
@@ -574,7 +573,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function validateAndMoveTempFile($image, $tempFile, $finalFile)
     {
-        list($width, $height, $type) = @getimagesize($tempFile);
+        [$width, $height, $type] = @getimagesize($tempFile);
 
         // File too small -- delete it and report failure.
         if ($width < 2 && $height < 2) {

@@ -3,6 +3,7 @@ return [
     'extends' => false,
     'helpers' => [
         'factories' => [
+            'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',
             'VuFind\View\Helper\Root\AccountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilitiesFactory',
             'VuFind\View\Helper\Root\AddEllipsis' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\AddThis' => 'VuFind\View\Helper\Root\AddThisFactory',
@@ -62,6 +63,7 @@ return [
             'VuFind\View\Helper\Root\SyndeticsPlus' => 'VuFind\View\Helper\Root\SyndeticsPlusFactory',
             'VuFind\View\Helper\Root\SystemEmail' => 'VuFind\View\Helper\Root\SystemEmailFactory',
             'VuFind\View\Helper\Root\TransEsc' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Root\TransEscAttr' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\TransEscWithPrefix' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Translate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Truncate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -130,6 +132,7 @@ return [
             'syndeticsPlus' => 'VuFind\View\Helper\Root\SyndeticsPlus',
             'systemEmail' => 'VuFind\View\Helper\Root\SystemEmail',
             'transEsc' => 'VuFind\View\Helper\Root\TransEsc',
+            'transEscAttr' => 'VuFind\View\Helper\Root\TransEscAttr',
             'transEscWithPrefix' => 'VuFind\View\Helper\Root\TransEscWithPrefix',
             'translate' => 'VuFind\View\Helper\Root\Translate',
             'truncate' => 'VuFind\View\Helper\Root\Truncate',

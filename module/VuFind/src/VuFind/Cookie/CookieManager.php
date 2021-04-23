@@ -42,6 +42,13 @@ namespace VuFind\Cookie;
 class CookieManager
 {
     /**
+     * Cookie array to work with
+     *
+     * @var array
+     */
+    protected $cookies;
+
+    /**
      * Cookie base path
      *
      * @var string
@@ -199,12 +206,6 @@ class CookieManager
         if ('cli' === PHP_SAPI) {
             return true;
         }
-        if (PHP_VERSION_ID < 70300) {
-            return setcookie(
-                $key, $value, $expire, "$path; samesite=$sameSite", $domain, $secure,
-                $httpOnly
-            );
-        }
         return setcookie(
             $key,
             $value,
@@ -314,6 +315,6 @@ class CookieManager
      */
     public function get($key)
     {
-        return isset($this->cookies[$key]) ? $this->cookies[$key] : null;
+        return $this->cookies[$key] ?? null;
     }
 }

@@ -125,6 +125,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $storageRetrievalRequestTypes = ['stack retrieval'];
 
     /**
+     * Are renewals disabled for this driver instance? Defaults to false
+     *
+     * @var bool
+     */
+    protected $disableRenewals = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -164,6 +171,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->agency[$this->config['Catalog']['agency']] = 1;
             }
         }
+        $this->disableRenewals
+            = $this->config['Catalog']['disableRenewals'] ?? false;
     }
 
     /**
@@ -267,8 +276,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         try {
             $client = $this->httpService->createClient($this->url);
             // Set timeout value
-            $timeout = isset($this->config['Catalog']['http_timeout'])
-                ? $this->config['Catalog']['http_timeout'] : 30;
+            $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
             $client->setOptions(['timeout' => $timeout]);
             $client->setRawBody($xml);
             $client->setEncType('application/xml; charset=UTF-8');
@@ -413,7 +421,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'id' => $aggregateId,
             'availability' =>  $this->isAvailable($status),
             'status' => $status,
-            'item_id' => (string)$itemId[0],
+            'item_id' => (string)($itemId[0] ?? ''),
             'bib_id' => $bibId,
             'item_agency_id' => (string)($itemAgencyId[0] ?? ''),
             'location' => $location,
@@ -490,7 +498,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Add the desired data list:
         foreach ($desiredParts as $current) {
             $xml .= '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 htmlspecialchars($current) . '</ns1:ItemElementType>';
         }
@@ -607,7 +615,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $patron Patron data
      * @param array  $ids    The (consortial) source records for the record id
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -700,7 +708,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -828,7 +836,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -866,9 +874,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:ItemId/ns1:AgencyId'
             );
 
-            $notRenewable = $current->xpath(
-                'ns1:Ext/ns1:RenewalNotPermitted'
-            );
+            $renewable = $this->disableRenewals
+                ? false
+                : empty($current->xpath('ns1:Ext/ns1:RenewalNotPermitted'));
 
             $itemAgencyId = !empty($itemAgencyId) ? (string)$itemAgencyId[0] : null;
             $bibId = !empty($bibId) ? (string)$bibId[0] : null;
@@ -911,7 +919,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'duedate' => $due,
                 'title' => (string)$title[0],
                 'item_id' => $itemId,
-                'renewable' => empty($notRenewable),
+                'renewable' => $renewable,
             ];
         }
 
@@ -925,7 +933,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -989,7 +997,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron The patron array from patronLogin
      * @param array $types  Request types
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1067,7 +1075,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1434,7 +1442,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
-        list($pickUpAgency, $pickUpLocation) = explode("|", $pickUpLocation);
+        [$pickUpAgency, $pickUpLocation] = explode("|", $pickUpLocation);
         $lastInterestDate = $details['requiredBy'];
         $lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
             . substr($lastInterestDate, 0, 5);
@@ -1504,7 +1512,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
 
         foreach ($details as $detail) {
-            list($itemAgencyId, $requestId, $itemId) = explode("|", $detail);
+            [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
             $request = $this->getCancelRequest(
                 $username, $password, $patronAgency,
                 $itemAgencyId, $requestId, $type,
@@ -1631,11 +1639,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $details = [];
         foreach ($renewDetails['details'] as $detail) {
-            list($agencyId, $itemId) = explode("|", $detail);
+            [$agencyId, $itemId] = explode("|", $detail);
             $failureReturn = [
                 "success" => false,
                 "item_id" => $itemId,
             ];
+            if ($this->disableRenewals) {
+                $details[$itemId] = $failureReturn;
+                continue;
+            }
             $request = $this->getRenewRequest(
                 $renewDetails['patron']['cat_username'],
                 $renewDetails['patron']['cat_password'], $itemId,
@@ -1867,7 +1879,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->getInitiationHeaderXml($agency) .
             $this->getItemIdXml($agency, $itemId, $idType) .
             '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
                 'itemelementtype/itemelementtype.scm">' .
                 'Bibliographic Description</ns1:ItemElementType>' .
         '</ns1:LookupItem></ns1:NCIPMessage>';

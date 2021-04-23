@@ -40,6 +40,8 @@ use VuFind\ILS\Driver\SierraRest;
  */
 class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test bib IDs (raw value => formatted value)
      *

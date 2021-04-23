@@ -38,8 +38,10 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeInfoTest extends Unit\TestCase
+class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Path to theme fixtures
      *
@@ -52,7 +54,8 @@ class ThemeInfoTest extends Unit\TestCase
      */
     public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
+        $this->fixturePath
+            = realpath($this->getFixtureDir('VuFindTheme') . 'themes');
     }
 
     /**
@@ -174,6 +177,40 @@ class ThemeInfoTest extends Unit\TestCase
         $ti->setTheme('mixin_user');
         $this->assertEquals('mixin', $ti->findContainingTheme('js/mixin.js'));
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
+    }
+
+    /**
+     * Test findInThemes()
+     *
+     * @return void
+     */
+    public function testFindInThemes()
+    {
+        $ti = $this->getThemeInfo();
+        $ti->setTheme('child');
+        $files = $ti->findInThemes(
+            [
+                'templates/content/*.phtml',
+                'templates/content/*.md'
+            ]
+        );
+        $this->assertIsArray($files);
+        $this->assertEquals(3, count($files));
+        $this->assertEquals('parent', $files[0]['theme']);
+        $this->assertEquals(
+            'templates/content/page1.phtml',
+            $files[0]['relativeFile']
+        );
+        $this->assertEquals('child', $files[1]['theme']);
+        $this->assertEquals(
+            'templates/content/page2.phtml',
+            $files[1]['relativeFile']
+        );
+        $this->assertEquals('parent', $files[2]['theme']);
+        $this->assertEquals(
+            'templates/content/page3.md',
+            $files[2]['relativeFile']
+        );
     }
 
     /**

@@ -84,9 +84,11 @@ class SearchController extends AbstractSolrSearch
                 $query = $query->addFilter($filter);
             }
         } elseif ($removeFacet) {
-            $defaults = ['operator' => 'AND', 'field' => '', 'value' => ''];
-            extract($removeFacet + $defaults);
-            $query = $initialParams->removeFacet($field, $value, $operator);
+            $query = $initialParams->removeFacet(
+                $removeFacet['field'] ?? '',
+                $removeFacet['value'] ?? '',
+                $removeFacet['operator'] ?? 'AND'
+            );
         } elseif ($removeFilter) {
             $query = $initialParams->removeFilter($removeFilter);
         } else {
@@ -488,7 +490,7 @@ class SearchController extends AbstractSolrSearch
         // Send the JSON response:
         $response = $this->getResponse();
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'application/javascript');
+        $headers->addHeaderLine('Content-type', 'application/json');
         $response->setContent(
             json_encode([$query->get('lookfor', ''), $suggestions])
         );

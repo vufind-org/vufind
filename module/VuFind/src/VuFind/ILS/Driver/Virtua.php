@@ -327,7 +327,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -402,6 +402,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Build Holdings Array
+        $holding = [];
         foreach ($result as $row) {
             // If it's reserved or has a due date... not available
             if ($row['DUE_DATE'] != null || $row['REQ_COUNT'] != null) {
@@ -461,11 +462,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $holding[] = $temp;
         }
 
-        if (count($holding) != 0 && $patron['id'] != null) {
-            return $this->checkHoldAllowed($patron['id'], $holding);
-        } else {
-            return $holding;
-        }
+        return (count($holding) != 0 && $patron['id'] != null)
+            ? $this->checkHoldAllowed($patron['id'], $holding) : $holding;
     }
 
     /**
@@ -669,6 +667,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function renderPartSubPattern($data)
     {
+        $end_time = $start_string = null;
+
         // Handle empty patterns
         if (count($data) == 0) {
             return "";
@@ -1243,7 +1243,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -1284,7 +1284,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -1323,7 +1323,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -1858,8 +1858,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function getConfiguredLanguage()
     {
-        return isset($this->config['Catalog']['language'])
-            ? $this->config['Catalog']['language'] : 'en';
+        return $this->config['Catalog']['language'] ?? 'en';
     }
 
     /**

@@ -38,8 +38,10 @@ use VuFind\Autocomplete\Solr;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SolrTest extends \VuFindTest\Unit\TestCase
+class SolrTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Get mock search options.
      *

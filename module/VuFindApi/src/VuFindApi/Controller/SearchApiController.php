@@ -111,6 +111,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
     protected $modelPrefix = '';
 
     /**
+     * Max limit of search results in API response (default 100);
+     *
+     * @var int
+     */
+    protected $maxLimit = 100;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service manager
@@ -126,6 +133,20 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         foreach ($rf->getRecordFields() as $fieldName => $fieldSpec) {
             if (!empty($fieldSpec['vufind.default'])) {
                 $this->defaultRecordFields[] = $fieldName;
+            }
+        }
+
+        // Load configurations from the search options class:
+        $settings = $sm->get(\VuFind\Search\Options\PluginManager::class)
+            ->get($this->searchClassId)->getAPISettings();
+
+        // Apply all supported configurations:
+        $configKeys = [
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit'
+        ];
+        foreach ($configKeys as $key) {
+            if (isset($settings[$key])) {
+                $this->$key = $settings[$key];
             }
         }
     }
@@ -158,6 +179,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
             'searchIndex' => $this->searchClassId,
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
+            'maxLimit' => $this->maxLimit,
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/swagger', $viewParams
@@ -222,6 +244,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
         }
 
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+        $results = [];
         try {
             if (is_array($request['id'])) {
                 $results = $loader->loadBatchForSource(
@@ -271,7 +294,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch
 
         if (isset($request['limit'])
             && (!ctype_digit($request['limit'])
-            || $request['limit'] < 0 || $request['limit'] > 100)
+            || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
         ) {
             return $this->output([], self::STATUS_ERROR, 400, 'Invalid limit');
         }

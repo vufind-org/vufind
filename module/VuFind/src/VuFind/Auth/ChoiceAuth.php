@@ -85,8 +85,7 @@ class ChoiceAuth extends AbstractBase
     {
         // Set up session container and load cached strategy (if found):
         $this->session = $container;
-        $this->strategy = isset($this->session->auth_method)
-            ? $this->session->auth_method : false;
+        $this->strategy = $this->session->auth_method ?? false;
     }
 
     /**

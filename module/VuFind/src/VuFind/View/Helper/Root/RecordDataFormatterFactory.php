@@ -29,6 +29,9 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
@@ -55,7 +58,7 @@ class RecordDataFormatterFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -80,7 +83,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     /**
      * Get the callback function for processing authors.
      *
-     * @return Callable
+     * @return callable
      */
     protected function getAuthorFunction()
     {

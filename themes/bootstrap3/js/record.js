@@ -161,6 +161,10 @@ function registerTabEvents() {
   handleAjaxTabLinks();
 
   VuFind.lightbox.bind('.tab-pane.active');
+
+  if (typeof VuFind.openurl !== 'undefined') {
+    VuFind.openurl.init($('.tab-pane.active'));
+  }
 }
 
 function removeHashFromLocation() {
@@ -273,7 +277,7 @@ function backgroundLoadTab(tabid) {
   return ajaxLoadTab(newTab, tabid, false);
 }
 
-function applyRecordTabHash() {
+function applyRecordTabHash(scrollToTabs) {
   var activeTab = $('.record-tabs li.active').attr('data-tab');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
   var newTab = typeof window.location.hash !== 'undefined'
@@ -283,7 +287,15 @@ function applyRecordTabHash() {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    $('.record-tabs .' + newTab.substr(1) + ' a').click();
+    var $tabLink = $('.record-tabs .' + newTab.substr(1) + ' a');
+    if ($tabLink.length > 0) {
+      $tabLink.click();
+      if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
+        $('html, body').animate({
+          scrollTop: $('.record-tabs').offset().top
+        }, 500);
+      }
+    }
   }
 }
 
@@ -344,5 +356,5 @@ function recordDocReady() {
   });
 
   registerTabEvents();
-  applyRecordTabHash();
+  applyRecordTabHash(false);
 }

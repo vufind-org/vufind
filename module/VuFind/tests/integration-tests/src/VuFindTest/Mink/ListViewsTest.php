@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * List views (i.e. tabs/accordion) test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,10 +41,10 @@ use Behat\Mink\Element\Element;
  * @link     http://www.vufind.org  Main Page
  * @retry    4
  */
-class ListViewsTest extends \VuFindTest\Unit\MinkTestCase
+final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.

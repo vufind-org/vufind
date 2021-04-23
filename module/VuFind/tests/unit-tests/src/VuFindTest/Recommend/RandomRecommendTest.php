@@ -29,7 +29,6 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\RandomRecommend as Random;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * Random Recommend tests.
@@ -40,8 +39,19 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RandomRecommendTest extends TestCase
+class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
+
+    /**
+     * Random recommendation module class
+     *
+     * @var Random
+     */
+    protected $recommend;
+
     /**
      * Standard setup method.
      *
@@ -127,9 +137,8 @@ class RandomRecommendTest extends TestCase
         $recommend = new Random($service, $paramManager);
 
         // Use Solr since some Base components are abstract:
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
-        $query = $this->getFixture('query');
+        $params = $this->getSolrParams();
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -155,19 +164,14 @@ class RandomRecommendTest extends TestCase
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
 
+        $params = $this->getSolrParams();
+
         $paramManager->expects($this->once())->method('get')
             ->with($this->equalTo("Solr"))
-            ->will(
-                $this->returnValue(
-                    $this->getServiceManager()
-                        ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr')
-                )
-            );
+            ->will($this->returnValue($params));
 
         // Use Solr since some Base components are abstract:
-        $params = $this->getServiceManager()
-            ->get(\VuFind\Search\Params\PluginManager::class)->get('Solr');
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -192,10 +196,9 @@ class RandomRecommendTest extends TestCase
         $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
-        $results = $this->getServiceManager()
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $results = $this->getSolrResults();
         $params = $results->getParams();
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -230,10 +233,9 @@ class RandomRecommendTest extends TestCase
         $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
-        $results = $this->getServiceManager()
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $results = $this->getSolrResults();
         $params = $results->getParams();
-        $query = $this->getFixture('query');
+        $query = $this->unserializeFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
@@ -271,9 +273,8 @@ class RandomRecommendTest extends TestCase
      *
      * @return mixed
      */
-    protected function getFixture($file)
+    protected function unserializeFixture($file)
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches/basic') . '/';
-        return unserialize(file_get_contents($fixturePath . $file));
+        return unserialize($this->getFixture("searches/basic/$file"));
     }
 }

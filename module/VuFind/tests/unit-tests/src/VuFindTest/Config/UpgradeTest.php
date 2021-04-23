@@ -39,8 +39,11 @@ use VuFind\Config\Upgrade;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UpgradeTest extends \VuFindTest\Unit\TestCase
+class UpgradeTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Target upgrade version
      *
@@ -57,7 +60,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
      */
     protected function getUpgrader($version)
     {
-        $oldDir = realpath(__DIR__ . '/../../../../fixtures/configs/' . $version);
+        $oldDir = realpath($this->getFixtureDir() . 'configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
         return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
     }
@@ -91,7 +94,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // Prior to 2.4, we expect exactly one warning about using a deprecated
         // theme:
         $expectedWarnings = [
-            'The Statistics module has been removed from Vufind. '
+            'The Statistics module has been removed from VuFind. '
             . 'For usage tracking, please configure Google Analytics or Piwik.'
         ];
         if ((float)$version < 1.3) {
@@ -131,7 +134,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
-                'CallNumber' => ['TopFacets:ResultsTop']
+                'CallNumber' => ['TopFacets:ResultsTop'],
+                'WorkKeys' => ['']
             ],
             $results['searches.ini']['TopRecommendations']
         );
@@ -469,7 +473,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     {
         $upgrader = $this->getUpgrader('1.4');
         $meaningless = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/empty.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/empty.properties'
         );
         $this->assertFalse(
             $this->callMethod(
@@ -477,7 +481,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $meaningful = realpath(
-            __DIR__ . '/../../../../fixtures/configs/solrmarc/meaningful.properties'
+            $this->getFixtureDir() . 'configs/solrmarc/meaningful.properties'
         );
         $this->assertTrue(
             $this->callMethod(

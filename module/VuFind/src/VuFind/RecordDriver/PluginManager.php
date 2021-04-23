@@ -138,7 +138,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
                 }
             }
         };
-        $this->addInitializer($initializer, false);
+        $this->addInitializer($initializer);
     }
 
     /**

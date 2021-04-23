@@ -172,7 +172,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $libraries = [];
 
         foreach ($lines as $line) {
-            list($code, $name) = explode('|', $line);
+            [$code, $name] = explode('|', $line);
             $libraries[] = [
                 'locationID' => $code,
                 'locationDisplay' => empty($name) ? $code : $name
@@ -254,7 +254,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $results = [];
         $lines = explode("\n", $response);
         foreach ($lines as $line) {
-            list($chargeKey, $result) = explode('-----API_RESULT-----', $line);
+            [$chargeKey, $result] = explode('-----API_RESULT-----', $line);
             $results[$chargeKey] = ['item_id' => $chargeKey];
             $matches = [];
             preg_match('/\^MN([0-9][0-9][0-9])/', $result, $matches);
@@ -270,7 +270,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
             preg_match('/\^CI([^\^]+)\^/', $result, $matches);
             if (isset($matches[1])) {
-                list($newDate, $newTime) = explode(',', $matches[1]);
+                [$newDate, $newTime] = explode(',', $matches[1]);
                 $results[$chargeKey]['new_date'] = $newDate;
                 $results[$chargeKey]['new_time'] = $newTime;
             }
@@ -397,7 +397,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -497,11 +497,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return null;
         }
 
-        list($user_key, $alt_id, $barcode, $name, $library, $profile,
-        $cat1, $cat2, $cat3, $cat4, $cat5, $expiry, $holds, $status)
-            = explode('|', $response);
+        [$user_key, $alt_id, $barcode, $name, $library, $profile, $cat1, $cat2,
+        $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
 
-        list($last, $first) = explode(',', $name);
+        [$last, $first] = explode(',', $name);
         $first = rtrim($first, " ");
 
         if ($expiry != '0') {
@@ -555,8 +554,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
         $response = $this->querySirsi($params);
 
-        list(, , , , $library, $profile, , , , , , , ,
-        $email, $address1, $zip, $phone, $address2) = explode('|', $response);
+        [, , , , $library, $profile, , , , , , , , $email, $address1, $zip, $phone,
+        $address2] = explode('|', $response);
 
         return [
             'firstname' => $patron['firstname'],
@@ -578,7 +577,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -597,8 +596,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lines = explode("\n", $response);
         $items = [];
         foreach ($lines as $item) {
-            list($catkey, $amount, $balance, $date_billed, $number_of_payments,
-            $with_items, $reason, $date_charged, $duedate, $date_recalled)
+            [$catkey, $amount, $balance, $date_billed, $number_of_payments,
+            $with_items, $reason, $date_charged, $duedate, $date_recalled]
                 = explode('|', $item);
 
             // the amount and balance are in cents, so we need to turn them into
@@ -636,7 +635,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -655,9 +654,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lines = explode("\n", $response);
         $items = [];
         foreach ($lines as $item) {
-            list($catkey, $holdkey, $available, , $date_expires, , $date_created, ,
-            $type, $pickup_library, , , , , , , $barcode)
-                = explode('|', $item);
+            [$catkey, $holdkey, $available, , $date_expires, , $date_created, ,
+            $type, $pickup_library, , , , , , , $barcode] = explode('|', $item);
 
             $date_created = $this->parseDateTime($date_created);
             $date_expires = $this->parseDateTime($date_expires);
@@ -731,7 +729,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($lines as $line) {
                 // error lines start with '**'
                 if (strpos(trim($line), '**') === 0) {
-                    list(, $holdKey) = explode(':', $line);
+                    [, $holdKey] = explode(':', $line);
                     $failures[] = trim($holdKey, '()');
                 }
             }
@@ -763,7 +761,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -782,10 +780,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $item_lines = explode("\n", $response);
         $items = [];
         foreach ($item_lines as $item) {
-            list($catkey, $date_charged, $duedate, $date_renewed, $accrued_fine,
-            $overdue, $number_of_renewals, $date_recalled,
-            $charge_key1, $charge_key2, $charge_key3, $charge_key4, $recall_period,
-            $callnum)
+            [$catkey, $date_charged, $duedate, $date_renewed, $accrued_fine,
+            $overdue, $number_of_renewals, $date_recalled, $charge_key1,
+            $charge_key2, $charge_key3, $charge_key4, $recall_period, $callnum]
                 = explode('|', $item);
 
             $duedate = $original_duedate = $this->parseDateTime($duedate);
@@ -852,7 +849,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $courses = [];
 
         foreach ($course_lines as $course) {
-            list($id, $code, $name) = explode('|', $course);
+            [$id, $code, $name] = explode('|', $course);
             $name = ($code == $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
@@ -879,7 +876,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $users = [];
 
         foreach ($user_lines as $user) {
-            list($id, $name) = explode('|', $user);
+            [$id, $name] = explode('|', $user);
             $users[$id] = $name;
         }
         asort($users);
@@ -905,7 +902,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $depts = [];
 
         foreach ($dept_lines as $dept) {
-            list($id, $name) = explode('|', $dept);
+            [$id, $name] = explode('|', $dept);
             $depts[$id] = $name;
         }
         asort($depts);
@@ -955,7 +952,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $item_lines = explode("\n", $response);
         $items = [];
         foreach ($item_lines as $item) {
-            list($instructor_id, $course_id, $dept_id, $bib_id)
+            [$instructor_id, $course_id, $dept_id, $bib_id]
                 = explode('|', $item);
             if ($bib_id && (empty($instructorId) || $instructorId == $instructor_id)
                 && (empty($courseId) || $courseId == $course_id)
@@ -1048,14 +1045,12 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function parseStatusLine($line)
     {
-        list($catkey, $shelving_key, $callnum,
-        $itemkey1, $itemkey2, $itemkey3, $barcode, $reserve,
-        $number_of_charges, $item_type, $recirculate_flag,
-        $holdcount, $library_code, $library,
-        $location_code, $location, $currLocCode, $current_location,
-        $holdable,
-        $circulation_rule, $duedate, $date_recalled, $recall_period,
-        $format, $title_holds) = explode("|", $line);
+        [$catkey, $shelving_key, $callnum, $itemkey1, $itemkey2, $itemkey3,
+        $barcode, $reserve, $number_of_charges, $item_type, $recirculate_flag,
+        $holdcount, $library_code, $library, $location_code, $location,
+        $currLocCode, $current_location, $holdable, $circulation_rule, $duedate,
+        $date_recalled, $recall_period, $format, $title_holds]
+            = explode("|", $line);
 
         // availability
         $availability = ($number_of_charges == 0) ? 1 : 0;
@@ -1391,7 +1386,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $decoded_holding = '';
             foreach ($field->getSubfields() as $subfield) {
-                if (strpos('68x', $subfield->getCode()) !== false) {
+                if (strpos('68x', (string)$subfield->getCode()) !== false) {
                     continue;
                 }
                 $decoded_holding .= ' ' . $subfield->getData();
@@ -1428,7 +1423,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $holdings = [];
         $file = new File_MARC($marc, File_MARC::SOURCE_STRING);
         while ($marc = $file->next()) {
-            list($locations, $record_holdings)
+            [$locations, $record_holdings]
                 = $this->decodeMarcHoldingRecord($marc);
             // Flatten locations with corresponding holdings as VuFind
             // expects it.

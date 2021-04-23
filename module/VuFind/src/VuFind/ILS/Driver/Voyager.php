@@ -150,8 +150,7 @@ class Voyager extends AbstractBase
         $this->dbName = $this->config['Catalog']['database'];
 
         $this->useHoldingsSortGroups
-            = isset($this->config['Holdings']['use_sort_groups'])
-            ? $this->config['Holdings']['use_sort_groups'] : true;
+            = $this->config['Holdings']['use_sort_groups'] ?? true;
 
         $this->displayDueTimeIntervals
             = isset($this->config['Loans']['display_due_time_only_for_intervals'])
@@ -188,6 +187,27 @@ class Voyager extends AbstractBase
                      ')' .
                    ')';
             try {
+                if ((!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
+                    && empty($this->config['Catalog']['forceOCI8Support'])
+                ) {
+                    $this->error(
+                        <<<EOT
+Voyager connection is only supported on PHP 7 by default. To enable support, you
+will need to manually update the yajra/laravel-pdo-via-oci8 package using the
+following command:
+
+php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
+
+Then force the Voyager driver to connect by adding the following setting to
+Voyager.ini or VoyagerRestful.ini:
+
+[Catalog]
+forceOCI8Support = true
+
+EOT
+                    );
+                    throw new ILSException('Unsupported PHP version');
+                }
                 $this->lazyDb = new Oci8(
                     "oci:dbname=$tns;charset=US7ASCII",
                     $this->config['Catalog']['user'],
@@ -294,8 +314,7 @@ class Voyager extends AbstractBase
         // "No information available" message that we hard-code when items are
         // missing); return a large number in this case to avoid an undefined index
         // error and to allow recognized statuses to take precedence.
-        return isset($this->statusRankings[$status])
-            ? $this->statusRankings[$status] : 32000;
+        return $this->statusRankings[$status] ?? 32000;
     }
 
     /**
@@ -477,8 +496,7 @@ class Voyager extends AbstractBase
         $data = [];
 
         foreach ($sqlRows as $row) {
-            $rowId = null !== $row['ITEM_ID']
-                ? $row['ITEM_ID'] : 'MFHD' . $row['MFHD_ID'];
+            $rowId = $row['ITEM_ID'] ?? 'MFHD' . $row['MFHD_ID'];
             if (!isset($data[$rowId])) {
                 $data[$rowId] = [
                     'id' => $row['BIB_ID'],
@@ -843,7 +861,7 @@ EOT;
         }
         // Deduplicate data and format it:
         foreach (array_unique($raw) as $current) {
-            list($holdings_id, $issue) = explode('||', $current, 2);
+            [$holdings_id, $issue] = explode('||', $current, 2);
             $processed[] = compact('issue', 'holdings_id');
         }
         return $processed;
@@ -873,7 +891,7 @@ EOT;
                     if ($subfields = $field->getSubfields()) {
                         $line = '';
                         foreach ($subfields as $code => $subfield) {
-                            if (false === strpos($subfieldCodes, $code)) {
+                            if (false === strpos($subfieldCodes, (string)$code)) {
                                 continue;
                             }
                             if ($line) {
@@ -918,9 +936,7 @@ EOT;
                 // Get Notes
                 $data = $this->getMFHDData(
                     $record,
-                    isset($this->config['Holdings']['notes'])
-                    ? $this->config['Holdings']['notes']
-                    : '852z'
+                    $this->config['Holdings']['notes'] ?? '852z'
                 );
                 if ($data) {
                     $marcDetails['notes'] = $data;
@@ -929,9 +945,7 @@ EOT;
                 // Get Summary (may be multiple lines)
                 $data = $this->getMFHDData(
                     $record,
-                    isset($this->config['Holdings']['summary'])
-                    ? $this->config['Holdings']['summary']
-                    : '866a'
+                    $this->config['Holdings']['summary'] ?? '866a'
                 );
                 if ($data) {
                     $marcDetails['summary'] = $data;
@@ -1187,8 +1201,7 @@ EOT;
     {
         // Return empty array if purchase history is disabled or embedded
         // in holdings
-        $setting = isset($this->config['Holdings']['purchase_history'])
-            ? $this->config['Holdings']['purchase_history'] : true;
+        $setting = $this->config['Holdings']['purchase_history'] ?? true;
         return (!$setting || $setting === 'split')
             ? [] : $this->getPurchaseHistoryData($id);
     }
@@ -1394,9 +1407,7 @@ EOT;
      */
     protected function pickTransactionStatus($statuses)
     {
-        $regex = isset($this->config['Loans']['show_statuses'])
-            ? $this->config['Loans']['show_statuses']
-            : '/lost|missing|claim/i';
+        $regex = $this->config['Loans']['show_statuses'] ?? '/lost|missing|claim/i';
         $retVal = [];
         foreach ($statuses as $status) {
             if (preg_match($regex, $status)) {
@@ -1995,12 +2006,8 @@ EOT;
                "PATRON_GROUP.PATRON_GROUP_ID (+) " .
                "AND PATRON_PHONE.PHONE_TYPE = PHONE_TYPE.PHONE_TYPE (+) " .
                "AND PATRON.PATRON_ID = :id";
-        $primaryPhoneType = isset($this->config['Profile']['primary_phone'])
-            ? $this->config['Profile']['primary_phone']
-            : 'Primary';
-        $mobilePhoneType = isset($this->config['Profile']['mobile_phone'])
-            ? $this->config['Profile']['mobile_phone']
-            : 'Mobile';
+        $primaryPhoneType = $this->config['Profile']['primary_phone'] ?? 'Primary';
+        $mobilePhoneType = $this->config['Profile']['mobile_phone'] ?? 'Mobile';
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $patron['id']]);
             $patron = [];
@@ -2589,7 +2596,7 @@ EOT;
             $sql = $sql['string'];
         }
         if ($this->logger) {
-            list(, $caller) = debug_backtrace(false);
+            [, $caller] = debug_backtrace(false);
             $this->debugSQL($caller['function'], $sql, $bind);
         }
         $sqlStmt = $this->getDb()->prepare($sql);

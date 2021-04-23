@@ -40,7 +40,7 @@ use VuFind\RecordDriver\EIT;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EITTest extends \VuFindTest\Unit\TestCase
+class EITTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getAllSubjectHeadings for a record.
@@ -126,9 +126,9 @@ class EITTest extends \VuFindTest\Unit\TestCase
      *
      * @param array $overrides Fixture fields to override.
      *
-     * @return SolrDefault
+     * @return EIT
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = []): EIT
     {
         // Simulate empty response for now:
         $fixture = ['response' => ['docs' => [[]]]];

@@ -29,8 +29,12 @@
 namespace VuFind\Db;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
+
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Database utility class. May be used as a service or as a standard
@@ -74,7 +78,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -129,6 +133,23 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     }
 
     /**
+     * Get options for the selected driver.
+     *
+     * @param string $driver Driver name
+     *
+     * @return array
+     */
+    protected function getDriverOptions($driver)
+    {
+        switch ($driver) {
+        case 'mysqli':
+            return ($this->config->Database->verify_server_certificate ?? false)
+                ? [] : [MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT];
+        }
+        return [];
+    }
+
+    /**
      * Obtain a Laminas\DB connection using an option array.
      *
      * @param array $options Options for building adapter
@@ -141,8 +162,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $driver = strtolower($options['driver']);
         switch ($driver) {
         case 'mysqli':
-            $options['charset'] = isset($this->config->Database->charset)
-                ? $this->config->Database->charset : 'utf8';
+            $options['charset'] = $this->config->Database->charset ?? 'utf8';
             $options['options'] = ['buffer_results' => true];
             break;
         }
@@ -177,37 +197,49 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getAdapterFromConnectionString($connectionString,
         $overrideUser = null, $overridePass = null
     ) {
-        list($type, $details) = explode('://', $connectionString);
+        [$type, $details] = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = $matches[1] ?? null;
+        $host = $port = null;
         if (isset($matches[2])) {
             if (strpos($matches[2], ':') !== false) {
-                list($host, $port) = explode(':', $matches[2]);
+                [$host, $port] = explode(':', $matches[2]);
             } else {
                 $host = $matches[2];
             }
         }
         $dbName = $matches[3] ?? null;
         if (strstr($credentials, ':')) {
-            list($username, $password) = explode(':', $credentials, 2);
+            [$username, $password] = explode(':', $credentials, 2);
         } else {
             $username = $credentials;
             $password = null;
         }
-        $username = null !== $overrideUser ? $overrideUser : $username;
-        $password = null !== $overridePass ? $overridePass : $password;
+        $username = $overrideUser ?? $username;
+        $password = $overridePass ?? $password;
+
+        $driverName = $this->getDriverName($type);
+        $driverOptions = $this->getDriverOptions($driverName);
 
         // Set up default options:
         $options = [
-            'driver' => $this->getDriverName($type),
-            'hostname' => $host ?? null,
+            'driver' => $driverName,
+            'hostname' => $host,
             'username' => $username,
             'password' => $password,
-            'database' => $dbName
+            'database' => $dbName,
+            'use_ssl' => $this->config->Database->use_ssl ?? false,
+            'driver_options' => $driverOptions,
         ];
         if (!empty($port)) {
             $options['port'] = $port;
         }
-        return $this->getAdapterFromOptions($options);
+        // Get extra custom options from config:
+        $extraOptions = isset($this->config->Database->extra_options)
+            ? $this->config->Database->extra_options->toArray()
+            : [];
+        // Note: $options takes precedence over $extraOptions -- we don't want users
+        // using extended settings to override values from core settings.
+        return $this->getAdapterFromOptions($options + $extraOptions);
     }
 }

@@ -31,7 +31,6 @@ namespace VuFindTest\Search;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\UrlQueryHelper;
 use VuFindSearch\Query\Query;
-use VuFindTest\Unit\TestCase as TestCase;
 
 /**
  * UrlQueryHelper unit tests.
@@ -42,8 +41,10 @@ use VuFindTest\Unit\TestCase as TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UrlQueryHelperTest extends TestCase
+class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Get a preconfigured helper.
      *
@@ -195,8 +196,7 @@ class UrlQueryHelperTest extends TestCase
      */
     public function testAdvancedSearch()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/advanced/';
-        $q = unserialize(file_get_contents($fixturePath . 'query'));
+        $q = unserialize($this->getFixture('searches/advanced/query'));
         $helper = new UrlQueryHelper([], $q);
         $this->assertEquals(
             '?join=OR&bool0%5B%5D=AND&lookfor0%5B%5D=oranges&lookfor0%5B%5D=bananas'

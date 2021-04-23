@@ -33,6 +33,7 @@ use VuFind\Cover\Router as CoverRouter;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\ILS\Driver\CacheTrait;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * GetRecordCover AJAX handler.
@@ -79,18 +80,20 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     /**
      * GetRecordCover constructor.
      *
-     * @param RecordLoader $recordLoader            Record loader
-     * @param CoverRouter  $coverRouter             Cover router
-     * @param PhpRenderer  $renderer                PHP renderer (only required if
-     * $userCoverFallbacksOnFail is set to true)
-     * @param bool         $useCoverFallbacksOnFail If true we will render a
+     * @param SessionSettings $ss                      Session settings
+     * @param RecordLoader    $recordLoader            Record loader
+     * @param CoverRouter     $coverRouter             Cover router
+     * @param PhpRenderer     $renderer                PHP renderer (only
+     * required if $userCoverFallbacksOnFail is set to true)
+     * @param bool            $useCoverFallbacksOnFail If true we will render a
      * fallback html template in case no image could be loaded
      */
-    public function __construct(RecordLoader $recordLoader,
+    public function __construct(SessionSettings $ss, RecordLoader $recordLoader,
         CoverRouter $coverRouter,
         ?PhpRenderer $renderer = null,
         $useCoverFallbacksOnFail = false
     ) {
+        $this->sessionSettings = $ss;
         $this->recordLoader = $recordLoader;
         $this->coverRouter = $coverRouter;
         $this->renderer = $renderer;
@@ -107,6 +110,8 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      */
     public function handleRequest(Params $params)
     {
+        $this->disableSessionWrites();
+
         $recordId = $params->fromQuery('recordId');
         $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $size = $params->fromQuery('size', 'small');
@@ -126,12 +131,12 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
             );
         }
 
-        $url = $this->coverRouter->getUrl(
-            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail
+        $metadata = $this->coverRouter->getMetadata(
+            $record, $size ?? 'small', true, $this->useCoverFallbacksOnFail, true
         );
 
-        return ($url || !$this->renderer || !$this->useCoverFallbacksOnFail)
-            ? $this->formatResponse(compact('url', 'size'))
+        return ($metadata || !$this->renderer || !$this->useCoverFallbacksOnFail)
+            ? $this->formatResponse(array_merge($metadata, compact('size')))
             : $this->formatResponse(
                 [
                     'html' => $this->renderer->render(

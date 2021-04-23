@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink favorites test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,10 +41,10 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
+final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
@@ -153,7 +155,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -206,7 +208,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Future List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -216,7 +218,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Login Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -297,7 +299,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->findCssAndSetValue($page, '#add_mytags', 'test1 test2 "test 3"');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
@@ -351,7 +353,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Future List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         // - One for now
         $this->clickCss($page, '#make-list');
@@ -361,7 +363,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->snooze();
         $this->assertEquals(
             'Login Test List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -433,7 +435,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertEquals(
             'Tagged List',
-            $this->findCss($page, '#save_list option[selected]')->getHtml()
+            trim($this->findCss($page, '#save_list option[selected]')->getHtml())
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
@@ -449,7 +451,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Login and go to account home
      *
-     * @return void
+     * @return \Behat\Mink\Element\DocumentElement
      */
     protected function setupBulkTest()
     {
@@ -504,7 +506,8 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     protected function selectAllItemsInList(Element $page)
     {
-        $selectAll = $this->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
+        $selectAll = $this
+            ->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
         $selectAll->check();
     }
 
@@ -601,7 +604,7 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
         $this->selectAllItemsInList($page);
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals('print=true', $params);
     }
 
