@@ -133,8 +133,11 @@ trait MarcReaderTrait
         if (!is_array($subfields)) {
             $subfields = ['a'];
         }
-        return $this->getMarcReader()
-            ->getFieldsSubfields($field, $subfields, $concat, $separator);
+        return $this->getMarcReader()->getFieldsSubfields(
+            $field,
+            $subfields,
+            $concat ? $separator : null
+        );
     }
 
     /**

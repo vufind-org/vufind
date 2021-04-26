@@ -236,20 +236,20 @@ class MarcReader
 
     /**
      * Return an array of all values extracted from the specified field/subfield
-     * combination.  If multiple subfields are specified and $concat is true, they
-     * will be concatenated together in the order listed -- each entry in the array
-     * will correspond with a single MARC field.  If $concat is false, the return
-     * array will contain separate entries for separate subfields.
+     * combination.  If multiple subfields and a separator are specified, the
+     * subfields will be concatenated together in the order listed -- each entry in
+     * the array will correspond with a single MARC field.  If $separator is null,
+     * the return array will contain separate entries for all subfields.
      *
      * @param string $fieldTag      The MARC field tag to get
      * @param array  $subfieldCodes The MARC subfield codes to get
-     * @param bool   $concat        Should we concatenate subfields?
-     * @param string $separator     Separator string (used only if $concat === true)
+     * @param string $separator     Subfield separator string. Set to null to disable
+     * concatenation of subfields.
      *
      * @return array
      */
     public function getFieldsSubfields(string $fieldTag, array $subfieldCodes,
-        bool $concat = true, string $separator = ' '
+        ?string $separator = ' '
     ): array {
         $result = [];
 
@@ -264,13 +264,13 @@ class MarcReader
                 ) {
                     continue;
                 }
-                if ($concat) {
+                if (null !== $separator) {
                     $subfields[] = current($subfield);
                 } else {
                     $result[] = current($subfield);
                 }
             }
-            if ($concat && $subfields) {
+            if (null !== $separator && $subfields) {
                 $result[] = implode($separator, $subfields);
             }
         }
@@ -356,29 +356,33 @@ class MarcReader
 
     /**
      * Return an array of all values extracted from the specified linked
-     * field/subfield combination.  If multiple subfields are specified and $concat
-     * is true, they will be concatenated together in the order listed -- each entry
-     * in the array will correspond with a single MARC field.  If $concat is false,
-     * the return array will contain separate entries for separate subfields.
+     * field/subfield combination.  If multiple subfields and a separator are
+     * specified, the subfields will be concatenated together in the order listed
+     * -- each entry in the array will correspond with a single MARC field.  If
+     * $separator is null, the return array will contain separate entries for all
+     * subfields.
      *
      * @param string $fieldTag       The MARC field that contains the linked fields
      * @param string $linkedFieldTag The linked MARC field tag to get
      * @param array  $subfieldCodes  The MARC subfield codes to get
-     * @param bool   $concat         Should we concatenate subfields?
-     * @param string $separator      Separator string (used only if $concat === true)
+     * @param string $separator      Subfield separator string. Set to null to
+     * disable concatenation of subfields.
      *
      * @return array
      */
     public function getLinkedFieldsSubfields(string $fieldTag,
-        string $linkedFieldTag, array $subfieldCodes, bool $concat = true,
-        string $separator = ' '
+        string $linkedFieldTag, array $subfieldCodes, ?string $separator = ' '
     ): array {
         $result = [];
         foreach ($this->getLinkedFields($fieldTag, $linkedFieldTag, $subfieldCodes)
             as $field
         ) {
             $subfields = $this->getSubfields($field);
-            $result[] = $concat ? implode($separator, $subfields) : $subfields;
+            if (null !== $separator) {
+                $result[] = implode($separator, $subfields);
+            } else {
+                $result = array_merge($result, $subfields);
+            }
         }
         return $result;
     }

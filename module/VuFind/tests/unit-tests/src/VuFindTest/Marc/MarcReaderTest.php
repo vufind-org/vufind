@@ -104,7 +104,12 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['Foo test', 'Bar test again'],
-            $reader->getFieldsSubfields(650, ['a', 'g'])
+            $reader->getFieldsSubfields('650', ['a', 'g'])
+        );
+
+        $this->assertEquals(
+            ['Foo', 'test', 'Bar', 'test again'],
+            $reader->getFieldsSubfields('650', ['a', 'g'], null)
         );
 
         $this->assertEquals([], $reader->getFieldsSubfields('008', ['a']));
@@ -127,6 +132,16 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals([], $reader->getLinkedField('880', '500', '4'));
         $this->assertEquals([], $reader->getLinkedField('008', '900'));
+
+        $this->assertEquals(
+            ['tHE fOO: bAR!'],
+            $reader->getLinkedFieldsSubfields('880', '245', ['a', 'b'])
+        );
+
+        $this->assertEquals(
+            ['tHE fOO:', 'bAR!'],
+            $reader->getLinkedFieldsSubfields('880', '245', ['a', 'b'], null)
+        );
     }
 
     /**
