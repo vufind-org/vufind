@@ -27,9 +27,9 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Config\Config;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Config\PluginManager as ConfigManager;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Icon view helper
@@ -59,9 +59,9 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param Config $config Icons config (icons.ini)
+     * @param ThemeInfo $themeInfo Theme info helper
      */
-    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
+    public function __construct(ThemeInfo $themeInfo)
     {
         $iconConfig = $themeInfo->getMergedConfig('icons');
         $this->defaultSet = $iconConfig['defaultSet'] ?? 'FontAwesome';
