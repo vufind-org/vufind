@@ -83,7 +83,7 @@ class Icon extends AbstractHelper
 
         // Override template from config (ie. FontAwesome:icon)
         if (strpos($icon, ':') !== false) {
-            list($template, $icon) = explode(':', $icon, 2);
+            [$template, $icon] = explode(':', $icon, 2);
         }
 
         $attrs = '';
