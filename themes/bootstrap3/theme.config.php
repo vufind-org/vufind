@@ -61,5 +61,13 @@ return [
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
+    ],
+    'icons' => [
+        'defaultSet' => 'FontAwesome',
+        'mappings' => [
+            'favorites' => 'Remix:star-fill',
+            'my-account' => 'user',
+            'search' => 'Remix:search-line',
+        ]
     ]
 ];

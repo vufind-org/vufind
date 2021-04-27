@@ -67,8 +67,8 @@ class IconFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('icons');
-
-        return new $requestedName($config);
+        return new $requestedName(
+            $container->get(\VuFindTheme\ThemeInfo::class)
+        );
     }
 }

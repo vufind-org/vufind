@@ -43,29 +43,29 @@ use VuFind\Config\PluginManager as ConfigManager;
 class Icon extends AbstractHelper
 {
     /**
-     * Icons config (icons.ini)
+     * Default icon template
      *
-     * @var Config
+     * @var string
      */
-    protected $config;
+    protected $defaultSet;
 
     /**
      * Transforming map
      *
      * @var array
      */
-    protected $nameMap;
+    protected $iconMap;
 
     /**
      * Constructor
      *
      * @param Config $config Icons config (icons.ini)
      */
-    public function __construct(Config $config)
+    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
     {
-        $this->config = $config->Config ?? new Config([]);
-        $this->iconMap
-            = $config[$config->Config->use ?? 'FontAwesome'] ?? new Config([]);
+        $themeConfig = $themeInfo->getThemeInfo()[$themeInfo->getTheme()];
+        $this->defaultSet = $themeConfig['icons']['defaultSet'];
+        $this->iconMap = $themeConfig['icons']['mappings'];
     }
 
     /**
@@ -79,7 +79,7 @@ class Icon extends AbstractHelper
     public function __invoke($name, $extra = [])
     {
         $icon = $this->iconMap[$name] ?? $name;
-        $template = $this->config->use;
+        $template = $this->defaultSet;
 
         // Override template from config (ie. FontAwesome:icon)
         if (strpos($icon, ':') !== false) {
