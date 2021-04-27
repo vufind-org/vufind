@@ -1,6 +1,6 @@
 <?php
 /**
- * Make link view helper
+ * Icon view helper
  *
  * PHP version 7
  *
@@ -32,7 +32,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\Config\PluginManager as ConfigManager;
 
 /**
- * Make link view helper
+ * Icon view helper
  *
  * @category VuFind
  * @package  View_Helpers
