@@ -94,7 +94,7 @@ class Icon extends AbstractHelper
 
         return $this->getView()->render(
             'Helpers/icons/' . $template,
-            ['icon' => $icon, 'attrs' => $attrs]
+            ['icon' => $escAttr($icon), 'attrs' => $attrs]
         );
     }
 }
