@@ -1,7 +1,6 @@
 <?php
 return [
     'extends' => false,
-    'css' => ['icons.css'],
     'helpers' => [
         'factories' => [
             'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',

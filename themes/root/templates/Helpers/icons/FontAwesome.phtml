@@ -1,1 +1,5 @@
-<i class="fa fa-<?=$this->icon ?>"<?=$this->attrs ?> aria-hidden="true"></i>
+<?php
+    $this->headLink()->appendStylesheet('vendor/font-awesome.min.css');
+    $this->headLink()->appendStylesheet('icons.css');
+?>
+<i class="icon--font fa fa-<?=$this->icon ?>"<?=$this->attrs ?> aria-hidden="true"></i>
