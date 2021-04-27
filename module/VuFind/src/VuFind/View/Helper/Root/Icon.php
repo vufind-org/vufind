@@ -28,7 +28,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\Config\PluginManager as ConfigManager;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -74,7 +73,7 @@ class Icon extends AbstractHelper
      * @param string $name  Which icon?
      * @param array  $extra Just extra HTML attributes for now
      *
-     * @return string|bool
+     * @return string
      */
     public function __invoke($name, $extra = [])
     {
