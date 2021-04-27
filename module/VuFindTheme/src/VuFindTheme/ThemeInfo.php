@@ -190,6 +190,36 @@ class ThemeInfo
     }
 
     /**
+     * Get a configuration element, merged to reflect theme inheritance.
+     *
+     * @param string $key Configuration key to retrieve
+     *
+     * @return array
+     */
+    public function getMergedConfig(string $key): array
+    {
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
+
+        $merged = [];
+        while (!empty($currentTheme)) {
+            $currentThemeSet = array_merge(
+                (array)$currentTheme,
+                $allThemeInfo[$currentTheme]['mixins'] ?? []
+            );
+            foreach ($currentThemeSet as $theme) {
+                if (isset($allThemeInfo[$theme][$key])) {
+                    $merged = array_merge_recursive(
+                        $merged, $allThemeInfo[$theme][$key]
+                    );
+                }
+            }
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
+        }
+        return $merged;
+    }
+
+    /**
      * Search the themes for a particular file.  If it exists, return the
      * first matching theme name; otherwise, return null.
      *

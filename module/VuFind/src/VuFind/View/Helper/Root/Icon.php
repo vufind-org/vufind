@@ -63,9 +63,9 @@ class Icon extends AbstractHelper
      */
     public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
     {
-        $themeConfig = $themeInfo->getThemeInfo()[$themeInfo->getTheme()];
-        $this->defaultSet = $themeConfig['icons']['defaultSet'];
-        $this->iconMap = $themeConfig['icons']['mappings'];
+        $iconConfig = $themeInfo->getMergedConfig('icons');
+        $this->defaultSet = $iconConfig['defaultSet'] ?? 'FontAwesome';
+        $this->iconMap = $iconConfig['mappings'] ?? [];
     }
 
     /**
