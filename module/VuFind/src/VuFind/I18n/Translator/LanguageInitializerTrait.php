@@ -27,7 +27,7 @@
  */
 namespace VuFind\I18n\Translator;
 
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -68,14 +68,14 @@ trait LanguageInitializerTrait
     /**
      * Configure a translator to support the requested language.
      *
-     * @param Translator     $translator Translator
-     * @param LocaleSettings $settings   Locale settings
-     * @param string         $language   Language to set up
+     * @param TranslatorInterface $translator Translator
+     * @param LocaleSettings      $settings   Locale settings
+     * @param string              $language   Language to set up
      *
      * @return void
      */
     protected function addLanguageToTranslator(
-        Translator $translator, LocaleSettings $settings, string $language
+        TranslatorInterface $translator, LocaleSettings $settings, string $language
     ): void {
         // Don't double-initialize languages:
         if ($settings->isLocaleInitialized($language)) {

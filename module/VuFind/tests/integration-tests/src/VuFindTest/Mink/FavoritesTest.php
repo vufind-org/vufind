@@ -405,6 +405,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that lists can be tagged when the optional setting is activated.
      *
+     * @depends testAddSearchItemToFavoritesNewAccount
+     *
      * @return void
      */
     public function testTaggedList()
@@ -453,15 +455,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return \Behat\Mink\Element\DocumentElement
      */
-    protected function setupBulkTest()
+    protected function gotoUserAccount()
     {
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
         // Go home
         $session = $this->getMinkSession();
         $path = '/Search/Home';
@@ -476,6 +471,23 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $path = '/MyResearch/Home';
         $session->visit($this->getVuFindUrl() . $path);
         return $page;
+    }
+
+    /**
+     * Adjust configs for bulk testing, then go to user account.
+     *
+     * @return \Behat\Mink\Element\DocumentElement
+     */
+    protected function setupBulkTest()
+    {
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Mail' => ['testOnly' => 1],
+                ],
+            ]
+        );
+        return $this->gotoUserAccount();
     }
 
     /**
@@ -612,6 +624,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that it is possible to email a public list.
      *
      * @depends testAddRecordToFavoritesNewAccount
+     * @depends testAddSearchItemToFavoritesNewAccount
      *
      * @return void
      */

@@ -1,10 +1,10 @@
 <?php
 /**
- * DisplayLanguageOption helper factory.
+ * ExtendedIni Loader Factory
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,30 +20,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Translator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFind\I18n\Translator\Loader;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use Laminas\Mvc\I18n\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * DisplayLanguageOption helper factory.
+ * ExtendedIni Loader Factory
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Translator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class DisplayLanguageOptionFactory implements FactoryInterface
+class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -58,16 +57,20 @@ class DisplayLanguageOptionFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $translator = $container->get(Translator::class);
-        // Add a special locale used just for this plugin:
-        $translator->addTranslationFile('ExtendedIni', null, 'default', 'native');
-        return new $requestedName($translator);
+        $pathStack = [
+            APPLICATION_PATH . '/languages',
+            LOCAL_OVERRIDE_DIR . '/languages'
+        ];
+        $settings = $container->get(LocaleSettings::class);
+        return new $requestedName($pathStack, $settings->getFallbackLocales());
     }
 }

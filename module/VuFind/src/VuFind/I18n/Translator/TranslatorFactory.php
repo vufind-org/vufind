@@ -29,9 +29,10 @@ namespace VuFind\I18n\Translator;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use Laminas\Mvc\I18n\Translator;
+use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -43,42 +44,42 @@ use VuFind\I18n\Locale\LocaleSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
+class TranslatorFactory implements DelegatorFactoryInterface
 {
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
     /**
-     * Create an object
+     * A factory that creates delegates of a given service
      *
-     * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
-     * @param null|array         $options       Extra options (optional)
+     * @param ContainerInterface $container Container
+     * @param string             $name      Service name
+     * @param callable           $callback  Primary factory
+     * @param null|array         $options   Options
      *
      * @return object
-     *
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
+     *     creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $requestedName,
+    public function __invoke(
+        ContainerInterface $container,
+        $name,
+        callable $callback,
         array $options = null
     ) {
-        $translator = parent::__invoke($container, $requestedName, $options);
+        $translator = $callback();
         if (!extension_loaded('intl')) {
             error_log(
                 'Translation broken due to missing PHP intl extension.'
             );
             return $translator;
         }
-        $pm = $translator->getPluginManager();
         $settings = $container->get(LocaleSettings::class);
         $language = $settings->getUserLocale();
-        $pm->setService('ExtendedIni', $this->getExtendedIni($settings));
         $this->enableCaching($translator, $container);
-        $translator->setLocale($language);
         $this->addLanguageToTranslator($translator, $settings, $language);
 
         return $translator;
@@ -87,13 +88,13 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
     /**
      * Add caching to a translator object
      *
-     * @param Translator         $translator Translator object
-     * @param ContainerInterface $container  Service manager
+     * @param TranslatorInterface $translator Translator object
+     * @param ContainerInterface  $container  Service manager
      *
      * @return void
      */
     protected function enableCaching(
-        Translator $translator,
+        TranslatorInterface $translator,
         ContainerInterface $container
     ): void {
         // Set up language caching for better performance:
@@ -110,22 +111,5 @@ class TranslatorFactory extends \Laminas\Mvc\I18n\TranslatorFactory
                 . $e->getMessage()
             );
         }
-    }
-
-    /**
-     * Get the ExtendedIni loader.
-     *
-     * @param LocaleSettings $settings Locale settings object
-     *
-     * @return Loader\ExtendedIni
-     */
-    protected function getExtendedIni(LocaleSettings $settings): Loader\ExtendedIni
-    {
-        $pathStack = [
-            APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages'
-        ];
-        $fallbackLocales = $settings->getFallbackLocales();
-        return new Loader\ExtendedIni($pathStack, $fallbackLocales);
     }
 }

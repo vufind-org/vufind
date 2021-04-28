@@ -63,7 +63,10 @@ class CssBuilderCommandTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($compiler));
         $commandTester = new CommandTester($command);
         $commandTester->execute(['themes' => ['foo', 'bar', 'foo']]);
-        $this->assertEquals('', $commandTester->getDisplay());
+        $expectedOutput = 'WARNING: this tool is deprecated; please use "grunt less"'
+            . " for more\nreliable results. See "
+            . "https://vufind.org/wiki/development:grunt";
+        $this->assertEquals($expectedOutput, trim($commandTester->getDisplay()));
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
 }
