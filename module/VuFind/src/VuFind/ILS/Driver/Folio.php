@@ -576,6 +576,7 @@ class Folio extends AbstractAPI implements
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
                     'callnumber' => $holding->callNumber ?? '',
+                    'callnumber_prefix' => $holding->callNumberPrefix ?? '',
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
