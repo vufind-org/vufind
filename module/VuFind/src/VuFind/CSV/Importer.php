@@ -205,15 +205,16 @@ class Importer
     }
 
     /**
-     * Process a single line of the CSV file.
+     * Collect field-specific values from a CSV input line. Returns an array
+     * mapping field name to value array.
      *
      * @param array          $line   Line to process.
      * @param ImporterConfig $config Configuration object.
      *
      * @return array
      */
-    protected function processLine(array $line, ImporterConfig $config): array
-    {
+    protected function collectValuesFromLine(array $line, ImporterConfig $config
+    ): array {
         $fieldValues = [];
         foreach ($line as $column => $value) {
             $columnConfig = $config->getColumn($column);
@@ -229,13 +230,31 @@ class Importer
                 }
             }
         }
+        return $fieldValues;
+    }
+
+    /**
+     * Process a single line of the CSV file.
+     *
+     * @param array          $line   Line to process.
+     * @param ImporterConfig $config Configuration object.
+     *
+     * @return array
+     */
+    protected function processLine(array $line, ImporterConfig $config): array
+    {
+        $fieldValues = $this->collectValuesFromLine($line, $config);
         $output = [];
         foreach ($config->getAllFields() as $field) {
             $delimiter = $config->getDelimiter($field);
-            if (empty($delimiter) && count($fieldValues[$field]) > 1) {
+            $currentValues = array_merge(
+                (array)($config->getField($field)['value'] ?? []),
+                $fieldValues[$field] ?? []
+            );
+            if (empty($delimiter) && count($currentValues) > 1) {
                 throw new \Exception('Unexpected multiple values in ' . $field);
             }
-            $output[] = implode($delimiter, $fieldValues[$field] ?? []);
+            $output[] = implode($delimiter, $currentValues);
         }
         return $output;
     }
