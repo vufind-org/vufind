@@ -164,22 +164,24 @@ class Importer
      * @param string   $value     Value to process
      * @param string[] $callbacks List of callback functions
      *
-     * @return string|string[]
+     * @return string[]
      */
-    protected function applyCallbacks(string $value, array $callbacks)
+    protected function applyCallbacks(string $value, array $callbacks): array
     {
         // No callbacks, no work:
         if (empty($callbacks)) {
-            return $value;
+            return [$value];
         }
 
         // Get the next callback, apply it, and then recurse over its
         // return values.
         $nextCallback = array_shift($callbacks);
-        $recurseFunction = function ($val) use ($callbacks) {
+        $recurseFunction = function (string $val) use ($callbacks): array {
             return $this->applyCallbacks($val, $callbacks);
         };
-        return array_map($recurseFunction, (array)$nextCallback($value));
+        $next = (array)$nextCallback($value);
+        $result = array_merge(...array_map($recurseFunction, $next));
+        return $result;
     }
 
     /**
@@ -194,9 +196,10 @@ class Importer
     {
         $processed = [];
         foreach ($values as $value) {
-            $newValues = $this
-                ->applyCallbacks($value, $fieldConfig['callback'] ?? []);
-            $processed = array_merge($processed, (array)$newValues);
+            $newValues = $this->applyCallbacks(
+                $value, (array)($fieldConfig['callback'] ?? [])
+            );
+            $processed = array_merge($processed, $newValues);
         }
         return $processed;
     }
@@ -218,9 +221,12 @@ class Importer
                 ? explode($columnConfig['delimiter'], $value)
                 : (array)$value;
             if (isset($columnConfig['field'])) {
-                $field = $columnConfig['field'];
-                $fieldConfig = $config->getField($field);
-                $fieldValues[$field] = $this->processValues($values, $fieldConfig);
+                $fieldList = (array)$columnConfig['field'];
+                foreach ($fieldList as $field) {
+                    $fieldConfig = $config->getField($field);
+                    $fieldValues[$field]
+                        = $this->processValues($values, $fieldConfig);
+                }
             }
         }
         $output = [];
@@ -229,7 +235,7 @@ class Importer
             if (empty($delimiter) && count($fieldValues[$field]) > 1) {
                 throw new \Exception('Unexpected multiple values in ' . $field);
             }
-            $output[] = implode($delimiter, $fieldValues[$field] ?? '');
+            $output[] = implode($delimiter, $fieldValues[$field] ?? []);
         }
         return $output;
     }
