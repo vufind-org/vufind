@@ -99,17 +99,16 @@ abstract class AbstractTextLayer extends AbstractLayer
             $align = 'left';
             $wrapGap = 0; // kill wrap gap to maximize text fit
         }
-        if (null == $align) {
-            $align = $settings->textAlign;
-        }
-        if ($align == 'left') {
+        switch ($align ?? $settings->textAlign) {
+        case 'left':
             $x = $wrapGap;
-        }
-        if ($align == 'center') {
-            $x = ($settings->width - $textWidth) / 2;
-        }
-        if ($align == 'right') {
+            break;
+        case 'right':
             $x = $settings->width - ($textWidth + $wrapGap);
+            break;
+        case 'center':
+        default:
+            $x = ($settings->width - $textWidth) / 2;
         }
 
         // Generate 5 lines of text, 4 offset in a border color

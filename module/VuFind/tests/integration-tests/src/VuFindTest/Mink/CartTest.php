@@ -32,6 +32,8 @@ use Behat\Mink\Element\Element;
 /**
  * Mink cart test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -39,9 +41,8 @@ use Behat\Mink\Element\Element;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class CartTest extends \VuFindTest\Integration\MinkTestCase
+final class CartTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Feature\AutoRetryTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -723,7 +724,7 @@ class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->selectAllItemsInCart($page);
         $button->click();
         $this->snooze();
-        list(, $params) = explode('?', $session->getCurrentUrl());
+        [, $params] = explode('?', $session->getCurrentUrl());
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
@@ -752,7 +753,7 @@ class CartTest extends \VuFindTest\Integration\MinkTestCase
         ];
         // Expected
         $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
-        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions'], $combo);
+        $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions']);
         $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
         $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
         $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);

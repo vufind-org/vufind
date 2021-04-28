@@ -57,7 +57,7 @@ class DisplayLanguageOptionFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -65,10 +65,9 @@ class DisplayLanguageOptionFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        // We want to construct a separate translator instance for this helper,
-        // since it configures different language/locale than the core shared
-        // instance!
-        $factory = new \VuFind\I18n\Translator\TranslatorFactory();
-        return new $requestedName($factory($container, Translator::class));
+        $translator = $container->get(Translator::class);
+        // Add a special locale used just for this plugin:
+        $translator->addTranslationFile('ExtendedIni', null, 'default', 'native');
+        return new $requestedName($translator);
     }
 }

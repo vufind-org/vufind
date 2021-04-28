@@ -43,5 +43,6 @@
       <li role="none"><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="fa fa-bookmark" aria-hidden="true"></i> <?=$this->transEsc('Bookmark')?></a></li>
     <?php endif; ?>
     <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
+    <li role="none"><a class="permalink-record toolbar-btn btn-type-permalink" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Permalink')?>" rel="nofollow"><?=$this->transEsc('permanent_link')?></a></li>
   </ul>
 </nav>

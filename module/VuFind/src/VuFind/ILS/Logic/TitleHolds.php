@@ -288,6 +288,7 @@ class TitleHolds
         $HMACkey = $this->hmac->generate($HMACKeys, $data);
 
         // Add Params
+        $queryString = [];
         foreach ($data as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {

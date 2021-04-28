@@ -579,9 +579,9 @@ class EDS extends DefaultRecord
                 if (in_array($group, $allowed_searchlink_groups)) {
                     $type = strtoupper($group);
                     $link_xml = '/<searchLink fieldCode="([^\"]*)" '
-                        . 'term="%22([^\"]*)%22">/';
-                    $link_html
-                        = "<a href=\"../EDS/Search?lookfor=$2&amp;type={$type}\">";
+                        . 'term="(%22[^\"]*%22)">/';
+                    $link_html = '<a href="../EDS/Search?lookfor=$2&amp;type='
+                        . urlencode($type) . '">';
                     $data = preg_replace($link_xml, $link_html, $data);
                     $data = str_replace('</searchLink>', '</a>', $data);
                 }
@@ -904,13 +904,13 @@ class EDS extends DefaultRecord
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
                 $placeParts = explode('.', $matches[1]);
-                list($place, $pub, $date)
+                [$place, $pub, $date]
                     = [trim($matches[1]), trim($matches[2]), $matches[3]];
             } elseif (preg_match('/^(.+):(.*)$/', $pub['Data'], $matches)) {
-                list($place, $pub, $date)
+                [$place, $pub, $date]
                     = [trim($matches[1]), trim($matches[2]), ''];
             } else {
-                list($place, $pub, $date) = ['', $pub['Data'], ''];
+                [$place, $pub, $date] = ['', $pub['Data'], ''];
             }
 
             // In some cases, the place may have noise on the front that needs
@@ -937,7 +937,7 @@ class EDS extends DefaultRecord
     {
         $result = [];
         foreach ($selectors as $selector) {
-            list($method, $params) = explode(':', $selector, 2);
+            [$method, $params] = explode(':', $selector, 2);
             $fullMethod = 'extractEbscoDataFrom' . ucwords($method);
             if (!is_callable([$this, $fullMethod])) {
                 throw new \Exception('Undefined method: ' . $fullMethod);

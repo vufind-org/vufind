@@ -118,7 +118,9 @@ trait ApiTrait
         $auth = $this->serviceLocator
             ->get(\LmcRbacMvc\Service\AuthorizationService::class);
         if (!$auth->isGranted($permission)) {
-            return $this->output([], self::STATUS_ERROR, 403, 'Permission denied');
+            return $this->output(
+                [], ApiInterface::STATUS_ERROR, 403, 'Permission denied'
+            );
         }
         return false;
     }
