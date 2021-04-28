@@ -76,7 +76,7 @@ class Importer
     ): string {
         // Process the file:
         [$fields, $csv] = $this->generateCSV($csvFile, $iniFile);
-        $params = new ParamBag(['fieldnames' => $fields]);
+        $params = new ParamBag(['fieldnames' => implode(',', $fields)]);
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
@@ -151,6 +151,49 @@ class Importer
     }
 
     /**
+     * Recursively apply callback functions to a value.
+     *
+     * @param string   $value     Value to process
+     * @param string[] $callbacks List of callback functions
+     *
+     * @return string|string[]
+     */
+    protected function applyCallbacks(string $value, array $callbacks)
+    {
+        // No callbacks, no work:
+        if (empty($callbacks)) {
+            return $value;
+        }
+
+        // Get the next callback, apply it, and then recurse over its
+        // return values.
+        $nextCallback = array_shift($callbacks);
+        $recurseFunction = function ($val) use ($callbacks) {
+            return $this->applyCallbacks($val, $callbacks);
+        };
+        return array_map($recurseFunction, (array)$nextCallback($value));
+    }
+
+    /**
+     * Process the values from a single column of a CSV.
+     *
+     * @param string[] $values      Values to process
+     * @param array    $fieldConfig Configuration to apply to values
+     *
+     * @return string[]
+     */
+    protected function processValues(array $values, array $fieldConfig): array
+    {
+        $processed = [];
+        foreach ($values as $value) {
+            $newValues = $this
+                ->applyCallbacks($value, $fieldConfig['callback'] ?? []);
+            $processed = array_merge($processed, (array)$newValues);
+        }
+        return $processed;
+    }
+
+    /**
      * Process a single line of the CSV file.
      *
      * @param array          $line   Line to process.
@@ -160,8 +203,23 @@ class Importer
      */
     protected function processLine(array $line, ImporterConfig $config): array
     {
-        // TODO: apply configuration
-        return $line;
+        $fieldValues = [];
+        foreach ($line as $column => $value) {
+            $columnConfig = $config->getColumn($column);
+            $values = isset($columnConfig['delimiter'])
+                ? explode($columnConfig['delimiter'], $value)
+                : (array)$value;
+            if (isset($columnConfig['field'])) {
+                $field = $columnConfig['field'];
+                $fieldConfig = $config->getField($field);
+                $fieldValues[$field] = $this->processValues($values, $fieldConfig);
+            }
+        }
+        $output = [];
+        foreach ($config->getAllFields() as $field) {
+            $output[] = implode('|', $fieldValues[$field]) ?? '';
+        }
+        return $output;
     }
 
     /**
