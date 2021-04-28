@@ -75,8 +75,16 @@ class Importer
         string $index = 'Solr', bool $testMode = false
     ): string {
         // Process the file:
-        [$fields, $csv] = $this->generateCSV($csvFile, $iniFile);
+        [$config, $csv] = $this->generateCSV($csvFile, $iniFile);
+        $fields = $config->getAllFields();
         $params = new ParamBag(['fieldnames' => implode(',', $fields)]);
+        foreach ($fields as $field) {
+            $delimiter = $config->getDelimiter($field);
+            if (!empty($delimiter)) {
+                $params->set("f.$field.split", 'true');
+                $params->set("f.$field.separator", $delimiter);
+            }
+        }
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
@@ -130,7 +138,7 @@ class Importer
      */
     protected function processConfiguration(array $options, $in): ImporterConfig
     {
-        $config = new ImporterConfig();
+        $config = new ImporterConfig($options['General'] ?? []);
         $this->processHeader($config, $in, $options['General']['header'] ?? 'none');
         foreach ($options as $section => $settings) {
             if (strpos($section, ':') !== false) {
@@ -217,13 +225,19 @@ class Importer
         }
         $output = [];
         foreach ($config->getAllFields() as $field) {
-            $output[] = implode('|', $fieldValues[$field]) ?? '';
+            $delimiter = $config->getDelimiter($field);
+            if (empty($delimiter) && count($fieldValues[$field]) > 1) {
+                throw new \Exception('Unexpected multiple values in ' . $field);
+            }
+            $output[] = implode($delimiter, $fieldValues[$field] ?? '');
         }
         return $output;
     }
 
     /**
-     * Transform $csvFile using the provided $iniFile configuration.
+     * Transform $csvFile using the provided $iniFile configuration. Returns an
+     * array containing two elements: the parsed config object and the processed
+     * data.
      *
      * @param string $csvFile CSV file to load.
      * @param string $iniFile INI file.
@@ -257,6 +271,6 @@ class Importer
         }
         fclose($out);
 
-        return [$config->getAllFields(), $csv];
+        return [$config, $csv];
     }
 }
