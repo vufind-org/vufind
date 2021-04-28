@@ -150,4 +150,19 @@ class ImporterConfig
     {
         return $this->getField($field)['outputDelimiter'] ?? $this->defaultDelimiter;
     }
+
+    /**
+     * Initialize a field array with any fixed values configured here.
+     *
+     * @return array
+     */
+    public function getFixedFieldValues()
+    {
+        $fields = [];
+        foreach ($this->getAllFields() as $field) {
+            $values = $this->getField($field)['value'] ?? [];
+            $fields[$field] = $values;
+        }
+        return $fields;
+    }
 }

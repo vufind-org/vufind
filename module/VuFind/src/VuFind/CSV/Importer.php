@@ -159,14 +159,60 @@ class Importer
     }
 
     /**
-     * Recursively apply callback functions to a value.
+     * Apply a single callback to a single value.
      *
-     * @param string   $value     Value to process
-     * @param string[] $callbacks List of callback functions
+     * @param string $callback    Callback string from config
+     * @param string $value       Value to process
+     * @param array  $fieldValues Field values processed so far
      *
      * @return string[]
      */
-    protected function applyCallbacks(string $value, array $callbacks): array
+    protected function processCallback(string $callback, string $value,
+        array $fieldValues
+    ): array {
+        preg_match('/([^(]+)(\(.*\))?/', $callback, $matches);
+        $callable = $matches[1];
+        $arglist = array_map(
+            'trim',
+            explode(
+                ',',
+                ltrim(rtrim($matches[2] ?? '$$csv$$', ')'), '(')
+            )
+        );
+        $argCallback = function ($arg) use ($value, $fieldValues) {
+            if (substr($arg, 0, 2) == '$$'
+                && substr($arg, -2) == '$$'
+            ) {
+                $parts = explode(':', trim($arg, '$'), 2);
+                switch ($parts[0]) {
+                case 'csv':
+                    return $value;
+                case 'field':
+                    return $fieldValues[$parts[1] ?? ''] ?? [];
+                case 'fieldFirst':
+                    return $fieldValues[$parts[1] ?? ''][0] ?? '';
+                default:
+                    throw new \Exception('Unknown directive: ' . $parts[0]);
+                }
+            }
+            return $arg;
+        };
+        $result = $callable(...array_map($argCallback, $arglist));
+        return (array)$result;
+    }
+
+    /**
+     * Recursively apply callback functions to a value.
+     *
+     * @param string   $value       Value to process
+     * @param string[] $callbacks   List of callback functions
+     * @param array    $fieldValues Field values processed so far
+     *
+     * @return string[]
+     */
+    protected function applyCallbacks(string $value, array $callbacks,
+        array $fieldValues
+    ): array
     {
         // No callbacks, no work:
         if (empty($callbacks)) {
@@ -176,10 +222,11 @@ class Importer
         // Get the next callback, apply it, and then recurse over its
         // return values.
         $nextCallback = array_shift($callbacks);
-        $recurseFunction = function (string $val) use ($callbacks): array {
-            return $this->applyCallbacks($val, $callbacks);
+        $recurseFunction = function (string $val) use ($callbacks, $fieldValues
+        ): array {
+            return $this->applyCallbacks($val, $callbacks, $fieldValues);
         };
-        $next = (array)$nextCallback($value);
+        $next = $this->processCallback($nextCallback, $value, $fieldValues);
         $result = array_merge(...array_map($recurseFunction, $next));
         return $result;
     }
@@ -189,15 +236,17 @@ class Importer
      *
      * @param string[] $values      Values to process
      * @param array    $fieldConfig Configuration to apply to values
+     * @param array    $fieldValues Field values processed so far
      *
      * @return string[]
      */
-    protected function processValues(array $values, array $fieldConfig): array
-    {
+    protected function processValues(array $values, array $fieldConfig,
+        array $fieldValues
+    ): array {
         $processed = [];
         foreach ($values as $value) {
             $newValues = $this->applyCallbacks(
-                $value, (array)($fieldConfig['callback'] ?? [])
+                $value, (array)($fieldConfig['callback'] ?? []), $fieldValues
             );
             $processed = array_merge($processed, $newValues);
         }
@@ -215,7 +264,7 @@ class Importer
      */
     protected function collectValuesFromLine(array $line, ImporterConfig $config
     ): array {
-        $fieldValues = [];
+        $fieldValues = $config->getFixedFieldValues();
         foreach ($line as $column => $value) {
             $columnConfig = $config->getColumn($column);
             $values = isset($columnConfig['delimiter'])
@@ -225,8 +274,12 @@ class Importer
                 $fieldList = (array)$columnConfig['field'];
                 foreach ($fieldList as $field) {
                     $fieldConfig = $config->getField($field);
-                    $fieldValues[$field]
-                        = $this->processValues($values, $fieldConfig);
+                    $processed = $this->processValues(
+                        $values, $fieldConfig, $fieldValues
+                    );
+                    $fieldValues[$field] = array_merge(
+                        $fieldValues[$field], $processed
+                    );
                 }
             }
         }
@@ -247,10 +300,7 @@ class Importer
         $output = [];
         foreach ($config->getAllFields() as $field) {
             $delimiter = $config->getDelimiter($field);
-            $currentValues = array_merge(
-                (array)($config->getField($field)['value'] ?? []),
-                $fieldValues[$field] ?? []
-            );
+            $currentValues = $fieldValues[$field] ?? [];
             if (empty($delimiter) && count($currentValues) > 1) {
                 throw new \Exception('Unexpected multiple values in ' . $field);
             }
