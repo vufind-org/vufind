@@ -201,7 +201,6 @@
       <?=$thumbnail ?>
     <?php endif; ?>
   </div>
-</li>
 <?php
 $escId = $this->escapeJs($id);
 $escSource = $this->escapeJs($source);
@@ -220,4 +219,5 @@ $('#confirm_delete_item_${escId}').click(function(e) {
 });
 JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
+</li>
