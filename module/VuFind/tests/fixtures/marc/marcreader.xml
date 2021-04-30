@@ -12,6 +12,7 @@
     <subfield code="0">(TEST)123</subfield>
   </datafield>
   <datafield tag="245" ind1="0" ind2="4">
+    <subfield code="6">880-01</subfield>
     <subfield code="a">The Foo:</subfield>
     <subfield code="b">Bar!</subfield>
   </datafield>
@@ -27,6 +28,19 @@
     <subfield code="a">Bar</subfield>
     <subfield code="g">test again</subfield>
     <subfield code="7">null</subfield>
+  </datafield>
+  <datafield tag="880" ind1="0" ind2="4">
+    <subfield code="a">Missing subfield 6</subfield>
+  </datafield>
+  <datafield tag="880" ind1="0" ind2="4">
+    <subfield code="6">245-01/Foo</subfield>
+    <subfield code="a">tHE fOO:</subfield>
+    <subfield code="b">bAR!</subfield>
+  </datafield>
+  <datafield tag="880" ind1="0" ind2="4">
+    <subfield code="6">500-00/Foo</subfield>
+    <subfield code="a">Non-linked 880a</subfield>
+    <subfield code="b">Non-linked 880b</subfield>
   </datafield>
 </record>
 </collection>

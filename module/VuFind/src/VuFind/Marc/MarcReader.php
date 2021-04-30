@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020.
+ * Copyright (C) The National Library of Finland 2020-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -236,20 +236,20 @@ class MarcReader
 
     /**
      * Return an array of all values extracted from the specified field/subfield
-     * combination.  If multiple subfields are specified and $concat is true, they
-     * will be concatenated together in the order listed -- each entry in the array
-     * will correspond with a single MARC field.  If $concat is false, the return
-     * array will contain separate entries for separate subfields.
+     * combination.  If multiple subfields and a separator are specified, the
+     * subfields will be concatenated together in the order listed -- each entry in
+     * the array will correspond with a single MARC field.  If $separator is null,
+     * the return array will contain separate entries for all subfields.
      *
      * @param string $fieldTag      The MARC field tag to get
      * @param array  $subfieldCodes The MARC subfield codes to get
-     * @param bool   $concat        Should we concatenate subfields?
-     * @param string $separator     Separator string (used only if $concat === true)
+     * @param string $separator     Subfield separator string. Set to null to disable
+     * concatenation of subfields.
      *
      * @return array
      */
     public function getFieldsSubfields(string $fieldTag, array $subfieldCodes,
-        bool $concat = true, string $separator = ' '
+        ?string $separator = ' '
     ): array {
         $result = [];
 
@@ -264,17 +264,175 @@ class MarcReader
                 ) {
                     continue;
                 }
-                if ($concat) {
+                if (null !== $separator) {
                     $subfields[] = current($subfield);
                 } else {
                     $result[] = current($subfield);
                 }
             }
-            if ($concat && $subfields) {
+            if (null !== $separator && $subfields) {
                 $result[] = implode($separator, $subfields);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Return an associative array for a linked field such as 880 (Alternate Graphic
+     * Representation) or an empty array if field does not exist
+     *
+     * @param string $fieldTag       The MARC field that contains the linked fields
+     * @param string $linkedFieldTag The linked MARC field tag to get
+     * @param string $occurrence     The occurrence number to get; empty string for
+     * whatever comes first
+     * @param array  $subfieldCodes  The MARC subfield codes to get, or empty for all
+     *
+     * @return array
+     */
+    public function getLinkedField(string $fieldTag, string $linkedFieldTag,
+        string $occurrence = '', ?array $subfieldCodes = null
+    ): array {
+        $results
+            = $this->getLinkedFields($fieldTag, $linkedFieldTag, $subfieldCodes);
+        foreach ($results as $field) {
+            if (empty($occurrence) || $occurrence === $field['link']['occurrence']) {
+                return $field;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * Return an array of associative arrays for a linked field such as 880
+     * (Alternate Graphic Representation)
+     *
+     * @param string $fieldTag       The MARC field that contains the linked fields
+     * @param string $linkedFieldTag The linked MARC field tag to get
+     * @param array  $subfieldCodes  The MARC subfield codes to get, or empty for all
+     *
+     * @return array
+     */
+    public function getLinkedFields(string $fieldTag, string $linkedFieldTag,
+        ?array $subfieldCodes = null
+    ): array {
+        $result = [];
+
+        foreach ($this->fields[$fieldTag] ?? [] as $field) {
+            if (!is_array($field)) {
+                // Control field
+                continue;
+            }
+            $link
+                = $this->parseLinkageField($this->getInternalSubfield($field, '6'));
+            if ($link['field'] !== $linkedFieldTag) {
+                continue;
+            }
+            $subfields = [];
+            foreach ($field['s'] ?? [] as $subfield) {
+                if ($subfieldCodes
+                    && !in_array((string)key($subfield), $subfieldCodes)
+                ) {
+                    continue;
+                }
+                $subfields[] = [
+                    'code' => (string)key($subfield),
+                    'data' => current($subfield),
+                ];
+            }
+            if ($subfields) {
+                $result[] = [
+                    'tag' => $fieldTag,
+                    'i1' => $field['i1'],
+                    'i2' => $field['i2'],
+                    'subfields' => $subfields,
+                    'link' => $link
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return an array of all values extracted from the specified linked
+     * field/subfield combination.  If multiple subfields and a separator are
+     * specified, the subfields will be concatenated together in the order listed
+     * -- each entry in the array will correspond with a single MARC field.  If
+     * $separator is null, the return array will contain separate entries for all
+     * subfields.
+     *
+     * @param string $fieldTag       The MARC field that contains the linked fields
+     * @param string $linkedFieldTag The linked MARC field tag to get
+     * @param array  $subfieldCodes  The MARC subfield codes to get
+     * @param string $separator      Subfield separator string. Set to null to
+     * disable concatenation of subfields.
+     *
+     * @return array
+     */
+    public function getLinkedFieldsSubfields(string $fieldTag,
+        string $linkedFieldTag, array $subfieldCodes, ?string $separator = ' '
+    ): array {
+        $result = [];
+        foreach ($this->getLinkedFields($fieldTag, $linkedFieldTag, $subfieldCodes)
+            as $field
+        ) {
+            $subfields = $this->getSubfields($field);
+            if (null !== $separator) {
+                $result[] = implode($separator, $subfields);
+            } else {
+                $result = array_merge($result, $subfields);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get linked field data from subfield 6
+     *
+     * @param array $field Field
+     *
+     * @return array
+     */
+    public function getFieldLink(array $field): array
+    {
+        return $this->parseLinkageField($this->getSubfield($field, '6'));
+    }
+
+    /**
+     * Parse a linkage field
+     *
+     * @param string $link Linkage field
+     *
+     * @return array
+     */
+    public function parseLinkageField(string $link): array
+    {
+        $linkParts = explode('/', $link, 3);
+        $targetParts = explode('-', $linkParts[0]);
+        return [
+            'field' => $targetParts[0],
+            'occurrence' => $targetParts[1] ?? '',
+            'script' => $linkParts[1] ?? '',
+            'orientation' => $linkParts[2] ?? ''
+        ];
+    }
+
+    /**
+     * Return first subfield with the given code in the internal MARC field
+     *
+     * @param array  $field        Internal MARC field
+     * @param string $subfieldCode The MARC subfield code to get
+     *
+     * @return string
+     */
+    protected function getInternalSubfield(array $field, string $subfieldCode
+    ): string {
+        foreach ($field['s'] ?? [] as $subfield) {
+            if (key($subfield) == $subfieldCode) {
+                return trim(current($subfield));
+            }
+        }
+        return '';
     }
 }
