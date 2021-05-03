@@ -1394,6 +1394,22 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test parse problem method
+     *
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function testParseProblem()
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><NCIPMessage xmlns="http://www.niso.org/2008/ncip"><Problem><ProblemType>Needed Data Missing</ProblemType><ProblemDetail>UserId or AuthenticationInput must be provided.</ProblemDetail><ProblemElement>LookupUser</ProblemElement></Problem></NCIPMessage>';
+        $method = new \ReflectionMethod('\VuFind\ILS\Driver\XCNCIP2', 'parseProblem');
+        $method->setAccessible(true);
+        $result = $method->invokeArgs($this->driver, [$xml]);
+        $expected = 'ProblemType: Needed Data Missing, ProblemDetail: UserId or AuthenticationInput must be provided., ProblemElement: LookupUser';
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file

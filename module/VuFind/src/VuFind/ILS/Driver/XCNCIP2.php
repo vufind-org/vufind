@@ -286,28 +286,15 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         if (!$result->isSuccess()) {
-            throw new ILSException('HTTP error');
+            throw new ILSException(
+                'HTTP error: ' . $this->parseProblem($result->getBody())
+            );
         }
 
         // Process the NCIP response:
         $response = $result->getBody();
         $this->debug('Got NCIP response: ' . $response);
-        $result = @simplexml_load_string($response);
-        if (is_a($result, 'SimpleXMLElement')) {
-            // If no namespaces are used, add default one and reload the document
-            if (empty($result->getNamespaces())) {
-                $result->addAttribute('xmlns', 'http://www.niso.org/2008/ncip');
-                $xml = $result->asXML();
-                $result = @simplexml_load_string($xml);
-                if ($result === false) {
-                    throw new ILSException('Problem parsing XML: ' . $xml);
-                }
-            }
-            $this->registerNamespaceFor($result);
-            return $result;
-        } else {
-            throw new ILSException("Problem parsing XML");
-        }
+        return $this->parseXml($response);
     }
 
     /**
@@ -2217,5 +2204,64 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         return is_array($agency) ? $agency[0] : $agency;
+    }
+
+    /**
+     * Parse http response into XML object representation
+     *
+     * @param string $xmlString XML string
+     *
+     * @return \SimpleXMLElement
+     * @throws ILSException
+     */
+    protected function parseXml(string $xmlString): \SimpleXMLElement
+    {
+        $result = @simplexml_load_string($xmlString);
+        if ($result === false) {
+            throw new ILSException('Problem parsing XML: ' . $xmlString);
+        }
+        // If no namespaces are used, add default one and reload the document
+        if (empty($result->getNamespaces())) {
+            $result->addAttribute('xmlns', 'http://www.niso.org/2008/ncip');
+            $xml = $result->asXML();
+            $result = @simplexml_load_string($xml);
+            if ($result === false) {
+                throw new ILSException('Problem parsing XML: ' . $xmlString);
+            }
+        }
+        $this->registerNamespaceFor($result);
+        return $result;
+    }
+
+    /**
+     * Parse all reported problem and return its string representation
+     *
+     * @param string $xmlString XML string
+     *
+     * @return string
+     */
+    protected function parseProblem(string $xmlString): string
+    {
+        $xml = $this->parseXml($xmlString);
+        $problems = $xml->xpath('ns1:Problem');
+        if (empty($problems)) {
+            return 'Cannot identify problem in response: ' . $xmlString;
+        }
+        $detailElements = [
+            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
+        ];
+        $allProblems = [];
+        foreach ($problems as $problem) {
+            $this->registerNamespaceFor($problem);
+            $oneProblem = [];
+            foreach ($detailElements as $detailElement) {
+                $detail = $problem->xpath('ns1:' . $detailElement);
+                if (!empty($detail)) {
+                    $oneProblem[] = $detailElement . ': ' . (string)$detail[0];
+                }
+            }
+            $allProblems[] = implode(', ', $oneProblem);
+        }
+        return implode(', ', $allProblems);
     }
 }
