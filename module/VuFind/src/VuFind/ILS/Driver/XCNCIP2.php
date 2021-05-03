@@ -753,12 +753,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function patronLogin($username, $password)
     {
-        // TODO: we somehow need to figure out 'patronAgencyId' in the
-        // consortium=true case
-        //$request = $this->getLookupUserRequest(
-        //    $username, $password, 'patronAgencyId'
-        //);
-
         $extras = [
             '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
             'schemes/userelementtype/userelementtype.scm">' .
@@ -770,7 +764,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '</ns1:UserElementType>'
         ];
 
-        $request = $this->getLookupUserRequest($username, $password, null, $extras);
+        $request = $this->getLookupUserRequest(
+            $username, $password, null, $extras, $username
+        );
 
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
