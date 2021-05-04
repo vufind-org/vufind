@@ -83,7 +83,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -372,7 +372,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
-            ->setMethods(['storedCatalogLogin'])
+            ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
         $mock->expects($this->any())->method('storedCatalogLogin')
             ->will($this->returnValue($patron));

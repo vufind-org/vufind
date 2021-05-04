@@ -204,7 +204,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -219,7 +219,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(\VuFind\Auth\Manager::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -234,7 +234,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(\VuFind\ILS\Connection::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

@@ -48,7 +48,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testRead()
     {
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'get'])
+            ->onlyMethods(['connect', 'get'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->will($this->returnValue(true));
@@ -67,7 +67,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testWriteWithDefaults()
     {
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'set'])
+            ->onlyMethods(['connect', 'set'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->with(
@@ -94,7 +94,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testWriteWithNonDefaults()
     {
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'set'])
+            ->onlyMethods(['connect', 'set'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->with(
@@ -129,7 +129,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     public function testDestroy()
     {
         $memcache = $this->getMockBuilder(\Memcache::class)
-            ->setMethods(['connect', 'delete'])
+            ->onlyMethods(['connect', 'delete'])
             ->getMock();
         $memcache->expects($this->once())->method('connect')
             ->will($this->returnValue(true));

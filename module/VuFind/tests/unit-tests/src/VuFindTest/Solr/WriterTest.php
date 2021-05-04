@@ -140,7 +140,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
+            ->onlyMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
             ->getMock();
         $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
         $mockConnector->expects($this->any())->method('getTimeout')->will($this->returnValue(30));
@@ -158,7 +158,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
             ->disableOriginalConstructor()
-            ->setMethods(['markDeleted'])
+            ->onlyMethods(['markDeleted'])
             ->getMock();
     }
 }

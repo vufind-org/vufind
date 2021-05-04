@@ -92,7 +92,7 @@ trait MockContainerTrait
     {
         return $this->test->getMockBuilder($id)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 

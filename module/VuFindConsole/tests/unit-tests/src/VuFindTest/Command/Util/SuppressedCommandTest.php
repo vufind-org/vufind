@@ -83,7 +83,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         ];
         return $this->getMockBuilder(SuppressedCommand::class)
             ->setConstructorArgs($args)
-            ->setMethods(['writeToDisk'])
+            ->onlyMethods(['writeToDisk'])
             ->getMock();
     }
 

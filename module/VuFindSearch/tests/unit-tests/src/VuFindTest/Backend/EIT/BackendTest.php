@@ -164,7 +164,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(__NAMESPACE__ . '\ConnectorMock')
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['http://fake', $client, 'profile', 'pwd', 'dbs'])
             ->getMock();
     }

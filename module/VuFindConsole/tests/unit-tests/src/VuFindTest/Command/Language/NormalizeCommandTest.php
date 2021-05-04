@@ -144,7 +144,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -159,7 +159,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

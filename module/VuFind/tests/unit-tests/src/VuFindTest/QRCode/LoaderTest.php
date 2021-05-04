@@ -96,7 +96,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $theme])
                 ->getMock();
         }

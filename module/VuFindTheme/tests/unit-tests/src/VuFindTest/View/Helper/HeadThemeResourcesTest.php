@@ -93,7 +93,7 @@ class HeadThemeResourcesTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
-            ->setMethods(['__invoke', 'prependHttpEquiv', 'appendName'])
+            ->onlyMethods(['__invoke', 'prependHttpEquiv', 'appendName'])
             ->getMock();
         $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
         $mock->expects($this->once())->method('prependHttpEquiv')

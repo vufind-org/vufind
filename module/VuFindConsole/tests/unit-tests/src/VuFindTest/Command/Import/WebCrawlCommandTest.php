@@ -110,7 +110,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
                     $solr ?? $this->getMockSolrWriter(),
                     $config ?? new Config([]),
                 ]
-            )->setMethods($methods)
+            )->onlyMethods($methods)
             ->getMock();
     }
 
@@ -125,7 +125,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(Importer::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -140,7 +140,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(Writer::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

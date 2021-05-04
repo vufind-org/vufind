@@ -380,7 +380,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $row1 = $this->getMockBuilder(\VuFind\Db\Row\Search::class)
             ->setConstructorArgs([$adapter])
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
         $row1->populate($overrides + $defaults, true);
         return [$row1];
@@ -573,7 +573,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder($class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

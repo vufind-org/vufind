@@ -2430,7 +2430,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
         return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2458,13 +2458,13 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 $mock = $this->getMockDemoDriver($methods);
             } else {
                 $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
-                    ->setMethods($methods)
+                    ->onlyMethods($methods)
                     ->setConstructorArgs([new \VuFind\Date\Converter()])
                     ->getMock();
             }
         } catch (\Exception $e) {
             $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
-                ->setMethods($methods)->getMock();
+                ->onlyMethods($methods)->getMock();
         }
         if ($methods && in_array('init', $methods)) {
             $mock->expects($this->any())
@@ -2474,7 +2474,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         if ($methods && in_array('supportsMethod', $methods)) {
             $mock = $this
                 ->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'NoSupportMock')
-                ->setMethods($methods)
+                ->onlyMethods($methods)
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         }

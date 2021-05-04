@@ -214,7 +214,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                     $reader ?? $this->getMockReader(),
                     $languageDir ?? $this->languageFixtureDir,
                 ]
-            )->setMethods($methods)
+            )->onlyMethods($methods)
             ->getMock();
     }
 
@@ -229,7 +229,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ExtendedIniNormalizer::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -244,7 +244,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ExtendedIniReader::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }
