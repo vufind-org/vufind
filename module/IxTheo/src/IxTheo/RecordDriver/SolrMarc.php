@@ -25,7 +25,8 @@ class SolrMarc extends SolrDefault
      * @param array $properties  associative array with name => value
      * @return int
      */
-    public function getChildRecordCountWithProperties($properties) {
+    public function getChildRecordCountWithProperties($properties)
+    {
         // Shortcut: if this record is not the top record, let's not find out the
         // count. This assumes that contained records cannot contain more records.
         if (!$this->containerLinking
@@ -48,7 +49,8 @@ class SolrMarc extends SolrDefault
         return $this->searchService->search('Solr', $query, 0, 0)->getTotal();
     }
 
-    private function getSubfieldPairs($field_tag, $first_subfield_code, $second_subfield_code) {
+    private function getSubfieldPairs($field_tag, $first_subfield_code, $second_subfield_code)
+    {
         $matches = [];
         $first_subfield_contents = null;
         foreach ($this->getMarcRecord()->getFields($field_tag) as $field) {
@@ -72,7 +74,8 @@ class SolrMarc extends SolrDefault
         return $matches;
     }
 
-    public function getEnclosedTitlesWithAuthors() {
+    public function getEnclosedTitlesWithAuthors()
+    {
         return array_merge($this->getSubfieldPairs('249', 'a', 'v'), $this->getSubfieldPairs('505', 't','r'));
     }
 
@@ -117,7 +120,8 @@ class SolrMarc extends SolrDefault
      *
      * @return array
      */
-    public function getTypesAndPersistentIdentifiers() {
+    public function getTypesAndPersistentIdentifiers()
+    {
         $result  = array();
         $rawdata = isset($this->fields['types_and_persistent_identifiers']) ? $this->fields['types_and_persistent_identifiers'] : array();
 
@@ -140,8 +144,17 @@ class SolrMarc extends SolrDefault
      * @return bool
      */
 
-    public function hasFulltext() {
+    public function hasFulltext()
+    {
         return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
+    }
+
+
+    public function getTimeRangesString()
+    {
+        // At the moment, only one time range is allowed, so we simply return
+        // the first found subfield.
+        return $this->getFirstFieldValue('TIM', ['b']);
     }
 
 }
