@@ -47,6 +47,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
+
     /**
      * The array of configured driver names.
      *
