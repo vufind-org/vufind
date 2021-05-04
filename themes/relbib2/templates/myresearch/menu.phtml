@@ -69,10 +69,12 @@
     </a>
   <?php endif; ?>
   <?php if ($user): ?>
-    <!-- RelBib: Show RSS feed settings -->
+    <!-- RelBib: Show RSS feed settings. This is still experimental and should not be used yet in production. -->
+    <!--
     <a href="<?=$this->url('myresearch-rssfeedsettings')?>" class="list-group-item<?=$this->active == 'rssFeedSettings' ? ' active' : ''?>">
       <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("RSS")?>
     </a>
+    -->
     <a href="<?=$this->url('myresearch-logout')?>" class="list-group-item">
       <i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?>
     </a>
