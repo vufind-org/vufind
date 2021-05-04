@@ -125,6 +125,22 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $storageRetrievalRequestTypes = ['stack retrieval'];
 
     /**
+     * Lowercased item use restriction types we consider to be holdable
+     *
+     * @var string[]
+     */
+    protected $notHoldableRestriction = ['not for loan'];
+
+    /**
+     * Lowercased circulation statuses we consider not be holdable
+     *
+     * @var string[]
+     */
+    protected $notHoldableStatuses = [
+        'circulation status undefined', 'not available', 'lost'
+    ];
+
+    /**
      * Are renewals disabled for this driver instance? Defaults to false
      *
      * @var bool
@@ -341,7 +357,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * Given a chunk of the availability response, extract the values needed
      * by VuFind.
      *
-     * @param array  $current     Current XCItemAvailability chunk.
+     * @param array  $current     Current ItemInformation element
      * @param string $aggregateId (Aggregate) ID of the consortial record
      * @param string $bibId       Bib ID of one of the consortial record's source
      * record(s)
@@ -360,10 +376,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $status = (string)($status[0] ?? '');
 
         $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
+        $itemId = (string)($itemId[0] ?? '');
         $itemType = $current->xpath('ns1:ItemId/ns1:ItemIdentifierType');
         $itemType = (string)($itemType[0] ?? '');
 
         $itemAgencyId = $current->xpath('ns1:ItemId/ns1:AgencyId');
+        $itemAgencyId = (string)($itemAgencyId[0] ?? '');
 
         // Pick out the permanent location (TODO: better smarts for dealing with
         // temporary locations and multi-level location names):
@@ -408,9 +426,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'id' => $aggregateId,
             'availability' =>  $this->isAvailable($status),
             'status' => $status,
-            'item_id' => (string)($itemId[0] ?? ''),
+            'item_id' => $itemId,
             'bib_id' => $bibId,
-            'item_agency_id' => (string)($itemAgencyId[0] ?? ''),
+            'item_agency_id' => $itemAgencyId,
             'location' => $location,
             'reserve' => 'N',       // not supported
             'callnumber' => $itemCallNo,
@@ -418,8 +436,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'volume' => $volume,
             'number' => $number,
             'barcode' => ($itemType === 'Barcode')
-                ? (string)$itemId[0] : 'Unknown barcode',
-            'is_holdable'  => true,
+                ? $itemId : 'Unknown barcode',
+            'is_holdable'  => $this->isItemHoldable($current),
             'addLink' => true,
             'holdtype' => $this->getHoldType($status),
             'storageRetrievalRequest' => 'auto',
@@ -774,6 +792,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $id = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserId/ns1:UserIdentifierValue'
         );
+        if (empty($id)) {
+            return null;
+        }
+
         $patronAgencyId = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserId/ns1:AgencyId'
         );
@@ -793,22 +815,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:ElectronicAddressData'
         );
 
-        $patron = null;
-        if (!empty($id)) {
-            // Fill in basic patron details:
-            $patron = [
-                'id' => (string)$id[0],
-                'patronAgencyId' => (string)$patronAgencyId[0],
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'email' => !empty($email) ? (string)$email[0] : null,
-                'major' => null,
-                'college' => null,
-                'firstname' => (string)$first[0],
-                'lastname' => (string)$last[0],
-            ];
-        }
-        return $patron;
+        // Fill in basic patron details:
+        return [
+            'id' => (string)$id[0],
+            'patronAgencyId' => !empty($patronAgencyId)
+                ? (string)$patronAgencyId[0] : null,
+            'cat_username' => $username,
+            'cat_password' => $password,
+            'email' => !empty($email) ? (string)$email[0] : null,
+            'major' => null,
+            'college' => null,
+            'firstname' => (string)($first[0] ?? ''),
+            'lastname' => (string)($last[0] ?? ''),
+        ];
     }
 
     /**
@@ -909,7 +928,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'item_agency_id' => $itemAgencyId,
                 'patronAgencyId' => $patron['patronAgencyId'],
                 'duedate' => $due,
-                'title' => (string)$title[0],
+                'title' => !empty($title) ? (string)$title[0] : null,
                 'item_id' => $itemId,
                 'renewable' => $renewable,
             ];
@@ -947,16 +966,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($list as $current) {
             $this->registerNamespaceFor($current);
 
-            $tmp = $current->xpath(
+            $amount = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:Amount/ns1:MonetaryValue'
             );
-            $amount = (string)$tmp[0];
-            $tmp = $current->xpath('ns1:AccrualDate');
-            $date = $this->displayDate(!empty($tmp) ? (string)$tmp[0] : null);
-            $tmp = $current->xpath(
+            $amount = (string)($amount[0] ?? '');
+            $date = $current->xpath('ns1:AccrualDate');
+            $date = $this->displayDate(!empty($date) ? (string)$date[0] : null);
+            $desc = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
-            $desc = (string)$tmp[0];
+            $desc = (string)($desc[0] ?? '');
 
             $bibId = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
@@ -1045,7 +1064,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'id' => (string)$id[0],
                     'create' => $created,
                     'expire' => $expireDate,
-                    'title' => (string)$title[0],
+                    'title' => !empty($title) ? (string)$title[0] : null,
                     'position' => !empty($pos) ? (string)$pos[0] : null,
                     'requestId' => !empty($requestId) ? (string)$requestId[0] : null,
                     'item_agency_id' => !empty($itemAgencyId)
@@ -1126,8 +1145,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $address = explode("\n", trim((string)$address[0]));
         return [
-            'firstname' => (string)$first[0],
-            'lastname' => (string)$last[0],
+            'firstname' => (string)($first[0] ?? ''),
+            'lastname' => (string)($last[0] ?? ''),
             'address1' => $address[0] ?? '',
             'address2' => ($address[1] ?? '') .
                 (isset($address[2]) ? ', ' . $address[2] : ''),
@@ -1187,7 +1206,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getDepartments()
     {
-        // TODO
+        // NCIP does not support course reserves
         return [];
     }
 
@@ -1247,7 +1266,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getSuppressedRecords()
     {
-        // TODO
+        // NCIP does not support this
         return [];
     }
 
@@ -2184,6 +2203,37 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $requestType = $request->xpath('ns1:RequestType');
         $requestType = (string)$requestType[0];
         return in_array(strtolower($requestType), $types);
+    }
+
+    /**
+     * Check if item is holdable
+     *
+     * @param \SimpleXMLElement $itemInformation Item information element
+     *
+     * @return bool
+     */
+    protected function isItemHoldable(\SimpleXMLElement $itemInformation): bool
+    {
+        $restrictions = $itemInformation->xpath(
+            'ns1:ItemOptionalFields/ns1:ItemUseRestrictionType'
+        );
+        foreach ($restrictions as $restriction) {
+            $restStr = strtolower((string)$restriction);
+            if (in_array($restStr, $this->notHoldableRestriction)) {
+                return false;
+            }
+        }
+        $statuses = $itemInformation->xpath(
+            'ns1:ItemOptionalFields/ns1:CirculationStatus'
+        );
+        foreach ($statuses as $status) {
+            $statusStr = strtolower((string)$status);
+            if (in_array($statusStr, $this->notHoldableStatuses)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

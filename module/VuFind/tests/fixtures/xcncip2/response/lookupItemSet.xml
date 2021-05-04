@@ -36,7 +36,7 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                         <ns1:BibliographicItemIdentifierCode ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">Legal Deposit Number</ns1:BibliographicItemIdentifierCode>
                      </ns1:BibliographicItemId>
                   </ns1:BibliographicDescription>
-                  <ns1:ItemUseRestrictionType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">In Library Use Only</ns1:ItemUseRestrictionType>
+                  <ns1:ItemUseRestrictionType ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">Not For Loan</ns1:ItemUseRestrictionType>
                   <ns1:CirculationStatus ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available on shelf</ns1:CirculationStatus>
                   <ns1:HoldQueueLength>0</ns1:HoldQueueLength>
                   <ns1:ItemDescription>
