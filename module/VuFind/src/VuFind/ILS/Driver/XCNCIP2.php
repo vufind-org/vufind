@@ -1051,8 +1051,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'item_agency_id' => !empty($itemAgencyId)
                         ? (string)$itemAgencyId[0] : null,
                     'canceled' => $this->isRequestCancelled($status),
-                    'item_id' => (string)$itemId[0],
-                    'location' => (string)$pickupLocation[0],
+                    'item_id' => !empty($itemId[0]) ? (string)$itemId[0] : null,
+                    'location' => !empty($pickupLocation[0])
+                        ? (string)$pickupLocation[0] : null,
                     'available' => $available,
                 ];
             }
