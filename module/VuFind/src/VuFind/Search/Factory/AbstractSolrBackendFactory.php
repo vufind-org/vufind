@@ -33,6 +33,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFind\Search\Solr\DeduplicationListener;
+use VuFind\Search\Solr\DefaultParametersListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\HierarchicalFacetListener;
@@ -214,6 +215,15 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $config = $this->config->get($this->mainConfig);
         $search = $this->config->get($this->searchConfig);
         $facet = $this->config->get($this->facetConfig);
+
+        // Attach default parameters listener first so that any other listeners can
+        // override the parameters as necessary:
+        if (!empty($search->General->default_parameters)) {
+            $this->getDefaultParametersListener(
+                $backend,
+                $search->General->default_parameters->toArray()
+            )->attach($events);
+        }
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
@@ -541,5 +551,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 ->get(\LmcRbacMvc\Service\AuthorizationService::class)
         );
         return $listener;
+    }
+
+    /**
+     * Get a default parameters listener for the backend
+     *
+     * @param Backend $backend Search backend
+     * @param array   $params  Default parameters
+     *
+     * @return DeduplicationListener
+     */
+    protected function getDefaultParametersListener(Backend $backend, array $params)
+    {
+        return new DefaultParametersListener($backend, $params);
     }
 }
