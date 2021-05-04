@@ -5,6 +5,7 @@
 
 .php_cs_cache
 .phpstan_cache
+.psalm_cache
 .vagrant
 .vscode/*
 /downloads
