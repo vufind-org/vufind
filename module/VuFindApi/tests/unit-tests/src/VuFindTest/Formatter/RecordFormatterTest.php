@@ -63,7 +63,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
             ],
             'fullRecord' => ['vufind.method' => 'Formatter::getFullRecord'],
             'rawData' => ['vufind.method' => 'Formatter::getRawData'],
-            'buildings' => ['vufind.method' => 'getBuilding'],
+            'buildings' => ['vufind.method' => 'getBuildings'],
             'recordPage' => ['vufind.method' => 'Formatter::getRecordPage'],
             'subjectsExtended' => [
                 'vufind.method' => 'Formatter::getExtendedSubjectHeadings'

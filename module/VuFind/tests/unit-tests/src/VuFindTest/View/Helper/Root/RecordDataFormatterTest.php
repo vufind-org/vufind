@@ -101,7 +101,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $methods = [
-            'getBuilding', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->setMethods($methods)
@@ -110,8 +110,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue([]));
         // Force a return value of zero so we can test this edge case value (even
         // though in the context of "building"/"container title" it makes no sense):
-        $record->expects($this->any())->method('getBuilding')
-            ->will($this->returnValue(0));
+        $record->expects($this->any())->method('getBuildings')
+            ->will($this->returnValue(['0']));
         $record->expects($this->any())->method('getContainerTitle')
             ->will($this->returnValue('0'));
         // Expect only one call to getDeduplicatedAuthors to confirm that caching
@@ -208,7 +208,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $formatter = $this->getFormatter();
         $spec = $formatter->getDefaults('core');
         $spec['Building'] = [
-            'dataMethod' => 'getBuilding', 'pos' => 0, 'context' => ['foo' => 1],
+            'dataMethod' => 'getBuildings', 'pos' => 0, 'context' => ['foo' => 1],
             'translationTextDomain' => 'prefix_',
         ];
         $spec['MultiTest'] = [
