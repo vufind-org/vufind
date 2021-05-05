@@ -66,13 +66,13 @@ class Memcache extends AbstractBase
     /**
      * Set up the connection to Memcache.
      *
-     * @param Config                 $config Session configuration ([Session] section
+     * @param ?Config                $config Session configuration ([Session] section
      * of config.ini)
      * @param ?\Memcache|?\Memcached $client Optional Memcache client object
      *
      * @return void
      */
-    protected function connect(Config $config, ?object $client): void
+    protected function connect(?Config $config, ?object $client): void
     {
         // Set defaults if nothing set in config file.
         $host = $config->memcache_host ?? 'localhost';
