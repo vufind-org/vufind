@@ -927,14 +927,19 @@ class Folio extends AbstractAPI implements
      * This is responsible get a list of valid locations for holds / recall
      * retrieval
      *
-     * @param array $patron Patron information returned by $this->patronLogin
+     * @param array $patron   Patron information returned by $this->patronLogin
+     * @param array $holdInfo Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the pickup options
+     * or may be ignored. The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
      *
      * @return array An array of associative arrays with locationID and
      * locationDisplay keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPickupLocations($patron)
+    public function getPickupLocations($patron, $holdInfo = null)
     {
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
