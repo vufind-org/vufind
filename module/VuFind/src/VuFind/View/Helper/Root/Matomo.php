@@ -280,7 +280,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             $template = $children[0]->getTemplate();
             if (!strstr($template, '/home') && !strstr($template, 'facet-list')) {
                 $results = $children[0]->getVariable('results');
-                if (is_a($results, 'VuFind\Search\Base\Results')) {
+                if ($results instanceof Results) {
                     return $results;
                 }
             }
@@ -323,7 +323,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $current = $viewModel->getCurrent();
         if (null === $current) {
             $driver = $view->vars('driver');
-            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+            if ($driver instanceof RecordDriverBase) {
                 return $driver;
             }
             return null;
@@ -331,7 +331,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $children = $current->getChildren();
         if (isset($children[0])) {
             $driver = $children[0]->getVariable('driver');
-            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+            if ($driver instanceof RecordDriverBase) {
                 return $driver;
             }
         }
