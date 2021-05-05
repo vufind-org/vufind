@@ -118,7 +118,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
                 'DedupData' => [['id' => 'bar']],
                 'fullrecord' => 'xyzzy',
                 'spelling' => 's',
-                'Building' => ['foo', new TranslatableString('bar', 'xyzzy')],
+                'Buildings' => ['foo', new TranslatableString('bar', 'xyzzy')],
                 'AllSubjectHeadings' => [['heading' => 'subject']],
                 'DeduplicatedAuthors' => [
                     'primary' => ['Ms. A' => ['role' => ['Editor']]],
@@ -149,7 +149,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
-        $expectedRaw['Building'] = [
+        $expectedRaw['Buildings'] = [
             'foo', ['value' => 'bar', 'translated' => 'xyzzy']
         ];
         $expected = [
