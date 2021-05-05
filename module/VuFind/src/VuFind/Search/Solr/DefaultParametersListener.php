@@ -121,7 +121,7 @@ class DefaultParametersListener
                     if (!isset($parts[1])) {
                         continue;
                     }
-                    $params->add($parts[0], $parts[1]);
+                    $params->add(urldecode($parts[0]), urldecode($parts[1]));
                 }
             }
         }
