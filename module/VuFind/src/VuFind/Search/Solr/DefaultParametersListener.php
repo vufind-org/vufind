@@ -116,9 +116,12 @@ class DefaultParametersListener
                 ?? '';
             if ($defaultParams) {
                 $params = $event->getParam('params');
-                parse_str($defaultParams, $paramsArray);
-                foreach ($paramsArray as $key => $value) {
-                    $params->add($key, $value);
+                foreach (explode('&', $defaultParams) as $keyVal) {
+                    $parts = explode('=', $keyVal, 2);
+                    if (!isset($parts[1])) {
+                        continue;
+                    }
+                    $params->add($parts[0], $parts[1]);
                 }
             }
         }
