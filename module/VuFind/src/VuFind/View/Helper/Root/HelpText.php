@@ -39,7 +39,7 @@ namespace VuFind\View\Helper\Root;
 class HelpText extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * The context view helper
+     * The content view helper
      *
      * @var Content
      */
