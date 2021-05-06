@@ -176,12 +176,12 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $memcache->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue('bar'));
-            $config = new \Laminas\Config\Config(
-                [
-                    'memcache_client' => 'Memcached',
-                ]
-            );
-            $handler = $this->getHandler($config, $memcache);
+        $config = new \Laminas\Config\Config(
+            [
+                'memcache_client' => 'Memcached',
+            ]
+        );
+        $handler = $this->getHandler($config, $memcache);
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
