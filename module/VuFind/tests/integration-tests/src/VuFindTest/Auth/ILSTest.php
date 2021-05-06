@@ -79,7 +79,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = [])
+    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
