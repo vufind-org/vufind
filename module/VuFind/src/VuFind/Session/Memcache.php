@@ -85,7 +85,13 @@ class Memcache extends AbstractBase
      */
     public function read($sessId)
     {
-        $value = $this->connection->get("vufind_sessions/{$sessId}");
+        // For some reason, Memcache tests fail if we do not pass exactly three
+        // parameters to the get method, even though this seems inconsistent with
+        // the documentation. This mechanism makes the tests pass, but may be worth
+        // revisiting in the future.
+        $extraParams = $this->connection instanceof \Memcache ? [null, null] : [];
+        $value = $this->connection
+            ->get("vufind_sessions/{$sessId}", ...$extraParams);
         return empty($value) ? '' : $value;
     }
 
