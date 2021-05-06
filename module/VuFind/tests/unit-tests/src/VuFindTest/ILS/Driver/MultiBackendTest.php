@@ -2429,8 +2429,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
-            ->onlyMethods($methods)
+        return $this->getTolerantMockBuilder(__NAMESPACE__ . '\DemoMock', $methods)
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2440,6 +2439,35 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                     }
                 ]
             )->getMock();
+    }
+
+    /**
+     * Create a mock builder that is tolerant of a mix of defined and undefined
+     * methods within the mock.
+     *
+     * @param string $class   Class to mock
+     * @param array  $methods Methods to stub
+     *
+     * @return object
+     */
+    protected function getTolerantMockBuilder($class, $methods)
+    {
+        $onlyMethods = $addMethods = [];
+        foreach ($methods ?? [] as $method) {
+            if (method_exists($class, $method)) {
+                $onlyMethods[] = $method;
+            } else {
+                $addMethods[] = $method;
+            }
+        }
+        $builder = $this->getMockBuilder($class);
+        if (!empty($addMethods)) {
+            $builder->addMethods($addMethods);
+        }
+        if (!empty($onlyMethods)) {
+            $builder->onlyMethods($onlyMethods);
+        }
+        return $builder;
     }
 
     /**
@@ -2457,14 +2485,14 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             if ($type == 'Demo') {
                 $mock = $this->getMockDemoDriver($methods);
             } else {
-                $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
-                    ->onlyMethods($methods)
+                $class = __NAMESPACE__ . '\\' . $type . 'Mock';
+                $mock = $this->getTolerantMockBuilder($class, $methods)
                     ->setConstructorArgs([new \VuFind\Date\Converter()])
                     ->getMock();
             }
         } catch (\Exception $e) {
-            $mock = $this->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'Mock')
-                ->onlyMethods($methods)->getMock();
+            $class = __NAMESPACE__ . '\\' . $type . 'Mock';
+            $mock = $this->getTolerantMockBuilder($class, $methods)->getMock();
         }
         if ($methods && in_array('init', $methods)) {
             $mock->expects($this->any())
