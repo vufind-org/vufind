@@ -55,7 +55,7 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Content $content The context view helper
+     * @param Content $content The content view helper
      */
     public function __construct(Content $content)
     {
