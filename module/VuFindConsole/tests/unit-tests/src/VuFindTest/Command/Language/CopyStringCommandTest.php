@@ -227,10 +227,12 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -242,9 +244,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockReader($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniReader::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniReader::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

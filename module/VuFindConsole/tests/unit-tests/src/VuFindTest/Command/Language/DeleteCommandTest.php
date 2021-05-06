@@ -157,10 +157,12 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
