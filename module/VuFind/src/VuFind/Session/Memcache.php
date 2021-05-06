@@ -90,7 +90,8 @@ class Memcache extends AbstractBase
         // the documentation. This mechanism makes the tests pass, but may be worth
         // revisiting in the future.
         $extraParams = $this->connection instanceof \Memcache ? [null, null] : [];
-        $value = $this->connection->get("vufind_sessions/{$sessId}", ...$extraParams);
+        $value = $this->connection
+            ->get("vufind_sessions/{$sessId}", ...$extraParams);
         return empty($value) ? '' : $value;
     }
 
