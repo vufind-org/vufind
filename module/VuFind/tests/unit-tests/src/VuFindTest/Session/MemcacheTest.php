@@ -165,7 +165,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             $this->markTestSkipped();
         }
         $memcache = $this->getMockBuilder(\Memcached::class)
-            ->setMethods(['addServer', 'get', 'setOption'])
+            ->onlyMethods(['addServer', 'get', 'setOption'])
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
@@ -196,7 +196,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             $this->markTestSkipped();
         }
         $memcache = $this->getMockBuilder(\Memcached::class)
-            ->setMethods(['addServer', 'set', 'setOption'])
+            ->onlyMethods(['addServer', 'set', 'setOption'])
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
@@ -233,7 +233,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             $this->markTestSkipped();
         }
         $memcache = $this->getMockBuilder(\Memcached::class)
-            ->setMethods(['addServer', 'set', 'setOption'])
+            ->onlyMethods(['addServer', 'set', 'setOption'])
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
@@ -274,7 +274,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             $this->markTestSkipped();
         }
         $memcache = $this->getMockBuilder(\Memcached::class)
-            ->setMethods(['addServer', 'delete', 'setOption'])
+            ->onlyMethods(['addServer', 'delete', 'setOption'])
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
