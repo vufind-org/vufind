@@ -42,6 +42,13 @@ use VuFindTheme\ThemeInfo;
 class Icon extends AbstractHelper
 {
     /**
+     * Icon config from theme.config.php
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * Default icon template
      *
      * @var string
@@ -62,9 +69,9 @@ class Icon extends AbstractHelper
      */
     public function __construct(ThemeInfo $themeInfo)
     {
-        $iconConfig = $themeInfo->getMergedConfig('icons');
-        $this->defaultSet = $iconConfig['defaultSet'] ?? 'FontAwesome';
-        $this->iconMap = $iconConfig['mappings'] ?? [];
+        $this->config = $themeInfo->getMergedConfig('icons');
+        $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
+        $this->iconMap = $this->config['mappings'] ?? [];
     }
 
     /**
@@ -93,7 +100,7 @@ class Icon extends AbstractHelper
 
         return $this->getView()->render(
             'Helpers/icons/' . $template,
-            ['icon' => $escAttr($icon), 'attrs' => $attrs]
+            ['icon' => $escAttr($icon), 'attrs' => $attrs, 'config' => $this->config]
         );
     }
 }

@@ -1,0 +1,8 @@
+<?php
+    $this->headLink()->appendStylesheet('icons.css');
+
+    $src = $this->config['spriteSrc'] ?? 'remixicon.symbol.svg';
+?>
+<svg class="icon--svg"<?=$this->attrs ?> aria-hidden="true">
+    <use xlink:href="<?=$this->imageLink($src) ?>#<?=$this->icon ?>"></use>
+</svg>

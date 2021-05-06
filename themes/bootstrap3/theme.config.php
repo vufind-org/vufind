@@ -64,10 +64,11 @@ return [
     ],
     'icons' => [
         'defaultSet' => 'FontAwesome',
+        'spriteSrc' => 'remixicon.symbol.svg',
         'mappings' => [
             'favorites' => 'Remix:star-fill',
-            'my-account' => 'user',
-            'search' => 'Remix:search-line',
+            'my-account' => 'user-circle',
+            'search' => 'Sprite:ri-search-line',
         ]
     ]
 ];
