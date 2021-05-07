@@ -11,7 +11,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
      *
      * @return string
      */
-    public function getHighlightedCorporation(){
+    public function getHighlightedCorporation()
+    {
         // Don't check for highlighted values if highlighting is disabled:
         if (!$this->highlight) {
             return '';
@@ -25,7 +26,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
      *
      * @return array
      */
-    public function getSecondaryAuthorsAndRole(){
+    public function getSecondaryAuthorsAndRole()
+    {
         return isset($this->fields['author2_and_role']) ?
             $this->fields['author2_and_role'] : [];
     }
@@ -164,27 +166,33 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     }
 
 
-    private static function IntDiv($numerator, $denominator) {
+    private static function IntDiv($numerator, $denominator)
+    {
         return (int)($numerator / $denominator);
     }
 
-    private static function HasChapter($code) {
+    private static function HasChapter($code)
+    {
         return ($code % 1000000 != 999999) && ((self::IntDiv($code, 1000) % 1000) != 0);
     }
 
-    private static function HasVerse($code) {
+    private static function HasVerse($code)
+    {
         return ($code % 1000000 != 999999) && (($code % 1000) != 0);
     }
 
-    private static function GetBookCode($code) {
+    private static function GetBookCode($code)
+    {
         return self::IntDiv($code, 1000000);
     }
 
-    private static function GetChapter($code) {
+    private static function GetChapter($code)
+    {
         return self::IntDiv($code, 1000) % 1000;
     }
 
-    private static function GetVerse($code) {
+    private static function GetVerse($code)
+    {
         return $code % 1000;
     }
 
@@ -273,7 +281,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         85 => "",
     );
 
-    private static function DecodeBookCode($book_code, $separator) {
+    private static function DecodeBookCode($book_code, $separator)
+    {
         $book_code_as_string = self::$codes_to_book_abbrevs[self::GetBookCode($book_code)];
         if (!self::HasChapter($book_code))
             return $book_code_as_string;
@@ -283,7 +292,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $book_code_as_string . $separator . strval(self::GetVerse($book_code));
     }
 
-    private static function DecodeChapterVerse($book_code, $separator) {
+    private static function DecodeChapterVerse($book_code, $separator)
+    {
         $chapter_code_as_string = "";
 
         if (!self::HasChapter($book_code))
@@ -298,7 +308,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             return $chapter_code_as_string;
     }
 
-    private static function BibleRangeToDisplayString($bible_range, $language_code) {
+    private static function BibleRangeToDisplayString($bible_range, $language_code)
+    {
         $separator = (substr($language_code, 0, 2) == "de") ? "," : ":";
         $code1 = (int)substr($bible_range, 0, 8);
         $code2 = (int)substr($bible_range, 9, 8);
@@ -326,7 +337,8 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $codes_as_string . self::DecodeChapterVerse($code1, $separator) . "–" . self::DecodeChapterVerse($code2, $separator);
     }
 
-    public function getBibleRangesString() {
+    public function getBibleRangesString()
+    {
         if (!isset($this->fields['bible_ranges']))
             return "";
         $language_code = $this->getTranslatorLocale();
@@ -339,11 +351,34 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $bible_references;
     }
 
-    public function getBundleIds(): array {
+    public function getBundleIds(): array
+    {
         return $this->fields['bundle_id'] ?? [];
     }
 
-    public function isAvailableForPDA() {
+    public function getKeyWordChainBag()
+    {
+        return isset($this->fields['key_word_chain_bag']) ?
+            $this->fields['key_word_chain_bag'] : '';
+    }
+
+    public function getPrefix4KeyWordChainBag()
+    {
+        return isset($this->fields['prefix4_key_word_chain_bag']) ?
+            $this->fields['prefix4_key_word_chain_bag'] : '';
+    }
+
+    /**
+     * Check whether there are fulltexts associated with this record
+     * @return bool
+     */
+    public function hasFulltext()
+    {
+        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
+    }
+
+    public function isAvailableForPDA()
+    {
         return isset($this->fields['is_potentially_pda']) && $this->fields['is_potentially_pda'];
     }
 }

@@ -99,18 +99,6 @@ class SolrMarc extends SolrDefault
         }
     }
 
-    public function getKeyWordChainBag()
-    {
-        return isset($this->fields['key_word_chain_bag']) ?
-            $this->fields['key_word_chain_bag'] : '';
-    }
-
-    public function getPrefix4KeyWordChainBag()
-    {
-        return isset($this->fields['prefix4_key_word_chain_bag']) ?
-            $this->fields['prefix4_key_word_chain_bag'] : '';
-    }
-
     /**
      * Returns persistent identifiers as array
      * e.g. array('DOI' => array(<doi1>, <doi2>),
@@ -137,18 +125,6 @@ class SolrMarc extends SolrDefault
 
         return $result;
     }
-
-
-    /**
-     * Check whether there are fulltexts associated with this record
-     * @return bool
-     */
-
-    public function hasFulltext()
-    {
-        return isset($this->fields['has_fulltext']) && $this->fields['has_fulltext'] == true;
-    }
-
 
     public function getTimeRangesString()
     {
