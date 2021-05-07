@@ -99,7 +99,7 @@ class DefaultParametersListener
     }
 
     /**
-     * Set up filter for excluding merge children.
+     * Add default parameters
      *
      * @param EventInterface $event Event
      *
@@ -114,8 +114,7 @@ class DefaultParametersListener
             $defaultParams = $this->defaultParams[$context]
                 ?? $this->defaultParams['*']
                 ?? '';
-            if ($defaultParams) {
-                $params = $event->getParam('params');
+            if ($defaultParams && $params = $event->getParam('params')) {
                 foreach (explode('&', $defaultParams) as $keyVal) {
                     $parts = explode('=', $keyVal, 2);
                     if (!isset($parts[1])) {
