@@ -209,8 +209,8 @@ class ThemeInfo
             );
             foreach ($currentThemeSet as $theme) {
                 if (isset($allThemeInfo[$theme][$key])) {
-                    $merged = array_merge_recursive(
-                        $merged, $allThemeInfo[$theme][$key]
+                    $merged = array_replace_recursive(
+                        $allThemeInfo[$theme][$key], $merged
                     );
                 }
             }
