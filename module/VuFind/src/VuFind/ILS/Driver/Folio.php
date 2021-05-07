@@ -561,6 +561,10 @@ class Folio extends AbstractAPI implements
                 $locationData = $this->getLocationData($locationId);
                 $locationName = $locationData['name'];
                 $locationCode = $locationData['code'];
+                $holdingCallNumber = $holding->callNumber ?? '';
+                $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+                $itemCallNumber = $item->itemLevelCallNumber ?? '';
+                $itemCallNumberPrefix = $item->itemLevelCallNumberPrefix ?? '';
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -575,8 +579,10 @@ class Folio extends AbstractAPI implements
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
-                    'callnumber' => $holding->callNumber ?? '',
-                    'callnumber_prefix' => $holding->callNumberPrefix ?? '',
+                    'callnumber' => $itemCallNumber
+                        ? $itemCallNumber : $holdingCallNumber,
+                    'callnumber_prefix' => $itemCallNumberPrefix
+                        ? $itemCallNumberPrefix : $holdingCallNumberPrefix,
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
