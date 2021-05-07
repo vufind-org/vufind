@@ -318,6 +318,8 @@ class SolrMarc extends SolrDefault
         $contains = [];
         $fields = $this->getMarcRecord()->getFields('772|773', true);
         foreach ($fields as $field) {
+            if ($field->getIndicator(1) != 0)
+                continue;
             $opening = $field->getSubfield('i') ? $field->getSubfield('i')->getData() : '';
             $titles = [];
             $field->getSubfield('a') ? $titles[] = $field->getSubfield('a')->getData() : '';
