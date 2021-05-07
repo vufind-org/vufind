@@ -49,7 +49,7 @@ class Icon extends AbstractHelper
     protected $config;
 
     /**
-     * Default icon template
+     * Default icon set
      *
      * @var string
      */
@@ -71,7 +71,7 @@ class Icon extends AbstractHelper
     {
         $this->config = $themeInfo->getMergedConfig('icons');
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
-        $this->iconMap = $this->config['mappings'] ?? [];
+        $this->iconMap = $this->config['aliases'] ?? [];
     }
 
     /**
@@ -79,28 +79,32 @@ class Icon extends AbstractHelper
      *
      * @param string $name  Which icon?
      * @param array  $extra Just extra HTML attributes for now
-     *
-     * @return string
      */
-    public function __invoke($name, $extra = [])
+    public function __invoke($name, $extra = []): string
     {
         $icon = $this->iconMap[$name] ?? $name;
-        $template = $this->defaultSet;
+        $set = $this->defaultSet;
 
-        // Override template from config (ie. FontAwesome:icon)
+        // Override set from config (ie. FontAwesome:icon)
         if (strpos($icon, ':') !== false) {
-            [$template, $icon] = explode(':', $icon, 2);
+            [$set, $icon] = explode(':', $icon, 2);
         }
 
+        // Find set in theme.config.php
+        $setConfig = $this->config['sets'][$set] ?? [];
+        $template = $setConfig['template'] ?? $set;
+
+        // Compile attitional HTML attributes
         $attrs = '';
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
         foreach ($extra as $key => $val) {
             $attrs .= ' ' . $key . '="' . $escAttr($val) . '"';
         }
 
+        // Surface set config and add icon and attrs
         return $this->getView()->render(
             'Helpers/icons/' . $template,
-            ['icon' => $escAttr($icon), 'attrs' => $attrs, 'config' => $this->config]
+            array_merge($setConfig, ['icon' => $escAttr($icon), 'attrs' => $attrs])
         );
     }
 }

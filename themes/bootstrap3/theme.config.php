@@ -64,11 +64,21 @@ return [
     ],
     'icons' => [
         'defaultSet' => 'FontAwesome',
-        'spriteSrc' => 'remixicon.symbol.svg',
-        'mappings' => [
-            'favorites' => 'Remix:star-fill',
+        'sets' => [
+            'FontAwesome' => [
+                'template' => 'font',
+                'prefix' => 'fa fa-',
+                'src' => 'vendor/font-awesome.min.css',
+            ],
+            'Remix' => [
+                'template' => 'svg-sprite',
+                'src' => 'remixicon.symbol.svg',
+            ],
+        ],
+        'aliases' => [
+            'favorites' => 'Remix:ri-star-fill',
             'my-account' => 'user-circle',
-            'search' => 'Sprite:ri-search-line',
+            'search' => 'Remix:ri-search-line',
         ]
     ]
 ];
