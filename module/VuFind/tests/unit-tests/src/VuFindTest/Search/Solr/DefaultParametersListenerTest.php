@@ -171,5 +171,4 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(null, $params->get('bar'));
     }
-
 }
