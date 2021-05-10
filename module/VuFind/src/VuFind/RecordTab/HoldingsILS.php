@@ -100,13 +100,31 @@ class HoldingsILS extends AbstractBase
     public function getUniqueCallNumbers($items)
     {
         $callNos = [];
-        foreach ($items as $item) {
+        foreach ($items as $i => $item) {
             if (isset($item['callnumber']) && strlen($item['callnumber']) > 0) {
-                $callNos[] = $item['callnumber'];
+                $prefix = $item['callnumber_prefix'] ?? '';
+                $callnumber = $item['callnumber'];
+                $callNos[$i]['callnumber'] = $callnumber;
+                $callNos[$i]['display'] = $prefix
+                    ? $prefix . ' ' . $callnumber : $callnumber;
+                $callNos[$i]['prefix'] = $item['callnumber_prefix'] ?? '';
             }
         }
-        sort($callNos);
-        return array_unique($callNos);
+
+        uasort(
+            $callNos,
+            function ($a, $b) {
+                return $a['display'] <=> $b['display'];
+            }
+        );
+
+        $unique = [];
+        foreach ($callNos as $no) {
+            $unique[$no['display']] = $no;
+        }
+        $callNosUnique = array_values($unique);
+
+        return $callNosUnique;
     }
 
     /**
