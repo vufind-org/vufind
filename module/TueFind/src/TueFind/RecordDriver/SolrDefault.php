@@ -71,7 +71,8 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $result;
     }
 
-    public function getAuthorsAsString() {
+    public function getAuthorsAsString()
+    {
         $author_implode = function ($array) {
             if (is_null($array)) {
                 return null;
@@ -238,7 +239,8 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     }
 
 
-    public function getSuperiorRecord() {
+    public function getSuperiorRecord()
+    {
         $superior_ppn = $this->getSuperiorPPN();
         if (empty($superior_ppn))
             return NULL;
@@ -501,15 +503,18 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
      *
      * @return bool
      */
-    public function isAvailableForPDA() {
+    public function isAvailableForPDA()
+    {
         return false;
     }
 
-    public function isSuperiorWork() {
+    public function isSuperiorWork()
+    {
         return (isset($this->fields['is_superior_work'])) ? $this->fields['is_superior_work'] : false;
     }
 
-    public function hasInferiorWorksInCurrentSubsystem() {
+    public function hasInferiorWorksInCurrentSubsystem()
+    {
         if (!isset($this->fields['superior_work_subsystems']))
             return false;
 
@@ -518,12 +523,13 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
                         $subsystems, true);
     }
 
-    public function isSubscribable() {
+    public function isSubscribable()
+    {
         return (isset($this->fields['is_subscribable'])) ? $this->fields['is_subscribable'] : false;
     }
 
     public function stripTrailingDates($text) {
-        $matches = array();
+        $matches = [];
         if (!preg_match("/(\\D*)(\\d{4}).*/", $text, $matches))
             return $text;
         return rtrim($matches[1]);
@@ -595,7 +601,8 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
      *
      * @return array
      */
-    public function getPublicationDetailsNoPlaces(){
+    public function getPublicationDetailsNoPlaces()
+    {
         $names = $this->getPublishers();
         $dates = $this->getHumanReadablePublicationDates();
 
@@ -616,32 +623,38 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
     }
 
 
-    public function setHasFulltextMatch() {
+    public function setHasFulltextMatch()
+    {
         $this->hasFulltextMatch = true;
     }
 
 
-    public function hasFulltextMatch() {
+    public function hasFulltextMatch()
+    {
         return $this->hasFulltextMatch ?? false;
     }
 
 
-    public function getFulltextTypes() : array {
+    public function getFulltextTypes() : array
+    {
         return (isset($this->fields['fulltext_types'])) ? $this->fields['fulltext_types'] : '';
     }
 
 
-    public function setFulltextTypeFilters($selected_fulltext_types) {
+    public function setFulltextTypeFilters($selected_fulltext_types)
+    {
         $this->selected_fulltext_types = $selected_fulltext_types;
     }
 
 
-    public function getFulltextTypeFilters() {
+    public function getFulltextTypeFilters()
+    {
         return $this->selected_fulltext_types;
     }
 
 
-    public function isHybrid() {
+    public function isHybrid()
+    {
         return isset($this->fields['is_hybrid']) && $this->fields['is_hybrid'] == true;
     }
 }

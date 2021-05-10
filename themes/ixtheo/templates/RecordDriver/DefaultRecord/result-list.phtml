@@ -171,6 +171,12 @@
         }
       ?>
 
+      <?php $timeRangesString = $this->driver->tryMethod('getTimeRangesString');
+        if (!empty($timeRangesString)) {
+          echo '<div>' . $this->transEsc($timeRangesString) . '</div>';
+        }
+      ?>
+
       <?=$this->record($this->driver)->getPreviews()?>
       <?php $label = str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
       <?php /* Remove separator needed for long title view */ ?>

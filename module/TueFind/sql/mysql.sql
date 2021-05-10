@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
 
 ALTER TABLE vufind.user ADD tuefind_uuid CHAR(36) NOT NULL;
 ALTER TABLE vufind.user ADD CONSTRAINT tuefind_user_uuid UNIQUE (tuefind_uuid);
-CREATE TRIGGER vufind.before_user_insert BEFORE INSERT ON vufind.user FOR EACH ROW SET NEW.tuefind_uuid = IF(NEW.tuefind_uuid IS NULL, UUID(), NEW.tuefind_uuid);
+CREATE TRIGGER vufind.before_user_insert BEFORE INSERT ON vufind.user FOR EACH ROW SET NEW.tuefind_uuid = UUID();
 
 ALTER TABLE vufind.user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE;
 CREATE INDEX tuefind_rss_feed_send_emails_index ON vufind.user (tuefind_rss_feed_send_emails);
