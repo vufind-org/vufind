@@ -79,8 +79,10 @@ class Icon extends AbstractHelper
      *
      * @param string $name  Which icon?
      * @param array  $extra Just extra HTML attributes for now
+     *
+     * @return string
      */
-    public function __invoke($name, $extra = []): string
+    public function __invoke($name, $extra = [])
     {
         $icon = $this->iconMap[$name] ?? $name;
         $set = $this->defaultSet;
