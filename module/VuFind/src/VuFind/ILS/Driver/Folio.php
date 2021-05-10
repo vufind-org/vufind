@@ -551,6 +551,8 @@ class Folio extends AbstractAPI implements
                 $textFormatter,
                 $holding->holdingsStatementsForIndexes ?? []
             );
+            $holdingCallNumber = $holding->callNumber ?? '';
+            $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
             foreach ($this->getPagedResults(
                 'items', '/item-storage/items', $query
             ) as $item) {
@@ -561,8 +563,6 @@ class Folio extends AbstractAPI implements
                 $locationData = $this->getLocationData($locationId);
                 $locationName = $locationData['name'];
                 $locationCode = $locationData['code'];
-                $holdingCallNumber = $holding->callNumber ?? '';
-                $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
                 $itemCallNumber = $item->itemLevelCallNumber ?? '';
                 $itemCallNumberPrefix = $item->itemLevelCallNumberPrefix ?? '';
                 $items[] = [
