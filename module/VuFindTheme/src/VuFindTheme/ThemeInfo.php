@@ -192,25 +192,45 @@ class ThemeInfo
     /**
      * Get a configuration element, merged to reflect theme inheritance.
      *
-     * @param string $key Configuration key to retrieve
+     * @param string $key     Configuration key to retrieve
+     * @param bool   $flatten Use array_replace to flatten values
      *
      * @return array
      */
-    public function getMergedConfig(string $key): array
+    public function getMergedConfig(string $key, bool $flatten = false): array
     {
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
 
+        /**
+         * Assume a parent value 'a' and a child value 'b'
+         *
+         * array_merge (default) will merge them into ['b', 'a']
+         * array_replace ($flatten = true) will merge them into 'b'
+         *
+         * we're using an anonymous funcyion here to swap the arguements in the
+         * flatten case. This is to make sure child values override parent values
+         * with replace but parent values are appended to the end of merged values
+         */
+        $arrayFunc = $flatten
+            ? function ($a, $b) { return array_replace($b, $a); }
+            : 'array_merge';
+
+        $deepFunc = $flatten
+            ? function ($a, $b) { return array_replace_recursive($b, $a); }
+            : 'array_merge_recursive';
+
         $merged = [];
         while (!empty($currentTheme)) {
-            $currentThemeSet = array_merge(
+            $currentThemeSet = $arrayFunc(
                 (array)$currentTheme,
-                $allThemeInfo[$currentTheme]['mixins'] ?? []
+                $allThemeInfo[$currentTheme]['mixins'] ?? [],
             );
             foreach ($currentThemeSet as $theme) {
                 if (isset($allThemeInfo[$theme][$key])) {
-                    $merged = array_replace_recursive(
-                        $allThemeInfo[$theme][$key], $merged
+                    $merged = $deepFunc(
+                        $merged,
+                        $allThemeInfo[$theme][$key],
                     );
                 }
             }

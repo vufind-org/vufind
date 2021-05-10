@@ -214,6 +214,47 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getMergedConfig()
+     *
+     * @return void
+     */
+    public function testGetMergedConfig()
+    {
+        // Parent
+        $ti = $this->getThemeInfo();
+        $parentJS = $ti->getMergedConfig('js');
+        $this->assertEquals(['hello.js'], $parentJS);
+        // recursive
+        $parentHelpers = $ti->getMergedConfig('helpers');
+        $this->assertEquals(
+            'fooFactory',
+            $parentHelpers['factories']['foo']
+        );
+
+        // Child with parents merged in
+        $ti->setTheme('child');
+        $childJS = $ti->getMergedConfig('js');
+        $this->assertEquals(['extra.js', 'hello.js'], $childJS);
+        // recursive
+        $childHelpers = $ti->getMergedConfig('helpers');
+        $this->assertEquals(
+            ['fooOverrideFactory', 'fooFactory'],
+            $childHelpers['factories']['foo']
+        );
+
+        // Use array_replace_recursive
+        $ti->setTheme('child');
+        $childJS = $ti->getMergedConfig('js', true);
+        $this->assertEquals(['extra.js'], $childJS);
+        // recursive
+        $childHelpers = $ti->getMergedConfig('helpers', true);
+        $this->assertEquals(
+            'fooOverrideFactory',
+            $childHelpers['factories']['foo']
+        );
+    }
+
+    /**
      * Get a test object
      *
      * @return ThemeInfo

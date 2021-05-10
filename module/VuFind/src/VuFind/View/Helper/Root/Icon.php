@@ -69,7 +69,7 @@ class Icon extends AbstractHelper
      */
     public function __construct(ThemeInfo $themeInfo)
     {
-        $this->config = $themeInfo->getMergedConfig('icons');
+        $this->config = $themeInfo->getMergedConfig('icons', true);
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->iconMap = $this->config['aliases'] ?? [];
     }
