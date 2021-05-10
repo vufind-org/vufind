@@ -54,7 +54,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Record\Router::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getActionRouteDetails'])
+            ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
         $mock->expects($this->any())->method('getActionRouteDetails')
             ->will($this->returnValue(['route' => 'home', 'params' => []]));
@@ -104,7 +104,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));

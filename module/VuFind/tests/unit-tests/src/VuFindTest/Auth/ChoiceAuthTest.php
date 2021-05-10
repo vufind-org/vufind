@@ -212,7 +212,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     protected function getSessionContainer($method = null)
     {
         $mock = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
             $mock->expects($this->any())->method('__isset')->with($this->equalTo('auth_method'))->will($this->returnValue(true));
