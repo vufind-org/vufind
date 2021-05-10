@@ -47,10 +47,11 @@ class SolrAuthMarc extends SolrAuthDefault {
             $references[] = ['title' => 'ORCID',
                              'url' => 'https://orcid.org/' . urlencode($orcid)];
 
-        $viaf = $this->getVIAF();
-        if ($viaf != null)
+        $viafs = $this->getVIAFs();
+        foreach ($viafs as $viaf) {
             $references[] = ['title' => 'VIAF',
                              'url' => 'https://viaf.org/viaf/' . urlencode($viaf)];
+        }
 
         $wikidataId = $this->getWikidataId();
         if ($wikidataId != null)

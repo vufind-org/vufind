@@ -25,8 +25,11 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
         return $this->fields['occupation'] ?? [];
     }
 
-    public function getVIAF() {
-        return $this->fields['viaf'] ?? null;
+    public function getVIAFs(): array {
+        $viafs = $this->fields['viaf'] ?? [];
+        if (!is_array($viafs))
+            $viafs = [$viafs];
+        return $viafs;
     }
 
     public function getWikidataId() {
@@ -34,6 +37,6 @@ class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
     }
 
     public function getType() {
-        return $this->fields['type'];
+        return $this->fields['type'] ?? null;
     }
 }
