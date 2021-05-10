@@ -65,6 +65,16 @@ return [
     'icons' => [
         'defaultSet' => 'FontAwesome',
         'sets' => [
+            /**
+             * Define icon sets here.
+             *
+             * All sets need:
+             * - 'template': which template the icon renders with
+             * - 'src': the location of the relevant resource (font, css, images)
+             *
+             * Some templates need additional information:
+             * - font: prefix (ie. fa fa- for FontAwesome)
+             */
             'FontAwesome' => [
                 'template' => 'font',
                 'prefix' => 'fa fa-',
@@ -76,6 +86,13 @@ return [
             ],
         ],
         'aliases' => [
+            /**
+             * Icons can be assigned or overriden here
+             *
+             * Format: 'icon' => [set:]icon
+             *
+             * Icons assigned without set will use the defaultSet (above)
+             */
             'favorites' => 'Remix:ri-star-fill',
             'my-account' => 'user-circle',
             'search' => 'Remix:ri-search-line',
