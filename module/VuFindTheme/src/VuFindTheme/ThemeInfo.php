@@ -205,20 +205,24 @@ class ThemeInfo
         /**
          * Assume a parent value 'a' and a child value 'b'
          *
-         * array_merge (default) will merge them into ['b', 'a']
-         * array_replace ($flatten = true) will merge them into 'b'
+         * Using array_merge (default) will merge them into ['b', 'a']
+         * Using array_replace ($flatten = true) will merge them into 'b'
          *
-         * we're using an anonymous funcyion here to swap the arguements in the
+         * We're using an anonymous funcyion here to swap the arguements in the
          * flatten case. This is to make sure child values override parent values
          * with replace but parent values are appended to the end of merged values
          */
-        $arrayFunc = $flatten
-            ? function ($a, $b) { return array_replace($b, $a); }
-            : 'array_merge';
+        $arrayFunc = !$flatten
+            ? 'array_merge'
+            : function ($a, $b) {
+                return array_replace($b, $a);
+            };
 
-        $deepFunc = $flatten
-            ? function ($a, $b) { return array_replace_recursive($b, $a); }
-            : 'array_merge_recursive';
+        $deepFunc = !$flatten
+            ? 'array_merge_recursive'
+            : function ($a, $b) {
+                return array_replace_recursive($b, $a);
+            };
 
         $merged = [];
         while (!empty($currentTheme)) {
