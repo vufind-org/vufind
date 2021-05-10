@@ -58,7 +58,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $test = new MultiBackend(
             new \VuFind\Config\PluginManager($container),
             $this->getMockILSAuthenticator(),
-            $this->getMockSM()
+            $this->getMockSM($this->never())
         );
         $test->init();
     }
@@ -186,8 +186,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $returnDriver = $this->callMethod($driver, 'getDriver', ['testing2']);
         $this->assertEquals($ILS, $returnDriver);
 
-        $returnDriver
-            = $this->callMethod($driver, 'getDriver', ['nonexistent']);
+        $returnDriver = $this->callMethod($driver, 'getDriver', ['nonexistent']);
         $this->assertNull($returnDriver);
     }
 
@@ -437,7 +436,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 )
             );
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
@@ -468,7 +467,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->with('123456')
             ->will($this->returnValue($driverReturn));
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
@@ -560,7 +559,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 )
             );
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
@@ -582,48 +581,79 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetStatuses()
     {
-        $ILS = $this->getMockILS('Voyager', ['init', 'getStatus']);
-        $ILS->expects($this->exactly(4))
-            ->method('getStatus')
+        $ils1 = $this->getMockILS('Voyager', ['init', 'getStatuses']);
+        $ils1->expects($this->exactly(1))
+            ->method('getStatuses')
             ->with(
-                $this->logicalOr(
-                    $this->equalTo('123456'),
-                    $this->equalTo('654321'),
-                    $this->equalTo('567890'),
-                    $this->equalTo('098765')
-                )
+                $this->equalTo(['123456', '098765'])
             )
             ->will(
+                $this->returnValue(
+                    [
+                        [
+                            'id' => '123456',
+                            'status' => 'in'
+                        ],
+                        [
+                            'id' => '098765',
+                            'status' => 'out'
+                        ],
+                    ]
+
+                )
+            );
+
+        $ils2 = $this->getMockILS('Unicorn', ['init', 'setConfig', 'getStatuses']);
+        $ils2->expects($this->exactly(1))
+            ->method('getStatuses')
+            ->with(
+                $this->equalTo(['654321', '567890'])
+            )
+            ->will(
+                $this->returnValue(
+                    [
+                        [
+                            'id' => '654321',
+                            'status' => 'out'
+                        ],
+                        [
+                            'id' => '567890',
+                            'status' => 'in'
+                        ],
+                    ]
+
+                )
+            );
+
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
+            ->disableOriginalConstructor()->getMock();
+        $sm->expects($this->exactly(2))
+            ->method('get')
+            ->with(
+                $this->logicalOr('Voyager', 'Unicorn')
+            )->will(
                 $this->returnCallback(
-                    function ($param) {
-                        $r_arr = ['id' => $param];
-                        if ($param == '123456') {
-                            $r_arr['status'] = 'in';
-                        } elseif ($param == '654321') {
-                            $r_arr['status'] = 'out';
-                        } elseif ($param == '567890') {
-                            $r_arr['status'] = 'in';
-                        } else {
-                            $r_arr['status'] = 'out';
-                        }
-                        return $r_arr;
+                    function ($driver) use ($ils1, $ils2) {
+                        return 'Voyager' === $driver ? $ils1 : $ils2;
                     }
                 )
             );
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
-        $drivers = ['d1' => 'Voyager'];
+        $drivers = [
+            'd1' => 'Voyager',
+            'd2' => 'Unicorn',
+        ];
         $this->setProperty($driver, 'drivers', $drivers);
 
         $ids = [
-            'd1.123456', 'd1.098765', 'd1.654321', 'd1.567890'
+            'd1.123456', 'd1.098765', 'd2.654321', 'd2.567890'
         ];
         $expectedReturn = [
             ['id' => "d1.123456", 'status' => 'in'],
             ['id' => "d1.098765", 'status' => 'out'],
-            ['id' => "d1.654321", 'status' => 'out'],
-            ['id' => "d1.567890", 'status' => 'in']
+            ['id' => "d2.654321", 'status' => 'out'],
+            ['id' => "d2.567890", 'status' => 'in']
         ];
         $return = $driver->getStatuses($ids);
         $this->assertEquals($expectedReturn, $return);
@@ -659,7 +689,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $ILS = $this->getMockILS('Voyager', ['getMyTransactions', 'init']);
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
         $drivers = [
             'otherinst' => 'Unicorn',
@@ -691,7 +721,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->with($patron)
             ->will($this->returnValue(true));
 
-        $sm = $this->getMockSM($this->any(), 'Unicorn', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Unicorn', $ILS);
         $driver = $this->getDriver($sm);
         $this->setProperty($driver, 'drivers', $drivers);
 
@@ -718,7 +748,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('1'), $this->equalTo('10'), $this->equalTo('5'), $this->equalTo('0'))
             ->will($this->returnValue($return));
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
@@ -842,7 +872,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('course'), $this->equalTo('inst'), $this->equalTo('dept'))
             ->will($this->returnValue($reservesReturn));
 
-        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->getDriver($sm);
         $drivers = ['d1' => 'Voyager'];
         $this->setProperty($driver, 'drivers', $drivers);
@@ -2272,9 +2302,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             [$voyager->expects($times1)->method($function), 'with'], $params
         )->will($this->returnValue($return1));
 
-        $demo = $this->getMockILS('Demo', ['init', $function]);
+        $voyager2 = $this->getMockILS('Voyager2', ['init', $function]);
         call_user_func_array(
-            [$demo->expects($times2)->method($function), 'with'], $params
+            [$voyager2->expects($times2)->method($function), 'with'], $params
         )->will($this->returnValue($return2));
 
         $dummyILS = new DummyILS();
@@ -2283,14 +2313,14 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $sm->expects($this->any())
             ->method('get')
-            ->with($this->logicalOr('Voyager', 'Demo', 'DummyILS'))
+            ->with($this->logicalOr('Voyager', 'Voyager2', 'DummyILS'))
             ->will(
                 $this->returnCallback(
-                    function ($param) use ($voyager, $demo, $dummyILS) {
+                    function ($param) use ($voyager, $voyager2, $dummyILS) {
                         if ($param == 'Voyager') {
                             return $voyager;
-                        } elseif ($param == 'Demo') {
-                            return $demo;
+                        } elseif ($param == 'Voyager2') {
+                            return $voyager2;
                         } elseif ($param == 'DummyILS') {
                             return $dummyILS;
                         }
@@ -2299,7 +2329,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 )
             );
         $driver = $this->getDriver($sm);
-        $drivers = ['d1' => 'Voyager', 'd2' => 'Demo', 'd3' => 'DummyILS'];
+        $drivers = ['d1' => 'Voyager', 'd2' => 'Voyager2', 'd3' => 'DummyILS'];
         $this->setProperty($driver, 'drivers', $drivers);
 
         return $driver;
@@ -2429,7 +2459,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getTolerantMockBuilder(__NAMESPACE__ . '\DemoMock', $methods)
+        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock', $methods)
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2439,35 +2469,6 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                     }
                 ]
             )->getMock();
-    }
-
-    /**
-     * Create a mock builder that is tolerant of a mix of defined and undefined
-     * methods within the mock.
-     *
-     * @param string $class   Class to mock
-     * @param array  $methods Methods to stub
-     *
-     * @return object
-     */
-    protected function getTolerantMockBuilder($class, $methods)
-    {
-        $onlyMethods = $addMethods = [];
-        foreach ($methods ?? [] as $method) {
-            if (method_exists($class, $method)) {
-                $onlyMethods[] = $method;
-            } else {
-                $addMethods[] = $method;
-            }
-        }
-        $builder = $this->getMockBuilder($class);
-        if (!empty($addMethods)) {
-            $builder->addMethods($addMethods);
-        }
-        if (!empty($onlyMethods)) {
-            $builder->onlyMethods($onlyMethods);
-        }
-        return $builder;
     }
 
     /**
@@ -2481,30 +2482,24 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     protected function getMockILS($type, $methods = null)
     {
         $mock = null;
-        try {
-            if ($type == 'Demo') {
-                $mock = $this->getMockDemoDriver($methods);
-            } else {
-                $class = __NAMESPACE__ . '\\' . $type . 'Mock';
-                $mock = $this->getTolerantMockBuilder($class, $methods)
-                    ->setConstructorArgs([new \VuFind\Date\Converter()])
-                    ->getMock();
-            }
-        } catch (\Exception $e) {
-            $class = __NAMESPACE__ . '\\' . $type . 'Mock';
-            $mock = $this->getTolerantMockBuilder($class, $methods)->getMock();
-        }
-        if ($methods && in_array('init', $methods)) {
-            $mock->expects($this->any())
-                ->method('init')
-                ->will($this->returnValue(null));
-        }
         if ($methods && in_array('supportsMethod', $methods)) {
             $mock = $this
                 ->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'NoSupportMock')
                 ->onlyMethods($methods)
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
+        } elseif ($type == 'Demo') {
+            $mock = $this->getMockDemoDriver($methods);
+        } else {
+            $class = __NAMESPACE__ . '\\' . $type . 'Mock';
+            $mock = $this->getMockBuilder($class)
+                ->setConstructorArgs([new \VuFind\Date\Converter()])
+                ->getMock();
+        }
+        if ($methods && in_array('init', $methods)) {
+            $mock->expects($this->any())
+                ->method('init')
+                ->will($this->returnValue(null));
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
@@ -2707,6 +2702,10 @@ class DemoMock extends \VuFind\ILS\Driver\Demo
     use ILSMockTrait;
 }
 class VoyagerMock extends \VuFind\ILS\Driver\Voyager
+{
+    use ILSMockTrait;
+}
+class Voyager2Mock extends \VuFind\ILS\Driver\Voyager
 {
     use ILSMockTrait;
 }
