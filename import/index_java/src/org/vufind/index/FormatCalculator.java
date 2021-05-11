@@ -72,7 +72,7 @@ public class FormatCalculator
             case 'g':   // Projected medium
             case 'j':   // Musical sound recording
             case 'k':   // 2-D nonprojectable graphic
-            case 'r':   // 3-D artifact or naturally occuring object
+            case 'r':   // 3-D artifact or naturally occurring object
                 // None of these things are books:
                 return true;
         }
