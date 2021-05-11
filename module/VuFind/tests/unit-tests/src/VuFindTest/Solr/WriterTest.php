@@ -68,9 +68,37 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $bm = $this->getBackendManagerWithMockSolr();
         $commit = new \VuFindSearch\Backend\Solr\Document\CommitDocument();
         $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')->with($this->equalTo($commit));
+        $connector->expects($this->once())->method('write')
+            ->with(
+                $this->equalTo($commit),
+                $this->equalTo('xml'),
+                $this->equalTo('update'),
+                $this->equalTo(null)
+            );
         $writer = new Writer($bm, $this->getMockChangeTracker());
         $writer->save('Solr', $commit);
+    }
+
+    /**
+     * Test save with non-default parameters
+     *
+     * @return void
+     */
+    public function testSaveWithNonDefaults()
+    {
+        $bm = $this->getBackendManagerWithMockSolr();
+        $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument('a,b,c');
+        $params = new \VuFindSearch\ParamBag(['foo' => 'bar']);
+        $connector = $bm->get('Solr')->getConnector();
+        $connector->expects($this->once())->method('write')
+            ->with(
+                $this->equalTo($csv),
+                $this->equalTo('csv'),
+                $this->equalTo('customUpdateHandler'),
+                $this->equalTo($params)
+            );
+        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer->save('Solr', $csv, 'csv', 'customUpdateHandler', $params);
     }
 
     /**

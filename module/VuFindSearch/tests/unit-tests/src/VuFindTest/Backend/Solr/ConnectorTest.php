@@ -141,6 +141,35 @@ class ConnectorTest extends TestCase
     }
 
     /**
+     * Test writing a CSV document.
+     *
+     * @return void
+     */
+    public function testWriteCSV()
+    {
+        $csvData = 'a,b,c';
+        $map = new HandlerMap();
+        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setEncType', 'setRawBody'])
+            ->getMock();
+        $client->expects($this->once())->method('setEncType')
+            ->with($this->equalTo('text/csv'));
+        $client->expects($this->once())->method('setRawBody')
+            ->with($this->equalTo($csvData));
+        $conn = $this->getMockBuilder(Connector::class)
+            ->onlyMethods(['createClient', 'send'])
+            ->setConstructorArgs(['http://foo', $map])
+            ->getMock();
+        $conn->expects($this->once())->method('createClient')
+            ->will($this->returnValue($client));
+        $conn->expects($this->once())->method('send')
+            ->with($this->equalTo($client));
+        $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument($csvData);
+        $conn->write($csv, 'csv');
+    }
+
+    /**
      * Test caching.
      *
      * @return void
