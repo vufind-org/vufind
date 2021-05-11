@@ -42,11 +42,12 @@
         </div>
     <?php endif; ?>
 
+    <ul class="record-list">
     <?php $iteration = 0; ?>
     <?php foreach ($this->recordList as $resource): ?>
       <?php $iteration++; ?>
       <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
+      <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
         <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
           <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
           <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
@@ -176,8 +177,9 @@
           <?php endif ?>
         </div>
         <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
-      </div>
+      </li>
     <?php endforeach; ?>
+    </ul>
     <?php if ($this->cancelForm): ?></form><?php endif; ?>
   <?php else: ?>
     <?=$this->transEsc('You do not have any holds or recalls placed') ?>.

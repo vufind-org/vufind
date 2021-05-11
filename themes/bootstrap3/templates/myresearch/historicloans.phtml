@@ -39,9 +39,10 @@
       <?php endif; ?>
     </nav>
 
+    <ul class="record-list">
     <?php $i = 0; foreach ($this->transactions as $resource): ?>
       <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
+      <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
         <?php
           $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLink()->getUrl($resource));
           $cover = $coverDetails['html'];
@@ -122,8 +123,9 @@
           <?php endif ?>
         </div>
         <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
-      </div>
+      </li>
     <?php endforeach; ?>
+    </ul>
     <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params]) : ''?>
   <?php else: ?>
     <?=$this->transEsc('loan_history_empty')?>

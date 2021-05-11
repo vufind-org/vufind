@@ -3,6 +3,13 @@ $thumbnail-width-small:   60px;
 $thumbnail-width-medium: 100px;
 $thumbnail-width-large:  160px;
 
+// record result list ol, ul that contains li.result
+.record-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 // Hide these on mobile
 @media (max-width: 767px) {
   #datevispublishDatexWrapper,
