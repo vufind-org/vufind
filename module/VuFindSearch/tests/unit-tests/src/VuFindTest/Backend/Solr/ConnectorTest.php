@@ -170,6 +170,35 @@ class ConnectorTest extends TestCase
     }
 
     /**
+     * Test writing a JSON document.
+     *
+     * @return void
+     */
+    public function testWriteJSON()
+    {
+        $jsonData = '[1,2,3]';
+        $map = new HandlerMap();
+        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setEncType', 'setRawBody'])
+            ->getMock();
+        $client->expects($this->once())->method('setEncType')
+            ->with($this->equalTo('application/json'));
+        $client->expects($this->once())->method('setRawBody')
+            ->with($this->equalTo($jsonData));
+        $conn = $this->getMockBuilder(Connector::class)
+            ->onlyMethods(['createClient', 'send'])
+            ->setConstructorArgs(['http://foo', $map])
+            ->getMock();
+        $conn->expects($this->once())->method('createClient')
+            ->will($this->returnValue($client));
+        $conn->expects($this->once())->method('send')
+            ->with($this->equalTo($client));
+        $json = new \VuFindSearch\Backend\Solr\Document\RawJSONDocument($jsonData);
+        $conn->write($json, 'json');
+    }
+
+    /**
      * Test caching.
      *
      * @return void
