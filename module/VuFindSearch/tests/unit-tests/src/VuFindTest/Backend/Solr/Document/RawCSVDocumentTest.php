@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Unit tests for SOLR raw XML document class.
+ * Unit tests for SOLR raw CSV document class.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -30,41 +30,28 @@ namespace VuFindTest\Backend\Solr\Document;
 
 use PHPUnit\Framework\TestCase;
 
-use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
+use VuFindSearch\Backend\Solr\Document\RawCSVDocument;
 
 /**
- * Unit tests for SOLR raw XML document class.
+ * Unit tests for SOLR raw CSV document class.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawXMLDocumentTest extends TestCase
+class RawCSVDocumentTest extends TestCase
 {
     /**
-     * Test creation of XML document.
-     *
-     * @return void
-     */
-    public function testAsXML()
-    {
-        $document = new RawXMLDocument('<empty />');
-        $this->assertXmlStringEqualsXmlString('<empty />', $document->asXML());
-    }
-
-    /**
-     * Confirm that CSV is unsupported.
+     * Test creation of CSV document.
      *
      * @return void
      */
     public function testAsCSV()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('CSV not supported');
-        $document = new RawXMLDocument('<empty />');
-        $document->asCSV();
+        $document = new RawCSVDocument('a,b,c');
+        $this->assertEquals('a,b,c', $document->asCSV());
     }
 
     /**
@@ -76,7 +63,20 @@ class RawXMLDocumentTest extends TestCase
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('JSON not supported');
-        $document = new RawXMLDocument('<empty />');
+        $document = new RawCSVDocument('a,b,c');
         $document->asJSON();
+    }
+
+    /**
+     * Confirm that XML is unsupported.
+     *
+     * @return void
+     */
+    public function testAsXML()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('XML not supported');
+        $document = new RawCSVDocument('a,b,c');
+        $document->asXML();
     }
 }

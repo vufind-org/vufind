@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Unit tests for SOLR raw XML document class.
+ * Unit tests for SOLR raw JSON document class.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -30,28 +30,28 @@ namespace VuFindTest\Backend\Solr\Document;
 
 use PHPUnit\Framework\TestCase;
 
-use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
+use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 /**
- * Unit tests for SOLR raw XML document class.
+ * Unit tests for SOLR raw JSON document class.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawXMLDocumentTest extends TestCase
+class RawJSONDocumentTest extends TestCase
 {
     /**
-     * Test creation of XML document.
+     * Test creation of JSON document.
      *
      * @return void
      */
-    public function testAsXML()
+    public function testAsJSON()
     {
-        $document = new RawXMLDocument('<empty />');
-        $this->assertXmlStringEqualsXmlString('<empty />', $document->asXML());
+        $document = new RawJSONDocument('{}');
+        $this->assertEquals('{}', $document->asJSON());
     }
 
     /**
@@ -63,20 +63,20 @@ class RawXMLDocumentTest extends TestCase
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('CSV not supported');
-        $document = new RawXMLDocument('<empty />');
+        $document = new RawJSONDocument('{}');
         $document->asCSV();
     }
 
     /**
-     * Confirm that JSON is unsupported.
+     * Confirm that XML is unsupported.
      *
      * @return void
      */
-    public function testAsJSON()
+    public function testAsXML()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('JSON not supported');
-        $document = new RawXMLDocument('<empty />');
-        $document->asJSON();
+        $this->expectExceptionMessage('XML not supported');
+        $document = new RawJSONDocument('{}');
+        $document->asXML();
     }
 }
