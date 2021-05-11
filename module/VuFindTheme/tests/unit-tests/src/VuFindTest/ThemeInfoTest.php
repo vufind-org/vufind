@@ -234,11 +234,11 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // Child with parents merged in
         $ti->setTheme('child');
         $childJS = $ti->getMergedConfig('js');
-        $this->assertEquals(['extra.js', 'hello.js'], $childJS);
+        $this->assertEquals(['hello.js', 'extra.js'], $childJS);
         // recursive
         $childHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
-            ['fooOverrideFactory', 'fooFactory'],
+            ['fooFactory', 'fooOverrideFactory'],
             $childHelpers['factories']['foo']
         );
 

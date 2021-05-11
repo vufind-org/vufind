@@ -214,27 +214,23 @@ class ThemeInfo
          */
         $arrayFunc = !$flatten
             ? 'array_merge'
-            : function ($a, $b) {
-                return array_replace($b, $a);
-            };
+            : 'array_replace';
 
         $deepFunc = !$flatten
             ? 'array_merge_recursive'
-            : function ($a, $b) {
-                return array_replace_recursive($b, $a);
-            };
+            : 'array_replace_recursive';
 
         $merged = [];
         while (!empty($currentTheme)) {
             $currentThemeSet = $arrayFunc(
-                (array)$currentTheme,
                 $allThemeInfo[$currentTheme]['mixins'] ?? [],
+                (array)$currentTheme,
             );
             foreach ($currentThemeSet as $theme) {
                 if (isset($allThemeInfo[$theme][$key])) {
                     $merged = $deepFunc(
-                        $merged,
                         $allThemeInfo[$theme][$key],
+                        $merged,
                     );
                 }
             }
