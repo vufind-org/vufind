@@ -102,10 +102,4 @@
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/cooperations_institutions?lng=de" />
         <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/cooperations_institutions?lng=en" />
     </url>
-    <url>
-        <loc>https://relbib.de/Content/links</loc>
-        <changefreq>monthly</changefreq>
-        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/links?lng=de" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/links?lng=en" />
-    </url>
 </urlset>
