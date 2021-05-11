@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SOLR delete document class.
+ * SOLR "raw CSV" document class for submitting bulk data.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,7 @@
 namespace VuFindSearch\Backend\Solr\Document;
 
 /**
- * SOLR delete document class.
+ * SOLR "raw CSV" document class for submitting bulk data.
  *
  * @category VuFind
  * @package  Search
@@ -37,8 +37,27 @@ namespace VuFindSearch\Backend\Solr\Document;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-abstract class AbstractDocument
+class RawCSVDocument extends AbstractDocument
 {
+    /**
+     * Raw CSV
+     *
+     * @var string
+     */
+    protected $csv;
+
+    /**
+     * Constructor.
+     *
+     * @param string $csv CSV document to pass to Solr
+     *
+     * @return void
+     */
+    public function __construct($csv)
+    {
+        $this->csv = $csv;
+    }
+
     /**
      * Return CSV representation.
      *
@@ -46,7 +65,7 @@ abstract class AbstractDocument
      */
     public function asCSV()
     {
-        throw new \Exception('CSV not supported here.');
+        return $this->csv;
     }
 
     /**
@@ -54,12 +73,18 @@ abstract class AbstractDocument
      *
      * @return string
      */
-    abstract public function asJSON();
+    public function asJSON()
+    {
+        throw new \Exception('JSON not supported here.');
+    }
 
     /**
      * Return serialized XML representation.
      *
      * @return string
      */
-    abstract public function asXML();
+    public function asXML()
+    {
+        throw new \Exception('XML not supported here.');
+    }
 }

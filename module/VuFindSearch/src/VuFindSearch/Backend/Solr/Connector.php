@@ -245,7 +245,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Write to the SOLR index.
      *
      * @param AbstractDocument $document Document to write
-     * @param string           $format   Serialization format, either 'json' or 'xml'
+     * @param string           $format   Serialization format: 'csv', 'json' or 'xml'
      * @param string           $handler  Update handler
      * @param ParamBag         $params   Update handler parameters
      *
@@ -268,6 +268,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             case 'json':
                 $client->setEncType('application/json');
                 $body = $document->asJSON();
+                break;
+            case 'csv':
+                $client->setEncType('text/csv');
+                $body = $document->asCSV();
                 break;
             default:
                 throw new InvalidArgumentException(
