@@ -1,0 +1,23 @@
+/**
+ * Basic alignment styling for icons
+ * generated through the Icon view helper.
+ */
+
+.icon--font::before {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.icon--img {
+    display: inline-block;
+    max-width: 1.25em;
+    text-align: center;
+    vertical-align: text-bottom;
+}
+
+.icon--svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentColor;
+    vertical-align: text-bottom;
+}
