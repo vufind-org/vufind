@@ -95,6 +95,7 @@ class Icon extends AbstractHelper
         // Find set in theme.config.php
         $setConfig = $this->config['sets'][$set] ?? [];
         $template = $setConfig['template'] ?? $set;
+        $prefix = $setConfig['prefix'] ?? '';
 
         // Compile attitional HTML attributes
         $attrs = '';
@@ -106,7 +107,10 @@ class Icon extends AbstractHelper
         // Surface set config and add icon and attrs
         return $this->getView()->render(
             'Helpers/icons/' . $template,
-            array_merge($setConfig, ['icon' => $escAttr($icon), 'attrs' => $attrs])
+            array_merge(
+                $setConfig,
+                ['icon' => $escAttr($prefix . $icon), 'attrs' => $attrs]
+            )
         );
     }
 }

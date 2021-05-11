@@ -71,9 +71,8 @@ return [
              * All sets need:
              * - 'template': which template the icon renders with
              * - 'src': the location of the relevant resource (font, css, images)
-             *
-             * Some templates need additional information:
-             * - font: prefix (ie. fa fa- for FontAwesome)
+             * - 'prefix': prefix to place before each icon name for convenience
+             *             (ie. fa fa- for FontAwesome, default "")
              */
             'FontAwesome' => [
                 'template' => 'font',
@@ -82,6 +81,7 @@ return [
             ],
             'Remix' => [
                 'template' => 'svg-sprite',
+                'prefix' => 'ri-',
                 'src' => 'remixicon.symbol.svg',
             ],
         ],
@@ -93,9 +93,10 @@ return [
              *
              * Icons assigned without set will use the defaultSet (above)
              */
-            'favorites' => 'Remix:ri-star-fill',
+            'favorites' => 'Remix:star-fill',
             'my-account' => 'user-circle',
-            'search' => 'Remix:ri-search-line',
+            'search' => 'Remix:search-line',
+            'sign-out' => 'door-close',
         ]
     ]
 ];
