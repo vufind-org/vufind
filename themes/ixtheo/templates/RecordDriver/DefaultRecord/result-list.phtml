@@ -165,9 +165,15 @@
         </span>
       <?php endif; ?>
 
-      <?php $bible_ranges_string = $this->driver->tryMethod('getBibleRangesString');
-        if (!empty($bible_ranges_string)) {
-          echo '<div>' . $this->transEsc($bible_ranges_string) . '</div>';
+      <?php $bibleRangesString = $this->driver->tryMethod('getBibleRangesString');
+        if (!empty($bibleRangesString)) {
+          echo '<div>' . $this->transEsc($bibleRangesString) . '</div>';
+        }
+      ?>
+
+      <?php $canonLawRangesString = $this->driver->tryMethod('getCanonLawRangesString');
+        if (!empty($canonLawRangesString)) {
+          echo '<div>' . $this->transEsc($canonLawRangesString) . '</div>';
         }
       ?>
 
