@@ -337,7 +337,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $codes_as_string . self::DecodeChapterVerse($code1, $separator) . "–" . self::DecodeChapterVerse($code2, $separator);
     }
 
-    private static function CanonLawRangePartToArray($canonLawRangePart)
+    private static function CanonLawRangePartToArray($canonLawRangePart): array
     {
         // see also: https://github.com/ubtue/tuefind/wiki/Codices
         if (strlen($canonLawRangePart) != 9)
@@ -361,7 +361,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         ];
     }
 
-    private static function CanonLawRangeToDisplayString($canonLawRange)
+    private static function CanonLawRangeToDisplayString($canonLawRange): string
     {
         list ($canonLawRangeStart, $canonLawRangeEnd) = explode('_', $canonLawRange);
         $canonLawRangeStart = self::CanonLawRangePartToArray($canonLawRangeStart);
