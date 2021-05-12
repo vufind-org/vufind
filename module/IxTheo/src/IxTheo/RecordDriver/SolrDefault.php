@@ -281,6 +281,11 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         85 => "",
     );
 
+    private static $CodesToCodexTitles = [  1 => 'CIC1917',
+                                            2 => 'CIC1983',
+                                            3 => 'CCEO',
+    ];
+
     private static function DecodeBookCode($book_code, $separator)
     {
         $book_code_as_string = self::$codes_to_book_abbrevs[self::GetBookCode($book_code)];
@@ -344,12 +349,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             throw new \Exception('Invalid canon law range part: ' . $canonLawRangePart);
 
         $codexId = $canonLawRangePart[0];
-        $codexTitles = [1 => 'CIC1917',
-                        2 => 'CIC1983',
-                        3 => 'CCEO',
-        ];
-
-        $codexTitle = $codexTitles[$codexId] ?? null;
+        $codexTitle = self::$CodesToCodexTitles[$codexId] ?? null;
         if ($codexTitle === null)
             throw new \Exception('Invalid codex id: ' . $codexId);
 
