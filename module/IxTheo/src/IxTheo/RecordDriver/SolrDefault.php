@@ -373,14 +373,14 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
             return $displayString;
         $displayString .= ' ' . $canonLawRangeStart['canon'];
 
-        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != '00')
+        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0)
             $displayString .= $canonLawRangeStart['pars1'] . ',' . $canonLawRangeStart['pars2'];
 
-        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != '9999') {
+        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
             $displayString .= '-';
             if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'])
                 $displayString .= $canonLawRangeEnd['canon'];
-            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != '9999')
+            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999)
                 $displayString .= $canonLawRangeEnd['pars1'] . ',' . $canonLawRangeEnd['pars2'];
         }
 
