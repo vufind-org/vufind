@@ -410,7 +410,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     {
         $canonLawRanges = $this->fields['canon_law_ranges'] ?? null;
         if ($canonLawRanges === null)
-            return '';
+            return [];
 
         $canonLawRanges = explode(',', $canonLawRanges);
         $canonLawRangesStrings = [];
