@@ -75,14 +75,14 @@ class Icon extends AbstractHelper
     }
 
     /**
-     * Returns inline HTML for icon
+     * Map icon to set. Add prefix, return with set and template
+     * Broken out for easier customization
      *
-     * @param string $name  Which icon?
-     * @param array  $extra Just extra HTML attributes for now
+     * @param string $name Which icon?
      *
-     * @return string
+     * @return array
      */
-    public function __invoke($name, $extra = [])
+    protected function mapIcon(string $name): array
     {
         $icon = $this->iconMap[$name] ?? $name;
         $set = $this->defaultSet;
@@ -97,6 +97,39 @@ class Icon extends AbstractHelper
         $template = $setConfig['template'] ?? $set;
         $prefix = $setConfig['prefix'] ?? '';
 
+        return [$prefix . $icon, $set, $template];
+    }
+
+    /**
+     * Reduce extra parameters to one attribute string
+     * Broken out for easier customization
+     *
+     * @param array $extra Just extra HTML attributes for now
+     *
+     * @return string
+     */
+    protected function compileAttrs(array $extra): string
+    {
+        $attrs = '';
+        $escAttr = $this->getView()->plugin('escapeHtmlAttr');
+        foreach ($extra as $key => $val) {
+            $attrs .= ' ' . $key . '="' . $escAttr($val) . '"';
+        }
+        return $attrs;
+    }
+
+    /**
+     * Returns inline HTML for icon
+     *
+     * @param string $name  Which icon?
+     * @param array  $extra Just extra HTML attributes for now
+     *
+     * @return string
+     */
+    public function __invoke(string $name, $extra = []): string
+    {
+        [$icon, $set, $template] = $this->mapIcon($name);
+
         // Compile attitional HTML attributes
         $attrs = '';
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
@@ -108,8 +141,8 @@ class Icon extends AbstractHelper
         return $this->getView()->render(
             'Helpers/icons/' . $template,
             array_merge(
-                $setConfig,
-                ['icon' => $escAttr($prefix . $icon), 'attrs' => $attrs]
+                $this->config['sets'][$set] ?? [],
+                ['icon' => $escAttr($icon), 'attrs' => $attrs]
             )
         );
     }
