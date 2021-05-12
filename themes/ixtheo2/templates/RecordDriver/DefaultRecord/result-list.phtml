@@ -238,8 +238,8 @@
         }
       ?>
 
-      <?php $canonLawRangesString = $this->driver->tryMethod('getCanonLawRangesString');
-        if (!empty($canonLawRangesString)) {
+      <?php $canonLawRangesStrings = $this->driver->tryMethod('getCanonLawRangesStrings');
+        foreach ($canonLawRangesStrings as $canonLawRangesString) {
           echo '<div>' . $this->transEsc($canonLawRangesString) . '</div>';
         }
       ?>

@@ -357,7 +357,7 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
                 'codexTitle' => $codexTitle,
                 'canon' => intval(substr($canonLawRangePart, 1, 4)),
                 'pars1' => intval(substr($canonLawRangePart, 5, 2)),
-                'pars2' => intval(substr($canonLawRangePart, 7, 2))
+                'pars2' => intval(substr($canonLawRangePart, 7, 2)),
         ];
     }
 
@@ -367,8 +367,13 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         $canonLawRangeStart = self::CanonLawRangePartToArray($canonLawRangeStart);
         $canonLawRangeEnd = self::CanonLawRangePartToArray($canonLawRangeEnd);
 
-        $displayString = $canonLawRangeStart['codexTitle'] . ' ' . $canonLawRangeStart['canon'];
-        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != '0000')
+        $displayString = $canonLawRangeStart['codexTitle'];
+
+        if ($canonLawRangeStart['canon'] == 0 && $canonLawRangeEnd['canon'] == 9999)
+            return $displayString;
+        $displayString .= ' ' . $canonLawRangeStart['canon'];
+
+        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != '00')
             $displayString .= $canonLawRangeStart['pars1'] . ',' . $canonLawRangeStart['pars2'];
 
         if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != '9999') {
@@ -401,13 +406,19 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $this->fields['bundle_id'] ?? [];
     }
 
-    public function getCanonLawRangesString()
+    public function getCanonLawRangesStrings(): array
     {
-        $canonLawRange = $this->fields['canon_law_ranges'] ?? null;
-        if ($canonLawRange === null)
+        $canonLawRanges = $this->fields['canon_law_ranges'] ?? null;
+        if ($canonLawRanges === null)
             return '';
 
-        return self::CanonLawRangeToDisplayString($canonLawRange);
+        $canonLawRanges = explode(',', $canonLawRanges);
+        $canonLawRangesStrings = [];
+        foreach ($canonLawRanges as $canonLawRange) {
+            $canonLawRangesStrings[] = self::CanonLawRangeToDisplayString($canonLawRange);
+        }
+        sort($canonLawRangesStrings);
+        return $canonLawRangesStrings;
     }
 
     public function getKeyWordChainBag()
