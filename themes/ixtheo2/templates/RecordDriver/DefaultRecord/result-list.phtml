@@ -232,9 +232,21 @@
         </span>
       <?php endif; ?>
 
-      <?php $bible_ranges_string = $this->driver->getBibleRangesString();
-        if (!empty($bible_ranges_string)) {
-          echo '<div>' . $this->transEsc($bible_ranges_string) . '</div>';
+      <?php $bibleRangesString = $this->driver->tryMethod('getBibleRangesString');
+        if (!empty($bibleRangesString)) {
+          echo '<div>' . $this->transEsc($bibleRangesString) . '</div>';
+        }
+      ?>
+
+      <?php $canonLawRangesStrings = $this->driver->tryMethod('getCanonLawRangesStrings');
+        foreach ($canonLawRangesStrings as $canonLawRangesString) {
+          echo '<div>' . $this->transEsc($canonLawRangesString) . '</div>';
+        }
+      ?>
+
+      <?php $timeRangesString = $this->driver->tryMethod('getTimeRangesString');
+        if (!empty($timeRangesString)) {
+          echo '<div>' . $this->transEsc($timeRangesString) . '</div>';
         }
       ?>
 
