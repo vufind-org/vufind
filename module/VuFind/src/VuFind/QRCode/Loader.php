@@ -134,7 +134,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @param string $level Error correction level parameter
      *
-     * @return string
+     * @return ErrorCorrectionLevelInterface
      */
     protected function mapErrorLevel($level): ErrorCorrectionLevelInterface
     {
