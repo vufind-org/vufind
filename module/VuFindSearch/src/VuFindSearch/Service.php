@@ -35,12 +35,12 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Backend\QueryHelperInterface;
 use VuFindSearch\Feature\GetIdsInterface;
-use VuFindSearch\Feature\GetQueryHelperInterface;
+use VuFindSearch\Feature\QueryAnalysisInterface;
 use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -399,29 +399,30 @@ class Service
     }
 
     /**
-     * Return backend query helper.
+     * Analyze query.
      *
-     * @param string        $backend Search backend identifier
-     * @param ParamBag|null $params  Search backend parameters
+     * @param string         $backend Search backend identifier
+     * @param QueryInterface $query   Query
+     * @param ParamBag|null  $params  Search backend parameters
      *
-     * @return QueryHelperInterface|null
+     * @return array
      */
-    public function getQueryHelper(string $backend, ParamBag $params = null)
+    public function analyzeQuery(string $backend, QueryInterface $query, ParamBag $params = null): array
     {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
-        $args = compact('backend', 'params', 'context');
+        $args = compact('backend', 'query', 'params', 'context');
         $backendInstance = $this->resolve($backend, $args);
         $args['backend_instance'] = $backendInstance;
 
         $this->triggerPre($backendInstance, $args);
         try {
-            if (!($backendInstance instanceof GetQueryHelperInterface)) {
+            if (!($backendInstance instanceof QueryAnalysisInterface)) {
                 throw new BackendException(
-                    "$backend does not support getQueryHelper()"
+                    "$backend does not support analyzeQuery()"
                 );
             }
-            $response = $backendInstance->getQueryHelper();
+            $response = $backendInstance->analyzeQuery($query, $params);
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;

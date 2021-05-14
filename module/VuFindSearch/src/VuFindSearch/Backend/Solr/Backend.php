@@ -32,11 +32,10 @@ use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
-use VuFindSearch\Backend\QueryHelperInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\GetIdsInterface;
-use VuFindSearch\Feature\GetQueryHelperInterface;
+use VuFindSearch\Feature\QueryAnalysisInterface;
 use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -45,7 +44,7 @@ use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Response\RecordCollectionInterface;
@@ -61,8 +60,10 @@ use VuFindSearch\Response\RecordCollectionInterface;
  */
 class Backend extends AbstractBackend
     implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface, WorkExpressionsInterface, GetQueryHelperInterface
+    GetIdsInterface, WorkExpressionsInterface, QueryAnalysisInterface
 {
+    use QueryTokenizerTrait;
+
     /**
      * Limit for records per query in a batch retrieval.
      *
@@ -391,6 +392,20 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Analyze query.
+     *
+     * @param QueryInterface $query Query object
+     *
+     * @return array
+     */
+    public function analyzeQuery(QueryInterface $query, ParamBag $params = null)
+    {
+        return [
+            'tokenized' => $this->tokenize($query->getAllTerms())
+        ];
+    }
+
+    /**
      * Set the query builder.
      *
      * @param QueryBuilder $queryBuilder Query builder
@@ -467,16 +482,6 @@ class Backend extends AbstractBackend
     public function getConnector()
     {
         return $this->connector;
-    }
-
-    /**
-     * Get query helper.
-     *
-     * @return QueryHelperInterface
-     */
-    public function getQueryHelper()
-    {
-        return $this->getQueryBuilder()->getQueryHelper();
     }
 
     /// Internal API

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Query helper interface definition.
+ * Query analysis interface definition.
  *
  * PHP version 7
  *
@@ -26,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend;
+namespace VuFindSearch\Feature;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
 
 /**
- * Query helper interface definition.
+ * Query analysis interface definition.
  *
  * @category VuFind
  * @package  Search
@@ -39,14 +40,14 @@ use VuFindSearch\Query\QueryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-interface QueryHelperInterface
+interface QueryAnalysisInterface
 {
     /**
-     * Get tokenized terms from all query strings within the object.
+     * Analyze query.
      *
      * @param QueryInterface $query Query object
      *
      * @return array
      */
-    public function getTokenizedTerms(QueryInterface $query);
+    public function analyzeQuery(QueryInterface $query, ParamBag $params = null);
 }
