@@ -401,7 +401,9 @@ class Backend extends AbstractBackend
     public function analyzeQuery(QueryInterface $query, ParamBag $params = null)
     {
         return [
-            'tokenized' => $this->tokenize($query->getAllTerms())
+            'tokenized' => $this->tokenize(
+                $this->getQueryBuilder()->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
+            )
         ];
     }
 
