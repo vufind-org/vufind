@@ -53,7 +53,10 @@ class DeleteDocumentTest extends TestCase
         $document = new DeleteDocument();
         $document->addKey('foobar');
         $document->addQuery('timestamp:[* TO NOW-12HOUR]');
-        $xml = $document->asXML();
+        $this->assertEquals(
+            'text/xml; charset=UTF-8', $document->getContentType()
+        );
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<delete><id>foobar</id><query>timestamp:[* TO NOW-12HOUR]</query></delete>',
             $xml
@@ -69,7 +72,7 @@ class DeleteDocumentTest extends TestCase
     {
         $document = new DeleteDocument();
         $document->addKeys(['foo', 'bar']);
-        $xml = $document->asXML();
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<delete><id>foo</id><id>bar</id></delete>',
             $xml

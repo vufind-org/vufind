@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Unit tests for SOLR update document class.
+ * Interface for Solr document classes
  *
  * PHP version 7
  *
@@ -26,14 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindTest\Backend\Solr\Document;
-
-use PHPUnit\Framework\TestCase;
-
-use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+namespace VuFindSearch\Backend\Solr\Document;
 
 /**
- * Unit tests for SOLR update document class.
+ * Interface for Solr document classes
  *
  * @category VuFind
  * @package  Search
@@ -41,28 +36,19 @@ use VuFindSearch\Backend\Solr\Document\UpdateDocument;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class UpdateDocumentTest extends TestCase
+interface DocumentInterface
 {
     /**
-     * Test creation of XML document.
+     * Return content MIME type.
      *
-     * @return void
+     * @return string
      */
-    public function testAsXML()
-    {
-        $record = $this->getMockForAbstractClass(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
-        $record->expects($this->once())
-            ->method('getFields')
-            ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));
-        $document = new UpdateDocument();
-        $document->addRecord($record, ['boost' => '2.0']);
-        $this->assertEquals(
-            'text/xml; charset=UTF-8', $document->getContentType()
-        );
-        $xml = $document->getContent();
-        $this->assertXmlStringEqualsXmlString(
-            '<add><doc boost="2.0"><field name="id">ID</field><field name="field">FIELD</field></doc></add>',
-            $xml
-        );
-    }
+    public function getContentType(): string;
+
+    /**
+     * Return serialized representation.
+     *
+     * @return string
+     */
+    public function getContent(): string;
 }

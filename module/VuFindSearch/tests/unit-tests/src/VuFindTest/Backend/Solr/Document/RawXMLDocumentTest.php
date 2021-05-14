@@ -48,35 +48,12 @@ class RawXMLDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsXML()
+    public function testBasicBehavior()
     {
         $document = new RawXMLDocument('<empty />');
-        $this->assertXmlStringEqualsXmlString('<empty />', $document->asXML());
-    }
-
-    /**
-     * Confirm that CSV is unsupported.
-     *
-     * @return void
-     */
-    public function testAsCSV()
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('CSV not supported');
-        $document = new RawXMLDocument('<empty />');
-        $document->asCSV();
-    }
-
-    /**
-     * Confirm that JSON is unsupported.
-     *
-     * @return void
-     */
-    public function testAsJSON()
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('JSON not supported');
-        $document = new RawXMLDocument('<empty />');
-        $document->asJSON();
+        $this->assertEquals(
+            'text/xml; charset=UTF-8', $document->getContentType()
+        );
+        $this->assertXmlStringEqualsXmlString('<empty />', $document->getContent());
     }
 }

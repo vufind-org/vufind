@@ -37,54 +37,16 @@ namespace VuFindSearch\Backend\Solr\Document;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawCSVDocument extends AbstractDocument
+class RawCSVDocument extends RawDocument
 {
-    /**
-     * Raw CSV
-     *
-     * @var string
-     */
-    protected $csv;
-
     /**
      * Constructor.
      *
-     * @param string $csv CSV document to pass to Solr
-     *
-     * @return void
+     * @param string  $content  Raw document text
+     * @param ?string $encoding Text encoding (null for unspecified)
      */
-    public function __construct($csv)
+    public function __construct(string $content, ?string $encoding = null)
     {
-        $this->csv = $csv;
-    }
-
-    /**
-     * Return CSV representation.
-     *
-     * @return string
-     */
-    public function asCSV()
-    {
-        return $this->csv;
-    }
-
-    /**
-     * Return serialized JSON representation.
-     *
-     * @return string
-     */
-    public function asJSON()
-    {
-        throw new \Exception('JSON not supported here.');
-    }
-
-    /**
-     * Return serialized XML representation.
-     *
-     * @return string
-     */
-    public function asXML()
-    {
-        throw new \Exception('XML not supported here.');
+        parent::__construct($content, 'text/csv', $encoding);
     }
 }

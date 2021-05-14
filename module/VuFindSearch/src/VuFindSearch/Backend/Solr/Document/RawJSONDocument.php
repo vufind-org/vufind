@@ -37,44 +37,16 @@ namespace VuFindSearch\Backend\Solr\Document;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawJSONDocument extends AbstractDocument
+class RawJSONDocument extends RawDocument
 {
-    /**
-     * Raw JSON
-     *
-     * @var string
-     */
-    protected $json;
-
     /**
      * Constructor.
      *
-     * @param string $json JSON document to pass to Solr
-     *
-     * @return void
+     * @param string  $content  Raw document text
+     * @param ?string $encoding Text encoding (null for unspecified)
      */
-    public function __construct($json)
+    public function __construct(string $content, ?string $encoding = null)
     {
-        $this->json = $json;
-    }
-
-    /**
-     * Return serialized JSON representation.
-     *
-     * @return string
-     */
-    public function asJSON()
-    {
-        return $this->json;
-    }
-
-    /**
-     * Return serialized XML representation.
-     *
-     * @return string
-     */
-    public function asXML()
-    {
-        throw new \Exception('XML not supported here.');
+        parent::__construct($content, 'application/json', $encoding);
     }
 }

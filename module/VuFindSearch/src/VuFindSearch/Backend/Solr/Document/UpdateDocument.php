@@ -41,14 +41,14 @@ use XMLWriter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class UpdateDocument extends AbstractDocument
+class UpdateDocument implements DocumentInterface
 {
     /**
      * Records and index attributes.
      *
      * @var SplObjectStorage
      */
-    protected $records;
+    protected SplObjectStorage $records;
 
     /**
      * Constructor.
@@ -61,21 +61,21 @@ class UpdateDocument extends AbstractDocument
     }
 
     /**
-     * Return serialized JSON representation.
+     * Return content MIME type.
      *
      * @return string
      */
-    public function asJSON()
+    public function getContentType(): string
     {
-        // @todo Implement
+        return 'text/xml; charset=UTF-8';
     }
 
     /**
-     * Return serialized XML representation.
+     * Return serialized representation.
      *
      * @return string
      */
-    public function asXML()
+    public function getContent(): string
     {
         $writer = new XMLWriter();
         $writer->openMemory();
@@ -113,7 +113,7 @@ class UpdateDocument extends AbstractDocument
      */
     public function addRecord(SerializableRecordInterface $record,
         array $indexAttr = []
-    ) {
+    ): void {
         $this->records->attach($record, $indexAttr);
     }
 }

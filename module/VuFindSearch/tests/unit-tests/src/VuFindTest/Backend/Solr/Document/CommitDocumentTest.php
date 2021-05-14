@@ -51,7 +51,10 @@ class CommitDocumentTest extends TestCase
     public function testAsXML()
     {
         $document = new CommitDocument('30000');
-        $xml = $document->asXML();
+        $this->assertEquals(
+            'text/xml; charset=UTF-8', $document->getContentType()
+        );
+        $xml = $document->getContent();
         $this->assertXmlStringEqualsXmlString(
             '<commit commitWithin="30000"/>',
             $xml

@@ -48,35 +48,12 @@ class RawJSONDocumentTest extends TestCase
      *
      * @return void
      */
-    public function testAsJSON()
+    public function testBasicBehavior()
     {
         $document = new RawJSONDocument('{}');
-        $this->assertEquals('{}', $document->asJSON());
-    }
-
-    /**
-     * Confirm that CSV is unsupported.
-     *
-     * @return void
-     */
-    public function testAsCSV()
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('CSV not supported');
-        $document = new RawJSONDocument('{}');
-        $document->asCSV();
-    }
-
-    /**
-     * Confirm that XML is unsupported.
-     *
-     * @return void
-     */
-    public function testAsXML()
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('XML not supported');
-        $document = new RawJSONDocument('{}');
-        $document->asXML();
+        $this->assertEquals(
+            'application/json', $document->getContentType()
+        );
+        $this->assertEquals('{}', $document->getContent());
     }
 }

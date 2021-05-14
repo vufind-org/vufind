@@ -126,21 +126,6 @@ class ConnectorTest extends TestCase
     }
 
     /**
-     * Test InvalidArgumentException unknown serialization format.
-     *
-     * @return void
-     */
-    public function testSaveThrowsUnknownFormat()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unable to serialize');
-
-        $conn = $this->createConnector();
-        $document = $this->createMock(\VuFindSearch\Backend\Solr\Document\UpdateDocument::class);
-        $conn->write($document, 'unknown', 'update');
-    }
-
-    /**
      * Test writing a CSV document.
      *
      * @return void

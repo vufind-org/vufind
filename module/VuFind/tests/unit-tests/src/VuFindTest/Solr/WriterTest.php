@@ -71,7 +71,6 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $connector->expects($this->once())->method('write')
             ->with(
                 $this->equalTo($commit),
-                $this->equalTo('xml'),
                 $this->equalTo('update'),
                 $this->equalTo(null)
             );
@@ -93,12 +92,11 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $connector->expects($this->once())->method('write')
             ->with(
                 $this->equalTo($csv),
-                $this->equalTo('csv'),
                 $this->equalTo('customUpdateHandler'),
                 $this->equalTo($params)
             );
         $writer = new Writer($bm, $this->getMockChangeTracker());
-        $writer->save('Solr', $csv, 'csv', 'customUpdateHandler', $params);
+        $writer->save('Solr', $csv, 'customUpdateHandler', $params);
     }
 
     /**
@@ -127,7 +125,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
         $callback = function ($i): bool {
-            return trim($i->asXML()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
+            return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));
         $writer = new Writer($bm, $this->getMockChangeTracker());
@@ -144,7 +142,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
         $callback = function ($i): bool {
-            return trim($i->asXML()) == "<?xml version=\"1.0\"?>\n<delete><id>foo</id><id>bar</id></delete>";
+            return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><id>foo</id><id>bar</id></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));
         $ct = $this->getMockChangeTracker();

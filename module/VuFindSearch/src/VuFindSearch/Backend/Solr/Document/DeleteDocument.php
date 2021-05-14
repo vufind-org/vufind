@@ -39,49 +39,38 @@ use XMLWriter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class DeleteDocument extends AbstractDocument
+class DeleteDocument implements DocumentInterface
 {
     /**
      * Unique keys to delete.
      *
-     * @var array
+     * @var string[]
      */
-    protected $keys;
+    protected array $keys = [];
 
     /**
      * Delete queries.
      *
-     * @var array
+     * @var string[]
      */
-    protected $queries;
+    protected array $queries = [];
 
     /**
-     * Constructor.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->keys    = [];
-        $this->queries = [];
-    }
-
-    /**
-     * Return serialized JSON representation.
+     * Return content MIME type.
      *
      * @return string
      */
-    public function asJSON()
+    public function getContentType(): string
     {
-        // @todo Implement
+        return 'text/xml; charset=UTF-8';
     }
 
     /**
-     * Return serialize XML representation.
+     * Return serialized representation.
      *
      * @return string
      */
-    public function asXML()
+    public function getContent(): string
     {
         $writer = new XMLWriter();
         $writer->openMemory();
@@ -105,7 +94,7 @@ class DeleteDocument extends AbstractDocument
      *
      * @return void
      */
-    public function addKey($key)
+    public function addKey(string $key): void
     {
         $this->keys[] = $key;
     }
@@ -113,11 +102,11 @@ class DeleteDocument extends AbstractDocument
     /**
      * Add array of unique keys to delete.
      *
-     * @param array $keys Unique keys
+     * @param string[] $keys Unique keys
      *
      * @return void
      */
-    public function addKeys($keys)
+    public function addKeys(array $keys): void
     {
         $this->keys = array_merge($this->keys, $keys);
     }
@@ -129,7 +118,7 @@ class DeleteDocument extends AbstractDocument
      *
      * @return void
      */
-    public function addQuery($query)
+    public function addQuery(string $query): void
     {
         $this->queries[] = $query;
     }

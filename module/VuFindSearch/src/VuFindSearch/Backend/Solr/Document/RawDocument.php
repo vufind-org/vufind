@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SOLR "raw XML" document class for manual overrides.
+ * SOLR "raw document" class for submitting any type of data.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,7 @@
 namespace VuFindSearch\Backend\Solr\Document;
 
 /**
- * SOLR "raw XML" document class for manual overrides.
+ * SOLR "raw document" class for submitting any type of data.
  *
  * @category VuFind
  * @package  Search
@@ -37,16 +37,62 @@ namespace VuFindSearch\Backend\Solr\Document;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawXMLDocument extends RawDocument
+class RawDocument implements DocumentInterface
 {
+    /**
+     * Raw document text
+     *
+     * @var string
+     */
+    protected $content;
+
+    /**
+     * MIME type
+     *
+     * @var string
+     */
+    protected $mime;
+
+    /**
+     * Text encoding
+     *
+     * @var string
+     */
+    protected $encoding;
+
     /**
      * Constructor.
      *
      * @param string  $content  Raw document text
+     * @param string  $mime     MIME type
      * @param ?string $encoding Text encoding (null for unspecified)
      */
-    public function __construct(string $content, ?string $encoding = 'UTF-8')
+    public function __construct(string $content, string $mime,
+        ?string $encoding = 'UTF-8'
+    ) {
+        $this->content = $content;
+        $this->mime = $mime;
+        $this->encoding = $encoding;
+    }
+
+    /**
+     * Return content MIME type.
+     *
+     * @return string
+     */
+    public function getContentType(): string
     {
-        parent::__construct($content, 'text/xml', $encoding);
+        return $this->mime
+            . (empty($this->encoding) ? '' : "; charset=" . $this->encoding);
+    }
+
+    /**
+     * Return serialized representation.
+     *
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->content;
     }
 }
