@@ -175,15 +175,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $basemapOptions = $this->basemapOptions;
         $mapSelectionOptions = $this->mapSelectionOptions;
         $this->defaultCoordinates = explode(
             ',',
             $mapSelectionOptions['default_coordinates']
         );
         $this->height = $mapSelectionOptions['height'];
-        $this->basemapUrl = $basemapOptions['basemap_url'];
-        $this->basemapAttribution = $basemapOptions['basemap_attribution'];
     }
 
     /**

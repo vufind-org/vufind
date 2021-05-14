@@ -192,7 +192,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $user["cat_password"], true
             )
             ) {
-                $this->getSessionContainer()->odAccess
+                $result = $this->getSessionContainer()->odAccess
                     = $this->getResultObject(true);
             } else {
                 $result = $this->getResultObject();
@@ -203,7 +203,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                 if ($conf->noAccessString) {
                     if (strpos(
                         $this->getSessionContainer()->odAccessMessage,
-                        $conf->noAccessString
+                        (string)$conf->noAccessString
                     ) !== false
                     ) {
                         // this user should not have access to OD
@@ -1256,8 +1256,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                 }
                 $postData = json_encode($jsonData);
                 $client->setRawBody($postData);
+                $this->debug("patronURL data sent: $postData");
             }
-            $this->debug("patronURL data sent: $postData");
             $this->debug("patronURL method: " . $client->getMethod());
             $this->debug("client: " . $client->getRequest());
             try {

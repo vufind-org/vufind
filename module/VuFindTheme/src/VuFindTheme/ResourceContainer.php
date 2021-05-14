@@ -386,7 +386,7 @@ class ResourceContainer
         if (empty($this->less)) {
             return false;
         }
-        list($fileName, ) = explode('.', $file);
+        [$fileName, ] = explode('.', $file);
         $lessFile = $fileName . '.less';
         return in_array($lessFile, $this->less, true);
     }
@@ -400,7 +400,7 @@ class ResourceContainer
      */
     protected function removeCSS($file)
     {
-        list($name, ) = explode('.', $file);
+        [$name, ] = explode('.', $file);
         $name .= '.css';
         $index = array_search($name, $this->css);
         if (false !== $index) {

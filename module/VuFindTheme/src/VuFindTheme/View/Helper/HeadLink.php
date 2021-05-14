@@ -159,7 +159,7 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
             return $cssDirectory . $css_file_name;
         } catch (\Exception $e) {
             error_log($e->getMessage());
-            list($fileName, ) = explode('.', $file);
+            [$fileName, ] = explode('.', $file);
             return $urlHelper('home') . "themes/{$currentTheme}/css/{$fileName}.css";
         }
     }

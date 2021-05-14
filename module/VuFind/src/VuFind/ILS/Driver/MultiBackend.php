@@ -47,6 +47,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
+
     /**
      * The array of configured driver names.
      *
@@ -585,6 +586,29 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver) {
             $fines = $driver->getMyFines($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes($fines, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     * @throws ILSException
+     */
+    public function getHoldLink($id, $details)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->getHoldLink($this->getLocalId($id), $details);
         }
         throw new ILSException('No suitable backend driver found');
     }

@@ -294,7 +294,7 @@ class LDAP extends AbstractBase
                         }
 
                         if ($field != "cat_password") {
-                            $user->$field = ($value === null) ? '' : $value;
+                            $user->$field = $value ?? '';
                         } else {
                             $catPassword = $value;
                         }

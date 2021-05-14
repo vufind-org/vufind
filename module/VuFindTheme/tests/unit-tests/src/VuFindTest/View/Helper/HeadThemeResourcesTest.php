@@ -91,9 +91,11 @@ class HeadThemeResourcesTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockHeadMeta()
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadMeta::class)
+        $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
-            ->setMethods(['__invoke', 'prependHttpEquiv', 'appendName'])
+            ->onlyMethods(['__invoke'])
+            // These are side effects of __call and need to be added for mocking:
+            ->addMethods(['prependHttpEquiv', 'appendName'])
             ->getMock();
         $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
         $mock->expects($this->once())->method('prependHttpEquiv')

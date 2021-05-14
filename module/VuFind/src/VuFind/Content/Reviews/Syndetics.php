@@ -164,7 +164,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
 
                     if ($review[$i]['Copyright']) {  //stop duplicate copyrights
                         $location = strripos(
-                            $review[0]['Content'], $review[0]['Copyright']
+                            $review[0]['Content'], (string)$review[0]['Copyright']
                         );
                         if ($location > 0) {
                             $review[$i]['Content']

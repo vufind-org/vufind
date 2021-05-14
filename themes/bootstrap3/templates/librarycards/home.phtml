@@ -29,7 +29,7 @@
         <?php $username = $record['cat_username']; if ($this->multipleTargets): ?>
           <?php $target = ''; ?>
           <?php if (strstr($username, '.')): ?>
-            <?php list($target, $username) = explode('.', $username, 2); ?>
+            <?php [$target, $username] = explode('.', $username, 2); ?>
           <?php endif; ?>
           <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
         <?php endif; ?>
@@ -52,6 +52,9 @@
   <?php endif; ?>
 
   <div class="btn-group">
+    <?php if ($this->allowConnectingCards): ?>
+      <a href="<?=$this->url('librarycards-connectcardlogin') ?>" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card using login')?></a>
+    <?php endif;?>
     <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link"><i class="fa fa-edit" aria-hidden="true"></i> <?=$this->transEsc('Add a Library Card')?></a>
   </div>
 </div>

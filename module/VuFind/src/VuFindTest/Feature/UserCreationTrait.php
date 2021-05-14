@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Trait with utility methods for user creation/management. Depends upon the
- * LiveDatabaseTrait for database access and the LiveDetectionTrait for
- * identification of a live test environment.
+ * Trait with utility methods for user creation/management.
  *
  * PHP version 7
  *
@@ -33,9 +31,7 @@ namespace VuFindTest\Feature;
 use Behat\Mink\Element\Element;
 
 /**
- * Trait with utility methods for user creation/management. Depends upon the
- * LiveDatabaseTrait for database access and the LiveDetectionTrait for
- * identification of a live test environment.
+ * Trait with utility methods for user creation/management.
  *
  * @category VuFind
  * @package  Tests
@@ -45,42 +41,6 @@ use Behat\Mink\Element\Element;
  */
 trait UserCreationTrait
 {
-    /**
-     * Static setup support function to fail if users already exist in the database.
-     * We want to ensure a clean state for each test!
-     *
-     * @return void
-     */
-    protected static function failIfUsersExist(): void
-    {
-        $test = new static();   // create instance of current class
-        // Fail if the test does not include the LiveDetectionTrait.
-        if (!$test->hasLiveDetectionTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-        // Fail if the test does not include the LiveDatabaseTrait.
-        if (!$test->hasLiveDatabaseTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-        // Fail if there are already users in the database (we don't want to run this
-        // on a real system -- it's only meant for the continuous integration server)
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        if (count($userTable->select()) > 0) {
-            self::fail(
-                'Test cannot run with pre-existing user data!'
-            );
-            return;
-        }
-    }
-
     /**
      * Mink support function: assert a warning message in the lightbox.
      *
@@ -187,46 +147,5 @@ trait UserCreationTrait
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
         $this->snooze();
-    }
-
-    /**
-     * Static teardown support function to destroy user accounts. Accounts are
-     * expected to exist, and the method will fail if they are missing.
-     *
-     * @param array|string $users User(s) to delete
-     *
-     * @return void
-     *
-     * @throws \Exception
-     */
-    protected static function removeUsers($users)
-    {
-        $test = new static();   // create instance of current class
-        // Fail if the test does not include the LiveDetectionTrait.
-        if (!$test->hasLiveDetectionTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-        // If CI is not running, all tests were skipped, so no work is necessary:
-        if (!$test->continuousIntegrationRunning()) {
-            return;
-        }
-
-        // Fail if the test does not include the LiveDatabaseTrait.
-        if (!$test->hasLiveDatabaseTrait ?? false) {
-            self::fail(
-                'Test requires LiveDatabaseTrait, but it is not used.'
-            );
-        }
-
-        // Delete test user
-        $userTable = $test->getTable(\VuFind\Db\Table\User::class);
-        foreach ((array)$users as $username) {
-            $user = $userTable->getByUsername($username, false);
-            if (!empty($user)) {
-                $user->delete();
-            }
-        }
     }
 }

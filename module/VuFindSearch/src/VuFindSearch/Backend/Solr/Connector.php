@@ -71,7 +71,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @var int
      */
-    const MAX_GET_URL_LENGTH = 2048;
+    public const MAX_GET_URL_LENGTH = 2048;
 
     /**
      * URL or an array of alternative URLs of the SOLR core.

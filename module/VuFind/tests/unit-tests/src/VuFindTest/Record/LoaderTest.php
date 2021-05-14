@@ -285,7 +285,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $fallbackPlugin = $this
             ->getMockBuilder(\VuFind\Record\FallbackLoader\Summon::class)
             ->disableOriginalConstructor()
-            ->setMethods(['load'])
+            ->onlyMethods(['load'])
             ->getMock();
         $callback = function ($r) {
             return $r->getUniqueId();
@@ -296,7 +296,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($records));
         $fallbackLoader = $this->getMockBuilder(FallbackLoader::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get', 'has'])
+            ->onlyMethods(['get', 'has'])
             ->getMock();
         $fallbackLoader->expects($this->once())->method('has')
             ->with($this->equalTo('Summon'))

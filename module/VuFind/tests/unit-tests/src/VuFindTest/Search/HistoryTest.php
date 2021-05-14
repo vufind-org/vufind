@@ -101,7 +101,7 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
     public function testPurgeHistory()
     {
         $table = $this->getMockBuilder(\VuFind\Db\Table\Search::class)
-            ->disableOriginalConstructor()->setMethods(['destroySession'])
+            ->disableOriginalConstructor()->onlyMethods(['destroySession'])
             ->getMock();
         $table->expects($this->once())->method('destroySession')
             ->with($this->equalTo('foosession'), $this->equalTo(1234));

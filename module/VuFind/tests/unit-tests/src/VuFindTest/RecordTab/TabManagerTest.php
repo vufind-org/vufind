@@ -87,7 +87,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     protected function getMockPluginManager()
     {
         $mockTab = $this->getMockBuilder(\VuFind\RecordTab\StaffViewArray::class)
-            ->disableOriginalConstructor()->setMethods(['isActive'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['isActive'])->getMock();
         $mockTab->expects($this->any())->method('isActive')
             ->will($this->returnValue(true));
         $pm = $this->getMockBuilder(\VuFind\RecordTab\PluginManager::class)
@@ -120,7 +120,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         );
         $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()
-            ->setMethods(['has', 'get'])
+            ->onlyMethods(['has', 'get'])
             ->getMock();
         $configManager->expects($this->any())->method('has')
             ->will($this->returnValue(true));

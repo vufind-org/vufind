@@ -37,7 +37,7 @@
   // Check if any results have version support enabled:
   $displayVersions = false;
   foreach (array_keys($this->combinedResults) as $configSection) {
-    list($searchClassId) = explode(':', $configSection);
+    [$searchClassId] = explode(':', $configSection);
     if ($this->searchOptions($searchClassId)->getVersionsAction()) {
       $displayVersions = true;
       break;

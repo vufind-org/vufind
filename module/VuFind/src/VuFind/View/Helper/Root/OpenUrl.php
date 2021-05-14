@@ -175,7 +175,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         if (null !== $this->config && isset($this->config->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            list($base) = explode('?', $this->config->url);
+            [$base] = explode('?', $this->config->url);
         } else {
             $base = false;
         }

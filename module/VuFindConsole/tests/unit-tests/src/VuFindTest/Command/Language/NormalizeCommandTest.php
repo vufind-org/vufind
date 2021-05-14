@@ -134,31 +134,6 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock command object
-     *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param array                 $methods     Methods to mock
-     *
-     * @return AddUsingTemplateCommand
-     */
-    protected function getMockCommand(ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null, $languageDir = null,
-        array $methods = ['writeFileToDisk']
-    ) {
-        return $this->getMockBuilder(DeleteCommand::class)
-            ->setConstructorArgs(
-                [
-                    $normalizer ?? $this->getMockNormalizer(),
-                    $reader ?? $this->getMockReader(),
-                    $languageDir ?? $this->languageFixtureDir,
-                ]
-            )->setMethods($methods)
-            ->getMock();
-    }
-
-    /**
      * Get a mock normalizer object
      *
      * @param array $methods Methods to mock
@@ -167,10 +142,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockNormalizer($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**
@@ -182,9 +159,11 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockReader($methods = [])
     {
-        return $this->getMockBuilder(ExtendedIniReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(ExtendedIniReader::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

@@ -127,7 +127,7 @@ class Options extends \VuFind\Search\Base\Options
             'list|detailed' => 'Detailed View'
         ];
         $this->apiInfo = $apiInfo;
-        $this->setOptionsFromApi($searchSettings);
+        $this->setOptionsFromApi();
         $this->setOptionsFromConfig($searchSettings);
         $facetConf = $configLoader->get($this->facetsIni);
         if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
@@ -361,12 +361,6 @@ class Options extends \VuFind\Search\Base\Options
             && isset($this->sortOptions[$searchSettings->General->default_sort])
         ) {
             $this->defaultSort = $searchSettings->General->default_sort;
-        }
-
-        if (isset($searchSettings->General->default_amount)
-            && isset($this->amountOptions[$searchSettings->General->default_amount])
-        ) {
-            $this->defaultAmount = $searchSettings->General->default_amount;
         }
 
         if (isset($searchSettings->General->default_mode)

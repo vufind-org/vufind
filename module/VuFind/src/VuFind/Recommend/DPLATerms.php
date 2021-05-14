@@ -51,7 +51,7 @@ class DPLATerms implements RecommendInterface
     protected $apiKey;
 
     /**
-     * Vufind HTTP Client
+     * VuFind HTTP Client
      *
      * @var HttpClient
      */

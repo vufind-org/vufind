@@ -144,7 +144,8 @@ trait MarcAdvancedTrait
                         $retval[] = [
                             'heading' => $current,
                             'type' => $fieldType,
-                            'source' => $source
+                            'source' => $source,
+                            'id' => $this->getSubfield($result, '0')
                         ];
                     } else {
                         $retval[] = $current;
@@ -950,5 +951,59 @@ trait MarcAdvancedTrait
             return $result;
         }
         return false;
+    }
+
+    /**
+     * Get the full titles of the record in alternative scripts.
+     *
+     * @return array
+     */
+    public function getTitlesAltScript(): array
+    {
+        return $this->getMarcReader()
+            ->getLinkedFieldsSubfields('880', '245', ['a', 'b']);
+    }
+
+    /**
+     * Get the full titles of the record including section and part information in
+     * alternative scripts.
+     *
+     * @return array
+     */
+    public function getFullTitlesAltScript(): array
+    {
+        return $this->getMarcReader()
+            ->getLinkedFieldsSubfields('880', '245', ['a', 'b', 'n', 'p']);
+    }
+
+    /**
+     * Get the short (pre-subtitle) title of the record in alternative scripts.
+     *
+     * @return array
+     */
+    public function getShortTitlesAltScript(): array
+    {
+        return $this->getMarcReader()->getLinkedFieldsSubfields('880', '245', ['a']);
+    }
+
+    /**
+     * Get the subtitle of the record in alternative script.
+     *
+     * @return array
+     */
+    public function getSubtitlesAltScript(): array
+    {
+        return $this->getMarcReader()->getLinkedFieldsSubFields('880', '245', ['b']);
+    }
+
+    /**
+     * Get the text of the part/section portion of the title in alternative scripts.
+     *
+     * @return array
+     */
+    public function getTitleSectionsAltScript(): array
+    {
+        return $this->getMarcReader()
+            ->getLinkedFieldsSubfields('880', '245', ['n', 'p']);
     }
 }

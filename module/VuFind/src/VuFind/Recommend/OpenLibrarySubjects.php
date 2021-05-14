@@ -200,6 +200,7 @@ class OpenLibrarySubjects implements RecommendInterface,
      */
     protected function getPublishedDates($field, $params, $request)
     {
+        $range = null;
         // Try to extract range details from request parameters or SearchObject:
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');

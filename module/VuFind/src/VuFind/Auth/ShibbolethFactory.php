@@ -45,7 +45,7 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
  */
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-    const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+    public const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
 
     /**
      * Create an object
@@ -59,7 +59,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null

@@ -183,7 +183,7 @@ class ChannelLoader
     {
         // The provider ID consists of a service name and an optional config
         // section -- break out the relevant parts:
-        list($serviceName, $configSection) = explode(':', $providerId . ':');
+        [$serviceName, $configSection] = explode(':', $providerId . ':');
 
         // Load configuration, using default value if necessary:
         if (empty($configSection)) {
@@ -226,6 +226,7 @@ class ChannelLoader
             $cache = $this->cacheManager->getCache('object', 'homeChannels');
         } else {
             $cacheKey = false;
+            $cache = null;
         }
 
         // Fetch channel data from cache, or populate cache if necessary:
