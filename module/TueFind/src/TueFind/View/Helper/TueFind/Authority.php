@@ -127,11 +127,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($relationsDisplay != '')
                 $relationsDisplay .= '<br>';
 
-            $relationsDisplay .= '<span property="relatedTo" typeof="Organization">';
+            $type = $relation['type'] == 'Veranstalter' ? 'organizer' : 'contributor';
+            $relationsDisplay .= '<span property="' . $type . '" typeof="Organization">';
 
             if (isset($relation['id'])) {
                 $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
-                $relationsDisplay .= '<a href="' . $url . '">';
+                $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
@@ -161,7 +162,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
             if (isset($relation['id'])) {
                 $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
-                $relationsDisplay .= '<a href="' . $url . '">';
+                $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
 
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
