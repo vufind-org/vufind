@@ -89,7 +89,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
         $display = '';
         foreach ($references as $reference)
-            $display .= '<a href="' . $reference['url'] . '" target="_blank">' . htmlspecialchars($reference['title']) . '</a><br>';
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($reference['title']) . '</a><br>';
 
         return $display;
     }
