@@ -33,19 +33,27 @@
             </tr>
           <?php endif; ?>
 
+          <?php $relations = $this->authority()->getPersonalRelations($this->driver); ?>
+          <?php if ($relations != ''): ?>
+            <tr>
+              <th>Personal relations:</th>
+              <td><?=$relations?></td>
+            </tr>
+          <?php endif; ?>
+
+          <?php $relations = $this->authority()->getCorporateRelations($this->driver); ?>
+          <?php if ($relations != ''): ?>
+            <tr>
+              <th>Corporate relations:</th>
+              <td><?=$relations?></td>
+            </tr>
+          <?php endif; ?>
+
           <?php $externalReferences = $this->authority()->getExternalReferences($this->driver); ?>
           <?php if ($externalReferences != ''): ?>
             <tr>
               <th>External references:</th>
               <td><?=$externalReferences?></td>
-            </tr>
-          <?php endif; ?>
-
-          <?php $relations = $this->authority()->getRelations($this->driver); ?>
-          <?php if ($relations != ''): ?>
-            <tr>
-              <th>Relations:</th>
-              <td><?=$relations?></td>
             </tr>
           <?php endif; ?>
         </tbody>

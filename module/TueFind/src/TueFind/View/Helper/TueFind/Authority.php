@@ -28,7 +28,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBirth(AuthorityRecordDriver &$driver): string {
+    public function getBirth(AuthorityRecordDriver &$driver): string
+    {
         $display = '';
 
         $birthDate = $driver->getBirthDateOrYear();
@@ -53,7 +54,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      * @param string $propertyId
      * @return string
      */
-    private function getDateTimeProperty($datetimeCandidate, $propertyId): string {
+    private function getDateTimeProperty($datetimeCandidate, $propertyId): string
+    {
         $iso8601DateTime = $this->getView()->tuefind()->convertDateTimeToIso8601($datetimeCandidate);
         if ($iso8601DateTime == $datetimeCandidate)
             return '<span property="' . htmlspecialchars($propertyId) . '">' . $datetimeCandidate . '</span>';
@@ -68,7 +70,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getDeath(AuthorityRecordDriver &$driver): string {
+    public function getDeath(AuthorityRecordDriver &$driver): string
+    {
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
@@ -80,7 +83,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getExternalReferences(AuthorityRecordDriver &$driver): string {
+    public function getExternalReferences(AuthorityRecordDriver &$driver): string
+    {
         $references = $driver->getExternalReferences();
         if (count($references) == 0)
             return '';
@@ -94,13 +98,15 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getName(AuthorityRecordDriver &$driver): string {
+    public function getName(AuthorityRecordDriver &$driver): string
+    {
         $name = $driver->getTitle();
         $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
-    public function getOccupations(AuthorityRecordDriver &$driver): string {
+    public function getOccupations(AuthorityRecordDriver &$driver): string
+    {
         $occupations = $driver->getOccupations();
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
@@ -111,8 +117,9 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $occupationsDisplay;
     }
 
-    public function getRelations(AuthorityRecordDriver &$driver): string {
-        $relations = $driver->getRelations();
+    public function getCorporateRelations(AuthorityRecordDriver &$driver): string
+    {
+        $relations = $driver->getCorporateRelations();
         $relationsDisplay = '';
 
         $urlHelper = $this->viewHelperManager->get('url');
@@ -120,14 +127,14 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if ($relationsDisplay != '')
                 $relationsDisplay .= '<br>';
 
-            $relationsDisplay .= '<span property="relatedTo">';
+            $relationsDisplay .= '<span property="relatedTo" typeof="Organization">';
 
             if (isset($relation['id'])) {
                 $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
                 $relationsDisplay .= '<a href="' . $url . '">';
             }
 
-            $relationsDisplay .= $relation['name'];
+            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
 
             if (isset($relation['type']))
                 $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
@@ -140,17 +147,55 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $relationsDisplay;
     }
 
-    public function getSchemaOrgType(AuthorityRecordDriver &$driver): string {
-        if ($driver->getType() == 'person')
+    public function getPersonalRelations(AuthorityRecordDriver &$driver): string
+    {
+        $relations = $driver->getPersonalRelations();
+        $relationsDisplay = '';
+
+        $urlHelper = $this->viewHelperManager->get('url');
+        foreach ($relations as $relation) {
+            if ($relationsDisplay != '')
+                $relationsDisplay .= '<br>';
+
+            $relationsDisplay .= '<span property="relatedTo" typeof="Person">';
+
+            if (isset($relation['id'])) {
+                $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
+                $relationsDisplay .= '<a href="' . $url . '">';
+            }
+
+            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
+
+            if (isset($relation['type']))
+                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+
+            if (isset($relation['id']))
+                $relationsDisplay .= '</a>';
+
+            $relationsDisplay .= '</span>';
+        }
+        return $relationsDisplay;
+    }
+
+    public function getSchemaOrgType(AuthorityRecordDriver &$driver): string
+    {
+        switch ($driver->getType()) {
+        case 'person':
             return 'Person';
-        else
+        case 'corporate':
             return 'Organization';
+        case 'meeting':
+            return 'Event';
+        default:
+            return 'Thing';
+        }
     }
 
     /**
      * Get titles of this authority to show in a preview box
      */
-    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10) {
+    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,

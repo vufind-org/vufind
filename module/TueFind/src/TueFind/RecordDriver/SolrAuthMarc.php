@@ -8,7 +8,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get List of all beacon references.
      * @return [['title', 'url']]
      */
-    public function getBeaconReferences(): array {
+    public function getBeaconReferences(): array
+    {
         $beacon_references = [];
         $beacon_fields = $this->getMarcRecord()->getFields('BEA');
         if (is_array($beacon_fields)) {
@@ -24,7 +25,8 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $beacon_references;
     }
 
-    public function getExternalReferences(): array {
+    public function getExternalReferences(): array
+    {
         $references = [];
 
         $gndNumber = $this->getGNDNumber();
@@ -76,7 +78,8 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $references;
     }
 
-    protected function getLifeDates() {
+    protected function getLifeDates()
+    {
         $lifeDates = ['birth' => null, 'death' => null];
 
         $fields = $this->getMarcRecord()->getFields('548');
@@ -94,7 +97,8 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $lifeDates;
     }
 
-    protected function getLifePlaces() {
+    protected function getLifePlaces()
+    {
         $lifePlaces = ['birth' => null, 'death' => null];
 
         $fields = $this->getMarcRecord()->getFields('551');
@@ -119,7 +123,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get birth date or year if date is not set
      * @return string
      */
-    public function getBirthDateOrYear() {
+    public function getBirthDateOrYear()
+    {
         return $this->getBirthDate() ?? $this->getBirthYear();
     }
 
@@ -127,7 +132,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get exact birth date
      * @return string
      */
-    public function getBirthDate() {
+    public function getBirthDate()
+    {
         $lifeDates = $this->getLifeDates();
         return $lifeDates['birth'] ?? null;
     }
@@ -136,7 +142,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get birth place
      * @return string
      */
-    public function getBirthPlace() {
+    public function getBirthPlace()
+    {
         return $this->getLifePlaces()['birth'] ?? null;
     }
 
@@ -144,7 +151,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get birth year
      * @return string
      */
-    public function getBirthYear() {
+    public function getBirthYear()
+    {
         $pattern = '"^(\d+)(-?)(\d+)?$"';
         $values = $this->getFieldArray('100', ['d']);
         foreach ($values as $value) {
@@ -157,7 +165,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get death date or year if date is not set
      * @return string
      */
-    public function getDeathDateOrYear() {
+    public function getDeathDateOrYear()
+    {
         return $this->getDeathDate() ?? $this->getDeathYear();
     }
 
@@ -165,7 +174,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get exact death date
      * @return string
      */
-    public function getDeathDate() {
+    public function getDeathDate()
+    {
         $lifeDates = $this->getLifeDates();
         return $lifeDates['death'] ?? null;
     }
@@ -174,7 +184,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get death place
      * @return string
      */
-    public function getDeathPlace() {
+    public function getDeathPlace()
+    {
         return $this->getLifePlaces()['death'] ?? null;
     }
 
@@ -182,7 +193,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get death year
      * @return string
      */
-    public function getDeathYear() {
+    public function getDeathYear()
+    {
         $pattern = '"^(\d+)(-?)(\d+)?$"';
         $values = $this->getFieldArray('100', ['d']);
         foreach ($values as $value) {
@@ -195,7 +207,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get GND Number from 035a (DE-588) or null
      * @return string
      */
-    public function getGNDNumber() {
+    public function getGNDNumber()
+    {
         $pattern = '"^\(DE-588\)"';
         $values = $this->getFieldArray('035', 'a');
         foreach ($values as $value) {
@@ -208,7 +221,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get locations from 551
      * @return [['name', 'type']]
      */
-    public function getLocations() {
+    public function getLocations()
+    {
         $locations = [];
         $fields = $this->getMarcRecord()->getFields('551');
         foreach ($fields as $field) {
@@ -222,7 +236,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * Get Name from 100a
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->getFirstFieldValue('100', 'a');
     }
 
@@ -231,7 +246,8 @@ class SolrAuthMarc extends SolrAuthDefault {
      * (e.g. for external searches like wikidata)
      * (e.g. "King, Martin Luther" => "Martin Luther King")
      */
-    public function getNameAliases() {
+    public function getNameAliases()
+    {
         $names = [];
         $name = $this->getName();
         $names[] = $name;
@@ -241,7 +257,8 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $names;
     }
 
-    public function getRelations(): array {
+    public function getPersonalRelations(): array
+    {
         $relations = [];
 
         $fields = $this->getMarcRecord()->getFields('500');
@@ -260,6 +277,35 @@ class SolrAuthMarc extends SolrAuthDefault {
                     $typeSubfield = $field->getSubfield('9');
                     if ($typeSubfield !== false)
                         $relation['type'] = preg_replace('/^v:/', '', $typeSubfield->getData());
+
+                    $relations[] = $relation;
+                }
+            }
+        }
+
+        return $relations;
+    }
+
+    public function getCorporateRelations(): array
+    {
+        $relations = [];
+
+        $fields = $this->getMarcRecord()->getFields('510');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+
+                if ($nameSubfield !== false) {
+                    $relation = ['name' => $nameSubfield->getData()];
+
+                    $idPrefixPattern = '/^\(DE-627\)/';
+                    $idSubfield = $field->getSubfield('0', $idPrefixPattern);
+                    if ($idSubfield !== false)
+                        $relation['id'] = preg_replace($idPrefixPattern, '', $idSubfield->getData());
+
+                    $typeSubfield = $field->getSubfield('i');
+                    if ($typeSubfield !== false)
+                        $relation['type'] = $typeSubfield->getData();
 
                     $relations[] = $relation;
                 }
