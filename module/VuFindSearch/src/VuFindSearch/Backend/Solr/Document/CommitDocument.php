@@ -46,16 +46,14 @@ class CommitDocument implements DocumentInterface
      *
      * @var int
      */
-    protected ?int $commitWithin;
+    protected $commitWithin;
 
     /**
      * Constructor.
      *
-     * @param ?int $commitWithin commitWithin attribute value
-     *
-     * @return void
+     * @param int $commitWithin commitWithin attribute value (-1 to omit)
      */
-    public function __construct(?int $commitWithin = null)
+    public function __construct(int $commitWithin = -1)
     {
         $this->commitWithin = $commitWithin;
     }

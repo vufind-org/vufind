@@ -48,12 +48,10 @@ class UpdateDocument implements DocumentInterface
      *
      * @var SplObjectStorage
      */
-    protected SplObjectStorage $records;
+    protected $records;
 
     /**
      * Constructor.
-     *
-     * @return void
      */
     public function __construct()
     {

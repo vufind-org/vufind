@@ -46,14 +46,14 @@ class DeleteDocument implements DocumentInterface
      *
      * @var string[]
      */
-    protected array $keys = [];
+    protected $keys = [];
 
     /**
      * Delete queries.
      *
      * @var string[]
      */
-    protected array $queries = [];
+    protected $queries = [];
 
     /**
      * Return content MIME type.
