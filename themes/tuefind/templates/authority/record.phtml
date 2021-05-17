@@ -4,7 +4,7 @@
     $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
 ?>
 <div vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">
-  <h3 property="name"><?=$this->authority()->getName($this->driver)?></h3>
+  <h3><?=$this->authority()->getName($this->driver)?></h3>
   <div class="row">
     <div class="col-sm-8">
       <table class="table table-striped">
