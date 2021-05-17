@@ -28,6 +28,8 @@
  */
 namespace VuFind\Search;
 
+use Laminas\Config\Config;
+
 /**
  * VuFind Search History Helper
  *
@@ -136,7 +138,12 @@ class History
         if (!($this->config->Account->schedule_searches ?? false)) {
             return [];
         }
-        return $this->config->Account->scheduled_search_frequencies
-            ?? [0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'];
+        if ($this->config->Account->scheduled_search_frequencies instanceof Config) {
+            return $this->config->Account->scheduled_search_frequencies->toArray();
+        }
+        if (isset($this->config->Account->scheduled_search_frequencies)) {
+            return (array)$this->config->Account->scheduled_search_frequencies;
+        }
+        return [0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'];
     }
 }
