@@ -107,7 +107,9 @@ class Holds extends AbstractRequestBase
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
         } elseif (!empty($selected)) {
-            $details = $params->fromPost('cancelSelectedIDS');
+            // Include cancelSelectedIDS for backwards-compatibility:
+            $details = $params->fromPost('selectedIDS')
+                ?? $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
             return [];
@@ -172,5 +174,29 @@ class Holds extends AbstractRequestBase
             $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
+    }
+
+    /**
+     * Update ILS details with update information, if appropriate.
+     *
+     * @param \VuFind\ILS\Connection $catalog      ILS connection object
+     * @param array                  $ilsDetails   Hold details from ILS driver's
+     * getMyHolds() method
+     * @param array                  $updateFields Fields to update from ILS driver's
+     * getConfig() method
+     *
+     * @return array $ilsDetails with info added
+     */
+    public function addUpdateDetails($catalog, $ilsDetails, $updateFields)
+    {
+        if ($updateFields) {
+            $updateDetails = $catalog->getUpdateHoldDetails($ilsDetails);
+            if ($updateDetails !== '') {
+                $ilsDetails['updateDetails'] = $updateDetails;
+                $this->rememberValidId($ilsDetails['updateDetails']);
+            }
+        }
+
+        return $ilsDetails;
     }
 }

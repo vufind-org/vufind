@@ -498,8 +498,11 @@ class Demo extends AbstractBase
                 $pos = rand() % 5;
                 if ($pos > 1) {
                     $currentItem['position'] = $pos;
+                    $currentItem['available'] = false;
+                    $currentItem['in_transit'] = (rand() % 2) === 1;
                 } else {
                     $currentItem['available'] = true;
+                    $currentItem['in_transit'] = false;
                     if (rand() % 3 != 1) {
                         $lastDate = strtotime('now + 3 days');
                         $currentItem['last_pickup_date'] = $this->dateConverter
@@ -1606,6 +1609,76 @@ class Demo extends AbstractBase
     public function getCancelHoldDetails($holdDetails)
     {
         return $holdDetails['reqnum'];
+    }
+
+    /**
+     * Get Update Hold Details
+     *
+     * Get required data for updating a hold. This value is relayed to the
+     * updateHolds function when the user attempts to update holds.
+     *
+     * N.B. This must return same information as getCancelHoldDetails since it is
+     * only used when canceling is not possible but updating is, and there's only
+     * one set of identifying checkboxes for the holds.
+     *
+     * @param array $hold An array of hold data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getUpdateHoldDetails($hold)
+    {
+        return empty($hold['available']) && empty($hold['in_transit'])
+            ? $hold['reqnum'] : '';
+    }
+
+    /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $patron       Patron array
+     * @param array $holdsDetails The details identifying the holds (from
+     * getUpdateHoldDetails)
+     * @param array $fields       An associative array of fields to be updated
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(array $patron, array $holdsDetails, array $fields
+    ): array {
+        $results = [];
+        $session = $this->getSession($patron['id']);
+        foreach ($session->holds as &$currentHold) {
+            $requestId = $this->getUpdateHoldDetails($currentHold);
+            if (!in_array($requestId, $holdsDetails)) {
+                continue;
+            }
+            if ($this->isFailing(__METHOD__, 25)) {
+                $results[$requestId]['success'] = false;
+                $results[$requestId]['status']
+                    = 'Simulated error; try again and it will work eventually.';
+                continue;
+            }
+            if (array_key_exists('frozen', $fields)) {
+                if ($fields['frozen']) {
+                    $currentHold['frozen'] = true;
+                    if (isset($fields['frozenUntil'])) {
+                        $currentHold['frozen_until'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $fields['frozenUntilTS']);
+                    } else {
+                        $currentHold['frozen_until'] = '';
+                    }
+                } else {
+                    $currentHold['frozen'] = false;
+                    $currentHold['frozen_until'] = '';
+                }
+            }
+            if (isset($fields['pickUpLocation'])) {
+                $currentHold['location'] = $fields['pickUpLocation'];
+            }
+            $results[$requestId]['success'] = true;
+        }
+
+        return $results;
     }
 
     /**
