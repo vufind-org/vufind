@@ -31,6 +31,8 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 use VuFind\Crypt\HMAC;
+use VuFind\Date\Converter as DateConverter;
+use VuFind\Date\DateException;
 use VuFind\ILS\Connection;
 
 /**
@@ -66,15 +68,26 @@ abstract class AbstractRequestBase extends AbstractPlugin
     protected $hmac;
 
     /**
+     * Date converter
+     *
+     * @var DateConverter
+     */
+    protected $dateConverter;
+
+    /**
      * Constructor
      *
      * @param HMAC           $hmac           HMAC generator
      * @param SessionManager $sessionManager Session manager
+     * @param DateConverter  $dateConverter  Date converter
+     * @
      */
-    public function __construct(HMAC $hmac, SessionManager $sessionManager)
-    {
+    public function __construct(HMAC $hmac, SessionManager $sessionManager,
+        DateConverter $dateConverter
+    ) {
         $this->hmac = $hmac;
         $this->sessionManager = $sessionManager;
+        $this->dateConverter = $dateConverter;
     }
 
     /**
@@ -119,6 +132,16 @@ abstract class AbstractRequestBase extends AbstractPlugin
         $existingArray = $this->getSession()->validIds;
         $existingArray[] = $id;
         $this->getSession()->validIds = $existingArray;
+    }
+
+    /**
+     * Get the list of valid IDs.
+     *
+     * @return array
+     */
+    public function getValidIds()
+    {
+        return $this->getSession()->validIds ?? [];
     }
 
     /**
@@ -301,6 +324,76 @@ abstract class AbstractRequestBase extends AbstractPlugin
         // If the driver setting is off or the driver didn't work, use the
         // standard relative date mechanism:
         return $this->getDateFromArray($dateArray);
+    }
+
+    /**
+     * Check if the user-provided dates are valid.
+     *
+     * Returns validated dates and/or an array of validation errors if there are
+     * problems.
+     *
+     * @param string $startDate       User-specified start date
+     * @param string $requiredBy      User-specified required-by date
+     * @param array  $extraHoldFields Hold form fields enabled by
+     * configuration/driver
+     *
+     * @return array
+     */
+    public function validateDates($startDate, $requiredBy, $extraHoldFields)
+    {
+        $result = [
+            'startDateTS' => null,
+            'requiredByTS' => null,
+            'errors' => [],
+        ];
+        if (!in_array('startDate', $extraHoldFields)
+            && !in_array('requiredByDate', $extraHoldFields)
+        ) {
+            return $result;
+        }
+
+        $errors = [];
+        if (in_array('startDate', $extraHoldFields)) {
+            try {
+                $result['startDateTS'] = $startDate
+                    ? $this->dateConverter->convertFromDisplayDate('U', $startDate)
+                    : 0;
+                if ($result['startDateTS'] < time()) {
+                    $errors[] = 'hold_start_date_invalid';
+                }
+            } catch (DateException $e) {
+                $errors[] = 'hold_start_date_invalid';
+            }
+        }
+
+        if (in_array('requiredByDate', $extraHoldFields)) {
+            try {
+                if ($requiredBy) {
+                    $result['requiredByTS'] = $this->dateConverter
+                        ->convertFromDisplayDate('U', $requiredBy, true)
+                        ->setTime(23, 59, 59)
+                        ->getTimestamp();
+                } else {
+                    $result['requiredByTS'] = 0;
+                }
+                if ($result['requiredByTS'] < time()) {
+                    $errors[] = 'hold_required_by_date_invalid';
+                }
+            } catch (DateException $e) {
+                $errors[] = 'hold_required_by_date_invalid';
+            }
+        }
+
+        if (!$errors
+            && in_array('startDate', $extraHoldFields)
+            && in_array('requiredByDate', $extraHoldFields)
+            && $result['startDateTS'] > $result['requiredByTS']
+        ) {
+            $errors[] = 'hold_required_by_date_before_start_date';
+        }
+
+        $result['errors'] = $errors;
+        return $result;
     }
 
     /**

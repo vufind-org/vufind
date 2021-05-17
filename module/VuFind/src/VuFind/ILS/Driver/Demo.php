@@ -1825,27 +1825,7 @@ class Demo extends AbstractBase
             ? $session->holds[$lastHold]['item_id'] + 1 : 0;
 
         // Figure out appropriate expiration date:
-        if (!isset($holdDetails['requiredBy'])
-            || empty($holdDetails['requiredBy'])
-        ) {
-            $expire = strtotime("now + 30 days");
-        } else {
-            try {
-                $expire = $this->dateConverter->convertFromDisplayDate(
-                    "U", $holdDetails['requiredBy']
-                );
-            } catch (DateException $e) {
-                // Expiration date is invalid
-                return [
-                    'success' => false, 'sysMessage' => 'hold_date_invalid'
-                ];
-            }
-        }
-        if ($expire <= time()) {
-            return [
-                'success' => false, 'sysMessage' => 'hold_date_past'
-            ];
-        }
+        $expire = $holdDetails['requiredByTS'] ?: strtotime('now + 30 days');
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
@@ -1855,6 +1835,20 @@ class Demo extends AbstractBase
                 $requestGroup = $group['name'];
                 break;
             }
+        }
+        if ($holdDetails['startDateTS']) {
+            // Suspend until the previous day:
+            $frozen = true;
+            $frozenUntil = $this->dateConverter->convertToDisplayDate(
+                'U',
+                \DateTime::createFromFormat(
+                    'U',
+                    $holdDetails['startDateTS']
+                )->modify('-1 DAY')->getTimestamp()
+            );
+        } else {
+            $frozen = false;
+            $frozenUntil = '';
         }
         $session->holds->append(
             [
@@ -1866,10 +1860,12 @@ class Demo extends AbstractBase
                 'create'   =>
                     $this->dateConverter->convertToDisplayDate('U', time()),
                 'reqnum'   => sprintf('%06d', $nextId),
-                'item_id' => $nextId,
-                'volume' => '',
+                'item_id'  => $nextId,
+                'volume'   => '',
                 'processed' => '',
-                'requestGroup' => $requestGroup
+                'requestGroup' => $requestGroup,
+                'frozen'   => $frozen,
+                'frozen_until' => $frozenUntil
             ]
         );
 
@@ -2312,12 +2308,13 @@ class Demo extends AbstractBase
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {
-            return [
-                'HMACKeys' => 'id:item_id:level',
-                'extraHoldFields' =>
-                    'comments:requestGroup:pickUpLocation:requiredByDate',
-                'defaultRequiredDate' => 'driver:0:2:0',
-            ];
+            return $this->config['Holds']
+                ?? [
+                    'HMACKeys' => 'id:item_id:level',
+                    'extraHoldFields' =>
+                        'comments:requestGroup:pickUpLocation:requiredByDate',
+                    'defaultRequiredDate' => 'driver:0:2:0',
+                ];
         }
         if ($function == 'Holdings') {
             return [
