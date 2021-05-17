@@ -281,6 +281,11 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         85 => "",
     );
 
+    private static $CodesToCodexTitles = [  1 => 'CIC1917',
+                                            2 => 'CIC1983',
+                                            3 => 'CCEO',
+    ];
+
     private static function DecodeBookCode($book_code, $separator)
     {
         $book_code_as_string = self::$codes_to_book_abbrevs[self::GetBookCode($book_code)];
@@ -337,6 +342,51 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
         return $codes_as_string . self::DecodeChapterVerse($code1, $separator) . "–" . self::DecodeChapterVerse($code2, $separator);
     }
 
+    private static function CanonLawRangePartToArray($canonLawRangePart): array
+    {
+        // see also: https://github.com/ubtue/tuefind/wiki/Codices
+        if (strlen($canonLawRangePart) != 9)
+            throw new \Exception('Invalid canon law range part: ' . $canonLawRangePart);
+
+        $codexId = $canonLawRangePart[0];
+        $codexTitle = self::$CodesToCodexTitles[$codexId] ?? null;
+        if ($codexTitle === null)
+            throw new \Exception('Invalid codex id: ' . $codexId);
+
+        return ['codexId' => $codexId,
+                'codexTitle' => $codexTitle,
+                'canon' => intval(substr($canonLawRangePart, 1, 4)),
+                'pars1' => intval(substr($canonLawRangePart, 5, 2)),
+                'pars2' => intval(substr($canonLawRangePart, 7, 2)),
+        ];
+    }
+
+    private static function CanonLawRangeToDisplayString($canonLawRange): string
+    {
+        list ($canonLawRangeStart, $canonLawRangeEnd) = explode('_', $canonLawRange);
+        $canonLawRangeStart = self::CanonLawRangePartToArray($canonLawRangeStart);
+        $canonLawRangeEnd = self::CanonLawRangePartToArray($canonLawRangeEnd);
+
+        $displayString = $canonLawRangeStart['codexTitle'];
+
+        if ($canonLawRangeStart['canon'] == 0 && $canonLawRangeEnd['canon'] == 9999)
+            return $displayString;
+        $displayString .= ' ' . $canonLawRangeStart['canon'];
+
+        if ($canonLawRangeStart['pars1'] . $canonLawRangeStart['pars2'] != 0)
+            $displayString .= $canonLawRangeStart['pars1'] . ',' . $canonLawRangeStart['pars2'];
+
+        if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'] || $canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999) {
+            $displayString .= '-';
+            if ($canonLawRangeStart['canon'] != $canonLawRangeEnd['canon'])
+                $displayString .= $canonLawRangeEnd['canon'];
+            if ($canonLawRangeEnd['pars1'] . $canonLawRangeEnd['pars2'] != 9999)
+                $displayString .= $canonLawRangeEnd['pars1'] . ',' . $canonLawRangeEnd['pars2'];
+        }
+
+        return $displayString;
+    }
+
     public function getBibleRangesString()
     {
         if (!isset($this->fields['bible_ranges']))
@@ -354,6 +404,21 @@ class SolrDefault extends \TueFind\RecordDriver\SolrMarc
     public function getBundleIds(): array
     {
         return $this->fields['bundle_id'] ?? [];
+    }
+
+    public function getCanonLawRangesStrings(): array
+    {
+        $canonLawRanges = $this->fields['canon_law_ranges'] ?? null;
+        if ($canonLawRanges === null)
+            return [];
+
+        $canonLawRanges = explode(',', $canonLawRanges);
+        $canonLawRangesStrings = [];
+        foreach ($canonLawRanges as $canonLawRange) {
+            $canonLawRangesStrings[] = self::CanonLawRangeToDisplayString($canonLawRange);
+        }
+        sort($canonLawRangesStrings);
+        return $canonLawRangesStrings;
     }
 
     public function getKeyWordChainBag()

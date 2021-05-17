@@ -26,14 +26,26 @@
         <changefreq>monthly</changefreq>
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/survey_results?lng=de" />
     </url>
-
-    <!-- left panel -->
     <url>
         <loc>https://relbib.de/Content/about_relbib</loc>
         <changefreq>monthly</changefreq>
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/about_relbib?lng=de" />
         <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/about_relbib?lng=en" />
     </url>
+    <url>
+        <loc>https://relbib.de/Content/about_fid</loc>
+        <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/about_fid?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/about_fid?lng=en" />
+    </url>
+    <url>
+        <loc>https://relbib.de/Content/advisors</loc>
+        <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/advisors?lng=de" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/advisors?lng=en" />
+    </url>
+
+    <!-- left panel -->
     <url>
         <loc>https://relbib.de/Content/search</loc>
         <changefreq>monthly</changefreq>
@@ -67,12 +79,6 @@
 
     <!-- right panel -->
     <url>
-        <loc>https://relbib.de/Content/about_fid</loc>
-        <changefreq>monthly</changefreq>
-        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/about_fid?lng=de" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/about_fid?lng=en" />
-    </url>
-    <url>
         <loc>https://relbib.de/Content/self_archiving_service</loc>
         <changefreq>monthly</changefreq>
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/self_archiving_service?lng=de" />
@@ -101,11 +107,5 @@
         <changefreq>monthly</changefreq>
         <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/cooperations_institutions?lng=de" />
         <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/cooperations_institutions?lng=en" />
-    </url>
-    <url>
-        <loc>https://relbib.de/Content/links</loc>
-        <changefreq>monthly</changefreq>
-        <xhtml:link rel="alternate" hreflang="de" href="https://relbib.de/Content/links?lng=de" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://relbib.de/Content/links?lng=en" />
     </url>
 </urlset>

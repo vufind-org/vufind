@@ -1,2 +1,19 @@
 <!-- TueFind extension template -->
-<!-- intentionally empty in RelBib, even if TueFind/IxTheo contain other elements -->
+<!-- About -->
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown"  href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-info-circle"> </i>
+        <?=$this->transEsc('About');?> <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_relbib']) ?>"><?=$this->transEsc('about_relbib')?></a></li>
+        <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'about_fid']) ?>"><?=$this->transEsc('about_relbib_fid')?></a></li>
+        <li><a class="dropdown-item" href="<?=$this->url('content-page', ['page' => 'advisors']) ?>"><?=$this->transEsc('FID Advisory Board')?></a></li>
+    </ul>
+</li>
+<!-- A-Z -->
+<li>
+    <a href="<?=$this->url('content-page', ['page' => 'A-Z']) ?>">
+        <i class="fa fa-list"> </i> RelBib A-Z
+    </a>
+</li>
