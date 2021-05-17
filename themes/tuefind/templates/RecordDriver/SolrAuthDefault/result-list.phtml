@@ -13,8 +13,9 @@
 ?>
 <div class="media">
   <div class="media-body" vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">
-    <div class="resultItemLine<?=++$resultItemLine?>">
-      <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
+    <div class="resultItemLine1">
+      <!-- TueFind: Override by solrauthrecord on purpose! -->
+      <a href="<?=$this->url('solrauthrecord', ['id' => $this->driver->getUniqueId()])?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
     <?php if ($occupations != ''): ?>

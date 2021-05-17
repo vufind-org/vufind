@@ -14,8 +14,13 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     protected $searchService;
 
-    public function __construct(\VuFindSearch\Service $searchService) {
+    protected $viewHelperManager;
+
+    public function __construct(\VuFindSearch\Service $searchService,
+                                \Laminas\View\HelperPluginManager $viewHelperManager)
+    {
         $this->searchService = $searchService;
+        $this->viewHelperManager = $viewHelperManager;
     }
 
     /**
@@ -109,14 +114,18 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     public function getRelations(AuthorityRecordDriver &$driver): string {
         $relations = $driver->getRelations();
         $relationsDisplay = '';
+
+        $urlHelper = $this->viewHelperManager->get('url');
         foreach ($relations as $relation) {
             if ($relationsDisplay != '')
                 $relationsDisplay .= '<br>';
 
             $relationsDisplay .= '<span property="relatedTo">';
 
-            if (isset($relation['id']))
-                $relationsDisplay .= '<a href="/Authority/Record?id=' . urlencode($relation['id']) . '">';
+            if (isset($relation['id'])) {
+                $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
+                $relationsDisplay .= '<a href="' . $url . '">';
+            }
 
             $relationsDisplay .= $relation['name'];
 
