@@ -397,7 +397,7 @@ class Service
     }
 
     /**
-     * Invoke a command
+     * Call a backend feature interface method
      *
      * @param string        $backend    Search backend identifier
      * @param string        $interface  Feature interface class name
@@ -407,7 +407,7 @@ class Service
      *
      * @return mixed
      */
-    public function invokeCommand(string $backend, string $interface, string $method,
+    public function callMethod(string $backend, string $interface, string $method,
         array $methodArgs, ParamBag $params = null
     ) {
         $params  = $params ?: new ParamBag();
