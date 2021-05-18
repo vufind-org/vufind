@@ -43,24 +43,12 @@ use VuFindSearch\Query\QueryInterface;
 interface QueryAnalysisInterface
 {
     /**
-     * Query analysis output option for search terms.
+     * Get search terms.
      *
-     * Returns an array of tokenized search terms without any search syntax.
+     * @param QueryInterface $query  Query object
+     * @param ParamBag|null  $params Search backend parameters
      *
-     * @var string
+     * @return array Tokenized search terms without any search syntax
      */
-    public const OUTPUT_SEARCH_TERMS = 'searchTerms';
-
-    /**
-     * Analyze query.
-     *
-     * @param QueryInterface $query   Query object
-     * @param array          $outputs Requested outputs
-     * @param ParamBag|null  $params  Search backend parameters
-     *
-     * @return array
-     */
-    public function analyzeQuery(QueryInterface $query, array $outputs,
-        ParamBag $params = null
-    ): array;
+    public function getSearchTerms(QueryInterface $query, ParamBag $params = null);
 }

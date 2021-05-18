@@ -392,30 +392,20 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Analyze query.
+     * Get search terms.
      *
-     * @param QueryInterface $query   Query object
-     * @param array          $outputs Requested outputs
-     * @param ParamBag|null  $params  Search backend parameters
+     * @param QueryInterface $query  Query object
+     * @param ParamBag|null  $params Search backend parameters
      *
-     * @return array
+     * @return array Tokenized search terms without any search syntax
      */
-    public function analyzeQuery(QueryInterface $query, array $outputs,
-        ParamBag $params = null
-    ): array {
-        $results = [];
-        foreach ($outputs as $output) {
-            switch ($output) {
-            case QueryAnalysisInterface::OUTPUT_SEARCH_TERMS:
-                $results[$output] = $this->tokenize(
-                    $this->getQueryBuilder()->getLuceneHelper()->extractSearchTerms(
-                        $query->getAllTerms()
-                    )
-                );
-                break;
-            }
-        }
-        return $results;
+    public function getSearchTerms(QueryInterface $query, ParamBag $params = null)
+    {
+        return $this->tokenize(
+            $this->getQueryBuilder()->getLuceneHelper()->extractSearchTerms(
+                $query->getAllTerms()
+            )
+        );
     }
 
     /**

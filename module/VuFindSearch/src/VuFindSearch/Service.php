@@ -36,11 +36,9 @@ use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\GetIdsInterface;
-use VuFindSearch\Feature\QueryAnalysisInterface;
 use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
-use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -399,32 +397,40 @@ class Service
     }
 
     /**
-     * Analyze query.
+     * Invoke a command
      *
-     * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Query object
-     * @param array          $outputs Requested outputs
-     * @param ParamBag|null  $params  Search backend parameters
+     * @param string        $backend    Search backend identifier
+     * @param string        $interface  Feature interface class name
+     * @param string        $method     Feature interface method name
+     * @param array         $methodArgs Feature interface method arguments
+     * @param ParamBag|null $params     Search backend parameters
      *
-     * @return array
+     * @return mixed
      */
-    public function analyzeQuery(string $backend, QueryInterface $query,
-        array $outputs, ParamBag $params = null
-    ): array {
+    public function invokeCommand(string $backend, string $interface, string $method,
+        array $methodArgs, ParamBag $params = null
+    ) {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
-        $args = compact('backend', 'query', 'outputs', 'params', 'context');
+        $args = compact(
+            'backend', 'interface', 'method', 'methodArgs', 'params', 'context'
+        );
         $backendInstance = $this->resolve($backend, $args);
         $args['backend_instance'] = $backendInstance;
 
         $this->triggerPre($backendInstance, $args);
         try {
-            if (!($backendInstance instanceof QueryAnalysisInterface)) {
+            if (!method_exists($interface, $method)) {
                 throw new BackendException(
-                    "$backend does not support analyzeQuery()"
+                    "The method $method does not exist in $interface"
                 );
             }
-            $response = $backendInstance->analyzeQuery($query, $outputs, $params);
+            if (!($backendInstance instanceof $interface)) {
+                throw new BackendException(
+                    "$backend is not an instance of $interface"
+                );
+            }
+            return call_user_func([$backendInstance, $method], ...$methodArgs);
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;
