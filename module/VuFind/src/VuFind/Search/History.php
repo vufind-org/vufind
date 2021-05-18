@@ -139,7 +139,7 @@ class History
         if (!($this->config->Account->schedule_searches ?? false)) {
             return [];
         }
-        // If custom frequences are not provided, return defaults:
+        // If custom frequencies are not provided, return defaults:
         if (!isset($this->config->Account->scheduled_search_frequencies)) {
             return [
                 0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'
