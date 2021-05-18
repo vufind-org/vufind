@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SOLR commit document class.
+ * SOLR "raw document" class for submitting any type of data.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,42 +22,57 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Solr\Document;
 
-use XMLWriter;
-
 /**
- * SOLR commit document class.
+ * SOLR "raw document" class for submitting any type of data.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class CommitDocument implements DocumentInterface
+class RawDocument implements DocumentInterface
 {
     /**
-     * Value for commitWithin attribute
+     * Raw document text
      *
-     * @var int
+     * @var string
      */
-    protected $commitWithin;
+    protected $content;
+
+    /**
+     * MIME type
+     *
+     * @var string
+     */
+    protected $mime;
+
+    /**
+     * Text encoding
+     *
+     * @var string
+     */
+    protected $encoding;
 
     /**
      * Constructor.
      *
-     * @param int $commitWithin commitWithin attribute value (-1 to omit)
+     * @param string  $content  Raw document text
+     * @param string  $mime     MIME type
+     * @param ?string $encoding Text encoding (null for unspecified)
      */
-    public function __construct(int $commitWithin = -1)
-    {
-        $this->commitWithin = $commitWithin;
+    public function __construct(string $content, string $mime,
+        ?string $encoding = 'UTF-8'
+    ) {
+        $this->content = $content;
+        $this->mime = $mime;
+        $this->encoding = $encoding;
     }
 
     /**
@@ -67,7 +82,8 @@ class CommitDocument implements DocumentInterface
      */
     public function getContentType(): string
     {
-        return 'text/xml; charset=UTF-8';
+        return $this->mime
+            . (empty($this->encoding) ? '' : "; charset=" . $this->encoding);
     }
 
     /**
@@ -77,15 +93,6 @@ class CommitDocument implements DocumentInterface
      */
     public function getContent(): string
     {
-        $writer = new XMLWriter();
-        $writer->openMemory();
-        $writer->startDocument();
-        $writer->startElement('commit');
-        if ($this->commitWithin > 0) {
-            $writer->writeAttribute('commitWithin', $this->commitWithin);
-        }
-        $writer->endElement();
-        $writer->endDocument();
-        return $writer->flush();
+        return $this->content;
     }
 }

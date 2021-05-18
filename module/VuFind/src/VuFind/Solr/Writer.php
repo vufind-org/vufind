@@ -30,10 +30,11 @@ namespace VuFind\Solr;
 use VuFind\Db\Table\ChangeTracker;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
+use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
+use VuFindSearch\ParamBag;
 
 /**
  * Solr Writer service
@@ -156,27 +157,30 @@ class Writer
     /**
      * Save new record(s) to the index.
      *
-     * @param string           $backend Backend ID
-     * @param AbstractDocument $doc     Document(s) to save
+     * @param string            $backend Backend ID
+     * @param DocumentInterface $doc     Document(s) to save
+     * @param string            $handler Update handler
+     * @param ParamBag          $params  Update handler parameters
      *
      * @return void
      */
-    public function save($backend, AbstractDocument $doc)
-    {
+    public function save($backend, DocumentInterface $doc, $handler = 'update',
+        ParamBag $params = null
+    ) {
         $connector = $this->getConnector($backend);
-        $connector->write($doc);
+        $connector->write($doc, $handler, $params);
     }
 
     /**
      * Write a document using a custom timeout value.
      *
-     * @param string           $backend Backend ID
-     * @param AbstractDocument $doc     Document(s) to write
-     * @param int              $timeout Timeout value
+     * @param string            $backend Backend ID
+     * @param DocumentInterface $doc     Document(s) to write
+     * @param int               $timeout Timeout value
      *
      * @return void
      */
-    protected function writeWithTimeout($backend, AbstractDocument $doc, $timeout)
+    protected function writeWithTimeout($backend, DocumentInterface $doc, $timeout)
     {
         $connector = $this->getConnector($backend);
 

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SOLR "raw XML" document class for manual overrides.
+ * Unit tests for SOLR raw JSON document class.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,10 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend\Solr\Document;
+namespace VuFindTest\Backend\Solr\Document;
+
+use PHPUnit\Framework\TestCase;
+
+use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 /**
- * SOLR "raw XML" document class for manual overrides.
+ * Unit tests for SOLR raw JSON document class.
  *
  * @category VuFind
  * @package  Search
@@ -37,16 +41,19 @@ namespace VuFindSearch\Backend\Solr\Document;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawXMLDocument extends RawDocument
+class RawJSONDocumentTest extends TestCase
 {
     /**
-     * Constructor.
+     * Test creation of JSON document.
      *
-     * @param string  $content  Raw document text
-     * @param ?string $encoding Text encoding (null for unspecified)
+     * @return void
      */
-    public function __construct(string $content, ?string $encoding = 'UTF-8')
+    public function testBasicBehavior()
     {
-        parent::__construct($content, 'text/xml', $encoding);
+        $document = new RawJSONDocument('{}');
+        $this->assertEquals(
+            'application/json', $document->getContentType()
+        );
+        $this->assertEquals('{}', $document->getContent());
     }
 }
