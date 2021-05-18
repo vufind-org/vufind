@@ -28,6 +28,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtmlAttr;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -104,14 +105,14 @@ class Icon extends AbstractHelper
      * Reduce extra parameters to one attribute string
      * Broken out for easier customization
      *
-     * @param array $extra Just extra HTML attributes for now
+     * @param array          $extra Just extra HTML attributes for now
+     * @param EscapeHtmlAttr $escAttr EscapeHtmlAttr view helper
      *
      * @return string
      */
-    protected function compileAttrs(array $extra): string
+    protected function compileAttrs(array $extra, EscapeHtmlAttr $escAttr): string
     {
         $attrs = '';
-        $escAttr = $this->getView()->plugin('escapeHtmlAttr');
         foreach ($extra as $key => $val) {
             $attrs .= ' ' . $key . '="' . $escAttr($val) . '"';
         }
@@ -131,18 +132,19 @@ class Icon extends AbstractHelper
         [$icon, $set, $template] = $this->mapIcon($name);
 
         // Compile attitional HTML attributes
-        $attrs = '';
         $escAttr = $this->getView()->plugin('escapeHtmlAttr');
-        foreach ($extra as $key => $val) {
-            $attrs .= ' ' . $key . '="' . $escAttr($val) . '"';
-        }
+        $attrs = $this->compileAttrs($extra, $escAttr);
 
         // Surface set config and add icon and attrs
         return $this->getView()->render(
             'Helpers/icons/' . $template,
             array_merge(
                 $this->config['sets'][$set] ?? [],
-                ['icon' => $escAttr($icon), 'attrs' => $attrs]
+                [
+                    'icon' => $escAttr($icon),
+                    'attrs' => $attrs,
+                    'extra' => $extra
+                ]
             )
         );
     }

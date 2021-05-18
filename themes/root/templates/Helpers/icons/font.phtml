@@ -1,5 +1,11 @@
 <?php
     $this->headLink()->appendStylesheet($this->src);
     $this->headLink()->appendStylesheet('icon-helper.css');
+
+    // Append extra classes
+    if (isset($this->extra['class'])) {
+        $this->icon .= ' ' . $this->extra['class'];
+        $this->attrs = preg_replace('/ class="[^"]+"/', '', $this->attrs);
+    }
 ?>
 <i class="icon--font <?=$this->icon ?>"<?=$this->attrs ?> aria-hidden="true"></i>
