@@ -148,6 +148,37 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $disableRenewals = false;
 
     /**
+     * Schemes preset for certain elements. See implementation profile:
+     * http://www.ncip.info/uploads/7/1/4/6/7146749/z39-83-2-2012_ncip.pdf
+     *
+     * @var string[]
+     */
+    protected $schemes = [
+        'AgencyElementType' =>
+            'http://www.niso.org/ncip/v1_0/imp1/schemes/agencyelementtype/' .
+            'agencyelementtype.scm',
+        'AuthenticationDataFormatType' =>
+            'http://www.iana.org/assignments/media-types/',
+        'AuthenticationInputType' =>
+            'http://www.niso.org/ncip/v1_0/imp1/schemes/authenticationinputtype/' .
+            'authenticationinputype.scm',
+        'BibliographicItemIdentifierCode' =>
+            'http://www.niso.org/ncip/v1_0/imp1/schemes/' .
+            'bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm',
+        'ItemElementType' =>
+            'http://www.niso.org/ncip/v1_0/schemes/itemelementtype/' .
+            'itemelementtype.scm',
+        'RequestScopeType' =>
+            'http://www.niso.org/ncip/v1_0/imp1/schemes/requestscopetype/' .
+            'requestscopetype.scm',
+        'RequestType' =>
+            'http://www.niso.org/ncip/v1_0/imp1/schemes/requesttype/requesttype.scm',
+        'UserElementType' =>
+            'http://www.niso.org/ncip/v1_0/schemes/userelementtype/' .
+            'userelementtype.scm',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -503,8 +534,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Add the desired data list:
         foreach ($desiredParts as $current) {
             $xml .= '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
-                'itemelementtype/itemelementtype.scm">' .
+                $this->scheme('ItemElementType') . '>' .
                 htmlspecialchars($current) . '</ns1:ItemElementType>';
         }
 
@@ -772,14 +802,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function patronLogin($username, $password)
     {
         $extras = [
-            '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
-            'schemes/userelementtype/userelementtype.scm">' .
-            'User Address Information' .
-            '</ns1:UserElementType>',
-            '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
-            'schemes/userelementtype/userelementtype.scm">' .
-            'Name Information' .
-            '</ns1:UserElementType>'
+            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
+            . 'User Address Information</ns1:UserElementType>',
+            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
+            . 'Name Information' . '</ns1:UserElementType>'
         ];
 
         $request = $this->getLookupUserRequest(
@@ -1109,14 +1135,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getMyProfile($patron)
     {
         $extras = [
-            '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
-                'schemes/userelementtype/userelementtype.scm">' .
-                'User Address Information' .
-            '</ns1:UserElementType>',
-            '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
-                'schemes/userelementtype/userelementtype.scm">' .
-                'Name Information' .
-            '</ns1:UserElementType>'
+            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
+                . 'User Address Information' . '</ns1:UserElementType>',
+            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
+                . 'Name Information' . '</ns1:UserElementType>'
         ];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
@@ -1866,8 +1888,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         ];
         foreach ($desiredElementTypes as $elementType) {
             $ret .= '<ns1:AgencyElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
-                'agencyelementtype/agencyelementtype.scm">' .
+                $this->scheme('AgencyElementType') . '>' .
                     $elementType .
                 '</ns1:AgencyElementType>';
         }
@@ -1890,10 +1911,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '<ns1:LookupItem>' .
             $this->getInitiationHeaderXml($agency) .
             $this->getItemIdXml($agency, $itemId, $idType) .
-            '<ns1:ItemElementType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/schemes/' .
-                'itemelementtype/itemelementtype.scm">' .
-                'Bibliographic Description</ns1:ItemElementType>' .
+            '<ns1:ItemElementType ' . $this->scheme('ItemElementType') . '>'
+            . 'Bibliographic Description</ns1:ItemElementType>' .
         '</ns1:LookupItem></ns1:NCIPMessage>';
         return $ret;
     }
@@ -1952,10 +1971,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '<ns1:AuthenticationInputData>' .
                     htmlspecialchars($username) .
                 '</ns1:AuthenticationInputData>' .
-                '<ns1:AuthenticationDataFormatType>' .
+                '<ns1:AuthenticationDataFormatType ' .
+                    $this->scheme('AuthenticationDataFormatType') . '>' .
                     'text' .
                 '</ns1:AuthenticationDataFormatType>' .
-                '<ns1:AuthenticationInputType>' .
+                '<ns1:AuthenticationInputType ' .
+                    $this->scheme('AuthenticationInputType') . '>' .
                     'Username' .
                 '</ns1:AuthenticationInputType>' .
             '</ns1:AuthenticationInput>' .
@@ -1966,7 +1987,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '<ns1:AuthenticationDataFormatType>' .
                     'text' .
                 '</ns1:AuthenticationDataFormatType>' .
-                '<ns1:AuthenticationInputType>' .
+                '<ns1:AuthenticationInputType ' .
+                    $this->scheme('AuthenticationInputType') . '>' .
                     'Password' .
                 '</ns1:AuthenticationInputType>' .
             '</ns1:AuthenticationInput>'
@@ -2032,15 +2054,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getRequestTypeXml($type, $scope = 'Bibliographic Item')
     {
-        return '<ns1:RequestType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
-                'requesttype/requesttype.scm">' .
+        return '<ns1:RequestType ' . $this->scheme('RequestType') . '>' .
                 htmlspecialchars($type) .
             '</ns1:RequestType>' .
-            '<ns1:RequestScopeType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/' .
-                'requestscopetype/requestscopetype.scm">' .
-                htmlspecialchars($scope) .
+            '<ns1:RequestScopeType ' . $this->scheme('RequestScopeType') .
+                '>' . htmlspecialchars($scope) .
             '</ns1:RequestScopeType>';
     }
 
@@ -2059,9 +2077,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     htmlspecialchars($id) .
                 '</ns1:BibliographicItemIdentifier>' .
                 '<ns1:BibliographicItemIdentifierCode ' .
-                    'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/' .
-                    'schemes/bibliographicitemidentifiercode/' .
-                    'bibliographicitemidentifiercode.scm">' .
+                    $this->scheme('BibliographicItemIdentifierCode') . '>' .
                     'Legal Deposit Number' .
                 '</ns1:BibliographicItemIdentifierCode>' .
             '</ns1:BibliographicItemId>' .
@@ -2313,5 +2329,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $allProblems[] = implode(', ', $oneProblem);
         }
         return implode(', ', $allProblems);
+    }
+
+    /**
+     * Creates scheme attribute based on $this->schemes array
+     *
+     * @param string $element Element name
+     *
+     * @return string Scheme attribute or empty string
+     */
+    protected function scheme(string $element): string
+    {
+        return isset($this->schemes[$element]) ?
+            'ns1:Scheme="' . $this->schemes[$element] . '"' : '';
     }
 }
