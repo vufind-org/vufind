@@ -533,15 +533,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // Add the desired data list:
         foreach ($desiredParts as $current) {
-            $xml .= '<ns1:ItemElementType ' .
-                $this->scheme('ItemElementType') . '>' .
-                htmlspecialchars($current) . '</ns1:ItemElementType>';
+            $xml .= $this->element('ItemElementType', $current);
         }
 
         // Add resumption token if necessary:
         if (!empty($resumption)) {
-            $xml .= '<ns1:NextItemToken>' . htmlspecialchars($resumption) .
-                '</ns1:NextItemToken>';
+            $xml .= $this->element('NextItemToken', $resumption);
         }
 
         // Close the XML and send it to the caller:
@@ -802,10 +799,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function patronLogin($username, $password)
     {
         $extras = [
-            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
-            . 'User Address Information</ns1:UserElementType>',
-            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
-            . 'Name Information' . '</ns1:UserElementType>'
+            $this->element('UserElementType', 'User Address Information'),
+            $this->element('UserElementType', 'Name Information'),
         ];
 
         $request = $this->getLookupUserRequest(
@@ -1135,10 +1130,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getMyProfile($patron)
     {
         $extras = [
-            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
-                . 'User Address Information' . '</ns1:UserElementType>',
-            '<ns1:UserElementType ' . $this->scheme('UserElementType') . '>'
-                . 'Name Information' . '</ns1:UserElementType>'
+            $this->element('UserElementType', 'User Address Information'),
+            $this->element('UserElementType', 'Name Information'),
         ];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
@@ -1751,14 +1744,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         if ($requestId !== null) {
             $ret .=
-                    '<ns1:RequestId>' .
-                        '<ns1:AgencyId>' .
-                            htmlspecialchars($itemAgencyId) .
-                        '</ns1:AgencyId>' .
-                        '<ns1:RequestIdentifierValue>' .
-                            htmlspecialchars($requestId) .
-                        '</ns1:RequestIdentifierValue>' .
-                    '</ns1:RequestId>';
+                '<ns1:RequestId>' .
+                    $this->element('AgencyId', $itemAgencyId) .
+                    $this->element('RequestIdentifierValue', $requestId) .
+                '</ns1:RequestId>';
         }
         if ($itemId !== null) {
             $ret .= $this->getItemIdXml($itemAgencyId, $itemId);
@@ -1800,14 +1789,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->getRequestTypeXml($requestType, $requestScope);
 
         if (!empty($pickupLocation)) {
-            $ret .= '<ns1:PickupLocation>' .
-                htmlspecialchars($pickupLocation) .
-            '</ns1:PickupLocation>';
+            $ret .= $this->element('PickupLocation', $pickupLocation);
         }
         if (!empty($lastInterestDate)) {
-            $ret .= '<ns1:NeedBeforeDate>' .
-                htmlspecialchars($lastInterestDate) .
-            '</ns1:NeedBeforeDate>';
+            $ret .= $this->element('NeedBeforeDate', $lastInterestDate);
         }
         $ret .= '</ns1:RequestItem></ns1:NCIPMessage>';
         return $ret;
@@ -1878,8 +1863,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $ret = $this->getNCIPMessageStart() .
             '<ns1:LookupAgency>' .
-             $this->getInitiationHeaderXml($agency) .
-            '<ns1:AgencyId>' . htmlspecialchars($agency) . '</ns1:AgencyId>';
+            $this->getInitiationHeaderXml($agency) .
+            $this->element('AgencyId', $agency);
 
         $desiredElementTypes = [
             'Agency Address Information', 'Agency User Privilege Type',
@@ -1887,10 +1872,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'Consortium Agreement', 'Organization Name Information'
         ];
         foreach ($desiredElementTypes as $elementType) {
-            $ret .= '<ns1:AgencyElementType ' .
-                $this->scheme('AgencyElementType') . '>' .
-                    $elementType .
-                '</ns1:AgencyElementType>';
+            $ret .= $this->element('AgencyElementType', $elementType);
         }
         $ret .= '</ns1:LookupAgency></ns1:NCIPMessage>';
         return $ret;
@@ -1911,8 +1893,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '<ns1:LookupItem>' .
             $this->getInitiationHeaderXml($agency) .
             $this->getItemIdXml($agency, $itemId, $idType) .
-            '<ns1:ItemElementType ' . $this->scheme('ItemElementType') . '>'
-            . 'Bibliographic Description</ns1:ItemElementType>' .
+            $this->element('ItemElementType', 'Bibliographic Description') .
         '</ns1:LookupItem></ns1:NCIPMessage>';
         return $ret;
     }
@@ -1932,14 +1913,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         return '<ns1:InitiationHeader>' .
                 '<ns1:FromAgencyId>' .
-                    '<ns1:AgencyId>' .
-                        htmlspecialchars($this->fromAgency) .
-                    '</ns1:AgencyId>' .
+                    $this->element('AgencyId', $this->fromAgency) .
                 '</ns1:FromAgencyId>' .
                 '<ns1:ToAgencyId>' .
-                    '<ns1:AgencyId>' .
-                        htmlspecialchars($agency) .
-                    '</ns1:AgencyId>' .
+                    $this->element('AgencyId', $agency) .
                 '</ns1:ToAgencyId>' .
             '</ns1:InitiationHeader>';
     }
@@ -1968,29 +1945,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         return (!empty($username) && !empty($password))
             ? '<ns1:AuthenticationInput>' .
-                '<ns1:AuthenticationInputData>' .
-                    htmlspecialchars($username) .
-                '</ns1:AuthenticationInputData>' .
-                '<ns1:AuthenticationDataFormatType ' .
-                    $this->scheme('AuthenticationDataFormatType') . '>' .
-                    'text' .
-                '</ns1:AuthenticationDataFormatType>' .
-                '<ns1:AuthenticationInputType ' .
-                    $this->scheme('AuthenticationInputType') . '>' .
-                    'Username' .
-                '</ns1:AuthenticationInputType>' .
+                $this->element('AuthenticationInputData', $username) .
+                $this->element('AuthenticationDataFormatType', 'text') .
+                $this->element('AuthenticationInputType', 'Username') .
             '</ns1:AuthenticationInput>' .
             '<ns1:AuthenticationInput>' .
-                '<ns1:AuthenticationInputData>' .
-                    htmlspecialchars($password) .
-                '</ns1:AuthenticationInputData>' .
-                '<ns1:AuthenticationDataFormatType>' .
-                    'text' .
-                '</ns1:AuthenticationDataFormatType>' .
-                '<ns1:AuthenticationInputType ' .
-                    $this->scheme('AuthenticationInputType') . '>' .
-                    'Password' .
-                '</ns1:AuthenticationInputType>' .
+                $this->element('AuthenticationInputData', $password) .
+                $this->element('AuthenticationDataFormatType', 'text') .
+                $this->element('AuthenticationInputType', 'Password') .
             '</ns1:AuthenticationInput>'
             : '';
     }
@@ -2006,15 +1968,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getItemIdXml($agency, $itemId, $idType = null)
     {
-        $ret = '<ns1:ItemId><ns1:AgencyId>' .
-            htmlspecialchars($agency) . '</ns1:AgencyId>';
+        $ret = '<ns1:ItemId>' . $this->element('AgencyId', $agency);
         if ($idType !== null) {
-            $ret .= '<ns1:ItemIdentifierType>' .
-                htmlspecialchars($idType) . '</ns1:ItemIdentifierType>';
+            $ret .= $this->element('ItemIdentifierType', $idType);
         }
-        $ret .= '<ns1:ItemIdentifierValue>' .
-            htmlspecialchars($itemId) . '</ns1:ItemIdentifierValue>' .
-            '</ns1:ItemId>';
+        $ret .= $this->element('ItemIdentifierValue', $itemId);
+        $ret .= '</ns1:ItemId>';
         return $ret;
     }
 
@@ -2031,14 +1990,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $agency = $this->determineToAgencyId($patronAgency);
         if ($patronId !== null) {
             return '<ns1:UserId>' .
-                '<ns1:AgencyId>' .
-                    htmlspecialchars($agency) .
-                '</ns1:AgencyId>' .
-                '<ns1:UserIdentifierType>Institution Id Number' .
-                '</ns1:UserIdentifierType>' .
-                '<ns1:UserIdentifierValue>' .
-                    htmlspecialchars($patronId) .
-                '</ns1:UserIdentifierValue>' .
+                $this->element('AgencyId', $agency) .
+                $this->element('UserIdentifierType', 'Institution Id Number') .
+                $this->element('UserIdentifierValue', $patronId) .
             '</ns1:UserId>';
         }
         return '';
@@ -2054,12 +2008,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getRequestTypeXml($type, $scope = 'Bibliographic Item')
     {
-        return '<ns1:RequestType ' . $this->scheme('RequestType') . '>' .
-                htmlspecialchars($type) .
-            '</ns1:RequestType>' .
-            '<ns1:RequestScopeType ' . $this->scheme('RequestScopeType') .
-                '>' . htmlspecialchars($scope) .
-            '</ns1:RequestScopeType>';
+        return
+            $this->element('RequestType', $type) .
+            $this->element('RequestScopeType', $scope);
     }
 
     /**
@@ -2073,13 +2024,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         return '<ns1:BibliographicId>' .
             '<ns1:BibliographicItemId>' .
-                '<ns1:BibliographicItemIdentifier>' .
-                    htmlspecialchars($id) .
-                '</ns1:BibliographicItemIdentifier>' .
-                '<ns1:BibliographicItemIdentifierCode ' .
-                    $this->scheme('BibliographicItemIdentifierCode') . '>' .
-                    'Legal Deposit Number' .
-                '</ns1:BibliographicItemIdentifierCode>' .
+                $this->element('BibliographicItemIdentifier', $id) .
+                $this->element(
+                    'BibliographicItemIdentifierCode', 'Legal Deposit Number'
+                ) .
             '</ns1:BibliographicItemId>' .
         '</ns1:BibliographicId>';
     }
@@ -2334,13 +2282,34 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Creates scheme attribute based on $this->schemes array
      *
-     * @param string $element Element name
+     * @param string $element         Element name
+     * @param string $namespacePrefix Namespace identifier
      *
      * @return string Scheme attribute or empty string
      */
-    protected function scheme(string $element): string
+    private function _schemeAttr(string $element, $namespacePrefix = 'ns1'): string
     {
-        return isset($this->schemes[$element]) ?
-            'ns1:Scheme="' . $this->schemes[$element] . '"' : '';
+        return isset($this->schemes[$element])
+            ? ' ' . $namespacePrefix . ':Scheme="' . $this->schemes[$element] . '"'
+            : '';
+    }
+
+    /**
+     * Creates simple element as XML string
+     *
+     * @param string $elementName     Element name
+     * @param string $text            Content of element
+     * @param string $namespacePrefix Namespace
+     *
+     * @return string XML string
+     */
+    protected function element(string $elementName, string $text,
+        string $namespacePrefix = 'ns1'
+    ): string {
+        $fullElementName = $namespacePrefix . ':' . $elementName;
+        return '<' . $fullElementName .
+            $this->_schemeAttr($elementName, $namespacePrefix) . '>' .
+            htmlspecialchars($text) .
+            '</' . $fullElementName . '>';
     }
 }
