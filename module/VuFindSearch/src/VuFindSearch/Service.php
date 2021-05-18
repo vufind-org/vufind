@@ -402,16 +402,18 @@ class Service
      * Analyze query.
      *
      * @param string         $backend Search backend identifier
-     * @param QueryInterface $query   Query
+     * @param QueryInterface $query   Query object
+     * @param array          $outputs Requested outputs
      * @param ParamBag|null  $params  Search backend parameters
      *
      * @return array
      */
-    public function analyzeQuery(string $backend, QueryInterface $query, ParamBag $params = null): array
-    {
+    public function analyzeQuery(string $backend, QueryInterface $query,
+        array $outputs, ParamBag $params = null
+    ): array {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
-        $args = compact('backend', 'query', 'params', 'context');
+        $args = compact('backend', 'query', 'outputs', 'params', 'context');
         $backendInstance = $this->resolve($backend, $args);
         $args['backend_instance'] = $backendInstance;
 
@@ -422,7 +424,7 @@ class Service
                     "$backend does not support analyzeQuery()"
                 );
             }
-            $response = $backendInstance->analyzeQuery($query, $params);
+            $response = $backendInstance->analyzeQuery($query, $outputs, $params);
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;
