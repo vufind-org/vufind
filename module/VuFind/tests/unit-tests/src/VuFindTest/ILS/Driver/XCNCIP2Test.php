@@ -366,6 +366,18 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'group' => '',
             ],
         ],
+        [
+            'file' => 'lookupUserResponseUnstructuredName.xml',
+            'result' => [
+                'firstname' => '',
+                'lastname' => 'John Smith Jr.',
+                'address1' => 'Trvalá ulice 123',
+                'address2' => '12345 Big City',
+                'zip' => '',
+                'phone' => '',
+                'group' => '',
+            ],
+        ],
     ];
 
     /**

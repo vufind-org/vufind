@@ -1140,16 +1140,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = $this->sendRequest($request);
         $this->checkResponseForError($response);
 
-        $first = $response->xpath(
+        $firstname = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:NameInformation/' .
             'ns1:PersonalNameInformation/ns1:StructuredPersonalUserName/' .
             'ns1:GivenName'
         );
-        $last = $response->xpath(
+        $lastname = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:NameInformation/' .
             'ns1:PersonalNameInformation/ns1:StructuredPersonalUserName/' .
             'ns1:Surname'
         );
+        if (empty($firstname) && empty($lastname)) {
+            $lastname = $response->xpath(
+                'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+                'ns1:NameInformation/ns1:PersonalNameInformation/' .
+                'ns1:UnstructuredPersonalUserName'
+            );
+        }
 
         $address1 = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
@@ -1194,8 +1201,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         return [
-            'firstname' => (string)($first[0] ?? ''),
-            'lastname' => (string)($last[0] ?? ''),
+            'firstname' => (string)($firstname[0] ?? ''),
+            'lastname' => (string)($lastname[0] ?? ''),
             'address1' => $address1,
             'address2' => $address2,
             'zip' => $zip,
