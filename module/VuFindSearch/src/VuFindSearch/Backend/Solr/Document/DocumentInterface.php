@@ -1,7 +1,6 @@
 <?php
-
 /**
- * SOLR commit document class.
+ * Interface for Solr document classes
  *
  * PHP version 7
  *
@@ -22,70 +21,34 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 namespace VuFindSearch\Backend\Solr\Document;
 
-use XMLWriter;
-
 /**
- * SOLR commit document class.
+ * Interface for Solr document classes
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class CommitDocument implements DocumentInterface
+interface DocumentInterface
 {
-    /**
-     * Value for commitWithin attribute
-     *
-     * @var int
-     */
-    protected $commitWithin;
-
-    /**
-     * Constructor.
-     *
-     * @param int $commitWithin commitWithin attribute value (-1 to omit)
-     */
-    public function __construct(int $commitWithin = -1)
-    {
-        $this->commitWithin = $commitWithin;
-    }
-
     /**
      * Return content MIME type.
      *
      * @return string
      */
-    public function getContentType(): string
-    {
-        return 'text/xml; charset=UTF-8';
-    }
+    public function getContentType(): string;
 
     /**
      * Return serialized representation.
      *
      * @return string
      */
-    public function getContent(): string
-    {
-        $writer = new XMLWriter();
-        $writer->openMemory();
-        $writer->startDocument();
-        $writer->startElement('commit');
-        if ($this->commitWithin > 0) {
-            $writer->writeAttribute('commitWithin', $this->commitWithin);
-        }
-        $writer->endElement();
-        $writer->endDocument();
-        return $writer->flush();
-    }
+    public function getContent(): string;
 }
