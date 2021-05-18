@@ -64,7 +64,7 @@ class SolrAuthMarc extends SolrAuthDefault {
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
-                if (in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata']))
+                if ($nameSubfield === false || in_array($nameSubfield->getData(), ['GND' , 'ISNI', 'LOC', 'ORCID', 'VIAF', 'Wikidata']))
                     continue;
 
                 $urlSubfield = $field->getSubfield('u');
