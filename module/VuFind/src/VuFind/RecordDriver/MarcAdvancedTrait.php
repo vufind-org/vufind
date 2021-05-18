@@ -144,7 +144,8 @@ trait MarcAdvancedTrait
                         $retval[] = [
                             'heading' => $current,
                             'type' => $fieldType,
-                            'source' => $source
+                            'source' => $source,
+                            'id' => $this->getSubfield($result, '0')
                         ];
                     } else {
                         $retval[] = $current;

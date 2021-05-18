@@ -52,7 +52,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     protected function getMockBackend($id = 'EDS')
     {
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->setMethods(['autocomplete'])
+            ->onlyMethods(['autocomplete'])
             ->disableOriginalConstructor()->getMock();
     }
 
