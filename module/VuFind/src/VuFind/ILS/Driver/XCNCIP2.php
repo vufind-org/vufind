@@ -1151,21 +1151,54 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:Surname'
         );
 
-        // TODO: distinguish between permanent and other types of addresses; look
-        // at the UnstructuredAddressType field and handle multiple options.
-        $address = $response->xpath(
+        $address1 = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
             'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
-            'ns1:UnstructuredAddress/ns1:UnstructuredAddressData'
+            'ns1:StructuredAddress/ns1:Line1' .
+            '|' .
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+            'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
+            'ns1:StructuredAddress/ns1:Street'
         );
-        $address = explode("\n", trim((string)$address[0]));
+        $address1 = (string)($address1[0] ?? '');
+        $address2 = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+            'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
+            'ns1:StructuredAddress/ns1:Line2' .
+            '|' .
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+            'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
+            'ns1:StructuredAddress/ns1:Locality'
+        );
+        $address2 = (string)($address2[0] ?? '');
+        $zip = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+            'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
+            'ns1:StructuredAddress/ns1:PostalCode'
+        );
+        $zip = (string)($zip[0] ?? '');
+
+        if (empty($address1)) {
+            // TODO: distinguish between more formatting types; look
+            // at the UnstructuredAddressType field and handle multiple options.
+            $address = $response->xpath(
+                'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
+                'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
+                'ns1:UnstructuredAddress/ns1:UnstructuredAddressData'
+            );
+            $address = explode("\n", trim((string)($address[0] ?? '')));
+            $address1 = $address[0] ?? '';
+            $address2 = ($address[1] ?? '') .
+                (isset($address[2]) ? ', ' . $address[2] : '');
+            $zip = $address[3] ?? '';
+        }
+
         return [
             'firstname' => (string)($first[0] ?? ''),
             'lastname' => (string)($last[0] ?? ''),
-            'address1' => $address[0] ?? '',
-            'address2' => ($address[1] ?? '') .
-                (isset($address[2]) ? ', ' . $address[2] : ''),
-            'zip' => $address[3] ?? '',
+            'address1' => $address1,
+            'address2' => $address2,
+            'zip' => $zip,
             'phone' => '',  // TODO: phone number support
             'group' => ''
         ];
