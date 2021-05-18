@@ -53,8 +53,11 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
                 }
             }
         }
-
         throw new \Exception('No image found');
+    }
+
+    protected function normalizeArtist($artist) {
+        return htmlspecialchars_decode(htmlentities(preg_replace("'(\r?\n)+'", ', ', trim(strip_tags($artist)))));
     }
 
     protected function generateResponse(&$image) {
@@ -66,7 +69,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         if (isset($image['licenseUrl']))
             $response->getHeaders()->addHeaderLine('Link', htmlspecialchars_decode(htmlentities('<'.$image['licenseUrl'].'>; rel="license"; title="'.$image['license'].'"')));
         if (isset($image['artist']))
-            $response->getHeaders()->addHeaderLine('Artist', htmlspecialchars_decode(htmlentities(trim(strip_tags($image['artist'])))));
+            $response->getHeaders()->addHeaderLine('Artist', $this->normalizeArtist($image['artist']));
         $response->setContent($image['image']);
         return $response;
     }
