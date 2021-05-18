@@ -36,9 +36,10 @@ use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\GetIdsInterface;
+use VuFindSearch\Feature\QueryAnalysisInterface;
 use VuFindSearch\Feature\RandomInterface;
-
 use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -397,46 +398,21 @@ class Service
     }
 
     /**
-     * Call a backend feature interface method
+     * Get search terms.
      *
-     * @param string        $backend    Search backend identifier
-     * @param string        $interface  Feature interface class name
-     * @param string        $method     Feature interface method name
-     * @param array         $methodArgs Feature interface method arguments
-     * @param ParamBag|null $params     Search backend parameters
+     * @param string         $backend Search backend identifier
+     * @param QueryInterface $query   Query object
+     * @param ParamBag|null  $params  Search backend parameters
      *
-     * @return mixed
+     * @return array Tokenized search terms without any search syntax
      */
-    public function callMethod(string $backend, string $interface, string $method,
-        array $methodArgs, ParamBag $params = null
+    public function getSearchTerms(string $backend, QueryInterface $query,
+        ParamBag $params = null
     ) {
-        $params  = $params ?: new ParamBag();
-        $context = __FUNCTION__;
-        $args = compact(
-            'backend', 'interface', 'method', 'methodArgs', 'params', 'context'
+        return $this->callMethod(
+            $backend, QueryAnalysisInterface::class, 'getSearchTerms',
+            [$query], $params
         );
-        $backendInstance = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backendInstance;
-
-        $this->triggerPre($backendInstance, $args);
-        try {
-            if (!method_exists($interface, $method)) {
-                throw new BackendException(
-                    "The method $method does not exist in $interface"
-                );
-            }
-            if (!($backendInstance instanceof $interface)) {
-                throw new BackendException(
-                    "$backend is not an instance of $interface"
-                );
-            }
-            return call_user_func([$backendInstance, $method], ...$methodArgs);
-        } catch (BackendException $e) {
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-        return $response;
     }
 
     /**
@@ -502,6 +478,49 @@ class Service
             $this->backends[$backend] = $response->last();
         }
         return $this->backends[$backend];
+    }
+
+    /**
+     * Call a backend feature interface method
+     *
+     * @param string        $backend    Search backend identifier
+     * @param string        $interface  Feature interface class name
+     * @param string        $method     Feature interface method name
+     * @param array         $methodArgs Feature interface method arguments
+     * @param ParamBag|null $params     Search backend parameters
+     *
+     * @return mixed
+     */
+    protected function callMethod(string $backend, string $interface,
+        string $method, array $methodArgs, ParamBag $params = null
+    ) {
+        $params  = $params ?: new ParamBag();
+        $context = __FUNCTION__;
+        $args = compact(
+            'backend', 'interface', 'method', 'methodArgs', 'params', 'context'
+        );
+        $backendInstance = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backendInstance;
+
+        $this->triggerPre($backendInstance, $args);
+        try {
+            if (!method_exists($interface, $method)) {
+                throw new BackendException(
+                    "The method $method does not exist in $interface"
+                );
+            }
+            if (!($backendInstance instanceof $interface)) {
+                throw new BackendException(
+                    "$backend is not an instance of $interface"
+                );
+            }
+            $response = call_user_func([$backendInstance, $method], ...$methodArgs);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
+        $this->triggerPost($response, $args);
+        return $response;
     }
 
     /**
