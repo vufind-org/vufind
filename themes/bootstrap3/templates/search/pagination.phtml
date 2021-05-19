@@ -8,7 +8,7 @@
       <?php endif; ?>
       <li role="none">
         <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
-          <i class="fa fa-angle-left" aria-hidden="true"></i>
+          <?=$this->icon('page-prev') ?>
           <?=$this->transEsc('Prev')?>
         </a>
       </li>
@@ -30,7 +30,7 @@
       <li role="none">
         <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>" aria-label="<?=$this->transEscAttr('page_next')?>">
           <?=$this->transEsc('Next');?>
-          <i class="fa fa-angle-right" aria-hidden="true"></i>
+          <?=$this->icon('page-next') ?>
         </a>
       </li>
       <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>

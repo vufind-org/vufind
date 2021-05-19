@@ -24,9 +24,11 @@
   <div id="treeSelector">
     <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
       <?php if($activeTree == $hierarchy): ?>
-        <i class="fa fa-sitemap" aria-hidden="true"></i> <?=$this->escapeHtml($hierarchyTitle)?>
+        <?=$this->icon('hierarchy-tree') ?>
+        <?=$this->escapeHtml($hierarchyTitle)?>
       <?php else: ?>
-        <i class="fa fa-sitemap text-muted" aria-hidden="true"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy])?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <?=$this->icon('hierarchy-tree', ['class' => 'text-muted']) ?>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy])?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
       <?php endif; ?>
     <?php endforeach; ?>
   </div>
@@ -41,12 +43,12 @@
           <option value="Title"><?=$this->transEsc('Title')?></option>
         </select>
         <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Search') ?>"/>
-        <i id="treeSearchLoadingImg" class="fa fa-spinner fa-spin hidden" aria-hidden="true"></i>
+        <?=$this->icon('spinner', ['id' => 'treeSearchLoadingImg']) ?>
       </div>
       <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->translate('nohit_heading')?></div>
       <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', ['%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()])?></div>
     <?php endif; ?>
-    <div id="hierarchyLoading" class="hide"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <?=$this->transEsc("Loading")?>...</div>
+    <div id="hierarchyLoading" class="hide"><?=$this->icon('spinner') ?> <?=$this->transEsc("Loading")?>...</div>
     <div id="hierarchyTree" class="hierarchy-tree">
       <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
       <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />

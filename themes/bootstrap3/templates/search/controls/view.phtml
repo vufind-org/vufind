@@ -7,7 +7,7 @@
       <?php else: ?>
         <span title="<?=$this->transEscAttr('view_already_selected', ['%%current%%' => $viewDesc]) ?>">
       <?php endif; ?>
-      <i class="fa fa-<?=$viewType ?>" alt="<?=$this->escapeHtmlAttr($viewDesc)?>"></i>
+      <?=$this->icon('view-' . $viewType, ['alt' => $viewDesc]) ?>
       <?=$viewDesc ?>
       <?php if (!$viewData['selected']): ?>
         </a>

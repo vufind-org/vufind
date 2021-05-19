@@ -12,7 +12,7 @@
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
       <?php $topLabel = $this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]); ?>
-      <a class="top-title js-toggle visible-xs" data-toggle="collapse" data-target="#top_<?=$this->escapeHtml($title) ?>"><i class="fa fa-caret-right"></i> <?=$topLabel ?></a>
+      <a class="top-title js-toggle visible-xs" data-toggle="collapse" data-target="#top_<?=$this->escapeHtml($title) ?>"><?=$this->icon('collapse-closed') ?> <?=$topLabel ?></a>
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
@@ -26,7 +26,7 @@
                 $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
               } ?>
               <a href="<?=$removeLink ?>" class="applied">
-                <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
+                <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$this->icon('check') ?><!--
            --></a>
             <?php else: ?>
               <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
@@ -35,7 +35,7 @@
               <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
               <?php if ($allowExclude): ?>
                 <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
-                  <i class="fa fa-times" aria-hidden="true"></i>
+                  <?=$this->icon('facet-exclude') ?>
                   <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
                 </a>
               <?php endif; ?>

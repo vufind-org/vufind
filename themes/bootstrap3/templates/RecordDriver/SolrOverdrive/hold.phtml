@@ -45,13 +45,15 @@
             </div>
             </form>
         <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
-            <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+            <div class="alert alert-warning">
+                <?=$this->icon('warning') ?>
                 <div class="moreInfo">
                     <?= $this->transEsc("od_is_checkedout", ["%%due_date%%" => $result->data->checkout->expires]); ?>
                 </div>
             </div>
         <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
-            <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+            <div class="alert alert-warning">
+                <?=$this->icon('warning') ?>
                 <div class="moreInfo">
                     <?= $this->transEsc("od_is_on_hold");
                     if($hold->holdReadyForCheckout):
@@ -64,7 +66,8 @@
                 </div>
             </div>
         <?php else: ?>
-            <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+            <div class="alert alert-danger">
+                <?=$this->icon('warning') ?>
                 <div class="moreInfo"><?= $result->msg?></div>
             </div>
 
@@ -83,13 +86,15 @@
          </div>
      </form>
         <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
-        <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+        <div class="alert alert-warning">
+            <?=$this->icon('warning') ?>
             <div class="moreInfo">
                 <?= $this->transEsc("od_is_checkedout", ["%%due_date%%" => $result->data->checkout->expires]); ?>
             </div>
         </div>
         <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
-        <div class="alert alert-warning"><i class='fa fa-exclamation-triangle'></i>
+        <div class="alert alert-warning">
+            <?=$this->icon('warning') ?>
             <div class="moreInfo">
                 <?= $this->transEsc("od_is_on_hold");
                 if($hold->holdReadyForCheckout):
@@ -102,7 +107,8 @@
             </div>
         </div>
         <?php else: ?>
-        <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <div class="alert alert-danger">
+            <?=$this->icon('warning') ?>
             <div class="moreInfo"><?= $result->msg?></div>
         </div>
 
@@ -145,12 +151,14 @@
 
     <?php elseif($action == 'placeHold'): ?>
         <?php  if($result->status):?>
-            <div class="alert alert-success"><i class='fa fa-check'></i>
-            <?= $this->transEsc("od_hold_place_success", ["%%holdListPosition%%" => $result->data->holdListPosition]); ?>
+            <div class="alert alert-success">
+              <?=$this->icon('check') ?>
+              <?= $this->transEsc("od_hold_place_success", ["%%holdListPosition%%" => $result->data->holdListPosition]); ?>
             </div>
 
         <?php else: ?>
-        <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+        <div class="alert alert-danger">
+            <?=$this->icon('warning') ?>
         <?= $this->transEsc("od_hold_place_failure") ?>
             <div class="moreInfo"><?= $result->msg?></div>
         </div>
@@ -162,23 +170,26 @@
 
         <?php elseif($action == 'cancelHold'): ?>
         <?php  if($result->status):?>
-          <div class="alert alert-success"><i class='fa fa-check'></i>
+          <div class="alert alert-success">
+            <?=$this->icon('check') ?>
             <?= $this->transEsc("od_hold_cancel_success"); ?>
           </div>
 
         <?php else: ?>
-          <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+          <div class="alert alert-danger">
+            <?=$this->icon('warning') ?>
             <?= $this->transEsc("od_hold_cancel_failure") ?>
             <div class="moreInfo"><?= $result->msg?></div>
           </div>
         <?php  endif;?>
         <div class="pull-right">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?= $this->transEsc("close"); ?></button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?= $this->transEsc("close"); ?></button>
         </div>
 
     <?php elseif($action == "doCheckout"): ?>
         <?php  if($result->status):?>
-      <div class="alert alert-success"><i class='fa fa-check'></i>
+      <div class="alert alert-success">
+        <?=$this->icon('check') ?>
         <?= $this->transEsc("od_docheckout_success", ['%%expireDate%%' => $result->data->expires]); ?>
       </div>
 
@@ -192,7 +203,8 @@
             </div>
 
     <?php else: ?>
-      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+      <div class="alert alert-danger">
+          <?=$this->icon('warning') ?>
         <?= $this->transEsc("od_docheckout_failure"); ?>
           <div class="moreInfo"><?= $result->msg?></div>
       </div>
@@ -203,11 +215,13 @@
 
     <?php elseif($action == "returnTitle"): ?>
     <?php if($result->status):?>
-      <div class="alert alert-success"><i class='fa fa-check'></i>
+      <div class="alert alert-success">
+        <?=$this->icon('check') ?>
         <?= $this->transEsc("od_return_success"); ?>
       </div>
     <?php else: ?>
-      <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+      <div class="alert alert-danger">
+        <?=$this->icon('warning') ?>
         <?= $this->transEsc("od_return_failure"); ?>
          <div class="moreInfo"><?= $result->msg ?></div>
       </div>
@@ -215,11 +229,13 @@
 
         <?php elseif($action == "getTitle"): ?>
     <?php if($result->status):?>
-            <div class="alert alert-success"><i class='fa fa-check'></i>
+            <div class="alert alert-success">
+                <?=$this->icon('check') ?>
                 <?= $this->transEsc("od_return_success"); ?>
             </div>
         <?php else: ?>
-            <div class="alert alert-danger"><i class='fa fa-exclamation-triangle'></i>
+            <div class="alert alert-danger">
+                <?=$this->icon('warning') ?>
                 <?= $this->transEsc("od_gettitle_failure"); ?>
                 <div class="moreInfo"><?= $result->msg ?></div>
             </div>
