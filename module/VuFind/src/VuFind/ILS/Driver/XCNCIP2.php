@@ -314,7 +314,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param string $xml XML request document
      *
-     * @return object     SimpleXMLElement parsed from response
+     * @return \SimpleXMLElement SimpleXMLElement parsed from response
      */
     protected function sendRequest($xml)
     {
@@ -1873,7 +1873,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $username       Username for login
      * @param string $password       Password for login
      * @param string $patronAgencyId Patron agency ID (optional)
-     * @param string $extras         Extra elements to include in the request
+     * @param array  $extras         Extra elements to include in the request
      * @param string $patronId       Patron internal identifier
      *
      * @return string          NCIP request XML
