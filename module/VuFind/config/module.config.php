@@ -78,6 +78,16 @@ $config = [
                     ]
                 ]
             ],
+            'legacy-holds' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/MyResearch/Holds',
+                    'defaults' => [
+                        'controller' => 'Holds',
+                        'action'     => 'List',
+                    ]
+                ]
+            ],
             'legacy-summonrecord' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -159,6 +169,7 @@ $config = [
             'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -243,6 +254,8 @@ $config = [
             'help' => 'VuFind\Controller\HelpController',
             'Hierarchy' => 'VuFind\Controller\HierarchyController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
+            'Holds' => 'VuFind\Controller\HoldsController',
+            'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
             'Install' => 'VuFind\Controller\InstallController',
@@ -303,6 +316,7 @@ $config = [
             'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\FollowupFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'VuFind\Controller\Plugin\IlsRecords' => 'VuFind\Controller\Plugin\IlsRecordsFactory',
             'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
             'VuFind\Controller\Plugin\Renewals' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -322,6 +336,7 @@ $config = [
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
+            'ilsRecords' => 'VuFind\Controller\Plugin\IlsRecords',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
@@ -665,6 +680,7 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',
@@ -676,10 +692,9 @@ $staticRoutes = [
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
-    'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
-    'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
-    'MyResearch/NewPassword', 'MyResearch/Profile',
+    'MyResearch/EmailNotVerified', 'MyResearch/Favorites', 'MyResearch/Fines',
+    'MyResearch/HistoricLoans', 'MyResearch/Home', 'MyResearch/ILLRequests',
+    'MyResearch/Logout', 'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests',
     'MyResearch/Unsubscribe', 'MyResearch/UserLogin',
