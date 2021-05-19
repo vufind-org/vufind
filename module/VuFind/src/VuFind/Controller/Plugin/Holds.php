@@ -46,10 +46,11 @@ class Holds extends AbstractRequestBase
      * getMyHolds() method
      * @param array                  $cancelStatus Cancel settings from ILS driver's
      * checkFunction() method
+     * @param array                  $patron       ILS patron
      *
      * @return array $ilsDetails with cancellation info added
      */
-    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus)
+    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus, $patron)
     {
         // Generate Form Details for cancelling Holds if Cancelling Holds
         // is enabled
@@ -57,7 +58,7 @@ class Holds extends AbstractRequestBase
             if ($cancelStatus['function'] == "getCancelHoldLink") {
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
-                    = $catalog->getCancelHoldLink($ilsDetails);
+                    = $catalog->getCancelHoldLink($ilsDetails, $patron);
             } elseif (isset($ilsDetails['cancel_details'])) {
                 // The ILS driver provided cancel details up front. If the
                 // details are an empty string (flagging lack of support), we
@@ -71,7 +72,8 @@ class Holds extends AbstractRequestBase
             } else {
                 // Default case: ILS supports cancel but we need to look up
                 // details:
-                $cancelDetails = $catalog->getCancelHoldDetails($ilsDetails);
+                $cancelDetails
+                    = $catalog->getCancelHoldDetails($ilsDetails, $patron);
                 if ($cancelDetails !== '') {
                     $ilsDetails['cancel_details'] = $cancelDetails;
                     $this->rememberValidId($ilsDetails['cancel_details']);

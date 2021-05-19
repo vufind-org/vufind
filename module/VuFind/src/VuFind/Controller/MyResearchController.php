@@ -1195,7 +1195,7 @@ class MyResearchController extends AbstractBase
         foreach ($result as $current) {
             // Add cancel details if appropriate:
             $current = $this->holds()->addCancelDetails(
-                $catalog, $current, $cancelStatus
+                $catalog, $current, $cancelStatus, $patron
             );
             if ($cancelStatus && $cancelStatus['function'] != "getCancelHoldLink"
                 && isset($current['cancel_details'])

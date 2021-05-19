@@ -1657,19 +1657,23 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
 
         $result = $driver->getCancelHoldDetails(
-            ['id' => 'd1.1', 'item_id' => 2]
+            ['id' => 'd1.1', 'item_id' => 2],
+            $this->getPatron('user', 'd1')
         );
         $this->assertEquals($expected, $result);
 
         $result = $driver->getCancelHoldDetails(
-            ['id' => 'd2.1', 'item_id' => 2]
+            ['id' => 'd2.1', 'item_id' => 2],
+            $this->getPatron('user', 'd2')
+
         );
         $this->assertEquals($expected, $result);
 
         $this->expectException('VuFind\Exception\ILS');
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelHoldDetails(
-            ['id' => 'invalid.1', 'item_id' => 2]
+            ['id' => 'd1.1', 'item_id' => 2],
+            $this->getPatron('user', 'invalid')
         );
     }
 
@@ -1811,19 +1815,22 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
 
         $result = $driver->getCancelStorageRetrievalRequestDetails(
-            ['id' => 'd1.1', 'item_id' => 2]
+            ['id' => 'd1.1', 'item_id' => 2],
+            $this->getPatron('user', 'd1')
         );
         $this->assertEquals($expected, $result);
 
         $result = $driver->getCancelStorageRetrievalRequestDetails(
-            ['id' => 'd2.1', 'item_id' => 2]
+            ['id' => 'd2.1', 'item_id' => 2],
+            $this->getPatron('user', 'd2')
         );
         $this->assertEquals($expected, $result);
 
         $this->expectException('VuFind\Exception\ILS');
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelStorageRetrievalRequestDetails(
-            ['id' => 'invalid.1', 'item_id' => 2]
+            ['id' => 'd1.1', 'item_id' => 2],
+            $this->getPatron('user', 'invalid')
         );
     }
 
@@ -2148,19 +2155,22 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
 
         $result = $driver->getCancelILLRequestDetails(
-            ['id' => 'd1.1', 'item_id' => 2]
+            ['id' => 'd1.1', 'item_id' => 2],
+            $this->getPatron('user', 'd1')
         );
         $this->assertEquals($expected, $result);
 
         $result = $driver->getCancelILLRequestDetails(
-            ['id' => 'd2.1', 'item_id' => 2]
+            ['id' => 'd2.1', 'item_id' => 2],
+            $this->getPatron('user', 'd2')
         );
         $this->assertEquals($expected, $result);
 
         $this->expectException('VuFind\Exception\ILS');
         $this->expectExceptionMessage('No suitable backend driver found');
         $result = $driver->getCancelILLRequestDetails(
-            ['id' => 'invalid.1', 'item_id' => 2]
+            ['id' => 'd1.1', 'item_id' => 2],
+            $this->getPatron('user', 'invalid')
         );
     }
 
@@ -2633,15 +2643,15 @@ trait ILSMockTrait
     {
     }
 
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron)
     {
     }
 
-    public function getCancelILLRequestDetails($holdDetails)
+    public function getCancelILLRequestDetails($holdDetails, $patron)
     {
     }
 
-    public function getCancelStorageRetrievalRequestDetails($holdDetails)
+    public function getCancelStorageRetrievalRequestDetails($holdDetails, $patron)
     {
     }
 
