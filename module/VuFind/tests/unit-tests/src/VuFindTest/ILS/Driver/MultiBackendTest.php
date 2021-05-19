@@ -1649,7 +1649,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $expected = ['1', '2'];
         $driver = $this->initSimpleMethodTest(
             $this->once(),
-            $this->once(),
+            $this->exactly(2),
             'getCancelHoldDetails',
             [['id' => '1', 'item_id' => '2']],
             $expected,
@@ -1665,6 +1665,12 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $result = $driver->getCancelHoldDetails(
             ['id' => 'd2.1', 'item_id' => 2],
             $this->getPatron('user', 'd2')
+
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->getCancelHoldDetails(
+            ['id' => 'd2.1', 'item_id' => 2]
 
         );
         $this->assertEquals($expected, $result);
