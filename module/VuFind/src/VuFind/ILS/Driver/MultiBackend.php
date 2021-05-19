@@ -948,9 +948,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * @return string Data for use in a form field
      */
-    public function getCancelHoldDetails($hold, $patron)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
-        $source = $this->getSource($patron['cat_username']);
+        $source = $this->getSource(
+            $patron['cat_username'] ?? $hold['id'] ?? $hold['item_id'] ?? ''
+        );
         $driver = $this->getDriver($source);
         if ($driver) {
             $hold = $this->stripIdPrefixes(

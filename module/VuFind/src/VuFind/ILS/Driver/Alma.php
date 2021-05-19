@@ -1012,7 +1012,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['id'];
     }

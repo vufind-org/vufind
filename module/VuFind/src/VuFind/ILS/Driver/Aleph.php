@@ -1306,7 +1306,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if ($holdDetails['delete']) {
             return $holdDetails['item_id'];

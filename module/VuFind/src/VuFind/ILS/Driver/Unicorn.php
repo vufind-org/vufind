@@ -690,7 +690,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['item_id'];
     }

@@ -1394,7 +1394,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }

@@ -1612,7 +1612,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         // TODO: implement me.
     }

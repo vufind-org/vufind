@@ -2643,7 +2643,7 @@ trait ILSMockTrait
     {
     }
 
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
     }
 

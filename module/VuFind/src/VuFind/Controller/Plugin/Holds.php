@@ -50,8 +50,9 @@ class Holds extends AbstractRequestBase
      *
      * @return array $ilsDetails with cancellation info added
      */
-    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus, $patron)
-    {
+    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus,
+        $patron = []
+    ) {
         // Generate Form Details for cancelling Holds if Cancelling Holds
         // is enabled
         if ($cancelStatus) {

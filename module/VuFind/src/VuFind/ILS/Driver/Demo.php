@@ -1606,7 +1606,7 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($hold, $patron)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
         return empty($hold['available']) && empty($hold['in_transit'])
             ? $hold['reqnum'] : '';

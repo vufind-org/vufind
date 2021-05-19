@@ -2113,7 +2113,7 @@ EOT;
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         if (!$this->allowCancelingAvailableRequests && $holdDetails['available']) {
             return '';

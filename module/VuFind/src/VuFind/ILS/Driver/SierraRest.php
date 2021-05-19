@@ -847,7 +847,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails, $patron)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
             : $holdDetails['requestId'];

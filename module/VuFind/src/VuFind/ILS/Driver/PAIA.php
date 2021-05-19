@@ -414,7 +414,7 @@ class PAIA extends DAIA
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($hold, $patron)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
         return $hold['cancel_details'];
     }
