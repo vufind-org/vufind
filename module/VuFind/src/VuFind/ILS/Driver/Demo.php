@@ -124,6 +124,27 @@ class Demo extends AbstractBase
     protected $failureProbabilities = [];
 
     /**
+     * Courses for use in course reserves.
+     *
+     * @var array
+     */
+    protected $courses = ["Course A", "Course B", "Course C"];
+
+    /**
+     * Departments for use in course reserves.
+     *
+     * @var array
+     */
+    protected $departments = ["Dept. A", "Dept. B", "Dept. C"];
+
+    /**
+     * Instructors for use in course reserves.
+     *
+     * @var array
+     */
+    protected $instructors = ["Instructor A", "Instructor B", "Instructor C"];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -1440,7 +1461,7 @@ class Demo extends AbstractBase
     public function getDepartments()
     {
         $this->checkIntermittentFailure();
-        return ["Dept. A", "Dept. B", "Dept. C"];
+        return $this->departments;
     }
 
     /**
@@ -1453,7 +1474,7 @@ class Demo extends AbstractBase
     public function getInstructors()
     {
         $this->checkIntermittentFailure();
-        return ["Instructor A", "Instructor B", "Instructor C"];
+        return $this->instructors;
     }
 
     /**
@@ -1466,7 +1487,7 @@ class Demo extends AbstractBase
     public function getCourses()
     {
         $this->checkIntermittentFailure();
-        return ["Course A", "Course B", "Course C"];
+        return $this->courses;
     }
 
     /**
@@ -1511,6 +1532,42 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Determine a course ID for findReserves.
+     *
+     * @param string $course Course ID (or empty for a random choice)
+     *
+     * @return string
+     */
+    protected function getCourseId(string $course = ''): string
+    {
+        return empty($course) ? (string)rand(0, count($this->courses) - 1) : $course;
+    }
+
+    /**
+     * Determine a department ID for findReserves.
+     *
+     * @param string $dept Department ID (or empty for a random choice)
+     *
+     * @return string
+     */
+    protected function getDepartmentId(string $dept = ''): string
+    {
+        return empty($dept) ? (string)rand(0, count($this->departments) - 1) : $dept;
+    }
+
+    /**
+     * Determine an instructor ID for findReserves.
+     *
+     * @param string $inst Instructor ID (or empty for a random choice)
+     *
+     * @return string
+     */
+    protected function getInstructorId(string $inst = ''): string
+    {
+        return empty($inst) ? (string)rand(0, count($this->instructors) - 1) : $inst;
+    }
+
+    /**
      * Find Reserves
      *
      * Obtain information on course reserves.
@@ -1540,7 +1597,12 @@ class Demo extends AbstractBase
 
         $retVal = [];
         foreach ($results as $current) {
-            $retVal[] = ['BIB_ID' => $current];
+            $retVal[] = [
+                'BIB_ID' => $current,
+                'INSTRUCTOR_ID' => $this->getInstructorId($inst),
+                'COURSE_ID' => $this->getCourseId($course),
+                'DEPARTMENT_ID' => $this->getDepartmentId($dept),
+            ];
         }
         return $retVal;
     }
