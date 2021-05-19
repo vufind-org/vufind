@@ -56,20 +56,23 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         throw new \Exception('No image found');
     }
 
-    protected function normalizeArtist($artist) {
-        return htmlspecialchars_decode(htmlentities(preg_replace("'(\r?\n)+'", ', ', trim(strip_tags($artist)))));
+    protected function normalizeHeaderContent($artist) {
+        // We use htmlspecialchars_decode(htmlentities()) because HTTP headers only support ASCII.
+        // This way we can keep HTML special characters without breaking non-ascii-characters.
+        // It is necessary to set ENT_HTML5 instead of default ENT_HTML401,
+        // because the entity table is a lot bigger (also contains e.g. cyrillic entities).
+        // See also: get_html_translation_table
+        return htmlspecialchars_decode(htmlentities(preg_replace("'(\r?\n)+'", ', ', trim(strip_tags($artist))), ENT_COMPAT | ENT_HTML5));
     }
 
     protected function generateResponse(&$image) {
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Content-Type', $image['mime']);
         // See RFC 5988 + http://www.otsukare.info/2011/07/12/using-http-link-header-for-cc-licenses
-        // In addition, we use htmlspecialchars_decode(htmlentities()) because HTTP headers only support ASCII.
-        // This way we can keep HTML special characters without breaking non-ascii-characters.
         if (isset($image['licenseUrl']))
-            $response->getHeaders()->addHeaderLine('Link', htmlspecialchars_decode(htmlentities('<'.$image['licenseUrl'].'>; rel="license"; title="'.$image['license'].'"')));
+            $response->getHeaders()->addHeaderLine('Link', htmlspecialchars_decode(htmlentities('<'.$image['licenseUrl'].'>; rel="license"; title="' . $this->normalizeHeaderContent($image['license']) . '"')));
         if (isset($image['artist']))
-            $response->getHeaders()->addHeaderLine('Artist', $this->normalizeArtist($image['artist']));
+            $response->getHeaders()->addHeaderLine('Artist', $this->normalizeHeaderContent($image['artist']));
         $response->setContent($image['image']);
         return $response;
     }
