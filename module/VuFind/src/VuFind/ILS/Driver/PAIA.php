@@ -403,18 +403,20 @@ class PAIA extends DAIA
      * cancelling each hold item. (optional, but required if you
      * implement cancelHolds). Not supported prior to VuFind 1.2
      *
-     * @param array $checkOutDetails One of the individual item arrays returned by
-     *                               the getMyHolds method
+     * @param array $hold   A single hold array from getMyHolds
+     * @param array $patron Patron information from patronLogin
      *
      * @return string  A string to use as the input form value for cancelling
      *                 each hold item; you can pass any data that is needed
      *                 by your ILS to identify the hold – the output of this
      *                 method will be used as part of the input to the
      *                 cancelHolds method.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($checkOutDetails)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
-        return $checkOutDetails['cancel_details'];
+        return $hold['cancel_details'];
     }
 
     /**
@@ -476,10 +478,13 @@ class PAIA extends DAIA
      * value is then extracted by the CancelHolds function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         // Not yet implemented
         return '';
@@ -599,10 +604,13 @@ class PAIA extends DAIA
      * Get Cancel ILL Request Details
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($details, $patron)
     {
         // Not yet implemented
         return '';
