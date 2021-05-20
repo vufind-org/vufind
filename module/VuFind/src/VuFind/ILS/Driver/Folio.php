@@ -1099,7 +1099,7 @@ class Folio extends AbstractAPI implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($hold, $patron)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
         return $hold['reqnum'];
     }
