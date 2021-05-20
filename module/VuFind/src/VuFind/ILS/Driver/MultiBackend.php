@@ -943,21 +943,25 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * as form data in Hold.php. This value is then extracted by the CancelHolds
      * function.
      *
-     * @param array $holdDetails An array of item data
+     * @param array $hold   A single hold array from getMyHolds
+     * @param array $patron Patron information from patronLogin
      *
      * @return string Data for use in a form field
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
         $source = $this->getSource(
-            $holdDetails['id'] ?? $holdDetails['item_id'] ?? ''
+            $patron['cat_username'] ?? $hold['id'] ?? $hold['item_id'] ?? ''
         );
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdDetails = $this->stripIdPrefixes(
-                $holdDetails, $source, ['id', 'item_id', 'cat_username']
+            $hold = $this->stripIdPrefixes(
+                $hold, $source, ['id', 'item_id', 'cat_username']
             );
-            return $driver->getCancelHoldDetails($holdDetails);
+            return $driver->getCancelHoldDetails(
+                $hold,
+                $this->stripIdPrefixes($patron, $source)
+            );
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -1028,22 +1032,25 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * as form data. This value is then extracted by the
      * CancelStorageRetrievalRequests function.
      *
-     * @param array $details An array of item data
+     * @param array $request An array of request data
+     * @param array $patron  Patron information
      *
      * @return string Data for use in a form field
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($request, $patron)
     {
-        $source = $this->getSource($details['id'] ?? '');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
                 $driver, 'getCancelStorageRetrievalRequestDetails',
-                compact('details')
+                compact('request', 'patron')
             )
         ) {
-            $details = $this->stripIdPrefixes($details, $source);
-            return $driver->getCancelStorageRetrievalRequestDetails($details);
+            return $driver->getCancelStorageRetrievalRequestDetails(
+                $this->stripIdPrefixes($request, $source),
+                $this->stripIdPrefixes($patron, $source)
+            );
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -1206,7 +1213,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * data in $cancelDetails['details'] is determined by
      * getCancelILLRequestDetails().
      *
-     * @param array $cancelDetails An array of item and patron data
+     * @param array $cancelDetails An array of request and patron data
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
@@ -1235,21 +1242,23 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * submitted as form data. This value is then extracted by the CancelILLRequests
      * function.
      *
-     * @param array $details An array of item data
+     * @param array $request An array of request data
+     * @param array $patron  The patron array from patronLogin
      *
      * @return string Data for use in a form field
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($request, $patron)
     {
-        $source = $this->getSource($details['id'] ?? $details['item_id'] ?? '');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getCancelILLRequestDetails', compact('details')
+                $driver, 'getCancelILLRequestDetails', compact('request', 'patron')
             )
         ) {
             return $driver->getCancelILLRequestDetails(
-                $this->stripIdPrefixes($details, $source)
+                $this->stripIdPrefixes($request, $source),
+                $this->stripIdPrefixes($patron, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');
