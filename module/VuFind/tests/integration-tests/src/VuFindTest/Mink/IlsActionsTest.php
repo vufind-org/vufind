@@ -114,7 +114,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function submitCatalogLoginForm(Element $page, string $username,
         string $password
     ): void {
-
         $this->findCss($page, '#profile_cat_username')->setValue($username);
         $this->findCss($page, '#profile_cat_password')->setValue($password);
         $this->clickCss($page, 'input.btn.btn-primary');
