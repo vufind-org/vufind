@@ -1124,7 +1124,7 @@ class MyResearchController extends AbstractBase
      */
     public function holdsAction()
     {
-        return $this->forwardTo('Holds', 'List');
+        return $this->redirect()->toRoute('holds-list');
     }
 
     /**
