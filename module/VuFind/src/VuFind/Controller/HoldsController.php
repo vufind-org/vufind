@@ -29,8 +29,6 @@
  */
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Controller for the user holds area.
  *
@@ -43,27 +41,6 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  */
 class HoldsController extends AbstractBase
 {
-    /**
-     * Hold update results container
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $updateResultsContainer;
-
-    /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface    $sm  Service locator
-     * @param \Laminas\Session\Container $urc A session container for hold update
-     * results
-     */
-    public function __construct(ServiceLocatorInterface $sm,
-        \Laminas\Session\Container $urc
-    ) {
-        $this->serviceLocator = $sm;
-        $this->updateResultsContainer = $urc;
-    }
-
     /**
      * Send list of holds to view
      *
@@ -89,28 +66,8 @@ class HoldsController extends AbstractBase
             return $view->cancelResults;
         }
 
-        // Process any update request results stored in the session:
-        $holdUpdateResults = $this->updateResultsContainer->results ?? null;
-        if ($holdUpdateResults) {
-            $view->updateResults = $holdUpdateResults;
-            $this->updateResultsContainer->results = null;
-        }
-        // Process update requests if necessary:
-        if ($this->params()->fromPost('updateSelected')) {
-            $details = $this->params()->fromPost('selectedIDS');
-            if (empty($details)) {
-                $this->flashMessenger()->addErrorMessage('hold_empty_selection');
-                if ($this->inLightbox()) {
-                    return $this->getRefreshResponse();
-                }
-            } else {
-                return $this->forwardTo('Holds', 'Edit');
-            }
-        }
-
-        // By default, assume we will not need to display a cancel or update form:
+        // By default, assume we will not need to display a form:
         $view->cancelForm = false;
-        $view->updateForm = false;
 
         // Get held item details:
         $result = $catalog->getMyHolds($patron);
@@ -122,23 +79,11 @@ class HoldsController extends AbstractBase
             $current = $this->holds()->addCancelDetails(
                 $catalog, $current, $cancelStatus
             );
-            if ($cancelStatus && $cancelStatus['function'] != "getCancelHoldLink"
+            if ($cancelStatus && $cancelStatus['function'] !== 'getCancelHoldLink'
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
                 $view->cancelForm = true;
-            }
-
-            // Add update details if appropriate
-            if (!empty($holdConfig['updateFields'])) {
-                $current = $this->holds()->addUpdateDetails(
-                    $catalog,
-                    $current,
-                    $holdConfig['updateFields']
-                );
-                if (isset($current['updateDetails'])) {
-                    $view->updateForm = true;
-                }
             }
 
             $driversNeeded[] = $current;

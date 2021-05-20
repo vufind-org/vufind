@@ -78,16 +78,6 @@ $config = [
                     ]
                 ]
             ],
-            'legacy-holds' => [
-                'type' => 'Laminas\Router\Http\Literal',
-                'options' => [
-                    'route'    => '/MyResearch/Holds',
-                    'defaults' => [
-                        'controller' => 'Holds',
-                        'action'     => 'List',
-                    ]
-                ]
-            ],
             'legacy-summonrecord' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -692,9 +682,10 @@ $staticRoutes = [
     'MyResearch/Account', 'MyResearch/ChangeEmail', 'MyResearch/ChangePassword',
     'MyResearch/CheckedOut', 'MyResearch/Delete', 'MyResearch/DeleteAccount',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/EmailNotVerified', 'MyResearch/Favorites', 'MyResearch/Fines',
-    'MyResearch/HistoricLoans', 'MyResearch/Home', 'MyResearch/ILLRequests',
-    'MyResearch/Logout', 'MyResearch/NewPassword', 'MyResearch/Profile',
+    'MyResearch/EmailNotVerified', 'MyResearch/Favorites',
+    'MyResearch/Fines', 'MyResearch/HistoricLoans', 'MyResearch/Holds',
+    'MyResearch/Home', 'MyResearch/ILLRequests', 'MyResearch/Logout',
+    'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests',
     'MyResearch/Unsubscribe', 'MyResearch/UserLogin',

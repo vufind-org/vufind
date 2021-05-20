@@ -28,9 +28,6 @@
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Config\Config;
-use Laminas\Session\SessionManager;
-use VuFind\Crypt\HMAC;
-use VuFind\Date\Converter as DateConverter;
 use VuFind\Record\Loader;
 
 /**
@@ -42,7 +39,7 @@ use VuFind\Record\Loader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class IlsRecords extends AbstractRequestBase
+class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
 {
     /**
      * VuFind configuration
@@ -61,16 +58,11 @@ class IlsRecords extends AbstractRequestBase
     /**
      * Constructor
      *
-     * @param HMAC           $hmac           HMAC generator
-     * @param SessionManager $sessionManager Session manager
-     * @param DateConverter  $dateConverter  Date converter
-     * @param Config         $config         VuFind configuration
-     * @param Loader         $loader         Record loader
+     * @param Config $config VuFind configuration
+     * @param Loader $loader Record loader
      */
-    public function __construct(HMAC $hmac, SessionManager $sessionManager,
-        DateConverter $dateConverter, Config $config, Loader $loader
-    ) {
-        parent::__construct($hmac, $sessionManager, $dateConverter);
+    public function __construct(Config $config, Loader $loader)
+    {
         $this->config = $config;
         $this->loader = $loader;
     }

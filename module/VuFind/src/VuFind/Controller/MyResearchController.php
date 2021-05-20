@@ -1116,6 +1116,18 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Send list of holds to view
+     *
+     * @return mixed
+     *
+     * @deprecated
+     */
+    public function holdsAction()
+    {
+        return $this->forwardTo('Holds', 'List');
+    }
+
+    /**
      * Send list of storage retrieval requests to view
      *
      * @return mixed
