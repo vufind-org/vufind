@@ -2607,10 +2607,13 @@ EOT;
      * value is then extracted by the CancelStorageRetrievalRequests function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         $details
             = ($details['institution_dbkey'] ?? '')
@@ -3209,10 +3212,13 @@ EOT;
      * submitted as form data and extracted by the CancelILLRequests function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($details, $patron)
     {
         $details = ($details['institution_dbkey'] ?? '')
             . '|' . $details['item_id']

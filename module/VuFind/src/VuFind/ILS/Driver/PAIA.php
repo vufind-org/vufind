@@ -478,10 +478,13 @@ class PAIA extends DAIA
      * value is then extracted by the CancelHolds function.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         // Not yet implemented
         return '';
@@ -601,10 +604,13 @@ class PAIA extends DAIA
      * Get Cancel ILL Request Details
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($details, $patron)
     {
         // Not yet implemented
         return '';

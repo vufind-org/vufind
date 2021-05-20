@@ -1178,10 +1178,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Get Cancel Storage Retrieval Request (article request) Details
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $details['item_id'];
     }
