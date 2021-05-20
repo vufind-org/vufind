@@ -1381,8 +1381,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $type = $entry['debit_type'];
             $type = $this->translate($this->feeTypeMappings[$type] ?? $type);
-            if ($entry['description'] !== $type) {
-                $type .= ' - ' . $entry['description'];
+            $description = trim($entry['description']);
+            if ($description !== $type) {
+                $type .= " - $description";
             }
             $fine = [
                 'amount' => $entry['amount'] * 100,
