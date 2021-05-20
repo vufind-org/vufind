@@ -122,8 +122,8 @@ class Holds extends AbstractRequestBase
                 if ($params->fromPost('cancelAll') !== null) {
                     return $this->getController()->confirm(
                         'hold_cancel_all',
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('holds-list'),
+                        $this->getController()->url()->fromRoute('holds-list'),
                         'confirm_hold_cancel_all_text',
                         [
                             'cancelAll' => 1,
@@ -133,8 +133,8 @@ class Holds extends AbstractRequestBase
                 } else {
                     return $this->getController()->confirm(
                         'hold_cancel_selected',
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('holds-list'),
+                        $this->getController()->url()->fromRoute('holds-list'),
                         'confirm_hold_cancel_selected_text',
                         [
                             'cancelSelected' => 1,
