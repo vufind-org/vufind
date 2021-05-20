@@ -238,7 +238,20 @@ class SolrAuthMarc extends SolrAuthDefault {
      */
     public function getName()
     {
-        return $this->getFirstFieldValue('100', 'a');
+        foreach ($this->getMarcRecord()->getFields('100') as $field) {
+            $aSubfield = $field->getSubfield('a');
+            if ($aSubfield == false)
+                continue;
+
+            $name = $aSubfield->getData();
+
+            $bSubfield = $field->getSubfield('b');
+            if ($bSubfield != false)
+                $name .= ' ' . $bSubfield->getData();
+            return $name;
+        }
+
+        return '';
     }
 
     /**

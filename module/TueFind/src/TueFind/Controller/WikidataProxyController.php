@@ -20,7 +20,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         if (isset($parameters['id'])) {
             $entities = $this->wikidata()->getEntities([$parameters['id']]);
             $entity = $this->getFirstMatchingEntity($entities);
-            $image = $this->getImageFromEntity($entity);
+            $image = $this->getBestImageFromEntity($entity);
             return $this->generateResponse($image);
         } else {
             if (!isset($parameters['search']))
@@ -45,7 +45,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
                 try {
                     $entities = $this->wikidata()->searchAndGetEntities($search, $language);
                     $entity = $this->getFirstMatchingEntity($entities, $filters, ['P18']);
-                    $image = $this->getImageFromEntity($entity);
+                    $image = $this->getBestImageFromEntity($entity);
                     return $this->generateResponse($image);
                 } catch (\Exception $e) {
                     // just continue and search for next image
@@ -53,7 +53,7 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
                 }
             }
         }
-        throw new \Exception('No image found');
+        throw new \Exception('No suitable image found');
     }
 
     protected function normalizeHeaderContent($artist) {
@@ -77,12 +77,20 @@ class WikidataProxyController extends \VuFind\Controller\AbstractBase
         return $response;
     }
 
-    protected function getImageFromEntity(&$entity) {
-        $imageFilename = $entity->claims->P18[0]->mainsnak->datavalue->value ?? null;
-        if ($imageFilename == null)
-            throw new \Exception('No image found');
-        $image = $this->wikidata()->getImage($imageFilename);
-        return $image;
+    protected function getBestImageFromEntity(&$entity) {
+        $images = $entity->claims->P18 ?? [];
+        foreach ($images as $image) {
+            $imageFilename = $image->mainsnak->datavalue->value ?? null;
+
+            // TIFFs will be skipped, since they are not supported in Firefox+Chrome
+            // Example: Helmut Kohl
+            if (preg_match('"\.tiff?$"i', $imageFilename))
+                continue;
+
+            return $this->wikidata()->getImage($imageFilename);
+        }
+
+        throw new \Exception('No suitable image found');
     }
 
     /**
