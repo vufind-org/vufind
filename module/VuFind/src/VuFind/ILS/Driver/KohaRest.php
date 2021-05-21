@@ -1379,7 +1379,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $bibId = $item['biblio_id'];
                 }
             }
-            $type = $entry['debit_type'];
+            $type = trim($entry['debit_type']);
             $type = $this->translate($this->feeTypeMappings[$type] ?? $type);
             $description = trim($entry['description']);
             if ($description !== $type) {
