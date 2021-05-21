@@ -277,6 +277,17 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate a fake call number prefix.
+     *
+     * @return string
+     */
+    protected function getFakeCallNumPrefix()
+    {
+        $codes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return substr(str_shuffle($codes), 1, rand(0, 3));
+    }
+
+    /**
      * Get a random ID from the Solr index.
      *
      * @return string
@@ -395,6 +406,7 @@ class Demo extends AbstractBase
             'locationhref' => $locationhref,
             'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
+            'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
             'addLink'      => $patron ? true : false,
