@@ -416,8 +416,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetHolding()
     {
-        $ILS = $this->getMockILS('Voyager', ['init', 'getHolding']);
-        $ILS->expects($this->exactly(2))
+        $ils1 = $this->getMockILS('Voyager', ['init', 'getHolding']);
+        $ils1->expects($this->exactly(2))
             ->method('getHolding')
             ->with(
                 $this->logicalOr(
@@ -436,21 +436,41 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 )
             );
 
-        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
-        $driver = $this->getDriver($sm);
-        $drivers = ['d1' => 'Voyager'];
-        $this->setProperty($driver, 'drivers', $drivers);
-        $id = '123456';
+        $ils2 = $this->getMockILS('Demo', ['init', 'getHolding']);
+        $ils2->expects($this->once())
+            ->method('getHolding')
+            ->with(
+                $this->equalTo('123456'),
+                $this->equalTo(['cat_username' => 'test.patron'])
+            )
+            ->will(
+                $this->returnValue(
+                    [
+                        [
+                            'id' => '123456',
+                            'status' => 'in'
+                        ],
+                    ]
+                )
+            );
+
+        $driver = $this->getMultibackendForDrivers(['d1' => $ils1, 'd2' => $ils2]);
 
         $expectedReturn = ['id' => 'd1.123456', 'status' => 'in'];
-        $return = $driver->getHolding("d1.$id");
+        $return = $driver
+            ->getHolding('d1.123456', ['cat_username' => 'test.patron']);
         $this->assertEquals($expectedReturn, $return);
 
-        $return = $driver->getHolding("fail.$id");
+        $return = $driver->getHolding("fail.123456");
         $this->assertEquals([], $return);
 
         $return = $driver->getHolding('d1.654321');
         $this->assertEquals([], $return);
+
+        $this->assertEquals(
+            [['id' => 'd2.123456', 'status' => 'in']],
+            $driver->getHolding('d2.123456', ['cat_username' => 'test.patron'])
+        );
     }
 
     /**
@@ -1204,20 +1224,23 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckRequestIsValid()
     {
-        $expected1 = true;
-        $expected2 = false;
-        $driver = $this->initSimpleMethodTest(
-            $this->once(),
-            $this->once(),
-            'checkRequestIsValid',
-            [
-                'bibid',
-                ['id' => 'itemid'],
-                $this->getPatron('username')
-            ],
-            true,
-            false
-        );
+        $ils1 = $this->getMockILS('Voyager', ['init', 'checkRequestIsValid']);
+        $ils1->expects($this->once())
+            ->method('checkRequestIsValid')
+            ->with('bibid', ['id' => 'itemid'], $this->getPatron('username'))
+            ->will(
+                $this->returnValue(true)
+            );
+
+        $ils2 = $this->getMockILS('Demo', ['init', 'checkRequestIsValid']);
+        $ils2->expects($this->once())
+            ->method('checkRequestIsValid')
+            ->with('bibid', ['id' => 'itemid'], $this->getPatron('username'))
+            ->will(
+                $this->returnValue(true)
+            );
+
+        $driver = $this->getMultibackendForDrivers(['d1' => $ils1, 'd2' => $ils2]);
 
         $result = $driver->checkRequestIsValid(
             'd1.bibid',
@@ -1226,7 +1249,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ],
             $this->getPatron('username', 'd1')
         );
-        $this->assertEquals($expected1, $result);
+        $this->assertTrue($result);
 
         $result = $driver->checkRequestIsValid(
             'd2.bibid',
@@ -1235,15 +1258,15 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ],
             $this->getPatron('username', 'd2')
         );
-        $this->assertEquals($expected2, $result);
+        $this->assertTrue($result);
 
-        // Cross-driver request must not be accepted
+        // Cross-driver request must not be accepted for Voyager:
         $result = $driver->checkRequestIsValid(
-            'd1.bibid',
+            'd2.bibid',
             [
-                'id' => 'd1.itemid'
+                'id' => 'd2.itemid'
             ],
-            $this->getPatron('username', 'd2')
+            $this->getPatron('username', 'd1')
         );
         $this->assertFalse($result);
 
@@ -1265,6 +1288,25 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $this->getPatron('username', 'invalid')
         );
         $this->assertFalse($result);
+
+        // Cross-driver request must be accepted for Demo:
+        $demo = $this->getMockILS('Demo', ['init', 'checkRequestIsValid']);
+        $demo->expects($this->once())
+            ->method('checkRequestIsValid')
+            ->with('d1.bibid', ['id' => 'd1.itemid'], $this->getPatron('username'))
+            ->will(
+                $this->returnValue(true)
+            );
+
+        $driver = $this->getMultibackendForDrivers(['d2' => $demo]);
+        $result = $driver->checkRequestIsValid(
+            'd1.bibid',
+            [
+                'id' => 'd1.itemid'
+            ],
+            $this->getPatron('username', 'd2')
+        );
+        $this->assertTrue($result);
     }
 
     /**
@@ -2245,16 +2287,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $ILS->expects($this->once())
             ->method('init');
 
-        //Set up the ServiceLocator so it returns our mock driver
-        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
-        $driver = $this->getDriver($sm);
-
-        //Add an entry for our test driver to the array of drivers
-        $drivers = ['testing3' => 'Voyager'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        //Case: No driver info in params, but default driver has method
-        //Result: A return of false
+        $driver = $this->getMultibackendForDrivers(['testing3' => $ILS]);
 
         $this->setProperty($driver, 'defaultDriver', 'testing3');
         $methodReturn = $driver->supportsMethod('fail', null);
@@ -2325,30 +2358,14 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         $dummyILS = new DummyILS();
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $sm->expects($this->any())
-            ->method('get')
-            ->with($this->logicalOr('Voyager', 'Voyager2', 'DummyILS'))
-            ->will(
-                $this->returnCallback(
-                    function ($param) use ($voyager, $voyager2, $dummyILS) {
-                        if ($param == 'Voyager') {
-                            return $voyager;
-                        } elseif ($param == 'Voyager2') {
-                            return $voyager2;
-                        } elseif ($param == 'DummyILS') {
-                            return $dummyILS;
-                        }
-                        return null;
-                    }
-                )
-            );
-        $driver = $this->getDriver($sm);
-        $drivers = ['d1' => 'Voyager', 'd2' => 'Voyager2', 'd3' => 'DummyILS'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        return $driver;
+        return $this->getMultibackendForDrivers(
+            [
+                'd1' => $voyager,
+                'd2' => $voyager2,
+                'd3' => $dummyILS
+            ],
+            $this->any()
+        );
     }
 
     /**
@@ -2374,6 +2391,50 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $driver->init();
+        return $driver;
+    }
+
+    /**
+     * Create a MultiBackend driver for the given ILS drivers
+     *
+     * @param array $drivers Array of drivers with prefix as key and driver instance
+     * as value
+     * @param mixed $count   How many drivers are expected to be used. Default is
+     * that all defined drivers are to be used.
+     *
+     * @return MultiBackend
+     */
+    protected function getMultibackendForDrivers(array $drivers, $count = null
+    ): MultiBackend {
+        $driverMap = [];
+        $driverPrefixMap = [];
+        $i = 0;
+        foreach ($drivers as $prefix => $driver) {
+            $i++;
+            $driverName = "Driver$i";
+            $driverMap[$driverName] = $driver;
+            $driverPrefixMap[$prefix] = $driverName;
+        }
+        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
+            ->disableOriginalConstructor()->getMock();
+        // MultiBackend should always ask for a driver just once, so exactly can be
+        // used here:
+        $sm->expects(null !== $count ? $count : $this->exactly(count($driverMap)))
+            ->method('get')
+            ->with(
+                call_user_func_array([$this, 'logicalOr'], array_keys($driverMap))
+            )
+            ->will(
+                $this->returnCallback(
+                    function ($driver) use ($driverMap) {
+                        return $driverMap[$driver];
+                    }
+                )
+            );
+
+        $driver = $this->getDriver($sm);
+        $this->setProperty($driver, 'drivers', $driverPrefixMap);
+
         return $driver;
     }
 
