@@ -277,14 +277,18 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Generate a fake call number prefix.
+     * Generate a fake call number prefix sometimes.
      *
      * @return string
      */
     protected function getFakeCallNumPrefix()
     {
-        $codes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        return substr(str_shuffle($codes), 1, rand(0, 3));
+        $codes = "0123456789";
+        $prefix = substr(str_shuffle($codes), 1, rand(0, 1));
+        if (!empty($prefix)) {
+            return 'Prefix: ' . $prefix;
+        }
+        return '';
     }
 
     /**
