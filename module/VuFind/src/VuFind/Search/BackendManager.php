@@ -141,7 +141,12 @@ class BackendManager
      */
     public function onResolve(EventInterface $e)
     {
-        $name = $e->getParam('backend');
+        if ($command = $e->getParam('command')) {
+            $name = $command->getTargetBackendName();
+        } else {
+            // TODO: Remove when legacy search backend methods are removed.
+            $name = $e->getParam('backend');
+        }
         if ($name && $this->has($name)) {
             return $this->get($name);
         }
