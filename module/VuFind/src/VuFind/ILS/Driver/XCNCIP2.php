@@ -1167,7 +1167,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
             'ns1:StructuredAddress/ns1:Street'
         );
-        $address1 = (string)($address1[0] ?? '');
+        $address1 = !empty($address1) ? (string)$address1[0] : null;
         $address2 = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
             'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
@@ -1177,13 +1177,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
             'ns1:StructuredAddress/ns1:Locality'
         );
-        $address2 = (string)($address2[0] ?? '');
+        $address2 = !empty($address2) ? (string)$address2[0] : null;
         $zip = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/' .
             'ns1:UserAddressInformation/ns1:PhysicalAddress/' .
             'ns1:StructuredAddress/ns1:PostalCode'
         );
-        $zip = (string)($zip[0] ?? '');
+        $zip = !empty($zip) ? (string)$zip[0] : null;
 
         if (empty($address1)) {
             // TODO: distinguish between more formatting types; look
@@ -1194,20 +1194,22 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:UnstructuredAddress/ns1:UnstructuredAddressData'
             );
             $address = explode("\n", trim((string)($address[0] ?? '')));
-            $address1 = $address[0] ?? '';
-            $address2 = ($address[1] ?? '') .
-                (isset($address[2]) ? ', ' . $address[2] : '');
-            $zip = $address[3] ?? '';
+            $address1 = $address[0] ?? null;
+            $address2 = ($address[1] ?? null);
+            if (isset($address[2])) {
+                $address2 .= ', ' . $address[2]);
+            }
+            $zip = $zip ?? $address[3] ?? null;
         }
 
         return [
-            'firstname' => (string)($firstname[0] ?? ''),
-            'lastname' => (string)($lastname[0] ?? ''),
+            'firstname' => (string)($firstname[0] ?? null),
+            'lastname' => (string)($lastname[0] ?? null),
             'address1' => $address1,
             'address2' => $address2,
             'zip' => $zip,
-            'phone' => '',  // TODO: phone number support
-            'group' => ''
+            'phone' => null,  // TODO: phone number support
+            'group' => null,
         ];
     }
 
