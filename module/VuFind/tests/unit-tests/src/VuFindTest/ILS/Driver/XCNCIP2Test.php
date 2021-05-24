@@ -328,6 +328,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'zip' => '',
                 'phone' => '',
                 'group' => '',
+                'expiration_date' => '12-30-2099',
             ],
         ],
         [
@@ -340,6 +341,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'zip' => '',
                 'phone' => '',
                 'group' => '',
+                'expiration_date' => '12-30-2099',
             ],
         ],
         [
@@ -352,6 +354,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'zip' => '',
                 'phone' => '',
                 'group' => '',
+                'expiration_date' => '12-30-2099',
             ],
         ],
         [
@@ -364,6 +367,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'zip' => '12345',
                 'phone' => '',
                 'group' => '',
+                'expiration_date' => '12-30-2099',
             ],
         ],
         [
@@ -376,6 +380,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'zip' => '',
                 'phone' => '',
                 'group' => '',
+                'expiration_date' => '12-30-2099'
             ],
         ],
     ];

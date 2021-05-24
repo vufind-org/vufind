@@ -1132,6 +1132,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $extras = [
             $this->element('UserElementType', 'User Address Information'),
             $this->element('UserElementType', 'Name Information'),
+            $this->element('UserElementType', 'User Privilege'),
         ];
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'],
@@ -1197,10 +1198,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $address1 = $address[0] ?? null;
             $address2 = ($address[1] ?? null);
             if (isset($address[2])) {
-                $address2 .= ', ' . $address[2]);
+                $address2 .= ', ' . $address[2];
             }
             $zip = $zip ?? $address[3] ?? null;
         }
+
+        $expirationDate = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:UserPrivilege/' .
+            'ns1:ValidToDate'
+        );
+        $expirationDate = !empty($expirationDate) ?
+            $this->displayDate((string)$expirationDate[0]) : null;
 
         return [
             'firstname' => (string)($firstname[0] ?? null),
@@ -1210,6 +1218,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'zip' => $zip,
             'phone' => null,  // TODO: phone number support
             'group' => null,
+            'expiration_date' => $expirationDate,
         ];
     }
 
