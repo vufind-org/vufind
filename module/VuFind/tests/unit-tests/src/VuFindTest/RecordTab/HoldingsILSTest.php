@@ -27,7 +27,6 @@
  */
 namespace VuFindTest\RecordTab;
 
-use VuFind\ILS\Connection;
 use VuFind\RecordTab\HoldingsILS;
 
 /**
