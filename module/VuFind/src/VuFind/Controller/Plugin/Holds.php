@@ -149,7 +149,7 @@ class Holds extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
+                    $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
             }
@@ -161,13 +161,27 @@ class Holds extends AbstractRequestBase
             if ($cancelResults == false) {
                 $flashMsg->addMessage('hold_cancel_fail', 'error');
             } else {
+                $failed = 0;
+                foreach ($cancelResults['items'] ?? [] as $item) {
+                    if (!$item['success']) {
+                        ++$failed;
+                    }
+                }
+                if ($failed) {
+                    $msg = $this->getController()
+                        ->translate(
+                            'hold_cancel_fail_items',
+                            ['%%count%%' => $failed]
+                        );
+                    $flashMsg->addErrorMessage($msg);
+                }
                 if ($cancelResults['count'] > 0) {
                     $msg = $this->getController()
                         ->translate(
                             'hold_cancel_success_items',
                             ['%%count%%' => $cancelResults['count']]
                         );
-                    $flashMsg->addMessage($msg, 'success');
+                    $flashMsg->addSuccessMessage($msg);
                 }
                 return $cancelResults;
             }
