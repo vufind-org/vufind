@@ -37,6 +37,7 @@ use SplObjectStorage;
 
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Command\CommandInterface;
 
 /**
  * Manager for search backends.
@@ -141,7 +142,9 @@ class BackendManager
      */
     public function onResolve(EventInterface $e)
     {
-        if ($command = $e->getParam('command')) {
+        if (($command = $e->getParam('command'))
+            && $command instanceof CommandInterface
+        ) {
             $name = $command->getTargetBackendName();
         } else {
             // TODO: Remove when legacy search backend methods are removed.
