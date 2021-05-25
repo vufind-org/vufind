@@ -452,6 +452,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $volume = (string)($volume[0] ?? '');
 
+        $dateDue = $current->xpath(
+            'ns1:DateDue' .
+            '| ' .
+            'ns1:ItemOptionalFields/ns1:DateDue'
+        );
+        $dateDue = !empty($dateDue)
+            ? $this->displayDate((string)$dateDue[0]) : null;
+
         // Build return array:
         $return = [
             'id' => $aggregateId,
@@ -463,7 +471,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'location' => $location,
             'reserve' => 'N',       // not supported
             'callnumber' => $itemCallNo,
-            'duedate' => '',        // not supported
+            'duedate' => $dateDue,
             'volume' => $volume,
             'number' => $number,
             'barcode' => ($itemType === 'Barcode')
