@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -35,6 +37,7 @@ use VuFind\Date\DateException;
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -112,7 +115,9 @@ class Holds extends AbstractRequestBase
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
         } elseif (!empty($selected)) {
-            $details = $params->fromPost('cancelSelectedIDS');
+            // Include cancelSelectedIDS for backwards-compatibility:
+            $details = $params->fromPost('selectedIDS')
+                ?? $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
             return [];
@@ -194,6 +199,32 @@ class Holds extends AbstractRequestBase
     }
 
     /**
+     * Update ILS details with update information, if appropriate.
+     *
+     * @param \VuFind\ILS\Connection $catalog      ILS connection object
+     * @param array                  $ilsDetails   Hold details from ILS driver's
+     * getMyHolds() method
+     * @param array                  $updateFields Fields to update from ILS driver's
+     * getConfig() method
+     * @param array                  $patron       ILS patron
+     *
+     * @return array $ilsDetails with info added
+     */
+    public function addUpdateDetails(\VuFind\ILS\Connection $catalog,
+        array $ilsDetails, array $updateFields, array $patron
+    ): array {
+        if ($updateFields) {
+            $updateDetails = $catalog->getUpdateHoldDetails($ilsDetails, $patron);
+            if ($updateDetails !== '') {
+                $ilsDetails['updateDetails'] = $updateDetails;
+                $this->rememberValidId($ilsDetails['updateDetails']);
+            }
+        }
+
+        return $ilsDetails;
+    }
+
+    /**
      * Check if the user-provided dates are valid.
      *
      * Returns validated dates and/or an array of validation errors if there are
@@ -206,8 +237,9 @@ class Holds extends AbstractRequestBase
      *
      * @return array
      */
-    public function validateDates($startDate, $requiredBy, $enabledFormFields)
-    {
+    public function validateDates(?string $startDate, ?string $requiredBy,
+        array $enabledFormFields
+    ): array {
         $result = [
             'startDateTS' => null,
             'requiredByTS' => null,
@@ -263,6 +295,44 @@ class Holds extends AbstractRequestBase
             && $result['startDateTS'] > $result['requiredByTS']
         ) {
             $errors[] = 'hold_required_by_date_before_start_date';
+        }
+
+        $result['errors'] = $errors;
+        return $result;
+    }
+
+    /**
+     * Check if the user-provided "frozen until" date is valid.
+     *
+     * Returns validated date and/or an array of validation errors if there are
+     * problems.
+     *
+     * @param string $frozenUntil     User-specified "frozen until" date
+     * @param array  $extraHoldFields Hold form fields enabled by
+     * configuration/driver
+     *
+     * @return array
+     */
+    public function validateFrozenUntil(?string $frozenUntil, array $extraHoldFields
+    ): array {
+        $result = [
+            'frozenUntilTS' => null,
+            'errors' => [],
+        ];
+        if (!in_array('frozenUntil', $extraHoldFields) || empty($frozenUntil)) {
+            return $result;
+        }
+
+        $errors = [];
+        try {
+            $result['frozenUntilTS'] = $frozenUntil
+                ? $this->dateConverter->convertFromDisplayDate('U', $frozenUntil)
+                : 0;
+            if ($result['frozenUntilTS'] < time()) {
+                $errors[] = 'hold_frozen_until_date_invalid';
+            }
+        } catch (DateException $e) {
+            $errors[] = 'hold_frozen_until_date_invalid';
         }
 
         $result['errors'] = $errors;
