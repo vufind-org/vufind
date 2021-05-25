@@ -219,14 +219,6 @@ $config = [
         'plugin_managers' => [
             'metadatavocabulary' => [],
         ],
-        'recorddriver_tabs' => [
-            'VuFind\RecordDriver\SolrAuthMarc' => [
-                'tabs' => [
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
-        ],
     ],
 ];
 
