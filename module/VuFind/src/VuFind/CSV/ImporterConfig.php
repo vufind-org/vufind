@@ -144,6 +144,8 @@ class ImporterConfig
     /**
      * Get the delimiter for a particular field.
      *
+     * @param string $field Field name
+     *
      * @return string
      */
     public function getDelimiter(string $field): string

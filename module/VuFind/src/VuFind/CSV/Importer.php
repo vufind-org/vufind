@@ -212,8 +212,7 @@ class Importer
      */
     protected function applyCallbacks(string $value, array $callbacks,
         array $fieldValues
-    ): array
-    {
+    ): array {
         // No callbacks, no work:
         if (empty($callbacks)) {
             return [$value];
