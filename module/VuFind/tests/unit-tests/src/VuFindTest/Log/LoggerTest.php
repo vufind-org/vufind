@@ -79,7 +79,7 @@ CONTEXT;
                 && count($a) == 5;
         };
         $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)
-            ->setMethods(['log'])
+            ->onlyMethods(['log'])
             ->getMock();
         $logger->expects($this->once())->method('log')->with($this->equalTo(Logger::CRIT), $this->callback($callback));
         try {

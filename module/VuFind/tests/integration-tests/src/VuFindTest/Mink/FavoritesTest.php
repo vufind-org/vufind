@@ -671,6 +671,48 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that public list indicator appears as expected.
+     *
+     * @depends testEmailPublicList
+     * @depends testAddRecordToFavoritesLogin
+     *
+     * @return void
+     */
+    public function testPublicListIndicator(): void
+    {
+        $page = $this->goToUserAccount();
+
+        // Collect data about the user list links on the page; we are checking
+        // for expected descriptions and icons, and we'll want URLs so we can
+        // visit links individually.
+        $links = $page->findAll('css', '.user-list-link');
+        $data = $hrefs = [];
+        foreach ($links as $link) {
+            $data[] = [
+                'text' => $link->getText(),
+                'iconCount' => count($link->findAll('css', 'i.fa-globe')),
+            ];
+            $hrefs[] = $link->getAttribute('href');
+        }
+        $expectedData = [
+            ['text' => 'Future List 1', 'iconCount' => 0],
+            ['text' => 'Login Test List 1', 'iconCount' => 0],
+            ['text' => 'Test List (Public List) 1', 'iconCount' => 1],
+        ];
+        $this->assertEquals($expectedData, $data);
+
+        // The "Future List" should NOT be public:
+        $this->clickCss($page, 'a[href="' . $hrefs[0] . '"]');
+        $this->snooze();
+        $this->assertEquals(0, count($page->findAll('css', 'strong i.fa-globe')));
+
+        // The "Test List" SHOULD be public:
+        $this->clickCss($page, 'a[href="' . $hrefs[2] . '"]');
+        $this->snooze();
+        $this->assertEquals(1, count($page->findAll('css', 'strong i.fa-globe')));
+    }
+
+    /**
      * Test that the bulk delete control works.
      *
      * @depends testAddRecordToFavoritesNewAccount

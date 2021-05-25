@@ -563,6 +563,16 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Get the buildings containing the record.
+     *
+     * @return array
+     */
+    public function getBuildings()
+    {
+        return (array)($this->fields['building'] ?? []);
+    }
+
+    /**
      * Get an array of all ISBNs associated with the record (may be empty).
      *
      * @return array

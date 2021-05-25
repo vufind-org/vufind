@@ -164,7 +164,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')
@@ -272,7 +272,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->asXml()));
+            $that->assertEquals($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')

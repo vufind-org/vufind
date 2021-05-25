@@ -84,7 +84,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetFundList()
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
-            ->setMethods(['checkCapability', 'getFunds'])
+            ->onlyMethods(['checkCapability', 'getFunds'])
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('checkCapability')
@@ -209,7 +209,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     protected function getMockCatalog(): \VuFind\ILS\Connection
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
-            ->setMethods(['getNewItems'])
+            ->onlyMethods(['getNewItems'])
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('getNewItems')

@@ -151,7 +151,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -166,7 +166,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

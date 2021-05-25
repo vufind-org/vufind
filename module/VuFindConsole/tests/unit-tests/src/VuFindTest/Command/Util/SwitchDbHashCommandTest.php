@@ -85,7 +85,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     new Config($config),
                     $table ?? $this->getMockTable(),
                 ]
-            )->setMethods(['getConfigWriter'])
+            )->onlyMethods(['getConfigWriter'])
             ->getMock();
     }
 
@@ -233,7 +233,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $adapter = $this->prepareMock(\Laminas\Db\Adapter\Adapter::class);
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->setConstructorArgs([$adapter])
-            ->setMethods(['save'])
+            ->onlyMethods(['save'])
             ->getMock();
         $user->populate($data, true);
         return $user;
