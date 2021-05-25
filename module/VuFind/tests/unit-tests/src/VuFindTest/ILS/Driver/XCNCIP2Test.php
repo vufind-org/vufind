@@ -1146,11 +1146,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([
             [
-                'locationId' => 'My University|1',
+                'locationID' => 'My University|1',
                 'locationDisplay' => 'Main Circulation Desk',
             ],
             [
-                'locationId' => 'My University|2',
+                'locationID' => 'My University|2',
                 'locationDisplay' => 'Stacks',
             ]
         ], $locations);
@@ -1169,11 +1169,11 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([
             [
-                'locationId' => 'My library|1',
+                'locationID' => 'My library|1',
                 'locationDisplay' => 'Main library',
             ],
             [
-                'locationId' => 'My library|2',
+                'locationID' => 'My library|2',
                 'locationDisplay' => 'Stacks',
             ]
         ], $locations);

@@ -267,7 +267,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             while (($data = fgetcsv($handle)) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
-                    'locationId' => $agencyId,
+                    'locationID' => $agencyId,
                     'locationDisplay' => $data[2]
                 ];
             }
@@ -301,7 +301,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 continue;
             }
             $location = [
-                'locationId' => $agencyId . '|' . (string)$id[0],
+                'locationID' => $agencyId . '|' . (string)$id[0],
                 'locationDisplay' => (string)$name[0],
             ];
             $return[] = $location;
@@ -1393,7 +1393,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getDefaultPickUpLocation($patron, $holdDetails = null)
     {
-        return $this->pickupLocations[$patron['patronAgencyId']][0]['locationId'];
+        return $this->pickupLocations[$patron['patronAgencyId']][0]['locationID'];
     }
 
     /**
@@ -1410,7 +1410,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * or may be ignored.  The driver must not add new options to the return array
      * based on this data or other areas of VuFind may behave incorrectly.
      *
-     * @return array        An array of associative arrays with locationId and
+     * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
