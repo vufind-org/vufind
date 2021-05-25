@@ -81,6 +81,13 @@ abstract class CallMethodCommand implements CommandInterface
     protected $params;
 
     /**
+     * Should the search backend parameters be added as the last method argument?
+     *
+     * @var bool
+     */
+    protected $addParamsToArgs;
+
+    /**
      * Was the command executed?
      *
      * @var bool
@@ -97,21 +104,24 @@ abstract class CallMethodCommand implements CommandInterface
     /**
      * CallMethodCommand constructor.
      *
-     * @param string    $backend   Search backend identifier
-     * @param string    $interface Search backend interface
-     * @param string    $method    Search backend interface method
-     * @param array     $args      Search backend interface method arguments,
-     *                             excluding search backend parameters
-     * @param ?ParamBag $params    Search backend parameters
+     * @param string    $backend         Search backend identifier
+     * @param string    $interface       Search backend interface
+     * @param string    $method          Search backend interface method
+     * @param array     $args            Search backend interface method arguments,
+     *                                   excluding search backend parameters
+     * @param ?ParamBag $params          Search backend parameters
+     * @param bool      $addParamsToArgs Should the search backend parameters be
+     *                                   added as the last method argument?
      */
     public function __construct(string $backend, string $interface, string $method,
-        array $args, ?ParamBag $params = null
+        array $args, ?ParamBag $params = null, bool $addParamsToArgs = true
     ) {
         $this->backend = $backend;
         $this->interface = $interface;
         $this->method = $method;
         $this->args = $args;
         $this->params = $params ?: new ParamBag();
+        $this->addParamsToArgs = $addParamsToArgs;
     }
 
     /**
@@ -147,7 +157,9 @@ abstract class CallMethodCommand implements CommandInterface
             );
         }
         $callArgs = $this->args;
-        $callArgs[] = $this->params;
+        if ($this->addParamsToArgs) {
+            $callArgs[] = $this->params;
+        }
         $this->result
             = call_user_func([$backendInstance, $this->method], ...$callArgs);
         $this->executed = true;
