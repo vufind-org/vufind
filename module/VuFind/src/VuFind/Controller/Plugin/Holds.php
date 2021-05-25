@@ -223,8 +223,10 @@ class Holds extends AbstractRequestBase
         if (in_array('startDate', $enabledFormFields)) {
             try {
                 $result['startDateTS'] = $startDate
-                    ? $this->dateConverter->convertFromDisplayDate('U', $startDate)
-                    : 0;
+                    ? (int)$this->dateConverter->convertFromDisplayDate(
+                        'U',
+                        $startDate
+                    ) : 0;
                 if ($result['startDateTS'] < strtotime('today')) {
                     $errors[] = 'hold_start_date_invalid';
                 }
@@ -236,7 +238,8 @@ class Holds extends AbstractRequestBase
         if (in_array('requiredByDate', $enabledFormFields)) {
             try {
                 if ($requiredBy) {
-                    $requiredByDateTime = new \DateTime(
+                    $requiredByDateTime = \DateTime::createFromFormat(
+                        'U',
                         $this->dateConverter
                             ->convertFromDisplayDate('U', $requiredBy)
                     );
