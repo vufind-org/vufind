@@ -211,7 +211,7 @@ class Holds extends AbstractRequestBase
                 $result['startDateTS'] = $startDate
                     ? $this->dateConverter->convertFromDisplayDate('U', $startDate)
                     : 0;
-                if ($result['startDateTS'] < time()) {
+                if ($result['startDateTS'] < strtotime('today')) {
                     $errors[] = 'hold_start_date_invalid';
                 }
             } catch (DateException $e) {
@@ -222,14 +222,17 @@ class Holds extends AbstractRequestBase
         if (in_array('requiredByDate', $enabledFormFields)) {
             try {
                 if ($requiredBy) {
-                    $result['requiredByTS'] = $this->dateConverter
-                        ->convertFromDisplayDate('U', $requiredBy, true)
+                    $requiredByDateTime = new \DateTime(
+                        $this->dateConverter
+                            ->convertFromDisplayDate('U', $requiredBy)
+                    );
+                    $result['requiredByTS'] = $requiredByDateTime
                         ->setTime(23, 59, 59)
                         ->getTimestamp();
                 } else {
                     $result['requiredByTS'] = 0;
                 }
-                if ($result['requiredByTS'] < time()) {
+                if ($result['requiredByTS'] < strtotime('today')) {
                     $errors[] = 'hold_required_by_date_invalid';
                 }
             } catch (DateException $e) {
