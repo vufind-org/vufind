@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2021.
+ * Copyright (C) The National Library of Finland 2019, 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  Search
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -37,6 +38,7 @@ use VuFindSearch\ParamBag;
  *
  * @category VuFind
  * @package  Search
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
