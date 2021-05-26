@@ -329,7 +329,7 @@
       <then>
         <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <exec command="${apachectl} restart" passthru="true" />
-        </then>
+      </then>
     </if>
 
     <!-- build and configure the requested database type -->
@@ -487,13 +487,13 @@
     <if>
       <available file="${srcdir}/composer.phar" />
       <then>
-        <delete file="${srcdir}/composer.phar" failonerror="false" />
+        <delete file="${srcdir}/composer.phar" failonerror="true" />
       </then>
     </if>
     <if>
       <available file="${srcdir}/vufind-exception.log" />
       <then>
-        <delete file="${srcdir}/vufind-exception.log" failonerror="false" />
+        <delete file="${srcdir}/vufind-exception.log" failonerror="true" />
       </then>
     </if>
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
