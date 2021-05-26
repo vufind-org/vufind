@@ -790,4 +790,17 @@ class AbstractBase extends AbstractActionController
         }
         return compact('targets', 'defaultTarget', 'loginMethod', 'loginMethods');
     }
+
+    /**
+     * Construct an HTTP 205 (refresh) response. Useful for reporting success
+     * in the lightbox without actually rendering content.
+     *
+     * @return \Laminas\Http\Response
+     */
+    protected function getRefreshResponse()
+    {
+        $response = $this->getResponse();
+        $response->setStatusCode(205);
+        return $response;
+    }
 }

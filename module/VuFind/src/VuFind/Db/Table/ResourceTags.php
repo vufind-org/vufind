@@ -708,7 +708,7 @@ class ResourceTags extends Gateway
             $select->offset($limit * ($page - 1));
         }
 
-        $adapter = new \Laminas\Paginator\Adapter\DbSelect($select, $sql);
+        $adapter = new \Laminas\Paginator\Adapter\LaminasDb\DbSelect($select, $sql);
         $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
         if (null !== $page) {
