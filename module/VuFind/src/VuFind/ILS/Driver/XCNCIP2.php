@@ -179,6 +179,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     ];
 
     /**
+     * L1 cache for NCIP responses to save some http connections. Responses are
+     * save as in following structure:
+     * [ 'ServiceName' => [ 'someId' => \SimpleXMLElement ] ]
+     *
+     * @var array
+     */
+    protected $responses = [
+        'LookupUser' => [],
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -806,17 +817,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function patronLogin($username, $password)
     {
-        $extras = [
-            $this->element('UserElementType', 'User Address Information'),
-            $this->element('UserElementType', 'Name Information'),
-        ];
-
-        $request = $this->getLookupUserRequest(
-            $username, $password, null, $extras, $username
-        );
-
-        $response = $this->sendRequest($request);
-        $this->checkResponseForError($response);
+        $response = $this->getLookupUserResponse($username, $password);
 
         $id = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserId/ns1:UserIdentifierValue'
@@ -873,13 +874,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getMyTransactions($patron)
     {
-        $extras = ['<ns1:LoanedItemsDesired/>'];
-        $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras, $patron['id']
+        $response = $this->getLookupUserResponse(
+            $patron['cat_username'], $patron['cat_password']
         );
-        $response = $this->sendRequest($request);
-        $this->checkResponseForError($response);
 
         $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
@@ -979,13 +976,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getMyFines($patron)
     {
-        $extras = ['<ns1:UserFiscalAccountDesired/>'];
-        $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras, $patron['id']
+        $response = $this->getLookupUserResponse(
+            $patron['cat_username'], $patron['cat_password']
         );
-        $response = $this->sendRequest($request);
-        $this->checkResponseForError($response);
 
         $list = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserFiscalAccount/ns1:AccountDetails'
@@ -1043,13 +1036,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getMyRequests(array $patron, array $types)
     {
-        $extras = ['<ns1:RequestedItemsDesired/>'];
-        $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras, $patron['id']
+        $response = $this->getLookupUserResponse(
+            $patron['cat_username'], $patron['cat_password']
         );
-        $response = $this->sendRequest($request);
-        $this->checkResponseForError($response);
 
         $retVal = [];
         $requests = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
@@ -1137,17 +1126,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getMyProfile($patron)
     {
-        $extras = [
-            $this->element('UserElementType', 'User Address Information'),
-            $this->element('UserElementType', 'Name Information'),
-            $this->element('UserElementType', 'User Privilege'),
-        ];
-        $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'],
-            $patron['patronAgencyId'], $extras, $patron['id']
+        $response = $this->getLookupUserResponse(
+            $patron['cat_username'], $patron['cat_password']
         );
-        $response = $this->sendRequest($request);
-        $this->checkResponseForError($response);
 
         $firstname = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:NameInformation/' .
@@ -2277,6 +2258,48 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         return is_array($agency) ? $agency[0] : $agency;
+    }
+
+    /**
+     * Get Lookup user response
+     *
+     * @param string      $username User name
+     * @param string|null $password User password
+     *
+     * @return \SimpleXMLElement
+     * @throws ILSException
+     */
+    protected function getLookupUserResponse(
+        string $username, ?string $password = null
+    ): \SimpleXMLElement {
+        if (isset($this->responses['LookupUser'][$username])) {
+            return $this->responses['LookupUser'][$username];
+        }
+        $extras = $this->getLookupUserExtras();
+        $request = $this->getLookupUserRequest(
+            $username, $password, $this->determineToAgencyId(), $extras, $username
+        );
+        $response = $this->sendRequest($request);
+        $this->checkResponseForError($response);
+        $this->responses['LookupUser'][$username] = $response;
+        return $response;
+    }
+
+    /**
+     * Creates array for Lookup user desired information
+     *
+     * @return array
+     */
+    protected function getLookupUserExtras(): array
+    {
+        return [
+            $this->element('UserElementType', 'User Address Information'),
+            $this->element('UserElementType', 'Name Information'),
+            $this->element('UserElementType', 'User Privilege'),
+            '<ns1:LoanedItemsDesired />',
+            '<ns1:RequestedItemsDesired />',
+            '<ns1:UserFiscalAccountDesired />',
+        ];
     }
 
     /**
