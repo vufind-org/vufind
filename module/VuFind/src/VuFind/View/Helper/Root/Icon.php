@@ -105,7 +105,7 @@ class Icon extends AbstractHelper
      * Reduce extra parameters to one attribute string
      * Broken out for easier customization
      *
-     * @param array          $extra Just extra HTML attributes for now
+     * @param array          $extra   Just extra HTML attributes for now
      * @param EscapeHtmlAttr $escAttr EscapeHtmlAttr view helper
      *
      * @return string
