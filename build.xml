@@ -498,7 +498,7 @@
     </if>
     <delete dir="${srcdir}/vendor" includeemptydirs="true" failonerror="false" />
     <if>
-      <available file="${srcdir}/solr" type="dir" />
+      <available file="${srcdir}/local" type="dir" />
       <then>
         <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
       </then>
