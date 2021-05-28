@@ -55,6 +55,22 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     protected $backend;
 
     /**
+     * Construct a mock search backend pre event.
+     *
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return Event
+     */
+    protected function getMockPreEvent(ParamBag $params): Event
+    {
+        $command = new MockCommandForOnCampusListenerTest($params);
+        return new Event(
+            Service::EVENT_PRE, $this->backend,
+            ['params' => $params, 'command' => $command]
+        );
+    }
+
+    /**
      * Setup.
      *
      * @return void
@@ -113,12 +129,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
         $params   = new ParamBag([ ]);
         $listener = new InjectOnCampusListener();
 
-        $event    = new Event(
-            Service::EVENT_PRE, $this->backend, [
-                'params' => $params,
-                'command' => new MockCommandForOnCampusListenerTest($params)
-            ]
-        );
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -142,12 +153,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event(
-            Service::EVENT_PRE, $this->backend, [
-                'params' => $params,
-                'command' => new MockCommandForOnCampusListenerTest($params)
-            ]
-        );
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -172,12 +178,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event(
-            Service::EVENT_PRE, $this->backend, [
-                'params' => $params,
-                'command' => new MockCommandForOnCampusListenerTest($params)
-            ]
-        );
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -202,12 +203,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event(
-            Service::EVENT_PRE, $this->backend, [
-                'params' => $params,
-                'command' => new MockCommandForOnCampusListenerTest($params)
-            ]
-        );
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -232,12 +228,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event(
-            Service::EVENT_PRE, $this->backend, [
-                'params' => $params,
-                'command' => new MockCommandForOnCampusListenerTest($params)
-            ]
-        );
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -255,12 +246,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener();
 
-        $event    = new Event(
-            Service::EVENT_PRE, $this->backend, [
-                'params' => $params,
-                'command' => new MockCommandForOnCampusListenerTest($params)
-            ]
-        );
+        $event    = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
