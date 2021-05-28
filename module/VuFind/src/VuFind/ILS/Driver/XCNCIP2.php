@@ -248,11 +248,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         } elseif ($this->config['Catalog']['pickupLocationsFromNCIP'] ?? false) {
             $this->loadPickUpLocationsFromNcip();
         } else {
-            throw new ILSException(
-                'XCNCIP2 ILS driver bad configuration. You should set up ' .
-                'one of these options: "pickupLocationsFile" or ' .
-                '"pickupLocationsFromNCIP"'
-            );
+            $this->pickupLocations = [];
         }
     }
 
@@ -1339,17 +1335,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getConfig($function, $params = null)
     {
         if ($function == 'Holds') {
+            $extraHoldFields = empty($this->getPickUpLocations(null))
+                ? 'comments:requiredByDate'
+                : 'comments:pickUpLocation:requiredByDate';
             return [
                 'HMACKeys' => 'item_id:holdtype:item_agency_id:id:bib_id',
-                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+                'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => '0:2:0',
                 'consortium' => $this->consortium,
             ];
         }
         if ($function == 'StorageRetrievalRequests') {
+            $extraFields = empty($this->getPickUpLocations(null))
+                ? 'comments:requiredByDate:item-issue'
+                : 'comments:pickUpLocation:requiredByDate:item-issue';
             return [
                 'HMACKeys' => 'id:item_id:item_agency_id:id:bib_id',
-                'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
+                'extraFields' => $extraFields,
                 'defaultRequiredDate' => '0:2:0',
             ];
         }
@@ -1508,8 +1510,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $password = $details['patron']['cat_password'];
         $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
-        $pickUpLocation = $details['pickUpLocation'];
-        [$pickUpAgency, $pickUpLocation] = explode("|", $pickUpLocation);
+        $pickUpLocation = null;
+        if (isset($details['pickUpLocation'])) {
+          [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
+        }
 
         $convertedDate = $this->dateConverter->convertFromDisplayDate(
             'U', $details['requiredBy']
@@ -1529,7 +1533,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $request = $this->getRequest(
             $username, $password, $bibId, $itemId,
             $details['patron']['patronAgencyId'], $details['item_agency_id'],
-            $type, "Item", $lastInterestDateStr, $pickUpLocation
+            $type, "Item", $lastInterestDateStr, $pickUpLocation, $username
         );
         $response = $this->sendRequest($request);
 
