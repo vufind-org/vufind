@@ -35,7 +35,6 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
-use VuFindSearch\Command\CallMethodCommand;
 use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\Command\GetIdsCommand;
 use VuFindSearch\Command\RandomCommand;
@@ -113,7 +112,7 @@ class Service
 
         $backendInstance = $this->resolve($command->getTargetBackendName(), $args);
 
-        $this->triggerPre($backendInstance, $args);
+        $this->triggerPre($command, $args);
         try {
             $command->execute($backendInstance);
         } catch (BackendException $e) {
@@ -165,10 +164,7 @@ class Service
     ) {
         $command = new GetIdsCommand($backend, $query, $offset, $limit, $params);
         return $this->legacyInvoke(
-            $command, [
-                'context' => strtolower(__FUNCTION__), 'query' => $query,
-                'offset' => $offset, 'limit' => $limit
-            ]
+            $command, ['query' => $query, 'offset' => $offset, 'limit' => $limit]
         );
     }
 
@@ -295,16 +291,16 @@ class Service
     /**
      * Invoke a command triggering deprecated legacy events and return the result.
      *
-     * @param CallMethodCommand $command Command
-     * @param array             $args    Additional event parameters
+     * @param CommandInterface $command Command
+     * @param array            $args    Additional event parameters
      *
      * @return mixed
      */
-    protected function legacyInvoke(CallMethodCommand $command, array $args = [])
+    protected function legacyInvoke(CommandInterface $command, array $args = [])
     {
         $backend = $command->getTargetBackendName();
         $params = $command->getSearchParameters();
-        $context = $command->getMethod();
+        $context = $command->getContext();
         $args = array_merge(
             compact('backend', 'params', 'context', 'command'), $args
         );
@@ -314,7 +310,7 @@ class Service
 
         $this->triggerPre($backendInstance, $args);
         try {
-            $response = $command->execute($backendInstance);
+            $response = $command->execute($backendInstance)->getResult();
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;
@@ -374,14 +370,15 @@ class Service
     /**
      * Trigger the pre event.
      *
-     * @param BackendInterface $backend Selected backend
-     * @param array            $args    Event arguments
+     * @param mixed $target Command object, or backend instance for deprecated
+     *                      legacy events
+     * @param array $args   Event arguments
      *
      * @return void
      */
-    protected function triggerPre(BackendInterface $backend, $args)
+    protected function triggerPre($target, $args)
     {
-        $this->getEventManager()->trigger(self::EVENT_PRE, $backend, $args);
+        $this->getEventManager()->trigger(self::EVENT_PRE, $target, $args);
     }
 
     /**

@@ -61,7 +61,7 @@ class GetIdsCommand extends CallMethodCommand
     ) {
         parent::__construct(
             $backend, GetIdsInterface::class, 'getIds', [$query, $offset, $limit],
-            $params
+            $params, true, 'getids'
         );
     }
 
@@ -70,9 +70,9 @@ class GetIdsCommand extends CallMethodCommand
      *
      * @param BackendInterface $backendInstance Backend instance
      *
-     * @return mixed
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance)
+    public function execute(BackendInterface $backendInstance): CommandInterface
     {
         if (!($backendInstance instanceof GetIdsInterface)) {
             $this->interface = BackendInterface::class;

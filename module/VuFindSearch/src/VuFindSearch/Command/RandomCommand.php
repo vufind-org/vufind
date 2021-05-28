@@ -68,9 +68,9 @@ class RandomCommand extends CallMethodCommand
      *
      * @param BackendInterface $backendInstance Backend instance
      *
-     * @return mixed
+     * @return CommandInterface
      */
-    public function execute(BackendInterface $backendInstance)
+    public function execute(BackendInterface $backendInstance): CommandInterface
     {
         // If the backend implements the RetrieveRandomInterface, we can load
         // all the records at once.
@@ -117,8 +117,8 @@ class RandomCommand extends CallMethodCommand
         }
 
         $this->result = $response;
-        $this->executed = true;
 
-        return $this->getResult();
+        $this->executed = true;
+        return $this;
     }
 }

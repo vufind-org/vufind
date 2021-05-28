@@ -65,9 +65,9 @@ class RetrieveBatchCommand extends CallMethodCommand
      *
      * @param BackendInterface $backendInstance Backend instance
      *
-     * @return mixed
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance)
+    public function execute(BackendInterface $backendInstance): CommandInterface
     {
         // If the backend implements the RetrieveBatchInterface, we can load
         // all the records at once.
@@ -90,8 +90,8 @@ class RetrieveBatchCommand extends CallMethodCommand
         }
 
         $this->result = $response;
-        $this->executed = true;
 
-        return $this->getResult();
+        $this->executed = true;
+        return $this;
     }
 }

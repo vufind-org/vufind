@@ -68,9 +68,9 @@ class WorkExpressionsCommand extends CallMethodCommand
      *
      * @param BackendInterface $backendInstance Backend instance
      *
-     * @return mixed
+     * @return CommandInterface Command instance for method chaining
      */
-    public function execute(BackendInterface $backendInstance)
+    public function execute(BackendInterface $backendInstance): CommandInterface
     {
         $id = $this->args[0];
         $workKeys = $this->args[1];
