@@ -34,6 +34,7 @@ use VuFindSearch\Backend\Primo\Backend;
 
 use VuFindSearch\Backend\Primo\Connector;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for OnCampus listener.
@@ -112,7 +113,12 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
         $params   = new ParamBag([ ]);
         $listener = new InjectOnCampusListener();
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params]);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend, [
+                'params' => $params,
+                'command' => new MockCommandForOnCampusListenerTest($params)
+            ]
+        );
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -136,7 +142,12 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params]);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend, [
+                'params' => $params,
+                'command' => new MockCommandForOnCampusListenerTest($params)
+            ]
+        );
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -161,7 +172,12 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend, [
+                'params' => $params,
+                'command' => new MockCommandForOnCampusListenerTest($params)
+            ]
+        );
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -186,7 +202,12 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend, [
+                'params' => $params,
+                'command' => new MockCommandForOnCampusListenerTest($params)
+            ]
+        );
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -211,7 +232,12 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener($mockPermController);
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend, [
+                'params' => $params,
+                'command' => new MockCommandForOnCampusListenerTest($params)
+            ]
+        );
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
@@ -229,10 +255,23 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
         $listener = new InjectOnCampusListener();
 
-        $event    = new Event('pre', $this->backend, [ 'params' => $params ]);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend, [
+                'params' => $params,
+                'command' => new MockCommandForOnCampusListenerTest($params)
+            ]
+        );
         $listener->onSearchPre($event);
 
         $onCampus   = $params->get('onCampus');
         $this->assertEquals([0 => false], $onCampus);
+    }
+}
+
+class MockCommandForOnCampusListenerTest extends \VuFindSearch\Command\AbstractBase
+{
+    public function __construct(ParamBag $params)
+    {
+        parent::__construct('foo', 'foo', $params);
     }
 }
