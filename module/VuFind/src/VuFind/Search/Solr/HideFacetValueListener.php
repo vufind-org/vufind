@@ -30,6 +30,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
 
 /**
  * Hide single facet values from displaying.
@@ -81,7 +82,9 @@ class HideFacetValueListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+        );
     }
 
     /**
@@ -93,12 +96,12 @@ class HideFacetValueListener
      */
     public function onSearchPost(EventInterface $event)
     {
-        $backend = $event->getParam('backend');
+        $command = $event->getParam('command');
 
-        if ($backend != $this->backend->getIdentifier()) {
+        if ($command->getTargetBackendName() !== $this->backend->getIdentifier()) {
             return $event;
         }
-        $context = $event->getParam('context');
+        $context = $command->getContext();
         if ($context == 'search' || $context == 'retrieve') {
             $this->processHideFacetValue($event);
         }
@@ -114,7 +117,7 @@ class HideFacetValueListener
      */
     protected function processHideFacetValue($event)
     {
-        $result = $event->getTarget();
+        $result = $event->getParam('command')->getResult();
         $facets = $result->getFacets()->getFieldFacets();
 
         foreach ($this->hideFacets as $facet => $value) {
