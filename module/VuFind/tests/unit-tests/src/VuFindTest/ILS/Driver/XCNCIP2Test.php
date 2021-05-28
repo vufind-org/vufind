@@ -928,8 +928,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetMyTransactions()
     {
-        $this->configureDriver();
         foreach ($this->transactionsTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions([
                 'cat_username' => 'my_login',
@@ -960,8 +960,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ],
             'NCIP' => [],
         ];
-        $this->configureDriver($config);
         foreach ($this->notRenewableTransactionsTests as $test) {
+            $this->configureDriver($config);
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions([
                 'cat_username' => 'my_login',
@@ -974,6 +974,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             );
         }
         foreach ($this->renewMyItemsWithDisabledRenewals as $test) {
+            $this->configureDriver($config);
             $this->mockResponse($test['file']);
             $result = $this->driver->renewMyItems(
                 [
@@ -990,8 +991,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->assertEquals($test['result'], $result, 'Fixture file: ' . implode(', ', (array)$test['file']));
         }
         $config['Catalog']['disableRenewals'] = false;
-        $this->configureDriver($config);
         foreach ($this->transactionsTests as $test) {
+            $this->configureDriver($config);
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions([
                 'cat_username' => 'my_login',
@@ -1012,8 +1013,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetMyFines()
     {
-        $this->configureDriver();
         foreach ($this->finesTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $fines = $this->driver->getMyFines(
                 [
@@ -1034,8 +1035,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testPatronLogin()
     {
-        $this->configureDriver();
         foreach ($this->loginTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $patron = $this->driver->patronLogin('my_login', 'my_password');
             $this->assertEquals($test['result'], $patron, 'Fixture file: ' . implode(', ', (array)$test['file']));
@@ -1049,8 +1050,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetMyHolds()
     {
-        $this->configureDriver();
         foreach ($this->holdsTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $holds = $this->driver->getMyHolds([
                 'cat_username' => 'my_login',
@@ -1069,8 +1070,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetMyProfile()
     {
-        $this->configureDriver();
         foreach ($this->profileTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $profile = $this->driver->getMyProfile(
                 [
@@ -1091,8 +1092,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetMyStorageRetrievalRequests()
     {
-        $this->configureDriver();
         foreach ($this->storageRetrievalTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $storageRetrievals = $this->driver->getMyStorageRetrievalRequests([
                 'cat_username' => 'my_login',
@@ -1111,8 +1112,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetStatuses()
     {
-        $this->configureDriver();
         foreach ($this->statusesTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $status = $this->driver->getStatuses(['Some Id']);
             $this->assertEquals($test['result'], $status, 'Fixture file: ' . implode(', ', (array)$test['file']));
@@ -1126,8 +1127,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testGetHolding()
     {
-        $this->configureDriver();
         foreach ($this->holdingTests as $test) {
+            $this->configureDriver();
             $this->mockResponse($test['file']);
             $holdings = $this->driver->getHolding('123456');
             $this->assertEquals($test['result'], $holdings, 'Fixture file: ' . implode(', ', (array)$test['file']));
