@@ -1512,7 +1512,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $itemId = $details['item_id'];
         $pickUpLocation = null;
         if (isset($details['pickUpLocation'])) {
-          [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
+            [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
         }
 
         $convertedDate = $this->dateConverter->convertFromDisplayDate(
