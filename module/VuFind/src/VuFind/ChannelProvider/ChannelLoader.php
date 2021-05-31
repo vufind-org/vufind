@@ -231,7 +231,13 @@ class ChannelLoader
 
         // Fetch channel data from cache, or populate cache if necessary:
         if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
-            $results = $this->performChannelSearch([], $providers, $source);
+            $searchParams = [];
+            if (isset($this->config->General->default_home_search)) {
+                $searchParams['lookfor']
+                    = $this->config->General->default_home_search;
+            }
+            $results = $this
+                ->performChannelSearch($searchParams, $providers, $source);
             $channels = $this->getChannelsFromResults($providers, $results, $token);
             if ($cacheKey) {
                 $cache->setItem($cacheKey, $channels);
