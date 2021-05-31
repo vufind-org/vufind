@@ -146,14 +146,6 @@
             <?php endif; ?>
             <br />
 
-            <?php if (isset($this->cancelResults['items'])): ?>
-              <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
-                <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
-                  <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
-                <?php endif; ?>
-              <?php endforeach; ?>
-            <?php endif; ?>
-
             <?php if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
               <div class="text-success">
                 <?php if (!empty($ilsDetails['last_pickup_date'])): ?>
@@ -180,6 +172,14 @@
             <?php endif; ?>
             <?php if (isset($ilsDetails['cancel_link'])): ?>
               <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
+            <?php endif; ?>
+
+            <?php if (isset($this->cancelResults['items'])): ?>
+              <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
+                <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
+                  <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+                <?php endif; ?>
+              <?php endforeach; ?>
             <?php endif; ?>
           </div>
           <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
