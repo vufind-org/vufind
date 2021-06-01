@@ -171,7 +171,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         } elseif (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
-        } elseif ($mode == 'all') {
+        } elseif ($mode == 'all' || $mode == 'group') {
             // All values mode?  Return comma-separated values:
             return implode(
                 ",\t",
@@ -231,6 +231,22 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Format call numbers and display call numbers with prefixes into a string
+     * with a split character for consumption by Javascript.
+     *
+     * @param string $prefix     Callnumber prefix or empty string.
+     * @param string $callnumber Main call number.
+     *
+     * @return string
+     */
+    protected function formatCallNums($prefix, $callnumber)
+    {
+        $displayCallnumber = !empty($prefix)
+            ? $prefix . ' ' . $callnumber : $callnumber;
+        return $callnumber . '::::' . $displayCallnumber;
+    }
+
+    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
@@ -265,7 +281,11 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $use_unknown_status = true;
             }
             // Store call number/location info:
-            $callNumbers[] = $info['callnumber'];
+            $callNumbers[] = $this->formatCallNums(
+                $info['callnumber_prefix'],
+                $info['callnumber']
+            );
+
             $locations[] = $info['location'];
             // Store all available services
             if (isset($info['services'])) {
@@ -343,8 +363,12 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
-            $locations[$info['location']]['callnumbers'][] = $info['callnumber'];
+            $locations[$info['location']]['callnumbers'][] = $this->formatCallNums(
+                $info['callnumber_prefix'],
+                $info['callnumber']
+            );
         }
+
 
         // Build list split out by location:
         $locationList = [];

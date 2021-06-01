@@ -5,7 +5,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     if (callnumber_handler) {
       var cns = callnumber.split(',\t');
       for (var i = 0; i < cns.length; i++) {
-        cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(cns[i]) + '">' + cns[i] + '</a>';
+        var pair = cns[i].split('::::');
+        cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(pair[0]) + '">' + pair[1] + '</a>';
       }
       return cns.join(',\t');
     }
