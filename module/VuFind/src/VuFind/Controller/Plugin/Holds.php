@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller\Plugin;
 
+use VuFind\Date\DateException;
+
 /**
  * Action helper to perform holds-related actions
  *
@@ -189,5 +191,81 @@ class Holds extends AbstractRequestBase
             $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
+    }
+
+    /**
+     * Check if the user-provided dates are valid.
+     *
+     * Returns validated dates and/or an array of validation errors if there are
+     * problems.
+     *
+     * @param string $startDate         User-specified start date
+     * @param string $requiredBy        User-specified required-by date
+     * @param array  $enabledFormFields Hold form fields enabled by
+     * configuration/driver
+     *
+     * @return array
+     */
+    public function validateDates($startDate, $requiredBy, $enabledFormFields)
+    {
+        $result = [
+            'startDateTS' => null,
+            'requiredByTS' => null,
+            'errors' => [],
+        ];
+        if (!in_array('startDate', $enabledFormFields)
+            && !in_array('requiredByDate', $enabledFormFields)
+        ) {
+            return $result;
+        }
+
+        $errors = [];
+        if (in_array('startDate', $enabledFormFields)) {
+            try {
+                $result['startDateTS'] = $startDate
+                    ? (int)$this->dateConverter->convertFromDisplayDate(
+                        'U',
+                        $startDate
+                    ) : 0;
+                if ($result['startDateTS'] < strtotime('today')) {
+                    $errors[] = 'hold_start_date_invalid';
+                }
+            } catch (DateException $e) {
+                $errors[] = 'hold_start_date_invalid';
+            }
+        }
+
+        if (in_array('requiredByDate', $enabledFormFields)) {
+            try {
+                if ($requiredBy) {
+                    $requiredByDateTime = \DateTime::createFromFormat(
+                        'U',
+                        $this->dateConverter
+                            ->convertFromDisplayDate('U', $requiredBy)
+                    );
+                    $result['requiredByTS'] = $requiredByDateTime
+                        ->setTime(23, 59, 59)
+                        ->getTimestamp();
+                } else {
+                    $result['requiredByTS'] = 0;
+                }
+                if ($result['requiredByTS'] < strtotime('today')) {
+                    $errors[] = 'hold_required_by_date_invalid';
+                }
+            } catch (DateException $e) {
+                $errors[] = 'hold_required_by_date_invalid';
+            }
+        }
+
+        if (!$errors
+            && in_array('startDate', $enabledFormFields)
+            && in_array('requiredByDate', $enabledFormFields)
+            && $result['startDateTS'] > $result['requiredByTS']
+        ) {
+            $errors[] = 'hold_required_by_date_before_start_date';
+        }
+
+        $result['errors'] = $errors;
+        return $result;
     }
 }
