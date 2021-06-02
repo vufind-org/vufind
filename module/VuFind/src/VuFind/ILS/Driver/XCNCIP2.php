@@ -27,9 +27,11 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\OAuth2Service;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver
@@ -44,6 +46,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFind\ILS\Driver\CacheTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -132,13 +135,30 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $disableRenewals = false;
 
     /**
+     * If the NCIP need an authorization using OAuth2
+     *
+     * @var bool
+     */
+    protected $useOAuth2 = false;
+
+    /**
+     * OAuth2 service for getting token
+     *
+     * @var OAuth2Service
+     */
+    protected $oauth2;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
+     * @param OAuth2Service          $oauth2        OAuth2 token service
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter)
-    {
+    public function __construct(\VuFind\Date\Converter $dateConverter,
+        OAuth2Service $oauth2
+    ) {
         $this->dateConverter = $dateConverter;
+        $this->oauth2 = $oauth2;
     }
 
     /**
@@ -173,6 +193,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         $this->disableRenewals
             = $this->config['Catalog']['disableRenewals'] ?? false;
+
+        $this->useOAuth2 = ($this->config['tokenEndpoint'] ?? false)
+            && ($this->config['clientId'] ?? false)
+            && ($this->config['clientSecret'] ?? false);
+        $this->config['tokenBasicAuth'] = $this->config['tokenBasicAuth'] ?? false;
     }
 
     /**
@@ -272,17 +297,34 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function sendRequest($xml)
     {
         $this->debug('Sendig NCIP request: ' . $xml);
+        $client = $this->httpService->createClient($this->url);
+        if ($this->useOAuth2) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Authorization', $this->getOAuth2Token());
+        }
+        // Set timeout value
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
+        $client->setOptions(['timeout' => $timeout]);
+        $client->setRawBody($xml);
+        $client->setEncType('application/xml; charset=UTF-8');
+        $client->setMethod('POST');
         // Make the NCIP request:
         try {
-            $client = $this->httpService->createClient($this->url);
-            // Set timeout value
-            $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
-            $client->setOptions(['timeout' => $timeout]);
-            $client->setRawBody($xml);
-            $client->setEncType('application/xml; charset=UTF-8');
-            $result = $client->setMethod('POST')->send();
+            $result = $client->send();
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
+        }
+
+        // If we get a 401, we need to renew the access token and try again
+        if ($this->useOAuth2 && $result->getStatusCode() == 401) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Authorization', $this->getOAuth2Token(true));
+
+            try {
+                $result = $client->send();
+            } catch (\Exception $e) {
+                throw new ILSException($e->getMessage());
+            }
         }
 
         if (!$result->isSuccess()) {
@@ -308,6 +350,44 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         } else {
             throw new ILSException("Problem parsing XML");
         }
+    }
+
+    /**
+     * Get a new or cached OAuth2 token (type + token)
+     *
+     * @param bool $renew Force renewal of token
+     *
+     * @return string
+     */
+    protected function getOAuth2Token($renew = false)
+    {
+        $cacheKey = 'ncipoauth';
+
+        if (!$renew) {
+            $token = $this->getCachedData($cacheKey);
+            if ($token) {
+                return $token;
+            }
+        }
+
+        try {
+            $token = $this->oauth2->getNewOAuth2Token(
+                $this->config['Catalog']['tokenEndpoint'],
+                $this->config['Catalog']['clientId'],
+                $this->config['Catalog']['clientSecret'],
+                $this->config['Catalog']['grantType'] ?? 'client_credentials'
+            );
+        } catch (HttpException $exception) {
+            throw new ILSException(
+                'Problem with NCIP API authorization: ' . $exception->getMessage()
+            );
+        }
+
+        $this->putCachedData(
+            $cacheKey, $token->getHeaderValue(), $token->getExpiresIn()
+        );
+
+        return $token->getHeaderValue();
     }
 
     /**
