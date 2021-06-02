@@ -56,13 +56,15 @@ class OAuth2Service implements
      * @param string $clientId      Client id
      * @param string $clientSecret  Client secret
      * @param string $grantType     Grant type (usually 'client_credentials')
+     * @param bool   $useHttpBasic  Use HTTP Basic authorization for getting token
      *
      * @return AuthToken
      * @throws HttpException
      */
     public function getNewOAuth2Token(
         string $tokenEndpoint, string $clientId,
-        string $clientSecret, string $grantType = 'client_credentials'
+        string $clientSecret, string $grantType = 'client_credentials',
+        bool $useHttpBasic = false
     ): \VuFind\Auth\AuthToken {
         $client = $this->httpService->createClient($tokenEndpoint);
         $client->setMethod('POST');
@@ -70,13 +72,15 @@ class OAuth2Service implements
             'Content-Type', 'application/x-www-form-urlencoded'
         );
 
-        $client->setParameterPost(
-            [
-                'client_id' => $clientId,
-                'client_secret' => $clientSecret,
-                'grant_type' => $grantType,
-            ]
-        );
+        $postFields = ['grant_type' => $grantType];
+        if ($useHttpBasic) {
+            $client->setAuth($clientId, $clientSecret);
+        } else {
+            $postFields['client_id'] = $clientId;
+            $postFields['client_secret'] = $clientSecret;
+        }
+
+        $client->setParameterPost($postFields);
 
         try {
             $response = $client->send();
