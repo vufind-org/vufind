@@ -28,6 +28,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Config\Config;
+use VuFind\Exception\BadRequest;
 use VuFindSearch\ParamBag;
 
 /**
@@ -45,6 +47,57 @@ use VuFindSearch\ParamBag;
 class AlphabrowseController extends AbstractBase
 {
     /**
+     * Default browse types
+     *
+     * @var array
+     */
+    protected $defaultTypes = [
+        'topic'  => 'By Topic',
+        'author' => 'By Author',
+        'title'  => 'By Title',
+        'lcc'    => 'By Call Number'
+    ];
+
+    /**
+     * Default extras
+     *
+     * @var array
+     */
+    protected $defaultExtras = [
+        'title' => 'author:format:publishDate',
+        'lcc' => 'title',
+        'dewey' => 'title'
+    ];
+
+    /**
+     * Get browse types from config file, or use defaults if unavailable.
+     *
+     * @param Config $config Configuration
+     *
+     * @return array
+     */
+    protected function getTypes(Config $config): array
+    {
+        return empty($config->AlphaBrowse_Types)
+            ? $this->defaultTypes
+            : $config->AlphaBrowse_Types->toArray();
+    }
+
+    /**
+     * Load any extras from config file, or use defaults if unavailable.
+     *
+     * @param Config $config Configuration
+     *
+     * @return array
+     */
+    protected function getExtras(Config $config): array
+    {
+        return isset($config->AlphaBrowse_Extras)
+            ? $config->AlphaBrowse_Extras->toArray()
+            : $this->defaultExtras;
+    }
+
+    /**
      * Gathers data for the view of the AlphaBrowser and does some initialization
      *
      * @return \Laminas\View\Model\ViewModel
@@ -53,49 +106,14 @@ class AlphabrowseController extends AbstractBase
     {
         $config = $this->getConfig();
 
-        // Load browse types from config file, or use defaults if unavailable:
-        if (isset($config->AlphaBrowse_Types)
-            && !empty($config->AlphaBrowse_Types)
-        ) {
-            $types = [];
-            foreach ($config->AlphaBrowse_Types as $key => $value) {
-                $types[$key] = $value;
-            }
-        } else {
-            $types = [
-                'topic'  => 'By Topic',
-                'author' => 'By Author',
-                'title'  => 'By Title',
-                'lcc'    => 'By Call Number'
-            ];
-        }
-
-        // Load any extras from config file
-        $extras = [];
-        if (isset($config->AlphaBrowse_Extras)) {
-            foreach ($config->AlphaBrowse_Extras as $key => $value) {
-                $extras[$key] = $value;
-            }
-        } else {
-            $extras = [
-                'title' => 'author:format:publishDate',
-                'lcc' => 'title',
-                'dewey' => 'title'
-            ];
-        }
-
-        // Load remaining config parameters
-        $rows_before = isset($config->AlphaBrowse->rows_before)
-            && is_numeric($config->AlphaBrowse->rows_before)
+        // Load config parameters
+        $types = $this->getTypes($config);
+        $extras = $this->getExtras($config);
+        $rows_before = is_numeric($config->AlphaBrowse->rows_before ?? null)
             ? (int)$config->AlphaBrowse->rows_before : 0;
         $highlighting = $config->AlphaBrowse->highlighting ?? false;
-        $limit  = isset($config->AlphaBrowse->page_size)
-            && is_numeric($config->AlphaBrowse->page_size)
+        $limit  = is_numeric($config->AlphaBrowse->page_size ?? null)
             ? (int)$config->AlphaBrowse->page_size : 20;
-
-        // Connect to Solr:
-        $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
-            ->get('Solr');
 
         // Process incoming parameters:
         $source = $this->params()->fromQuery('source', false);
@@ -119,7 +137,14 @@ class AlphabrowseController extends AbstractBase
         // If required parameters are present, load results:
         $result = [];
         if ($source && $from !== false) {
+            // Validate source parameter:
+            if (!in_array($source, array_keys($types))) {
+                throw new BadRequest("Unsupported alphabrowse type: $source");
+            }
+
             // Load Solr data or die trying:
+            $db = $this->serviceLocator->get(\VuFind\Search\BackendManager::class)
+                ->get('Solr');
             $result = $db->alphabeticBrowse(
                 $source, $from, $page, $limit, $extraParams, 0 - $rows_before
             );
