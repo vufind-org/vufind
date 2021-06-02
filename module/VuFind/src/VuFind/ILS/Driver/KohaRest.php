@@ -30,8 +30,10 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\OAuth2Service;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
@@ -215,19 +217,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sortItemsBySerialIssue;
 
     /**
+     * OAuth2 service for getting token
+     *
+     * @var OAuth2Service
+     */
+    protected $oauth2;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter   Date converter object
      * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
      * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
+     * @param OAuth2Service          $oauth2          OAuth2 token service
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
+        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat, OAuth2Service $oauth2
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
         $this->safeMoneyFormat = $safeMoneyFormat;
+        $this->oauth2 = $oauth2;
     }
 
     /**
@@ -1705,54 +1716,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $url = $this->config['Catalog']['host'] . '/v1/oauth/token';
-        $client = $this->createHttpClient($url);
-        $client->setMethod('POST');
-        $client->getRequest()->getHeaders()->addHeaderLine(
-            'Content-Type', 'application/x-www-form-urlencoded'
-        );
-
-        $client->setParameterPost(
-            [
-                'client_id' => $this->config['Catalog']['clientId'],
-                'client_secret' => $this->config['Catalog']['clientSecret'],
-                'grant_type' => $this->config['Catalog']['grantType']
-                    ?? 'client_credentials'
-            ]
-        );
 
         try {
-            $response = $client->send();
-        } catch (\Exception $e) {
-            $this->logError(
-                "POST request for '$url' failed: " . $e->getMessage()
+            $token = $this->oauth2->getNewOAuth2Token(
+                $url, $this->config['Catalog']['clientId'],
+                $this->config['Catalog']['clientSecret'],
+                $this->config['Catalog']['grantType'] ?? 'client_credentials'
             );
-            throw new ILSException('Problem with Koha REST API.');
-        }
-
-        if ($response->getStatusCode() != 200) {
-            $errorMessage = 'Error while getting OAuth2 access token (status code '
-                . $response->getStatusCode() . '): ' . $response->getContent();
-            $this->logError($errorMessage);
-            throw new ILSException('Problem with Koha REST API.');
-        }
-        $responseData = json_decode($response->getContent(), true);
-
-        if (empty($responseData['token_type'])
-            || empty($responseData['access_token'])
-        ) {
-            $this->logError(
-                'Did not receive OAuth2 token, response: '
-                . $response->getContent()
+        } catch (HttpException $exception) {
+            throw new ILSException(
+                'Problem with Koha REST API: ' . $exception->getMessage()
             );
-            throw new ILSException('Problem with Koha REST API.');
         }
 
-        $token = $responseData['token_type'] . ' '
-            . $responseData['access_token'];
+        $this->putCachedData(
+            $cacheKey, $token->getHeaderValue(), $token->getExpiresIn()
+        );
 
-        $this->putCachedData($cacheKey, $token, $responseData['expires_in'] ?? null);
-
-        return $token;
+        return $token->getHeaderValue();
     }
 
     /**
