@@ -369,7 +369,6 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-
         // Build list split out by location:
         $locationList = [];
         foreach ($locations as $location => $details) {
