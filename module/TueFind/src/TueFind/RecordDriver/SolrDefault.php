@@ -515,12 +515,14 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
 
     public function hasInferiorWorksInCurrentSubsystem()
     {
+        $subsystem = $this->container->get('ViewHelperManager')->get('tuefind')->getTueFindSubtype();
+        if (($subsystem == 'IXT' || $subsystem == 'KRI') && $this->fields['is_superior_work'])
+	    return true;
         if (!isset($this->fields['superior_work_subsystems']))
             return false;
 
         $subsystems = $this->fields['superior_work_subsystems'];
-        return in_array($this->container->get('ViewHelperManager')->get('tuefind')->getTueFindSubtype(),
-                        $subsystems, true);
+        return in_array($subsystem, $subsystems, true);
     }
 
     public function isSubscribable()
