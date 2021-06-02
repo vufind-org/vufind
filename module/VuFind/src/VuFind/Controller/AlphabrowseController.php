@@ -109,10 +109,10 @@ class AlphabrowseController extends AbstractBase
         // Load config parameters
         $types = $this->getTypes($config);
         $extras = $this->getExtras($config);
-        $rows_before = is_numeric($config->AlphaBrowse->rows_before ?? null)
+        $rows_before = ctype_digit($config->AlphaBrowse->rows_before ?? '-')
             ? (int)$config->AlphaBrowse->rows_before : 0;
         $highlighting = $config->AlphaBrowse->highlighting ?? false;
-        $limit  = is_numeric($config->AlphaBrowse->page_size ?? null)
+        $limit  = ctype_digit($config->AlphaBrowse->page_size ?? '-')
             ? (int)$config->AlphaBrowse->page_size : 20;
 
         // Process incoming parameters:
