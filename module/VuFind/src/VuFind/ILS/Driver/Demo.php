@@ -1659,10 +1659,12 @@ class Demo extends AbstractBase
     /**
      * Get Cancel Hold Details
      *
-     * In order to cancel a hold, Voyager requires the patron details an item ID
-     * and a recall ID. This function returns the item id and recall id as a string
-     * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.
+     * Get required data for canceling a hold. This value is relayed to the
+     * cancelHolds function when the user attempts to cancel holds. Returning an
+     * empty string means that the hold is not cancelable.
+     *
+     * N.B. This must return same information as getUpdateHoldDetails since it is
+     * only as the identifier also for updates when both functions are available.
      *
      * @param array $hold   An array of hold data
      * @param array $patron Patron information from patronLogin
@@ -1681,7 +1683,8 @@ class Demo extends AbstractBase
      * Get Update Hold Details
      *
      * Get required data for updating a hold. This value is relayed to the
-     * updateHolds function when the user attempts to update holds.
+     * updateHolds function when the user attempts to update holds. Returning an
+     * empty string means that the hold is not editable.
      *
      * N.B. This must return same information as getCancelHoldDetails since it is
      * only used when canceling is not possible but updating is, and there's only
