@@ -131,16 +131,12 @@ class HoldsController extends AbstractBase
             }
 
             // Add update details if appropriate
-            if (!empty($holdConfig['updateFields'])) {
-                $current = $this->holds()->addUpdateDetails(
-                    $catalog,
-                    $current,
-                    $holdConfig['updateFields'],
-                    $patron
-                );
+            if (empty($holdConfig['updateFields'])) {
                 if (isset($current['updateDetails'])) {
-                    $view->updateForm = true;
+                    unset($current['updateDetails']);
                 }
+            } elseif (isset($current['updateDetails'])) {
+                $view->updateForm = true;
             }
 
             $driversNeeded[] = $current;
@@ -268,9 +264,7 @@ class HoldsController extends AbstractBase
         $firstDetails = reset($selectedIds);
         $pickupLocations = [];
         foreach ($holds as $hold) {
-            $currentUpdateDetails
-                = (string)$catalog->getUpdateHoldDetails($hold, $patron);
-            if ($currentUpdateDetails === $firstDetails) {
+            if ((string)($hold['updateDetails'] ?? '') === $firstDetails) {
                 try {
                     $pickupLocations = $catalog->getPickUpLocations($patron, $hold);
                 } catch (ILSException $e) {

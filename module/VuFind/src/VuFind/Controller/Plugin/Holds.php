@@ -199,32 +199,6 @@ class Holds extends AbstractRequestBase
     }
 
     /**
-     * Update ILS details with update information, if appropriate.
-     *
-     * @param \VuFind\ILS\Connection $catalog      ILS connection object
-     * @param array                  $ilsDetails   Hold details from ILS driver's
-     * getMyHolds() method
-     * @param array                  $updateFields Fields to update from ILS driver's
-     * getConfig() method
-     * @param array                  $patron       ILS patron
-     *
-     * @return array $ilsDetails with info added
-     */
-    public function addUpdateDetails(\VuFind\ILS\Connection $catalog,
-        array $ilsDetails, array $updateFields, array $patron
-    ): array {
-        if ($updateFields) {
-            $updateDetails = $catalog->getUpdateHoldDetails($ilsDetails, $patron);
-            if ($updateDetails !== '') {
-                $ilsDetails['updateDetails'] = $updateDetails;
-                $this->rememberValidId($ilsDetails['updateDetails']);
-            }
-        }
-
-        return $ilsDetails;
-    }
-
-    /**
      * Check if the user-provided dates are valid.
      *
      * Returns validated dates and/or an array of validation errors if there are

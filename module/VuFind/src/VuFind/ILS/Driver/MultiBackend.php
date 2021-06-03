@@ -977,8 +977,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      *
      * This is responsible for changing the status of hold requests
      *
-     * @param array $holdsDetails The details identifying the holds (from
-     * getUpdateHoldDetails)
+     * @param array $holdsDetails The details identifying the holds
      * @param array $fields       An associative array of fields to be updated
      * @param array $patron       Patron array
      *
@@ -993,32 +992,6 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $holdsDetails,
                 $fields,
                 $this->stripIdPrefixes($patron, $source)
-            );
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
-     * Get Update Hold Details
-     *
-     * Get required data for updating a hold. This value is relayed to the
-     * updateHolds function when the user attempts to update holds.
-     *
-     * @param array $hold   An array of hold data
-     * @param array $patron Patron information from patronLogin
-     *
-     * @return string Data for use in a form field
-     */
-    public function getUpdateHoldDetails(array $hold, array $patron): string
-    {
-        $source = $this->getSource($patron['cat_username']);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $hold = $this->stripIdPrefixes(
-                $hold, $source, self::HOLD_ID_FIELDS
-            );
-            return $driver->getUpdateHoldDetails(
-                $hold, $this->stripIdPrefixes($patron, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');

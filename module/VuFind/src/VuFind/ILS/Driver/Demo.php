@@ -532,6 +532,9 @@ class Demo extends AbstractBase
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
+                if (!$currentItem['available'] && !$currentItem['in_transit']) {
+                    $currentItem['updateDetails'] = $currentItem['reqnum'];
+                }
             } else {
                 $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
@@ -1663,8 +1666,9 @@ class Demo extends AbstractBase
      * cancelHolds function when the user attempts to cancel holds. Returning an
      * empty string means that the hold is not cancelable.
      *
-     * N.B. This must return same information as getUpdateHoldDetails since it is
-     * only as the identifier also for updates when both functions are available.
+     * N.B. This must return same information as the updateDetails field of each
+     * hold returned by getMyHolds since it is used as the identifier also for
+     * updates when both functions are available.
      *
      * @param array $hold   An array of hold data
      * @param array $patron Patron information from patronLogin
@@ -1680,34 +1684,11 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Get Update Hold Details
-     *
-     * Get required data for updating a hold. This value is relayed to the
-     * updateHolds function when the user attempts to update holds. Returning an
-     * empty string means that the hold is not editable.
-     *
-     * N.B. This must return same information as getCancelHoldDetails since it is
-     * only used when canceling is not possible but updating is, and there's only
-     * one set of identifying checkboxes for the holds.
-     *
-     * @param array $hold   An array of hold data
-     * @param array $patron Patron information from patronLogin
-     *
-     * @return string Data for use in a form field
-     */
-    public function getUpdateHoldDetails(array $hold, array $patron): string
-    {
-        return empty($hold['available']) && empty($hold['in_transit'])
-            ? $hold['reqnum'] : '';
-    }
-
-    /**
      * Update holds
      *
      * This is responsible for changing the status of hold requests
      *
-     * @param array $holdsDetails The details identifying the holds (from
-     * getUpdateHoldDetails)
+     * @param array $holdsDetails The details identifying the holds
      * @param array $fields       An associative array of fields to be updated
      * @param array $patron       Patron array
      *
@@ -1718,13 +1699,14 @@ class Demo extends AbstractBase
         $results = [];
         $session = $this->getSession($patron['id']);
         foreach ($session->holds as &$currentHold) {
-            $requestId = $this->getUpdateHoldDetails($currentHold, $patron);
-            if (!in_array($requestId, $holdsDetails)) {
+            if (!isset($currentHold['updateDetails'])
+                || !in_array($currentHold['updateDetails'], $holdsDetails)
+            ) {
                 continue;
             }
             if ($this->isFailing(__METHOD__, 25)) {
-                $results[$requestId]['success'] = false;
-                $results[$requestId]['status']
+                $results[$currentHold['reqnum']]['success'] = false;
+                $results[$currentHold['reqnum']]['status']
                     = 'Simulated error; try again and it will work eventually.';
                 continue;
             }
@@ -1745,7 +1727,7 @@ class Demo extends AbstractBase
             if (isset($fields['pickUpLocation'])) {
                 $currentHold['location'] = $fields['pickUpLocation'];
             }
-            $results[$requestId]['success'] = true;
+            $results[$currentHold['reqnum']]['success'] = true;
         }
 
         return $results;
