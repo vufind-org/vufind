@@ -159,6 +159,11 @@ class AlphabrowseController extends AbstractBase
             }
         }
         $view->result = $result;
+
+        // set up highlighting: page 0 contains match location
+        if ($highlighting && $page == 0 && isset($view->result['Browse'])) {
+            $this->applyHighlighting($view, $rowsBefore);
+        }
     }
 
     /**
@@ -235,11 +240,6 @@ class AlphabrowseController extends AbstractBase
         $this->addResultsToView(
             $view, $page, $limit, $rowsBefore, $highlighting, $extras
         );
-
-        // set up highlighting: page 0 contains match location
-        if ($highlighting && $page == 0 && isset($view->result['Browse'])) {
-            $this->applyHighlighting($view, $rowsBefore);
-        }
 
         return $view;
     }
