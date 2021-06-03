@@ -176,7 +176,8 @@ class HoldsController extends AbstractBase
         $catalog = $this->getILS();
 
         $holdConfig = $catalog->checkFunction('Holds', compact('patron'));
-        $selectedIds = $this->params()->fromPost('selectedIDS');
+        $selectedIds = $this->params()->fromPost('selectedIDS')
+            ?: $this->params()->fromQuery('selectedIDS');
         if (empty($holdConfig['updateFields']) || empty($selectedIds)) {
             // Shouldn't be here. Redirect to holds
             return $this->redirect()->toRoute('holds-list');
