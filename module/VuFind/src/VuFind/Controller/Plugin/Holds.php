@@ -251,7 +251,6 @@ class Holds extends AbstractRequestBase
             return $result;
         }
 
-        $errors = [];
         if (in_array('startDate', $enabledFormFields)) {
             try {
                 $result['startDateTS'] = $startDate
@@ -260,10 +259,10 @@ class Holds extends AbstractRequestBase
                         $startDate
                     ) : 0;
                 if ($result['startDateTS'] < strtotime('today')) {
-                    $errors[] = 'hold_start_date_invalid';
+                    $result['errors'][] = 'hold_start_date_invalid';
                 }
             } catch (DateException $e) {
-                $errors[] = 'hold_start_date_invalid';
+                $result['errors'][] = 'hold_start_date_invalid';
             }
         }
 
@@ -282,22 +281,21 @@ class Holds extends AbstractRequestBase
                     $result['requiredByTS'] = 0;
                 }
                 if ($result['requiredByTS'] < strtotime('today')) {
-                    $errors[] = 'hold_required_by_date_invalid';
+                    $result['errors'][] = 'hold_required_by_date_invalid';
                 }
             } catch (DateException $e) {
-                $errors[] = 'hold_required_by_date_invalid';
+                $result['errors'][] = 'hold_required_by_date_invalid';
             }
         }
 
-        if (!$errors
+        if (!$result['errors']
             && in_array('startDate', $enabledFormFields)
             && in_array('requiredByDate', $enabledFormFields)
             && $result['startDateTS'] > $result['requiredByTS']
         ) {
-            $errors[] = 'hold_required_by_date_before_start_date';
+            $result['errors'][] = 'hold_required_by_date_before_start_date';
         }
 
-        $result['errors'] = $errors;
         return $result;
     }
 
@@ -323,19 +321,17 @@ class Holds extends AbstractRequestBase
             return $result;
         }
 
-        $errors = [];
         try {
             $result['frozenUntilTS'] = $frozenUntil
                 ? $this->dateConverter->convertFromDisplayDate('U', $frozenUntil)
                 : 0;
             if ($result['frozenUntilTS'] < time()) {
-                $errors[] = 'hold_frozen_until_date_invalid';
+                $result['errors'][] = 'hold_frozen_until_date_invalid';
             }
         } catch (DateException $e) {
-            $errors[] = 'hold_frozen_until_date_invalid';
+            $result['errors'][] = 'hold_frozen_until_date_invalid';
         }
 
-        $result['errors'] = $errors;
         return $result;
     }
 }
