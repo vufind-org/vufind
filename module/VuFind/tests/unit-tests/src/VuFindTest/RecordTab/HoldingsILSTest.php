@@ -1,6 +1,6 @@
 <?php
 /**
- * RecordTab Manager Test Class
+ * HoldingsILS Test Class
  *
  * PHP version 7
  *
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Brad Busenius <bbusenius@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -30,11 +30,11 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\HoldingsILS;
 
 /**
- * RecordTab Manager Test Class
+ * HoldingsILS Test Class
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Brad Busenius <bbusenius@uchicago.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
