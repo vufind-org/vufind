@@ -8,9 +8,6 @@
     . '<li class="active">' . $this->transEsc('hold_edit_title') . '</li>';
 ?>
 <h2><?=$this->transEsc('hold_edit_title')?></h2>
-<?php if ($this->helpText): ?>
-<p class="helptext"><?=$this->helpText?></p>
-<?php endif; ?>
 
 <form action="<?=$this->url('holds-edit')?>" class="form-edit-holds" method="post" name="editHolds">
   <?=$this->flashmessages()?>
@@ -55,17 +52,11 @@
   <?php endif; ?>
 
   <?php if (in_array('pickUpLocation', $this->fields) && $this->pickupLocations): ?>
-    <?php
-      if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
-        $selected = $this->gatheredDetails['pickUpLocation'];
-      } else {
-        $selected = false;
-      }
-    ?>
+    <?php $selected = $this->gatheredDetails['pickUpLocation'] ?? ''; ?>
     <div class="form-group hold-pickup-location">
       <label for="pickup_location" class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
       <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-control">
-        <option value="" selected="selected"><?=$this->transEsc('hold_edit_no_change')?></option>
+        <option value=""<?=$selected === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
         <?php foreach ($this->pickupLocations as $loc): ?>
           <option value="<?=$this->escapeHtmlAttr($loc['locationID'])?>"<?=($selected === $loc['locationID']) ? ' selected' : ''?>>
             <?=$this->transEscWithPrefix('location_', $loc['locationDisplay'])?>

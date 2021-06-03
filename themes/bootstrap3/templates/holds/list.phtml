@@ -204,7 +204,7 @@
               <?php endforeach; ?>
             <?php endif; ?>
 
-            <?php if (!empty($this->updateResults[$ilsDetails['reqnum']])): ?>
+            <?php if (!empty($ilsDetails['reqnum']) && !empty($this->updateResults[$ilsDetails['reqnum']])): ?>
               <?php $updateResult = $this->updateResults[$ilsDetails['reqnum']]; ?>
               <?php if (!$updateResult['success']): ?>
                 <div class="alert alert-danger"><?=$this->transEsc($updateResult['status']) ?><?php if (!empty($updateResult['sysMessage'])) echo ': ' . $this->transEsc($updateResult['sysMessage']); ?></div>
