@@ -135,7 +135,9 @@ class HoldsController extends AbstractBase
                 if (isset($current['updateDetails'])) {
                     unset($current['updateDetails']);
                 }
-            } elseif (isset($current['updateDetails'])) {
+            } elseif (isset($current['updateDetails'])
+                && '' !== $current['updateDetails']
+            ) {
                 $view->updateForm = true;
             }
 
