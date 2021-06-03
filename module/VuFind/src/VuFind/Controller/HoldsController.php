@@ -77,8 +77,8 @@ class HoldsController extends AbstractBase
         }
         // Process update requests if necessary:
         if ($this->params()->fromPost('updateSelected')) {
-            $details = $this->params()->fromPost('selectedIDS');
-            if (empty($details)) {
+            $selectedIds = $this->params()->fromPost('selectedIDS');
+            if (empty($selectedIds)) {
                 $this->flashMessenger()->addErrorMessage('hold_empty_selection');
                 if ($this->inLightbox()) {
                     return $this->getRefreshResponse();
@@ -155,99 +155,31 @@ class HoldsController extends AbstractBase
         $catalog = $this->getILS();
 
         $holdConfig = $catalog->checkFunction('Holds', compact('patron'));
-        $details = $this->params()->fromPost('selectedIDS');
-        if (empty($holdConfig['updateFields']) || empty($details)) {
+        $selectedIds = $this->params()->fromPost('selectedIDS');
+        if (empty($holdConfig['updateFields']) || empty($selectedIds)) {
             // Shouldn't be here. Redirect to holds
             return $this->redirect()->toRoute('holds-list');
         }
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
-        if (array_diff($details, $this->holds()->getValidIds())) {
+        if (array_diff($selectedIds, $this->holds()->getValidIds())) {
             $this->flashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->redirect()->toRoute('holds-list');
         }
 
-        // Get list of pickup locations based on the first selected hold. This may
-        // not be perfect as pickup locations may differ per request, but it's the
-        // best we can do.
-        $holds = $catalog->getMyHolds($patron);
-        $firstDetails = reset($details);
-        $pickupLocations = [];
-        foreach ($holds as $hold) {
-            $currentUpdateDetails
-                = (string)$catalog->getUpdateHoldDetails($hold, $patron);
-            if ($currentUpdateDetails === $firstDetails) {
-                try {
-                    $pickupLocations = $catalog->getPickUpLocations($patron, $hold);
-                } catch (ILSException $e) {
-                    $this->flashMessenger()
-                        ->addErrorMessage('ils_connection_failed');
-                }
-                break;
-            }
-        }
+        $pickupLocations = $this->getPickupLocationsForEdit($patron, $selectedIds);
 
         $gatheredDetails = $this->params()->fromPost('gatheredDetails', []);
         if ($this->params()->fromPost('updateHolds')) {
-            $validPickup = true;
-            $selectedPickupLocation = $gatheredDetails['pickUpLocation'] ?? '';
-            if ('' !== $selectedPickupLocation) {
-                $validPickup = $this->holds()->validatePickUpInput(
-                    $selectedPickupLocation,
-                    $holdConfig['updateFields'],
-                    $pickupLocations
-                );
-            }
-            $dateValidationResults = $this->holds()->validateDates(
-                $gatheredDetails['startDate'] ?? null,
-                $gatheredDetails['requiredBy'] ?? null,
-                $holdConfig['updateFields']
+            $updateFields = $this->getUpdateFieldsFromGatheredDetails(
+                $holdConfig,
+                $gatheredDetails,
+                $pickupLocations
             );
-            if (in_array('frozenUntil', $holdConfig['updateFields'])) {
-                $frozenUntilValidationResults = $this->holds()->validateFrozenUntil(
-                    $gatheredDetails['frozenUntil'] ?? null,
-                    $holdConfig['updateFields']
-                );
-                $dateValidationResults['errors'] = array_unique(
-                    array_merge(
-                        $dateValidationResults['errors'],
-                        $frozenUntilValidationResults['errors']
-                    )
-                );
-            }
-            if (!$validPickup) {
-                $this->flashMessenger()->addErrorMessage('hold_invalid_pickup');
-            }
-            foreach ($dateValidationResults['errors'] as $msg) {
-                $this->flashMessenger()->addErrorMessage($msg);
-            }
-            if ($validPickup && !$dateValidationResults['errors']) {
-                $updateFields = [];
-                if ($selectedPickupLocation !== '') {
-                    $updateFields['pickUpLocation'] = $selectedPickupLocation;
-                }
-                if ($gatheredDetails['startDate'] ?? '' !== '') {
-                    $updateFields['startDate'] = $gatheredDetails['startDate'];
-                    $updateFields['startDateTS']
-                        = $dateValidationResults['startDateTS'];
-                }
-                if (($gatheredDetails['requiredBy'] ?? '') !== '') {
-                    $updateFields['requiredBy'] = $gatheredDetails['requiredBy'];
-                    $updateFields['requiredByTS']
-                        = $dateValidationResults['requiredByTS'];
-                }
-                if (($gatheredDetails['frozen'] ?? '') !== '') {
-                    $updateFields['frozen'] = $gatheredDetails['frozen'] === '1';
-                    if (($gatheredDetails['frozenUntil']) ?? '' !== '') {
-                        $updateFields['frozenUntil']
-                            = $gatheredDetails['frozenUntil'];
-                        $updateFields['frozenUntilTS']
-                            = $frozenUntilValidationResults['frozenUntilTS'];
-                    }
-                }
-
-                $results = $catalog->updateHolds($details, $updateFields, $patron);
+            if ($updateFields) {
+                $results
+                    = $catalog->updateHolds($selectedIds, $updateFields, $patron);
                 $successful = 0;
                 $failed = 0;
                 foreach ($results as $result) {
@@ -282,7 +214,7 @@ class HoldsController extends AbstractBase
 
         $view = $this->createViewModel(
             [
-                'selectedIDS' => $details,
+                'selectedIDS' => $selectedIds,
                 'fields' => $holdConfig['updateFields'],
                 'gatheredDetails' => $gatheredDetails,
                 'pickupLocations' => $pickupLocations,
@@ -290,6 +222,112 @@ class HoldsController extends AbstractBase
         );
 
         return $view;
+    }
+
+    /**
+     * Get list of pickup locations based on the first selected hold. This may not be
+     * perfect as pickup locations may differ per hold, but it's the best we can do.
+     *
+     * @param array $patron      Patron information
+     * @param array $selectedIds Selected holds
+     *
+     * @return array
+     */
+    protected function getPickupLocationsForEdit(array $patron, array $selectedIds
+    ): array {
+        $catalog = $this->getILS();
+        $holds = $catalog->getMyHolds($patron);
+        $firstDetails = reset($selectedIds);
+        $pickupLocations = [];
+        foreach ($holds as $hold) {
+            $currentUpdateDetails
+                = (string)$catalog->getUpdateHoldDetails($hold, $patron);
+            if ($currentUpdateDetails === $firstDetails) {
+                try {
+                    $pickupLocations = $catalog->getPickUpLocations($patron, $hold);
+                } catch (ILSException $e) {
+                    $this->flashMessenger()
+                        ->addErrorMessage('ils_connection_failed');
+                }
+                break;
+            }
+        }
+        return $pickupLocations;
+    }
+
+    /**
+     * Get fields to update from details gathered from the user
+     *
+     * @param array $holdConfig      Hold configuration from the driver
+     * @param array $gatheredDetails Details gathered from the user
+     * @param array $pickupLocations Valid pickup locations
+     *
+     * @return null|array Array of fields to update or null on validation error
+     */
+    protected function getUpdateFieldsFromGatheredDetails(array $holdConfig,
+        array $gatheredDetails, array $pickupLocations
+    ): ?array {
+        $validPickup = true;
+        $selectedPickupLocation = $gatheredDetails['pickUpLocation'] ?? '';
+        if ('' !== $selectedPickupLocation) {
+            $validPickup = $this->holds()->validatePickUpInput(
+                $selectedPickupLocation,
+                $holdConfig['updateFields'],
+                $pickupLocations
+            );
+        }
+        $dateValidationResults = $this->holds()->validateDates(
+            $gatheredDetails['startDate'] ?? null,
+            $gatheredDetails['requiredBy'] ?? null,
+            $holdConfig['updateFields']
+        );
+        if (in_array('frozenUntil', $holdConfig['updateFields'])) {
+            $frozenUntilValidationResults = $this->holds()->validateFrozenUntil(
+                $gatheredDetails['frozenUntil'] ?? null,
+                $holdConfig['updateFields']
+            );
+            $dateValidationResults['errors'] = array_unique(
+                array_merge(
+                    $dateValidationResults['errors'],
+                    $frozenUntilValidationResults['errors']
+                )
+            );
+        }
+        if (!$validPickup) {
+            $this->flashMessenger()->addErrorMessage('hold_invalid_pickup');
+        }
+        foreach ($dateValidationResults['errors'] as $msg) {
+            $this->flashMessenger()->addErrorMessage($msg);
+        }
+        if (!$validPickup || $dateValidationResults['errors']) {
+            return null;
+        }
+
+        $updateFields = [];
+        if ($selectedPickupLocation !== '') {
+            $updateFields['pickUpLocation'] = $selectedPickupLocation;
+        }
+        if ($gatheredDetails['startDate'] ?? '' !== '') {
+            $updateFields['startDate'] = $gatheredDetails['startDate'];
+            $updateFields['startDateTS']
+                = $dateValidationResults['startDateTS'];
+        }
+        if (($gatheredDetails['requiredBy'] ?? '') !== '') {
+            $updateFields['requiredBy'] = $gatheredDetails['requiredBy'];
+            $updateFields['requiredByTS']
+                = $dateValidationResults['requiredByTS'];
+        }
+        if (($gatheredDetails['frozen'] ?? '') !== '') {
+            $updateFields['frozen'] = $gatheredDetails['frozen'] === '1';
+            if (($gatheredDetails['frozenUntil']) ?? '' !== '') {
+                $updateFields['frozenUntil']
+                    = $gatheredDetails['frozenUntil'];
+                $updateFields['frozenUntilTS']
+                    = $frozenUntilValidationResults['frozenUntilTS'];
+            }
+        }
+
+        return $updateFields;
     }
 
     /**
