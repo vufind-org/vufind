@@ -29,7 +29,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Validator\Csrf;
 
 /**
  * Controller for the user holds area.
@@ -43,6 +45,25 @@ use VuFind\Exception\ILS as ILSException;
  */
 class HoldsController extends AbstractBase
 {
+    /**
+     * CSRF validator
+     *
+     * @var Csrf
+     */
+    protected $csrf;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm   Service locator
+     * @param Csrf                    $csrf CSRF validator
+     */
+    public function __construct(ServiceLocatorInterface $sm, Csrf $csrf)
+    {
+        parent::__construct($sm);
+        $this->csrf = $csrf;
+    }
+
     /**
      * Send list of holds to view
      *
@@ -172,6 +193,12 @@ class HoldsController extends AbstractBase
 
         $gatheredDetails = $this->params()->fromPost('gatheredDetails', []);
         if ($this->params()->fromPost('updateHolds')) {
+            if (!$this->csrf->isValid($this->params()->fromPost('csrf'))) {
+                throw new \VuFind\Exception\BadRequest(
+                    'error_inconsistent_parameters'
+                );
+            }
+
             $updateFields = $this->getUpdateFieldsFromGatheredDetails(
                 $holdConfig,
                 $gatheredDetails,

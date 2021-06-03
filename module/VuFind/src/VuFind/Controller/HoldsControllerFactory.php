@@ -1,6 +1,6 @@
 <?php
 /**
- * Generic controller factory.
+ * Holds controller factory.
  *
  * PHP version 7
  *
@@ -31,10 +31,9 @@ use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * Generic controller factory.
+ * Holds controller factory.
  *
  * @category VuFind
  * @package  Controller
@@ -42,48 +41,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractBaseFactory implements FactoryInterface
+class HoldsControllerFactory extends AbstractBaseFactory
 {
-    /**
-     * Apply permission settings to the controller.
-     *
-     * @param ContainerInterface $container  Service manager
-     * @param AbstractBase       $controller Controller to configure
-     *
-     * @return AbstractBase
-     */
-    protected function applyPermissions($container, $controller)
-    {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('permissionBehavior');
-        $permissions = $config->global->controllerAccess ?? [];
-
-        if (!empty($permissions)) {
-            // Iterate through parent classes until we find the most specific
-            // class access permission defined (if any):
-            $class = get_class($controller);
-            do {
-                if (isset($permissions[$class])) {
-                    $controller->setAccessPermission($permissions[$class]);
-                    break;
-                }
-                $class = get_parent_class($class);
-            } while ($class);
-
-            // If the controller's current permission is null (as opposed to false
-            // or a string), that means it has no internally configured default, and
-            // setAccessPermission was not called above; thus, we should apply the
-            // default value:
-            if (isset($permissions['*'])
-                && $controller->getAccessPermission() === null
-            ) {
-                $controller->setAccessPermission($permissions['*']);
-            }
-        }
-
-        return $controller;
-    }
-
     /**
      * Create an object
      *
@@ -101,9 +60,10 @@ class AbstractBaseFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        return $this->applyPermissions(
+        return parent::__invoke(
             $container,
-            new $requestedName($container, ...($options ?: []))
+            $requestedName,
+            [$container->get(\VuFind\Validator\Csrf::class)]
         );
     }
 }
