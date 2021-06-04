@@ -1371,7 +1371,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyFines($patron)
     {
-        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Closed'];
+        $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $fines = [];
         foreach ($this->getPagedResults(
             'accounts', '/accounts', $query
