@@ -290,6 +290,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $xml XML request document
      *
      * @return object     SimpleXMLElement parsed from response
+     * @throws ILSException
      */
     protected function sendRequest($xml)
     {
@@ -309,7 +310,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         try {
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->logError('Error in NCIP communication: ' . $e->getMessage());
+            throw new ILSException('Problem with NCIP API');
         }
 
         // If we get a 401, we need to renew the access token and try again
@@ -319,7 +321,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             try {
                 $result = $client->send();
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage());
+                $this->logError('Error in NCIP communication: ' . $e->getMessage());
+                throw new ILSException('Problem with NCIP API');
             }
         }
 
