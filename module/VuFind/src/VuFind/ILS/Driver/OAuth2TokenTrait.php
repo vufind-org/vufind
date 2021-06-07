@@ -30,8 +30,8 @@ declare(strict_types=1);
  */
 namespace VuFind\ILS\Driver;
 
-use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Auth\AuthToken;
+use VuFind\Exception\AuthToken as AuthTokenException;
 
 /**
  * Trait OAuth2TokenTraitTest
@@ -58,7 +58,7 @@ trait OAuth2TokenTrait
      * @param bool   $useHttpBasic  Use HTTP Basic authorization for getting token
      *
      * @return AuthToken
-     * @throws HttpException
+     * @throws AuthTokenException
      */
     public function getNewOAuth2Token(
         string $tokenEndpoint, string $clientId,
@@ -87,7 +87,7 @@ trait OAuth2TokenTrait
             $this->logError(
                 "POST request for '$tokenEndpoint' failed: " . $e->getMessage()
             );
-            throw new HttpException(
+            throw new AuthTokenException(
                 'Problem getting authorization token: Request failed'
             );
         }
@@ -96,7 +96,7 @@ trait OAuth2TokenTrait
             $errorMessage = 'Error while getting OAuth2 access token (status code '
                 . $response->getStatusCode() . '): ' . $response->getContent();
             $this->logError($errorMessage);
-            throw new HttpException(
+            throw new AuthTokenException(
                 'Problem getting authorization token: Bad status code returned'
             );
         }
@@ -109,7 +109,7 @@ trait OAuth2TokenTrait
                 'Did not receive OAuth2 token, response: '
                 . $response->getContent()
             );
-            throw new HttpException(
+            throw new AuthTokenException(
                 'Problem getting authorization token: Empty data'
             );
         }

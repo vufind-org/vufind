@@ -27,9 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Date\DateException;
+use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -374,7 +374,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->config['Catalog']['grantType'] ?? 'client_credentials',
                 $this->tokenBasicAuth
             );
-        } catch (HttpException $exception) {
+        } catch (AuthTokenException $exception) {
             throw new ILSException(
                 'Problem with NCIP API authorization: ' . $exception->getMessage()
             );

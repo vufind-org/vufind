@@ -30,8 +30,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Date\DateException;
+use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 
@@ -1714,7 +1714,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->config['Catalog']['clientSecret'],
                 $this->config['Catalog']['grantType'] ?? 'client_credentials'
             );
-        } catch (HttpException $exception) {
+        } catch (AuthTokenException $exception) {
             throw new ILSException(
                 'Problem with Koha REST API: ' . $exception->getMessage()
             );
