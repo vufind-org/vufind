@@ -142,6 +142,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $useOAuth2 = false;
 
     /**
+     * Use HTTP basic authorization when getting OAuth2 token
+     *
+     * @var bool
+     */
+    protected $tokenBasicAuth = false;
+
+    /**
      * OAuth2 service for getting token
      *
      * @var OAuth2Service
@@ -194,10 +201,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $this->disableRenewals
             = $this->config['Catalog']['disableRenewals'] ?? false;
 
-        $this->useOAuth2 = ($this->config['tokenEndpoint'] ?? false)
-            && ($this->config['clientId'] ?? false)
-            && ($this->config['clientSecret'] ?? false);
-        $this->config['tokenBasicAuth'] = $this->config['tokenBasicAuth'] ?? false;
+        $this->useOAuth2 = ($this->config['Catalog']['tokenEndpoint'] ?? false)
+            && ($this->config['Catalog']['clientId'] ?? false)
+            && ($this->config['Catalog']['clientSecret'] ?? false);
+        $this->tokenBasicAuth = $this->config['Catalog']['tokenBasicAuth'] ?? false;
     }
 
     /**
@@ -319,7 +326,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if ($this->useOAuth2 && $result->getStatusCode() == 401) {
             $client->getRequest()->getHeaders()
                 ->addHeaderLine('Authorization', $this->getOAuth2Token(true));
-
             try {
                 $result = $client->send();
             } catch (\Exception $e) {
@@ -361,7 +367,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getOAuth2Token($renew = false)
     {
-        $cacheKey = 'ncipoauth';
+        $cacheKey = 'oauth';
 
         if (!$renew) {
             $token = $this->getCachedData($cacheKey);
@@ -375,7 +381,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->config['Catalog']['tokenEndpoint'],
                 $this->config['Catalog']['clientId'],
                 $this->config['Catalog']['clientSecret'],
-                $this->config['Catalog']['grantType'] ?? 'client_credentials'
+                $this->config['Catalog']['grantType'] ?? 'client_credentials',
+                $this->tokenBasicAuth
             );
         } catch (HttpException $exception) {
             throw new ILSException(
@@ -388,6 +395,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         return $token->getHeaderValue();
+    }
+
+    /**
+     * Method to ensure uniform cache keys for cached VuFind objects.
+     *
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
+     *
+     * @return string
+     */
+    protected function getCacheKey($suffix = null)
+    {
+        return 'XCNCIP2' . '-' . md5($this->url . $suffix);
     }
 
     /**
