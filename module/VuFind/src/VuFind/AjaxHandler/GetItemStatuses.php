@@ -171,7 +171,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         } elseif (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
-        } elseif ($mode == 'all' || $mode == 'group') {
+        } elseif ($mode == 'all') {
             // All values mode?  Return comma-separated values:
             return implode(
                 ",\t",
