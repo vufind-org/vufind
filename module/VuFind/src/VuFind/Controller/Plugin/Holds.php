@@ -296,9 +296,8 @@ class Holds extends AbstractRequestBase
         }
 
         try {
-            $result['frozenUntilTS'] = $frozenUntil
-                ? $this->dateConverter->convertFromDisplayDate('U', $frozenUntil)
-                : 0;
+            $result['frozenUntilTS']
+                = $this->dateConverter->convertFromDisplayDate('U', $frozenUntil);
             if ($result['frozenUntilTS'] < time()) {
                 $result['errors'][] = 'hold_frozen_until_date_invalid';
             }

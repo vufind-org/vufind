@@ -264,19 +264,19 @@ class HoldsController extends AbstractBase
         $catalog = $this->getILS();
         $holds = $catalog->getMyHolds($patron);
         $firstDetails = reset($selectedIds);
-        $pickupLocations = [];
         foreach ($holds as $hold) {
             if ((string)($hold['updateDetails'] ?? '') === $firstDetails) {
                 try {
-                    $pickupLocations = $catalog->getPickUpLocations($patron, $hold);
+                    return $catalog->getPickUpLocations($patron, $hold);
                 } catch (ILSException $e) {
                     $this->flashMessenger()
                         ->addErrorMessage('ils_connection_failed');
                 }
-                break;
             }
         }
-        return $pickupLocations;
+        // As a last resort, return all pickup locations. This should only happen if
+        // the first hold was deleted while being selected.
+        return $catalog->getPickUpLocations($patron);
     }
 
     /**
