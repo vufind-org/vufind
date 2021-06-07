@@ -33,7 +33,6 @@ namespace VuFind\ILS\Driver;
 use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\ILS\OAuth2Service;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 
 /**
@@ -61,6 +60,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         logError as error;
     }
     use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\ILS\Driver\OAuth2TokenTrait;
 
     /**
      * Library prefix
@@ -217,28 +217,19 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $sortItemsBySerialIssue;
 
     /**
-     * OAuth2 service for getting token
-     *
-     * @var OAuth2Service
-     */
-    protected $oauth2;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter   Date converter object
      * @param callable               $sessionFactory  Factory function returning
      * SessionContainer object
      * @param ?SafeMoneyFormat       $safeMoneyFormat Money formatting view helper
-     * @param OAuth2Service          $oauth2          OAuth2 token service
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat, OAuth2Service $oauth2
+        $sessionFactory, ?SafeMoneyFormat $safeMoneyFormat
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
         $this->safeMoneyFormat = $safeMoneyFormat;
-        $this->oauth2 = $oauth2;
     }
 
     /**
@@ -1718,7 +1709,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $url = $this->config['Catalog']['host'] . '/v1/oauth/token';
 
         try {
-            $token = $this->oauth2->getNewOAuth2Token(
+            $token = $this->getNewOAuth2Token(
                 $url, $this->config['Catalog']['clientId'],
                 $this->config['Catalog']['clientSecret'],
                 $this->config['Catalog']['grantType'] ?? 'client_credentials'

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Class OAuth2ServiceTest
+ * Class OAuth2TokenTraitTest
  *
  * PHP version 7
  *
@@ -31,10 +31,10 @@ namespace VuFindTest\ILS;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-use VuFind\ILS\OAuth2Service;
+use VuFind\ILS\Driver\XCNCIP2;
 
 /**
- * Class OAuth2ServiceTest
+ * Class OAuth2TokenTraitTest
  *
  * @category VuFind
  * @package  VuFindTest\ILS
@@ -42,14 +42,14 @@ use VuFind\ILS\OAuth2Service;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class OAuth2ServiceTest extends \PHPUnit\Framework\TestCase
+class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tested service
      *
-     * @var OAuth2Service
+     * @var XCNCIP2
      */
-    protected $service;
+    protected $driver;
 
     /**
      * Test for getNewOauth2Token
@@ -66,9 +66,9 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
 {"access_token": "some_access_token","expires_in": 3600,"token_type": "Bearer"}
 END;
 
-        $this->configureService();
+        $this->configureDriver();
         $this->mockResponse($response);
-        $token = $this->service->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
+        $token = $this->driver->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
         $this->assertEquals('Bearer some_access_token', $token->getHeaderValue());
 
         $response = <<<END
@@ -76,20 +76,20 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 Date: Wed, 18 Mar 2015 11:49:40 GMT
 END;
-        $this->configureService();
+        $this->configureDriver();
         $this->mockResponse($response);
         $this->expectExceptionMessage('Problem getting authorization token: Bad status code returned');
-        $this->service->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
+        $this->driver->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
 
         $response = <<<END
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Wed, 18 Mar 2015 11:49:40 GMT
 END;
-        $this->configureService();
+        $this->configureDriver();
         $this->mockResponse($response);
         $this->expectExceptionMessage('Problem getting authorization token: Empty data');
-        $this->service->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
+        $this->driver->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
     }
 
     /**
@@ -113,14 +113,14 @@ END;
         }
         $httpService = new \VuFindHttp\HttpService();
         $httpService->setDefaultAdapter($adapter);
-        $this->service->setHttpService($httpService);
+        $this->driver->setHttpService($httpService);
     }
 
     /**
      * Basic configuration for tested service
      */
-    protected function configureService()
+    public function configureDriver(): void
     {
-        $this->service = new OAuth2Service();
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
     }
 }

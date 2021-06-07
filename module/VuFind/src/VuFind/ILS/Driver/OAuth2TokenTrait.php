@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Class OAuth2Service
+ * Trait OAuth2TokenTraitTest
  *
  * PHP version 7
  *
@@ -24,27 +24,26 @@ declare(strict_types=1);
  * @category VuFind
  * @package  VuFind\ILS
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ * @link     https://knihovny.cz Main Page
  */
-namespace VuFind\ILS;
+namespace VuFind\ILS\Driver;
 
 use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Auth\AuthToken;
 
 /**
- * Class OAuth2Service
+ * Trait OAuth2TokenTraitTest
  *
  * @category VuFind
  * @package  VuFind\ILS
  * @author   Josef Moravec <moravec@mzk.cz>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
+ * @link     https://knihovny.cz Main Page
  */
-class OAuth2Service implements
-    \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+trait OAuth2TokenTrait
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

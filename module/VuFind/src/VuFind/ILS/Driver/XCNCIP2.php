@@ -31,7 +31,6 @@ use Laminas\Http\Client\Exception\RuntimeException as HttpException;
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\ILS\OAuth2Service;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver
@@ -47,6 +46,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\ILS\Driver\OAuth2TokenTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -149,23 +149,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $tokenBasicAuth = false;
 
     /**
-     * OAuth2 service for getting token
-     *
-     * @var OAuth2Service
-     */
-    protected $oauth2;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param OAuth2Service          $oauth2        OAuth2 token service
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
-        OAuth2Service $oauth2
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateConverter = $dateConverter;
-        $this->oauth2 = $oauth2;
     }
 
     /**
@@ -377,7 +367,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         try {
-            $token = $this->oauth2->getNewOAuth2Token(
+            $token = $this->getNewOAuth2Token(
                 $this->config['Catalog']['tokenEndpoint'],
                 $this->config['Catalog']['clientId'],
                 $this->config['Catalog']['clientSecret'],

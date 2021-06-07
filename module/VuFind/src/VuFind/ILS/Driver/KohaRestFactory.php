@@ -73,9 +73,8 @@ class KohaRestFactory extends \VuFind\ILS\Driver\DriverWithDateConverterFactory
         $helperManager = $container->get('ViewHelperManager');
         $safeMoneyFormat = $helperManager->has('safeMoneyFormat')
             ? $helperManager->get('safeMoneyFormat') : null;
-        $oauth2 = $container->get(\VuFind\ILS\OAuth2Service::class);
         return parent::__invoke(
-            $container, $requestedName, [$sessionFactory, $safeMoneyFormat, $oauth2]
+            $container, $requestedName, [$sessionFactory, $safeMoneyFormat]
         );
     }
 }
