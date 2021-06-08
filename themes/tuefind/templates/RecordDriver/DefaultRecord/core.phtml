@@ -7,37 +7,10 @@
     $preview = ($this->previewOverride ?? false)
       ? $this->previewOverride : $this->record($this->driver)->getPreviews();
   ?>
-  <!-- TueFind: Hide QRCode / Cover / Preview -->
-  <!--
-  <?php if ($QRCode || $cover || $preview): ?>
-    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-      <?php /* Display thumbnail if appropriate: */ ?>
-      <?php if($cover): ?>
-        <?=$cover?>
-      <?php endif; ?>
-
-      <?php /* Display qrcode if appropriate: */ ?>
-      <?php if($QRCode): ?>
-        <span class="hidden-xs">
-          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
-        </span>
-      <?php endif; ?>
-
-      <?php // if you have a preview tab but want to move or remove the preview link
-         // from this area of the record view, this can be split into
-         // getPreviewData() (should stay here) and
-         // getPreviewLink() (can go in your desired tab) ?>
-      <?php if ($preview): ?>
-        <div class="record-previews">
-          <?=$preview?>
-        </div>
-      <?php endif; ?>
-    </div>
-  <?php endif; ?>
-  -->
+  <?php /* TueFind: Intentionally removed QRCode / Cover / Preview here */ ?>
   <div class="media-body">
 
-    <!-- TueFind: Get title from custom RecordDriver function -->
+    <?php /* TueFind: Get title from custom RecordDriver function */ ?>
     <h3 property="name"><?=$this->escapeHtml($this->driver->getTitle())?></h3>
 
     <?php if(!empty($this->extraControls)): ?>
@@ -75,7 +48,7 @@
         </colgroup>
         <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
         <?php foreach ($coreFields as $current): ?>
-          <!-- TueFind: possibility to add rowId, e.g. for PDA -->
+          <?php /* TueFind: possibility to add rowId, e.g. for PDA */ ?>
           <tr<?=(isset($current['options']['rowId'])) ? ' id="'.$current['options']['rowId'].'"' : ''?>><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
         <?php endforeach; ?>
       </table>
