@@ -330,10 +330,13 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Place the hold:
         $futureDate = date("m-d-Y", strtotime("+2 days"));
+        $expectedDate = date("m-d-Y", strtotime("+1 day"));
         $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
 
-        // Confirm that the hold is frozen, as expected:
-        $expected = "Frozen (temporarily suspended) until $futureDate";
+        // Confirm that the hold is frozen, as expected (note that the expected
+        // date differs from the date entered, because the date entered indicates
+        // when the hold will start, and the freeze ends on the previous day):
+        $expected = "Frozen (temporarily suspended) until $expectedDate";
         $elementText = $this->findCss($page, ".media-body")->getText();
         $this->assertTrue(
             false !== strstr($elementText, $expected),
