@@ -29,6 +29,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Date\DateException;
+use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -44,6 +45,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\ILS\Driver\OAuth2TokenTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -132,6 +135,20 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $disableRenewals = false;
 
     /**
+     * If the NCIP need an authorization using OAuth2
+     *
+     * @var bool
+     */
+    protected $useOAuth2 = false;
+
+    /**
+     * Use HTTP basic authorization when getting OAuth2 token
+     *
+     * @var bool
+     */
+    protected $tokenBasicAuth = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -173,6 +190,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         $this->disableRenewals
             = $this->config['Catalog']['disableRenewals'] ?? false;
+
+        $this->useOAuth2 = ($this->config['Catalog']['tokenEndpoint'] ?? false)
+            && ($this->config['Catalog']['clientId'] ?? false)
+            && ($this->config['Catalog']['clientSecret'] ?? false);
+        $this->tokenBasicAuth = $this->config['Catalog']['tokenBasicAuth'] ?? false;
     }
 
     /**
@@ -268,21 +290,40 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $xml XML request document
      *
      * @return object     SimpleXMLElement parsed from response
+     * @throws ILSException
      */
     protected function sendRequest($xml)
     {
         $this->debug('Sendig NCIP request: ' . $xml);
+        $client = $this->httpService->createClient($this->url);
+        if ($this->useOAuth2) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Authorization', $this->getOAuth2Token());
+        }
+        // Set timeout value
+        $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
+        $client->setOptions(['timeout' => $timeout]);
+        $client->setRawBody($xml);
+        $client->setEncType('application/xml; charset=UTF-8');
+        $client->setMethod('POST');
         // Make the NCIP request:
         try {
-            $client = $this->httpService->createClient($this->url);
-            // Set timeout value
-            $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
-            $client->setOptions(['timeout' => $timeout]);
-            $client->setRawBody($xml);
-            $client->setEncType('application/xml; charset=UTF-8');
-            $result = $client->setMethod('POST')->send();
+            $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->logError('Error in NCIP communication: ' . $e->getMessage());
+            throw new ILSException('Problem with NCIP API');
+        }
+
+        // If we get a 401, we need to renew the access token and try again
+        if ($this->useOAuth2 && $result->getStatusCode() == 401) {
+            $client->getRequest()->getHeaders()
+                ->addHeaderLine('Authorization', $this->getOAuth2Token(true));
+            try {
+                $result = $client->send();
+            } catch (\Exception $e) {
+                $this->logError('Error in NCIP communication: ' . $e->getMessage());
+                throw new ILSException('Problem with NCIP API');
+            }
         }
 
         if (!$result->isSuccess()) {
@@ -308,6 +349,58 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         } else {
             throw new ILSException("Problem parsing XML");
         }
+    }
+
+    /**
+     * Get a new or cached OAuth2 token (type + token)
+     *
+     * @param bool $renew Force renewal of token
+     *
+     * @return string
+     */
+    protected function getOAuth2Token($renew = false)
+    {
+        $cacheKey = 'oauth';
+
+        if (!$renew) {
+            $token = $this->getCachedData($cacheKey);
+            if ($token) {
+                return $token;
+            }
+        }
+
+        try {
+            $token = $this->getNewOAuth2Token(
+                $this->config['Catalog']['tokenEndpoint'],
+                $this->config['Catalog']['clientId'],
+                $this->config['Catalog']['clientSecret'],
+                $this->config['Catalog']['grantType'] ?? 'client_credentials',
+                $this->tokenBasicAuth
+            );
+        } catch (AuthTokenException $exception) {
+            throw new ILSException(
+                'Problem with NCIP API authorization: ' . $exception->getMessage()
+            );
+        }
+
+        $this->putCachedData(
+            $cacheKey, $token->getHeaderValue(), $token->getExpiresIn()
+        );
+
+        return $token->getHeaderValue();
+    }
+
+    /**
+     * Method to ensure uniform cache keys for cached VuFind objects.
+     *
+     * @param string|null $suffix Optional suffix that will get appended to the
+     * object class name calling getCacheKey()
+     *
+     * @return string
+     */
+    protected function getCacheKey($suffix = null)
+    {
+        return 'XCNCIP2' . '-' . md5($this->url . $suffix);
     }
 
     /**
@@ -1581,11 +1674,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * value is then extracted by the CancelHolds function.  item id is used as the
      * array key in the response.
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $this->getCancelRequestDetails($holdDetails);
     }
@@ -1616,10 +1712,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * The item id is used as the key in the return value.
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $this->getCancelRequestDetails($details);
     }

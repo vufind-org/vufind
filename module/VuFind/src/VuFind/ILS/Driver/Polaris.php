@@ -832,12 +832,15 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Get Cancel Hold Details
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field (just request id is all Polaris
      * needs)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }

@@ -31,6 +31,7 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Date\DateException;
+use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\View\Helper\Root\SafeMoneyFormat;
 
@@ -55,10 +56,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\Log\LoggerAwareTrait {
-        logError as error;
-    }
+    use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\ILS\Driver\OAuth2TokenTrait;
 
     /**
      * Library prefix
@@ -776,11 +776,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Get required data for canceling a hold. This value is used by relayed to the
      * cancelHolds function when the user attempts to cancel a hold.
      *
-     * @param array $holdDetails An array of hold data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
             : $holdDetails['requestId'];
@@ -1175,10 +1178,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * Get Cancel Storage Retrieval Request (article request) Details
      *
      * @param array $details An array of item data
+     * @param array $patron  Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($details, $patron)
     {
         return $details['item_id'];
     }
@@ -1373,10 +1379,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $bibId = $item['biblio_id'];
                 }
             }
-            $type = $entry['debit_type'];
+            $type = trim($entry['debit_type']);
             $type = $this->translate($this->feeTypeMappings[$type] ?? $type);
-            if ($entry['description'] !== $type) {
-                $type .= ' - ' . $entry['description'];
+            $description = trim($entry['description']);
+            if ($description !== $type) {
+                $type .= " - $description";
             }
             $fine = [
                 'amount' => $entry['amount'] * 100,
@@ -1698,54 +1705,24 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $url = $this->config['Catalog']['host'] . '/v1/oauth/token';
-        $client = $this->createHttpClient($url);
-        $client->setMethod('POST');
-        $client->getRequest()->getHeaders()->addHeaderLine(
-            'Content-Type', 'application/x-www-form-urlencoded'
-        );
-
-        $client->setParameterPost(
-            [
-                'client_id' => $this->config['Catalog']['clientId'],
-                'client_secret' => $this->config['Catalog']['clientSecret'],
-                'grant_type' => $this->config['Catalog']['grantType']
-                    ?? 'client_credentials'
-            ]
-        );
 
         try {
-            $response = $client->send();
-        } catch (\Exception $e) {
-            $this->logError(
-                "POST request for '$url' failed: " . $e->getMessage()
+            $token = $this->getNewOAuth2Token(
+                $url, $this->config['Catalog']['clientId'],
+                $this->config['Catalog']['clientSecret'],
+                $this->config['Catalog']['grantType'] ?? 'client_credentials'
             );
-            throw new ILSException('Problem with Koha REST API.');
-        }
-
-        if ($response->getStatusCode() != 200) {
-            $errorMessage = 'Error while getting OAuth2 access token (status code '
-                . $response->getStatusCode() . '): ' . $response->getContent();
-            $this->logError($errorMessage);
-            throw new ILSException('Problem with Koha REST API.');
-        }
-        $responseData = json_decode($response->getContent(), true);
-
-        if (empty($responseData['token_type'])
-            || empty($responseData['access_token'])
-        ) {
-            $this->logError(
-                'Did not receive OAuth2 token, response: '
-                . $response->getContent()
+        } catch (AuthTokenException $exception) {
+            throw new ILSException(
+                'Problem with Koha REST API: ' . $exception->getMessage()
             );
-            throw new ILSException('Problem with Koha REST API.');
         }
 
-        $token = $responseData['token_type'] . ' '
-            . $responseData['access_token'];
+        $this->putCachedData(
+            $cacheKey, $token->getHeaderValue(), $token->getExpiresIn()
+        );
 
-        $this->putCachedData($cacheKey, $token, $responseData['expires_in'] ?? null);
-
-        return $token;
+        return $token->getHeaderValue();
     }
 
     /**
@@ -1878,7 +1855,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $statuses[] = 'Not Available';
             }
         } else {
-            $this->error(
+            $this->logError(
                 "Unable to determine status for item: " . print_r($item, true)
             );
         }

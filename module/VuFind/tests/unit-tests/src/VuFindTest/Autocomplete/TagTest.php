@@ -69,12 +69,12 @@ class TagTest extends \PHPUnit\Framework\TestCase
 
         // Fake services:
         $tagTable = $this->getMockBuilder(\VuFind\Db\Table\Tags::class)
-            ->disableOriginalConstructor()->setMethods(['matchText'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['matchText'])->getMock();
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
         $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
-            ->disableOriginalConstructor()->setMethods(['get'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))
             ->will($this->returnValue($tagTable));

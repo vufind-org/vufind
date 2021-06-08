@@ -840,11 +840,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * Get required data for canceling a hold. This value is used by relayed to the
      * cancelHolds function when the user attempts to cancel a hold.
      *
-     * @param array $holdDetails An array of hold data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
             : $holdDetails['requestId'];

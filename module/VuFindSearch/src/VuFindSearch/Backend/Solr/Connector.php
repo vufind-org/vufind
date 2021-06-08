@@ -44,7 +44,7 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
-use VuFindSearch\Backend\Solr\Document\AbstractDocument;
+use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\ParamBag;
 
 /**
@@ -130,8 +130,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @param string|array $url       SOLR core URL or an array of alternative URLs
      * @param HandlerMap   $map       Handler map
      * @param string       $uniqueKey Solr field used to store unique identifier
-     *
-     * @return void
      */
     public function __construct($url, HandlerMap $map, $uniqueKey = 'id')
     {
@@ -244,36 +242,23 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Write to the SOLR index.
      *
-     * @param AbstractDocument $document Document to write
-     * @param string           $format   Serialization format, either 'json' or 'xml'
-     * @param string           $handler  Update handler
-     * @param ParamBag         $params   Update handler parameters
+     * @param DocumentInterface $document Document to write
+     * @param string            $handler  Update handler
+     * @param ParamBag          $params   Update handler parameters
      *
      * @return string Response body
      */
-    public function write(AbstractDocument $document, $format = 'xml',
-        $handler = 'update', ParamBag $params = null
+    public function write(DocumentInterface $document, $handler = 'update',
+        ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document, $format) {
-            switch ($format) {
-            case 'xml':
-                $client->setEncType('text/xml; charset=UTF-8');
-                $body = $document->asXML();
-                break;
-            case 'json':
-                $client->setEncType('application/json');
-                $body = $document->asJSON();
-                break;
-            default:
-                throw new InvalidArgumentException(
-                    "Unable to serialize to selected format: {$format}"
-                );
-            }
+        $callback = function ($client) use ($document) {
+            $client->setEncType($document->getContentType());
+            $body = $document->getContent();
             $client->setRawBody($body);
             $client->getRequest()->getHeaders()
                 ->addHeaderLine('Content-Length', strlen($body));

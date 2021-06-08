@@ -224,7 +224,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
         $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->any())->method('get')
             ->with($this->equalTo('FeedbackForms.yaml'))
@@ -316,7 +316,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
         $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->any())->method('get')
             ->with($this->equalTo('FeedbackForms.yaml'))
