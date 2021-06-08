@@ -228,14 +228,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function cancelProcedure(Element $page, string $type): void
     {
-        // Test empty selection
+        // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-        $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
-        $this->assertEquals(
-            'No ' . $type . ' were selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
-        );
+        $this->assertNull($page->find('css', '.btn-group.open'));
 
         // Test "cancel all" button -- first make sure item is there before
         // cancel is pushed:
