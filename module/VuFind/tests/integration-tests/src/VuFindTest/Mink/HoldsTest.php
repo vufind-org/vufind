@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
 
 /**
@@ -92,9 +93,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $id ID of record to access.
      *
-     * @return Element
+     * @return DocumentElement
      */
-    protected function gotoRecordById(string $id = 'testsample1'): Element
+    protected function gotoRecordById(string $id = 'testsample1'): DocumentElement
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -122,12 +123,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Support method to place a hold and click through to "Your Holds and Recalls."
      *
-     * @param Element $page Page element.
+     * @param Element $page   Page element.
+     * @param array   $extras Associative array of selector => value for additional
+     * form values to set.
      *
      * @return void
      */
-    protected function placeHoldAndGoToHoldsScreen(Element $page): void
-    {
+    protected function placeHoldAndGoToHoldsScreen(Element $page, array $extras = []
+    ): void {
         // Open the "place hold" dialog
         $this->clickCss($page, 'a.placehold');
         $this->snooze();
@@ -135,6 +138,10 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickUpLocation')->setValue('B');
+        // Add extra form field values, if any:
+        foreach ($extras as $selector => $value) {
+            $this->findCss($page, $selector)->setValue($value);
+        }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
@@ -294,6 +301,44 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test canceling the hold:
         $this->cancelProcedure($page, 'holds');
+    }
+
+    /**
+     * Test creating a frozen hold.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testFrozenHoldCreation(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Place the hold:
+        $futureDate = date("m-d-Y", strtotime("+2 days"));
+        $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
+
+        // Confirm that the hold is frozen, as expected:
+        $expected = "Frozen (temporarily suspended) until $futureDate";
+        $elementText = $this->findCss($page, ".media-body")->getText();
+        $this->assertTrue(
+            false !== strstr($elementText, $expected),
+            "Missing expected text: $expected in $elementText"
+        );
     }
 
     /**
