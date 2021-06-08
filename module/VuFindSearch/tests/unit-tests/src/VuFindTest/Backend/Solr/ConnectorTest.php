@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -43,6 +44,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
@@ -126,18 +128,61 @@ class ConnectorTest extends TestCase
     }
 
     /**
-     * Test InvalidArgumentException unknown serialization format.
+     * Test writing a CSV document.
      *
      * @return void
      */
-    public function testSaveThrowsUnknownFormat()
+    public function testWriteCSV()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unable to serialize');
+        $csvData = 'a,b,c';
+        $map = new HandlerMap();
+        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setEncType', 'setRawBody'])
+            ->getMock();
+        $client->expects($this->once())->method('setEncType')
+            ->with($this->equalTo('text/csv'));
+        $client->expects($this->once())->method('setRawBody')
+            ->with($this->equalTo($csvData));
+        $conn = $this->getMockBuilder(Connector::class)
+            ->onlyMethods(['createClient', 'send'])
+            ->setConstructorArgs(['http://foo', $map])
+            ->getMock();
+        $conn->expects($this->once())->method('createClient')
+            ->will($this->returnValue($client));
+        $conn->expects($this->once())->method('send')
+            ->with($this->equalTo($client));
+        $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument($csvData);
+        $conn->write($csv, 'csv');
+    }
 
-        $conn = $this->createConnector();
-        $document = $this->createMock(\VuFindSearch\Backend\Solr\Document\UpdateDocument::class);
-        $conn->write($document, 'unknown', 'update');
+    /**
+     * Test writing a JSON document.
+     *
+     * @return void
+     */
+    public function testWriteJSON()
+    {
+        $jsonData = '[1,2,3]';
+        $map = new HandlerMap();
+        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setEncType', 'setRawBody'])
+            ->getMock();
+        $client->expects($this->once())->method('setEncType')
+            ->with($this->equalTo('application/json'));
+        $client->expects($this->once())->method('setRawBody')
+            ->with($this->equalTo($jsonData));
+        $conn = $this->getMockBuilder(Connector::class)
+            ->onlyMethods(['createClient', 'send'])
+            ->setConstructorArgs(['http://foo', $map])
+            ->getMock();
+        $conn->expects($this->once())->method('createClient')
+            ->will($this->returnValue($client));
+        $conn->expects($this->once())->method('send')
+            ->with($this->equalTo($client));
+        $json = new \VuFindSearch\Backend\Solr\Document\RawJSONDocument($jsonData);
+        $conn->write($json, 'json');
     }
 
     /**

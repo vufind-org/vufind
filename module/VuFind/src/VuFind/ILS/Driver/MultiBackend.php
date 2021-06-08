@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2012-2018.
+ * Copyright (C) The National Library of Finland 2012-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -260,7 +260,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             // If the patron belongs to another source, just pass on an empty array
             // to indicate that the patron has logged in but is not available for the
             // current catalog.
-            if ($patron && $this->getSource($patron['cat_username']) !== $source) {
+            if ($patron
+                && !$this->driverSupportsSource($source, $patron['cat_username'])
+            ) {
                 $patron = [];
             }
             $holdings = $driver->getHolding(
@@ -685,7 +687,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($id) != $source) {
+            if (!$this->driverSupportsSource($source, $id)) {
                 return false;
             }
             return $driver->checkRequestIsValid(
@@ -715,10 +717,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($id) != $source
-                || !is_callable(
-                    [$driver, 'checkStorageRetrievalRequestIsValid']
-                )
+            if (!$this->driverSupportsSource($source, $id)
+                || !is_callable([$driver, 'checkStorageRetrievalRequestIsValid'])
             ) {
                 return false;
             }
@@ -754,7 +754,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($holdDetails) {
-                if ($this->getSource($holdDetails['id']) != $source) {
+                if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                     // Return empty array since the sources don't match
                     return [];
                 }
@@ -790,7 +790,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($holdDetails) {
-                if ($this->getSource($holdDetails['id']) != $source) {
+                if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                     // Return false since the sources don't match
                     return false;
                 }
@@ -820,10 +820,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getRequestGroups($id, $patron, $holdDetails = null)
     {
-        $source = $this->getSource($id);
+        // Get source from patron as that will work also with the Demo driver:
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($patron['cat_username']) != $source
+            if (!$this->driverSupportsSource($source, $id)
                 || !$this->methodSupported(
                     $driver,
                     'getRequestGroups',
@@ -864,7 +865,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             if (!empty($holdDetails)) {
-                if ($this->getSource($holdDetails['id']) != $source
+                if (!$this->driverSupportsSource($source, $holdDetails['id'])
                     || !$this->methodSupported(
                         $driver, 'getDefaultRequestGroup',
                         compact('patron', 'holdDetails')
@@ -900,7 +901,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($holdDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($holdDetails['id']) != $source) {
+            if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
                 return [
                     "success" => false,
                     "sysMessage" => 'hold_wrong_user_institution'
@@ -943,21 +944,25 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * as form data in Hold.php. This value is then extracted by the CancelHolds
      * function.
      *
-     * @param array $holdDetails An array of item data
+     * @param array $hold   A single hold array from getMyHolds
+     * @param array $patron Patron information from patronLogin
      *
      * @return string Data for use in a form field
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($hold, $patron = [])
     {
         $source = $this->getSource(
-            $holdDetails['id'] ?? $holdDetails['item_id'] ?? ''
+            $patron['cat_username'] ?? $hold['id'] ?? $hold['item_id'] ?? ''
         );
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdDetails = $this->stripIdPrefixes(
-                $holdDetails, $source, ['id', 'item_id', 'cat_username']
+            $hold = $this->stripIdPrefixes(
+                $hold, $source, ['id', 'item_id', 'cat_username']
             );
-            return $driver->getCancelHoldDetails($holdDetails);
+            return $driver->getCancelHoldDetails(
+                $hold,
+                $this->stripIdPrefixes($patron, $source)
+            );
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -980,7 +985,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver
             && is_callable([$driver, 'placeStorageRetrievalRequest'])
         ) {
-            if ($this->getSource($details['id']) != $source) {
+            if (!$this->driverSupportsSource($source, $details['id'])) {
                 return [
                     "success" => false,
                     "sysMessage" => 'hold_wrong_user_institution'
@@ -1028,22 +1033,25 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * as form data. This value is then extracted by the
      * CancelStorageRetrievalRequests function.
      *
-     * @param array $details An array of item data
+     * @param array $request An array of request data
+     * @param array $patron  Patron information
      *
      * @return string Data for use in a form field
      */
-    public function getCancelStorageRetrievalRequestDetails($details)
+    public function getCancelStorageRetrievalRequestDetails($request, $patron)
     {
-        $source = $this->getSource($details['id'] ?? '');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
                 $driver, 'getCancelStorageRetrievalRequestDetails',
-                compact('details')
+                compact('request', 'patron')
             )
         ) {
-            $details = $this->stripIdPrefixes($details, $source);
-            return $driver->getCancelStorageRetrievalRequestDetails($details);
+            return $driver->getCancelStorageRetrievalRequestDetails(
+                $this->stripIdPrefixes($request, $source),
+                $this->stripIdPrefixes($patron, $source)
+            );
         }
         throw new ILSException('No suitable backend driver found');
     }
@@ -1206,7 +1214,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * data in $cancelDetails['details'] is determined by
      * getCancelILLRequestDetails().
      *
-     * @param array $cancelDetails An array of item and patron data
+     * @param array $cancelDetails An array of request and patron data
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
@@ -1235,21 +1243,23 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * submitted as form data. This value is then extracted by the CancelILLRequests
      * function.
      *
-     * @param array $details An array of item data
+     * @param array $request An array of request data
+     * @param array $patron  The patron array from patronLogin
      *
      * @return string Data for use in a form field
      */
-    public function getCancelILLRequestDetails($details)
+    public function getCancelILLRequestDetails($request, $patron)
     {
-        $source = $this->getSource($details['id'] ?? $details['item_id'] ?? '');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getCancelILLRequestDetails', compact('details')
+                $driver, 'getCancelILLRequestDetails', compact('request', 'patron')
             )
         ) {
             return $driver->getCancelILLRequestDetails(
-                $this->stripIdPrefixes($details, $source)
+                $this->stripIdPrefixes($request, $source),
+                $this->stripIdPrefixes($patron, $source)
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -1642,5 +1652,24 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if the given ILS driver supports the source of a record
+     *
+     * @param string $driverSource Driver's source identifier
+     * @param string $id           Prefixed identifier to compare with
+     *
+     * @return bool
+     */
+    protected function driverSupportsSource(string $driverSource, string $id): bool
+    {
+        // Same source is always ok:
+        if ($this->getSource($id) === $driverSource) {
+            return true;
+        }
+        // Demo driver supports any record source:
+        $driver = $this->getDriver($driverSource);
+        return $driver instanceof \VuFind\ILS\Driver\Demo;
     }
 }

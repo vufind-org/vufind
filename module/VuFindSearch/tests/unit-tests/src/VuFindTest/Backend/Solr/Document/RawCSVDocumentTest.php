@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SOLR delete document class.
+ * Unit tests for SOLR raw CSV document class.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,34 +22,38 @@
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend\Solr\Document;
+namespace VuFindTest\Backend\Solr\Document;
+
+use PHPUnit\Framework\TestCase;
+
+use VuFindSearch\Backend\Solr\Document\RawCSVDocument;
 
 /**
- * SOLR delete document class.
+ * Unit tests for SOLR raw CSV document class.
  *
  * @category VuFind
  * @package  Search
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-abstract class AbstractDocument
+class RawCSVDocumentTest extends TestCase
 {
     /**
-     * Return serialized JSON representation.
+     * Test creation of CSV document.
      *
-     * @return string
+     * @return void
      */
-    abstract public function asJSON();
-
-    /**
-     * Return serialized XML representation.
-     *
-     * @return string
-     */
-    abstract public function asXML();
+    public function testBasicBehavior()
+    {
+        $document = new RawCSVDocument('a,b,c');
+        $this->assertEquals(
+            'text/csv', $document->getContentType()
+        );
+        $this->assertEquals('a,b,c', $document->getContent());
+    }
 }

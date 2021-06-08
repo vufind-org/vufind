@@ -27,6 +27,8 @@
  */
 namespace VuFind\Controller\Plugin;
 
+use VuFind\Date\DateException;
+
 /**
  * Action helper to perform holds-related actions
  *
@@ -46,18 +48,20 @@ class Holds extends AbstractRequestBase
      * getMyHolds() method
      * @param array                  $cancelStatus Cancel settings from ILS driver's
      * checkFunction() method
+     * @param array                  $patron       ILS patron
      *
      * @return array $ilsDetails with cancellation info added
      */
-    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus)
-    {
+    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus,
+        $patron = []
+    ) {
         // Generate Form Details for cancelling Holds if Cancelling Holds
         // is enabled
         if ($cancelStatus) {
             if ($cancelStatus['function'] == "getCancelHoldLink") {
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
-                    = $catalog->getCancelHoldLink($ilsDetails);
+                    = $catalog->getCancelHoldLink($ilsDetails, $patron);
             } elseif (isset($ilsDetails['cancel_details'])) {
                 // The ILS driver provided cancel details up front. If the
                 // details are an empty string (flagging lack of support), we
@@ -71,7 +75,8 @@ class Holds extends AbstractRequestBase
             } else {
                 // Default case: ILS supports cancel but we need to look up
                 // details:
-                $cancelDetails = $catalog->getCancelHoldDetails($ilsDetails);
+                $cancelDetails
+                    = $catalog->getCancelHoldDetails($ilsDetails, $patron);
                 if ($cancelDetails !== '') {
                     $ilsDetails['cancel_details'] = $cancelDetails;
                     $this->rememberValidId($ilsDetails['cancel_details']);
@@ -119,8 +124,8 @@ class Holds extends AbstractRequestBase
                 if ($params->fromPost('cancelAll') !== null) {
                     return $this->getController()->confirm(
                         'hold_cancel_all',
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('holds-list'),
+                        $this->getController()->url()->fromRoute('holds-list'),
                         'confirm_hold_cancel_all_text',
                         [
                             'cancelAll' => 1,
@@ -130,8 +135,8 @@ class Holds extends AbstractRequestBase
                 } else {
                     return $this->getController()->confirm(
                         'hold_cancel_selected',
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('holds-list'),
+                        $this->getController()->url()->fromRoute('holds-list'),
                         'confirm_hold_cancel_selected_text',
                         [
                             'cancelSelected' => 1,
@@ -146,7 +151,7 @@ class Holds extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
+                    $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
             }
@@ -158,13 +163,27 @@ class Holds extends AbstractRequestBase
             if ($cancelResults == false) {
                 $flashMsg->addMessage('hold_cancel_fail', 'error');
             } else {
+                $failed = 0;
+                foreach ($cancelResults['items'] ?? [] as $item) {
+                    if (!$item['success']) {
+                        ++$failed;
+                    }
+                }
+                if ($failed) {
+                    $msg = $this->getController()
+                        ->translate(
+                            'hold_cancel_fail_items',
+                            ['%%count%%' => $failed]
+                        );
+                    $flashMsg->addErrorMessage($msg);
+                }
                 if ($cancelResults['count'] > 0) {
                     $msg = $this->getController()
                         ->translate(
                             'hold_cancel_success_items',
                             ['%%count%%' => $cancelResults['count']]
                         );
-                    $flashMsg->addMessage($msg, 'success');
+                    $flashMsg->addSuccessMessage($msg);
                 }
                 return $cancelResults;
             }
@@ -172,5 +191,81 @@ class Holds extends AbstractRequestBase
             $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
+    }
+
+    /**
+     * Check if the user-provided dates are valid.
+     *
+     * Returns validated dates and/or an array of validation errors if there are
+     * problems.
+     *
+     * @param string $startDate         User-specified start date
+     * @param string $requiredBy        User-specified required-by date
+     * @param array  $enabledFormFields Hold form fields enabled by
+     * configuration/driver
+     *
+     * @return array
+     */
+    public function validateDates($startDate, $requiredBy, $enabledFormFields)
+    {
+        $result = [
+            'startDateTS' => null,
+            'requiredByTS' => null,
+            'errors' => [],
+        ];
+        if (!in_array('startDate', $enabledFormFields)
+            && !in_array('requiredByDate', $enabledFormFields)
+        ) {
+            return $result;
+        }
+
+        $errors = [];
+        if (in_array('startDate', $enabledFormFields)) {
+            try {
+                $result['startDateTS'] = $startDate
+                    ? (int)$this->dateConverter->convertFromDisplayDate(
+                        'U',
+                        $startDate
+                    ) : 0;
+                if ($result['startDateTS'] < strtotime('today')) {
+                    $errors[] = 'hold_start_date_invalid';
+                }
+            } catch (DateException $e) {
+                $errors[] = 'hold_start_date_invalid';
+            }
+        }
+
+        if (in_array('requiredByDate', $enabledFormFields)) {
+            try {
+                if ($requiredBy) {
+                    $requiredByDateTime = \DateTime::createFromFormat(
+                        'U',
+                        $this->dateConverter
+                            ->convertFromDisplayDate('U', $requiredBy)
+                    );
+                    $result['requiredByTS'] = $requiredByDateTime
+                        ->setTime(23, 59, 59)
+                        ->getTimestamp();
+                } else {
+                    $result['requiredByTS'] = 0;
+                }
+                if ($result['requiredByTS'] < strtotime('today')) {
+                    $errors[] = 'hold_required_by_date_invalid';
+                }
+            } catch (DateException $e) {
+                $errors[] = 'hold_required_by_date_invalid';
+            }
+        }
+
+        if (!$errors
+            && in_array('startDate', $enabledFormFields)
+            && in_array('requiredByDate', $enabledFormFields)
+            && $result['startDateTS'] > $result['requiredByTS']
+        ) {
+            $errors[] = 'hold_required_by_date_before_start_date';
+        }
+
+        $result['errors'] = $errors;
+        return $result;
     }
 }
