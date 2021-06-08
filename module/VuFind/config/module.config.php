@@ -448,6 +448,9 @@ $config = [
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
+        'invokables' => [
+            'VuFind\ILS\OAuth2Service',
+        ],
         'delegators' => [
             'Laminas\I18n\Translator\TranslatorInterface' => [
                 'VuFind\I18n\Translator\TranslatorFactory',
