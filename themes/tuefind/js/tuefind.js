@@ -1,11 +1,21 @@
 var TueFind = {
     // helper function to add content anchors to content page links
     AddContentAnchors: function() {
+        let current_anchor = null;
+        if (window.location.href.includes('#')) {
+            current_anchor = window.location.href.split('#').pop();
+        }
+
         $('a').each(function() {
             let href = $(this).attr('href');
             if (href != undefined && !href.includes('#')) {
                 if (href.match(/\/Content\//) || href.match(/\?subpage=/)) {
-                    this.setAttribute('href', href + '#content');
+                    if (href.match(/[?&]lng=/)) {
+                        // when switching the language, we want to keep the current anchor
+                        this.setAttribute('href', href + '#' + current_anchor);
+                    } else {
+                        this.setAttribute('href', href + '#content');
+                    }
                 }
             }
         });
