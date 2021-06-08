@@ -56,9 +56,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\Log\LoggerAwareTrait {
-        logError as error;
-    }
+    use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
 
@@ -1857,7 +1855,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $statuses[] = 'Not Available';
             }
         } else {
-            $this->error(
+            $this->logError(
                 "Unable to determine status for item: " . print_r($item, true)
             );
         }
