@@ -304,21 +304,13 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test creating a frozen hold.
+     * Create a frozen hold and navigate to the holds list. Return the page
+     * object that was set up during the process.
      *
-     * @depends testPlaceHold
-     *
-     * @return void
+     * @return DocumentElement
      */
-    public function testFrozenHoldCreation(): void
+    protected function setUpFrozenHold(): DocumentElement
     {
-        $this->changeConfigs(
-            [
-                'config' => $this->getConfigIniOverrides(),
-                'Demo' => $this->getDemoIniOverrides(),
-            ]
-        );
-
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
@@ -342,6 +334,53 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             false !== strstr($elementText, $expected),
             "Missing expected text: $expected in $elementText"
         );
+
+        return $page;
+    }
+
+    /**
+     * Test creating a frozen hold.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testFrozenHoldCreation(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        $page = $this->setUpFrozenHold();
+
+        // TODO: assert that edit buttons are not active, since we didn't
+        // enable them.
+    }
+
+    /**
+     * Test creating, and then editing, a frozen hold.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testFrozenHoldEditing(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenUntil:pickUpLocation'];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        $page = $this->setUpFrozenHold();
+
+        // TODO: edit the freeze date and confirm that it sticks.
     }
 
     /**
