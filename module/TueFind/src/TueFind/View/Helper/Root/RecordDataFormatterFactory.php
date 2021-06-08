@@ -59,8 +59,10 @@ class RecordDataFormatterFactory extends \VuFind\View\Helper\Root\RecordDataForm
     }
 
     protected function addFollowingTitle(&$spec) {
+        // We use the "New Title" display text here because we can re-use
+        // vufind-org translations for it.
         $spec->setTemplateLine(
-            'Following Title', 'getFollowingPPNAndTitle', 'data-following_title.phtml'
+            'New Title', 'getFollowingPPNAndTitle', 'data-following_title.phtml'
         );
     }
 
