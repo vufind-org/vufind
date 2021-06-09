@@ -1993,7 +1993,8 @@ class Demo extends AbstractBase
                 'processed' => '',
                 'requestGroup' => $requestGroup,
                 'frozen'   => $frozen,
-                'frozen_until' => $frozenUntil
+                'frozen_until' => $frozenUntil,
+                'updateDetails' => sprintf('%06d', $nextId)
             ]
         );
 
