@@ -356,8 +356,10 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->setUpFrozenHold();
 
-        // TODO: assert that edit buttons are not active, since we didn't
-        // enable them.
+        // Confirm that there are no edit controls on the page, since we didn't
+        // enable them:
+        $this->assertNull($page->find('css', '#update_selected'));
+        $this->assertNull($page->find('css', '.hold-edit'));
     }
 
     /**
@@ -380,7 +382,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->setUpFrozenHold();
 
-        // TODO: edit the freeze date and confirm that it sticks.
+        // Confirm that there are edit controls on the page:
+        $this->assertNotNull($page->find('css', '#update_selected'));
+
+        // Open the edit dialog box:
+        $this->clickCss($page, '.hold-edit');
+        $this->snooze();
+
+        // TODO: edit the hold
     }
 
     /**
