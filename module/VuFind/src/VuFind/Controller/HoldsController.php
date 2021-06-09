@@ -177,15 +177,19 @@ class HoldsController extends AbstractBase
         $selectedIds = $this->params()->fromPost('selectedIDS')
             ?: $this->params()->fromQuery('selectedIDS');
         if (empty($holdConfig['updateFields']) || empty($selectedIds)) {
-            // Shouldn't be here. Redirect to holds
-            return $this->redirect()->toRoute('holds-list');
+            // Shouldn't be here. Redirect back to holds.
+            return $this->inLightbox()
+                ? $this->getRefreshResponse()
+                : $this->redirect()->toRoute('holds-list');
         }
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
         if (array_diff($selectedIds, $this->holds()->getValidIds())) {
             $this->flashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
-            return $this->redirect()->toRoute('holds-list');
+            return $this->inLightbox()
+                ? $this->getRefreshResponse()
+                : $this->redirect()->toRoute('holds-list');
         }
 
         $pickupLocations = $this->getPickupLocationsForEdit($patron, $selectedIds);
