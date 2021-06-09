@@ -328,7 +328,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that the hold is frozen, as expected (note that the expected
         // date differs from the date entered, because the date entered indicates
         // when the hold will start, and the freeze ends on the previous day):
-        $expected = "Frozen (temporarily suspended) until $expectedDate";
+        $expected = "Frozen (temporarily suspended) through $expectedDate";
         $elementText = $this->findCss($page, ".media-body")->getText();
         $this->assertTrue(
             false !== strstr($elementText, $expected),
