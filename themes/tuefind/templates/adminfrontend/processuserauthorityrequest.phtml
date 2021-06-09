@@ -1,0 +1,14 @@
+<h3>Process User Authority Request</h3>
+<?php if ($this->action == 'decline'): ?>
+  <p>The access has been successfully declined.</p>
+<?php elseif ($this->action == 'grant'): ?>
+  <p>The access has been successfully granted.</p>
+<?php else: ?>
+  <p>
+    Do you really want to grant the user access to this authority? This cannot be revoked!<br>
+    If you decline, the request will be deleted, allowing other users to request access to the same authority.<br>
+  </p>
+  <p>No automatic e-mail will be sent in both cases, please make sure you inform the user directly, e.g. via email.</p>
+  <form method="post" style="display: inline;" data-lightbox-onclose="VuFind.refreshPage"><button class="btn btn-primary" name="action" value="grant" type="submit">Accept</button></form>
+  <form method="post" style="display: inline;" data-lightbox-onclose="VuFind.refreshPage"><button class="btn btn-primary" name="action" value="decline" type="submit">Decline</button></form>
+<?php endif; ?>

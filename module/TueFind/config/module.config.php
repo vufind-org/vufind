@@ -99,10 +99,38 @@ $config = [
                     ],
                 ],
             ],
+            'authority-request-access' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/Authority/RequestAccess/:authority_id",
+                    'constraints' => [
+                        'authority_id'     => '[0-9A-Z]{8,}',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Authority',
+                        'action'     => 'requestAccess',
+                    ],
+                ],
+            ],
+            'authority-process-request' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/Authority/RequestAccess/:authority_id/:user_id",
+                    'constraints' => [
+                        'authority_id'     => '[0-9A-Z]{8,}',
+                        'user_id'          => '\d+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'AdminFrontend',
+                        'action'     => 'ProcessUserAuthorityRequest',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
+            'TueFind\Controller\AdminFrontendController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'TueFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
@@ -119,6 +147,7 @@ $config = [
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
+            'AdminFrontend' => 'TueFind\Controller\AdminFrontendController',
             'AJAX' => 'TueFind\Controller\AjaxController',
             'ajax' => 'TueFind\Controller\AjaxController',
             'Authority' => 'TueFind\Controller\AuthorityController',
@@ -224,7 +253,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['MyResearch/Newsletter', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
+$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
