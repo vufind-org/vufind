@@ -100,7 +100,7 @@ trait OAuth2TokenTrait
                 'Problem getting authorization token: Bad status code returned'
             );
         }
-        $tokenData = json_decode($response->getContent(), true);
+        $tokenData = json_decode($response->getBody(), true);
 
         if (empty($tokenData['token_type'])
             || empty($tokenData['access_token'])
