@@ -1713,15 +1713,15 @@ class Demo extends AbstractBase
             if (array_key_exists('frozen', $fields)) {
                 if ($fields['frozen']) {
                     $currentHold['frozen'] = true;
-                    if (isset($fields['frozenUntil'])) {
-                        $currentHold['frozen_until'] = $this->dateConverter
-                            ->convertToDisplayDate('U', $fields['frozenUntilTS']);
+                    if (isset($fields['frozenThrough'])) {
+                        $currentHold['frozenThrough'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $fields['frozenThroughTS']);
                     } else {
-                        $currentHold['frozen_until'] = '';
+                        $currentHold['frozenThrough'] = '';
                     }
                 } else {
                     $currentHold['frozen'] = false;
-                    $currentHold['frozen_until'] = '';
+                    $currentHold['frozenThrough'] = '';
                 }
             }
             if (isset($fields['pickUpLocation'])) {
@@ -1967,7 +1967,7 @@ class Demo extends AbstractBase
         if ($holdDetails['startDateTS']) {
             // Suspend until the previous day:
             $frozen = true;
-            $frozenUntil = $this->dateConverter->convertToDisplayDate(
+            $frozenThrough = $this->dateConverter->convertToDisplayDate(
                 'U',
                 \DateTime::createFromFormat(
                     'U',
@@ -1976,7 +1976,7 @@ class Demo extends AbstractBase
             );
         } else {
             $frozen = false;
-            $frozenUntil = '';
+            $frozenThrough = '';
         }
         $session->holds->append(
             [
@@ -1993,7 +1993,7 @@ class Demo extends AbstractBase
                 'processed' => '',
                 'requestGroup' => $requestGroup,
                 'frozen'   => $frozen,
-                'frozen_until' => $frozenUntil,
+                'frozenThrough' => $frozenThrough,
                 'updateDetails' => sprintf('%06d', $nextId)
             ]
         );

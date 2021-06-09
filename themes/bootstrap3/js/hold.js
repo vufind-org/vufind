@@ -44,11 +44,11 @@ function setUpHoldRequestForm(recordId) {
 
 function setupHoldEditForm() {
   $('#frozen').on('change', function updateFrozen() {
-    var $frozenUntil = $('#frozen_until');
+    var $frozenThrough = $('#frozen_through');
     if ($(this).val() === '1') {
-      $frozenUntil.removeAttr('disabled');
+      $frozenThrough.removeAttr('disabled');
     } else {
-      $frozenUntil.val('').attr('disabled', 'disabled');
+      $frozenThrough.val('').attr('disabled', 'disabled');
     }
   }).trigger('change');
 }

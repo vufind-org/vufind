@@ -274,35 +274,36 @@ class Holds extends AbstractRequestBase
     }
 
     /**
-     * Check if the user-provided "frozen until" date is valid.
+     * Check if the user-provided "frozen through" date is valid.
      *
      * Returns validated date and/or an array of validation errors if there are
      * problems.
      *
-     * @param string $frozenUntil     User-specified "frozen until" date
+     * @param string $frozenThrough   User-specified "frozen through" date
      * @param array  $extraHoldFields Hold form fields enabled by
      * configuration/driver
      *
      * @return array
      */
-    public function validateFrozenUntil(?string $frozenUntil, array $extraHoldFields
+    public function validateFrozenThrough(?string $frozenThrough,
+        array $extraHoldFields
     ): array {
         $result = [
-            'frozenUntilTS' => null,
+            'frozenThroughTS' => null,
             'errors' => [],
         ];
-        if (!in_array('frozenUntil', $extraHoldFields) || empty($frozenUntil)) {
+        if (!in_array('frozenThrough', $extraHoldFields) || empty($frozenThrough)) {
             return $result;
         }
 
         try {
-            $result['frozenUntilTS']
-                = $this->dateConverter->convertFromDisplayDate('U', $frozenUntil);
-            if ($result['frozenUntilTS'] < time()) {
-                $result['errors'][] = 'hold_frozen_until_date_invalid';
+            $result['frozenThroughTS']
+                = $this->dateConverter->convertFromDisplayDate('U', $frozenThrough);
+            if ($result['frozenThroughTS'] < time()) {
+                $result['errors'][] = 'hold_frozen_through_date_invalid';
             }
         } catch (DateException $e) {
-            $result['errors'][] = 'hold_frozen_until_date_invalid';
+            $result['errors'][] = 'hold_frozen_through_date_invalid';
         }
 
         return $result;

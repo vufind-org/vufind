@@ -184,10 +184,10 @@
             <?php if (!empty($ilsDetails['frozen'])): ?>
               <p>
                 <strong>
-                  <?php if (empty($ilsDetails['frozen_until'])): ?>
+                  <?php if (empty($ilsDetails['frozenThrough'])): ?>
                     <?=$this->transEsc('hold_frozen') ?>
                   <?php else: ?>
-                    <?=$this->transEsc('hold_frozen_until', ['%%date%%' => $ilsDetails['frozen_until']]) ?>
+                    <?=$this->transEsc('hold_frozen_through', ['%%date%%' => $ilsDetails['frozenThrough']]) ?>
                   <?php endif; ?>
                 </strong>
               </p>

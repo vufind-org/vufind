@@ -370,7 +370,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     public function testFrozenHoldEditing(): void
     {
         $demoConfig = $this->getDemoIniOverrides();
-        $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenUntil:pickUpLocation'];
+        $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
         $this->changeConfigs(
             [
                 'config' => $this->getConfigIniOverrides(),

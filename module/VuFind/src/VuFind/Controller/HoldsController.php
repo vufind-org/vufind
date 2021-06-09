@@ -305,15 +305,15 @@ class HoldsController extends AbstractBase
             $gatheredDetails['requiredBy'] ?? null,
             $holdConfig['updateFields']
         );
-        if (in_array('frozenUntil', $holdConfig['updateFields'])) {
-            $frozenUntilValidationResults = $this->holds()->validateFrozenUntil(
-                $gatheredDetails['frozenUntil'] ?? null,
+        if (in_array('frozenThrough', $holdConfig['updateFields'])) {
+            $frozenThroughValidationResults = $this->holds()->validateFrozenThrough(
+                $gatheredDetails['frozenThrough'] ?? null,
                 $holdConfig['updateFields']
             );
             $dateValidationResults['errors'] = array_unique(
                 array_merge(
                     $dateValidationResults['errors'],
-                    $frozenUntilValidationResults['errors']
+                    $frozenThroughValidationResults['errors']
                 )
             );
         }
@@ -343,11 +343,11 @@ class HoldsController extends AbstractBase
         }
         if (($gatheredDetails['frozen'] ?? '') !== '') {
             $updateFields['frozen'] = $gatheredDetails['frozen'] === '1';
-            if (($gatheredDetails['frozenUntil']) ?? '' !== '') {
-                $updateFields['frozenUntil']
-                    = $gatheredDetails['frozenUntil'];
-                $updateFields['frozenUntilTS']
-                    = $frozenUntilValidationResults['frozenUntilTS'];
+            if (($gatheredDetails['frozenThrough']) ?? '' !== '') {
+                $updateFields['frozenThrough']
+                    = $gatheredDetails['frozenThrough'];
+                $updateFields['frozenThroughTS']
+                    = $frozenThroughValidationResults['frozenThroughTS'];
             }
         }
 
