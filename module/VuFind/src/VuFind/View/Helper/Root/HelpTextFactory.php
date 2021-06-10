@@ -32,7 +32,6 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * HelpText helper factory.
