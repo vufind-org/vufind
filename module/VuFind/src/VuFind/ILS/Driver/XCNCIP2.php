@@ -560,6 +560,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $dateDue = !empty($dateDue)
             ? $this->displayDate((string)$dateDue[0]) : null;
 
+        $isHoldable = $this->isItemHoldable($current);
         // Build return array:
         $return = [
             'id' => $aggregateId,
@@ -576,8 +577,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'number' => $number,
             'barcode' => ($itemType === 'Barcode')
                 ? $itemId : 'Unknown barcode',
-            'is_holdable'  => $this->isItemHoldable($current),
-            'addLink' => true,
+            'is_holdable'  => $isHoldable,
+            'addLink' => $isHoldable,
             'holdtype' => $this->getHoldType($status),
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => 'true',
