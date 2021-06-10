@@ -139,6 +139,7 @@ class HoldsController extends AbstractBase
                 && '' !== $current['updateDetails']
             ) {
                 $view->updateForm = true;
+                $this->holds()->rememberValidId($current['updateDetails']);
             }
 
             $driversNeeded[] = $current;
