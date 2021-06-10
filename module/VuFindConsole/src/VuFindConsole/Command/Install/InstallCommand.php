@@ -271,9 +271,10 @@ class InstallCommand extends Command
         if ($allowEmpty && empty($basePath)) {
             return true;
         }
-        return preg_match('/^\/\w*$/', $basePath)
+        return preg_match('/^\/[\w_-]*$/', $basePath)
             ? true
-            : 'Error: Base path must be alphanumeric and start with a slash.';
+            : 'Error: Base path must start with a slash and contain only'
+                . ' alphanumeric characters, dash or underscore.';
     }
 
     /**
@@ -928,5 +929,6 @@ class InstallCommand extends Command
 
         // Report success:
         $this->displaySuccessMessage($output);
+        return 0;
     }
 }

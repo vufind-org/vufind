@@ -110,7 +110,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
-            ->setMethods(['makeRequest'])
+            ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($this->testConfig);

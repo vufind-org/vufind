@@ -77,10 +77,15 @@ class Minified
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
      */
     public $id;
+
     public $i;
+
     public $s;
+
     public $r;
+
     public $ty;
+
     public $cl;
 
     /**

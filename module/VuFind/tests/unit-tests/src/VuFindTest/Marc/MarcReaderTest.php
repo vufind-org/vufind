@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2020.
+ * Copyright (C) The National Library of Finland 2020-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -67,14 +67,27 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
             $this->assertTrue(is_string($subfield['code']));
         }
 
-        $field = $reader->getField('245');
-        $this->assertTrue(is_array($field));
-        $this->assertEquals(0, $field['i1']);
-        $this->assertEquals(4, $field['i2']);
-        $this->assertEquals('The Foo:', $reader->getSubfield($field, 'a'));
+        $title = $reader->getField('245');
+        $this->assertTrue(is_array($title));
+        $this->assertEquals(0, $title['i1']);
+        $this->assertEquals(4, $title['i2']);
+        $this->assertEquals('The Foo:', $reader->getSubfield($title, 'a'));
         $this->assertEquals(
-            'The Foo: Bar!', implode(' ', $reader->getSubfields($field, ''))
+            '880-01 The Foo: Bar!', implode(' ', $reader->getSubfields($title, ''))
         );
+        $link = $reader->getFieldLink($title);
+        $this->assertEquals(
+            [
+                'field' => '880',
+                'occurrence' => '01',
+                'script' => '',
+                'orientation' => '',
+            ],
+            $link
+        );
+        $linkedTitle = $reader
+            ->getLinkedField($link['field'], $title['tag'], $link['occurrence']);
+        $this->assertEquals('tHE fOO:', $reader->getSubfield($linkedTitle, 'a'));
 
         $empty = $reader->getField('246');
         $this->assertEquals([], $empty);
@@ -91,10 +104,44 @@ class MarcReaderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['Foo test', 'Bar test again'],
-            $reader->getFieldsSubfields(650, ['a', 'g'])
+            $reader->getFieldsSubfields('650', ['a', 'g'])
+        );
+
+        $this->assertEquals(
+            ['Foo', 'test', 'Bar', 'test again'],
+            $reader->getFieldsSubfields('650', ['a', 'g'], null)
         );
 
         $this->assertEquals([], $reader->getFieldsSubfields('008', ['a']));
+
+        $altNote = $reader->getLinkedField('880', '500');
+        $this->assertEquals(
+            [
+                '500-00/Foo',
+                'Non-linked 880a',
+                'Non-linked 880b',
+            ],
+            $reader->getSubfields($altNote)
+        );
+        $altNote = $reader->getLinkedField('880', '500', '', ['a']);
+        $this->assertEquals(
+            [
+                'Non-linked 880a',
+            ],
+            $reader->getSubfields($altNote)
+        );
+        $this->assertEquals([], $reader->getLinkedField('880', '500', '4'));
+        $this->assertEquals([], $reader->getLinkedField('008', '900'));
+
+        $this->assertEquals(
+            ['tHE fOO: bAR!'],
+            $reader->getLinkedFieldsSubfields('880', '245', ['a', 'b'])
+        );
+
+        $this->assertEquals(
+            ['tHE fOO:', 'bAR!'],
+            $reader->getLinkedFieldsSubfields('880', '245', ['a', 'b'], null)
+        );
     }
 
     /**

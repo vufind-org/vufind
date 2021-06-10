@@ -159,6 +159,7 @@ $config = [
             'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\HoldsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -243,6 +244,8 @@ $config = [
             'help' => 'VuFind\Controller\HelpController',
             'Hierarchy' => 'VuFind\Controller\HierarchyController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
+            'Holds' => 'VuFind\Controller\HoldsController',
+            'holds' => 'VuFind\Controller\HoldsController',
             'Index' => 'VuFind\Controller\IndexController',
             'index' => 'VuFind\Controller\IndexController',
             'Install' => 'VuFind\Controller\InstallController',
@@ -303,6 +306,7 @@ $config = [
             'VuFind\Controller\Plugin\Followup' => 'VuFind\Controller\Plugin\FollowupFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
+            'VuFind\Controller\Plugin\IlsRecords' => 'VuFind\Controller\Plugin\IlsRecordsFactory',
             'VuFind\Controller\Plugin\NewItems' => 'VuFind\Controller\Plugin\NewItemsFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
             'VuFind\Controller\Plugin\Renewals' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -322,6 +326,7 @@ $config = [
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
+            'ilsRecords' => 'VuFind\Controller\Plugin\IlsRecords',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
@@ -441,10 +446,15 @@ $config = [
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Db\Adapter\Adapter' => 'VuFind\Db\AdapterFactory',
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
-            'Laminas\Mvc\I18n\Translator' => 'VuFind\I18n\Translator\TranslatorFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
+        'invokables' => [
+            'VuFind\ILS\OAuth2Service',
+        ],
         'delegators' => [
+            'Laminas\I18n\Translator\TranslatorInterface' => [
+                'VuFind\I18n\Translator\TranslatorFactory',
+            ],
             'SlmLocale\Locale\Detector' => [
                 'VuFind\I18n\Locale\LocaleDetectorFactory',
             ],
@@ -517,6 +527,14 @@ $config = [
         ],
     ],
     'translator' => [],
+    'translator_plugins' => [
+        'factories' => [
+            'VuFind\I18n\Translator\Loader\ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIniFactory',
+        ],
+        'aliases' => [
+            'ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIni'
+        ],
+    ],
     'view_helpers' => [
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -655,6 +673,7 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',

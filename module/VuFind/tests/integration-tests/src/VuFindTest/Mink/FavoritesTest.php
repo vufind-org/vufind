@@ -405,6 +405,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that lists can be tagged when the optional setting is activated.
      *
+     * @depends testAddSearchItemToFavoritesNewAccount
+     *
      * @return void
      */
     public function testTaggedList()
@@ -453,15 +455,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return \Behat\Mink\Element\DocumentElement
      */
-    protected function setupBulkTest()
+    protected function gotoUserAccount()
     {
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
         // Go home
         $session = $this->getMinkSession();
         $path = '/Search/Home';
@@ -476,6 +471,23 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $path = '/MyResearch/Home';
         $session->visit($this->getVuFindUrl() . $path);
         return $page;
+    }
+
+    /**
+     * Adjust configs for bulk testing, then go to user account.
+     *
+     * @return \Behat\Mink\Element\DocumentElement
+     */
+    protected function setupBulkTest()
+    {
+        $this->changeConfigs(
+            ['config' =>
+                [
+                    'Mail' => ['testOnly' => 1],
+                ],
+            ]
+        );
+        return $this->gotoUserAccount();
     }
 
     /**
@@ -612,6 +624,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that it is possible to email a public list.
      *
      * @depends testAddRecordToFavoritesNewAccount
+     * @depends testAddSearchItemToFavoritesNewAccount
      *
      * @return void
      */
@@ -655,6 +668,48 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your item(s) were emailed',
             $this->findCss($page, '.modal .alert-success')->getText()
         );
+    }
+
+    /**
+     * Test that public list indicator appears as expected.
+     *
+     * @depends testEmailPublicList
+     * @depends testAddRecordToFavoritesLogin
+     *
+     * @return void
+     */
+    public function testPublicListIndicator(): void
+    {
+        $page = $this->goToUserAccount();
+
+        // Collect data about the user list links on the page; we are checking
+        // for expected descriptions and icons, and we'll want URLs so we can
+        // visit links individually.
+        $links = $page->findAll('css', '.user-list-link');
+        $data = $hrefs = [];
+        foreach ($links as $link) {
+            $data[] = [
+                'text' => $link->getText(),
+                'iconCount' => count($link->findAll('css', 'i.fa-globe')),
+            ];
+            $hrefs[] = $link->getAttribute('href');
+        }
+        $expectedData = [
+            ['text' => 'Future List 1', 'iconCount' => 0],
+            ['text' => 'Login Test List 1', 'iconCount' => 0],
+            ['text' => 'Test List (Public List) 1', 'iconCount' => 1],
+        ];
+        $this->assertEquals($expectedData, $data);
+
+        // The "Future List" should NOT be public:
+        $this->clickCss($page, 'a[href="' . $hrefs[0] . '"]');
+        $this->snooze();
+        $this->assertEquals(0, count($page->findAll('css', 'strong i.fa-globe')));
+
+        // The "Test List" SHOULD be public:
+        $this->clickCss($page, 'a[href="' . $hrefs[2] . '"]');
+        $this->snooze();
+        $this->assertEquals(1, count($page->findAll('css', 'strong i.fa-globe')));
     }
 
     /**

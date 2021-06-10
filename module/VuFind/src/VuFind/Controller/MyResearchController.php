@@ -71,19 +71,6 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
-     * Construct an HTTP 205 (refresh) response. Useful for reporting success
-     * in the lightbox without actually rendering content.
-     *
-     * @return \Laminas\Http\Response
-     */
-    protected function getRefreshResponse()
-    {
-        $response = $this->getResponse();
-        $response->setStatusCode(205);
-        return $response;
-    }
-
-    /**
      * Process an authentication error.
      *
      * @param AuthException $e Exception to process.
@@ -1129,95 +1116,15 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get record driver objects corresponding to an array of record arrays returned
-     * by an ILS driver's methods such as getMyHolds / getMyTransactions.
-     *
-     * @param array $records Record information
-     *
-     * @return \VuFind\RecordDriver\AbstractBase[]
-     */
-    protected function getDriversForILSRecords(array $records): array
-    {
-        if (!$records) {
-            return [];
-        }
-        $ids = array_map(
-            function ($current) {
-                return [
-                    'id' => $current['id'] ?? '',
-                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND
-                ];
-            },
-            $records
-        );
-        $drivers = $this->serviceLocator->get(\VuFind\Record\Loader::class)
-            ->loadBatch($ids, true);
-        foreach ($records as $i => $current) {
-            // loadBatch takes care of maintaining correct order, so we can access
-            // the array by index
-            $drivers[$i]->setExtraDetail('ils_details', $current);
-        }
-        return $drivers;
-    }
-
-    /**
      * Send list of holds to view
      *
      * @return mixed
+     *
+     * @deprecated
      */
     public function holdsAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        // Connect to the ILS:
-        $catalog = $this->getILS();
-
-        // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
-        $view = $this->createViewModel();
-        $view->cancelResults = $cancelStatus
-            ? $this->holds()->cancelHolds($catalog, $patron) : [];
-        // If we need to confirm
-        if (!is_array($view->cancelResults)) {
-            return $view->cancelResults;
-        }
-
-        // By default, assume we will not need to display a cancel form:
-        $view->cancelForm = false;
-
-        // Get held item details:
-        $result = $catalog->getMyHolds($patron);
-        $driversNeeded = [];
-        $this->holds()->resetValidation();
-        foreach ($result as $current) {
-            // Add cancel details if appropriate:
-            $current = $this->holds()->addCancelDetails(
-                $catalog, $current, $cancelStatus
-            );
-            if ($cancelStatus && $cancelStatus['function'] != "getCancelHoldLink"
-                && isset($current['cancel_details'])
-            ) {
-                // Enable cancel form if necessary:
-                $view->cancelForm = true;
-            }
-
-            $driversNeeded[] = $current;
-        }
-
-        // Get List of PickUp Libraries based on patron's home library
-        try {
-            $view->pickup = $catalog->getPickUpLocations($patron);
-        } catch (\Exception $e) {
-            // Do nothing; if we're unable to load information about pickup
-            // locations, they are not supported and we should ignore them.
-        }
-
-        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
-        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
-        return $view;
+        return $this->redirect()->toRoute('holds-list');
     }
 
     /**
@@ -1281,8 +1188,9 @@ class MyResearchController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
-        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
+        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
+        $view->accountStatus = $this->ilsRecords()
+            ->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -1339,8 +1247,9 @@ class MyResearchController extends AbstractBase
             $driversNeeded[] = $current;
         }
 
-        $view->recordList = $this->getDriversForILSRecords($driversNeeded);
-        $view->accountStatus = $this->collectRequestAccountStats($view->recordList);
+        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
+        $view->accountStatus = $this->ilsRecords()
+            ->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -1449,7 +1358,7 @@ class MyResearchController extends AbstractBase
             }
         }
 
-        $transactions = $this->getDriversForILSRecords($driversNeeded);
+        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
 
         $displayItemBarcode
             = !empty($config->Catalog->display_checked_out_item_barcode);
@@ -1529,7 +1438,7 @@ class MyResearchController extends AbstractBase
             }
         }
 
-        $transactions = $this->getDriversForILSRecords($driversNeeded);
+        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
         $sortList = $pageOptions['sortList'];
         $params = $pageOptions['ilsParams'];
         return $this->createViewModel(
@@ -2219,36 +2128,6 @@ class MyResearchController extends AbstractBase
         $check = $this->serviceLocator
             ->get(\VuFind\Config\AccountCapabilities::class);
         return $check->getListTagSetting() === 'enabled';
-    }
-
-    /**
-     * Collect up to date status information for ajax account notifications.
-     *
-     * @param array $records Records for holds, ILL requests or storage retrieval
-     * requests
-     *
-     * @return array
-     */
-    protected function collectRequestAccountStats(array $records): ?array
-    {
-        // Collect up to date stats for ajax account notifications:
-        if (empty($this->getConfig()->Authentication->enableAjax)) {
-            return null;
-        }
-        $accountStatus = [
-            'available' => 0,
-            'in_transit' => 0
-        ];
-        foreach ($records as $record) {
-            $request = $record->getExtraDetail('ils_details');
-            if ($request['available'] ?? false) {
-                $accountStatus['available']++;
-            }
-            if ($request['in_transit'] ?? false) {
-                $accountStatus['in_transit']++;
-            }
-        }
-        return $accountStatus;
     }
 
     /**

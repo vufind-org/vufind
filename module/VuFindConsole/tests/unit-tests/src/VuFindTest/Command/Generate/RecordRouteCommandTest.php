@@ -120,7 +120,7 @@ class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -135,7 +135,7 @@ class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(RouteGenerator::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

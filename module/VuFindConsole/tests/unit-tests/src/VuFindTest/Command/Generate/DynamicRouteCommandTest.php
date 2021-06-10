@@ -122,7 +122,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(GeneratorTools::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -137,7 +137,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(RouteGenerator::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }
