@@ -25,7 +25,7 @@ function settext() {
 
     // Case 3: "More Topics" special-case collapsed block:
     if (d.name === VuFind.translate('More Topics')) {
-      var topics = VuFind.translate('more_topics');
+      var topics = VuFind.translate('more_topics_html');
       return topics.replace("%%count%%", d.count);
     }
 
@@ -58,7 +58,7 @@ function settitle() {
 
     // Case 3: Standard second-level field
     if (typeof d.field !== "undefined") {
-      var on_topic = VuFind.translate('on_topic');
+      var on_topic = VuFind.translate('on_topic_html');
       return d.name + " (" + on_topic.replace("%%count%%", d.count) + ")";
     }
   });

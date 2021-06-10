@@ -88,25 +88,35 @@ class JsTranslations extends AbstractHelper
     }
 
     /**
-     * Generate JSON from the internal strings.
+     * Generate JSON from the internal strings
      *
      * @return string
      */
     public function getJSON()
     {
-        $parts = [];
-        foreach ($this->strings as $k => $v) {
-            $translation = is_array($v)
-                ? call_user_func_array([$this->transEsc, '__invoke'], $v)
-                : $this->transEsc->__invoke($v);
-            // Special case: do not escape _html translations:
-            if (substr($k, -5) === '_html') {
-                $translation = html_entity_decode($translation);
-            }
-            $parts[] = '"' . addslashes($k) . '": "'
-                . addslashes($translation) . '"';
+        return $this->getJSONFromArray($this->strings);
+    }
+
+    /**
+     * Generate JSON from an array
+     *
+     * @param array $strings Strings to translate (key = js key, value = string to
+     * translate)
+     *
+     * @return string
+     */
+    public function getJSONFromArray(array $strings): string
+    {
+        $view = $this->getView();
+        $translate = $view->plugin('translate');
+        foreach ($strings as $key => &$translation) {
+            $translateFunc = substr($key, -5) === '_html'
+                ? $translate : $this->transEsc;
+            $translation = is_array($translation)
+                ? call_user_func_array([$translateFunc, '__invoke'], $translation)
+                : ($translateFunc)($translation);
         }
-        return '{' . implode(',', $parts) . '}';
+        return json_encode($strings);
     }
 
     /**

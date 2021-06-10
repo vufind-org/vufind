@@ -29,6 +29,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use VuFind\I18n\TranslatableString;
 use VuFind\View\Helper\Root\Translate;
+use VuFindTest\Feature\TranslatorTrait;
 
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
@@ -41,6 +42,8 @@ use VuFind\View\Helper\Root\Translate;
  */
 class TranslateTest extends \PHPUnit\Framework\TestCase
 {
+    use TranslatorTrait;
+
     /**
      * Test translation without a loaded translator
      *
@@ -355,23 +358,5 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
         $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
-    }
-
-    /**
-     * Get mock translator.
-     *
-     * @param array $translations Key => value translation map.
-     *
-     * @return \Laminas\I18n\Translator\TranslatorInterface
-     */
-    protected function getMockTranslator($translations)
-    {
-        $callback = function ($str, $domain) use ($translations) {
-            return $translations[$domain][$str] ?? $str;
-        };
-        $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
-        $translator->expects($this->any())->method('translate')
-            ->will($this->returnCallback($callback));
-        return $translator;
     }
 }
