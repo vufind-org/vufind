@@ -2,15 +2,16 @@
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function linkCallnumbers(callnumber, callnumber_handler) {
+    var delim = '::::';
     if (callnumber_handler) {
       var cns = callnumber.split(',\t');
       for (var i = 0; i < cns.length; i++) {
-        var pair = cns[i].split('::::');
+        var pair = cns[i].split(delim);
         cns[i] = '<a href="' + VuFind.path + '/Alphabrowse/Home?source=' + encodeURI(callnumber_handler) + '&amp;from=' + encodeURI(pair[0]) + '">' + pair[1] + '</a>';
       }
       return cns.join(',\t');
     }
-    return callnumber;
+    return callnumber.split(delim)[1];
   }
   function displayItemStatus(result, $item) {
     $item.addClass('js-item-done').removeClass('js-item-pending');
