@@ -492,11 +492,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $aggregateId (Aggregate) ID of the consortial record
      * @param string $bibId       Bib ID of one of the consortial record's source
      * record(s)
+     * @param array  $patron      Patron array from patronLogin
      *
      * @return array
+     * @throws ILSException
      */
     protected function getHoldingsForChunk($current, $aggregateId = null,
-        $bibId = null
+        $bibId = null, $patron = null
     ) {
         $this->registerNamespaceFor($current);
 
@@ -578,7 +580,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'barcode' => ($itemType === 'Barcode')
                 ? $itemId : 'Unknown barcode',
             'is_holdable'  => $isHoldable,
-            'addLink' => $isHoldable,
+            'addLink' => empty($this->getPatronBlocks($patron))
+                ? $isHoldable : false,
             'holdtype' => $this->getHoldType($status),
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => 'true',
@@ -824,7 +827,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 // Build the array of holdings:
                 foreach ($avail as $current) {
                     $chunk = $this->getHoldingsForChunk(
-                        $current, $aggregateId, $bibId
+                        $current, $aggregateId, $bibId, $patron
                     );
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
@@ -1471,6 +1474,32 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getDefaultPickUpLocation($patron, $holdDetails = null)
     {
         return $this->pickupLocations[$patron['patronAgencyId']][0]['locationID'];
+    }
+
+    /**
+     * Return patron blocks
+     *
+     * @param array $patron Patron data from patronLogin method
+     *
+     * @return ?array
+     * @throws ILSException
+     */
+    protected function getPatronBlocks($patron = null): ?array
+    {
+        if (empty($patron)) {
+            return [];
+        }
+        $response = $this->getLookupUserResponse($patron['cat_username']);
+        $blocks = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserOptionalFields/ns1:BlockOrTrap/' .
+            'ns1:BlockOrTrapType'
+        );
+        $blocks = ($blocks === false) ? [] : $blocks;
+        return array_map(
+            function ($block) {
+                return (string)$block;
+            }, $blocks
+        );
     }
 
     /**
@@ -2400,6 +2429,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->element('UserElementType', 'User Address Information'),
             $this->element('UserElementType', 'Name Information'),
             $this->element('UserElementType', 'User Privilege'),
+            $this->element('UserElementType', 'Block Or Trap'),
             '<ns1:LoanedItemsDesired />',
             '<ns1:RequestedItemsDesired />',
             '<ns1:UserFiscalAccountDesired />',

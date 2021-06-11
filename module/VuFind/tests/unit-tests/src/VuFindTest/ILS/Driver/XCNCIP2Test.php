@@ -546,7 +546,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'volume' => '',
                     'number' => '',
                     'is_holdable' => false,
-                    'addLink' => true,
+                    'addLink' => false,
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true',
                     'eresource' => '',
@@ -612,7 +612,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'number' => '',
                     'barcode' => 'Unknown barcode',
                     'is_holdable' => false,
-                    'addLink' => true,
+                    'addLink' => false,
                     'holdtype' => 'Recall',
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true',
@@ -917,6 +917,25 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'item_id' => 'Item1'
                     ],
                 ],
+            ],
+        ],
+    ];
+
+    /**
+     * Test definitions for getPatronBlocks tests
+     *
+     * @var array
+     */
+    protected $patronBlocksTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [],
+        ],
+        [
+            'file' => 'lookupUserResponseWithBlocks.xml',
+            'result' => [
+                'Block Request Item',
+                'Block Renewal',
             ],
         ],
     ];
@@ -1432,6 +1451,24 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             );
             $expected = file_get_contents($file);
             $this->assertEquals($expected, $request, 'Test identifier: ' . $id);
+        }
+    }
+
+    /**
+     * Test method getPatronBlocks
+     *
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function testGetPatronBlocks(): void
+    {
+        foreach ($this->patronBlocksTests as $test) {
+            $this->configureDriver();
+            $this->mockResponse($test['file']);
+            $method = new \ReflectionMethod('\VuFind\ILS\Driver\XCNCIP2', 'getPatronBlocks');
+            $method->setAccessible(true);
+            $blocks = $method->invokeArgs($this->driver, [['cat_username' => 'test']]);
+            $this->assertEquals($test['result'], $blocks);
         }
     }
 
