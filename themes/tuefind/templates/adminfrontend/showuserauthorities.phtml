@@ -1,5 +1,13 @@
+<?php
+// Set up page title:
+$this->headTitle($this->translate('User Authorities'));
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('User Authorities') . '</li>';
+?>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
-<h2>User Authorities</h2>
+  <h2>User Authorities</h2>
   <?php if (count($this->users) == 0): ?>
     <p>No user has requested access to any authority record so far.</p>
   <?php else: ?>

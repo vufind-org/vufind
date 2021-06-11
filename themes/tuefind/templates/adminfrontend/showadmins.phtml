@@ -1,3 +1,11 @@
+<?php
+// Set up page title:
+$this->headTitle($this->translate('Admins'));
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Admins') . '</li>';
+?>
+
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2>Admins</h2>
   <p>Additional admins must be unlocked manually in the database by the development team.</p>
