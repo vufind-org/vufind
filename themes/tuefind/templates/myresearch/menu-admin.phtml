@@ -1,0 +1,15 @@
+<?php /* TueFind: Admin Menu */ ?>
+<?php $user = $this->auth()->isLoggedIn(); ?>
+<?php if ($user && $user->tuefind_is_admin): ?>
+  <h3>Admin</h3>
+  <div class="list-group">
+    <a href="<?=$this->url('adminfrontend-showadmins') ?>" class="list-group-item<?=$this->active == 'showadmins' ? ' active' : ''?>">
+      <i class="fa fa-fw fa-user-secret" aria-hidden="true"></i> Show admins
+    </a>
+    <?php if ($this->accountCapabilities()->getRequestAuthorityRightsSetting() == 'enabled'): ?>
+      <a href="<?=$this->url('adminfrontend-showuserauthorities') ?>" class="list-group-item<?=$this->active == 'showuserauthorities' ? ' active' : ''?>">
+        <i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> Show user authorities
+      </a>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>

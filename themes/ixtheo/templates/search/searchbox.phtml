@@ -5,6 +5,9 @@
         $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
     }
 
+    if (preg_match('"/Authority"i', $this->serverUrl(true)))
+        $this->searchClassId = 'SolrAuth';
+
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(

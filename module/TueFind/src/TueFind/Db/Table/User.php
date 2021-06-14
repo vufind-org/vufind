@@ -14,4 +14,9 @@ class User extends \VuFind\Db\Table\User {
     {
         return $this->select(['tuefind_uuid' => $uuid])->current();
     }
+
+    public function getAdmins()
+    {
+        return $this->select(['tuefind_is_admin' => true]);
+    }
 }
