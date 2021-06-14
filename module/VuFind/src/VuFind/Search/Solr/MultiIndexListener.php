@@ -32,6 +32,7 @@ use Laminas\EventManager\EventInterface;
 
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Service;
 
 /**
  * MultiIndex listener class file.
@@ -100,7 +101,9 @@ class MultiIndexListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -112,11 +115,11 @@ class MultiIndexListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $params = $event->getParam('params');
+        $command = $event->getParam('command');
+        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+            $params = $command->getSearchParameters();
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
-            if (in_array($event->getParam('context'), $allShardsContexts)) {
+            if (in_array($command->getContext(), $allShardsContexts)) {
                 // If we're retrieving by id(s), we should pull all shards to be
                 // sure we find the right record(s).
                 $params->set('shards', implode(',', $this->shards));
@@ -133,7 +136,7 @@ class MultiIndexListener
                 );
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
-                $backend->getQueryBuilder()->setSpecs($specs);
+                $this->backend->getQueryBuilder()->setSpecs($specs);
                 $facets = $params->get('facet.field') ?: [];
                 $params->set('facet.field', array_diff($facets, $fields));
             }

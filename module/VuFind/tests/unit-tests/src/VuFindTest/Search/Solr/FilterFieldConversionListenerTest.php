@@ -32,6 +32,7 @@ use Laminas\EventManager\Event;
 
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for FilterFieldConversionListener.
@@ -87,7 +88,11 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
 
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $event = new Event('pre', $backend, ['params' => $params]);
+        $command = new MockCommandForFilterFieldConversionListenerTest($params);
+        $event = new Event(
+            Service::EVENT_PRE, $backend,
+            ['params' => $params, 'command' => $command]
+        );
         $listener->onSearchPre($event);
 
         $fq   = $params->get('fq');
@@ -100,5 +105,14 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             '(bar:value)',
         ];
         $this->assertEquals($expected, $fq);
+    }
+}
+
+class MockCommandForFilterFieldConversionListenerTest
+    extends \VuFindSearch\Command\AbstractBase
+{
+    public function __construct(ParamBag $params)
+    {
+        parent::__construct('foo', 'foo', $params);
     }
 }

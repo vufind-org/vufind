@@ -38,6 +38,7 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
 
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Service;
 
 /**
  * Solr merged record handling listener.
@@ -120,8 +121,12 @@ class DeduplicationListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
-        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
+        $manager->attach(
+            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+        );
+        $manager->attach(
+            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
+        );
     }
 
     /**
@@ -133,10 +138,10 @@ class DeduplicationListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $params = $event->getParam('params');
-            $context = $event->getParam('context');
+        $command = $event->getParam('command');
+        if ($command->getTargetBackendName() === $this->backend->getIdentifier()) {
+            $params = $command->getSearchParameters();
+            $context = $command->getContext();
             $contexts = ['search', 'similar', 'getids', 'workExpressions'];
             if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
@@ -181,12 +186,12 @@ class DeduplicationListener
     public function onSearchPost(EventInterface $event)
     {
         // Inject deduplication details into record objects:
-        $backend = $event->getParam('backend');
+        $command = $event->getParam('command');
 
-        if ($backend != $this->backend->getIdentifier()) {
+        if ($command->getTargetBackendName() !== $this->backend->getIdentifier()) {
             return $event;
         }
-        $context = $event->getParam('context');
+        $context = $command->getContext();
         $contexts = ['search', 'similar', 'workExpressions'];
         if ($this->enabled && in_array($context, $contexts)) {
             $this->fetchLocalRecords($event);
@@ -210,12 +215,13 @@ class DeduplicationListener
             ? explode(',', $searchConfig->Records->sources)
             : [];
         $sourcePriority = $this->determineSourcePriority($recordSources);
-        $params = $event->getParam('params');
+        $command = $event->getParam('command');
+        $params = $command->getSearchParameters();
         $buildingPriority = $this->determineBuildingPriority($params);
 
         $idList = [];
         // Find out the best records and list their IDs:
-        $result = $event->getTarget();
+        $result = $command->getResult();
         foreach ($result->getRecords() as $record) {
             $fields = $record->getRawData();
 
