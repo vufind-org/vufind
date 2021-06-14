@@ -41,12 +41,15 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+    \Laminas\Log\LoggerAwareInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\ILS\Driver\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -1481,7 +1484,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param array $patron Patron data from patronLogin method
      *
-     * @return ?array
+     * @return array
      * @throws ILSException
      */
     protected function getPatronBlocks($patron = null): ?array
@@ -1880,6 +1883,26 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         return [ 'blocks' => false, 'details' => $details];
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     * @throws ILSException
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = $this->getPatronBlocks($patron);
+        $blocks = array_map(
+            function($block) {
+                return $this->translate('AccountBlocks::' . $block);
+            }, $blocks
+        );
+        return empty($blocks) ? false : $blocks;
     }
 
     /**
