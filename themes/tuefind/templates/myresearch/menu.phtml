@@ -29,12 +29,6 @@
         <i class="fa fa-fw fa-rss" aria-hidden="true"></i> <?=$this->transEsc("RSS")?>
       </a>
     <?php endif; ?>
-    <?php /* TueFind: Publication functionality */ ?>
-    <?php if ($this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
-      <a href="<?=$this->url('myresearch-publications')?>"<?=$this->active == 'librarycards' ? ' class="active"' : ''?>>
-        <i class="fa fa-fw fa-upload" aria-hidden="true"></i> <?=$this->transEsc('Publications')?>
-      </a>
-    <?php endif; ?>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyTransactions', $capabilityParams)): ?>
     <a href="<?=$this->url('myresearch-checkedout')?>" class="flex checkedout<?=$this->active == 'checkedout' ? ' active' : ''?>">
