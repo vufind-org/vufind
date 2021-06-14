@@ -45,7 +45,7 @@
     <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
 
     <!-- IxTheo: Subscribe button -->
-    <?php if ($this->driver->isSubscribable()):?>
+    <?php if ($this->driver->isSubscribable() && $this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
       <?php if ($this->IxTheo()->isRecordSubscribed($this->driver) || $this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
         <li><a class="subscribe-record toolbar-btn btn-type-unsubscribe" data-lightbox href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow"><?=$this->transEsc('Unsubscribe')?></a></li>
       <?php else: ?>
