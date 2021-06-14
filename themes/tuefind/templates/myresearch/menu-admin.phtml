@@ -6,8 +6,10 @@
     <a href="<?=$this->url('adminfrontend-showadmins') ?>" class="list-group-item<?=$this->active == 'showadmins' ? ' active' : ''?>">
       <i class="fa fa-fw fa-user-secret" aria-hidden="true"></i> Show admins
     </a>
-    <a href="<?=$this->url('adminfrontend-showuserauthorities') ?>" class="list-group-item<?=$this->active == 'showuserauthorities' ? ' active' : ''?>">
-      <i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> Show user authorities
-    </a>
+    <?php if ($this->accountCapabilities()->getRequestAuthorityRightsSetting() == 'enabled'): ?>
+      <a href="<?=$this->url('adminfrontend-showuserauthorities') ?>" class="list-group-item<?=$this->active == 'showuserauthorities' ? ' active' : ''?>">
+        <i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> Show user authorities
+      </a>
+    <?php endif; ?>
   </div>
 <?php endif; ?>
