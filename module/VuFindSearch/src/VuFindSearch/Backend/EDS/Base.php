@@ -51,7 +51,7 @@ abstract class Base
      *
      * @var string
      */
-    protected $edsApiHost = 'http://eds-api.ebscohost.com/edsapi/rest';
+    protected $edsApiHost = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * Auth host
@@ -106,6 +106,12 @@ abstract class Base
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
                 switch ($key) {
+                case 'api_url':
+                    $this->edsApiHost = $value;
+                    break;
+                case 'auth_url':
+                    $this->authHost = $value;
+                    break;
                 case 'debug':
                     $this->debug = $value;
                     break;
