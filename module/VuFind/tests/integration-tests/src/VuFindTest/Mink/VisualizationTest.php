@@ -40,6 +40,20 @@ namespace VuFindTest\Mink;
 class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Config overrides for visual facets.
+     *
+     * @var array
+     */
+    protected $visualConfig = [
+        'searches' => [
+            'General' => [
+                'default_top_recommend' => ['VisualFacets'],
+            ],
+            'Views' => ['list' => 'List', 'visual' => 'Visual'],
+        ]
+    ];
+
+    /**
      * Run the basic visualization test procedure; this allows us to do the same
      * checks in multiple configuration contexts.
      *
@@ -67,16 +81,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testVisualization(): void
     {
-        $this->changeConfigs(
-            [
-                'searches' => [
-                    'General' => [
-                        'default_top_recommend' => ['VisualFacets'],
-                    ],
-                    'Views' => ['list' => 'List', 'visual' => 'Visual'],
-                ]
-            ]
-        );
+        $this->changeConfigs($this->visualConfig);
         $this->doVisualizationCheck();
     }
 
@@ -89,17 +94,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
     public function testVisualizationWithoutSideFacets(): void
     {
         // ONLY set up visual facets, while removing all other configs!
-        $this->changeConfigs(
-            [
-                'searches' => [
-                    'General' => [
-                        'default_top_recommend' => ['VisualFacets'],
-                    ],
-                    'Views' => ['list' => 'List', 'visual' => 'Visual'],
-                ]
-            ],
-            ['searches']
-        );
+        $this->changeConfigs($this->visualConfig, ['searches']);
         $this->doVisualizationCheck();
     }
 }
