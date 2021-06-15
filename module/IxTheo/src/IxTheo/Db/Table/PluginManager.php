@@ -5,6 +5,9 @@ namespace IxTheo\Db\Table;
 use VuFind\Db\Table\GatewayFactory;
 
 class PluginManager extends \TueFind\Db\Table\PluginManager {
+
+    use \TueFind\PluginManagerExtensionTrait;
+
     /**
      * Constructor
      *
@@ -17,13 +20,15 @@ class PluginManager extends \TueFind\Db\Table\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
-        $this->aliases['IxTheoUser']                        = IxTheoUser::class;
-        $this->aliases['pdasubscription']                   = PDASubscription::class;
-        $this->aliases['subscription']                      = Subscription::class;
-
-        $this->factories['IxTheo\Db\Table\IxTheoUser']      = GatewayFactory::class;
-        $this->factories['IxTheo\Db\Table\PDASubscription'] = GatewayFactory::class;
-        $this->factories['IxTheo\Db\Table\Subscription']    = GatewayFactory::class;
+        $this->addOverride('aliases', 'IxTheoUser', IxTheoUser::class);
+        $this->addOverride('aliases', 'pdasubscription', PDASubscription::class);
+        $this->addOverride('aliases', 'subscription', Subscription::class);
+        $this->addOverride('aliases', 'user', User::class);
+        $this->addOverride('factories', IxTheoUser::class, GatewayFactory::class);
+        $this->addOverride('factories', PDASubscription::class, GatewayFactory::class);
+        $this->addOverride('factories', Subscription::class, GatewayFactory::class);
+        $this->addOverride('factories', User::class, \VuFind\Db\Table\UserFactory::class);
+        $this->applyOverrides();
 
         $this->addAbstractFactory(PluginFactory::class);
         return parent::__construct($configOrContainerInstance, $v3config);
