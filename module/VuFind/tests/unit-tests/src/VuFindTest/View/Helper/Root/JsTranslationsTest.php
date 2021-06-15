@@ -57,7 +57,7 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
         $view = $this->getPhpRenderer($this->getViewHelpers());
         $transEsc = new TransEsc();
         $transEsc->setView($view);
-        $helper = new JsTranslations($transEsc);
+        $helper = new JsTranslations($view->plugin('translate'), $transEsc);
         $helper->setView($view);
 
         // Normal addStrings:

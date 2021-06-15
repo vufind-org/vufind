@@ -41,6 +41,13 @@ use Laminas\View\Helper\AbstractHelper;
 class JsTranslations extends AbstractHelper
 {
     /**
+     * Translate helper
+     *
+     * @var Translate
+     */
+    protected $translate;
+
+    /**
      * Translate + escape helper
      *
      * @var TransEsc
@@ -64,11 +71,14 @@ class JsTranslations extends AbstractHelper
     /**
      * Constructor
      *
-     * @param TransEsc $transEsc Translate + escape helper
-     * @param string   $varName  Variable name to store translations
+     * @param Translate $translate Translate helper
+     * @param TransEsc  $transEsc  Translate + escape helper
+     * @param string    $varName   Variable name to store translations
      */
-    public function __construct(TransEsc $transEsc, $varName = 'vufindString')
-    {
+    public function __construct(Translate $translate, TransEsc $transEsc,
+        $varName = 'vufindString'
+    ) {
+        $this->translate = $translate;
         $this->transEsc = $transEsc;
         $this->varName = $varName;
     }
@@ -107,12 +117,10 @@ class JsTranslations extends AbstractHelper
      */
     public function getJSONFromArray(array $strings): string
     {
-        $view = $this->getView();
-        $translate = $view->plugin('translate');
         foreach ($strings as $key => &$translation) {
             $translateFunc
                 = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
-                ? $translate : $this->transEsc;
+                ? $this->translate : $this->transEsc;
             $translation = is_array($translation)
                 ? call_user_func_array([$translateFunc, '__invoke'], $translation)
                 : ($translateFunc)($translation);
