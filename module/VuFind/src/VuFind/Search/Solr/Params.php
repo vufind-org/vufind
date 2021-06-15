@@ -554,6 +554,7 @@ class Params extends \VuFind\Search\Base\Params
 
         if ($pf = $this->getPivotFacets()) {
             $backendParams->add('facet.pivot', $pf);
+            $backendParams->set('facet', 'true');
         }
 
         return $backendParams;
