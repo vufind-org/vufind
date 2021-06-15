@@ -133,6 +133,16 @@ abstract class AbstractRequestBase extends AbstractPlugin
     }
 
     /**
+     * Get remembered valid IDs
+     *
+     * @return array
+     */
+    public function getValidIds(): array
+    {
+        return $this->getSession()->validIds ?? [];
+    }
+
+    /**
      * Method for validating contents of a request; returns an array of
      * collected details if request is valid, otherwise returns false.
      *
