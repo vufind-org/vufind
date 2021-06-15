@@ -97,6 +97,7 @@ trait DemoDriverTestTrait
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
                 'renewMyItems' => 0,
+                'updateHolds' => 0,
             ],
             'Holdings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],

@@ -27,6 +27,7 @@
  */
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
 
 /**
@@ -92,9 +93,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $id ID of record to access.
      *
-     * @return Element
+     * @return DocumentElement
      */
-    protected function gotoRecordById(string $id = 'testsample1'): Element
+    protected function gotoRecordById(string $id = 'testsample1'): DocumentElement
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
@@ -122,12 +123,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Support method to place a hold and click through to "Your Holds and Recalls."
      *
-     * @param Element $page Page element.
+     * @param Element $page   Page element.
+     * @param array   $extras Associative array of selector => value for additional
+     * form values to set.
      *
      * @return void
      */
-    protected function placeHoldAndGoToHoldsScreen(Element $page): void
-    {
+    protected function placeHoldAndGoToHoldsScreen(Element $page, array $extras = []
+    ): void {
         // Open the "place hold" dialog
         $this->clickCss($page, 'a.placehold');
         $this->snooze();
@@ -135,6 +138,10 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
         $this->findCss($page, '#pickUpLocation')->setValue('B');
+        // Add extra form field values, if any:
+        foreach ($extras as $selector => $value) {
+            $this->findCss($page, $selector)->setValue($value);
+        }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->snooze();
 
@@ -228,14 +235,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function cancelProcedure(Element $page, string $type): void
     {
-        // Test empty selection
+        // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-        $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
-        $this->assertEquals(
-            'No ' . $type . ' were selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
-        );
+        $this->assertNull($page->find('css', '.btn-group.open'));
 
         // Test "cancel all" button -- first make sure item is there before
         // cancel is pushed:
@@ -299,6 +301,163 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test canceling the hold:
         $this->cancelProcedure($page, 'holds');
+    }
+
+    /**
+     * Create a frozen hold and navigate to the holds list. Return the page
+     * object that was set up during the process.
+     *
+     * @return DocumentElement
+     */
+    protected function setUpFrozenHold(): DocumentElement
+    {
+        // Log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+        $this->snooze();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Place the hold:
+        $futureDate = date("m-d-Y", strtotime("+2 days"));
+        $expectedDate = date("m-d-Y", strtotime("+1 day"));
+        $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
+
+        // Confirm that the hold is frozen, as expected (note that the expected
+        // date differs from the date entered, because the date entered indicates
+        // when the hold will start, and the freeze ends on the previous day):
+        $expected = "Frozen (temporarily suspended) through $expectedDate";
+        $elementText = $this->findCss($page, ".media-body")->getText();
+        $this->assertTrue(
+            false !== strstr($elementText, $expected),
+            "Missing expected text: $expected in $elementText"
+        );
+
+        return $page;
+    }
+
+    /**
+     * Test creating a frozen hold.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testFrozenHoldCreation(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        $page = $this->setUpFrozenHold();
+
+        // Confirm that no cancel buttons appear, since they are not configured:
+        $this->assertNull($page->find('css', '#cancelSelected'));
+        $this->assertNull($page->find('css', '#cancelAll'));
+
+        // Confirm that there are no edit controls on the page, since we didn't
+        // enable them:
+        $this->assertNull($page->find('css', '#update_selected'));
+        $this->assertNull($page->find('css', '.hold-edit'));
+    }
+
+    /**
+     * Test creating, and then editing, a frozen hold.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testFrozenHoldEditing(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        $page = $this->setUpFrozenHold();
+
+        // Confirm that no cancel buttons appear, since they are not configured:
+        $this->assertNull($page->find('css', '#cancelSelected'));
+        $this->assertNull($page->find('css', '#cancelAll'));
+
+        // Confirm that there are edit controls on the page:
+        $this->assertNotNull($page->find('css', '#update_selected'));
+
+        // Open the edit dialog box using the link:
+        $this->clickCss($page, '.hold-edit');
+        $this->snooze();
+
+        // Release the hold and change the pickup location
+        $this->findCss($page, '#frozen')->setValue('0');
+        $this->findCss($page, '#pickup_location')->setValue('A');
+        $this->findCss($page, '#modal .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Confirm that the values have changed
+        $this->assertTrue(false !== strstr($page->getContent(), 'Campus A'));
+        $this->assertFalse(
+            strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
+        );
+    }
+
+    /**
+     * Test creating, and then editing, and then canceling, a frozen hold.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testFrozenHoldEditingWithCancellation(): void
+    {
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['cancel_holds_enabled'] = 1;
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
+        $this->changeConfigs(['config' => $config, 'Demo' => $demoConfig]);
+
+        $page = $this->setUpFrozenHold();
+
+        // Open the edit dialog box using the button:
+        $this->clickCss($page, '.checkbox-select-all');
+        $this->clickCss($page, '#update_selected');
+        $this->snooze();
+
+        // Revise the freeze date:
+        $futureDate = date('m-d-Y', strtotime('+3 days'));
+        $this->findCss($page, '#frozen')->setValue('1');
+        $this->findCss($page, '#frozen_through')->setValue($futureDate);
+        $this->findCss($page, '#modal .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Confirm that the values have changed
+        $expected = "Frozen (temporarily suspended) through $futureDate";
+        $elementText = $this->findCss($page, ".media-body")->getText();
+        $this->assertTrue(
+            false !== strstr($elementText, $expected),
+            "Missing expected text: $expected in $elementText"
+        );
+
+        // Now cancel the hold (using the checkboxes, to test a variation on
+        // what we do in the cancelProcedure method)
+        $this->clickCss($page, '.checkbox-select-all');
+        $this->clickCss($page, '#cancelSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->snooze();
+        $this->assertEquals(
+            '1 request(s) were successfully canceled',
+            $this->findCss($page, '.alert.alert-success')->getText()
+        );
+        $this->assertNull($page->find('css', 'a.title'));
     }
 
     /**
