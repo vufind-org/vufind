@@ -12,13 +12,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+    protected $recordLoader;
+
     protected $searchService;
 
     protected $viewHelperManager;
 
     public function __construct(\VuFindSearch\Service $searchService,
-                                \Laminas\View\HelperPluginManager $viewHelperManager)
+                                \Laminas\View\HelperPluginManager $viewHelperManager,
+                                \VuFind\Record\Loader $recordLoader)
     {
+        $this->recordLoader = $recordLoader;
         $this->searchService = $searchService;
         $this->viewHelperManager = $viewHelperManager;
     }
@@ -130,7 +134,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             $type = $relation['type'] == 'Veranstalter' ? 'organizer' : 'contributor';
             $relationsDisplay .= '<span property="' . $type . '" typeof="Organization">';
 
-            if (isset($relation['id'])) {
+            $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
+            if ($recordExists) {
                 $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
@@ -140,7 +145,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if (isset($relation['type']))
                 $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
 
-            if (isset($relation['id']))
+            if ($recordExists)
                 $relationsDisplay .= '</a>';
 
             $relationsDisplay .= '</span>';
@@ -160,7 +165,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
             $relationsDisplay .= '<span property="relatedTo" typeof="Person">';
 
-            if (isset($relation['id'])) {
+            $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
+            if ($recordExists) {
                 $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
                 $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
             }
@@ -170,7 +176,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
             if (isset($relation['type']))
                 $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
 
-            if (isset($relation['id']))
+            if ($recordExists)
                 $relationsDisplay .= '</a>';
 
             $relationsDisplay .= '</span>';
@@ -200,9 +206,15 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getUniqueID() . '"', 'AllFields'),
+                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getGNDNumber() . '"', 'AllFields'),
                                                  $offset, $limit);
 
         return $response;
+    }
+
+    public function recordExists($authorityId)
+    {
+        $loadResult = $this->recordLoader->load($authorityId, 'SolrAuth', /* $tolerate_missing=*/ true);
+        return !($loadResult instanceof \VuFind\RecordDriver\Missing);
     }
 }
