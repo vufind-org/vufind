@@ -110,7 +110,8 @@ class JsTranslations extends AbstractHelper
         $view = $this->getView();
         $translate = $view->plugin('translate');
         foreach ($strings as $key => &$translation) {
-            $translateFunc = substr($key, -5) === '_html'
+            $translateFunc
+                = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
                 ? $translate : $this->transEsc;
             $translation = is_array($translation)
                 ? call_user_func_array([$translateFunc, '__invoke'], $translation)

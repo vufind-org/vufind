@@ -66,6 +66,7 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
         $helper->addStrings(['2key' => 'key2']);
         $helper->addStrings(['key_html' => 'key_html']);
         $helper->addStrings(['keyhtml' => 'key_html']);
+        $helper->addStrings(['key_unescaped' => 'key1']);
         $expected = json_encode(
             [
                 '1key' => 'Translation 1&lt;p&gt;',
@@ -73,6 +74,7 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
                 '2key' => 'Translation 2',
                 'key_html' => '<span>translation</span>',
                 'keyhtml' => '&lt;span&gt;translation&lt;/span&gt;',
+                'key_unescaped' => 'Translation 1<p>'
             ]
         );
         $this->assertJsonStringEqualsJsonString($expected, $helper->getJSON());
