@@ -121,9 +121,7 @@ class JsTranslations extends AbstractHelper
             $translateFunc
                 = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
                 ? $this->translate : $this->transEsc;
-            $translation = is_array($translation)
-                ? call_user_func_array([$translateFunc, '__invoke'], $translation)
-                : ($translateFunc)($translation);
+            $translation = ($translateFunc)(...((array)$translation));
         }
         return json_encode($strings);
     }
