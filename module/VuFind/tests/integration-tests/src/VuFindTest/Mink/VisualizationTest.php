@@ -40,22 +40,13 @@ namespace VuFindTest\Mink;
 class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Test that combined results work in mixed AJAX/non-AJAX mode.
+     * Run the basic visualization test procedure; this allows us to do the same
+     * checks in multiple configuration contexts.
      *
      * @return void
      */
-    public function testVisualization()
+    protected function doVisualizationCheck(): void
     {
-        $this->changeConfigs(
-            [
-                'searches' => [
-                    'General' => [
-                        'default_top_recommend' => ['VisualFacets'],
-                    ],
-                    'Views' => ['list' => 'List', 'visual' => 'Visual'],
-                ]
-            ]
-        );
         $session = $this->getMinkSession();
         $session->visit(
             $this->getVuFindUrl()
@@ -67,5 +58,48 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that some content has been dynamically loaded into the
         // visualization area:
         $this->assertStringContainsString('A - General Works', $text);
+    }
+
+    /**
+     * Test that visualization results display correctly.
+     *
+     * @return void
+     */
+    public function testVisualization(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_top_recommend' => ['VisualFacets'],
+                    ],
+                    'Views' => ['list' => 'List', 'visual' => 'Visual'],
+                ]
+            ]
+        );
+        $this->doVisualizationCheck();
+    }
+
+    /**
+     * Test that visualization results display correctly even when no other
+     * recommendation modules are active.
+     *
+     * @return void
+     */
+    public function testVisualizationWithoutSideFacets(): void
+    {
+        // ONLY set up visual facets, while removing all other configs!
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_top_recommend' => ['VisualFacets'],
+                    ],
+                    'Views' => ['list' => 'List', 'visual' => 'Visual'],
+                ]
+            ],
+            ['searches']
+        );
+        $this->doVisualizationCheck();
     }
 }
