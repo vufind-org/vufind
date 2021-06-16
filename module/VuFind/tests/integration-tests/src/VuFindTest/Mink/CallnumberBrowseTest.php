@@ -100,7 +100,8 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $href = $link->getAttribute('href');
         $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
-        $this->assertStringContainsString($link->getText(), $href);
+        $hrefCallnum = explode('&from=', $href)[1];
+        $this->assertStringEndsWith($hrefCallnum, $link->getText());
     }
 
     protected function setupMultipleCallnumbers()
