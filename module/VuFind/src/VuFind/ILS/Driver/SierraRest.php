@@ -811,9 +811,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
+            $inTransit = $entry['status']['code'] === 't';
+            $requestId = $this->extractId($entry['id']);
+            $updateDetails = ($available || $inTransit) ? '' : $requestId;
             $holds[] = [
                 'id' => $this->formatBibId($bibId),
-                'requestId' => $this->extractId($entry['id']),
+                'reqnum' => $requestId,
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
                 // note that $entry['pickupLocation']['name'] may contain misleading
                 // text, so we instead use the code here:
@@ -824,33 +827,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
-                'in_transit' => $entry['status']['code'] == 't',
+                'in_transit' => $inTransit,
                 'volume' => $volume,
                 'publication_year' => $publicationYear,
                 'title' => $title,
-                'frozen' => !empty($entry['frozen'])
+                'frozen' => !empty($entry['frozen']),
+                'cancel_details' => $updateDetails,
+                'updateDetails' => $updateDetails,
             ];
         }
         return $holds;
-    }
-
-    /**
-     * Get Cancel Hold Details
-     *
-     * Get required data for canceling a hold. This value is used by relayed to the
-     * cancelHolds function when the user attempts to cancel a hold.
-     *
-     * @param array $holdDetails A single hold array from getMyHolds
-     * @param array $patron      Patron information from patronLogin
-     *
-     * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getCancelHoldDetails($holdDetails, $patron = [])
-    {
-        return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['requestId'];
     }
 
     /**
@@ -896,6 +882,53 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             }
         }
         return ['count' => $count, 'items' => $response];
+    }
+
+    /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    ): array {
+        $results = [];
+        foreach ($holdsDetails as $requestId) {
+            $updateFields = [];
+            if (isset($fields['frozen'])) {
+                $updateFields['freeze'] = $fields['frozen'];
+            }
+            if (isset($fields['pickUpLocation'])) {
+                $updateFields['pickupLocation'] = $fields['pickUpLocation'];
+            }
+
+            $result = $this->makeRequest(
+                [$this->apiBase, 'patrons', 'holds', $requestId],
+                json_encode($updateFields),
+                'PUT',
+                $patron
+            );
+
+            if (!empty($result['code'])) {
+                $results[$requestId] = [
+                    'success' => false,
+                    'status' => $this->formatErrorMessage(
+                        $result['description'] ?? $result['name']
+                    )
+                ];
+            } else {
+                $results[$requestId] = [
+                    'success' => true
+                ];
+            }
+        }
+
+        return $results;
     }
 
     /**
