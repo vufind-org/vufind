@@ -241,9 +241,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
      */
     protected function formatCallNums($prefix, $callnumber)
     {
-        $displayCallnumber = !empty($prefix)
-            ? $prefix . ' ' . $callnumber : $callnumber;
-        return $callnumber . '::::' . $displayCallnumber;
+        return !empty($prefix) ? $prefix . '::::' . $callnumber : $callnumber;
     }
 
     /**
