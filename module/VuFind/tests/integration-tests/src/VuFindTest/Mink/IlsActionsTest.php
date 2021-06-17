@@ -358,6 +358,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
+        $this->snooze();
         $this->illRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -411,6 +412,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
+        $this->snooze();
         $this->storageRetrievalRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
