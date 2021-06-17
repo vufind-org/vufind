@@ -6,7 +6,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     for (var i = 0; i < cns.length; i++) {
       // If the call number has a special delimiter, it indicates a prefix that
       // should be used for display but not for sorting/searching.
-      var displayCallNumber = actualCallNumber = cns[i];
+      var actualCallNumber = cns[i];
+      var displayCallNumber = cns[i];
       var parts = cns[i].split('::::');
       if (parts.length > 1) {
         displayCallNumber = parts[0] + " " + parts[1];
