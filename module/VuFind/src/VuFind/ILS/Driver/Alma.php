@@ -872,8 +872,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $offset = 0;
         $totalCount = 1;
         $allowCancelingAvailableRequests
-            = !isset($this->config['Holds']['allowCancelingAvailableRequests'])
-                || $this->config['Holds']['allowCancelingAvailableRequests'];
+            = $this->config['Holds']['allowCancelingAvailableRequests'] ?? true;
         while ($offset < $totalCount) {
             $xml = $this->makeRequest(
                 '/users/' . $patron['id'] . '/requests',
@@ -898,11 +897,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $lastInterestDate = null;
                 }
                 $requestStatus = (string)$request->request_status;
-                if (!$available || $allowCancelingAvailableRequests) {
-                    $updateDetails = (string)$request->request_id;
-                } else {
-                    $updateDetails = '';
-                }
+                $updateDetails = (!$available || $allowCancelingAvailableRequests)
+                    ? (string)$request->request_id : '';
 
                 $hold = [
                     'create' => $this->parseDate((string)$request->request_time),
@@ -920,11 +916,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'updateDetails' => $updateDetails,
                 ];
                 if (!$available) {
-                    if ('In Process' === $requestStatus) {
-                        $hold['position'] = $this->translate('hold_in_process');
-                    } else {
-                        $hold['position'] = (int)($request->place_in_queue ?? 1);
-                    }
+                    $hold['position'] = 'In Process' === $requestStatus
+                        ? $this->translate('hold_in_process')
+                        : (int)($request->place_in_queue ?? 1);
                 }
 
                 $holdList[] = $hold;
