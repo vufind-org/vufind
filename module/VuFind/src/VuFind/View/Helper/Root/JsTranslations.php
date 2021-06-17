@@ -41,6 +41,13 @@ use Laminas\View\Helper\AbstractHelper;
 class JsTranslations extends AbstractHelper
 {
     /**
+     * Translate helper
+     *
+     * @var Translate
+     */
+    protected $translate;
+
+    /**
      * Translate + escape helper
      *
      * @var TransEsc
@@ -64,11 +71,14 @@ class JsTranslations extends AbstractHelper
     /**
      * Constructor
      *
-     * @param TransEsc $transEsc Translate + escape helper
-     * @param string   $varName  Variable name to store translations
+     * @param Translate $translate Translate helper
+     * @param TransEsc  $transEsc  Translate + escape helper
+     * @param string    $varName   Variable name to store translations
      */
-    public function __construct(TransEsc $transEsc, $varName = 'vufindString')
-    {
+    public function __construct(Translate $translate, TransEsc $transEsc,
+        $varName = 'vufindString'
+    ) {
+        $this->translate = $translate;
         $this->transEsc = $transEsc;
         $this->varName = $varName;
     }
@@ -88,25 +98,34 @@ class JsTranslations extends AbstractHelper
     }
 
     /**
-     * Generate JSON from the internal strings.
+     * Generate JSON from the internal strings
      *
      * @return string
      */
     public function getJSON()
     {
-        $parts = [];
-        foreach ($this->strings as $k => $v) {
-            $translation = is_array($v)
-                ? call_user_func_array([$this->transEsc, '__invoke'], $v)
-                : $this->transEsc->__invoke($v);
-            // Special case: do not escape _html translations:
-            if (substr($k, -5) === '_html') {
-                $translation = html_entity_decode($translation);
-            }
-            $parts[] = '"' . addslashes($k) . '": "'
-                . addslashes($translation) . '"';
+        return $this->getJSONFromArray($this->strings);
+    }
+
+    /**
+     * Generate JSON from an array
+     *
+     * @param array $strings Strings to translate (key = js key, value = string to
+     * translate)
+     *
+     * @return string
+     */
+    public function getJSONFromArray(array $strings): string
+    {
+        foreach ($strings as $key => &$translation) {
+            $translateFunc
+                = substr($key, -5) === '_html' || substr($key, -10) === '_unescaped'
+                ? $this->translate : $this->transEsc;
+            // $translation could be a string or an array of parameters; this code
+            // normalizes it into a parameter list for the translator.
+            $translation = ($translateFunc)(...((array)$translation));
         }
-        return '{' . implode(',', $parts) . '}';
+        return json_encode($strings);
     }
 
     /**

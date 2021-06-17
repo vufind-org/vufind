@@ -3,6 +3,12 @@
   $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
+  $translations = $this->jsTranslations()->getJSONFromArray(
+    [
+      'showTree' => 'hierarchy_show_tree',
+      'hideTree' => 'hierarchy_hide_tree'
+    ]
+  );
 
   $this->inlineScript(
      \Laminas\View\Helper\HeadScript::SCRIPT,
@@ -10,10 +16,7 @@
      . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
      . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
      . "};\n"
-     . "VuFind.addTranslations({\n"
-     . "    'showTree': '" . $this->transEsc('hierarchy_show_tree') . "',\n"
-     . "    'hideTree': '" . $this->transEsc('hierarchy_hide_tree') . "'}\n"
-     . ");\n",
+     . "VuFind.addTranslations($translations);\n",
      'SET'
   );
   $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');

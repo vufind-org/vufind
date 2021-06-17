@@ -162,7 +162,7 @@ class ChoiceAuth extends AbstractBase
     {
         try {
             return $this->proxyUserLoad($request, 'authenticate', func_get_args());
-        } catch (AuthException $e) {
+        } catch (\Exception $e) {
             // If an exception was thrown during login, we need to clear the
             // stored strategy to ensure that we display the full ChoiceAuth
             // form rather than the form for only the method that the user

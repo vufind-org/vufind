@@ -735,58 +735,43 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $holds = [];
         foreach ($result['data'] as $entry) {
             $biblio = $this->getBiblio($entry['biblio_id']);
-            $frozen = false;
-            if (!empty($entry['suspended'])) {
-                $frozen = !empty($entry['suspend_until']) ? $entry['suspend_until']
-                    : true;
-            }
+            $frozen = !empty($entry['suspended']);
             $volume = '';
             if ($entry['item_id'] ?? null) {
                 $item = $this->getItem($entry['item_id']);
                 $volume = $item['serial_issue_number'];
             }
+            $available = !empty($entry['waiting_date']);
+            $inTransit = !empty($entry['status']) && $entry['status'] == 'T';
+            $requestId = $entry['hold_id'];
+            $updateDetails = ($available || $inTransit) ? '' : $requestId;
             $holds[] = [
                 'id' => $entry['biblio_id'],
                 'item_id' => $entry['hold_id'],
-                'requestId' => $entry['hold_id'],
+                'reqnum' => $requestId,
                 'location' => $this->getLibraryName(
                     $entry['pickup_library_id'] ?? null
                 ),
                 'create' => $this->convertDate($entry['hold_date'] ?? null),
                 'expire' => $this->convertDate($entry['expiration_date'] ?? null),
                 'position' => $entry['priority'],
-                'available' => !empty($entry['waiting_date']),
+                'available' => $available,
                 'frozen' => $frozen,
-                'in_transit' => !empty($entry['status']) && $entry['status'] == 'T',
+                'frozenThrough' => $frozen
+                    ? $this->convertDate($entry['suspended_until'] ?? null) : null,
+                'in_transit' => $inTransit,
                 'title' => $this->getBiblioTitle($biblio),
                 'isbn' => $biblio['isbn'] ?? '',
                 'issn' => $biblio['issn'] ?? '',
                 'publication_year' => $biblio['copyright_date']
                     ?? $biblio['publication_year'] ?? '',
                 'volume' => $volume,
+                'cancel_details' => $updateDetails,
+                'updateDetails' => $updateDetails,
             ];
         }
 
         return $holds;
-    }
-
-    /**
-     * Get Cancel Hold Details
-     *
-     * Get required data for canceling a hold. This value is used by relayed to the
-     * cancelHolds function when the user attempts to cancel a hold.
-     *
-     * @param array $holdDetails A single hold array from getMyHolds
-     * @param array $patron      Patron information from patronLogin
-     *
-     * @return string Data for use in a form field
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getCancelHoldDetails($holdDetails, $patron = [])
-    {
-        return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['requestId'];
     }
 
     /**
@@ -841,10 +826,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -856,6 +843,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $bibId = $holdDetails['id'] ?? null;
         $itemId = $holdDetails['item_id'] ?? false;
+        $requestId = $holdDetails['reqnum'] ?? false;
         $requestType
             = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
                 ? 'StorageRetrievalRequests' : 'Holds';
@@ -875,7 +863,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         ],
                         'query' => [
                             'patron_id' => (int)$patron['id'],
-                            'query_pickup_locations' => 1
+                            'query_pickup_locations' => 1,
+                            'ignore_patron_holds' => $requestId ? 1 : 0,
                         ]
                     ]
                 );
@@ -893,7 +882,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         ],
                         'query' => [
                             'patron_id' => (int)$patron['id'],
-                            'query_pickup_locations' => 1
+                            'query_pickup_locations' => 1,
+                            'ignore_patron_holds' => $requestId ? 1 : 0,
                         ]
                     ]
                 );
@@ -1066,32 +1056,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             throw new ILSException("Hold level is 'copy', but item ID is empty");
         }
 
-        // Convert last interest date from Display Format to Koha's required format
-        try {
-            $lastInterestDate = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d', $holdDetails['requiredBy']
-            );
-        } catch (DateException $e) {
-            // Hold Date is invalid
-            return $this->holdError('hold_date_invalid');
-        }
-
-        try {
-            $checkTime = $this->dateConverter->convertFromDisplayDate(
-                'U', $holdDetails['requiredBy']
-            );
-            if (!is_numeric($checkTime)) {
-                throw new DateException('Result should be numeric');
-            }
-        } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.');
-        }
-
-        if (time() > $checkTime) {
-            // Hold Date is in the past
-            return $this->holdError('hold_date_past');
-        }
-
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
             return $this->holdError('hold_invalid_pickup');
@@ -1102,7 +1066,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'patron_id' => (int)$patron['id'],
             'pickup_library_id' => $pickUpLocation,
             'notes' => $comment,
-            'expiration_date' => $lastInterestDate,
+            'expiration_date' => date('Y-m-d', $holdDetails['requiredByTS']),
         ];
         if ($level == 'copy') {
             $request['item_id'] = (int)$itemId;
@@ -1120,7 +1084,108 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($result['code'] >= 300) {
             return $this->holdError($result['data']['error'] ?? 'hold_error_fail');
         }
+
+        if ($holdDetails['startDateTS']) {
+            $holdId = $result['data']['hold_id'];
+            // Suspend until the previous day from start date:
+            $request = [
+                'suspended_until' => \DateTime::createFromFormat(
+                    'U',
+                    $holdDetails['startDateTS']
+                )->modify('-1 DAY')->format('Y-m-d')
+            ];
+            $result = $this->makeRequest(
+                [
+                    'path' => ['v1', 'holds', $holdId],
+                    'json' => $request,
+                    'method' => 'PUT',
+                    'errors' => true
+                ]
+            );
+            if ($result['code'] >= 300) {
+                // Report a success since the hold was created, but include a message
+                // about the modification failure:
+                return [
+                    'success' => true,
+                    'warningMessage' => 'hold_error_update_failed'
+                ];
+            }
+        }
+
         return ['success' => true];
+    }
+
+    /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    ): array {
+        $results = [];
+        foreach ($holdsDetails as $requestId) {
+            $updateFields = [];
+            // Suspension (bool) has its own endpoint, so we need to distinguish
+            // between the cases
+            if (isset($fields['frozen'])) {
+                if ($fields['frozen']) {
+                    if (isset($fields['frozenThrough'])) {
+                        $updateFields['suspended_until']
+                            = date('Y-m-d', $fields['frozenThroughTS']);
+                        $result = false;
+                    } else {
+                        $result = $this->makeRequest(
+                            [
+                                'path' => ['v1', 'holds', $requestId, 'suspension'],
+                                'method' => 'POST',
+                                'errors' => true
+                            ]
+                        );
+                    }
+                } else {
+                    $result = $this->makeRequest(
+                        [
+                            'path' => ['v1', 'holds', $requestId, 'suspension'],
+                            'method' => 'DELETE',
+                            'errors' => true
+                        ]
+                    );
+                }
+                if ($result && $result['code'] >= 300) {
+                    $results[$requestId]['status']
+                        = $result['data']['error'] ?? 'hold_error_update_failed';
+                }
+            }
+            if (empty($results[$requestId]['errors'])) {
+                if (isset($fields['pickUpLocation'])) {
+                    $updateFields['pickup_library_id'] = $fields['pickUpLocation'];
+                }
+                if ($updateFields) {
+                    $result = $this->makeRequest(
+                        [
+                            'path' => ['v1', 'holds', $requestId],
+                            'method' => 'PUT',
+                            'json' => $updateFields,
+                            'errors' => true
+                        ]
+                    );
+                    if ($result['code'] >= 300) {
+                        $results[$requestId]['status']
+                            = $result['data']['error'] ?? 'hold_error_update_failed';
+                    }
+                }
+            }
+
+            $results[$requestId]['success'] = empty($results[$requestId]['status']);
+        }
+
+        return $results;
     }
 
     /**
