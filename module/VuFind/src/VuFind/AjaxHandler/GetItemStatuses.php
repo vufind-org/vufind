@@ -231,15 +231,15 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Format call numbers and display call numbers with prefixes into a string
-     * with a split character for consumption by Javascript.
+     * Create a delimited version of the call number to allow the Javascript code
+     * to handle the prefix appropriately.
      *
      * @param string $prefix     Callnumber prefix or empty string.
      * @param string $callnumber Main call number.
      *
      * @return string
      */
-    protected function formatCallNums($prefix, $callnumber)
+    protected function formatCallNo($prefix, $callnumber)
     {
         return !empty($prefix) ? $prefix . '::::' . $callnumber : $callnumber;
     }
@@ -279,7 +279,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $use_unknown_status = true;
             }
             // Store call number/location info:
-            $callNumbers[] = $this->formatCallNums(
+            $callNumbers[] = $this->formatCallNo(
                 $info['callnumber_prefix'],
                 $info['callnumber']
             );
@@ -361,7 +361,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
-            $locations[$info['location']]['callnumbers'][] = $this->formatCallNums(
+            $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
                 $info['callnumber_prefix'],
                 $info['callnumber']
             );
