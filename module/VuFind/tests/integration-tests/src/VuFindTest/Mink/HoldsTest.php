@@ -444,7 +444,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that the popup contains a warning message about mismatched
         // pickup locations:
-        $expectedMsg = "Selected holds have different pick up locations. "
+        $expectedMsg = "Selected holds have different options for pick up location. "
             . "Edit a single hold to change its pick up location.";
         $this->assertStringContainsString(
             $expectedMsg,
@@ -466,18 +466,24 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
 
-        // Now we can edit them to campus A:
-        $this->clickCss($page, '.checkbox-select-all');
+        // Place a third hold:
+        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'A']);
+
+        // Update the two holds that have same possible pick up locations to
+        // change the pickup locations to campus C:
+        $this->clickCss($page, '.checkbox-select-item', 1000, 0);
+        $this->clickCss($page, '.checkbox-select-item', 1000, 2);
         $this->clickCss($page, '#update_selected');
         $this->snooze();
-        $this->findCss($page, '#pickup_location')->setValue('A');
+        $this->findCss($page, '#pickup_location')->setValue('C');
         $this->findCss($page, '#modal .btn.btn-primary')->click();
         $this->snooze();
 
         // Confirm that it worked:
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus A'));
+        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertFalse(strstr($page->getContent(), 'Campus A'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
-        $this->assertFalse(strstr($page->getContent(), 'Campus C'));
     }
 
     /**
