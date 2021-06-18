@@ -3,17 +3,32 @@
     $this->backgroundTabs = $this->BackgroundTabs ?? [];
     $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
 ?>
+
+<?php /* User Authority Access */ ?>
+<?php if ($this->user != false && $this->accountCapabilities()->getRequestAuthorityRightsSetting() === 'enabled'): ?>
+  <div>
+    <?php if ($this->user_access['availability'] == 'free'): ?>
+      <a class="save-record toolbar-btn btn-type-save rel="nofollow" href="<?=$this->url('authority-request-access', ['authority_id' => $this->driver->getUniqueId()])?>" data-lightbox="">Request access rights (This is me!)</a>
+    <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'requested'): ?>
+      You have requested permission on this authority record. Our team has been informed, please wait for the approval.
+    <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'granted'): ?>
+      This authority record is linked to your user account.
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
+<?php /* Record details */ ?>
 <div vocab="http://schema.org/" typeof="<?=$schemaOrgType?>">
-  <h3 property="name"><?=$this->authority()->getName($this->driver)?></h3>
+  <h3><?=$this->authority()->getName($this->driver)?></h3>
   <div class="row">
     <div class="col-sm-8">
       <table class="table table-striped">
         <tbody>
-          <?php $professions = $this->authority()->getProfessions($this->driver);?>
-          <?php if ($professions != ''): ?>
+          <?php $occupations = $this->authority()->getOccupations($this->driver);?>
+          <?php if ($occupations != ''): ?>
             <tr>
-              <th>Professions:</th>
-              <td><?=$professions?></td>
+              <th>Occupations:</th>
+              <td><?=$occupations?></td>
             </tr>
           <?php endif; ?>
 
@@ -30,6 +45,22 @@
             <tr>
               <th>Died:</th>
               <td><?=$death?></td>
+            </tr>
+          <?php endif; ?>
+
+          <?php $relations = $this->authority()->getPersonalRelations($this->driver); ?>
+          <?php if ($relations != ''): ?>
+            <tr>
+              <th>Personal relations:</th>
+              <td><?=$relations?></td>
+            </tr>
+          <?php endif; ?>
+
+          <?php $relations = $this->authority()->getCorporateRelations($this->driver); ?>
+          <?php if ($relations != ''): ?>
+            <tr>
+              <th>Corporate relations:</th>
+              <td><?=$relations?></td>
             </tr>
           <?php endif; ?>
 
@@ -78,5 +109,41 @@
   // Pick a tab to display -- Details if available, otherwise first option (if any):
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
 ?>
-<h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>
-<p><?=empty($tab) ? $this->transEsc('no_description') :  $this->record($this->driver)->getTab($tab)?></p>
+
+<!-- TueFind: Use similar tab logic as for title data -->
+<div class="record-tabs">
+  <ul class="nav nav-tabs">
+    <?php foreach ($this->tabs as $tab => $obj): ?>
+      <?php // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $tabName = preg_replace("/\W/", "-", strtolower($tab));
+        $tabClasses = [ 'record-tab', $tabName ];
+
+        if (!isset($this->activeTab))
+          $this->activeTab = $tab;
+
+        if (0 === strcasecmp($this->activeTab, $tab)) {
+          if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+            $tabClasses[] = 'active';
+          }
+          $tabClasses[] = 'initiallyActive';
+          $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+          $activeTabObj = $obj;
+        }
+        if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
+        if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+      ?>
+      <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$tabName?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+
+  <div class="tab-content">
+    <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+      <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>

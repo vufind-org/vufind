@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
-
+    <fieldType name="date_range" class="solr.DateRangeField"/>
 </types>

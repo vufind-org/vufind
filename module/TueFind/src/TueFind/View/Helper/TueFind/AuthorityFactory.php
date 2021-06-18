@@ -15,7 +15,9 @@ class AuthorityFactory implements FactoryInterface
         }
 
         return new Authority(
-            $container->get('VuFindSearch\Service')
+            $container->get('VuFindSearch\Service'),
+            $container->get('ViewHelperManager'),
+            $container->get('VuFind\Record\Loader')
         );
     }
 }

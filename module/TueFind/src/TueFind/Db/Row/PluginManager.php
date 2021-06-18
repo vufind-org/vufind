@@ -22,11 +22,13 @@ class PluginManager extends \VuFind\Db\Row\PluginManager {
         $this->aliases['rss_item']               = RssItem::class;
         $this->aliases['rss_subscription']       = RssSubscription::class;
         $this->aliases['user']                   = User::class;
+        $this->aliases['user_authority']         = UserAuthority::class;
         $this->factories[Redirect::class]        = RowGatewayFactory::class;
         $this->factories[RssFeed::class]         = RowGatewayFactory::class;
         $this->factories[RssItem::class]         = RowGatewayFactory::class;
         $this->factories[RssSubscription::class] = RowGatewayFactory::class;
         $this->factories[User::class]            = \VuFind\Db\Row\UserFactory::class;
+        $this->factories[UserAuthority::class]   = RowGatewayFactory::class;
 
         parent::__construct($configOrContainerInstance, $v3config);
     }

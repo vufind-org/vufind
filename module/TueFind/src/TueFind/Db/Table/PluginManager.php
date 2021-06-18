@@ -25,11 +25,13 @@ class PluginManager extends \VuFind\Db\Table\PluginManager {
         $this->addOverride('aliases', 'rss_item', RssItem::class);
         $this->addOverride('aliases', 'rss_subscription', RssSubscription::class);
         $this->addOverride('aliases', 'user', User::class);
+        $this->addOverride('aliases', 'user_authority', UserAuthority::class);
         $this->addOverride('factories', Redirect::class, GatewayFactory::class);
         $this->addOverride('factories', RssFeed::class, RssFactory::class);
         $this->addOverride('factories', RssItem::class, RssFactory::class);
         $this->addOverride('factories', RssSubscription::class, RssFactory::class);
         $this->addOverride('factories', User::class, \VuFind\Db\Table\UserFactory::class);
+        $this->addOverride('factories', UserAuthority::class, GatewayFactory::class);
         $this->applyOverrides();
 
         $this->addAbstractFactory(PluginFactory::class);

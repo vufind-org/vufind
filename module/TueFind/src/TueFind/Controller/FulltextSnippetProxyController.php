@@ -26,7 +26,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     protected $page_index; //Elasticssearch index with single HTML pages
     protected $es; // Elasticsearch interface
     protected $logger;
-    protected $configLoader;
     protected $maxSnippets = 5;
     protected $text_type_to_description_map;
     const FIELD = 'full_text';
@@ -53,21 +52,15 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
     const DOTS = '...';
 
 
-    public function __construct(\Elasticsearch\ClientBuilder $builder, \Laminas\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger, \VuFind\Config\PluginManager $configLoader) {
+    public function __construct(\Elasticsearch\ClientBuilder $builder, \Laminas\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger) {
         $this->logger = $logger;
-        $this->configLoader = $configLoader;
-        $config = $configLoader->get($this->getFulltextSnippetIni());
+        $config = $this->getConfig(self::fulltextsnippetIni);
         $this->base_url = isset($config->Elasticsearch->base_url) ? $config->Elasticsearch->base_url : 'localhost:9200';
         $this->index = isset($config->Elasticsearch->index) ? $config->Elasticsearch->index : 'full_text_cache';
         $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
         $this->text_type_to_description_map = array_flip(self::description_to_text_type_map);
         parent::__construct($sm);
-    }
-
-
-    protected function getFulltextSnippetIni() {
-        return self::fulltextsnippetIni;
     }
 
 

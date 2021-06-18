@@ -1,0 +1,33 @@
+<?php
+// Set up page title:
+$this->headTitle($this->translate('Admins'));
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Admins') . '</li>';
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2>Admins</h2>
+  <p>Additional admins must be unlocked manually in the database by the development team.</p>
+
+  <table class="table">
+    <tr>
+      <th><?=$this->transEsc('Username')?></th>
+      <th><?=$this->transEsc('First Name')?></th>
+      <th><?=$this->transEsc('Last Name')?></th>
+      <th><?=$this->transEsc('Email Address')?></th>
+    </tr>
+    <?php foreach ($this->admins as $user): ?>
+      <tr>
+        <td><?=$user->username?></td>
+        <td><?=$user->firstname?></td>
+        <td><?=$user->lastname?></td>
+        <td><?=$user->email?></td>
+      </tr>
+    <?php endforeach; ?>
+  </table>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'showadmins'])?>
+</div>

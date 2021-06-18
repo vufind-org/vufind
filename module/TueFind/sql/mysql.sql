@@ -55,6 +55,17 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 
+CREATE TABLE IF NOT EXISTS vufind.tuefind_user_authorities (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    authority_id VARCHAR(255) NOT NULL,
+    access_state ENUM('requested', 'granted'),
+    PRIMARY KEY (id),
+    UNIQUE KEY user_authority (authority_id),
+    FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+
+
 ALTER TABLE vufind.user ADD tuefind_uuid CHAR(36) NOT NULL;
 ALTER TABLE vufind.user ADD CONSTRAINT tuefind_user_uuid UNIQUE (tuefind_uuid);
 CREATE TRIGGER vufind.before_user_insert BEFORE INSERT ON vufind.user FOR EACH ROW SET NEW.tuefind_uuid = UUID();
@@ -62,3 +73,5 @@ CREATE TRIGGER vufind.before_user_insert BEFORE INSERT ON vufind.user FOR EACH R
 ALTER TABLE vufind.user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE;
 CREATE INDEX tuefind_rss_feed_send_emails_index ON vufind.user (tuefind_rss_feed_send_emails);
 ALTER TABLE vufind.user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE vufind.user ADD tuefind_is_admin BOOLEAN NOT NULL DEFAULT FALSE;

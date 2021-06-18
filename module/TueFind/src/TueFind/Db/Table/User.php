@@ -14,4 +14,12 @@ class User extends \VuFind\Db\Table\User {
     {
         return $this->select(['tuefind_uuid' => $uuid])->current();
     }
+
+    public function getAdmins()
+    {
+        $select = $this->getSql()->select();
+        $select->where(['tuefind_is_admin' => true]);
+        $select->order('username ASC');
+        return $this->selectWith($select);
+    }
 }

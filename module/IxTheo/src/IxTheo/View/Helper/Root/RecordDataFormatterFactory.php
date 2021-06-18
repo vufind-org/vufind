@@ -8,6 +8,12 @@ use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
 class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFormatterFactory {
 
     /**
+     * User Account Capabilites Service
+     * @var \VuFind\Config\AccountCapabilities
+     */
+    protected $accountCapabilities;
+
+    /**
      * Db Table Plugin Manager (e.g. to check user-specific rights)
      * @var \VuFind\Db\Table\PluginManager
      */
@@ -24,6 +30,7 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
     ) {
         $this->user = $container->get('ViewHelperManager')->get('auth')->getManager()->isLoggedIn();
         $this->dbTablePluginManager = $container->get('VuFind\Db\Table\PluginManager');
+        $this->accountCapabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return parent::__invoke($container, $requestedName, $options);
     }
 
@@ -49,9 +56,11 @@ class RecordDataFormatterFactory extends \TueFind\View\Helper\Root\RecordDataFor
         $this->addHBZ($spec);
         $this->addJOP($spec);
         // PDA (IxTheo-specific)
-        $spec->setTemplateLine(
-            'PDA', 'showPDA', 'data-PDA.phtml', ['rowId' => 'pda_row']
-        );
+        if ($this->accountCapabilities->getPdaSetting()) {
+            $spec->setTemplateLine(
+                'PDA', 'showPDA', 'data-PDA.phtml', ['rowId' => 'pda_row']
+            );
+        }
         // TAD (IxTheo-specific)
         if ($this->user != null && $this->dbTablePluginManager->get('IxTheoUser')->canUseTAD($this->user->id)) {
             $spec->setTemplateLine(
