@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +23,13 @@
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Controller\Plugin;
+
+use VuFind\Date\DateException;
 
 /**
  * Action helper to perform holds-related actions
@@ -33,6 +37,7 @@ namespace VuFind\Controller\Plugin;
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -110,7 +115,9 @@ class Holds extends AbstractRequestBase
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
         } elseif (!empty($selected)) {
-            $details = $params->fromPost('cancelSelectedIDS');
+            // Include cancelSelectedIDS for backwards-compatibility:
+            $details = $params->fromPost('selectedIDS')
+                ?? $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
             return [];
@@ -189,5 +196,116 @@ class Holds extends AbstractRequestBase
             $flashMsg->addMessage('hold_empty_selection', 'error');
         }
         return [];
+    }
+
+    /**
+     * Check if the user-provided dates are valid.
+     *
+     * Returns validated dates and/or an array of validation errors if there are
+     * problems.
+     *
+     * @param string $startDate         User-specified start date
+     * @param string $requiredBy        User-specified required-by date
+     * @param array  $enabledFormFields Hold form fields enabled by
+     * configuration/driver
+     *
+     * @return array
+     */
+    public function validateDates(?string $startDate, ?string $requiredBy,
+        array $enabledFormFields
+    ): array {
+        $result = [
+            'startDateTS' => null,
+            'requiredByTS' => null,
+            'errors' => [],
+        ];
+        if (!in_array('startDate', $enabledFormFields)
+            && !in_array('requiredByDate', $enabledFormFields)
+        ) {
+            return $result;
+        }
+
+        if (in_array('startDate', $enabledFormFields)) {
+            try {
+                $result['startDateTS'] = $startDate
+                    ? (int)$this->dateConverter->convertFromDisplayDate(
+                        'U',
+                        $startDate
+                    ) : 0;
+                if ($result['startDateTS'] < strtotime('today')) {
+                    $result['errors'][] = 'hold_start_date_invalid';
+                }
+            } catch (DateException $e) {
+                $result['errors'][] = 'hold_start_date_invalid';
+            }
+        }
+
+        if (in_array('requiredByDate', $enabledFormFields)) {
+            try {
+                if ($requiredBy) {
+                    $requiredByDateTime = \DateTime::createFromFormat(
+                        'U',
+                        $this->dateConverter
+                            ->convertFromDisplayDate('U', $requiredBy)
+                    );
+                    $result['requiredByTS'] = $requiredByDateTime
+                        ->setTime(23, 59, 59)
+                        ->getTimestamp();
+                } else {
+                    $result['requiredByTS'] = 0;
+                }
+                if ($result['requiredByTS'] < strtotime('today')) {
+                    $result['errors'][] = 'hold_required_by_date_invalid';
+                }
+            } catch (DateException $e) {
+                $result['errors'][] = 'hold_required_by_date_invalid';
+            }
+        }
+
+        if (!$result['errors']
+            && in_array('startDate', $enabledFormFields)
+            && in_array('requiredByDate', $enabledFormFields)
+            && $result['startDateTS'] > $result['requiredByTS']
+        ) {
+            $result['errors'][] = 'hold_required_by_date_before_start_date';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Check if the user-provided "frozen through" date is valid.
+     *
+     * Returns validated date and/or an array of validation errors if there are
+     * problems.
+     *
+     * @param string $frozenThrough   User-specified "frozen through" date
+     * @param array  $extraHoldFields Hold form fields enabled by
+     * configuration/driver
+     *
+     * @return array
+     */
+    public function validateFrozenThrough(?string $frozenThrough,
+        array $extraHoldFields
+    ): array {
+        $result = [
+            'frozenThroughTS' => null,
+            'errors' => [],
+        ];
+        if (!in_array('frozenThrough', $extraHoldFields) || empty($frozenThrough)) {
+            return $result;
+        }
+
+        try {
+            $result['frozenThroughTS']
+                = $this->dateConverter->convertFromDisplayDate('U', $frozenThrough);
+            if ($result['frozenThroughTS'] < time()) {
+                $result['errors'][] = 'hold_frozen_through_date_invalid';
+            }
+        } catch (DateException $e) {
+            $result['errors'][] = 'hold_frozen_through_date_invalid';
+        }
+
+        return $result;
     }
 }
