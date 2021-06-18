@@ -1898,7 +1898,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $blocks = $this->getPatronBlocks($patron);
         $blocks = array_map(
-            function($block) {
+            function ($block) {
                 return $this->translate('AccountBlocks::' . $block);
             }, $blocks
         );
