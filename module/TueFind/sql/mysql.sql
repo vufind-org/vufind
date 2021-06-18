@@ -1,12 +1,18 @@
+CREATE TABLE IF NOT EXISTS tuefind_publications (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    external_document_id VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY publication_external_document_id (external_document_id),
+    FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin;
+
+
 CREATE TABLE IF NOT EXISTS tuefind_redirect (
     url VARCHAR(1000) NOT NULL,
     group_name VARCHAR(1000) DEFAULT NULL,
     timestamp TIMESTAMP DEFAULT NOW() NOT NULL
 ) DEFAULT CHARSET=utf8;
-
-
-ALTER TABLE vufind.user ADD tuefind_subscribed_to_newsletter BOOL NOT NULL DEFAULT FALSE;
-CREATE INDEX tuefind_subscribed_to_newsletter_index ON vufind.user (tuefind_subscribed_to_newsletter);
 
 
 CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_feeds (
@@ -65,6 +71,8 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_user_authorities (
     FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
+ALTER TABLE vufind.user ADD tuefind_subscribed_to_newsletter BOOL NOT NULL DEFAULT FALSE;
+CREATE INDEX tuefind_subscribed_to_newsletter_index ON vufind.user (tuefind_subscribed_to_newsletter);
 
 ALTER TABLE vufind.user ADD tuefind_uuid CHAR(36) NOT NULL;
 ALTER TABLE vufind.user ADD CONSTRAINT tuefind_user_uuid UNIQUE (tuefind_uuid);
