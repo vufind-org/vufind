@@ -37,6 +37,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use Laminas\I18n\Translator\TranslatorInterface;
+
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -356,6 +358,13 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $cacheManager;
 
     /**
+     * Translator
+     *
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -476,16 +485,27 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $defaultPatronId;
 
     /**
+     * ISO 3166-1 alpha-2 to ISO 3166-1 alpha-3 mapping for
+     * translation in REST DLF API.
+     *
+     * @var array
+     */
+    protected $languages$languages = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param \VuFind\Cache\Manager  $cacheManager  Cache manager (optional)
+     * @param TranslatorInterface    $translator    Translator (optional)
      */
     public function __construct(\VuFind\Date\Converter $dateConverter,
-        \VuFind\Cache\Manager $cacheManager = null
+        \VuFind\Cache\Manager $cacheManager = null,
+        TranslatorInterface $translator = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->cacheManager = $cacheManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -567,6 +587,11 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         if (isset($this->config['Catalog']['default_patron_id'])) {
             $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
         }
+        if (isset($this->config['Languages'])) {
+            foreach ($this->config['Languages'] as $locale => $lang) {
+                $this->languages[$locale] = $lang;
+            }
+        }
     }
 
     /**
@@ -626,6 +651,15 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $url = "http://$this->host:$this->dlfport/rest-dlf/" . $path;
         } else {
             $url = $this->dlfbaseurl . $path;
+        }
+        if ($params == null) {
+            $params = [];
+        }
+        if (!empty($this->languages) && $this->translator != null) {
+            $locale = $this->translator->getLocale();
+            if (isset($this->languages[$locale])) {
+                $params['lang'] = $this->languages[$locale];
+            }
         }
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
