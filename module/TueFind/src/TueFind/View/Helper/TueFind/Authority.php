@@ -12,10 +12,19 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+    protected $recordLoader;
+
     protected $searchService;
 
-    public function __construct(\VuFindSearch\Service $searchService) {
+    protected $viewHelperManager;
+
+    public function __construct(\VuFindSearch\Service $searchService,
+                                \Laminas\View\HelperPluginManager $viewHelperManager,
+                                \VuFind\Record\Loader $recordLoader)
+    {
+        $this->recordLoader = $recordLoader;
         $this->searchService = $searchService;
+        $this->viewHelperManager = $viewHelperManager;
     }
 
     /**
@@ -23,7 +32,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getBirth(AuthorityRecordDriver &$driver): string {
+    public function getBirth(AuthorityRecordDriver &$driver): string
+    {
         $display = '';
 
         $birthDate = $driver->getBirthDateOrYear();
@@ -48,7 +58,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      * @param string $propertyId
      * @return string
      */
-    private function getDateTimeProperty($datetimeCandidate, $propertyId): string {
+    private function getDateTimeProperty($datetimeCandidate, $propertyId): string
+    {
         $iso8601DateTime = $this->getView()->tuefind()->convertDateTimeToIso8601($datetimeCandidate);
         if ($iso8601DateTime == $datetimeCandidate)
             return '<span property="' . htmlspecialchars($propertyId) . '">' . $datetimeCandidate . '</span>';
@@ -63,7 +74,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getDeath(AuthorityRecordDriver &$driver): string {
+    public function getDeath(AuthorityRecordDriver &$driver): string
+    {
         $display = '';
         $deathDate = $driver->getDeathDateOrYear();
         if ($deathDate != '') {
@@ -75,52 +87,134 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $display;
     }
 
-    public function getExternalReferences(AuthorityRecordDriver &$driver): string {
+    public function getExternalReferences(AuthorityRecordDriver &$driver): string
+    {
         $references = $driver->getExternalReferences();
         if (count($references) == 0)
             return '';
 
+        usort($references, function($a, $b) { return strcmp($a['title'], $b['title']); });
+
         $display = '';
         foreach ($references as $reference)
-            $display .= '<a href="' . $reference['url'] . '">' . htmlspecialchars($reference['title']) . '</a><br>';
+            $display .= '<a href="' . $reference['url'] . '" target="_blank" property="sameAs">' . htmlspecialchars($reference['title']) . '</a><br>';
 
         return $display;
     }
 
-    public function getName(AuthorityRecordDriver &$driver): string {
+    public function getName(AuthorityRecordDriver &$driver): string
+    {
         $name = $driver->getTitle();
         $name = trim(preg_replace('"\d+\-?\d*"', '', $name));
         return '<span property="name">' . $name . '</span>';
     }
 
-    public function getProfessions(AuthorityRecordDriver &$driver): string {
-        $professions = $driver->getProfessions();
-        $professions_display = '';
-        foreach ($professions as $profession) {
-            if ($professions_display != '')
-                $professions_display .= '/';
-            $professions_display .= '<span property="hasOccupation">' . $profession . '</span>';
+    public function getOccupations(AuthorityRecordDriver &$driver): string
+    {
+        $occupations = $driver->getOccupations();
+        $occupationsDisplay = '';
+        foreach ($occupations as $occupation) {
+            if ($occupationsDisplay != '')
+                $occupationsDisplay .= '/';
+            $occupationsDisplay .= '<span property="hasOccupation">' . $occupation . '</span>';
         }
-        return $professions_display;
+        return $occupationsDisplay;
     }
 
-    public function getSchemaOrgType(AuthorityRecordDriver &$driver): string {
-        if ($driver->getType() == 'person')
+    public function getCorporateRelations(AuthorityRecordDriver &$driver): string
+    {
+        $relations = $driver->getCorporateRelations();
+        $relationsDisplay = '';
+
+        $urlHelper = $this->viewHelperManager->get('url');
+        foreach ($relations as $relation) {
+            if ($relationsDisplay != '')
+                $relationsDisplay .= '<br>';
+
+            $type = $relation['type'] == 'Veranstalter' ? 'organizer' : 'contributor';
+            $relationsDisplay .= '<span property="' . $type . '" typeof="Organization">';
+
+            $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
+            if ($recordExists) {
+                $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
+                $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
+            }
+
+            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
+
+            if (isset($relation['type']))
+                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+
+            if ($recordExists)
+                $relationsDisplay .= '</a>';
+
+            $relationsDisplay .= '</span>';
+        }
+        return $relationsDisplay;
+    }
+
+    public function getPersonalRelations(AuthorityRecordDriver &$driver): string
+    {
+        $relations = $driver->getPersonalRelations();
+        $relationsDisplay = '';
+
+        $urlHelper = $this->viewHelperManager->get('url');
+        foreach ($relations as $relation) {
+            if ($relationsDisplay != '')
+                $relationsDisplay .= '<br>';
+
+            $relationsDisplay .= '<span property="relatedTo" typeof="Person">';
+
+            $recordExists = isset($relation['id']) && $this->recordExists($relation['id']);
+            if ($recordExists) {
+                $url = $urlHelper('solrauthrecord', ['id' => $relation['id']]);
+                $relationsDisplay .= '<a property="sameAs" href="' . $url . '">';
+            }
+
+            $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
+
+            if (isset($relation['type']))
+                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+
+            if ($recordExists)
+                $relationsDisplay .= '</a>';
+
+            $relationsDisplay .= '</span>';
+        }
+        return $relationsDisplay;
+    }
+
+    public function getSchemaOrgType(AuthorityRecordDriver &$driver): string
+    {
+        switch ($driver->getType()) {
+        case 'person':
             return 'Person';
-        else
+        case 'corporate':
             return 'Organization';
+        case 'meeting':
+            return 'Event';
+        default:
+            return 'Thing';
+        }
     }
 
     /**
      * Get titles of this authority to show in a preview box
      */
-    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10) {
+    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getUniqueID() . '"', 'AllFields'),
+                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getGNDNumber() . '"', 'AllFields'),
                                                  $offset, $limit);
 
         return $response;
+    }
+
+    public function recordExists($authorityId)
+    {
+        $loadResult = $this->recordLoader->load($authorityId, 'SolrAuth', /* $tolerate_missing=*/ true);
+        return !($loadResult instanceof \VuFind\RecordDriver\Missing);
     }
 }

@@ -203,6 +203,8 @@
       <then>
         <!-- make sure we don't run out of memory during installation: -->
         <php expression="ini_set('memory_limit', '1G');" />
+        <!-- TueFind: Increase default_socket_timeout -->
+        <php expression="ini_set('default_socket_timeout', '600');" />
 
         <!-- download from Apache if not already present in the downloads cache -->
         <if>

@@ -85,10 +85,52 @@ $config = [
                     ],
                 ],
             ],
+            'myresearch-rssfeedraw' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/myrssfeed/:user_uuid",
+                    'constraints' => [
+                        //example: 134b5a64-97ab-11eb-baff-309c23c4daa6
+                        'user_uuid'     => '.{8}(-.{4}){3}-.{12}',
+                    ],
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'rssFeedRaw',
+                    ],
+                ],
+            ],
+            'authority-request-access' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/Authority/RequestAccess/:authority_id",
+                    'constraints' => [
+                        'authority_id'     => '[0-9A-Z]{8,}',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Authority',
+                        'action'     => 'requestAccess',
+                    ],
+                ],
+            ],
+            'authority-process-request' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/Authority/RequestAccess/:authority_id/:user_id",
+                    'constraints' => [
+                        'authority_id'     => '[0-9A-Z]{8,}',
+                        'user_id'          => '\d+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'AdminFrontend',
+                        'action'     => 'ProcessUserAuthorityRequest',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
+            'TueFind\Controller\AdminFrontendController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'TueFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
@@ -101,11 +143,11 @@ $config = [
             'TueFind\Controller\RecordController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'TueFind\Controller\RedirectController' => 'TueFind\Controller\RedirectControllerFactory',
             'TueFind\Controller\RssFeedController' => 'VuFind\Controller\AbstractBaseFactory',
-            'TueFind\Controller\ShortlinkController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\StaticPageController' => 'VuFind\Controller\AbstractBaseFactory',
             'TueFind\Controller\WikidataProxyController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
+            'AdminFrontend' => 'TueFind\Controller\AdminFrontendController',
             'AJAX' => 'TueFind\Controller\AjaxController',
             'ajax' => 'TueFind\Controller\AjaxController',
             'Authority' => 'TueFind\Controller\AuthorityController',
@@ -126,8 +168,6 @@ $config = [
             'redirect' => 'TueFind\Controller\RedirectController',
             'RssFeed' => 'TueFind\Controller\RssFeedController',
             'rssfeed' => 'TueFind\Controller\RssFeedController',
-            'Shortlink' => 'TueFind\Controller\ShortlinkController',
-            'shortlink' => 'TueFind\Controller\ShortlinkController',
             'StaticPage' => 'TueFind\Controller\StaticPageController',
             'wikidataproxy' => 'TueFind\Controller\WikidataProxyController',
         ],
@@ -145,6 +185,7 @@ $config = [
         'factories' => [
             'TueFind\Auth\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'TueFind\Config\AccountCapabilities' => 'TueFind\Config\AccountCapabilitiesFactory',
             'TueFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoaderFactory',
             'TueFind\ContentBlock\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'TueFind\Cookie\CookieManager' => 'VuFind\Cookie\CookieManagerFactory',
@@ -167,9 +208,11 @@ $config = [
             'TueFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
+            'VuFind\AccountCapabilities' => 'TueFind\Config\AccountCapabilities',
             'VuFind\AuthPluginManager' => 'TueFind\Auth\PluginManager',
             'VuFind\Auth\PluginManager' => 'TueFind\Auth\PluginManager',
             'VuFind\Captcha\PluginManager' => 'TueFind\Captcha\PluginManager',
+            'VuFind\Config\AccountCapabilities' => 'TueFind\Config\AccountCapabilities',
             'VuFind\ContentBlock\BlockLoader' => 'TueFind\ContentBlock\BlockLoader',
             'VuFind\ContentBlock\PluginManager' => 'TueFind\ContentBlock\PluginManager',
             'VuFind\Cookie\CookieManager' => 'TueFind\Cookie\CookieManager',
@@ -209,21 +252,12 @@ $config = [
         'plugin_managers' => [
             'metadatavocabulary' => [],
         ],
-        'recorddriver_tabs' => [
-            'VuFind\RecordDriver\SolrAuthMarc' => [
-                'tabs' => [
-                    'ExternalAuthorityDatabases' => 'ExternalAuthorityDatabases',
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
-        ],
     ],
 ];
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['MyResearch/Newsletter', 'RssFeed/Full'];
+$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);

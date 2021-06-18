@@ -76,16 +76,34 @@ class FeedbackController extends \VuFind\Controller\FeedbackController
             $user ? $user->email : null
         );
 
-        list($recipientName, $recipientEmail) = $form->getRecipient();
+        // TueFind: Deny Spam-Mails from @ixtheo.de and other addresses
+        if (preg_match('"@ixtheo.de$"i', $replyToEmail)) {
+            $this->showResponse($view, $form, false, 'Invalid reply-to address: ' . $replyToEmail);
+            return $view;
+        }
+
+        $recipients = $form->getRecipient($params->fromPost());
 
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
-        list($success, $errorMsg) = $this->sendEmail(
-            $recipientName, $recipientEmail, $senderName, $senderEmail,
-            $replyToName, $replyToEmail, $emailSubject, $emailMessage
-        );
+        $sendSuccess = true;
+        foreach ($recipients as $recipient) {
+            list($success, $errorMsg) = $this->sendEmail(
+                $recipient['name'], $recipient['email'], $senderName, $senderEmail,
+                $replyToName, $replyToEmail, $emailSubject, $emailMessage
+            );
 
-        $this->showResponse($view, $form, $success, $errorMsg);
+            $sendSuccess = $sendSuccess && $success;
+            if (!$success) {
+                $this->showResponse(
+                    $view, $form, false, $errorMsg
+                );
+            }
+        }
+
+        if ($sendSuccess) {
+            $this->showResponse($view, $form, true);
+        }
 
         return $view;
     }

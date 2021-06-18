@@ -1,14 +1,18 @@
 <h1 id="anchor">Personalisierte Features</h1>
-<p>Die folgenden Features können Sie nach einem Login in Ihr RelBib Konto) nutzen:</p>
+<p>Die folgenden Features können Sie nach einem Login in Ihr RelBib Konto nutzen:</p>
 <div class="tf-panel-collapse">
     <a data-toggle="collapse" href="#alerting">
         <div class="tf-panel-collapse-heading">
-            Neuerscheinungen abonnieren (Alerting-Funktion)
+            Benachrichtigungen über neue Inhalte
         </div>
     </a>
     <div id="alerting" class="collapse tf-panel-collapse-body">
-        <p>Mit dieser Funktion können Sie sich über neu erschienene Aufsätze aus Zeitschriften und neu erschienene Bände in Reihen per E-Mail benachrichtigen lassen.</p>
-        <p>Um die Alerting-Funktion auszulösen, müssen Sie zunächst den Titel der Zeitschrift oder Reihe aufrufen. Klicken Sie dann auf das Glocke-Symbol <i class="result-link-icon fa fa-fw fa-bell"></i> in der oberen Zeile der Titelanzeige. In Ihrem Konto können Sie die Abonnements verwalten.</p>
+        <p>In RelBib gibt es zwei Möglichkeiten sich über neu in der Bibliografie aufgenommene Zeitschriftenaufsätze oder Bände von Reihen per E-Mail benachrichtigen zu lassen.</p>
+        <p><b>Alerting für einzelne Zeitschriften oder Reihen</b></p>
+        <p>Um diese Alerting-Funktion auszulösen, müssen Sie zunächst den Titel der gewünschten Zeitschrift oder Reihe aufrufen. Klicken Sie dann auf das Glocke-Symbol <i class="result-link-icon fa fa-fw fa-bell"></i> in der Trefferliste oder benutzen Sie den „Abonnieren“-Button in der oberen Zeile der Titelanzeige. In Ihrem Konto können Sie die Alerts verwalten.</p>
+        <p><b>Alertpakete für Zeitschriften</b></p>
+        <p>Wenn Sie zu einem bestimmten Themenbereich laufend auf dem neuesten Stand bleiben wollen, empfiehlt es sich ein Alertpaket zu wählen. In den Alertpaketen haben wir bereits im Vorfeld Zeitschriften, die einem Thema bzw. einer Kategorie angehören, gruppiert. Sie erhalten immer dann eine E-Mail-Benachrichtigung, wenn Aufsätze aus mindestens einer der im gewählten Alertpaket enthaltenen Zeitschriften neu in RelBib aufgenommen wurden.</p>
+        <p><a href="<?=$this->url('search-results')?>?type=AllFields&filter[]=~format%3A%22Subscription+Bundle%22">Übersicht der verfügbaren Alertpakete</a></p>
     </div>
 </div>
 

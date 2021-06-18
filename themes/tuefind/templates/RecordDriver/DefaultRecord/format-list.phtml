@@ -9,7 +9,7 @@ if (isset($media_types)) {
     $formats = array_merge(["Electronic/Print"], $formats);
   elseif (in_array("Electronic", $media_types)):
     $formats = array_merge(["Electronic"], $formats);
-  elseif (!in_array("Literary Remains", $formats)):
+  elseif (!in_array("Literary Remains", $formats) && !in_array("Subscription Bundle", $formats)):
     $formats = array_merge(["print"], $formats);
   endif;
   $i = 0;

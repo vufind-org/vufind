@@ -165,9 +165,21 @@
         </span>
       <?php endif; ?>
 
-      <?php $bible_ranges_string = $this->driver->tryMethod('getBibleRangesString');
-        if (!empty($bible_ranges_string)) {
-          echo '<div>' . $this->transEsc($bible_ranges_string) . '</div>';
+      <?php $bibleRangesString = $this->driver->tryMethod('getBibleRangesString');
+        if (!empty($bibleRangesString)) {
+          echo '<div>' . $this->transEsc($bibleRangesString) . '</div>';
+        }
+      ?>
+
+      <?php $canonLawRangesStrings = $this->driver->tryMethod('getCanonLawRangesStrings');
+        if (!empty($canonLawRangesStrings) && count($canonLawRangesStrings) > 0) {
+          echo '<div>' . implode($canonLawRangesStrings, ', ') . '</div>';
+        }
+      ?>
+
+      <?php $timeRangesString = $this->driver->tryMethod('getTimeRangesString');
+        if (!empty($timeRangesString)) {
+          echo '<div>' . $this->transEsc($timeRangesString) . '</div>';
         }
       ?>
 
@@ -182,7 +194,7 @@
         <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>">
           <i class="fa fa-fw fa-star"></i>
         </a><br/>
-        <?php if ($this->driver->tryMethod('isSubscribable')):?>
+        <?php if ($this->driver->tryMethod('isSubscribable') && $this->accountCapabilities()->getSubscriptionSetting() === 'enabled'): ?>
           <?php if ($this->IxTheo()->isRecordSubscribed($this->driver) || $this->IxTheo()->isRecordSubscribedViaBundle($this->driver)): ?>
             <a class="subscribe-record save-record modal-link" data-lightbox id="<?=$this->driver->getUniqueId() ?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Subscribe')?>" rel="nofollow" title="<?=$this->transEsc('Unsubscribe')?>">
               <i class="result-link-icon fa fa-fw fa-bell-slash"></i>

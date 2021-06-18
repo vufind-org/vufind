@@ -1,0 +1,47 @@
+<?php
+
+namespace TueFind\Db\Table;
+
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\ResultSet\ResultSetInterface as ResultSet;
+use Laminas\Db\Sql\Select;
+use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Table\PluginManager;
+use TueFind\Db\Row\UserAuthority as UserAuthorityRow;
+
+class UserAuthority extends \VuFind\Db\Table\Gateway {
+
+    public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
+        RowGateway $rowObj = null, $table = 'tuefind_user_authorities'
+    ) {
+        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
+    }
+
+    public function getAll()
+    {
+        $select = $this->getSql()->select();
+        $select->join('user', 'tuefind_user_authorities.user_id = user.id', Select::SQL_STAR, SELECT::JOIN_LEFT);
+        $select->order('username ASC, authority_id ASC');
+        return $this->selectWith($select);
+    }
+
+    public function getByUserId($userId): ResultSet
+    {
+        return $this->select(['user_id' => $userId]);
+    }
+
+    public function getByAuthorityId($authorityId): ?UserAuthorityRow
+    {
+        return $this->select(['authority_id' => $authorityId])->current();
+    }
+
+    public function getByUserIdAndAuthorityId($userId, $authorityId): ?UserAuthorityRow
+    {
+        return $this->select(['user_id' => $userId, 'authority_id' => $authorityId])->current();
+    }
+
+    public function addRequest($userId, $authorityId)
+    {
+        $this->insert(['user_id' => $userId, 'authority_id' => $authorityId, 'access_state' => 'requested']);
+    }
+}
