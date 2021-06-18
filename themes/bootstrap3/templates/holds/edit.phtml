@@ -52,19 +52,26 @@
     </div>
   <?php endif; ?>
 
-  <?php if (in_array('pickUpLocation', $this->fields) && $this->pickupLocations): ?>
-    <?php $selected = $this->gatheredDetails['pickUpLocation'] ?? ''; ?>
-    <div class="form-group hold-pickup-location">
-      <label for="pickup_location" class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
-      <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-control">
-        <option value=""<?=$selected === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
-        <?php foreach ($this->pickupLocations as $loc): ?>
-          <option value="<?=$this->escapeHtmlAttr($loc['locationID'])?>"<?=($selected === $loc['locationID']) ? ' selected' : ''?>>
-            <?=$this->transEscWithPrefix('location_', $loc['locationDisplay'])?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div>
+  <?php if (in_array('pickUpLocation', $this->fields)): ?>
+    <?php if ($this->conflictingPickupLocations): ?>
+      <div class="form-group hold-pickup-location">
+        <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label><br>
+        <?=$this->transEsc('hold_edit_conflicting_pickup_locations')?>
+      </div>
+    <?php elseif ($this->pickupLocations): ?>
+      <?php $selected = $this->gatheredDetails['pickUpLocation'] ?? ''; ?>
+      <div class="form-group hold-pickup-location">
+        <label for="pickup_location" class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
+        <select id="pickup_location" name="gatheredDetails[pickUpLocation]" class="form-control">
+          <option value=""<?=$selected === '' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_no_change')?></option>
+          <?php foreach ($this->pickupLocations as $loc): ?>
+            <option value="<?=$this->escapeHtmlAttr($loc['locationID'])?>"<?=($selected === $loc['locationID']) ? ' selected' : ''?>>
+              <?=$this->transEscWithPrefix('location_', $loc['locationDisplay'])?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    <?php endif; ?>
   <?php endif; ?>
 
   <div class="form-group">

@@ -1346,7 +1346,7 @@ class Demo extends AbstractBase
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        return [
+        $result = [
             [
                 'locationID' => 'A',
                 'locationDisplay' => 'Campus A'
@@ -1360,6 +1360,13 @@ class Demo extends AbstractBase
                 'locationDisplay' => 'Campus C'
             ]
         ];
+        if (($holdDetails['reqnum'] ?? '') == 1) {
+            $result[] = [
+                'locationID' => 'D',
+                'locationDisplay' => 'Campus D'
+            ];
+        }
+        return $result;
     }
 
     /**

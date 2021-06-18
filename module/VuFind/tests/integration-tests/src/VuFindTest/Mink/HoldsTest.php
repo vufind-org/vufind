@@ -137,8 +137,10 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Set pickup location to a non-default value so we can confirm that
         // the element is being passed through correctly, then submit form:
-        $this->findCss($page, '#pickUpLocation')->setValue('B');
-        // Add extra form field values, if any:
+        if (!isset($extras['#pickUpLocation'])) {
+            $extras['#pickUpLocation'] = 'B';
+        }
+        // Add extra form field values:
         foreach ($extras as $selector => $value) {
             $this->findCss($page, $selector)->setValue($value);
         }
@@ -408,6 +410,80 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFalse(
             strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
         );
+    }
+
+    /**
+     * Test editing two holds with different pickup locations.
+     *
+     * @depends testPlaceHold
+     *
+     * @return void
+     */
+    public function testEditingDifferentPickupLocations()
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        // Place the first hold:
+        $this->setUpFrozenHold();
+
+        // Place the second hold:
+        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'C']);
+
+        // Open the edit dialog box using the button:
+        $this->clickCss($page, '.checkbox-select-all');
+        $this->clickCss($page, '#update_selected');
+        $this->snooze();
+
+        // Confirm that the popup contains a warning message about mismatched
+        // pickup locations:
+        $expectedMsg = "Selected holds have different options for pick up location. "
+            . "Edit a single hold to change its pick up location.";
+        $this->assertStringContainsString(
+            $expectedMsg,
+            $this->findCss($page, '#modal .hold-pickup-location')->getText()
+        );
+
+        // Close the modal:
+        $this->findCss($page, '#modal .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Change the first hold to location C so it matches the second one:
+        $this->clickCss($page, '.hold-edit');
+        $this->snooze();
+        $this->findCss($page, '#pickup_location')->setValue('C');
+        $this->findCss($page, '#modal .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Locations should now match:
+        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertFalse(strstr($page->getContent(), 'Campus B'));
+
+        // Place a third hold:
+        $page = $this->gotoRecordById('dollar$ign/slashcombo');
+        $this->placeHoldAndGoToHoldsScreen($page, ['#pickUpLocation' => 'A']);
+
+        // Update the two holds that have same possible pick up locations to
+        // change the pickup locations to campus C:
+        $this->clickCss($page, '.checkbox-select-item', 1000, 0);
+        $this->clickCss($page, '.checkbox-select-item', 1000, 2);
+        $this->clickCss($page, '#update_selected');
+        $this->snooze();
+        $this->findCss($page, '#pickup_location')->setValue('C');
+        $this->findCss($page, '#modal .btn.btn-primary')->click();
+        $this->snooze();
+
+        // Confirm that it worked:
+        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertFalse(strstr($page->getContent(), 'Campus A'));
+        $this->assertFalse(strstr($page->getContent(), 'Campus B'));
     }
 
     /**

@@ -193,7 +193,11 @@ class HoldsController extends AbstractBase
                 : $this->redirect()->toRoute('holds-list');
         }
 
-        $pickupLocations = $this->getPickupLocationsForEdit($patron, $selectedIds);
+        $pickupLocationInfo = $this->getPickupLocationsForEdit(
+            $patron,
+            $selectedIds,
+            $holdConfig['pickUpLocationCheckLimit']
+        );
 
         $gatheredDetails = $this->params()->fromPost('gatheredDetails', []);
         if ($this->params()->fromPost('updateHolds')) {
@@ -206,7 +210,7 @@ class HoldsController extends AbstractBase
             $updateFields = $this->getUpdateFieldsFromGatheredDetails(
                 $holdConfig,
                 $gatheredDetails,
-                $pickupLocations
+                $pickupLocationInfo['pickupLocations']
             );
             if ($updateFields) {
                 $results
@@ -248,7 +252,8 @@ class HoldsController extends AbstractBase
                 'selectedIDS' => $selectedIds,
                 'fields' => $holdConfig['updateFields'],
                 'gatheredDetails' => $gatheredDetails,
-                'pickupLocations' => $pickupLocations,
+                'pickupLocations' => $pickupLocationInfo['pickupLocations'],
+                'conflictingPickupLocations' => $pickupLocationInfo['differences'],
             ]
         );
 
@@ -261,27 +266,61 @@ class HoldsController extends AbstractBase
      *
      * @param array $patron      Patron information
      * @param array $selectedIds Selected holds
+     * @param int   $checkLimit  Maximum number of pickup location checks to make
+     * (0 = no limit)
      *
-     * @return array
+     * @return array An array of any common pickup locations and a flag
+     * indicating any differences between them.
      */
-    protected function getPickupLocationsForEdit(array $patron, array $selectedIds
-    ): array {
+    protected function getPickupLocationsForEdit(array $patron, array $selectedIds,
+        int $checkLimit = 0
+    ): ?array {
         $catalog = $this->getILS();
         $holds = $catalog->getMyHolds($patron);
-        $firstDetails = reset($selectedIds);
+        $checks = 0;
+        $pickupLocations = [];
+        $differences = false;
         foreach ($holds as $hold) {
-            if ((string)($hold['updateDetails'] ?? '') === $firstDetails) {
+            if (in_array((string)($hold['updateDetails'] ?? ''), $selectedIds)) {
                 try {
-                    return $catalog->getPickUpLocations($patron, $hold);
+                    $locations = $catalog->getPickUpLocations($patron, $hold);
+                    if (!$pickupLocations) {
+                        $pickupLocations = $locations;
+                    } else {
+                        $ids1 = array_column($pickupLocations, 'locationID');
+                        $ids2 = array_column($locations, 'locationID');
+                        if (count($ids1) !== count($ids2) || array_diff($ids1, $ids2)
+                        ) {
+                            $differences = true;
+                            // Find out any common pickup locations:
+                            $common = array_intersect($ids1, $ids2);
+                            if (!$common) {
+                                $pickupLocations = [];
+                                break;
+                            }
+                            $pickupLocations = array_filter(
+                                $pickupLocations,
+                                function ($location) use ($common) {
+                                    return in_array(
+                                        $location['locationID'],
+                                        $common
+                                    );
+                                }
+                            );
+                        }
+                    }
+                    ++$checks;
+                    if ($checkLimit && $checks >= $checkLimit) {
+                        break;
+                    }
                 } catch (ILSException $e) {
                     $this->flashMessenger()
                         ->addErrorMessage('ils_connection_failed');
                 }
             }
         }
-        // As a last resort, return all pickup locations. This should only happen if
-        // the first hold was deleted while being selected.
-        return $catalog->getPickUpLocations($patron);
+
+        return compact('pickupLocations', 'differences');
     }
 
     /**
