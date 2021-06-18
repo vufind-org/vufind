@@ -79,10 +79,13 @@ class Importer
         }
         $config = $this->getConfiguration($iniFile, $in);
         $batchSize = $config->getBatchSize();
+        $encoding = $config->getEncoding();
         $data = [];
         $output = '';
         while ($line = fgetcsv($in)) {
-            $data[] = $this->collectValuesFromLine($line, $config);
+            $data[] = $this->collectValuesFromLine(
+                $this->adjustEncoding($line, $encoding), $config
+            );
             // If we have finished a batch, write it now and start the next one:
             if (count($data) === $batchSize) {
                 $output .= $this->writeData($data, $index, $testMode);
@@ -96,6 +99,27 @@ class Importer
         }
 
         return $output;
+    }
+
+    /**
+     * Fix the character encoding of a CSV line (if necessary).
+     *
+     * @param array  $line     Input from CSV
+     * @param string $encoding Encoding of $line
+     *
+     * @return array           Input re-encoded as UTF-8 (if not already in UTF-8)
+     */
+    protected function adjustEncoding(array $line, string $encoding): array
+    {
+        // We want UTF-8, so if that's already the setting, we don't need to do work:
+        if (strtolower($encoding) === 'utf-8') {
+            return $line;
+        }
+        return array_map(
+            function (string $str) use ($encoding): string {
+                return iconv($encoding, 'UTF-8', $str);
+            }, $line
+        );
     }
 
     /**

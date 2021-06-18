@@ -43,21 +43,28 @@ class ImporterConfig
      *
      * @var array
      */
-    protected array $columns = [];
+    protected $columns = [];
 
     /**
      * Field data
      *
      * @var array
      */
-    protected array $fields = [];
+    protected $fields = [];
 
     /**
      * Batch size
      *
      * @var int
      */
-    protected int $batchSize = 100;
+    protected $batchSize = 100;
+
+    /**
+     * Input character encoding
+     *
+     * @var string
+     */
+    protected $encoding = 'UTF-8';
 
     /**
      * Constructor
@@ -69,6 +76,9 @@ class ImporterConfig
         if (isset($options['batchSize']) && $options['batchSize'] > 0) {
             $this->batchSize = $options['batchSize'];
         }
+        if (isset($options['encoding'])) {
+            $this->encoding = $options['encoding'];
+        }
     }
 
     /**
@@ -79,6 +89,16 @@ class ImporterConfig
     public function getBatchSize(): int
     {
         return $this->batchSize;
+    }
+
+    /**
+     * Get encoding setting
+     *
+     * @return string
+     */
+    public function getEncoding(): string
+    {
+        return $this->encoding;
     }
 
     /**
