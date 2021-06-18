@@ -29,8 +29,7 @@ namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Locator as ConfigLocator;
-use VuFindSearch\Backend\Solr\Document\RawCSVDocument;
-use VuFindSearch\ParamBag;
+use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 /**
  * VuFind CSV importer configuration
@@ -75,26 +74,15 @@ class Importer
         string $index = 'Solr', bool $testMode = false
     ): string {
         // Process the file:
-        [$config, $csv] = $this->generateCSV($csvFile, $iniFile);
-        $fields = $config->getAllFields();
-        $params = new ParamBag(['fieldnames' => implode(',', $fields)]);
-        foreach ($fields as $field) {
-            $delimiter = $config->getDelimiter($field);
-            if (!empty($delimiter)) {
-                $params->set("f.$field.split", 'true');
-                $params->set("f.$field.separator", $delimiter);
-            }
-        }
+        $flags = $testMode ? JSON_PRETTY_PRINT : 0; // only pretty-print for testing
+        $json = json_encode($this->processCSV($csvFile, $iniFile), $flags);
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
             $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
-            $solr->save(
-                $index,
-                new RawCSVDocument($csv), 'csv', 'update', $params
-            );
+            $solr->save($index, new RawJSONDocument($json), 'update');
         }
-        return $csv;
+        return $json;
     }
 
     /**
@@ -286,32 +274,8 @@ class Importer
     }
 
     /**
-     * Process a single line of the CSV file.
-     *
-     * @param array          $line   Line to process.
-     * @param ImporterConfig $config Configuration object.
-     *
-     * @return array
-     */
-    protected function processLine(array $line, ImporterConfig $config): array
-    {
-        $fieldValues = $this->collectValuesFromLine($line, $config);
-        $output = [];
-        foreach ($config->getAllFields() as $field) {
-            $delimiter = $config->getDelimiter($field);
-            $currentValues = $fieldValues[$field] ?? [];
-            if (empty($delimiter) && count($currentValues) > 1) {
-                throw new \Exception('Unexpected multiple values in ' . $field);
-            }
-            $output[] = implode($delimiter, $currentValues);
-        }
-        return $output;
-    }
-
-    /**
      * Transform $csvFile using the provided $iniFile configuration. Returns an
-     * array containing two elements: the parsed config object and the processed
-     * data.
+     * array suitable for JSON encoding representing the processed data.
      *
      * @param string $csvFile CSV file to load.
      * @param string $iniFile INI file.
@@ -319,7 +283,7 @@ class Importer
      * @throws \Exception
      * @return array
      */
-    protected function generateCSV(string $csvFile, string $iniFile): array
+    protected function processCSV(string $csvFile, string $iniFile): array
     {
         // Load properties file:
         $ini = ConfigLocator::getConfigPath($iniFile, 'import');
@@ -333,18 +297,12 @@ class Importer
             throw new \Exception("Cannot open CSV file: {$csvFile}.");
         }
         $config = $this->processConfiguration($options, $in);
-        $out = fopen('php://temp', 'r+');
+        $json = [];
         while ($line = fgetcsv($in)) {
-            fputcsv($out, $this->processLine($line, $config));
+            $json[] = $this->collectValuesFromLine($line, $config);
         }
         fclose($in);
-        rewind($out);
-        $csv = '';
-        while ($data = fread($out, 1048576)) {
-            $csv .= $data;
-        }
-        fclose($out);
 
-        return [$config, $csv];
+        return $json;
     }
 }

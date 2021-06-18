@@ -53,23 +53,6 @@ class ImporterConfig
     protected array $fields = [];
 
     /**
-     * Default field delimiter (for storing multiple values in a single field)
-     *
-     * @var string
-     */
-    protected $defaultDelimiter;
-
-    /**
-     * Constructor
-     *
-     * @param array $options Default settings
-     */
-    public function __construct(array $options = [])
-    {
-        $this->defaultDelimiter = $options['defaultOutputDelimiter'] ?? '|';
-    }
-
-    /**
      * Add column configuration
      *
      * @param int   $column Column number
@@ -139,18 +122,6 @@ class ImporterConfig
     public function getAllFields(): array
     {
         return array_keys($this->fields);
-    }
-
-    /**
-     * Get the delimiter for a particular field.
-     *
-     * @param string $field Field name
-     *
-     * @return string
-     */
-    public function getDelimiter(string $field): string
-    {
-        return $this->getField($field)['outputDelimiter'] ?? $this->defaultDelimiter;
     }
 
     /**
