@@ -68,21 +68,49 @@ class Importer
      * @param bool   $testMode Are we in test-only mode?
      *
      * @throws \Exception
-     * @return string            Transformed XML
+     * @return string          Output for test mode
      */
     public function save(string $csvFile, string $iniFile,
         string $index = 'Solr', bool $testMode = false
     ): string {
-        // Process the file:
-        $flags = $testMode ? JSON_PRETTY_PRINT : 0; // only pretty-print for testing
-        $json = json_encode($this->processCSV($csvFile, $iniFile), $flags);
-
-        // Save the results (or just display them, if in test mode):
-        if (!$testMode) {
-            $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
-            $solr->save($index, new RawJSONDocument($json), 'update');
+        $in = fopen($csvFile, 'r');
+        if (!$in) {
+            throw new \Exception("Cannot open CSV file: {$csvFile}.");
         }
-        return $json;
+        $config = $this->getConfiguration($iniFile, $in);
+        $data = [];
+        while ($line = fgetcsv($in)) {
+            $data[] = $this->collectValuesFromLine($line, $config);
+        }
+        fclose($in);
+
+        $output = $this->writeData($data, $index, $testMode);
+        return $output;
+    }
+
+    /**
+     * Write a batch of JSON data to Solr.
+     *
+     * @param array  $data     Data to write
+     * @param string $index    Target Solr index
+     * @param bool   $testMode Are we in test mode?
+     *
+     * @return string          Test mode output (if applicable) or empty string
+     */
+    protected function writeData(array $data, string $index, bool $testMode): string
+    {
+        // Format the data appropriately (human-readable for test-mode, concise
+        // for real Solr writing):
+        $flags = $testMode ? JSON_PRETTY_PRINT : 0;
+        $json = json_encode($data, $flags);
+
+        // Save the results (or just return them, if in test mode):
+        if ($testMode) {
+            return $json;
+        }
+        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
+        $solr->save($index, new RawJSONDocument($json), 'update');
+        return ''; // no output when not in test mode!
     }
 
     /**
@@ -113,6 +141,26 @@ class Importer
             // Do nothing.
             break;
         }
+    }
+
+    /**
+     * Load and set up the configuration object.
+     *
+     * @param string   $iniFile Name of .ini file to load
+     * @param resource $in      File handle to input file
+     *
+     * @throws \Exception
+     * @return ImporterConfig
+     */
+    protected function getConfiguration(string $iniFile, $in): ImporterConfig
+    {
+        // Load properties file:
+        $ini = ConfigLocator::getConfigPath($iniFile, 'import');
+        if (!file_exists($ini)) {
+            throw new \Exception("Cannot load .ini file: {$ini}.");
+        }
+        $options = parse_ini_file($ini, true);
+        return $this->processConfiguration($options, $in);
     }
 
     /**
@@ -271,38 +319,5 @@ class Importer
             }
         }
         return $fieldValues;
-    }
-
-    /**
-     * Transform $csvFile using the provided $iniFile configuration. Returns an
-     * array suitable for JSON encoding representing the processed data.
-     *
-     * @param string $csvFile CSV file to load.
-     * @param string $iniFile INI file.
-     *
-     * @throws \Exception
-     * @return array
-     */
-    protected function processCSV(string $csvFile, string $iniFile): array
-    {
-        // Load properties file:
-        $ini = ConfigLocator::getConfigPath($iniFile, 'import');
-        if (!file_exists($ini)) {
-            throw new \Exception("Cannot load .ini file: {$ini}.");
-        }
-        $options = parse_ini_file($ini, true);
-
-        $in = fopen($csvFile, 'r');
-        if (!$in) {
-            throw new \Exception("Cannot open CSV file: {$csvFile}.");
-        }
-        $config = $this->processConfiguration($options, $in);
-        $json = [];
-        while ($line = fgetcsv($in)) {
-            $json[] = $this->collectValuesFromLine($line, $config);
-        }
-        fclose($in);
-
-        return $json;
     }
 }
