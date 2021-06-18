@@ -53,6 +53,35 @@ class ImporterConfig
     protected array $fields = [];
 
     /**
+     * Batch size
+     *
+     * @var int
+     */
+    protected int $batchSize = 100;
+
+    /**
+     * Constructor
+     *
+     * @param array $options Config options
+     */
+    public function __construct($options = [])
+    {
+        if (isset($options['batchSize']) && $options['batchSize'] > 0) {
+            $this->batchSize = $options['batchSize'];
+        }
+    }
+
+    /**
+     * Get batch size setting
+     *
+     * @return int
+     */
+    public function getBatchSize(): int
+    {
+        return $this->batchSize;
+    }
+
+    /**
      * Add column configuration
      *
      * @param int   $column Column number

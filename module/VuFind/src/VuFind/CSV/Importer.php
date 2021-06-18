@@ -78,13 +78,23 @@ class Importer
             throw new \Exception("Cannot open CSV file: {$csvFile}.");
         }
         $config = $this->getConfiguration($iniFile, $in);
+        $batchSize = $config->getBatchSize();
         $data = [];
+        $output = '';
         while ($line = fgetcsv($in)) {
             $data[] = $this->collectValuesFromLine($line, $config);
+            // If we have finished a batch, write it now and start the next one:
+            if (count($data) === $batchSize) {
+                $output .= $this->writeData($data, $index, $testMode);
+                $data = [];
+            }
         }
         fclose($in);
+        // If there's an incomplete batch in progress, write the remaining data:
+        if (!empty($data)) {
+            $output .= $this->writeData($data, $index, $testMode);
+        }
 
-        $output = $this->writeData($data, $index, $testMode);
         return $output;
     }
 
