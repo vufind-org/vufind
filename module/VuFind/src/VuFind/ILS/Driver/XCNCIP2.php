@@ -43,7 +43,7 @@ use VuFind\Exception\ILS as ILSException;
  */
 class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface,
-    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
