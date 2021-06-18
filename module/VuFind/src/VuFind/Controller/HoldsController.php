@@ -193,7 +193,7 @@ class HoldsController extends AbstractBase
                 : $this->redirect()->toRoute('holds-list');
         }
 
-        $pickupLocations = $this->getPickupLocationsForEdit(
+        $pickupLocationInfo = $this->getPickupLocationsForEdit(
             $patron,
             $selectedIds,
             $holdConfig['pickUpLocationCheckLimit']
@@ -210,7 +210,7 @@ class HoldsController extends AbstractBase
             $updateFields = $this->getUpdateFieldsFromGatheredDetails(
                 $holdConfig,
                 $gatheredDetails,
-                $pickupLocations
+                $pickupLocationInfo['pickupLocations']
             );
             if ($updateFields) {
                 $results
@@ -252,8 +252,8 @@ class HoldsController extends AbstractBase
                 'selectedIDS' => $selectedIds,
                 'fields' => $holdConfig['updateFields'],
                 'gatheredDetails' => $gatheredDetails,
-                'pickupLocations' => $pickupLocations ?? [],
-                'conflictingPickupLocations' => $pickupLocations === null,
+                'pickupLocations' => $pickupLocationInfo['pickupLocations'],
+                'conflictingPickupLocations' => $pickupLocationInfo['differences'],
             ]
         );
 
@@ -269,8 +269,8 @@ class HoldsController extends AbstractBase
      * @param int   $checkLimit  Maximum number of pickup location checks to make
      * (0 = no limit)
      *
-     * @return array|null Array of pickup locations or null if differences were
-     * encountered when checking selected holds.
+     * @return array An array of any common pickup locations and a flag
+     * indicating any differences between them.
      */
     protected function getPickupLocationsForEdit(array $patron, array $selectedIds,
         int $checkLimit = 0
@@ -279,6 +279,7 @@ class HoldsController extends AbstractBase
         $holds = $catalog->getMyHolds($patron);
         $checks = 0;
         $pickupLocations = [];
+        $differences = false;
         foreach ($holds as $hold) {
             if (in_array((string)($hold['updateDetails'] ?? ''), $selectedIds)) {
                 try {
@@ -290,12 +291,27 @@ class HoldsController extends AbstractBase
                         $ids2 = array_column($locations, 'locationID');
                         if (count($ids1) !== count($ids2) || array_diff($ids1, $ids2)
                         ) {
-                            return null;
+                            $differences = true;
+                            // Find out any common pickup locations:
+                            $common = array_intersect($ids1, $ids2);
+                            if (!$common) {
+                                $pickupLocations = [];
+                                break;
+                            }
+                            $pickupLocations = array_filter(
+                                $pickupLocations,
+                                function ($location) use ($common) {
+                                    return in_array(
+                                        $location['locationID'],
+                                        $common
+                                    );
+                                }
+                            );
                         }
                     }
                     ++$checks;
                     if ($checkLimit && $checks >= $checkLimit) {
-                        return $pickupLocations;
+                        break;
                     }
                 } catch (ILSException $e) {
                     $this->flashMessenger()
@@ -304,7 +320,7 @@ class HoldsController extends AbstractBase
             }
         }
 
-        return $pickupLocations;
+        return compact('pickupLocations', 'differences');
     }
 
     /**
