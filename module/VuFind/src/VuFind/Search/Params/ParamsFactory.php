@@ -64,8 +64,9 @@ class ParamsFactory implements FactoryInterface
         // Replace trailing "Params" with "Options" to get the options service:
         $optionsService = preg_replace('/Params$/', 'Options', $requestedName);
         // Replace leading namespace with "VuFind" if service is not available:
-        if (!$container->get(VuFind\Search\Options\PluginManager::class)
-            ->has($optionsService)) {
+        $optionsServiceAvailable = $container
+            ->get(VuFind\Search\Options\PluginManager::class)->has($optionsService);
+        if (!$optionsServiceAvailable) {
             $optionsService = preg_replace(
                 '/^[^\\\]+/', 'VuFind', $optionsService
             );
