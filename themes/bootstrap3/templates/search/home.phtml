@@ -12,7 +12,7 @@
 
   $this->layout()->breadcrumbs = false;
 ?>
-
+<?=$this->flashmessages()?>
 <div class="searchHomeContent">
   <?php $this->slot('search-home-hero')->start() ?>
     <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>

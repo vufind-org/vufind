@@ -1,6 +1,7 @@
 <?php $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>'; ?>
 <div id="bd">
   <div id="yui-main" class="content">
+    <?=$this->flashmessages()?>
     <div class="disambiguationDiv" >
       <?php if (empty($collections)): ?>
         <h2><?=$this->transEsc('collection_empty')?></h2>
