@@ -931,7 +931,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $addLink = ($hold_request[0] == 'Y');
             }
             $matches = [];
-            $dueDateWithStatusRegEx = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*);([a-zA-Z ]*)/";
+            $dueDateWithStatusRegEx
+                = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*);([a-zA-Z ]*)/";
             $dueDateRegEx = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*)/";
             if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
