@@ -595,6 +595,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true',
                     'eresource' => '',
+                    'collection_desc' => 'Some holding sublocation',
                 ],
                 [
                     'status' => 'Circulation Status Undefined',
@@ -617,6 +618,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'storageRetrievalRequest' => 'auto',
                     'addStorageRetrievalRequestLink' => 'true',
                     'eresource' => '',
+                    'collection_desc' => 'Some holding sublocation',
                 ],
             ],
         ],

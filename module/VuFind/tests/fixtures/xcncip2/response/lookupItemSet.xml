@@ -106,6 +106,15 @@ Date: Wed, 18 Mar 2015 11:49:40 GMT
                   </ns1:LocationNameInstance>
                </ns1:LocationName>
             </ns1:Location>
+            <ns1:Location>
+              <ns1:LocationType Scheme="http://www.niso.org/ncip/;1_0/imp1/schemes/locationtype/locationtype.scm">Permanent Location</ns1:LocationType>
+              <ns1:LocationName>
+                <ns1:LocationNameInstance>
+                  <ns1:LocationNameLevel>2</ns1:LocationNameLevel>
+                  <ns1:LocationNameValue>Some holding sublocation</ns1:LocationNameValue>
+                </ns1:LocationNameInstance>
+              </ns1:LocationName>
+            </ns1:Location>
             <ns1:BibliographicDescription>
                <ns1:Author>Elman, Jiří</ns1:Author>
                <ns1:BibliographicItemId>

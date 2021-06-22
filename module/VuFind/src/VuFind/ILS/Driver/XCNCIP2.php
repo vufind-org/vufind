@@ -491,11 +491,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * Given a chunk of the availability response, extract the values needed
      * by VuFind.
      *
-     * @param array  $current     Current ItemInformation element
-     * @param string $aggregateId (Aggregate) ID of the consortial record
-     * @param string $bibId       Bib ID of one of the consortial record's source
-     * record(s)
-     * @param array  $patron      Patron array from patronLogin
+     * @param \SimpleXMLElement $current     Current ItemInformation element
+     * @param string            $aggregateId (Aggregate) ID of the consortial record
+     * @param string            $bibId       Bib ID of one of the consortial
+     * record's source record(s)
+     * @param array             $patron      Patron array from patronLogin
      *
      * @return array
      * @throws ILSException
@@ -534,11 +534,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         //     }
         // }
 
-        $tmp = $current->xpath(
-            'ns1:ItemOptionalFields/ns1:Location/' .
-            'ns1:LocationName/ns1:LocationNameInstance/ns1:LocationNameValue'
+        $locations = $current->xpath(
+            'ns1:ItemOptionalFields/ns1:Location/ns1:LocationName/' .
+            'ns1:LocationNameInstance'
         );
-        $location = !empty($tmp) ? (string)$tmp[0] : null;
+        [$location, $collection] = $this->parseLocationInstance($locations);
 
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
@@ -592,6 +592,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (strtolower($status) === 'circulation status undefined') {
             $return['use_unknown_message'] = true;
         }
+        if (!empty($collection)) {
+            $return['collection_desc']= $collection;
+        }
+
         return $return;
     }
 
@@ -820,12 +824,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'ns1:ElectronicResource/ns1:ReferenceToResource'
                 );
                 $eResource = (string)($eResource[0] ?? '');
-                $holdingLocation = $holding->xpath(
-                    'ns1:Location/ns1:LocationName/ns1:LocationNameInstance/' .
-                    'ns1:LocationNameValue'
+
+                $locations = $holding->xpath(
+                    'ns1:Location/ns1:LocationName/ns1:LocationNameInstance'
                 );
-                $holdingLocation = !empty($holdingLocation)
-                    ? (string)$holdingLocation[0] : null;
+                [$holdingLocation, $collection]
+                    = $this->parseLocationInstance($locations);
 
                 // Build the array of holdings:
                 foreach ($avail as $current) {
@@ -837,6 +841,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $chunk['eresource'] = $eResource;
                     $chunk['location'] = $chunk['location']
                         ?? $holdingLocation ?? null;
+                    if (!isset($chunk['collection_desc'])
+                        && !empty($collection)
+                    ) {
+                        $chunk['collection_desc'] = $collection;
+                    }
                     $holdings[] = $chunk;
                 }
             }
@@ -2550,5 +2559,31 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->_schemeAttr($elementName, $namespacePrefix) . '>' .
             htmlspecialchars($text) .
             '</' . $fullElementName . '>';
+    }
+
+    /**
+     * Parse the LocationNameInstanceElement for multi-level locations
+     *
+     * @param array $locations Array of \SimpleXMLElement objects for
+     * LocationNameInstance element
+     *
+     * @return array Two item, 1st and 2nd level from LocationNameInstance
+     */
+    protected function parseLocationInstance(array $locations): array
+    {
+        $location = $collection = null;
+        foreach ($locations ?? [] as $loc) {
+            $this->registerNamespaceFor($loc);
+            $name = $loc->xpath('ns1:LocationNameValue');
+            $name = (string)($name[0] ?? '');
+            $level = $loc->xpath('ns1:LocationNameLevel');
+            $level = !empty($level) ? (string)($level[0]) : '1';
+            if ($level === '1') {
+                $location = $name;
+            } elseif ($level === '2') {
+                $collection = $name;
+            }
+        }
+        return [$location, $collection];
     }
 }
