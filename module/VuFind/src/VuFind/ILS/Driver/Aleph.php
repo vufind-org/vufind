@@ -490,7 +490,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      *
      * @var array
      */
-    protected $languages$languages = [];
+    protected $languages = [];
 
     /**
      * Constructor
