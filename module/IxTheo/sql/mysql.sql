@@ -43,4 +43,3 @@ CREATE TABLE ixtheo_user (
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
-GRANT CREATE TEMPORARY TABLES ON `vufind`.* TO 'vufind'@'localhost';
