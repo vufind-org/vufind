@@ -593,7 +593,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $return['use_unknown_message'] = true;
         }
         if (!empty($collection)) {
-            $return['collection_desc']= $collection;
+            $return['collection_desc'] = $collection;
         }
 
         return $return;
