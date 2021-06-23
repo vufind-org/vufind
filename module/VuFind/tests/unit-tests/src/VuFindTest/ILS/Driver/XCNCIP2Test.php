@@ -1475,6 +1475,28 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test method for isPatronBlocked
+     *
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function testIsPatronBlocked(): void
+    {
+        $tests = [
+            ['file' => 'lookupUserResponseWithBlocks.xml', 'result' => true, ],
+            ['file' => 'lookupUserResponseWithTraps.xml', 'result' => false, ],
+        ];
+        foreach ($tests as $test) {
+            $this->configureDriver();
+            $this->mockResponse($test['file']);
+            $method = new \ReflectionMethod('\VuFind\ILS\Driver\XCNCIP2', 'isPatronBlocked');
+            $method->setAccessible(true);
+            $blocked = $method->invokeArgs($this->driver, [['cat_username' => 'test']]);
+            $this->assertEquals($test['result'], $blocked);
+        }
+    }
+
+    /**
      * Test parse problem method
      *
      * @return void

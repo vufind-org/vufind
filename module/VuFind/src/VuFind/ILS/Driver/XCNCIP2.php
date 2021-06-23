@@ -583,8 +583,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'barcode' => ($itemType === 'Barcode')
                 ? $itemId : 'Unknown barcode',
             'is_holdable'  => $isHoldable,
-            'addLink' => empty($this->getPatronBlocks($patron))
-                ? $isHoldable : false,
+            'addLink' => $this->isPatronBlocked($patron) ? false : $isHoldable,
             'holdtype' => $this->getHoldType($status),
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => 'true',
@@ -1518,6 +1517,26 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 return (string)$block;
             }, $blocks
         );
+    }
+
+    /**
+     * Helper function to distinguish if blocks are really blocking patron from
+     * actions on ILS, or if they are more like notifies
+     *
+     * @param array $patron Patron from patronLogin
+     *
+     * @return bool
+     * @throws ILSException
+     */
+    protected function isPatronBlocked(?array $patron): bool
+    {
+        $blocks = $this->getPatronBlocks($patron);
+        $blocks = array_filter(
+            $blocks, function ($item) {
+                return strpos($item, 'Block') === 0;
+            }
+        );
+        return !empty($blocks);
     }
 
     /**
