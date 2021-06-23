@@ -59,32 +59,23 @@ trait MarcReaderTrait
     protected $lazyMarcRecord = null;
 
     /**
-     * Preferred MARC field
-     *
-     * @var string
-     */
-    protected $preferredMarcField = null;
-
-    /**
      * Set preferred MARC field from config or default, if it's not existing
      *
-     * @return void
+     * @return string
      */
-    protected function setMarcField()
+    public function getRawMarcData()
     {
-        if (empty($this->preferredMarcField)) {
-            $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
-                ?? 'fullrecord';
-            $preferredMarcFieldArray = explode(',', $preferredMarcFields);
-            $preferredMarcField = 'fullrecord';
-            foreach ($preferredMarcFieldArray as $testField) {
-                if (array_key_exists($testField, $this->fields)) {
-                    $preferredMarcField = $testField;
-                    break;
-                }
+        $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
+            ?? 'fullrecord';
+        $preferredMarcFieldArray = explode(',', $preferredMarcFields);
+        $preferredMarcField = 'fullrecord';
+        foreach ($preferredMarcFieldArray as $testField) {
+            if (array_key_exists($testField, $this->fields)) {
+                $preferredMarcField = $testField;
+                break;
             }
-            $this->preferredMarcField = $preferredMarcField;
         }
+        return trim($this->fields[$preferredMarcField]);
     }
 
     /**
@@ -95,9 +86,9 @@ trait MarcReaderTrait
     public function getMarcReader()
     {
         if (null === $this->lazyMarcReader) {
-            $this->setMarcField();
-            $marc = trim($this->fields[$this->preferredMarcField]);
-            $this->lazyMarcReader = new $this->marcReaderClass($marc);
+            $this->lazyMarcReader = new $this->marcReaderClass(
+                $this->getRawMarcData()
+            );
         }
 
         return $this->lazyMarcReader;
@@ -112,8 +103,7 @@ trait MarcReaderTrait
     public function getMarcRecord()
     {
         if (null === $this->lazyMarcRecord) {
-            $this->setMarcField();
-            $marc = trim($this->fields[$this->preferredMarcField]);
+            $marc = $this->getRawMarcData();
 
             // check if we are dealing with MARCXML
             if (substr($marc, 0, 1) == '<') {
