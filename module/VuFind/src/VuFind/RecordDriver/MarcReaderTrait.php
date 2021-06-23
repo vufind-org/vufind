@@ -59,6 +59,28 @@ trait MarcReaderTrait
     protected $lazyMarcRecord = null;
 
     /**
+     * Retrieve the raw MARC data for this record; note that format may vary
+     * depending on what was indexed (e.g. XML vs. binary MARC).
+     *
+     * @return string
+     */
+    public function getRawMarcData()
+    {
+        // Set preferred MARC field from config or default, if it's not existing
+        $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
+            ?? 'fullrecord';
+        $preferredMarcFieldArray = explode(',', $preferredMarcFields);
+        $preferredMarcField = 'fullrecord';
+        foreach ($preferredMarcFieldArray as $testField) {
+            if (array_key_exists($testField, $this->fields)) {
+                $preferredMarcField = $testField;
+                break;
+            }
+        }
+        return trim($this->fields[$preferredMarcField]);
+    }
+
+    /**
      * Get access to the MarcReader object.
      *
      * @return \VuFind\Marc\MarcReader
@@ -66,8 +88,9 @@ trait MarcReaderTrait
     public function getMarcReader()
     {
         if (null === $this->lazyMarcReader) {
-            $marc = trim($this->fields['fullrecord']);
-            $this->lazyMarcReader = new $this->marcReaderClass($marc);
+            $this->lazyMarcReader = new $this->marcReaderClass(
+                $this->getRawMarcData()
+            );
         }
 
         return $this->lazyMarcReader;
@@ -82,19 +105,7 @@ trait MarcReaderTrait
     public function getMarcRecord()
     {
         if (null === $this->lazyMarcRecord) {
-            // Get preferred MARC field from config, if it is set and is existing
-            $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
-                ?? 'fullrecord';
-            $preferredMarcFieldArray = explode(',', $preferredMarcFields);
-            $preferredMarcField = 'fullrecord';
-            foreach ($preferredMarcFieldArray as $testField) {
-                if (array_key_exists($testField, $this->fields)) {
-                    $preferredMarcField = $testField;
-                    break;
-                }
-            }
-
-            $marc = trim($this->fields[$preferredMarcField]);
+            $marc = $this->getRawMarcData();
 
             // check if we are dealing with MARCXML
             if (substr($marc, 0, 1) == '<') {
