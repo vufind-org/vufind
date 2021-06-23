@@ -59,12 +59,14 @@ trait MarcReaderTrait
     protected $lazyMarcRecord = null;
 
     /**
-     * Set preferred MARC field from config or default, if it's not existing
+     * Retrieve the raw MARC data for this record; note that format may vary
+     * depending on what was indexed (e.g. XML vs. binary MARC).
      *
      * @return string
      */
     public function getRawMarcData()
     {
+        // Set preferred MARC field from config or default, if it's not existing
         $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
             ?? 'fullrecord';
         $preferredMarcFieldArray = explode(',', $preferredMarcFields);
