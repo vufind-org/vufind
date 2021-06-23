@@ -66,7 +66,10 @@ class AlephFactory extends DriverWithDateConverterFactory
         return parent::__invoke(
             $container,
             $requestedName,
-            [$container->get(\VuFind\Cache\Manager::class)]
+            [
+                $container->get(\VuFind\Cache\Manager::class),
+                $container->get(\Laminas\Mvc\I18n\Translator::class)
+            ]
         );
     }
 }
