@@ -299,6 +299,25 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $relations;
     }
 
+    /**
+     * "Titles" does NOT mean title data from the biblio index,
+     * it refers to the field 100c instead. Due to the MARC21 authority standard,
+     * this subfield is named "Titles and other words associated with a name".
+     * It may contain occupations like "Theologe", but also other attributes
+     * like "Familie".
+     */
+    public function getPersonalTitles(): array
+    {
+        $personalTitles = [];
+        $personalTitlesStrings = $this->getFieldArray('100', ['c']);
+        foreach ($personalTitlesStrings as $personalTitlesString) {
+            $personalTitlesArray = explode(',', $personalTitlesString);
+            foreach ($personalTitlesArray as $personalTitle)
+                $personalTitles[] = trim($personalTitle);
+        }
+        return $personalTitles;
+    }
+
     public function getCorporateRelations(): array
     {
         $relations = [];
