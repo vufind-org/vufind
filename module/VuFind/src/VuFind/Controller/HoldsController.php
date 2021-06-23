@@ -344,11 +344,19 @@ class HoldsController extends AbstractBase
                 $pickupLocations
             );
         }
-        $dateValidationResults = $this->holds()->validateDates(
-            $gatheredDetails['startDate'] ?? null,
-            $gatheredDetails['requiredBy'] ?? null,
-            $holdConfig['updateFields']
-        );
+        $dateValidationResults = [
+            'errors' => []
+        ];
+        // The dates are not required unless one of them is set, so check that first:
+        if (!empty($gatheredDetails['startDate'])
+            || !empty($gatheredDetails['requiredBy'])
+        ) {
+            $dateValidationResults = $this->holds()->validateDates(
+                $gatheredDetails['startDate'] ?? null,
+                $gatheredDetails['requiredBy'] ?? null,
+                $holdConfig['updateFields']
+            );
+        }
         if (in_array('frozenThrough', $holdConfig['updateFields'])) {
             $frozenThroughValidationResults = $this->holds()->validateFrozenThrough(
                 $gatheredDetails['frozenThrough'] ?? null,
