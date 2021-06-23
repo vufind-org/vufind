@@ -28,7 +28,9 @@
   }
 }
 // Comma-separate formatting
+.record .format:not(.badge)::after,
 .result .record .format::after,
+.record-versions .format::after,
 .record .format:last-child::after { content: ""; }
 .record .format::after { content: ", "; }
 .record-previews { margin-top: .5rem; }
