@@ -1155,6 +1155,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier' .
                 ' | ' .
                 'ns1:Ext/ns1:BibliographicDescription/' .
+                'ns1:BibliographicItemId/ns1:BibliographicItemIdentifier' .
+                ' | ' .
+                'ns1:BibliographicId/' .
+                'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier' .
+                ' | ' .
+                'ns1:BibliographicId/' .
                 'ns1:BibliographicItemId/ns1:BibliographicItemIdentifier'
             );
             $itemAgencyId = $current->xpath(
@@ -1184,7 +1190,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             // Only return requests of desired type
             if ($this->checkRequestType($current, $types)) {
                 $retVal[] = [
-                    'id' => (string)$id[0],
+                    'id' => (string)($id[0] ?? ''),
                     'create' => $created,
                     'expire' => $expireDate,
                     'title' => !empty($title) ? (string)$title[0] : null,
