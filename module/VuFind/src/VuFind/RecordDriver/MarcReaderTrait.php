@@ -68,7 +68,7 @@ trait MarcReaderTrait
     /**
      * Set preferred MARC field from config or default, if it's not existing
      *
-     * return void
+     * @return void
      */
     protected function setMarcField()
     {
