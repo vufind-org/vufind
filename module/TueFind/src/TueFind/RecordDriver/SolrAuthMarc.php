@@ -259,7 +259,7 @@ class SolrAuthMarc extends SolrAuthDefault {
      * (e.g. for external searches like wikidata)
      * (e.g. "King, Martin Luther" => "Martin Luther King")
      */
-    public function getNameAliases()
+    public function getNameAliases(): array
     {
         $names = [];
         $name = $this->getName();
@@ -307,9 +307,14 @@ class SolrAuthMarc extends SolrAuthDefault {
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
-
                 if ($nameSubfield !== false) {
-                    $relation = ['name' => $nameSubfield->getData()];
+                    $name = $nameSubfield->getData();
+
+                    $addSubfield = $field->getSubfield('b');
+                    if ($addSubfield !== false)
+                        $name .= ', ' . $addSubfield->getData();
+
+                    $relation = ['name' => $name];
 
                     $idPrefixPattern = '/^\(DE-627\)/';
                     $idSubfield = $field->getSubfield('0', $idPrefixPattern);
