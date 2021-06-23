@@ -76,14 +76,13 @@ trait MarcReaderTrait
             $preferredMarcFields = $this->mainConfig->Record->preferredMarcFields
                 ?? 'fullrecord';
             $preferredMarcFieldArray = explode(',', $preferredMarcFields);
-            $preferredMarcField = 'fullrecord';
+            $this->preferredMarcField = 'fullrecord';
             foreach ($preferredMarcFieldArray as $testField) {
                 if (array_key_exists($testField, $this->fields)) {
-                    $preferredMarcField = $testField;
-                    break;
+                    $this->preferredMarcField = $testField;
+                    return;
                 }
             }
-            $this->preferredMarcField = $preferredMarcField;
         }
     }
 
