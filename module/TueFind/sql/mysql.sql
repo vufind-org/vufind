@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS tuefind_redirect (
 
 ALTER TABLE vufind.user ADD tuefind_subscribed_to_newsletter BOOL NOT NULL DEFAULT FALSE;
 CREATE INDEX tuefind_subscribed_to_newsletter_index ON vufind.user (tuefind_subscribed_to_newsletter);
+ALTER TABLE vufind.user ADD journal_subscription_format ENUM ('meistertask');
 
 
 CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_feeds (
