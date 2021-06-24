@@ -207,7 +207,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
                                                  new \VuFindSearch\Query\Query('author_id:"' . $driver->getGNDNumber() . '"', 'AllFields'),
-                                                 $offset, $limit);
+                                                 $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
     }
