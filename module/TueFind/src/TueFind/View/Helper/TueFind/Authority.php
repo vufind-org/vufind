@@ -115,7 +115,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
-                $occupationsDisplay .= '/';
+                $occupationsDisplay .= ' / ';
             $occupationsDisplay .= '<span property="hasOccupation">' . $occupation . '</span>';
         }
         return $occupationsDisplay;
