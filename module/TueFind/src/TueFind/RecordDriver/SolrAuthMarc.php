@@ -270,6 +270,25 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $names;
     }
 
+    /**
+     * Get name variants as listed in MARC21 400a
+     */
+    public function getNameVariants(): array
+    {
+        $nameVariants = [];
+        $fields = $this->getMarcRecord()->getFields('400');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+                if ($nameSubfield !== false)
+                    $nameVariants[] = $nameSubfield->getData();
+            }
+        }
+
+        sort($nameVariants);
+        return $nameVariants;
+    }
+
     public function getPersonalRelations(): array
     {
         $relations = [];
