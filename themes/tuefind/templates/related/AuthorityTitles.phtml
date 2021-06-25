@@ -9,7 +9,7 @@
   </ul>
   <?php if ($response->getTotal() > $titlePreviewLimit): ?>
     <p>
-      <a href="<?=$this->url('search-results', [], ['query' => ['lookfor' => 'author_id:' . $this->driver->getGNDNumber()]])?>">Show all titles (<?=$response->getTotal()?>)</a>
+      <a href="<?=$this->url('search-results', [], ['query' => ['lookfor' => 'author_id:' . $this->driver->getUniqueId()]])?>">Show all titles (<?=$response->getTotal()?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>
