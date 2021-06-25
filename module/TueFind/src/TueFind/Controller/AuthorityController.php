@@ -3,6 +3,9 @@
 namespace TueFind\Controller;
 
 class AuthorityController extends \VuFind\Controller\AuthorityController {
+
+    use TabsTrait;
+
     protected function getUserAccessState($authorityId, $userId = null): array
     {
         $table = $this->getTable('user_authority');
@@ -24,24 +27,55 @@ class AuthorityController extends \VuFind\Controller\AuthorityController {
         return $result;
     }
 
-    public function recordAction()
+    /**
+     * This action needs to be overwritten because it is meant to be a redirect
+     * to the recordAction under certain circumstances (especially tabs).
+     * Therefore we need to make sure that additional parameters
+     * like GND number or the active tab will not be lost.
+     */
+    public function homeAction()
+    {
+        $tab = $this->params()->fromRoute('tab', false);
+
+        // If we came in with a record ID, forward to the record action:
+        if ($id = $this->params()->fromRoute('id', false)) {
+            $this->getRequest()->getQuery()->set('id', $id);
+            $this->getRequest()->getQuery()->set('tab', $tab);
+            return $this->forwardTo('Authority', 'Record');
+        } elseif ($gndNumber = $this->params()->fromQuery('gnd')) {
+            $this->getRequest()->getQuery()->set('gnd', $gndNumber);
+            $this->getRequest()->getQuery()->set('tab', $tab);
+            return $this->forwardTo('Authority', 'Record');
+        }
+
+        // Default behavior:
+        return parent::homeAction();
+    }
+
+    public function loadRecord()
     {
         $gndNumber = $this->params()->fromQuery('gnd');
         if ($gndNumber != null) {
-            $driver = $this->serviceLocator->get(\TueFind\Record\Loader::class)->loadAuthorityRecordByGNDNumber($gndNumber, 'SolrAuth');
+            $this->driver = $this->serviceLocator->get(\TueFind\Record\Loader::class)->loadAuthorityRecordByGNDNumber($gndNumber, 'SolrAuth');
         } else {
             $id = $this->params()->fromQuery('id');
-            $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)
+            $this->driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                 ->load($id, 'SolrAuth');
         }
+        return $this->driver;
+    }
+
+    public function recordAction()
+    {
+        $driver = $this->loadRecord();
 
         $user = $this->getUser();
         $request = $this->getRequest();
-        $tabs = $this->getRecordTabManager()->getTabsForRecord($driver, $request);
-        return $this->createViewModel(['driver' => $driver,
-                                       'tabs' => $tabs,
-                                       'user' => $user,
-                                       'user_access' => $this->getUserAccessState($driver->getUniqueId(), $user->id ?? null)]);
+        $view = $this->showTab($this->params()->fromQuery('tab', $this->getDefaultTab()));
+        $view->driver = $driver;
+        $view->user = $user;
+        $view->user_access = $this->getUserAccessState($driver->getUniqueId(), $user->id ?? null);
+        return $view;
     }
 
     public function requestAccessAction()

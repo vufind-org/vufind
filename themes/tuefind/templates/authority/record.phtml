@@ -2,6 +2,12 @@
     $this->layout()->breadcrumbs = false;
     $this->backgroundTabs = $this->BackgroundTabs ?? [];
     $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
+
+    // TueFind:
+    // - record.js is needed for AJAX tab logic
+    // - disabled, because we use the non-ajax-version.
+    // - see also "recordDocReady" at the bottom of this file.
+    //$this->headScript()->appendFile("record.js");
 ?>
 
 <?php /* User Authority Access */ ?>
@@ -115,7 +121,7 @@
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
 ?>
 
-<!-- TueFind: Use similar tab logic as for title data -->
+<?php/* TueFind: Use similar tab logic as for title data (without AJAX!)*/?>
 <div class="record-tabs">
   <ul class="nav nav-tabs">
     <?php foreach ($this->tabs as $tab => $obj): ?>
@@ -152,3 +158,11 @@
     <?php endif; ?>
   </div>
 </div>
+
+<?php
+  // TueFind:
+  // - recordDocReady is needed for AJAX tab logic
+  // - disabled, because we use the non-ajax-version.
+  // - see also "record.js" at the top of this file.
+  // print $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET');
+?>
