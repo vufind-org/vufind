@@ -43,3 +43,4 @@ CREATE TABLE ixtheo_user (
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
+ALTER TABLE vufind.user ADD COLUMN ixtheo_journal_subscription_format ENUM ('meistertask') DEFAULT NULL;
