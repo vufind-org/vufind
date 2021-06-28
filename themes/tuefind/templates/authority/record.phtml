@@ -2,6 +2,12 @@
     $this->layout()->breadcrumbs = false;
     $this->backgroundTabs = $this->BackgroundTabs ?? [];
     $schemaOrgType = $this->authority()->getSchemaOrgType($this->driver);
+
+    // TueFind:
+    // - record.js is needed for AJAX tab logic
+    // - disabled, because we use the non-ajax-version.
+    // - see also "recordDocReady" at the bottom of this file.
+    //$this->headScript()->appendFile("record.js");
 ?>
 
 <?php /* User Authority Access */ ?>
@@ -13,6 +19,9 @@
       You have requested permission on this authority record. Our team has been informed, please wait for the approval.
     <?php elseif ($this->user_access['availability'] == 'mine' && $this->user_access['access_state'] == 'granted'): ?>
       This authority record is linked to your user account.
+      <?php if ($this->user != false && $this->accountCapabilities()->getPublicationSetting() === 'enabled'): ?>
+        <br><a href="<?=$this->url('myresearch-publish')?>">Would you like to publish something?</a>
+      <?php endif; ?>
     <?php endif; ?>
   </div>
 <?php endif; ?>
@@ -75,33 +84,35 @@
       </table>
       <?=$this->context($this)->renderInContext('related/AuthorityTitles', ['driver' => $this->driver])?>
     </div>
-    <div class="col-sm-4">
-      <?php
-        // Image (partially rendered by JS)
-        $imgUrl = '/wikidataproxy/load';
-        $wikidataId = $this->driver->getWikidataId();
-        if ($wikidataId != null) {
-          $imgUrl .= '?id=' . $wikidataId;
-        } else {
-          $imgUrl .= '?search[]=';
-          $names = $this->driver->getNameAliases();
-          $encodedNames = [];
-          foreach ($names as $name) {
-            $encodedNames[] = urlencode($name);
+    <?php if ($this->driver->getType() == 'person' && !in_array('Familie', $this->driver->getPersonalTitles())): ?>
+      <div class="col-sm-4">
+        <?php
+          // Image (partially rendered by JS)
+          $imgUrl = '/wikidataproxy/load';
+          $wikidataId = $this->driver->getWikidataId();
+          if ($wikidataId != null) {
+            $imgUrl .= '?id=' . $wikidataId;
+          } else {
+            $imgUrl .= '?search[]=';
+            $names = $this->driver->getNameAliases();
+            $encodedNames = [];
+            foreach ($names as $name) {
+              $encodedNames[] = urlencode($name);
+            }
+            $imgUrl .= implode('&search[]=', $encodedNames);
+            $params = ['birthYear' => $this->driver->getBirthYear(),
+                       'deathYear' => $this->driver->getDeathYear()];
+            foreach ($params as $key => $value) {
+              if ($value)
+                $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+            }
           }
-          $imgUrl .= implode('&search[]=', $encodedNames);
-          $params = ['birthYear' => $this->driver->getBirthYear(),
-                     'deathYear' => $this->driver->getDeathYear()];
-          foreach ($params as $key => $value) {
-            if ($value)
-              $imgUrl .= '&' . urlencode($key) . '=' . urlencode($value);
-          }
-        }
-      ?>
-      <!-- onload didn't work, so we use a separate script snippet -->
-      <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
-      <script>TueFind.GetImagesFromWikidata();</script>
-    </div>
+        ?>
+        <!-- onload didn't work, so we use a separate script snippet -->
+        <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
+        <script>TueFind.GetImagesFromWikidata();</script>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
 
@@ -110,7 +121,7 @@
   $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
 ?>
 
-<!-- TueFind: Use similar tab logic as for title data -->
+<?php/* TueFind: Use similar tab logic as for title data (without AJAX!)*/?>
 <div class="record-tabs">
   <ul class="nav nav-tabs">
     <?php foreach ($this->tabs as $tab => $obj): ?>
@@ -147,3 +158,11 @@
     <?php endif; ?>
   </div>
 </div>
+
+<?php
+  // TueFind:
+  // - recordDocReady is needed for AJAX tab logic
+  // - disabled, because we use the non-ajax-version.
+  // - see also "record.js" at the top of this file.
+  // print $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET');
+?>

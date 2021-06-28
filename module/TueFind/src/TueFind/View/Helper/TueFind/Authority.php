@@ -115,7 +115,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         $occupationsDisplay = '';
         foreach ($occupations as $occupation) {
             if ($occupationsDisplay != '')
-                $occupationsDisplay .= '/';
+                $occupationsDisplay .= ' / ';
             $occupationsDisplay .= '<span property="hasOccupation">' . $occupation . '</span>';
         }
         return $occupationsDisplay;
@@ -206,8 +206,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query('author_id:"' . $driver->getGNDNumber() . '"', 'AllFields'),
-                                                 $offset, $limit);
+                                                 new \VuFindSearch\Query\Query('author_corporate_id:"' . $driver->getUniqueId() . '"', 'AllFields'),
+                                                 $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
     }

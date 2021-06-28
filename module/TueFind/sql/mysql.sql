@@ -1,15 +1,21 @@
-CREATE TABLE IF NOT EXISTS tuefind_redirect (
+CREATE TABLE tuefind_publications (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    external_document_id VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY publication_external_document_id (external_document_id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin;
+
+
+CREATE TABLE tuefind_redirect (
     url VARCHAR(1000) NOT NULL,
     group_name VARCHAR(1000) DEFAULT NULL,
     timestamp TIMESTAMP DEFAULT NOW() NOT NULL
 ) DEFAULT CHARSET=utf8;
 
 
-ALTER TABLE vufind.user ADD tuefind_subscribed_to_newsletter BOOL NOT NULL DEFAULT FALSE;
-CREATE INDEX tuefind_subscribed_to_newsletter_index ON vufind.user (tuefind_subscribed_to_newsletter);
-
-
-CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_feeds (
+CREATE TABLE tuefind_rss_feeds (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     feed_name VARCHAR(200) NOT NULL,
     subsystem_types SET('krimdok', 'ixtheo', 'relbib') NOT NULL,
@@ -26,7 +32,7 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_feeds (
 ) DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin;
 
 
-CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
+CREATE TABLE tuefind_rss_items (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     rss_feeds_id INT UNSIGNED NOT NULL,
     item_id VARCHAR(768) NOT NULL,
@@ -35,7 +41,7 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
     item_description MEDIUMTEXT NOT NULL,
     pub_date DATETIME NOT NULL,
     insertion_time TIMESTAMP DEFAULT NOW() NOT NULL,
-    FOREIGN KEY (rss_feeds_id) REFERENCES vufind.tuefind_rss_feeds(id) ON DELETE CASCADE,
+    FOREIGN KEY (rss_feeds_id) REFERENCES tuefind_rss_feeds(id) ON DELETE CASCADE,
     CONSTRAINT id_constraint UNIQUE (id),
     CONSTRAINT tuefind_rss_items_item_id UNIQUE (item_id),
     INDEX tuefind_rss_items_item_id_index(item_id(768)),
@@ -45,33 +51,35 @@ CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_items (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 
-CREATE TABLE IF NOT EXISTS vufind.tuefind_rss_subscriptions (
+CREATE TABLE tuefind_rss_subscriptions (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     rss_feeds_id INT UNSIGNED NOT NULL,
     user_id INT NOT NULL,
     CONSTRAINT id_constraint UNIQUE (id),
     FOREIGN KEY (rss_feeds_id) REFERENCES tuefind_rss_feeds(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 
-CREATE TABLE IF NOT EXISTS vufind.tuefind_user_authorities (
+CREATE TABLE tuefind_user_authorities (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     authority_id VARCHAR(255) NOT NULL,
     access_state ENUM('requested', 'granted'),
     PRIMARY KEY (id),
     UNIQUE KEY user_authority (authority_id),
-    FOREIGN KEY (user_id) REFERENCES vufind.user(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
+ALTER TABLE user ADD tuefind_subscribed_to_newsletter BOOL NOT NULL DEFAULT FALSE;
+CREATE INDEX tuefind_subscribed_to_newsletter_index ON user (tuefind_subscribed_to_newsletter);
 
-ALTER TABLE vufind.user ADD tuefind_uuid CHAR(36) NOT NULL;
-ALTER TABLE vufind.user ADD CONSTRAINT tuefind_user_uuid UNIQUE (tuefind_uuid);
-CREATE TRIGGER vufind.before_user_insert BEFORE INSERT ON vufind.user FOR EACH ROW SET NEW.tuefind_uuid = UUID();
+ALTER TABLE user ADD tuefind_uuid CHAR(36) NOT NULL;
+ALTER TABLE user ADD CONSTRAINT tuefind_user_uuid UNIQUE (tuefind_uuid);
+CREATE TRIGGER before_user_insert BEFORE INSERT ON user FOR EACH ROW SET NEW.tuefind_uuid = UUID();
 
-ALTER TABLE vufind.user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE;
-CREATE INDEX tuefind_rss_feed_send_emails_index ON vufind.user (tuefind_rss_feed_send_emails);
-ALTER TABLE vufind.user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
+ALTER TABLE user ADD tuefind_rss_feed_send_emails BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE INDEX tuefind_rss_feed_send_emails_index ON user (tuefind_rss_feed_send_emails);
+ALTER TABLE user ADD tuefind_rss_feed_last_notification TIMESTAMP DEFAULT NOW();
 
-ALTER TABLE vufind.user ADD tuefind_is_admin BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE user ADD tuefind_is_admin BOOLEAN NOT NULL DEFAULT FALSE;

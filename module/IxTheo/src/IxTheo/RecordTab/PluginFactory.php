@@ -1,7 +1,7 @@
 <?php
 namespace IxTheo\RecordTab;
 
-class PluginFactory extends \VuFind\RecordTab\PluginFactory
+class PluginFactory extends \TueFind\RecordTab\PluginFactory
 {
     public function __construct()
     {

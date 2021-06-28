@@ -20,12 +20,14 @@ class PluginManager extends \VuFind\Db\Table\PluginManager {
     public function __construct($configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addOverride('aliases', 'publication', Publication::class);
         $this->addOverride('aliases', 'redirect', Redirect::class);
         $this->addOverride('aliases', 'rss_feed', RssFeed::class);
         $this->addOverride('aliases', 'rss_item', RssItem::class);
         $this->addOverride('aliases', 'rss_subscription', RssSubscription::class);
         $this->addOverride('aliases', 'user', User::class);
         $this->addOverride('aliases', 'user_authority', UserAuthority::class);
+        $this->addOverride('factories', Publication::class, GatewayFactory::class);
         $this->addOverride('factories', Redirect::class, GatewayFactory::class);
         $this->addOverride('factories', RssFeed::class, RssFactory::class);
         $this->addOverride('factories', RssItem::class, RssFactory::class);

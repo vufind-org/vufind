@@ -7,7 +7,9 @@
     $preview = ($this->previewOverride ?? false)
       ? $this->previewOverride : $this->record($this->driver)->getPreviews();
   ?>
-  <?php /* TueFind: Intentionally removed QRCode / Cover / Preview here */ ?>
+
+  <?php /* TueFind: Intentionally removed the whole block for QRCode / Cover / Preview at this point */ ?>
+
   <div class="media-body">
 
     <?php /* TueFind: Get title from custom RecordDriver function */ ?>

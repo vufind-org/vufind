@@ -3,6 +3,12 @@
 namespace TueFind\RecordDriver;
 
 class SolrAuthDefault extends \VuFind\RecordDriver\SolrAuthMarc {
+
+    public function getGNDNumber()
+    {
+        return $this->fields['gnd'] ?? null;
+    }
+
     public function getISNI() {
         return $this->fields['isni'] ?? null;
     }

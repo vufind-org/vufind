@@ -1,0 +1,39 @@
+<?php
+// Set up page title:
+$this->headTitle($this->translate('Publications'));
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Publications') . '</li>';
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2>Publications</h2>
+  <?php if (count($this->authorityRecords) == 0): ?>
+    <p>You do not have access to any authority records yet. Please search for an authority record first and request access there.</p>
+  <?php else: ?>
+    <p><a href="<?=$this->url('myresearch-publish')?>">Would you like to publish something?</a></p>
+    <?php if (count($this->publications) == 0): ?>
+      <p>You did not upload any publications so far.</p>
+    <?php else: ?>
+      <p>Details are queried live from our external publication repository:</p>
+      <table class="table">
+        <tr>
+          <th>ID in external repository</th>
+          <th>Title</th>
+          <th>Status</th>
+        </tr>
+        <?php foreach ($this->publications as $publication): ?>
+          <tr>
+            <td><?=$publication['external_document_id']?></td>
+            <td>???</td>
+            <td>???</td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'publications'])?>
+</div>

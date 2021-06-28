@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
     <!-- COMMON fields -->
+    <field name="abr" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="author_gnd" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="author_id" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="author2_gnd" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="author2_id" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="author_corporate_gnd" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="author_corporate_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="container_ids_and_titles" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="end_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="following_ppn_and_title" type="string" indexed="true" stored="true" multiValued="false"/>
@@ -12,6 +18,7 @@
     <field name="issue_sort" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="issue" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="journal_issue" type="textProper" indexed="true" stored="true" multiValued="true"/>
+    <field name="local_notes_1" type="textProper" indexed="true" stored="true" multiValued="true"/>
     <field name="mediatype" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="oldid" type="string" indexed="true" stored="true"/>
     <field name="pages" type="string" indexed="true" stored="true" multiValued="false"/>
@@ -22,14 +29,12 @@
     <field name="start_page" type="long" indexed="true" stored="true" multiValued="false"/>
     <field name="superior_ppn" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="superior_work_subsystems" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="urls_and_material_types" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
-    <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
-    <field name="volume_sort" type="long" indexed="true" stored="true" multiValued="false"/>
-    <field name="local_notes_1" type="textProper" indexed="true" stored="true" multiValued="true"/>
-    <field name="abr" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="title_alt_sort" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="title_browse_sort" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="urls_and_material_types" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="volume" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="volume_sort" type="long" indexed="true" stored="true" multiValued="false"/>
+    <field name="year" type="string" indexed="true" stored="true" multiValued="false"/>
 
     <!-- COMMON copyFields -->
     <copyField source="id" dest="ids"/>

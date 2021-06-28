@@ -204,20 +204,6 @@ class SolrAuthMarc extends SolrAuthDefault {
     }
 
     /**
-     * Get GND Number from 035a (DE-588) or null
-     * @return string
-     */
-    public function getGNDNumber()
-    {
-        $pattern = '"^\(DE-588\)"';
-        $values = $this->getFieldArray('035', 'a');
-        foreach ($values as $value) {
-            if (preg_match($pattern, $value))
-                return preg_replace($pattern, '', $value);
-        }
-    }
-
-    /**
      * Get locations from 551
      * @return [['name', 'type']]
      */
@@ -259,7 +245,7 @@ class SolrAuthMarc extends SolrAuthDefault {
      * (e.g. for external searches like wikidata)
      * (e.g. "King, Martin Luther" => "Martin Luther King")
      */
-    public function getNameAliases()
+    public function getNameAliases(): array
     {
         $names = [];
         $name = $this->getName();
@@ -268,6 +254,25 @@ class SolrAuthMarc extends SolrAuthDefault {
         if ($alias != $name)
             $names[] = $alias;
         return $names;
+    }
+
+    /**
+     * Get name variants as listed in MARC21 400a
+     */
+    public function getNameVariants(): array
+    {
+        $nameVariants = [];
+        $fields = $this->getMarcRecord()->getFields('400');
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $nameSubfield = $field->getSubfield('a');
+                if ($nameSubfield !== false)
+                    $nameVariants[] = $nameSubfield->getData();
+            }
+        }
+
+        sort($nameVariants);
+        return $nameVariants;
     }
 
     public function getPersonalRelations(): array
@@ -299,6 +304,25 @@ class SolrAuthMarc extends SolrAuthDefault {
         return $relations;
     }
 
+    /**
+     * "Titles" does NOT mean title data from the biblio index,
+     * it refers to the field 100c instead. Due to the MARC21 authority standard,
+     * this subfield is named "Titles and other words associated with a name".
+     * It may contain occupations like "Theologe", but also other attributes
+     * like "Familie".
+     */
+    public function getPersonalTitles(): array
+    {
+        $personalTitles = [];
+        $personalTitlesStrings = $this->getFieldArray('100', ['c']);
+        foreach ($personalTitlesStrings as $personalTitlesString) {
+            $personalTitlesArray = explode(',', $personalTitlesString);
+            foreach ($personalTitlesArray as $personalTitle)
+                $personalTitles[] = trim($personalTitle);
+        }
+        return $personalTitles;
+    }
+
     public function getCorporateRelations(): array
     {
         $relations = [];
@@ -307,9 +331,14 @@ class SolrAuthMarc extends SolrAuthDefault {
         if (is_array($fields)) {
             foreach ($fields as $field) {
                 $nameSubfield = $field->getSubfield('a');
-
                 if ($nameSubfield !== false) {
-                    $relation = ['name' => $nameSubfield->getData()];
+                    $name = $nameSubfield->getData();
+
+                    $addSubfield = $field->getSubfield('b');
+                    if ($addSubfield !== false)
+                        $name .= ', ' . $addSubfield->getData();
+
+                    $relation = ['name' => $name];
 
                     $idPrefixPattern = '/^\(DE-627\)/';
                     $idSubfield = $field->getSubfield('0', $idPrefixPattern);
