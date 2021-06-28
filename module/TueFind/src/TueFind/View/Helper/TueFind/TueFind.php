@@ -159,27 +159,22 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Appropriately format the roles for authors
-     * @param array roles
-     *
-     * @return string
      */
-    public function formatRoles($roles) {
-
-        if (!isset($roles['role'])) {
+    public function formatRoles(array $roles): string {
+        if (count($roles) == 0) {
             return '';
         }
-        $translate = function ($arr) {
-          $translatedRoles = array();
-          foreach ($arr as $element) {
-              if (!is_array($element)) {
+
+        $translate = function ($element) {
+            $translatedRoles = [];
+            if (!is_array($element)) {
                 $translatedRoles[] = $this->translate('CreatorRoles::' . $element);
-              } else {
+            } else {
                 foreach ($element as $str) {
                     $translatedRoles[] = $this->translate('CreatorRoles::' . $str);
                 }
-              }
-          }
-          return implode(', ', $translatedRoles);
+            }
+            return implode(', ', $translatedRoles);
         };
         return ' (' . implode(', ', array_unique(array_map($translate, $roles))) . ')';
     }
@@ -408,6 +403,18 @@ class TueFind extends \Laminas\View\Helper\AbstractHelper
         $auth = $this->container->get('ViewHelperManager')->get('auth');
         $manager = $auth->getManager();
         return ($user = $manager->isLoggedIn()) ? $user->lastname : "";
+    }
+
+    /**
+     * Check if a searchbox tab is enabled, e.g. "SolrAuth".
+     */
+    public function isSearchTabEnabled($tabId): bool {
+        $tabConfig = $this->getConfig('config')->SearchTabs ?? [];
+        foreach ($tabConfig as $tabKey => $tabText) {
+            if ($tabKey == $tabId)
+                return true;
+        }
+        return false;
     }
 
     /**

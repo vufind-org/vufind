@@ -163,6 +163,21 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
+    public function getCorporateAuthorsGnds(): array
+    {
+        return $this->fields['author2_gnd'] ?? [];
+    }
+
+    public function getCorporateAuthorsIds(): array
+    {
+        return $this->fields['author2_id'] ?? [];
+    }
+
+    public function getDeduplicatedAuthors($dataFields = ['role', 'id', 'gnd'])
+    {
+        return parent::getDeduplicatedAuthors($dataFields);
+    }
+
     public function getFollowingPPNAndTitle()
     {
         $retval = [];
@@ -227,11 +242,30 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $retval;
     }
 
+    public function getPrimaryAuthorsGnds(): array
+    {
+        return $this->fields['author_gnd'] ?? [];
+    }
+
+    public function getPrimaryAuthorsIds(): array
+    {
+        return $this->fields['author_id'] ?? [];
+    }
+
     public function getRecordDriverByPPN($ppn) {
         $recordLoader = $this->container->get('VuFind\RecordLoader');
         return $recordLoader->load($ppn, 'Solr', false);
     }
 
+    public function getSecondaryAuthorsGnds(): array
+    {
+        return $this->fields['author2_gnd'] ?? [];
+    }
+
+    public function getSecondaryAuthorsIds(): array
+    {
+        return $this->fields['author2_id'] ?? [];
+    }
 
     public function getSuperiorPPN() {
         return isset($this->fields['superior_ppn']) ?

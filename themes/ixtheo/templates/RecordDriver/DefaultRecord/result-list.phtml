@@ -50,9 +50,21 @@
             <?php if ($truncate_authors): ?>
               <?php $authors['primary'] = array_splice($authors['primary'], 0, 3); ?>
             <?php endif; ?>
-            <?php $i = 0; foreach ($authors['primary'] as $author => $roles): ?><?=($i++ == 0)?'':'; '?>
-               <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
-               <?=$this->escapeHtml($author)?></a><?=$this->tuefind()->formatRoles($roles)?></span>
+            <?php $i = 0; foreach ($authors['primary'] as $author => $authorProperties): ?><?=($i++ == 0)?'':'; '?>
+              <span>
+                <?php if ($this->tuefind()->isSearchTabEnabled('SolrAuth')): ?>
+                  <?php /* Display separate links to title search + authority page */ ?>
+                  <?=$this->escapeHtml($author)?> <?=$this->tuefind()->formatRoles($authorProperties['role'] ?? [])?>
+                  <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
+                  <?php $authorityId = $authorProperties['id'][0] ?? '';?>
+                  <?php if ($authorityId && $this->authority()->recordExists($authorityId)): ?>
+                    <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <?php /* Simple link to title search by author */ ?>
+                  <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"> <?=$this->escapeHtml($author)?></a><?=$this->tuefind()->formatRoles($authorProperties['role'] ?? [])?>
+                <?php endif; ?>
+              </span>
             <?php endforeach; ?>
             <?php // Show dots if we exceedeed max display length ?>
             <?php if ($truncate_authors): ?>
