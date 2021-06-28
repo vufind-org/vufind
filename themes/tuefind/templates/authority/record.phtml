@@ -130,7 +130,7 @@
         $tabName = preg_replace("/\W/", "-", strtolower($tab));
         $tabClasses = [ 'record-tab', $tabName ];
 
-        if (!isset($this->activeTab))
+        if (!isset($this->activeTab) || !$this->activeTab)
           $this->activeTab = $tab;
 
         if (0 === strcasecmp($this->activeTab, $tab)) {
