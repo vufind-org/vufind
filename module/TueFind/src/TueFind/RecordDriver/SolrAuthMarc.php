@@ -349,6 +349,10 @@ class SolrAuthMarc extends SolrAuthDefault {
                     if ($typeSubfield !== false)
                         $relation['type'] = $typeSubfield->getData();
 
+                    $timespanSubfield = $field->getSubfield('z');
+                    if ($timespanSubfield !== false)
+                        $relation['timespan'] = $timespanSubfield->getData();
+
                     $relations[] = $relation;
                 }
             }
