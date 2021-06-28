@@ -10,8 +10,7 @@ class FulltextSnippetProxyControllerFactory implements FactoryInterface {
    public function __invoke(ContainerInterface $container, $requestedName, array $options = null) {
        return new FulltextSnippetProxyController(new ClientBuilder,
                                                  $container,
-                                                 $container->get('VuFind\Logger'),
-                                                 $container->get('VuFind\Config\PluginManager'));
+                                                 $container->get('VuFind\Logger'));
    }
 
 }

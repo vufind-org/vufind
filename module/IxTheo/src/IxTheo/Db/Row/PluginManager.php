@@ -20,10 +20,12 @@ class PluginManager extends \TueFind\Db\Row\PluginManager {
         $this->aliases['IxTheoUser']                        = IxTheoUser::class;
         $this->aliases['pdasubscription']                   = PDASubscription::class;
         $this->aliases['subscription']                      = Subscription::class;
+        $this->aliases['user']                              = User::class;
 
         $this->factories[IxTheoUser::class]                 = RowGatewayFactory::class;
         $this->factories[PDASubscription::class]            = RowGatewayFactory::class;
         $this->factories[Subscription::class]               = RowGatewayFactory::class;
+        $this->factories[User::class]                       = \VuFind\Db\Row\UserFactory::class;
         parent::__construct($configOrContainerInstance, $v3config);
     }
 }
