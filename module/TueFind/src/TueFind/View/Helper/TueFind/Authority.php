@@ -142,8 +142,17 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
             $relationsDisplay .= '<span property="name">' . $relation['name'] . '</span>';
 
-            if (isset($relation['type']))
-                $relationsDisplay .= ' (' . htmlspecialchars($relation['type']) . ')';
+            $additionalValuesConfig = ['type', 'timespan'];
+            $additionalValuesString = '';
+            foreach ($additionalValuesConfig as $additionalValue) {
+                if (isset($relation[$additionalValue])) {
+                    if ($additionalValuesString != '')
+                        $additionalValuesString .= ', ';
+                    $additionalValuesString .= htmlspecialchars($relation[$additionalValue]);
+                }
+            }
+            if ($additionalValuesString != '')
+                $relationsDisplay .= ' (' . $additionalValuesString . ')';
 
             if ($recordExists)
                 $relationsDisplay .= '</a>';
