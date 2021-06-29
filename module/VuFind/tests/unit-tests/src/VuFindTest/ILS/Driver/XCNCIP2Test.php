@@ -943,6 +943,30 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
+     * Test definitions for getAccountBlocks tests
+     *
+     * @var array
+     */
+    protected $accountBlocksTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => false,
+        ],
+        [
+            'file' => 'lookupUserResponseWithAllBlocks.xml',
+            'result' => [
+                'request_block',
+                'renewal_block',
+                'checkout_block',
+                'electronic_resources_block',
+                'lost_card',
+                'message_from_library',
+                'available_for_pickup',
+            ],
+        ],
+    ];
+
+    /**
      * Test getMyTransactions
      *
      * @return void
@@ -1471,6 +1495,21 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $method->setAccessible(true);
             $blocks = $method->invokeArgs($this->driver, [['cat_username' => 'test']]);
             $this->assertEquals($test['result'], $blocks);
+        }
+    }
+
+    /**
+     * Test method getPatronBlocks
+     *
+     * @return void
+     */
+    public function testGetAccountBlocks(): void
+    {
+        foreach ($this->accountBlocksTests as $test) {
+            $this->configureDriver();
+            $this->mockResponse($test['file']);
+            $blocks = $this->driver->getAccountBlocks(['cat_username' => 'test']);
+            $this->assertEqualsCanonicalizing($test['result'], $blocks);
         }
     }
 

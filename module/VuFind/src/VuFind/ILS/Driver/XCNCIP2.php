@@ -210,6 +210,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $tokenBasicAuth = false;
 
     /**
+     * Mapping block messages from NCIP API to VuFind internal values
+     *
+     * @var array
+     */
+    protected $blockCodes = [
+        'Block Check Out' => 'checkout_block',
+        'Block Electronic Resource Access' => 'electronic_resources_block',
+        'Block Hold' => 'request_block',
+        'Block Recall' => 'request_block',
+        'Block Renewal' => 'renewal_block',
+        'Block Request Item' => 'request_block',
+        'Trap For Lost Card' => 'lost_card',
+        'Trap For Message' => 'message_from_library',
+        'Trap For Pickup' => 'available_for_pickup',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -1933,10 +1950,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $blocks = $this->getPatronBlocks($patron);
         $blocks = array_map(
             function ($block) {
-                return $this->translate('AccountBlocks::' . $block);
+                return $this->translate(
+                    'ILSMessages::' . ($this->blockCodes[$block] ?? $block)
+                );
             }, $blocks
         );
-        return empty($blocks) ? false : $blocks;
+        return empty($blocks) ? false : array_unique($blocks);
     }
 
     /**
