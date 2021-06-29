@@ -227,6 +227,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     ];
 
     /**
+     * Domain used to translate messages from ILS
+     *
+     * @var string
+     */
+    protected $translationDomain = 'ILSMessages';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -273,6 +280,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             && ($this->config['Catalog']['clientId'] ?? false)
             && ($this->config['Catalog']['clientSecret'] ?? false);
         $this->tokenBasicAuth = $this->config['Catalog']['tokenBasicAuth'] ?? false;
+
+        if (isset($this->config['Catalog']['translationDomain'])) {
+            $this->translationDomain
+                = $this->config['Catalog']['translationDomain'];
+        }
     }
 
     /**
@@ -1950,9 +1962,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $blocks = $this->getPatronBlocks($patron);
         $blocks = array_map(
             function ($block) {
-                return $this->translate(
-                    'ILSMessages::' . ($this->blockCodes[$block] ?? $block)
-                );
+                return $this->translateMessage($this->blockCodes[$block] ?? $block);
             }, $blocks
         );
         return empty($blocks) ? false : array_unique($blocks);
@@ -2629,5 +2639,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
         return [$location, $collection];
+    }
+
+    /**
+     * Translate a message from ILS
+     *
+     * @param string $message Message to be translated
+     *
+     * @return string
+     */
+    protected function translateMessage(string $message): string
+    {
+        return $this->translate($this->translationDomain . '::' . $message);
     }
 }
