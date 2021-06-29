@@ -476,6 +476,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     protected $defaultPatronId;
 
     /**
+     * Mapping of z304 address elements in Aleph to getMyProfile attributes
      *
      * @var array
      */
@@ -583,16 +584,22 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         }
     }
 
-    protected function getDefaultAddressMappings() {
+    /**
+     * Return default mapping of z304 address elements in Aleph
+     * to getMyProfile attributes.
+     *
+     * @return array
+     */
+    protected function getDefaultAddressMappings()
+    {
         return [
-            'barcode' => 'z304-address-5',
             'fullname' => 'z304-address-1',
-            'address1' => 'z304-address-3',
-            'address2' => 'z304-address-4',
-            'city' => 'z304-address-3',
-            'zip' => 'z304-zip',
-            'email' => 'z304-email-address',
-            'phone' => 'z304-telephone-1',
+            'address1' => 'z304-address-2',
+            'address2' => 'z304-address-3',
+            'city'     => 'z304-address-4',
+            'zip'      => 'z304-zip',
+            'email'    => 'z304-email-address',
+            'phone'    => 'z304-telephone-1',
         ];
     }
 
