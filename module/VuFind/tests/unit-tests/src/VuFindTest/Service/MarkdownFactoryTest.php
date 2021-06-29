@@ -29,6 +29,7 @@
 namespace VuFindTest\Service;
 
 use Laminas\Config\Config;
+use League\CommonMark\MarkdownConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
 /**
@@ -112,6 +113,32 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that extensions are added based on configuration
+     *
+     * @return void
+     */
+    public function testExtensions(): void
+    {
+        $config = [
+            'Markdown' => [
+                'extensions' => 'Attributes,ExternalLink',
+            ],
+        ];
+
+        $expectedExtensions = [
+            'League\CommonMark\Extension\CommonMarkCoreExtension',
+            'League\CommonMark\Extension\GithubFlavoredMarkdownExtension',
+            'League\CommonMark\Extension\Attributes\AttributesExtension',
+            'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension'
+        ];
+        $result = $this->getMarkdownEnvironmentExtensions($config);
+        $result = array_map(function ($extension) {
+            return get_class($extension);
+        }, $result);
+        $this->assertEquals($expectedExtensions, $result);
+    }
+
+    /**
      * Return config of created markdown service environment
      *
      * @param array $config Configuration settings
@@ -119,6 +146,34 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      * @return array
      */
     protected function getMarkdownEnvironmentConfig(array $config): array
+    {
+        $markdown = $this->getMarkdownConverter($config);
+        return $markdown->getEnvironment()->getConfig();
+    }
+
+    /**
+     * Return config of created markdown service environment
+     *
+     * @param array $config Configuration settings
+     *
+     * @return array
+     */
+    protected function getMarkdownEnvironmentExtensions(array $config): array
+    {
+        $markdown = $this->getMarkdownConverter($config);
+        return $markdown->getEnvironment()->getExtensions();
+    }
+
+    /**
+     * Create markdown converter
+     *
+     * @param array $config
+     *
+     * @return MarkdownConverterInterface
+     * @throws \Interop\Container\Exception\ContainerException
+     * @throws \Throwable
+     */
+    protected function getMarkdownConverter(array $config): MarkdownConverterInterface
     {
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -131,6 +186,6 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $markdown = $markdownFactory->__invoke(
             $container, \League\CommonMark\MarkdownConverterInterface::class
         );
-        return $markdown->getEnvironment()->getConfig();
+        return $markdown;
     }
 }
