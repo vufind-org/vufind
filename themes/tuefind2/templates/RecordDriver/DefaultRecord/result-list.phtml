@@ -44,19 +44,19 @@
             <?php foreach ($ids_and_titles_and_volume as $id => $title_and_volume): ?>
               <div>
                 <?php $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
-                <?php if (!empty($journal_issue)): ?>
-                <?php $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
-                <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
-                <?php unset($journal_issue[$superior_ppn_index]); ?>
-                <div>
-                  <?php if(!empty($superior_ppn)): ?>
-                    <?=$this->transEsc('in')?>:
-                    <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode($journal_issue,  ", ")) ?>
-                    <a href="<?=$this->url('record', array('id' => $superior_ppn)) ?>"><?=$journal_issue_display ?></a>
-                  <?php else: ?>
-                    <?php implode($journal_issue, " ") ?>
-                  <?php endif; ?>
-                </div>
+                <?php if (is_array($journal_issue) && count($journal_issue) > 1): ?>
+                  <?php $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
+                  <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
+                  <?php unset($journal_issue[$superior_ppn_index]); ?>
+                  <div>
+                    <?php if(!empty($superior_ppn)): ?>
+                      <?=$this->transEsc('in')?>:
+                      <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode($journal_issue,  ", ")) ?>
+                      <a href="<?=$this->url('record', array('id' => $superior_ppn)) ?>"><?=$journal_issue_display ?></a>
+                    <?php else: ?>
+                      <?php implode($journal_issue, " ") ?>
+                    <?php endif; ?>
+                  </div>
                 <?php else: ?>
                   <div>
                     <?php // Fill with non article handling code ?>
