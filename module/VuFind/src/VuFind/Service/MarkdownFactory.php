@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use League\CommonMark\Environment;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\MarkdownConverter;
 
 /**
@@ -107,7 +106,6 @@ class MarkdownFactory implements FactoryInterface
         ];
 
         $environment = Environment::createCommonMarkEnvironment();
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $extensions = isset($mainConfig->extensions)
             ? array_map('trim', explode(',', $mainConfig->extensions)) : [];
 

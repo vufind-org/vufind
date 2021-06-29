@@ -121,15 +121,24 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $config = [
             'Markdown' => [
-                'extensions' => 'Attributes,ExternalLink',
+                'extensions' => 'Attributes,ExternalLink,Table',
             ],
         ];
-
         $expectedExtensions = [
             'League\CommonMark\Extension\CommonMarkCoreExtension',
-            'League\CommonMark\Extension\GithubFlavoredMarkdownExtension',
             'League\CommonMark\Extension\Attributes\AttributesExtension',
-            'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension'
+            'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
+            'League\CommonMark\Extension\Table\TableExtension',
+        ];
+        $result = $this->getMarkdownEnvironmentExtensions($config);
+        $result = array_map(function ($extension) {
+            return get_class($extension);
+        }, $result);
+        $this->assertEquals($expectedExtensions, $result);
+
+        $config = [];
+        $expectedExtensions = [
+            'League\CommonMark\Extension\CommonMarkCoreExtension',
         ];
         $result = $this->getMarkdownEnvironmentExtensions($config);
         $result = array_map(function ($extension) {
