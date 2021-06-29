@@ -32,89 +32,67 @@
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <?php else: ?>
           <?php // Handle displaying of author according to rule 3 of issue 131 ?>
-          <?php $primaryAuthor = $this->driver->getPrimaryAuthor(); ?>
-          <?php $otherAuthors = $this->driver->getSecondaryAuthors(); ?>
-          <?php if (!empty($primaryAuthor) || !empty($otherAuthors)): ?>
-            <?=$this->transEsc('by')?>
-            <?php if (!empty($primaryAuthor)): ?>
-	    <a href="<?=$this->record($this->driver)->getLink('author', $primaryAuthor)?>"><?php
-                /* TODO: Highlight primary author. */
-                echo $this->escapeHtml($primaryAuthor);
-              ?></a>
+          <?php $authors = $this->driver->getDeduplicatedAuthors(); ?>
+          <?php if (isset($authors['primary']) && !empty($authors['primary'])): ?>
+            <?php // Limit to showing at most three authors ?>
+            <?php $truncate_authors = (count($authors['primary']) > 3); ?>
+            <?php if ($truncate_authors): ?>
+              <?php $authors['primary'] = array_splice($authors['primary'], 0, 3); ?>
             <?php endif; ?>
-            <?php if (!empty($otherAuthors)): ?>
-              <?php if (!empty($primaryAuthor)): ?>
-                <?php echo ' ; ' ?>
-              <?php endif; ?>
-              <?php $otherAuthorsAndRoles = $this->driver->getSecondaryAuthorsAndRole() ?>
-              <?php $i = 0 ?>
-              <?php foreach($otherAuthors as $author): ?>
-                <?php if ($i > 1): ?>
-                  <?php echo '...' ?>
-                  <?php break; ?>
-                <?php endif; ?>
-                <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?php
-                  /* Highlight author */
-                  echo $this->escapeHtml($author);
-                ?></a>
-                <?php foreach ($otherAuthorsAndRoles as $author_and_role): ?>
-                  <?php $author_and_role_splitted = preg_split('/\$/', $author_and_role) ?>
-		  <?php if ($author_and_role_splitted[0] == preg_replace('/(\s*)(\d+)(\s*)-?(\d*)(\s*)/', '',  $author)
-                            && $author_and_role_splitted[1] != ''): ?>
-                    <?php echo '(' . $this->transEsc('CreatorRoles::' . $author_and_role_splitted[1]) . ')' ?>
+            <?php $i = 0; foreach ($authors['primary'] as $author => $authorProperties): ?><?=($i++ == 0)?'':'; '?>
+              <span>
+                <?php if ($this->tuefind()->isSearchTabEnabled('SolrAuth')): ?>
+                  <?php /* Display separate links to title search + authority page */ ?>
+                  <?=$this->escapeHtml($author)?> <?=$this->tuefind()->formatRoles($authorProperties['role'] ?? [])?>
+                  <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
+                  <?php $authorityId = $authorProperties['id'][0] ?? '';?>
+                  <?php if ($authorityId && $this->authority()->recordExists($authorityId)): ?>
+                    <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
                   <?php endif; ?>
-                <?php endforeach ?>
-                <?php if (!($author == end($otherAuthors))): ?>
-                  <?php echo ' ; ' ?>
+                <?php else: ?>
+                  <?php /* Simple link to title search by author */ ?>
+                  <a href="<?=$this->record($this->driver)->getLink('author', $author)?>"> <?=$this->escapeHtml($author)?></a><?=$this->tuefind()->formatRoles($authorProperties['role'] ?? [])?>
                 <?php endif; ?>
-              <?php endforeach; ?>
+              </span>
+            <?php endforeach; ?>
+            <?php // Show dots if we exceedeed max display length ?>
+            <?php if ($truncate_authors): ?>
+               <?php echo '...' ?>
             <?php endif; ?>
           <?php else: ?>
             <?php // Handle corporation information... ?>
-            <?php $corporation = implode($this->driver->getCorporation(), " ") ?>
+            <?php $corporation = !is_null($this->driver->tryMethod('getCorporation')) ? implode($this->driver->tryMethod('getCorporation'), " ") : ""?>
             <?php if (!empty($corporation)): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>">
-                <?php
-                  //$summCorporation = $this->driver->getHighlightedAuthor();
-                  $summCorporation = "";
-                  echo !empty($summCorporation)
-                    ? $this->highlight($summCorporation)
-                    : $this->escapeHtml($corporation);
-                ?>
-              </a>
+               <a href="<?=$this->record($this->driver)->getLink('author', $corporation)?>"><?php
+                $summCorporation = "";
+                echo !empty($summCorporation)
+                  ? $this->highlight($summCorporation)
+                  : $this->escapeHtml($corporation);
+               ?></a>
             <?php endif; ?>
           <?php endif; ?>
           <?php // Handle superior data according to Issue 131 / Rule 5 ?>
           <?php $journal_issue = $this->driver->tryMethod('getJournalIssue'); ?>
-          <?php if (is_array($journal_issue) && count($journal_issue) > 1): ?>
+          <?php if (!empty($journal_issue)): ?>
             <?php $superior_ppn_index = !empty($journal_issue[2]) ? 2 : 1; ?>
-            <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
-            <?php unset($journal_issue[$superior_ppn_index]); ?>
+            <?php if (isset($journal_issue[$superior_ppn_index])): ?>
+                <?php $superior_ppn = preg_replace('/\(.*\)/', '', $journal_issue[$superior_ppn_index]); ?>
+                <?php unset($journal_issue[$superior_ppn_index]); ?>
+            <?php endif; ?>
             <div>
               <?php if(!empty($superior_ppn)): ?>
                 <?=$this->transEsc('in')?>:
                 <?php $journal_issue_display = preg_replace('/(\d+)(\()/','$1 $2', implode($journal_issue,  ", ")) ?>
-                <a href="<?=$this->url('record', array('id' => $superior_ppn)) ?>"><?=$journal_issue_display ?></a>
+                <a href="<?=$this->url('record', ['id' => $superior_ppn]) ?>"><?=$journal_issue_display ?></a>
               <?php else: ?>
                 <?php implode($journal_issue, " ") ?>
               <?php endif; ?>
             </div>
           <?php else: ?>
-            <div>
-            <?php // Fill with non article handling code ?>
-            <?=implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ") ?>
-            </div>
-          <?php endif; ?>
-          <?php $summInCollection = $this->driver->getContainingCollections();?>
-          <?php if (!empty($summInCollection)): ?>
-            <?php foreach ($summInCollection as $collId => $collText): ?>
               <div>
-                <b><?=$this->transEsc("in_collection_label")?></b>
-                <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
-                  <?=$this->escapeHtml($collText)?>
-                </a>
+              <?php // Fill with non article handling code ?>
+              <?=!is_null($this->driver->tryMethod('getPublicationDetailsNoPlaces')) ? implode($this->driver->tryMethod('getPublicationDetailsNoPlaces'), " ")  : "" ?>
               </div>
-            <?php endforeach; ?>
           <?php endif; ?>
         <?php endif; ?>
       </div>
