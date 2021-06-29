@@ -33,9 +33,9 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\MarkdownConverter;
 
 /**
  * VuFind HTTP Service factory.
@@ -82,20 +82,21 @@ class MarkdownFactory implements FactoryInterface
         $markdownConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('markdown');
         $mainConfig = $markdownConfig->Markdown;
-        $environment = Environment::createCommonMarkEnvironment();
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $config = [
             'html_input' => $mainConfig->html_input ?? 'strip',
             'allow_unsafe_links' => $mainConfig->allow_unsafe_links ?? false,
-            'enable_em' => $mainConfig->enable_em ?? true,
-            'enable_strong' => $mainConfig->enable_strong ?? true,
-            'use_asterisk' => $mainConfig->use_asterisk ?? true,
-            'use_underscore' => $mainConfig->use_underscore ?? true,
-            'unordered_list_markers' => isset($mainConfig->unordered_list_markers)
-                && $mainConfig->unordered_list_markers instanceof \ArrayAccess
-                    ? $mainConfig->unordered_list_markers->toArray()
-                    : ['-', '*', '+'],
-            'max_nesting_level' => $mainConfig->max_nesting_level ?? \INF,
+            'max_nesting_level' => $mainConfig->max_nesting_level ?? \PHP_INT_MAX,
+            'commonmark' => [
+                'enable_em' => $mainConfig->enable_em ?? true,
+                'enable_strong' => $mainConfig->enable_strong ?? true,
+                'use_asterisk' => $mainConfig->use_asterisk ?? true,
+                'use_underscore' => $mainConfig->use_underscore ?? true,
+                'unordered_list_markers' =>
+                    isset($mainConfig->unordered_list_markers)
+                    && $mainConfig->unordered_list_markers instanceof \ArrayAccess
+                        ? $mainConfig->unordered_list_markers->toArray()
+                        : ['-', '*', '+'],
+            ],
             'renderer' => [
                 'block_separator'
                     => $mainConfig->renderer['block_separator'] ?? "\n",
@@ -104,6 +105,9 @@ class MarkdownFactory implements FactoryInterface
                 'soft_break' => $mainConfig->renderer['soft_break'] ?? "\n",
             ],
         ];
+
+        $environment = Environment::createCommonMarkEnvironment();
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $extensions = isset($mainConfig->extensions)
             ? array_map('trim', explode(',', $mainConfig->extensions)) : [];
 
@@ -116,6 +120,8 @@ class MarkdownFactory implements FactoryInterface
                 $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();
             }
         }
-        return new CommonMarkConverter($config, $environment);
+        $environment->mergeConfig($config);
+
+        return new MarkdownConverter($environment);
     }
 }

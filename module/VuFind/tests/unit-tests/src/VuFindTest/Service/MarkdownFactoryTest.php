@@ -54,12 +54,14 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $defaultEnvironment = [
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
-            'enable_em' => true,
-            'enable_strong' => true,
-            'use_asterisk' => true,
-            'use_underscore' => true,
-            'unordered_list_markers' => ['-', '*', '+'],
-            'max_nesting_level' => \INF,
+            'max_nesting_level' => \PHP_INT_MAX,
+            'commonmark' => [
+                'enable_em' => true,
+                'enable_strong' => true,
+                'use_asterisk' => true,
+                'use_underscore' => true,
+                'unordered_list_markers' => ['-', '*', '+'],
+            ],
             'renderer' => [
                 'block_separator' => "\n",
                 'inner_separator' => "\n",
@@ -87,12 +89,14 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $customEnvironment = [
             'html_input' => 'escape',
             'allow_unsafe_links' => true,
-            'enable_em' => false,
-            'enable_strong' => false,
-            'use_asterisk' => false,
-            'use_underscore' => false,
-            'unordered_list_markers' => [';', '^'],
             'max_nesting_level' => 10,
+            'commonmark' => [
+                'enable_em' => false,
+                'enable_strong' => false,
+                'use_asterisk' => false,
+                'use_underscore' => false,
+                'unordered_list_markers' => [';', '^'],
+            ],
             'renderer' => [
                 'block_separator' => "\r\n",
                 'inner_separator' => "\r\n",
