@@ -47,7 +47,7 @@ namespace VuFind\RecordDriver;
  */
 class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
 {
-    use HierarchyAwareTrait;
+    use Feature\HierarchyAwareTrait;
     use Feature\VersionAwareTrait;
 
     /**
