@@ -2628,15 +2628,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function parseLocationInstance(array $locations): array
     {
         $location = $collection = null;
+        $initialLevel = 0;
         foreach ($locations ?? [] as $loc) {
             $this->registerNamespaceFor($loc);
             $name = $loc->xpath('ns1:LocationNameValue');
             $name = (string)($name[0] ?? '');
             $level = $loc->xpath('ns1:LocationNameLevel');
-            $level = !empty($level) ? (string)($level[0]) : '1';
-            if ($level === '1') {
+            $level = !empty($level) ? (int)($level[0]) : 1;
+            if ($initialLevel === 0) {
+                $initialLevel = $level;
+            }
+            if ($level === $initialLevel) {
                 $location = $name;
-            } elseif ($level === '2') {
+            } elseif ($level === $initialLevel + 1) {
                 $collection = $name;
             }
         }
