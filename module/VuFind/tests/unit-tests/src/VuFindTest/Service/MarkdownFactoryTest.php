@@ -29,6 +29,8 @@
 namespace VuFindTest\Service;
 
 use Laminas\Config\Config;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use League\CommonMark\MarkdownConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
 /**
@@ -54,12 +56,14 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $defaultEnvironment = [
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
-            'enable_em' => true,
-            'enable_strong' => true,
-            'use_asterisk' => true,
-            'use_underscore' => true,
-            'unordered_list_markers' => ['-', '*', '+'],
-            'max_nesting_level' => \INF,
+            'max_nesting_level' => \PHP_INT_MAX,
+            'commonmark' => [
+                'enable_em' => true,
+                'enable_strong' => true,
+                'use_asterisk' => true,
+                'use_underscore' => true,
+                'unordered_list_markers' => ['-', '*', '+'],
+            ],
             'renderer' => [
                 'block_separator' => "\n",
                 'inner_separator' => "\n",
@@ -87,12 +91,14 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $customEnvironment = [
             'html_input' => 'escape',
             'allow_unsafe_links' => true,
-            'enable_em' => false,
-            'enable_strong' => false,
-            'use_asterisk' => false,
-            'use_underscore' => false,
-            'unordered_list_markers' => [';', '^'],
             'max_nesting_level' => 10,
+            'commonmark' => [
+                'enable_em' => false,
+                'enable_strong' => false,
+                'use_asterisk' => false,
+                'use_underscore' => false,
+                'unordered_list_markers' => [';', '^'],
+            ],
             'renderer' => [
                 'block_separator' => "\r\n",
                 'inner_separator' => "\r\n",
@@ -108,6 +114,69 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that extensions are added based on configuration
+     *
+     * @return void
+     */
+    public function testExtensions(): void
+    {
+        $tests = [
+            [ // Test custom extension set
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => 'Attributes,ExternalLink,Table',
+                    ],
+                ],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\Attributes\AttributesExtension',
+                    'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
+                    'League\CommonMark\Extension\Table\TableExtension',
+                ],
+            ],
+            [ // Test default extension set
+                'config' => [],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\Autolink\AutolinkExtension',
+                    'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
+                    'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
+                    'League\CommonMark\Extension\Table\TableExtension',
+                    'League\CommonMark\Extension\TaskList\TaskListExtension',
+                ],
+            ],
+            [ // Test empty extensions set
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => '',
+                    ],
+                ],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                ],
+            ],
+            [ // Test not valid extensions set
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => 'NotValidExtension',
+                    ],
+                ],
+                'exception' => ServiceNotCreatedException::class,
+            ],
+        ];
+        foreach ($tests as $test) {
+            if (isset($test['exception'])) {
+                $this->expectException($test['exception']);
+            }
+            $result = $this->getMarkdownEnvironmentExtensions($test['config']);
+            $result = array_map(function ($extension) {
+                return get_class($extension);
+            }, $result);
+            $this->assertEquals($test['expected'], $result);
+        }
+    }
+
+    /**
      * Return config of created markdown service environment
      *
      * @param array $config Configuration settings
@@ -115,6 +184,34 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      * @return array
      */
     protected function getMarkdownEnvironmentConfig(array $config): array
+    {
+        $markdown = $this->getMarkdownConverter($config);
+        return $markdown->getEnvironment()->getConfig();
+    }
+
+    /**
+     * Return config of created markdown service environment
+     *
+     * @param array $config Configuration settings
+     *
+     * @return array
+     */
+    protected function getMarkdownEnvironmentExtensions(array $config): array
+    {
+        $markdown = $this->getMarkdownConverter($config);
+        return $markdown->getEnvironment()->getExtensions();
+    }
+
+    /**
+     * Create markdown converter
+     *
+     * @param array $config
+     *
+     * @return MarkdownConverterInterface
+     * @throws \Interop\Container\Exception\ContainerException
+     * @throws \Throwable
+     */
+    protected function getMarkdownConverter(array $config): MarkdownConverterInterface
     {
         $config = new Config($config);
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -127,6 +224,6 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $markdown = $markdownFactory->__invoke(
             $container, \League\CommonMark\MarkdownConverterInterface::class
         );
-        return $markdown->getEnvironment()->getConfig();
+        return $markdown;
     }
 }
