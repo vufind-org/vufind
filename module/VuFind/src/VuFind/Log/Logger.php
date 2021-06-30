@@ -72,7 +72,10 @@ class Logger extends BaseLogger
     public function __construct($options = null)
     {
         parent::__construct($options);
-        $this->userIpReader = $options['vufind_ip_reader'] ?? null;
+        if (!($options['vufind_ip_reader'] ?? null instanceof UserIpReader)) {
+            throw new \Exception('Missing or incorrect vufind_ip_reader option');
+        }
+        $this->userIpReader = $options['vufind_ip_reader'];
     }
 
     /**
@@ -164,8 +167,7 @@ class Logger extends BaseLogger
             $prev = $prev->getPrevious();
         }
         $referer = $server->get('HTTP_REFERER', 'none');
-        $ipAddr = $this->userIpReader !== null
-            ? $this->userIpReader->getUserIp() : $server->get('REMOTE_ADDR');
+        $ipAddr = $this->userIpReader->getUserIp();
         $basicServer
             = '(Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
