@@ -2620,6 +2620,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getItemsWithBibsForTransactions(array $transactions,
         array $patron
     ): array {
+        if (!$transactions) {
+            return [];
+        }
         // Fetch items
         $itemIds = [];
         foreach ($transactions as $transaction) {

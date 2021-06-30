@@ -94,20 +94,20 @@ trait OAuth2TokenTrait
 
         if ($response->getStatusCode() != 200) {
             $errorMessage = 'Error while getting OAuth2 access token (status code '
-                . $response->getStatusCode() . '): ' . $response->getContent();
+                . $response->getStatusCode() . '): ' . $response->getBody();
             $this->logError($errorMessage);
             throw new AuthTokenException(
                 'Problem getting authorization token: Bad status code returned'
             );
         }
-        $tokenData = json_decode($response->getContent(), true);
+        $tokenData = json_decode($response->getBody(), true);
 
         if (empty($tokenData['token_type'])
             || empty($tokenData['access_token'])
         ) {
             $this->logError(
                 'Did not receive OAuth2 token, response: '
-                . $response->getContent()
+                . $response->getBody()
             );
             throw new AuthTokenException(
                 'Problem getting authorization token: Empty data'
