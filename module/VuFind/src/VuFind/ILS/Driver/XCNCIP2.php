@@ -217,13 +217,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $blockCodes = [
         'Block Check Out' => 'checkout_block',
         'Block Electronic Resource Access' => 'electronic_resources_block',
-        'Block Hold' => 'request_block',
-        'Block Recall' => 'request_block',
+        'Block Hold' => 'requests_blocked',
+        'Block Recall' => 'requests_blocked',
         'Block Renewal' => 'renewal_block',
-        'Block Request Item' => 'request_block',
+        'Block Request Item' => 'requests_blocked',
         'Trap For Lost Card' => 'lost_card',
         'Trap For Message' => 'message_from_library',
-        'Trap For Pickup' => 'available_for_pickup',
+        'Trap For Pickup' => 'available_for_pickup_notification',
     ];
 
     /**

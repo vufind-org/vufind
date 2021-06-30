@@ -955,13 +955,13 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         [
             'file' => 'lookupUserResponseWithAllBlocks.xml',
             'result' => [
-                'request_block',
+                'requests_blocked',
                 'renewal_block',
                 'checkout_block',
                 'electronic_resources_block',
                 'lost_card',
                 'message_from_library',
-                'available_for_pickup',
+                'available_for_pickup_notification',
             ],
         ],
     ];
