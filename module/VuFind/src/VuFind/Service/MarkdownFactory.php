@@ -62,6 +62,15 @@ class MarkdownFactory implements FactoryInterface
     ];
 
     /**
+     * Default set of extensions
+     *
+     * @var string[]
+     */
+    protected static $defaultExtensions = [
+        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList'
+    ];
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -107,12 +116,21 @@ class MarkdownFactory implements FactoryInterface
 
         $environment = Environment::createCommonMarkEnvironment();
         $extensions = isset($mainConfig->extensions)
-            ? array_map('trim', explode(',', $mainConfig->extensions)) : [];
+            ? array_map('trim', explode(',', $mainConfig->extensions))
+            : self::$defaultExtensions;
 
         foreach ($extensions as $ext) {
+            if ($ext === '') {
+                continue;
+            }
             $extClass = sprintf(
                 'League\CommonMark\Extension\%s\%sExtension', $ext, $ext
             );
+            if (!class_exists($extClass)) {
+                throw new ServiceNotCreatedException(
+                    "Could not create markdown service. Extension '$ext' not found"
+                );
+            }
             $environment->addExtension(new $extClass());
             if (isset($markdownConfig[$ext])) {
                 $config[self::$configKeys[$ext]] = $markdownConfig->$ext->toArray();

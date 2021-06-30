@@ -29,6 +29,7 @@
 namespace VuFindTest\Service;
 
 use Laminas\Config\Config;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use League\CommonMark\MarkdownConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
@@ -119,32 +120,60 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testExtensions(): void
     {
-        $config = [
-            'Markdown' => [
-                'extensions' => 'Attributes,ExternalLink,Table',
+        $tests = [
+            [ // Test custom extension set
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => 'Attributes,ExternalLink,Table',
+                    ],
+                ],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\Attributes\AttributesExtension',
+                    'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
+                    'League\CommonMark\Extension\Table\TableExtension',
+                ],
+            ],
+            [ // Test default extension set
+                'config' => [],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                    'League\CommonMark\Extension\Autolink\AutolinkExtension',
+                    'League\CommonMark\Extension\DisallowedRawHtml\DisallowedRawHtmlExtension',
+                    'League\CommonMark\Extension\Strikethrough\StrikethroughExtension',
+                    'League\CommonMark\Extension\Table\TableExtension',
+                    'League\CommonMark\Extension\TaskList\TaskListExtension',
+                ],
+            ],
+            [ // Test empty extensions set
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => '',
+                    ],
+                ],
+                'expected' => [
+                    'League\CommonMark\Extension\CommonMarkCoreExtension',
+                ],
+            ],
+            [ // Test not valid extensions set
+                'config' => [
+                    'Markdown' => [
+                        'extensions' => 'NotValidExtension',
+                    ],
+                ],
+                'exception' => ServiceNotCreatedException::class,
             ],
         ];
-        $expectedExtensions = [
-            'League\CommonMark\Extension\CommonMarkCoreExtension',
-            'League\CommonMark\Extension\Attributes\AttributesExtension',
-            'League\CommonMark\Extension\ExternalLink\ExternalLinkExtension',
-            'League\CommonMark\Extension\Table\TableExtension',
-        ];
-        $result = $this->getMarkdownEnvironmentExtensions($config);
-        $result = array_map(function ($extension) {
-            return get_class($extension);
-        }, $result);
-        $this->assertEquals($expectedExtensions, $result);
-
-        $config = [];
-        $expectedExtensions = [
-            'League\CommonMark\Extension\CommonMarkCoreExtension',
-        ];
-        $result = $this->getMarkdownEnvironmentExtensions($config);
-        $result = array_map(function ($extension) {
-            return get_class($extension);
-        }, $result);
-        $this->assertEquals($expectedExtensions, $result);
+        foreach ($tests as $test) {
+            if (isset($test['exception'])) {
+                $this->expectException($test['exception']);
+            }
+            $result = $this->getMarkdownEnvironmentExtensions($test['config']);
+            $result = array_map(function ($extension) {
+                return get_class($extension);
+            }, $result);
+            $this->assertEquals($test['expected'], $result);
+        }
     }
 
     /**
