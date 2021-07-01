@@ -24,6 +24,9 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         return relatorConfigCache.computeIfAbsent(setting, s -> super.loadRelatorConfig(setting));
     }
 
+    /**
+    // The authorsCache is experimental; if used for a full import, the cache might get to big,
+    // which will cause an OutOfMemory error.
     static protected Map<String, List<String>> authorsCache = new ConcurrentHashMap();
 
     public List<String> getAuthorsFilteredByRelator(Record record, String tagList,
@@ -33,4 +36,5 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         final String cacheKey = record.getControlNumber() + tagList + acceptWithoutRelator + relatorConfig + acceptUnknownRelators + indexRawRelators + firstOnly.toString();
         return authorsCache.computeIfAbsent(cacheKey, c -> super.getAuthorsFilteredByRelator(record, tagList, acceptWithoutRelator, relatorConfig, acceptUnknownRelators, indexRawRelators, firstOnly));
     }
+    */
 }
