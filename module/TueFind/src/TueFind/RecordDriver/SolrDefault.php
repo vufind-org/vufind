@@ -252,6 +252,31 @@ class SolrDefault extends \VuFind\RecordDriver\SolrMarc
         return $this->fields['author_id'] ?? [];
     }
 
+    /**
+     * Same as the parent, but we want to return not only the author's name,
+     * but also ids and other properties (e.g. to generate links to authority pages).
+     */
+    public function getPrimaryAuthorsWithHighlighting(): array
+    {
+        $highlights = [];
+        // Create a map of de-highlighted valeus => highlighted values.
+        foreach ($this->getRawAuthorHighlights() as $current) {
+            $dehighlighted = str_replace(
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+            );
+            $highlights[$dehighlighted] = $current;
+        }
+
+        // replace unhighlighted authors with highlighted versions where
+        // applicable:
+        $authors = [];
+        foreach ($this->getDeduplicatedAuthors()['primary'] ?? [] as $author => $authorProperties) {
+            $author = $highlights[$author] ?? $author;
+            $authors[$author] = $authorProperties;
+        }
+        return $authors;
+    }
+
     public function getRecordDriverByPPN($ppn) {
         $recordLoader = $this->container->get('VuFind\RecordLoader');
         return $recordLoader->load($ppn, 'Solr', false);
