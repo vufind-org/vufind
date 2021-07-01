@@ -63,19 +63,16 @@ class Logger extends BaseLogger
      * - writers: array of writers to add to this logger
      * - exceptionhandler: if true register this logger as exceptionhandler
      * - errorhandler: if true register this logger as errorhandler
-     * - vufind_ip_reader: UserIpReader object to use for IP lookups
      *
-     * @param array|Traversable $options Configuration options
+     * @param UserIpReader      $userIpReader User IP reader
+     * @param array|Traversable $options      Configuration options
      *
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      */
-    public function __construct($options = null)
+    public function __construct(UserIpReader $userIpReader, $options = null)
     {
+        $this->userIpReader = $userIpReader;
         parent::__construct($options);
-        if (!($options['vufind_ip_reader'] ?? null instanceof UserIpReader)) {
-            throw new \Exception('Missing or incorrect vufind_ip_reader option');
-        }
-        $this->userIpReader = $options['vufind_ip_reader'];
     }
 
     /**

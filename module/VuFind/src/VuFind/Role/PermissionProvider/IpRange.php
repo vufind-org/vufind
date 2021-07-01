@@ -94,7 +94,7 @@ class IpRange implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // Check if any regex matches....
-        $ipAddr = PHP_SAPI === 'cli' ? null : $this->userIpReader->getUserIp();
+        $ipAddr = $this->userIpReader->getUserIp();
         if ($this->ipAddressUtils->isInRange($ipAddr, (array)$options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];
