@@ -5,11 +5,9 @@
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
   if ($cover):
     ob_start(); ?>
-    <!--
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?=$cover ?>
     </div>
-    -->
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif; ?>
@@ -31,14 +29,26 @@
         <?php if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <?php else: ?>
+          <?php /* TueFind: Add links to authority index, if active */ ?>
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <?=$this->transEsc('by')?>
-            <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+            <?php $i=0; $authorCount = count($summAuthors); foreach ($summAuthors as $summAuthor => $summAuthorProperties): ?>
+              <?php if ($this->tuefind()->isSearchTabEnabled('SolrAuth')): ?>
+                <?php /* Display separate links to title search + authority page */ ?>
+                <?=$this->highlight(rtrim($summAuthor, ','))?> <?=$this->tuefind()->formatRoles($summAuthorProperties['role'] ?? [])?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
+                <?php $authorityId = $summAuthorProperties['id'][0] ?? '';?>
+                <?php if ($authorityId && $this->authority()->recordExists($authorityId)): ?>
+                  <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
+                <?php endif; ?>
+              <?php else: ?>
+              <?php /* Simple link to title search by author */ ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i++ + 1 < $authorCount ? ',' : ''?>
+              <?php endif; ?>
             <?php endforeach; ?>
           <?php endif; ?>
 
-          <!-- TueFind: Replace default container information by custom logic -->
+          <?php /* TueFind: Replace default container information by custom logic */ ?>
           <?php $ids_and_titles_and_volume = $this->driver->getContainerIDsAndTitles(); ?>
           <?php if (!empty($ids_and_titles_and_volume)): ?>
             <?php foreach ($ids_and_titles_and_volume as $id => $title_and_volume): ?>
