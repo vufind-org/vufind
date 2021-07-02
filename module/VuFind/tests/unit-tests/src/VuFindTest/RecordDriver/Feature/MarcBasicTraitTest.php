@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-namespace VuFindTest\RecordDriver;
+namespace VuFindTest\RecordDriver\Feature;
 
 /**
  * Record Driver Marc Traits Test Class
