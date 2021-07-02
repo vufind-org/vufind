@@ -132,11 +132,7 @@ public class CreatorTools
         // relator allowed" list.
         if (subfieldE.size() == 0 && subfield4.size() == 0) {
             if (Arrays.asList(noRelatorAllowed).contains(tag)) {
-                // 100 contains the first author even if the relator is not given explicitly
-                if (tag.equals("100"))
-                    relators.add("aut");
-                else
-                    relators.add("");
+                relators.add("");
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
@@ -215,26 +211,18 @@ public class CreatorTools
                 authorField = (DataField) fieldsIter.next();
                 // add all author types to the result set; if we have multiple relators, repeat the authors
                 for (String iterator: getValidRelators(authorField, noRelatorAllowed, relatorConfig, unknownRelatorAllowed, indexRawRelators)) {
-                    for (String subfieldCharacters : parsedTagList.get(authorField.getTag())) {
-                        final List<Subfield> subfields = authorField.getSubfields("["+subfieldCharacters+"]");
-                        final Iterator<Subfield> subfieldsIter =  subfields.iterator();
-                        String resultOneField = new String();
-                        while (subfieldsIter.hasNext()) {
-                           final Subfield subfield = subfieldsIter.next();
-                           final String data = subfield.getData();
-                           if (resultOneField.isEmpty())
-                               resultOneField = data;
-                           else {
-                               resultOneField += (subfield.getCode() == 'b' || subfield.getCode() == 'c' ||
-                                                  subfield.getCode() == 'g') ? ", " : " ";
-                               resultOneField += data;
-
-                           }
-                        }
-                        if (!resultOneField.isEmpty()) {
-                            result.add(resultOneField);
-                            if (firstOnly)
+                    for (String subfields : parsedTagList.get(authorField.getTag())) {
+                        String current = SolrIndexer.instance().getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                        // TODO: we may eventually be able to use this line instead,
+                        // but right now it's not handling separation between the
+                        // subfields correctly, so it's commented out until that is
+                        // fixed.
+                        //String current = authorField.getSubfieldsAsString(subfields);
+                        if (null != current) {
+                            result.add(current);
+                            if (firstOnly) {
                                 return result;
+                            }
                         }
                     }
                 }
