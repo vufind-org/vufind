@@ -38,7 +38,6 @@ import org.solrmarc.tools.PropertyUtils;
 import org.solrmarc.tools.Utils;
 import org.solrmarc.driver.Boot;
 import org.vufind.index.DatabaseManager;
-import org.tuefind.index.CreatorTools;
 import java.sql.*;
 
 public class TuelibBiblioMixin extends TuelibMixin {
