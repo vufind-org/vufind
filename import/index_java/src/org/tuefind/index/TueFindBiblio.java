@@ -1182,36 +1182,6 @@ public class TueFindBiblio extends TueFind {
     }
 
     /**
-     * This function is similar to VuFind's own ...byRelator functions.
-     * This is important to keep it in sync with other fields
-     * (e.g. for author_role, author2_role, author_corporate_role and so on.)
-     *
-     * This function can be used to e.g. get the k10plus id or GND number
-     * by passing the corresponding prefix like e.g. "(DE-627)"
-     * in marc_local.properties.
-     */
-    public List<String> getAuthorIdsByPrefixFilteredByRelator(final Record record, final String tagList, final String acceptWithoutRelator,
-                                                              final String relatorConfig, final String prefix)
-    {
-        // An author normally has multiple $0 subfields which will be
-        // concatenated by the tools function, so it will generate strings like this
-        // which we need to split:
-        //
-        // (DE-588)118562215 (DE-627)035286210 (DE-576)208988572
-        List<String> idsStrings = creatorTools.getAuthorsFilteredByRelator(
-            record, tagList, acceptWithoutRelator, relatorConfig
-        );
-        List<String> result = new LinkedList<String>();
-        for (final String idsString : idsStrings) {
-            for (final String id : idsString.split(" ")) {
-                if (id.startsWith(prefix))
-                    result.add(id.substring(prefix.length()));
-            }
-        }
-        return result;
-    }
-
-    /**
      * @param record
      *            the record
      */
