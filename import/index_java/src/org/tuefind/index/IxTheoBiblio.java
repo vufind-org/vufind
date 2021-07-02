@@ -14,8 +14,6 @@ import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.Utils;
 
 public class IxTheoBiblio extends TueFindBiblio {
-    protected static Logger logger = Logger.getLogger(IxTheoBiblio.class.getName());
-
 
     static boolean parseIniFileLine(final String line, final StringBuilder key, final StringBuilder value)
     {

@@ -6,7 +6,6 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 
 public class KrimDokBiblio extends TueFindBiblio {
-    protected static Logger logger = Logger.getLogger(KrimDokBiblio.class.getName());
 
     public String isAvailableForPDA(final Record record) {
         final List<VariableField> fields = record.getVariableFields("PDA");

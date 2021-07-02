@@ -1,5 +1,6 @@
 package org.tuefind.index;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
@@ -19,7 +21,13 @@ import org.solrmarc.index.SolrIndexerMixin;
 
 public class TueFind extends SolrIndexerMixin {
 
-    protected static final Logger logger = Logger.getLogger(TueFind.class.getName());
+    /**
+     * Initialize Logger using MethodHandles.lookup().
+     * This was each subclass will have its own logger with the correct name
+     * without needing to explicitly override it in the subclass itself.
+     */
+    protected static final Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     protected static final Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
 
     protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpecList, char excludeSubfield) {
@@ -238,5 +246,4 @@ public class TueFind extends SolrIndexerMixin {
     public TueFind() {
         super();
     }
-
 }
