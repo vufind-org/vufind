@@ -14,11 +14,11 @@ jobs:
         php-version: ['7.3', '7.4', '8.0']
         include:
           - php-version: 7.3
-            phing_tasks: "phpunitfast"
+            phing_tasks: "eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
           - php-version: 7.4
             phing_tasks: "eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
           - php-version: 8.0
-            phing_tasks: "phpunitfast"
+            phing_tasks: "eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
 
     steps:
       - name: Setup PHP
@@ -26,6 +26,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: intl, xsl
+          tools: composer:2.0.13
 
       - name: Setup node
         uses: actions/setup-node@v2
