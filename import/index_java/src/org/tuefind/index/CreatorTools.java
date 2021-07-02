@@ -19,14 +19,14 @@ public class CreatorTools extends org.vufind.index.CreatorTools
 {
     static protected Logger logger = Logger.getLogger(CreatorTools.class.getName());
 
-  /**
-   * Added cache to certain "getAuthorsFilteredByRelator" queries, because they are very slow
-   * and we repeatedly perform the same lookups.
-   *
-   * Using a ConcurrentHashMap to be thread-safe, combined with computeIfAbsent for best performance.
-   * see also: https://dzone.com/articles/concurrenthashmap-isnt-always-enough
-   *
-   */
+    /**
+     * Added cache to certain "getAuthorsFilteredByRelator" queries, because they are very slow
+     * and we repeatedly perform the same lookups.
+     *
+     * Using a ConcurrentHashMap to be thread-safe, combined with computeIfAbsent for best performance.
+     * see also: https://dzone.com/articles/concurrenthashmap-isnt-always-enough
+     *
+     */
     static protected Map<String, String[]> relatorConfigCache = new ConcurrentHashMap();
 
     protected String[] loadRelatorConfig(String setting){
@@ -124,5 +124,53 @@ public class CreatorTools extends org.vufind.index.CreatorTools
             }
         }
         return relators;
+    }
+
+    /**
+     * Thread-safe cache for storing finished lookups to be re-used later.
+     *
+     * Outer key = record control number
+     * Inner key = lookup parameters as concatenated string (tagList, relatorConfig, ...)
+     *
+     * maxSize should not be too small (to avoid concurrency between the threads),
+     * but not be too high either so lookups stay efficient.
+     */
+    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String,List<String>>> authorIdsCache = new ConcurrentLimitedHashMap(/* maxSize */100);
+
+    /**
+     * This function is similar to VuFind's own ...byRelator functions.
+     * This is important to keep it in sync with other fields
+     * (e.g. for author_role, author2_role, author_corporate_role and so on.)
+     *
+     * This function can be used to e.g. get the k10plus id or GND number
+     * by passing the corresponding prefix like e.g. "(DE-627)"
+     * in marc_local.properties.
+     */
+    public List<String> getAuthorIdsByPrefixFilteredByRelator(final Record record, final String tagList, final String acceptWithoutRelator,
+                                                              final String relatorConfig, final String prefix)
+    {
+        authorIdsCache.cleanup();
+
+        final String cacheKey = tagList + acceptWithoutRelator + relatorConfig;
+        ConcurrentHashMap<String,List<String>> cacheEntry = authorIdsCache.computeIfAbsent(record.getControlNumber(), e -> new ConcurrentHashMap<String,List<String>>());
+        List<String> idsStrings = cacheEntry.computeIfAbsent(cacheKey, innerCacheEntry -> {
+            // An author normally has multiple $0 subfields which will be
+            // concatenated by the tools function, so it will generate strings like this
+            // which we need to split:
+            //
+            // (DE-588)118562215 (DE-627)035286210 (DE-576)208988572
+            return getAuthorsFilteredByRelator(
+                record, tagList, acceptWithoutRelator, relatorConfig
+            );
+        });
+
+        List<String> result = new LinkedList<String>();
+        for (final String idsString : idsStrings) {
+            for (final String id : idsString.split(" ")) {
+                if (id.startsWith(prefix))
+                    result.add(id.substring(prefix.length()));
+            }
+        }
+        return result;
     }
 }
