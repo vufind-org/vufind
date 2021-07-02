@@ -9,9 +9,8 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
-import org.solrmarc.index.SolrIndexerMixin;
 
-public class FidSystematikMixin extends SolrIndexerMixin {
+public class FidSystematik extends TueFind {
     private final static Pattern FID_SYSTEMATIK_PATTERN = Pattern.compile("k\\d+(\\.\\d+)+");
     private final static Set<String> roman_numerals = new HashSet<String>() {
         {

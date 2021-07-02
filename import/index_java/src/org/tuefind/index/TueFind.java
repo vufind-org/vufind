@@ -17,9 +17,9 @@ import org.marc4j.marc.VariableField;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.index.SolrIndexerMixin;
 
-public class TuelibMixin extends SolrIndexerMixin {
+public class TueFind extends SolrIndexerMixin {
 
-    protected static final Logger logger = Logger.getLogger(TuelibMixin.class.getName());
+    protected static final Logger logger = Logger.getLogger(TueFind.class.getName());
     protected static final Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
 
     protected static Set<String> getAllSubfieldsBut(final Record record, final String fieldSpecList, char excludeSubfield) {
@@ -38,7 +38,7 @@ public class TuelibMixin extends SolrIndexerMixin {
                  else if (fieldSpec.length() == 3)
                      subfieldsToSearch = field.getSubfields();
                  else {
-                     logger.severe("in TuelibMixin.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
+                     logger.severe("in TueFindBase.getAllSubfieldsBut: invalid field specification: " + fieldSpec);
                      System.exit(1);
                  }
                  for (final Subfield subfield : subfieldsToSearch)
@@ -235,7 +235,7 @@ public class TuelibMixin extends SolrIndexerMixin {
         return null;
     }
 
-    public TuelibMixin() {
+    public TueFind() {
         super();
     }
 

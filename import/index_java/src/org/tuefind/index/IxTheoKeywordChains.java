@@ -6,13 +6,12 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
-import org.solrmarc.index.SolrIndexerMixin;
 
-public class IxTheoKeywordChains extends SolrIndexerMixin {
+public class IxTheoKeywordChains extends TueFind {
 
     private final static String KEYWORD_DELIMITER = "/";
     private final static String SUBFIELD_CODES = "abcdetnpzf";
-    private final static TuelibBiblioMixin tuelibMixin = new TuelibBiblioMixin();
+    private final static TueFindBiblio tueFindBiblio = new TueFindBiblio();
 
     public Set<String> getKeyWordChain(final Record record, final String fieldSpec, final String lang) {
         final List<VariableField> variableFields = record.getVariableFields(fieldSpec);
@@ -98,7 +97,7 @@ public class IxTheoKeywordChains extends SolrIndexerMixin {
                 if (SUBFIELD_CODES.indexOf(subfield.getCode()) != -1) {
                     if (keyword.length() > 0) {
                         if (subfield.getCode() == 'z') {
-                            keyword.append(" (" + tuelibMixin.translateTopic(subfield.getData(), lang) + ")");
+                            keyword.append(" (" + tueFindBiblio.translateTopic(subfield.getData(), lang) + ")");
                             continue;
                         }
                         // We need quite a bunch of special logic here to group subsequent d and c fields
@@ -126,7 +125,7 @@ public class IxTheoKeywordChains extends SolrIndexerMixin {
                             keyword.append(", ");
                     }
                     final String term = subfield.getData().trim();
-                    keyword.append(tuelibMixin.translateTopic(term, lang));
+                    keyword.append(tueFindBiblio.translateTopic(term, lang));
                     complexElements.add(term);
                 } else if (subfield.getCode() == '9' && keyword.length() > 0 && subfield.getData().startsWith("g:")) {
                     // For Ixtheo-translations the specification in the g:-Subfield is appended in angle
@@ -135,13 +134,13 @@ public class IxTheoKeywordChains extends SolrIndexerMixin {
                     final Subfield germanASubfield = dataField.getSubfield('a');
                     if (germanASubfield != null) {
                         final String translationCandidate = germanASubfield.getData() + " <" + specification + ">";
-                        final String translation = tuelibMixin.translateTopic(translationCandidate, lang);
+                        final String translation = tueFindBiblio.translateTopic(translationCandidate, lang);
                         keyword.setLength(0);
                         keyword.append(translation.replaceAll("<", "(").replaceAll(">", ")"));
                     }
                     else {
                         keyword.append(" (");
-                        keyword.append(tuelibMixin.translateTopic(specification, lang));
+                        keyword.append(tueFindBiblio.translateTopic(specification, lang));
                         keyword.append(')');
                     }
                 }
@@ -153,7 +152,7 @@ public class IxTheoKeywordChains extends SolrIndexerMixin {
         if (keyword.length() > 0) {
             // Check whether there exists a translation for the whole chain
             final String complexTranslation = (complexElements.size() > 1) ?
-                                              TuelibBiblioMixin.getTranslationOrNull(String.join(" / ", complexElements), lang) : null;
+                                              TueFindBiblio.getTranslationOrNull(String.join(" / ", complexElements), lang) : null;
             String keywordString = (complexTranslation != null) ? complexTranslation : keyword.toString();
             keywordString = keywordString.replace("/", "\\/");
             keyWordChain.add(lang.equals("de") ? BCEReplacer.replaceBCEPatterns(keywordString) : keywordString);

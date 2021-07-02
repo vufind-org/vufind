@@ -15,9 +15,9 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 
-public class TuelibAuthMixin extends TuelibMixin {
+public class TueFindAuth extends TueFind {
 
-    protected final static Logger logger = Logger.getLogger(TuelibAuthMixin.class.getName());
+    protected final static Logger logger = Logger.getLogger(TueFindAuth.class.getName());
 
     protected final static Pattern SORTABLE_STRING_REMOVE_PATTERN = Pattern.compile("[^\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{N}]+");
     protected final static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^([v]?)(\\d+)-([v]?)(\\d+)$");

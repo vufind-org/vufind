@@ -10,8 +10,8 @@ import org.marc4j.marc.VariableField;
 import org.marc4j.marc.*;
 
 
-public class RelBib extends IxTheo {
-    protected static Logger logger = Logger.getLogger(RelBib.class.getName());
+public class RelBibBiblio extends IxTheoBiblio {
+    protected static Logger logger = Logger.getLogger(RelBibBiblio.class.getName());
     protected final static Pattern RELBIB_POSITIVE_MATCH_PATTERN =
         Pattern.compile("^A.*|^B.*|^HD.*|^HH.*|^KB.*|" +
                         "KCA|KCG|KDG|KDH|NBC|NBD|NBE|NBH|NBK|NBQ|NCB|NCC|NCD|NCE|NCF|NCG|NCH|NCJ|" +

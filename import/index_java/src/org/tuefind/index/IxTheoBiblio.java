@@ -11,11 +11,10 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 import org.solrmarc.index.SolrIndexer;
-import org.solrmarc.index.SolrIndexerMixin;
 import org.solrmarc.tools.Utils;
 
-public class IxTheo extends SolrIndexerMixin {
-    protected static Logger logger = Logger.getLogger(IxTheo.class.getName());
+public class IxTheoBiblio extends TueFindBiblio {
+    protected static Logger logger = Logger.getLogger(IxTheoBiblio.class.getName());
 
 
     static boolean parseIniFileLine(final String line, final StringBuilder key, final StringBuilder value)
@@ -145,7 +144,7 @@ public class IxTheo extends SolrIndexerMixin {
     public Set<String> getIxTheoNotationFacets(final Record record) {
         final Set<String> ixTheoNotations = getIxTheoNotations(record);
         if (ixTheoNotations.isEmpty()) {
-            return TuelibBiblioMixin.UNASSIGNED_SET;
+            return TueFindBiblio.UNASSIGNED_SET;
         }
         return ixTheoNotations;
     }
@@ -157,7 +156,7 @@ public class IxTheo extends SolrIndexerMixin {
         if (langShortcut.equals("de"))
             return topics;
         Set<String> translated_topics = new HashSet<String>();
-        Map<String, String> translation_map = TuelibBiblioMixin.getTranslationMap(langShortcut);
+        Map<String, String> translation_map = TueFindBiblio.getTranslationMap(langShortcut);
 
         for (String topic : topics) {
             // Some ordinary topics contain words with an escaped slash as a

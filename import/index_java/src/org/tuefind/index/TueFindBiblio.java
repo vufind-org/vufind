@@ -40,7 +40,7 @@ import org.solrmarc.driver.Boot;
 import org.vufind.index.DatabaseManager;
 import java.sql.*;
 
-public class TuelibBiblioMixin extends TuelibMixin {
+public class TueFindBiblio extends TueFind {
     public final static String UNASSIGNED_STRING = "[Unassigned]";
     public final static Set<String> UNASSIGNED_SET = Collections.singleton(UNASSIGNED_STRING);
 
@@ -1136,7 +1136,7 @@ public class TuelibBiblioMixin extends TuelibMixin {
         }
 
         if (results.isEmpty() && last_unmappable_physical_code != null)
-            logger.severe("in TuelibMixin.getPhysicalType: can't map \"" + last_unmappable_physical_code + "\"!");
+            logger.severe("in TueFindBiblio.map935b: can't map \"" + last_unmappable_physical_code + "\"!");
 
         return results;
     }
@@ -1146,7 +1146,7 @@ public class TuelibBiblioMixin extends TuelibMixin {
      *            the record
      */
     public Set<String> getPhysicalType(final Record record) {
-        return map935b(record, TuelibBiblioMixin.phys_code_to_full_name_map);
+        return map935b(record, phys_code_to_full_name_map);
     }
 
     // Removes any non-letters from "original_role".
@@ -1371,7 +1371,7 @@ public class TuelibBiblioMixin extends TuelibMixin {
         if (langAbbrev.equals("de"))
             return topic;
 
-        Map<String, String> translation_map = TuelibBiblioMixin.getTranslationMap(langAbbrev);
+        Map<String, String> translation_map = getTranslationMap(langAbbrev);
         Matcher numberEndMatcher = NUMBER_END_PATTERN.matcher(topic);
 
         // Some terms contain slash separated subterms, see whether we can
@@ -2342,7 +2342,7 @@ public class TuelibBiblioMixin extends TuelibMixin {
      * @return set of record format
      */
     public Set<String> getFormats(final Record record) {
-        final Set<String> formats = map935b(record, TuelibBiblioMixin.phys_code_to_format_map);
+        final Set<String> formats = map935b(record, phys_code_to_format_map);
         final String leader = record.getLeader().toString();
         final ControlField fixedField = (ControlField) record.getVariableField("008");
         //final DataField title = (DataField) record.getVariableField("245");
