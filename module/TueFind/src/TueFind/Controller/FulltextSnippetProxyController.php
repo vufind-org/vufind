@@ -53,6 +53,7 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
 
 
     public function __construct(\Elasticsearch\ClientBuilder $builder, \Laminas\ServiceManager\ServiceLocatorInterface $sm, \VuFind\Log\Logger $logger) {
+        parent::__construct($sm);
         $this->logger = $logger;
         $config = $this->getConfig(self::fulltextsnippetIni);
         $this->base_url = isset($config->Elasticsearch->base_url) ? $config->Elasticsearch->base_url : 'localhost:9200';
@@ -60,7 +61,6 @@ class FulltextSnippetProxyController extends \VuFind\Controller\AbstractBase imp
         $this->page_index = isset($config->Elasticsearch->page_index) ? $config->Elasticsearch->page_index : 'full_text_cache_html';
         $this->es = $builder::create()->setHosts([$this->base_url])->build();
         $this->text_type_to_description_map = array_flip(self::description_to_text_type_map);
-        parent::__construct($sm);
     }
 
 
