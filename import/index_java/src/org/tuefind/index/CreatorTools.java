@@ -135,7 +135,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
      * maxSize should not be too small (to avoid concurrency between the threads),
      * but not be too high either so lookups stay efficient.
      */
-    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String,List<String>>> authorIdsCache = new ConcurrentLimitedHashMap(/* maxSize */100);
+    static protected ConcurrentLimitedHashMap<String, ConcurrentHashMap<String, List<String>>> authorIdsCache = new ConcurrentLimitedHashMap(/* maxSize */100);
 
     /**
      * This function is similar to VuFind's own ...byRelator functions.
@@ -152,7 +152,7 @@ public class CreatorTools extends org.vufind.index.CreatorTools
         authorIdsCache.cleanup();
 
         final String cacheKey = tagList + acceptWithoutRelator + relatorConfig;
-        ConcurrentHashMap<String,List<String>> cacheEntry = authorIdsCache.computeIfAbsent(record.getControlNumber(), e -> new ConcurrentHashMap<String,List<String>>());
+        ConcurrentHashMap<String, List<String>> cacheEntry = authorIdsCache.computeIfAbsent(record.getControlNumber(), e -> new ConcurrentHashMap<String, List<String>>());
         List<String> idsStrings = cacheEntry.computeIfAbsent(cacheKey, innerCacheEntry -> {
             // An author normally has multiple $0 subfields which will be
             // concatenated by the tools function, so it will generate strings like this
