@@ -150,7 +150,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPost($event);
         $this->assertEquals(
-            ['Fake' => 3], $facets['format']->toArray()
+            ['Book' => 124], $facets['format']->toArray()
         );
     }
 }
