@@ -482,14 +482,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         BackendInterface $backend,
         Config $facet
     ) {
-        if (!isset($facet->HideFacetValue)
-            || ($facet->HideFacetValue->count()) == 0
-        ) {
-            return null;
-        }
+        $hideFacetValue = (isset($facet->HideFacetValue))
+            ? $facet->HideFacetValue->toArray() : [];
+        $hideAllFacetValuesExcept = (isset($facet->HideAllFacetValuesExcept))
+            ? $facet->HideAllFacetValuesExcept->toArray() : [];
         return new HideFacetValueListener(
             $backend,
-            $facet->HideFacetValue->toArray()
+            $hideFacetValue,
+            $hideAllFacetValuesExcept
         );
     }
 
