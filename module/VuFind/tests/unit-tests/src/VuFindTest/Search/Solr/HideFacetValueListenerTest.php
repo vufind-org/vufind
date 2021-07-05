@@ -101,14 +101,17 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return HideFacetValueListener
      */
-    protected function getListener($config = null)
+    protected function getListener($config = null, $config2 = null)
     {
         // Set default config if necessary
         if (null === $config) {
             $config = ['format' => ['Unknown']];
         }
+        if (null === $config2) {
+            $config2 = ['format' => ['Book']];
+        }
 
-        return new HideFacetValueListener($this->getMockBackend(), $config);
+        return new HideFacetValueListener($this->getMockBackend(), $config, $config2);
     }
 
     /**
