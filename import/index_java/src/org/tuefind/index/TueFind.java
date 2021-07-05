@@ -242,8 +242,4 @@ public class TueFind extends SolrIndexerMixin {
 
         return null;
     }
-
-    public TueFind() {
-        super();
-    }
 }

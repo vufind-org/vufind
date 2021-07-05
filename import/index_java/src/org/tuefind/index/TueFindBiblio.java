@@ -1182,36 +1182,6 @@ public class TueFindBiblio extends TueFind {
     }
 
     /**
-     * This function is similar to VuFind's own ...byRelator functions.
-     * This is important to keep it in sync with other fields
-     * (e.g. for author_role, author2_role, author_corporate_role and so on.)
-     *
-     * This function can be used to e.g. get the k10plus id or GND number
-     * by passing the corresponding prefix like e.g. "(DE-627)"
-     * in marc_local.properties.
-     */
-    public List<String> getAuthorIdsByPrefixFilteredByRelator(final Record record, final String tagList, final String acceptWithoutRelator,
-                                                              final String relatorConfig, final String prefix)
-    {
-        // An author normally has multiple $0 subfields which will be
-        // concatenated by the tools function, so it will generate strings like this
-        // which we need to split:
-        //
-        // (DE-588)118562215 (DE-627)035286210 (DE-576)208988572
-        List<String> idsStrings = creatorTools.getAuthorsFilteredByRelator(
-            record, tagList, acceptWithoutRelator, relatorConfig
-        );
-        List<String> result = new LinkedList<String>();
-        for (final String idsString : idsStrings) {
-            for (final String id : idsString.split(" ")) {
-                if (id.startsWith(prefix))
-                    result.add(id.substring(prefix.length()));
-            }
-        }
-        return result;
-    }
-
-    /**
      * @param record
      *            the record
      */
@@ -2984,26 +2954,6 @@ public class TueFindBiblio extends TueFind {
         }
     }
 
-    // Detect "real" superior_ppns
-    public String getSuperiorPPN(final Record record) {
-        // The order of the subfields matters, since 8XX can contain information about the series in which
-        // an article in a volume is published but we do not want this as an immediate superior work
-        Vector<String> superiorDescriptors = new Vector<String>(Arrays.asList("773w:800w:810w:830w".split(":")));
-        for (String superiorDescriptor : superiorDescriptors) {
-            final List<VariableField> superiorFields = record.getVariableFields(superiorDescriptor.substring(0, 3));
-            for (final VariableField superiorField : superiorFields) {
-                final DataField field = (DataField)superiorField;
-                final char subfieldCode = superiorDescriptor.charAt(3);
-                final Subfield subfield = field.getSubfield(subfieldCode);
-                if (subfield == null)
-                    continue;
-                final Matcher matcher = SUPERIOR_PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN.matcher(subfield.getData());
-                if (matcher.matches())
-                     return matcher.group(1);
-            }
-        }
-        return "";
-    }
 
     public String isHybrid(final Record record) {
         final VariableField field = record.getVariableField("ZWI");
