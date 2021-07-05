@@ -69,6 +69,7 @@ class HideFacetValueListener
      *
      * @param BackendInterface $backend         Search backend
      * @param array            $hideFacetValues Associative array of field name
+     * @param array            $hideAllFacetValuesExcept Assoc. array of field name
      * to array of facet values to hide.
      */
     public function __construct(
