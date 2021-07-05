@@ -2954,26 +2954,6 @@ public class TueFindBiblio extends TueFind {
         }
     }
 
-    // Detect "real" superior_ppns
-    public String getSuperiorPPN(final Record record) {
-        // The order of the subfields matters, since 8XX can contain information about the series in which
-        // an article in a volume is published but we do not want this as an immediate superior work
-        Vector<String> superiorDescriptors = new Vector<String>(Arrays.asList("773w:800w:810w:830w".split(":")));
-        for (String superiorDescriptor : superiorDescriptors) {
-            final List<VariableField> superiorFields = record.getVariableFields(superiorDescriptor.substring(0, 3));
-            for (final VariableField superiorField : superiorFields) {
-                final DataField field = (DataField)superiorField;
-                final char subfieldCode = superiorDescriptor.charAt(3);
-                final Subfield subfield = field.getSubfield(subfieldCode);
-                if (subfield == null)
-                    continue;
-                final Matcher matcher = SUPERIOR_PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN.matcher(subfield.getData());
-                if (matcher.matches())
-                     return matcher.group(1);
-            }
-        }
-        return "";
-    }
 
     public String isHybrid(final Record record) {
         final VariableField field = record.getVariableField("ZWI");
