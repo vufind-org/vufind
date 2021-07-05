@@ -68,14 +68,15 @@ class HideFacetValueListener
      * Constructor.
      *
      * @param BackendInterface $backend                  Search backend
-     * @param array            $hideFacetValues          Assoc. array of field name
-     * @param array            $hideAllFacetValuesExcept Assoc. array of field name
-     * to array of facet values to hide.
+     * @param array            $hideFacetValues          Assoc. array of field
+     * name => values to exclude from display.
+     * @param array            $hideAllFacetValuesExcept Assoc. array of field
+     * name => values to exclusively show in display.
      */
     public function __construct(
         BackendInterface $backend,
         array $hideFacetValues,
-        array $hideAllFacetValuesExcept
+        array $hideAllFacetValuesExcept = []
     ) {
         $this->backend = $backend;
         $this->hideFacets = $hideFacetValues;
