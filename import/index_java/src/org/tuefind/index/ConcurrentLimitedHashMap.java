@@ -34,8 +34,7 @@ public class ConcurrentLimitedHashMap<K extends Object, V extends Object> extend
      */
     public synchronized void cleanup() {
         while (keyHistory.size() > maxSize) {
-            K k = keyHistory.pollFirst();
-            remove(k);
+            keyHistory.removeFirst();
         }
     }
 
