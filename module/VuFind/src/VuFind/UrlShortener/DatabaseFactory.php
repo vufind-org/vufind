@@ -58,7 +58,7 @@ class DatabaseFactory
         }
         $router = $container->get('HttpRouter');
         $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
-        $baseUrl = ($serverUrl)($router->assemble([], ['name' => 'home']));
+        $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         $table = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('shortlinks');
         $config = $container->get(\VuFind\Config\PluginManager::class)
