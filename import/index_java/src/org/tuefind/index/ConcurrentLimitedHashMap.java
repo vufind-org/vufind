@@ -26,13 +26,15 @@ public class ConcurrentLimitedHashMap<K extends Object, V extends Object> extend
             if (!keyHistory.contains(k))
                 keyHistory.addLast(k);
         }
-        return super.computeIfAbsent(k, fnctn);
+        V v = super.computeIfAbsent(k, fnctn);
+        cleanup();
+        return v;
     }
 
     /**
      * Delete oldest entries, according to maxSize (see constructor).
      */
-    public synchronized void cleanup() {
+    protected synchronized void cleanup() {
         while (keyHistory.size() > maxSize) {
             keyHistory.removeFirst();
         }
