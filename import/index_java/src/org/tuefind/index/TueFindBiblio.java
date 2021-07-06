@@ -196,9 +196,9 @@ public class TueFindBiblio extends TueFind {
     };
 
 
-    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap(1000);
-    protected Map<String, Collection<Collection<Topic>>> collectedTopicsCache = new TreeMap<>();
-    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap(1000);
+    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap(100);
+    protected ConcurrentLimitedHashMap<String, Collection<Collection<Topic>>> collectedTopicsCache = new ConcurrentLimitedHashMap(100);
+    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap(100);
     protected static final String fullHostName;
     static {
         String tmp = ""; // Needed for syntactical reasons
@@ -210,11 +210,6 @@ public class TueFindBiblio extends TueFind {
         fullHostName = tmp;
     }
 
-
-    @Override
-    public void perRecordInit(Record record) throws Exception {
-        collectedTopicsCache = new TreeMap<>();
-    }
 
     protected String getTitleFromField(final DataField titleField) {
         if (titleField == null)
@@ -1712,13 +1707,11 @@ public class TueFindBiblio extends TueFind {
                                             final Collection<String> collector, final String langAbbrev,
                                             final Predicate<DataField> includeFieldPredicate)
     {
-        final String cacheKey = fieldSpec;
-        Collection<Collection<Topic>> subcollector = new ArrayList<>();
-
         // Part 1: Get raw topics either from cache or from record
-        if (collectedTopicsCache.containsKey(cacheKey)) {
-            subcollector = collectedTopicsCache.get(cacheKey);
-        } else {
+        final String cacheKey = record.getControlNumber() + fieldSpec;
+        Collection<Collection<Topic>> subcollector = collectedTopicsCache.computeIfAbsent(cacheKey, s -> {
+            Collection<Collection<Topic>> cachedSubcollector = new ArrayList<>();
+
             String[] fieldTags = fieldSpec.split(":");
             String fieldTag;
             String subfieldTags;
@@ -1750,18 +1743,18 @@ public class TueFindBiblio extends TueFind {
                     // Get subfield 0 since the "subtag" is saved here
                     marcFieldList = record.getVariableFields("LOK");
                     if (!marcFieldList.isEmpty())
-                        extractCachedTopicsHelper(marcFieldList, separators, subcollector, fieldTag, subfieldTags, includeFieldPredicate);
+                        extractCachedTopicsHelper(marcFieldList, separators, cachedSubcollector, fieldTag, subfieldTags, includeFieldPredicate);
                 }
                 // Case 2: We have an ordinary MARC field
                 else {
                     marcFieldList = record.getVariableFields(fieldTag);
                     if (!marcFieldList.isEmpty())
-                        extractCachedTopicsHelper(marcFieldList, separators, subcollector, fieldTag, subfieldTags, includeFieldPredicate);
+                        extractCachedTopicsHelper(marcFieldList, separators, cachedSubcollector, fieldTag, subfieldTags, includeFieldPredicate);
                 }
             }
 
-            collectedTopicsCache.put(cacheKey, subcollector);
-        }
+            return cachedSubcollector;
+        });
 
         // Part 2: Translate & deliver previously collected topics
         for (final Collection<Topic> topicParts : subcollector) {
