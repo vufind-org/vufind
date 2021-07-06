@@ -82,11 +82,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
             'show_in_results' => false,
             'show_in_foo' => true,
         ];
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'results');
+        $driver = $this->getMockDriver();
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'results');
         $this->assertFalse($openUrl->isActive());
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'foo');
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'foo');
         $this->assertTrue($openUrl->isActive());
     }
 
@@ -97,11 +96,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckContextNoUrl()
     {
-        $openUrl = $this->getOpenUrl()
-            ->__invoke($this->getMockDriver(), 'results');
+        $driver = $this->getMockDriver();
+        $openUrl = ($this->getOpenUrl())($driver, 'results');
         $this->assertFalse($openUrl->isActive());
-        $openUrl = $this->getOpenUrl()
-            ->__invoke($this->getMockDriver(), 'foo');
+        $openUrl = ($this->getOpenUrl())($driver, 'foo');
         $this->assertFalse($openUrl->isActive());
     }
 
@@ -113,9 +111,9 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     public function testCheckExcludedRecordsRulesFalse()
     {
-        $openUrl = $this
-            ->getOpenUrl($this->getJsonFixture("openurlrules/rule1.json"), $this->rulesConfig)
-            ->__invoke($this->getMockDriver(), 'results');
+        $fixture = $this->getJsonFixture("openurlrules/rule1.json");
+        $helper = $this->getOpenUrl($fixture, $this->rulesConfig);
+        $openUrl = $helper($this->getMockDriver(), 'results');
         $this->assertTrue($openUrl->isActive());
     }
 
