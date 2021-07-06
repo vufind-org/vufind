@@ -196,9 +196,9 @@ public class TueFindBiblio extends TueFind {
     };
 
 
-    protected ConcurrentLimitedHashMap<String, List<String>> isils_cache = new ConcurrentLimitedHashMap(1000);
+    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap(1000);
     protected Map<String, Collection<Collection<Topic>>> collectedTopicsCache = new TreeMap<>();
-    protected JSONArray fulltext_server_hits = new JSONArray();
+    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap(1000);
     protected static final String fullHostName;
     static {
         String tmp = ""; // Needed for syntactical reasons
@@ -214,8 +214,6 @@ public class TueFindBiblio extends TueFind {
     @Override
     public void perRecordInit(Record record) throws Exception {
         collectedTopicsCache = new TreeMap<>();
-        final String es_search_response = getElasticsearchSearchResponse(record);
-        fulltext_server_hits = getElasticsearchHits(es_search_response);
     }
 
     protected String getTitleFromField(final DataField titleField) {
@@ -645,7 +643,7 @@ public class TueFindBiblio extends TueFind {
      * @return Set of isils
      */
     public Set<String> getIsils(final Record record) {
-        return isils_cache.computeIfAbsent(record.getControlNumber(), value -> {
+        return isilsCache.computeIfAbsent(record.getControlNumber(), value -> {
             final Set<String> isils = new LinkedHashSet<>();
             final List<VariableField> fields = record.getVariableFields("LOK");
             if (fields != null) {
@@ -3144,34 +3142,46 @@ public class TueFindBiblio extends TueFind {
         }
     }
 
+    protected JSONArray getFullTextServerHits(final Record record) throws Exception {
+        return fulltextServerHitsCache.computeIfAbsent(record.getControlNumber(), hits -> {
+            try {
+                final String es_search_response = getElasticsearchSearchResponse(record);
+                return getElasticsearchHits(es_search_response);
+            } catch (Exception e) {
+                // The lambda interface here does nut support regular exceptions,
+                // So we need to wrap any exception in a runtime exception
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
-    public String getFullTextElasticsearch(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Fulltext");
+    public String getFullTextElasticsearch(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Fulltext");
     }
 
 
-    public String getFullTextElasticsearchTOC(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Table of Contents");
+    public String getFullTextElasticsearchTOC(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Table of Contents");
     }
 
 
-    public String getFullTextElasticsearchAbstract(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Abstract");
+    public String getFullTextElasticsearchAbstract(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Abstract");
     }
 
 
-    public String getFullTextElasticsearchSummary(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Summary");
+    public String getFullTextElasticsearchSummary(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Summary");
     }
 
 
-    public Set<String> getFullTextTypes(final Record record) {
-        return extractTextTypeFromJSON(fulltext_server_hits);
+    public Set<String> getFullTextTypes(final Record record) throws Exception {
+        return extractTextTypeFromJSON(getFullTextServerHits(record));
     }
 
 
-    public String getHasPublisherFullText(final Record record) {
-        return Boolean.toString(extractIsPublisherProvidedFromJSON(fulltext_server_hits));
+    public String getHasPublisherFullText(final Record record) throws Exception {
+        return Boolean.toString(extractIsPublisherProvidedFromJSON(getFullTextServerHits(record)));
     }
 
 
