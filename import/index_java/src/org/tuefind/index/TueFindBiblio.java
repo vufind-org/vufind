@@ -20,7 +20,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.HttpEntity;
 import org.json.simple.JSONArray;
@@ -3105,25 +3107,42 @@ public class TueFindBiblio extends TueFind {
         return fulltextIDList.contains(ppn);
     }
 
+    protected static CloseableHttpClient elasticsearchClient;
+
+    protected synchronized CloseableHttpClient getSharedElasticsearchClient() {
+        // Use shared client for better performance, see:
+        // https://stackoverflow.com/questions/43730286/closeablehttpclient-blocks-per-few-minutes-under-high-concurrency
+        if (elasticsearchClient == null) {
+            // Use concurrency limit, see:
+            // https://www.tutorialspoint.com/apache_httpclient/apache_httpclient_multiple_threads.htm
+            PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+            connManager.setMaxTotal(10);
+            HttpClientBuilder elasticsearchClientBuilder = HttpClients.custom().setConnectionManager(connManager);
+            elasticsearchClient = elasticsearchClientBuilder.build();
+        }
+        return elasticsearchClient;
+    }
 
     protected String getElasticsearchSearchResponse(final Record record) throws IOException {
         if (isFullTextDisabled())
             return "";
         if (!IsInFulltextPPNList(record.getControlNumber()))
             return "";
+
         final String esHost = getElasticsearchHost();
         final String esPort = getElasticsearchPort();
-        CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://" + esHost + ":" + esPort + "/full_text_cache/_search");
-        String fulltextById = "{ \"query\" : { \"match\" : { \"id\" : \"" + record.getControlNumber() + "\" } } }";
-        StringEntity stringEntity = new StringEntity(fulltextById);
+        final String fulltextById = "{ \"query\" : { \"match\" : { \"id\" : \"" + record.getControlNumber() + "\" } } }";
+        final StringEntity stringEntity = new StringEntity(fulltextById);
         httpPost.setEntity(stringEntity);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
-        CloseableHttpResponse response = httpclient.execute(httpPost);
+        CloseableHttpResponse response = getSharedElasticsearchClient().execute(httpPost);
         try {
             HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity, StandardCharsets.UTF_8);
+            final String result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+            EntityUtils.consume(entity);
+            return result;
         } finally {
             response.close();
         }
