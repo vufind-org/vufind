@@ -472,7 +472,7 @@ class DAIA extends AbstractBase implements
         } catch (\Exception $e) {
             throw new ILSException(
                 'HTTP request exited with Exception ' . $e->getMessage() .
-                ' for record: ' . $id
+                ' for record: ' . $id, 0, $e
             );
         }
 
@@ -595,7 +595,7 @@ class DAIA extends AbstractBase implements
             try {
                 $docs = $this->convertDaiaXmlToJson($daiaResponse);
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage());
+                throw new ILSException($e->getMessage(), 0, $e);
             }
         } elseif ($this->daiaResponseFormat == 'json') {
             $docs = json_decode($daiaResponse, true);

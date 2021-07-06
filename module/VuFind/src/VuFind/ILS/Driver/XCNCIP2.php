@@ -397,7 +397,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $result = $client->send();
         } catch (\Exception $e) {
             $this->logError('Error in NCIP communication: ' . $e->getMessage());
-            throw new ILSException('Problem with NCIP API');
+            throw new ILSException('Problem with NCIP API', 0, $e);
         }
 
         // If we get a 401, we need to renew the access token and try again
@@ -408,7 +408,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $result = $client->send();
             } catch (\Exception $e) {
                 $this->logError('Error in NCIP communication: ' . $e->getMessage());
-                throw new ILSException('Problem with NCIP API');
+                throw new ILSException('Problem with NCIP API', 0, $e);
             }
         }
 
@@ -452,7 +452,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
         } catch (AuthTokenException $exception) {
             throw new ILSException(
-                'Problem with NCIP API authorization: ' . $exception->getMessage()
+                'Problem with NCIP API authorization: ' . $exception->getMessage(),
+                0,
+                $exception
             );
         }
 

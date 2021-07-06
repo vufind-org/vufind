@@ -166,7 +166,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $client->setMethod($http_method);
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            throw new ILSException($e->getMessage(), 0, $e);
         }
 
         if (!$result->isSuccess()) {

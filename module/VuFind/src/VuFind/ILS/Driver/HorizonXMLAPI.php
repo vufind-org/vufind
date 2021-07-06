@@ -263,7 +263,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                     ];
                 }
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage());
+                throw new ILSException($e->getMessage(), 0, $e);
             }
         } elseif (isset($this->wsPickUpLocations)) {
             foreach ($this->wsPickUpLocations as $code => $library) {
@@ -327,7 +327,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 // If we didn't return above, there were no values.
                 return null;
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage());
+                throw new ILSException($e->getMessage(), 0, $e);
             }
         } elseif (isset($this->wsDefaultPickUpLocation)) {
             return $this->wsDefaultPickUpLocation;

@@ -2068,7 +2068,7 @@ class PAIA extends DAIA
             $client->setHeaders($http_headers);
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            throw new ILSException($e->getMessage(), 0, $e);
         }
 
         if (!$result->isSuccess()) {
