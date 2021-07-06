@@ -20,7 +20,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.HttpEntity;
 import org.json.simple.JSONArray;
@@ -194,9 +196,9 @@ public class TueFindBiblio extends TueFind {
     };
 
 
-    protected Set<String> isils_cache = null;
-    protected Map<String, Collection<Collection<Topic>>> collectedTopicsCache = new TreeMap<>();
-    protected JSONArray fulltext_server_hits = new JSONArray();
+    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap<>(100);
+    protected ConcurrentLimitedHashMap<String, Collection<Collection<Topic>>> collectedTopicsCache = new ConcurrentLimitedHashMap<>(100);
+    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap<>(100);
     protected static final String fullHostName;
     static {
         String tmp = ""; // Needed for syntactical reasons
@@ -208,14 +210,6 @@ public class TueFindBiblio extends TueFind {
         fullHostName = tmp;
     }
 
-
-    @Override
-    public void perRecordInit(Record record) throws Exception {
-        isils_cache = null;
-        collectedTopicsCache = new TreeMap<>();
-        final String es_search_response = getElasticsearchSearchResponse(record);
-        fulltext_server_hits = getElasticsearchHits(es_search_response);
-    }
 
     protected String getTitleFromField(final DataField titleField) {
         if (titleField == null)
@@ -644,31 +638,28 @@ public class TueFindBiblio extends TueFind {
      * @return Set of isils
      */
     public Set<String> getIsils(final Record record) {
-        if (isils_cache != null) {
-            return isils_cache;
-        }
-
-        final Set<String> isils = new LinkedHashSet<>();
-        final List<VariableField> fields = record.getVariableFields("LOK");
-        if (fields != null) {
-            for (final VariableField variableField : fields) {
-                final DataField lokfield = (DataField) variableField;
-                final Subfield subfield0 = lokfield.getSubfield('0');
-                if (subfield0 == null || !subfield0.getData().startsWith("852")) {
-                    continue;
-                }
-                final Subfield subfieldA = lokfield.getSubfield('a');
-                if (subfieldA != null) {
-                    isils.add(subfieldA.getData());
+        return isilsCache.computeIfAbsent(record.getControlNumber(), value -> {
+            final Set<String> isils = new LinkedHashSet<>();
+            final List<VariableField> fields = record.getVariableFields("LOK");
+            if (fields != null) {
+                for (final VariableField variableField : fields) {
+                    final DataField lokfield = (DataField) variableField;
+                    final Subfield subfield0 = lokfield.getSubfield('0');
+                    if (subfield0 == null || !subfield0.getData().startsWith("852")) {
+                        continue;
+                    }
+                    final Subfield subfieldA = lokfield.getSubfield('a');
+                    if (subfieldA != null) {
+                        isils.add(subfieldA.getData());
+                    }
                 }
             }
-        }
 
-        if (isils.isEmpty()) { // Nothing worked!
-            isils.add("Unknown");
-        }
-        this.isils_cache = isils;
-        return isils;
+            if (isils.isEmpty()) { // Nothing worked!
+                isils.add("Unknown");
+            }
+            return isils;
+        });
     }
 
     public Set<String> getJournalIssue(final Record record) {
@@ -1716,13 +1707,11 @@ public class TueFindBiblio extends TueFind {
                                             final Collection<String> collector, final String langAbbrev,
                                             final Predicate<DataField> includeFieldPredicate)
     {
-        final String cacheKey = fieldSpec;
-        Collection<Collection<Topic>> subcollector = new ArrayList<>();
-
         // Part 1: Get raw topics either from cache or from record
-        if (collectedTopicsCache.containsKey(cacheKey)) {
-            subcollector = collectedTopicsCache.get(cacheKey);
-        } else {
+        final String cacheKey = record.getControlNumber() + fieldSpec;
+        Collection<Collection<Topic>> subcollector = collectedTopicsCache.computeIfAbsent(cacheKey, s -> {
+            Collection<Collection<Topic>> cachedSubcollector = new ArrayList<>();
+
             String[] fieldTags = fieldSpec.split(":");
             String fieldTag;
             String subfieldTags;
@@ -1754,18 +1743,18 @@ public class TueFindBiblio extends TueFind {
                     // Get subfield 0 since the "subtag" is saved here
                     marcFieldList = record.getVariableFields("LOK");
                     if (!marcFieldList.isEmpty())
-                        extractCachedTopicsHelper(marcFieldList, separators, subcollector, fieldTag, subfieldTags, includeFieldPredicate);
+                        extractCachedTopicsHelper(marcFieldList, separators, cachedSubcollector, fieldTag, subfieldTags, includeFieldPredicate);
                 }
                 // Case 2: We have an ordinary MARC field
                 else {
                     marcFieldList = record.getVariableFields(fieldTag);
                     if (!marcFieldList.isEmpty())
-                        extractCachedTopicsHelper(marcFieldList, separators, subcollector, fieldTag, subfieldTags, includeFieldPredicate);
+                        extractCachedTopicsHelper(marcFieldList, separators, cachedSubcollector, fieldTag, subfieldTags, includeFieldPredicate);
                 }
             }
 
-            collectedTopicsCache.put(cacheKey, subcollector);
-        }
+            return cachedSubcollector;
+        });
 
         // Part 2: Translate & deliver previously collected topics
         for (final Collection<Topic> topicParts : subcollector) {
@@ -3105,58 +3094,83 @@ public class TueFindBiblio extends TueFind {
         return fulltextIDList.contains(ppn);
     }
 
+    protected static CloseableHttpClient elasticsearchClient;
+
+    protected synchronized CloseableHttpClient getSharedElasticsearchClient() {
+        // Use shared client for better performance, see:
+        // https://stackoverflow.com/questions/43730286/closeablehttpclient-blocks-per-few-minutes-under-high-concurrency
+        if (elasticsearchClient == null) {
+            // Use concurrency limit, see:
+            // https://www.tutorialspoint.com/apache_httpclient/apache_httpclient_multiple_threads.htm
+            PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+            connManager.setMaxTotal(10);
+            HttpClientBuilder elasticsearchClientBuilder = HttpClients.custom().setConnectionManager(connManager);
+            elasticsearchClient = elasticsearchClientBuilder.build();
+        }
+        return elasticsearchClient;
+    }
 
     protected String getElasticsearchSearchResponse(final Record record) throws IOException {
         if (isFullTextDisabled())
             return "";
         if (!IsInFulltextPPNList(record.getControlNumber()))
             return "";
+
         final String esHost = getElasticsearchHost();
         final String esPort = getElasticsearchPort();
-        CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://" + esHost + ":" + esPort + "/full_text_cache/_search");
-        String fulltextById = "{ \"query\" : { \"match\" : { \"id\" : \"" + record.getControlNumber() + "\" } } }";
-        StringEntity stringEntity = new StringEntity(fulltextById);
+        final String fulltextById = "{ \"query\" : { \"match\" : { \"id\" : \"" + record.getControlNumber() + "\" } } }";
+        final StringEntity stringEntity = new StringEntity(fulltextById);
         httpPost.setEntity(stringEntity);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        try {
-            HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity, StandardCharsets.UTF_8);
-        } finally {
-            response.close();
-        }
+        CloseableHttpResponse response = getSharedElasticsearchClient().execute(httpPost);
+        HttpEntity entity = response.getEntity();
+        final String result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+        EntityUtils.consume(entity);
+        return result;
+    }
+
+    protected JSONArray getFullTextServerHits(final Record record) throws Exception {
+        return fulltextServerHitsCache.computeIfAbsent(record.getControlNumber(), hits -> {
+            try {
+                final String es_search_response = getElasticsearchSearchResponse(record);
+                return getElasticsearchHits(es_search_response);
+            } catch (Exception e) {
+                // The lambda interface here does nut support regular exceptions,
+                // So we need to wrap any exception in a runtime exception
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public String getFullTextElasticsearch(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Fulltext");
     }
 
 
-    public String getFullTextElasticsearch(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Fulltext");
+    public String getFullTextElasticsearchTOC(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Table of Contents");
     }
 
 
-    public String getFullTextElasticsearchTOC(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Table of Contents");
+    public String getFullTextElasticsearchAbstract(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Abstract");
     }
 
 
-    public String getFullTextElasticsearchAbstract(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Abstract");
+    public String getFullTextElasticsearchSummary(final Record record) throws Exception {
+        return extractFullTextFromJSON(getFullTextServerHits(record), "Summary");
     }
 
 
-    public String getFullTextElasticsearchSummary(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "Summary");
+    public Set<String> getFullTextTypes(final Record record) throws Exception {
+        return extractTextTypeFromJSON(getFullTextServerHits(record));
     }
 
 
-    public Set<String> getFullTextTypes(final Record record) {
-        return extractTextTypeFromJSON(fulltext_server_hits);
-    }
-
-
-    public String getHasPublisherFullText(final Record record) {
-        return Boolean.toString(extractIsPublisherProvidedFromJSON(fulltext_server_hits));
+    public String getHasPublisherFullText(final Record record) throws Exception {
+        return Boolean.toString(extractIsPublisherProvidedFromJSON(getFullTextServerHits(record)));
     }
 
 

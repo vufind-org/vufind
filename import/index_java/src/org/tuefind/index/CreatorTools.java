@@ -149,8 +149,6 @@ public class CreatorTools extends org.vufind.index.CreatorTools
     public List<String> getAuthorIdsByPrefixFilteredByRelator(final Record record, final String tagList, final String acceptWithoutRelator,
                                                               final String relatorConfig, final String prefix)
     {
-        authorIdsCache.cleanup();
-
         final String cacheKey = tagList + acceptWithoutRelator + relatorConfig;
         ConcurrentHashMap<String, List<String>> cacheEntry = authorIdsCache.computeIfAbsent(record.getControlNumber(), e -> new ConcurrentHashMap<String, List<String>>());
         List<String> idsStrings = cacheEntry.computeIfAbsent(cacheKey, innerCacheEntry -> {
