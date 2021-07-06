@@ -63,11 +63,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $config = [
             'url' => 'http://foo/bar'
         ];
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'results');
+        $driver = $this->getMockDriver();
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'results');
         $this->assertTrue($openUrl->isActive());
-        $openUrl = $this->getOpenUrl(null, $config)
-            ->__invoke($this->getMockDriver(), 'foo');
+        $openUrl = ($this->getOpenUrl(null, $config))($driver, 'foo');
         $this->assertFalse($openUrl->isActive());
     }
 

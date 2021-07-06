@@ -221,7 +221,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($config));
         $container->set(\VuFind\Config\PluginManager::class, $configManager);
         $markdownFactory = new MarkdownFactory();
-        $markdown = $markdownFactory->__invoke(
+        $markdown = $markdownFactory(
             $container, \League\CommonMark\MarkdownConverterInterface::class
         );
         return $markdown;
