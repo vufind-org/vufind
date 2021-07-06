@@ -196,9 +196,9 @@ public class TueFindBiblio extends TueFind {
     };
 
 
-    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap(100);
-    protected ConcurrentLimitedHashMap<String, Collection<Collection<Topic>>> collectedTopicsCache = new ConcurrentLimitedHashMap(100);
-    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap(100);
+    protected ConcurrentLimitedHashMap<String, Set<String>> isilsCache = new ConcurrentLimitedHashMap<>(100);
+    protected ConcurrentLimitedHashMap<String, Collection<Collection<Topic>>> collectedTopicsCache = new ConcurrentLimitedHashMap<>(100);
+    protected ConcurrentLimitedHashMap<String, JSONArray> fulltextServerHitsCache = new ConcurrentLimitedHashMap<>(100);
     protected static final String fullHostName;
     static {
         String tmp = ""; // Needed for syntactical reasons
