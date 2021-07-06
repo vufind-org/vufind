@@ -550,7 +550,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = new Record($config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);
-        return $record->__invoke($driver);
+        return $record($driver);
     }
 
     /**
