@@ -3125,14 +3125,10 @@ public class TueFindBiblio extends TueFind {
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
         CloseableHttpResponse response = getSharedElasticsearchClient().execute(httpPost);
-        try {
-            HttpEntity entity = response.getEntity();
-            final String result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-            EntityUtils.consume(entity);
-            return result;
-        } finally {
-            response.close();
-        }
+        HttpEntity entity = response.getEntity();
+        final String result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+        EntityUtils.consume(entity);
+        return result;
     }
 
     protected JSONArray getFullTextServerHits(final Record record) throws Exception {
