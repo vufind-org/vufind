@@ -196,7 +196,7 @@ public class TueFindBiblio extends TueFind {
     };
 
 
-    protected Set<String> isils_cache = null;
+    protected ConcurrentLimitedHashMap<String, List<String>> isils_cache = new ConcurrentLimitedHashMap(1000);
     protected Map<String, Collection<Collection<Topic>>> collectedTopicsCache = new TreeMap<>();
     protected JSONArray fulltext_server_hits = new JSONArray();
     protected static final String fullHostName;
@@ -213,7 +213,6 @@ public class TueFindBiblio extends TueFind {
 
     @Override
     public void perRecordInit(Record record) throws Exception {
-        isils_cache = null;
         collectedTopicsCache = new TreeMap<>();
         final String es_search_response = getElasticsearchSearchResponse(record);
         fulltext_server_hits = getElasticsearchHits(es_search_response);
@@ -646,31 +645,28 @@ public class TueFindBiblio extends TueFind {
      * @return Set of isils
      */
     public Set<String> getIsils(final Record record) {
-        if (isils_cache != null) {
-            return isils_cache;
-        }
-
-        final Set<String> isils = new LinkedHashSet<>();
-        final List<VariableField> fields = record.getVariableFields("LOK");
-        if (fields != null) {
-            for (final VariableField variableField : fields) {
-                final DataField lokfield = (DataField) variableField;
-                final Subfield subfield0 = lokfield.getSubfield('0');
-                if (subfield0 == null || !subfield0.getData().startsWith("852")) {
-                    continue;
-                }
-                final Subfield subfieldA = lokfield.getSubfield('a');
-                if (subfieldA != null) {
-                    isils.add(subfieldA.getData());
+        return isils_cache.computeIfAbsent(record.getControlNumber(), value -> {
+            final Set<String> isils = new LinkedHashSet<>();
+            final List<VariableField> fields = record.getVariableFields("LOK");
+            if (fields != null) {
+                for (final VariableField variableField : fields) {
+                    final DataField lokfield = (DataField) variableField;
+                    final Subfield subfield0 = lokfield.getSubfield('0');
+                    if (subfield0 == null || !subfield0.getData().startsWith("852")) {
+                        continue;
+                    }
+                    final Subfield subfieldA = lokfield.getSubfield('a');
+                    if (subfieldA != null) {
+                        isils.add(subfieldA.getData());
+                    }
                 }
             }
-        }
 
-        if (isils.isEmpty()) { // Nothing worked!
-            isils.add("Unknown");
-        }
-        this.isils_cache = isils;
-        return isils;
+            if (isils.isEmpty()) { // Nothing worked!
+                isils.add("Unknown");
+            }
+            return isils;
+        });
     }
 
     public Set<String> getJournalIssue(final Record record) {
