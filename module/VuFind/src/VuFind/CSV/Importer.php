@@ -50,13 +50,22 @@ class Importer
     protected $serviceLocator;
 
     /**
+     * Base path for loading .ini files
+     *
+     * @var string
+     */
+    protected $configBaseDir;
+
+    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ServiceLocatorInterface $sm      Service manager
+     * @param array                   $options Configuration options
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    public function __construct(ServiceLocatorInterface $sm, array $options = [])
     {
         $this->serviceLocator = $sm;
+        $this->configBaseDir = $options['configBaseDir'] ?? 'import';
     }
 
     /**
@@ -189,7 +198,7 @@ class Importer
     protected function getConfiguration(string $iniFile, $in): ImporterConfig
     {
         // Load properties file:
-        $ini = ConfigLocator::getConfigPath($iniFile, 'import');
+        $ini = ConfigLocator::getConfigPath($iniFile, $this->configBaseDir);
         if (!file_exists($ini)) {
             throw new \Exception("Cannot load .ini file: {$ini}.");
         }
