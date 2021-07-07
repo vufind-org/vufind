@@ -298,74 +298,6 @@ function removeCheckRouteParam() {
   }
 }
 
-function initTruncate(_holder, _target, _fill) {
-  $(_holder).each(function truncate() {
-    var holder = $(this);
-    var target = holder.find(_target);
-
-    var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
-    var targetElemName = target.length && target.prop('tagName').toLowerCase();
-    var targetClass = target.length ? ' ' + target.prop('class') : '';
-    var rowCount = holder.data('rows') || 3;
-    var moreLabel = holder.data('more-label') ? holder.data('more-label') : VuFind.translate('show_more');
-    var lessLabel = holder.data('less-label') ? holder.data('less-label') : VuFind.translate('show_less');
-    var btnSize = holder.data('btn-size') ? ' ' + holder.data('btn-size') : '';
-    var topToggle = holder.data('top-toggle') || Infinity;
-    var inPlaceToggle = holder.data('in-place-toggle') || false;
-
-    var numRows = holder.find(target).length || 0;
-    var hasTopToggle = numRows > topToggle;
-    // Truncate only if there's more than one line to hide
-    var shouldTruncate = rowCount < numRows || false;
-    var truncateAfter = rowCount - 1;
-    target.each(function hideRows(i) {
-      if (i === truncateAfter) {
-        $(this).addClass('truncate-after');
-      }
-      if (i > truncateAfter && shouldTruncate) {
-        $(this).hide();
-        $(this).addClass('truncate-toggle');
-      }
-    });
-
-    if (shouldTruncate) {
-      var btn = '<button type="button" class="more-link btn' + btnSize + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button><button type="button" class="less-link btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
-      var btnLessTop = '<button type="button" class="less-link-top btn' + btnSize + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
-      var btnWrapper = $('<' + targetElemName + ' class="more-less-btn-wrapper' + targetClass + '"></' + targetElemName + '>');
-      var btnWrapperBtm = btnWrapper.clone().append(fill(btn));
-      var btnWrapperTop = btnWrapper.clone().append(fill(btnLessTop));
-
-      // Attach show/hide buttons to the top and bottom or display in place
-      if (hasTopToggle) {
-        $(btnWrapperTop).prependTo(holder);
-      }
-      if (inPlaceToggle) {
-        $(btnWrapperBtm).insertAfter(holder.find('.truncate-after'));
-      } else {
-        $(btnWrapperBtm).appendTo(holder);
-      }
-
-      holder.find('.less-link, .less-link-top').hide();
-
-      holder.find('.less-link, .less-link-top').click(function onClickLessLink(/*event*/) {
-        holder.find('.less-link, .less-link-top').hide();
-        holder.find('.more-link').show();
-        holder.find('.truncate-toggle').toggle();
-      });
-
-      holder.find('.more-link').click(function onClickMoreLink(/*event*/) {
-        $(this).hide();
-        holder.find('.less-link').show();
-        if (hasTopToggle) {
-          holder.find('.less-link-top').show();
-        }
-        holder.find('.truncate-toggle').toggle();
-      });
-    }
-    holder.addClass('truncate-done');
-  });
-}
-
 function recordDocReady() {
   removeCheckRouteParam();
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
@@ -411,8 +343,8 @@ function recordDocReady() {
     backgroundLoadTab(el.dataset.tab);
   });
 
-  initTruncate('.truncate-subjects', '.subject-line');
-  initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
+  VuFind.truncate.initTruncate('.truncate-subjects', '.subject-line');
+  VuFind.truncate.initTruncate('table.truncate-field', 'tr[typeof="Offer"]', function createTd(m) { return '<td colspan="2">' + m + '</td>'; });
   registerTabEvents();
   applyRecordTabHash();
 }
