@@ -470,10 +470,9 @@ class DAIA extends AbstractBase implements
                 $params, $this->daiaTimeout, $http_headers
             );
         } catch (\Exception $e) {
-            throw new ILSException(
-                'HTTP request exited with Exception ' . $e->getMessage() .
-                ' for record: ' . $id, 0, $e
-            );
+            $msg = 'HTTP request exited with Exception ' . $e->getMessage() .
+                ' for record: ' . $id;
+            $this->throwAsIlsException($e, $msg);
         }
 
         if (!$result->isSuccess()) {

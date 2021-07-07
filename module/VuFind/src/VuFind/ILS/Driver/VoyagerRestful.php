@@ -1956,7 +1956,7 @@ EOT;
                 throw new DateException('Result should be numeric');
             }
         } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.', 0, $e);
+            $this->throwAsIlsException($e, 'Problem parsing required by date.');
         }
 
         if (time() > $checkTime) {

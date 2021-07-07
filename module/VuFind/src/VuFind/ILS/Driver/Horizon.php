@@ -100,8 +100,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException(
-                'ILS Configuration problem : ' . $e->getMessage(), 0, $e
+            $this->throwAsIlsException(
+                $e, 'ILS Configuration problem : ' . $e->getMessage()
             );
         }
     }
