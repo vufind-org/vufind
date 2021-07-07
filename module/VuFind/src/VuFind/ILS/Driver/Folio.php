@@ -499,6 +499,24 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Choose a call number and callnumber prefix.
+     *
+     * @param string $hCallNumP Holding-level call number prefix
+     * @param string $hCallNum  Holding-level call number
+     * @param string $iCallNumP Item-level call number prefix
+     * @param string $iCallNum  Item-level call number
+     *
+     * @return array with call number and call number prefix.
+     */
+    protected function chooseCallNumber($hCallNumP, $hCallNum, $iCallNumP, $iCallNum)
+    {
+        if (empty($iCallNum)) {
+            return ['prefix' => $hCallNumP, 'callnumber' => $hCallNum];
+        }
+        return ['prefix' => $iCallNumP, 'callnumber' => $iCallNum];
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -565,6 +583,12 @@ class Folio extends AbstractAPI implements
                 $locationCode = $locationData['code'];
                 $itemCallNumber = $item->itemLevelCallNumber ?? '';
                 $itemCallNumberPrefix = $item->itemLevelCallNumberPrefix ?? '';
+                $callNumberData = $this->chooseCallNumber(
+                    $holdingCallNumberPrefix,
+                    $holdingCallNumber,
+                    $itemCallNumberPrefix,
+                    $itemCallNumber
+                );
                 $items[] = [
                     'id' => $bibId,
                     'item_id' => $item->id,
@@ -579,10 +603,8 @@ class Folio extends AbstractAPI implements
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
-                    'callnumber' => $itemCallNumber
-                        ? $itemCallNumber : $holdingCallNumber,
-                    'callnumber_prefix' => $itemCallNumberPrefix
-                        ? $itemCallNumberPrefix : $holdingCallNumberPrefix,
+                    'callnumber' => $callNumberData['callnumber'],
+                    'callnumber_prefix' => $callNumberData['prefix'],
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
