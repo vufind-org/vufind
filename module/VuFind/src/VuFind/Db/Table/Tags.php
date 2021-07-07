@@ -281,7 +281,7 @@ class Tags extends Gateway
      *
      * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
-    public function getForUser($userId, $resourceId = null, $listId = null,
+    public function getListTagsForUser($userId, $resourceId = null, $listId = null,
         $source = null
     ) {
         $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
