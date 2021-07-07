@@ -193,12 +193,11 @@ class UrlQueryHelper
      * @param string $name          Name of parameter
      * @param string $value         Value of parameter
      * @param bool   $forceOverride Force an override of the existing value, even if
-     * it was set in the incoming $urlParams in the constructor (defaults to true for
-     * backward compatibility)
+     * it was set in the incoming $urlParams in the constructor (defaults to false)
      *
      * @return UrlQueryHelper
      */
-    public function setDefaultParameter($name, $value, $forceOverride = true)
+    public function setDefaultParameter($name, $value, $forceOverride = false)
     {
         // Add the new default to the configuration, and apply it to the query
         // if no existing value has already been set in this position (or if an
