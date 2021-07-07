@@ -131,7 +131,7 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
@@ -231,7 +231,7 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
@@ -348,7 +348,7 @@ HERE;
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -393,7 +393,7 @@ HERE;
             }
             return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -450,7 +450,7 @@ HERE;
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -510,7 +510,7 @@ HERE;
             }
             return $holdList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -566,7 +566,7 @@ HERE;
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -606,7 +606,7 @@ HERE;
         $sqlStmt = $this->db->prepare($sql);
         $sqlStmt->execute();
     } catch (PDOException $e) {
-        throw new ILSException($e->getMessage(), 0, $e);
+        $this->throwAsIlsException($e);
     }
     */
     //}
@@ -671,7 +671,7 @@ HERE;
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['count'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         // TODO: implement paging support
@@ -692,7 +692,7 @@ HERE;
             }
             return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -718,7 +718,7 @@ HERE;
                 $list[] = $row['name'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -746,7 +746,7 @@ HERE;
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         return $list;

@@ -595,7 +595,7 @@ class DAIA extends AbstractBase implements
             try {
                 $docs = $this->convertDaiaXmlToJson($daiaResponse);
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage(), 0, $e);
+                $this->throwAsIlsException($e);
             }
         } elseif ($this->daiaResponseFormat == 'json') {
             $docs = json_decode($daiaResponse, true);

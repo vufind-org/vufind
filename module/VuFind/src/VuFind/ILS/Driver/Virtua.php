@@ -1890,7 +1890,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             }
             $result = $client->setMethod($method)->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {

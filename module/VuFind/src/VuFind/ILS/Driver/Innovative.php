@@ -75,7 +75,7 @@ class Innovative extends AbstractBase implements
         try {
             $result = $this->httpService->get($url);
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {

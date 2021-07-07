@@ -276,7 +276,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         $this->debug('Connected to DB');
@@ -385,7 +385,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $client->send();
         } catch (\Exception $e) {
             $this->debug("Result is invalid.");
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -450,7 +450,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $client->send();
         } catch (\Exception $e) {
             $this->debug("Result is invalid.");
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -582,7 +582,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         $this->pickupEnableBranchcodes = $sqlSt->fetch();
                     } catch (PDOException $e) {
                         $this->debug('Connection failed: ' . $e->getMessage());
-                        throw new ILSException($e->getMessage(), 0, $e);
+                        $this->throwAsIlsException($e);
                     }
                 } elseif (!empty($holdDetails['level'])
                     && $holdDetails['level'] == 'title'
@@ -600,7 +600,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         }
                     } catch (PDOException $e) {
                         $this->debug('Connection failed: ' . $e->getMessage());
-                        throw new ILSException($e->getMessage(), 0, $e);
+                        $this->throwAsIlsException($e);
                     }
                 }
             }
@@ -617,7 +617,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->locations = $sqlSt->fetchAll();
             } catch (PDOException $e) {
                 $this->debug('Connection failed: ' . $e->getMessage());
-                throw new ILSException($e->getMessage(), 0, $e);
+                $this->throwAsIlsException($e);
             }
         }
         return $this->locations;
@@ -856,7 +856,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());
@@ -1184,7 +1184,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             return $transactionLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1405,7 +1405,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $blocks[] = implode(' - ', $block);
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
 
         return count($blocks) ? $blocks : false;
@@ -1490,7 +1490,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'transactions' => $historicLoans
             ];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1648,7 +1648,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $result[] = ['issue' => $rowItem["date and enumeration"]];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
         return $result;
     }
@@ -1728,7 +1728,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $result[] = $rowItem["biblionumber"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
         return $result;
     }
@@ -1757,7 +1757,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $deptList[$rowItem["abv"]] = $rowItem["DEPARTMENT"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
         return $deptList;
     }
@@ -1787,7 +1787,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $instList[$rowItem["borrowernumber"]] = $rowItem["name"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
         return $instList;
     }
@@ -1816,7 +1816,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $courseList[$rowItem["course_id"]] = $rowItem["course"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
         return $courseList;
     }
@@ -1881,7 +1881,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $result[] = $rowItem;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage(), 0, $e);
+            $this->throwAsIlsException($e);
         }
         return $result;
     }

@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver;
 
+use VuFind\Exception\ILS as ILSException;
+
 /**
  * Default ILS driver base class.
  *
@@ -60,5 +62,18 @@ abstract class AbstractBase implements DriverInterface
     public function setConfig($config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * Rethrow the provided exception as an ILS exception.
+     *
+     * @param \Throwable $exception Exception to rethrow
+     *
+     * @throws ILSException
+     * @return void
+     */
+    protected function throwAsIlsException(\Throwable $exception): void
+    {
+        throw new ILSException($exception->getMessage(), 0, $exception);
     }
 }
