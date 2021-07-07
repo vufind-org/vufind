@@ -11,7 +11,7 @@ VuFind.register('truncate', function Truncate() {
         ? container.find(_element)
         : container.data('element')
           ? container.find(container.data('element'))
-          : null;
+          : false;
       var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
       var rowCount = typeof container.data('rows') !== 'undefined' ? container.data('rows') : 3;
       var moreLabel, lessLabel;
