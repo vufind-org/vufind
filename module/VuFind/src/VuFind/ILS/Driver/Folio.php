@@ -1054,7 +1054,7 @@ class Folio extends AbstractAPI implements
                 $holdDetails['requiredBy']
             );
         } catch (Exception $e) {
-            throw new ILSException('hold_date_invalid');
+            $this->throwAsIlsException($e, 'hold_date_invalid');
         }
         $requestBody = [
             'itemId' => $holdDetails['item_id'],
@@ -1085,7 +1085,7 @@ class Folio extends AbstractAPI implements
                     'status' => $json->errors[0]->message
                 ];
             } catch (Exception $e) {
-                throw new ILSException($response->getBody());
+                $this->throwAsIlsException($e, $response->getBody());
             }
         }
         return $result;
