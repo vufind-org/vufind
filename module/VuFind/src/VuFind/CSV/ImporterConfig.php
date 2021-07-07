@@ -183,7 +183,7 @@ class ImporterConfig
         $fields = [];
         foreach ($this->getAllFields() as $field) {
             $values = $this->getField($field)['value'] ?? [];
-            $fields[$field] = $values;
+            $fields[$field] = (array)$values;
         }
         return $fields;
     }
