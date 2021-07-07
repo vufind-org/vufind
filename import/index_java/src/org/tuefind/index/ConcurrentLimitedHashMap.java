@@ -36,7 +36,10 @@ public class ConcurrentLimitedHashMap<K extends Object, V extends Object> extend
      */
     protected synchronized void cleanup() {
         while (keyHistory.size() > maxSize) {
-            keyHistory.removeFirst();
+            // Get oldest key from history & remove from history
+            K k = keyHistory.pollFirst();
+            // Delete entry from cache itself
+            remove(k);
         }
     }
 
