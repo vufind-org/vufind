@@ -139,7 +139,7 @@ class Results extends BaseResults
                 switch ($field) {
                 case 'tags':
                     if ($this->list) {
-                        $tags = $this->list->getTags();
+                        $tags = $this->list->getResourceTags();
                     } else {
                         $tags = $this->user ? $this->user->getTags() : [];
                     }
