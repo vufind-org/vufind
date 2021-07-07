@@ -70,8 +70,7 @@ class RouterFactory implements FactoryInterface
             $base = $container->get('ControllerPluginManager')->get('url')
                 ->fromRoute('cover-show');
         } catch (\Exception $e) {
-            $base = $container->get('ViewRenderer')->plugin('url')
-                ->__invoke('cover-show');
+            $base = ($container->get('ViewRenderer')->plugin('url'))('cover-show');
         }
         $coverLoader = $container->get(\VuFind\Cover\Loader::class);
         return new $requestedName($base, $coverLoader);

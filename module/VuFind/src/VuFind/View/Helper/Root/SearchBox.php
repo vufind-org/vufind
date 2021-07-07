@@ -349,8 +349,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getAlphabrowseHandlers($activeHandler, $indent = true)
     {
-        $alphaBrowseBase = $this->getView()->plugin('url')
-            ->__invoke('alphabrowse-home');
+        $alphaBrowseBase = ($this->getView()->plugin('url'))('alphabrowse-home');
         $labelPrefix = $this->getView()->translate('Browse Alphabetically') . ': ';
         $handlers = [];
         foreach ($this->alphabrowseConfig as $source => $label) {
