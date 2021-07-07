@@ -21,7 +21,7 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="latest-2.x" />
+  <property name="composer_version" value="2.0.13" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->

@@ -30,18 +30,13 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
-use InvalidArgumentException;
-
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Http\Client\Adapter\AdapterInterface;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
 
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
@@ -74,6 +69,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
+     * HTTP client
+     *
+     * @var HttpClient
+     */
+    protected $client;
+
+    /**
      * URL or an array of alternative URLs of the SOLR core.
      *
      * @var string|array
@@ -99,23 +101,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @var int
      */
-    protected $timeout = 30;
-
-    /**
-     * Proxy service
-     *
-     * @var mixed
-     */
-    protected $proxy;
-
-    /**
-     * HTTP client adapter.
-     *
-     * Either the class name or a adapter instance.
-     *
-     * @var string|AdapterInterface
-     */
-    protected $adapter = 'Laminas\Http\Client\Adapter\Socket';
+    protected $timeout;
 
     /**
      * Request cache
@@ -130,12 +116,17 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @param string|array $url       SOLR core URL or an array of alternative URLs
      * @param HandlerMap   $map       Handler map
      * @param string       $uniqueKey Solr field used to store unique identifier
+     * @param HttpClient   $client    HTTP client (optional)
      */
-    public function __construct($url, HandlerMap $map, $uniqueKey = 'id')
-    {
+    public function __construct($url, HandlerMap $map, $uniqueKey = 'id',
+        HttpClient $client = null
+    ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
+        $this->client = $client ?? new HttpClient();
+        // Set default timeout:
+        $this->setTimeout(30);
     }
 
     /// Public API
@@ -267,20 +258,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the HTTP proxy service.
-     *
-     * @param mixed $proxy Proxy service
-     *
-     * @return void
-     *
-     * @todo Typehint on ProxyInterface
-     */
-    public function setProxy($proxy)
-    {
-        $this->proxy = $proxy;
-    }
-
-    /**
      * Get the HTTP connect timeout.
      *
      * @return int
@@ -299,30 +276,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function setTimeout($timeout)
     {
+        // Ideally, it would be nice to fully delegate the timeout setting to the
+        // client... however, there is no way to retrieve the setting from the
+        // client, so we need to also store it here in the connector.
         $this->timeout = $timeout;
-    }
-
-    /**
-     * Set HTTP client adapter.
-     *
-     * Keep in mind that a proxy service might replace the client adapter by a
-     * Proxy adapter if necessary.
-     *
-     * @param string|AdapterInterface $adapter Adapter or name of adapter class
-     *
-     * @return void
-     */
-    public function setAdapter($adapter)
-    {
-        if (is_object($adapter) && (!$adapter instanceof AdapterInterface)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'HTTP client adapter must implement AdapterInterface: %s',
-                    get_class($adapter)
-                )
-            );
-        }
-        $this->adapter = $adapter;
+        $this->client->setOptions(compact('timeout'));
     }
 
     /**
@@ -425,14 +383,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         // Loop through all base URLs and try them in turn until one works.
         $cacheKey = null;
         foreach ((array)$this->url as $base) {
-            $client = $this->createClient($base . $urlSuffix, $method);
+            $this->client->resetParameters();
+            $this->client->setMethod($method);
+            $this->client->setUri($base . $urlSuffix);
             if (is_callable($callback)) {
-                $callback($client);
+                $callback($this->client);
             }
             // Always create the cache key from the first server, and only after any
             // callback has been called above.
             if ($cacheable && $this->cache && null === $cacheKey) {
-                $cacheKey = md5($client->getRequest()->toString());
+                $cacheKey = md5($this->client->getRequest()->toString());
                 try {
                     if ($result = $this->cache->getItem($cacheKey)) {
                         $this->debug('Returning cached results');
@@ -443,7 +403,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 }
             }
             try {
-                $result = $this->send($client);
+                $result = $this->send($this->client);
 
                 if ($cacheKey) {
                     try {
@@ -517,26 +477,5 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();
-    }
-
-    /**
-     * Create the HTTP client.
-     *
-     * @param string $url    Target URL
-     * @param string $method Request method
-     *
-     * @return HttpClient
-     */
-    protected function createClient($url, $method)
-    {
-        $client = new HttpClient();
-        $client->setAdapter($this->adapter);
-        $client->setOptions(['timeout' => $this->timeout]);
-        $client->setUri($url);
-        $client->setMethod($method);
-        if ($this->proxy) {
-            $this->proxy->proxify($client);
-        }
-        return $client;
     }
 }

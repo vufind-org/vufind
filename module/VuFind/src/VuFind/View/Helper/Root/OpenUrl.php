@@ -233,9 +233,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
-        return $this->context->__invoke($this->getView())->renderInContext(
-            'Helpers/openurl.phtml', $params
-        );
+        return ($this->context)($this->getView())
+            ->renderInContext('Helpers/openurl.phtml', $params);
     }
 
     /**

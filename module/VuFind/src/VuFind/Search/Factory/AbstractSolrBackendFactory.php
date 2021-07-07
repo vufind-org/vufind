@@ -365,20 +365,16 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
+        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
+        $client = $httpService->createClient();
+
         $connector = new $this->connectorClass(
-            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
+            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey, $client
         );
-        $connector->setTimeout(
-            $config->Index->timeout ?? 30
-        );
+        $connector->setTimeout($config->Index->timeout ?? 30);
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
-        }
-        if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
-            $connector->setProxy(
-                $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            );
         }
 
         if (!empty($searchConfig->SearchCache->adapter)) {

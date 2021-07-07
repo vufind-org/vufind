@@ -104,18 +104,6 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Get an array of resource tags associated with this list.
-     *
-     * @deprecated Deprecated, use getResourceTags.
-     *
-     * @return array
-     */
-    public function getTags()
-    {
-        return $this->getResourceTags();
-    }
-
-    /**
      * Get an array of tags assigned to this list.
      *
      * @return array

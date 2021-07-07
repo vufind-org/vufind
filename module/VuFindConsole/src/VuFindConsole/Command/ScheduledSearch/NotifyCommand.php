@@ -431,12 +431,12 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function buildEmail($s, $user, $searchObject, $newRecords)
     {
         $viewBaseUrl = $searchUrl = $s->notification_base_url;
-        $searchUrl .= $this->urlHelper->__invoke(
+        $searchUrl .= ($this->urlHelper)(
             $searchObject->getOptions()->getSearchAction()
         ) . $searchObject->getUrlQuery()->getParams(false);
         $secret = $s->getUnsubscribeSecret($this->hmac, $user);
         $unsubscribeUrl = $s->notification_base_url
-            . $this->urlHelper->__invoke('myresearch-unsubscribe')
+            . ($this->urlHelper)('myresearch-unsubscribe')
             . "?id={$s->id}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();

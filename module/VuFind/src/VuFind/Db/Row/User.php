@@ -269,7 +269,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
         return $this->getDbTable('Tags')
-            ->getForUser($this->id, $resourceId, $listId, $source);
+            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
     }
 
     /**
