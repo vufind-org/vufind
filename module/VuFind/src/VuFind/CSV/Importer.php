@@ -47,7 +47,7 @@ class Importer
      *
      * @var ServiceLocatorInterface
      */
-    protected ServiceLocatorInterface $serviceLocator;
+    protected $serviceLocator;
 
     /**
      * Constructor
