@@ -280,7 +280,7 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     protected function getSearchActionForSource($source)
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
-        return $optionsHelper->__invoke($source)->getSearchAction();
+        return $optionsHelper($source)->getSearchAction();
     }
 
     /**
@@ -294,6 +294,6 @@ class RecordLink extends \Laminas\View\Helper\AbstractHelper
     protected function getVersionsActionForSource($source)
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
-        return $optionsHelper->__invoke($source)->getVersionsAction();
+        return $optionsHelper($source)->getVersionsAction();
     }
 }
