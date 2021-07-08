@@ -4,7 +4,7 @@ VuFind.register('truncate', function Truncate() {
   function initTruncate(_container, _element, _fill) {
     var zeroHeightContainers = [];
 
-    $(_container).each(function truncate() {
+    $(_container).not('.truncate-done').each(function truncate() {
       var container = $(this);
 
       var element = typeof _element !== 'undefined'
