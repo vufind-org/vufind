@@ -4,7 +4,7 @@ VuFind.register('truncate', function Truncate() {
   function initTruncate(_container, _element, _fill) {
     var zeroHeightContainers = [];
 
-    $(_container).each(function truncate() {
+    $(_container).not('.truncate-done').each(function truncate() {
       var container = $(this);
 
       var element = typeof _element !== 'undefined'
@@ -115,7 +115,7 @@ VuFind.register('truncate', function Truncate() {
             container.css('height', truncatedHeight + 'px');
           }
           btnWrapperBtm.find('.more-btn').focus();
-        }
+        };
         btnWrapperBtm.find('.less-btn').click(onClickLessBtn);
         if (btnWrapperTop) {
           btnWrapperTop.find('.less-btn').click(onClickLessBtn);
