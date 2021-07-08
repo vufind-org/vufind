@@ -98,18 +98,18 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     /**
      * Construct a listener for testing.
      *
-     * @param array $hideFacetValues          Assoc. array of field name => values
+     * @param array $hideFacetValues Assoc. array of field name => values
      * to exclude from display (see also next param).
-     * @param array $hideAllFacetValuesExcept Assoc. array of field name => values
+     * @param array $showFacetValues Assoc. array of field name => values
      * to exclusively show in display (see also previous param).
      *
      * @return HideFacetValueListener
      */
     protected function getListener(array $hideFacetValues = [],
-        array $hideAllFacetValuesExcept = []
+        array $showFacetValues = []
     ): HideFacetValueListener {
         return new HideFacetValueListener(
-            $this->getMockBackend(), $hideFacetValues, $hideAllFacetValuesExcept
+            $this->getMockBackend(), $hideFacetValues, $showFacetValues
         );
     }
 
@@ -154,11 +154,11 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test actual functionality of listener, with "hide facets except" setting.
+     * Test actual functionality of listener, with "show facets" setting.
      *
      * @return void
      */
-    public function testHideFacetsExcept(): void
+    public function testShowFacets(): void
     {
         $listener = $this->getListener([], ['format' => ['Book']]);
         $result = $this->getMockResult();
@@ -177,13 +177,13 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test actual functionality of listener, with "hide facets" and "hide facets
-     * except" settings, demonstrating that both can be applied together (though
-     * doing so in a real-world scenario would not really make sense).
+     * Test actual functionality of listener, with "hide facets" and "show facets"
+     * settings, demonstrating that both can be applied together (though doing so in
+     * a real-world scenario would not really make sense).
      *
      * @return void
      */
-    public function testHideFacetsAndHideFacetsExcept(): void
+    public function testHideFacetsAndShowFacets(): void
     {
         $listener = $this->getListener(
             ['format' => ['Fake']], ['format' => ['Book', 'Fake']]
