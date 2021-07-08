@@ -85,6 +85,19 @@ $config = [
                     ],
                 ],
             ],
+            'myresearch-publish' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => "/MyResearch/Publish/[:record_id]",
+                    'constraints' => [
+                        'record_id'     => '[0-9A-Z]{8,}',
+                    ],
+                    'defaults' => [
+                        'controller' => 'MyResearch',
+                        'action'     => 'publish',
+                    ],
+                ],
+            ],
             'myresearch-rssfeedraw' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -256,7 +269,7 @@ $config = [
 
 $recordRoutes = [];
 $dynamicRoutes = [];
-$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/Publish', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
+$staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);

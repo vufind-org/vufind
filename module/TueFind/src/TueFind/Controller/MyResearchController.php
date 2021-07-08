@@ -16,7 +16,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $authorityRecords = [];
         foreach ($userAuthorities as $userAuthority) {
-            $authorityRecords[$userAuthority['authority_id']] = $this->serviceLocator->get(\VuFind\Record\Loader::class)
+            $authorityRecords[$userAuthority['authority_id']] = $this->getRecordLoader()
                 ->load($userAuthority['authority_id'], 'SolrAuth');
         }
 
@@ -128,6 +128,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $this->forceLogin();
         }
 
+        $existingRecord = null;
+        $dublinCore = null;
+        $existingRecordId = $this->params()->fromRoute('record_id', null);
+        if ($existingRecordId != null) {
+            $existingRecord = $this->getRecordLoader()->load($existingRecordId);
+            $dublinCore = $this->serviceLocator->get(\VuFind\MetadataVocabulary\PluginManager::class)->get('DublinCore')->getMappedData($existingRecord);
+        }
+
         $action = $this->params()->fromPost('action');
         if ($action == 'publish') {
             $packagePath = $this->generatePublishPackageFromPost();
@@ -137,7 +145,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         }
 
-        return $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
+        $view = $this->createViewModel($this->getUserAuthoritiesAndRecords($user, /* $onlyGranted = */ true, /* $exceptionIfEmpty = */ true));
+        $view->existingRecord = $existingRecord;
+        $view->dublinCore = $dublinCore;
+        return $view;
     }
 
     public function rssFeedSettingsAction()
