@@ -115,7 +115,7 @@ VuFind.register('truncate', function Truncate() {
             container.css('height', truncatedHeight + 'px');
           }
           btnWrapperBtm.find('.more-btn').focus();
-        }
+        };
         btnWrapperBtm.find('.less-btn').click(onClickLessBtn);
         if (btnWrapperTop) {
           btnWrapperTop.find('.less-btn').click(onClickLessBtn);
