@@ -511,9 +511,9 @@ class Folio extends AbstractAPI implements
     protected function chooseCallNumber($hCallNumP, $hCallNum, $iCallNumP, $iCallNum)
     {
         if (empty($iCallNum)) {
-            return ['prefix' => $hCallNumP, 'callnumber' => $hCallNum];
+            return ['callnumber_prefix' => $hCallNumP, 'callnumber' => $hCallNum];
         }
-        return ['prefix' => $iCallNumP, 'callnumber' => $iCallNum];
+        return ['callnumber_prefix' => $iCallNumP, 'callnumber' => $iCallNum];
     }
 
     /**
@@ -581,15 +581,13 @@ class Folio extends AbstractAPI implements
                 $locationData = $this->getLocationData($locationId);
                 $locationName = $locationData['name'];
                 $locationCode = $locationData['code'];
-                $itemCallNumber = $item->itemLevelCallNumber ?? '';
-                $itemCallNumberPrefix = $item->itemLevelCallNumberPrefix ?? '';
                 $callNumberData = $this->chooseCallNumber(
                     $holdingCallNumberPrefix,
                     $holdingCallNumber,
-                    $itemCallNumberPrefix,
-                    $itemCallNumber
+                    $item->itemLevelCallNumberPrefix ?? '',
+                    $item->itemLevelCallNumber ?? ''
                 );
-                $items[] = [
+                $items[] = $callNumberData + [
                     'id' => $bibId,
                     'item_id' => $item->id,
                     'holding_id' => $holding->id,
@@ -603,8 +601,6 @@ class Folio extends AbstractAPI implements
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
-                    'callnumber' => $callNumberData['callnumber'],
-                    'callnumber_prefix' => $callNumberData['prefix'],
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
