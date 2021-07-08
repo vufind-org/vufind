@@ -478,9 +478,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         BackendInterface $backend,
         Config $facet
     ) {
-        $hideFacetValue = (isset($facet->HideFacetValue))
+        $hideFacetValue = isset($facet->HideFacetValue)
             ? $facet->HideFacetValue->toArray() : [];
-        $showFacetValue = (isset($facet->ShowFacetValue))
+        $showFacetValue = isset($facet->ShowFacetValue)
             ? $facet->ShowFacetValue->toArray() : [];
         if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
