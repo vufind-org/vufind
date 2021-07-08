@@ -81,7 +81,9 @@ class LibraryCardsController extends AbstractBase
         return $this->createViewModel(
             [
                 'libraryCards' => $user->getLibraryCards(),
-                'multipleTargets' => $catalog->checkCapability('getLoginDrivers')
+                'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
+                'allowConnectingCards' => $this->getAuthManager()
+                    ->supportsConnectingLibraryCard(),
             ]
         );
     }
@@ -122,7 +124,7 @@ class LibraryCardsController extends AbstractBase
         $loginSettings = $this->getILSLoginSettings();
         // Split target and username if multiple login targets are available:
         if ($loginSettings['targets'] && strstr($username, '.')) {
-            list($target, $username) = explode('.', $username, 2);
+            [$target, $username] = explode('.', $username, 2);
         }
 
         $cardName = $this->params()->fromPost('card_name', $card->card_name);
@@ -241,6 +243,45 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
+     * Redirects to authentication to connect a new library card
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectCardLoginAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+        $url = $this->getServerUrl('librarycards-connectcard');
+        $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
+        if (!$redirectUrl) {
+            $this->flashMessenger()
+                ->addMessage('authentication_error_technical', 'error');
+            return $this->redirect()->toRoute('librarycards-home');
+        }
+        return $this->redirect()->toUrl($redirectUrl);
+    }
+
+    /**
+     * Connects a new library card for authenticated user
+     *
+     * @return \Laminas\Http\Response
+     */
+    public function connectCardAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+        try {
+            $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
+        } catch (\Exception $ex) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($ex->getMessage());
+        }
+        return $this->redirect()->toRoute('librarycards-home');
+    }
+
+    /**
      * Process the "edit library card" submission.
      *
      * @param \VuFind\Db\Row\User $user Logged in user
@@ -336,9 +377,7 @@ class LibraryCardsController extends AbstractBase
                 $info['cat_username'],
                 ' '
             );
-        } catch (\VuFind\Exception\Auth $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
-        } catch (\VuFind\Exception\LibraryCard $e) {
+        } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
 

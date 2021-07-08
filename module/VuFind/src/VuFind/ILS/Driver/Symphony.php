@@ -307,9 +307,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             )
         ) {
             $login    = $this->config['WebServices']['login'];
-            $password = isset($this->config['WebServices']['password'])
-                ? $this->config['WebServices']['password']
-                : null;
+            $password = $this->config['WebServices']['password'] ?? null;
         } else {
             $login    = null;
             $password = null;
@@ -615,8 +613,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         date('F j, Y', strtotime($itemInfo->recallDueDate)) :
                         $duedate;
 
-                $requests_placed = isset($itemInfo->numberOfHolds) ?
-                            $itemInfo->numberOfHolds : 0;
+                $requests_placed = $itemInfo->numberOfHolds ?? 0;
 
                 // Handle item notes
                 $notes = [];
@@ -645,8 +642,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         )
                         : null;
 
-                $transitReason = isset($itemInfo->transitReason) ?
-                    $itemInfo->transitReason : null;
+                $transitReason = $itemInfo->transitReason ?? null;
 
                 $transitDate = isset($itemInfo->transitDate) ?
                      date('F j, Y', strtotime($itemInfo->transitDate)) : null;
@@ -883,6 +879,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function getLiveStatuses($ids)
     {
+        $items = [];
         foreach ($ids as $id) {
             $items[$id] = [];
         }
@@ -1198,7 +1195,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            list($lastname, $firstname)
+            [$lastname, $firstname]
                 = explode(', ', $result->patronInfo->displayName);
 
             $profile = [
@@ -1213,7 +1210,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             return $profile;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1274,7 +1271,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
             return $transList;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1331,7 +1328,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         } catch (SoapFault $e) {
             return null;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1380,10 +1377,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
 
             return $fineList;
-        } catch (SoapFault $e) {
-            throw new ILSException($e->getMessage());
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+        } catch (SoapFault | \Exception $e) {
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1392,11 +1387,14 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * Supplies the form details required to cancel a hold
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string  Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }
@@ -1654,10 +1652,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys

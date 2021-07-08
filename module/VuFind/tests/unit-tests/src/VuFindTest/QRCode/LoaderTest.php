@@ -40,7 +40,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoaderTest extends \VuFindTest\Unit\TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Theme to use for testing purposes.
@@ -86,9 +86,9 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param ThemeInfo  $theme  Theme info object (null to create default)
      * @param array|bool $mock   Array of functions to mock, or false for real object
      *
-     * @return void
+     * @return Loader
      */
-    protected function getLoader($config = [], $theme = null, $mock = false)
+    protected function getLoader($config = [], $theme = null, $mock = false): Loader
     {
         $config = new Config($config);
         if (null === $theme) {
@@ -96,7 +96,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $theme])
                 ->getMock();
         }

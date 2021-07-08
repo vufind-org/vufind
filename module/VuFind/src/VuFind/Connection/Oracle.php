@@ -86,8 +86,6 @@ class Oracle
         $tmp = error_reporting(1);
         if ($this->dbHandle = @oci_connect($username, $password, $tns)) {
             error_reporting($tmp);
-            $this->audit_id = 0;
-            $this->detail_id = 0;
         } else {
             error_reporting($tmp);
             $this->handleError('connect', oci_error());
@@ -324,7 +322,7 @@ class Oracle
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
-            list($column, $type) = explode(":", $field);
+            [$column, $type] = explode(":", $field);
             $this->bindParam($stmt, ":" . $column, $datum, $type);
         }
 
@@ -355,7 +353,7 @@ class Oracle
 
         // Split all the fields up into arrays
         foreach ($fields as $field => $datum) {
-            list($column, $type) = explode(":", $field);
+            [$column, $type] = explode(":", $field);
             $types[$column] = $type;
             $data[$column]  = $datum;
             $clauses[]      = "$column = :$column";
@@ -454,7 +452,7 @@ class Oracle
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
-            list($column, $type) = explode(":", $field);
+            [$column, $type] = explode(":", $field);
             $this->bindParam($stmt, ":" . $column, $datum, $type);
         }
         if ($this->exec($stmt)) {

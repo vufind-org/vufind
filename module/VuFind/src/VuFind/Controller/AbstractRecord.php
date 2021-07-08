@@ -415,13 +415,9 @@ class AbstractRecord extends AbstractBase
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $containingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $containingLists[] = $list->toArray();
             } else {
-                $nonContainingLists[] = [
-                    'id' => $list->id, 'title' => $list->title
-                ];
+                $nonContainingLists[] = $list->toArray();
             }
         }
 
@@ -556,6 +552,18 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Show permanent link for the current record.
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function permalinkAction()
+    {
+        $view = $this->createViewModel();
+        $view->setTemplate('record/permalink');
+        return $view;
+    }
+
+    /**
      * Export the record
      *
      * @return mixed
@@ -591,13 +599,19 @@ class AbstractRecord extends AbstractBase
         }
 
         $recordHelper = $this->getViewRenderer()->plugin('record');
+        try {
+            $exportedRecord = $recordHelper($driver)->getExport($format);
+        } catch (\VuFind\Exception\FormatUnavailable $e) {
+            $this->flashMessenger()->addErrorMessage('export_unsupported_format');
+            return $this->redirectToRecord();
+        }
 
         $exportType = $export->getBulkExportType($format);
         if ('post' === $exportType) {
             $params = [
                 'exportType' => 'post',
                 'postField' => $export->getPostField($format),
-                'postData' => $recordHelper($driver)->getExport($format),
+                'postData' => $exportedRecord,
                 'targetWindow' => $export->getTargetWindow($format),
                 'url' => $export->getRedirectUrl($format, ''),
                 'format' => $format
@@ -617,7 +631,7 @@ class AbstractRecord extends AbstractBase
         $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
-        $response->setContent($recordHelper($driver)->getExport($format));
+        $response->setContent($exportedRecord);
         return $response;
     }
 
@@ -814,9 +828,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = isset($config->Item_Status->callnumber_handler)
-            ? $config->Item_Status->callnumber_handler
-            : false;
+        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

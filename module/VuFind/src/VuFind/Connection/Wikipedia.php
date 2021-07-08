@@ -135,7 +135,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @param string $infoboxStr Infobox text
      *
-     * @return string
+     * @return array Array with two values values: image name and image caption
      */
     protected function extractImageFromInfoBox($infoboxStr)
     {
@@ -414,13 +414,15 @@ class Wikipedia implements TranslatorAwareInterface
      */
     protected function parseWikipedia($rawBody)
     {
+        $imageName = null;
+        $imageCaption = null;
         // Check if data exists or not
         if (isset($rawBody['query']['pages']['-1'])) {
             return null;
         }
 
         // Check for redirects; get some basic information:
-        list($name, $redirectTo, $bodyArr) = $this->checkForRedirect($rawBody);
+        [$name, $redirectTo, $bodyArr] = $this->checkForRedirect($rawBody);
 
         // Recurse if we only found redirects:
         if ($redirectTo) {
@@ -442,11 +444,11 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Try to find an image in either the infobox or the body:
         if ($infoboxStr) {
-            list($imageName, $imageCaption)
+            [$imageName, $imageCaption]
                 = $this->extractImageFromInfoBox($infoboxStr);
         }
         if (!isset($imageName)) {
-            list($imageName, $imageCaption) = $this->extractImageFromBody($bodyArr);
+            [$imageName, $imageCaption] = $this->extractImageFromBody($bodyArr);
         }
 
         // Given an image name found above, look up the associated URL and add it to
@@ -471,6 +473,7 @@ class Wikipedia implements TranslatorAwareInterface
      */
     protected function getWikipediaImageURL($imageName)
     {
+        $imageUrl = null;
         $url = "http://{$this->lang}.wikipedia.org/w/api.php" .
                '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=php' .
                '&titles=Image:' . urlencode($imageName);

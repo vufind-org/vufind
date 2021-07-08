@@ -281,7 +281,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                         $facetOp = $values['facetOp'];
                         $values = $values['values'];
                     }
-                    array_map(
+                    $values = array_map(
                         function ($value) {
                             return urlencode(preg_replace('/,/', '+', $value));
                         },
@@ -359,6 +359,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
+        $baseUrl = null;
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;
         } elseif ($method == 'POST') {
@@ -608,7 +609,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord($recordId, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = [];
@@ -654,7 +654,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecords($recordIds, $inst_code = null, $onCampus = false)
     {
-        $this->currentParams = [];
         // Callback function for formatting IDs:
         $formatIds = function ($id) {
             return addcslashes($id, '":()');

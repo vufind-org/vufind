@@ -198,9 +198,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         if ($displaySetting == 'msg' && count($list) > 1) {
             return false;
         }
-        return isset($this->config->Item_Status->callnumber_handler)
-            ? $this->config->Item_Status->callnumber_handler
-            : false;
+        return $this->config->Item_Status->callnumber_handler ?? false;
     }
 
     /**
@@ -230,6 +228,20 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             'ajax/status-available-services.phtml',
             ['services' => $services]
         );
+    }
+
+    /**
+     * Create a delimited version of the call number to allow the Javascript code
+     * to handle the prefix appropriately.
+     *
+     * @param string $prefix     Callnumber prefix or empty string.
+     * @param string $callnumber Main call number.
+     *
+     * @return string
+     */
+    protected function formatCallNo($prefix, $callnumber)
+    {
+        return !empty($prefix) ? $prefix . '::::' . $callnumber : $callnumber;
     }
 
     /**
@@ -267,7 +279,11 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $use_unknown_status = true;
             }
             // Store call number/location info:
-            $callNumbers[] = $info['callnumber'];
+            $callNumbers[] = $this->formatCallNo(
+                $info['callnumber_prefix'],
+                $info['callnumber']
+            );
+
             $locations[] = $info['location'];
             // Store all available services
             if (isset($info['services'])) {
@@ -345,11 +361,14 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
-            $locations[$info['location']]['callnumbers'][] = $info['callnumber'];
+            $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
+                $info['callnumber_prefix'],
+                $info['callnumber']
+            );
         }
 
         // Build list split out by location:
-        $locationList = false;
+        $locationList = [];
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
@@ -426,6 +445,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
      */
     public function handleRequest(Params $params)
     {
+        $results = [];
         $this->disableSessionWrites();  // avoid session write timing bug
         $ids = $params->fromPost('id', $params->fromQuery('id', []));
         try {
@@ -465,12 +485,9 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
         ];
 
         // Load callnumber and location settings:
-        $callnumberSetting = isset($this->config->Item_Status->multiple_call_nos)
-            ? $this->config->Item_Status->multiple_call_nos : 'msg';
-        $locationSetting = isset($this->config->Item_Status->multiple_locations)
-            ? $this->config->Item_Status->multiple_locations : 'msg';
-        $showFullStatus = isset($this->config->Item_Status->show_full_status)
-            ? $this->config->Item_Status->show_full_status : false;
+        $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
+        $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
+        $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
 
         // Loop through all the status information that came back
         $statuses = [];

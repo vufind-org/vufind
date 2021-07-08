@@ -41,7 +41,7 @@ namespace VuFindTest\Captcha;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ImageFactoryTest extends \VuFindTest\Unit\MockContainerTest
+class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the factory behaves correctly.
@@ -52,18 +52,17 @@ class ImageFactoryTest extends \VuFindTest\Unit\MockContainerTest
     {
         // Set up mock services expected by factory:
         $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
-        $storage = $this->container->get(
-            \Laminas\Cache\Storage\StorageInterface::class
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
         $storage->expects($this->once())->method('getOptions')
             ->will($this->returnValue($options));
-        $cacheManager = $this->container->get(\VuFind\Cache\Manager::class);
+        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $cacheManager->expects($this->once())->method('getCache')
             ->with($this->equalTo('public'))
             ->will($this->returnValue($storage));
 
-        $url = $this->container->get(\VuFind\View\Helper\Root\Url::class);
-        $manager = $this->container->get('ViewHelperManager');
+        $url = $container->get(\VuFind\View\Helper\Root\Url::class);
+        $manager = $container->get('ViewHelperManager');
         $manager->expects($this->once())->method('get')
             ->with($this->equalTo('url'))->will($this->returnValue($url));
 
@@ -84,7 +83,7 @@ class ImageFactoryTest extends \VuFindTest\Unit\MockContainerTest
                 $this->constructorArgs = func_get_args();
             }
         };
-        $result = $factory($this->container, get_class($fakeImage));
+        $result = $factory($container, get_class($fakeImage));
         $expectedFont = APPLICATION_PATH
         . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf';
         $this->assertTrue(file_exists($expectedFont));

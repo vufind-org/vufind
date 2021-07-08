@@ -365,20 +365,35 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array_push($handlers['select']['appends']['fq'], $filter);
         }
 
+        $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
+        $client = $httpService->createClient();
+
         $connector = new $this->connectorClass(
-            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
+            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey, $client
         );
-        $connector->setTimeout(
-            isset($config->Index->timeout) ? $config->Index->timeout : 30
-        );
+        $connector->setTimeout($config->Index->timeout ?? 30);
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
         }
-        if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
-            $connector->setProxy(
-                $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            );
+
+        if (!empty($searchConfig->SearchCache->adapter)) {
+            $cacheConfig = $searchConfig->SearchCache->toArray();
+            $options = $cacheConfig['options'] ?? [];
+            if (empty($options['namespace'])) {
+                $options['namespace'] = 'Index';
+            }
+            if (empty($options['ttl'])) {
+                $options['ttl'] = 300;
+            }
+            $settings = [
+                'adapter' => [
+                    'name' => $cacheConfig['adapter'],
+                    'options' => $options,
+                ]
+            ];
+            $cache = \Laminas\Cache\StorageFactory::factory($settings);
+            $connector->setCache($cache);
         }
         return $connector;
     }
@@ -392,18 +407,15 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $specs   = $this->loadSpecs();
         $config = $this->config->get($this->mainConfig);
-        $defaultDismax = isset($config->Index->default_dismax_handler)
-            ? $config->Index->default_dismax_handler : 'dismax';
+        $defaultDismax = $config->Index->default_dismax_handler ?? 'dismax';
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
         $search = $this->config->get($this->searchConfig);
         $caseSensitiveBooleans
-            = isset($search->General->case_sensitive_bools)
-            ? $search->General->case_sensitive_bools : true;
+            = $search->General->case_sensitive_bools ?? true;
         $caseSensitiveRanges
-            = isset($search->General->case_sensitive_ranges)
-            ? $search->General->case_sensitive_ranges : true;
+            = $search->General->case_sensitive_ranges ?? true;
         $helper = new LuceneSyntaxHelper(
             $caseSensitiveBooleans, $caseSensitiveRanges
         );
@@ -438,12 +450,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get a deduplication listener for the backend
      *
-     * @param BackendInterface $backend Search backend
-     * @param bool             $enabled Whether deduplication is enabled
+     * @param Backend $backend Search backend
+     * @param bool    $enabled Whether deduplication is enabled
      *
      * @return DeduplicationListener
      */
-    protected function getDeduplicationListener(BackendInterface $backend, $enabled)
+    protected function getDeduplicationListener(Backend $backend, $enabled)
     {
         return new DeduplicationListener(
             $backend,
@@ -466,14 +478,17 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         BackendInterface $backend,
         Config $facet
     ) {
-        if (!isset($facet->HideFacetValue)
-            || ($facet->HideFacetValue->count()) == 0
-        ) {
+        $hideFacetValue = isset($facet->HideFacetValue)
+            ? $facet->HideFacetValue->toArray() : [];
+        $showFacetValue = isset($facet->ShowFacetValue)
+            ? $facet->ShowFacetValue->toArray() : [];
+        if (empty($hideFacetValue) && empty($showFacetValue)) {
             return null;
         }
         return new HideFacetValueListener(
             $backend,
-            $facet->HideFacetValue->toArray()
+            $hideFacetValue,
+            $showFacetValue
         );
     }
 
@@ -504,8 +519,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function getInjectHighlightingListener(BackendInterface $backend,
         Config $search
     ) {
-        $fl = isset($search->General->highlighting_fields)
-            ? $search->General->highlighting_fields : '*';
+        $fl = $search->General->highlighting_fields ?? '*';
         return new InjectHighlightingListener($backend, $fl);
     }
 

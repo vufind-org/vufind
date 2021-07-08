@@ -41,9 +41,10 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test performing an autocomplete
@@ -226,7 +227,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs([[], $client])
             ->getMock();
     }
@@ -258,7 +259,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         } else {
             $params = [$connector, $factory, $cache, $container, new \Laminas\Config\Config($settings)];
             return $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs($params)
                 ->getMock();
         }

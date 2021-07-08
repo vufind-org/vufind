@@ -114,6 +114,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         $record_ids = pg_query_params(
             $this->db, $get_record_ids_query, [$this->idStrip($id)]
         );
+        $itemRecords = [];
         while ($record = pg_fetch_row($record_ids)) {
             $itemRecords[] = $record[0];
         }
@@ -208,7 +209,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . " password=" . $this->config['Catalog']['dna_password'];
             $this->db = pg_connect($conn_string);
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -233,12 +234,13 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 . "varfield_type_code = 'r' AND occ_num = '0' "
                 . "ORDER BY field_content;";
             $results = pg_query($query);
+            $courses = [];
             while ($row = pg_fetch_row($results)) {
                 $courses[$row[1]] = $row[0];
             }
             return $courses;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -257,7 +259,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             $departments = [];
             return $departments;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -302,7 +304,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $instructors;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -322,6 +324,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
      */
     public function findReserves($course, $instructor, $department)
     {
+        $reserves = [];
         try {
             if ($course != null) {
                 $coursenum = $course;
@@ -351,7 +354,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
 
             return $reserves;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -375,7 +378,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $funds;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -451,7 +454,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $status;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -545,7 +548,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $holdings;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -623,7 +626,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $newItems;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -647,7 +650,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             $history = [];
             return $history;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -671,7 +674,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $statuses;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -695,7 +698,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $authRecords;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -719,7 +722,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
             }
             return $suppRecords;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 }

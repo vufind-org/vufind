@@ -40,12 +40,14 @@ use VuFind\Log\Writer\Post;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PostTest extends \VuFindTest\Unit\TestCase
+class PostTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test writer functionality
+     *
+     * @return void
      */
-    public function testWriter()
+    public function testWriter(): void
     {
         // Set up data and expectations:
         $fakeUri = 'http://fake';

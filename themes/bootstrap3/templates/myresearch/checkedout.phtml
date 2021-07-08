@@ -42,16 +42,17 @@
       <?php endif; ?>
     </nav>
     <?php if ($this->renewForm): ?>
-    <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut">
+    <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf"/>
       <div class="toolbar">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
             <?=$this->transEsc('select_page')?>
           </label>
-          <input type="submit" class="btn btn-default" id="renewSelected" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+          <input type="submit" class="btn btn-default" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr("renew_selected")?>" />
           <?php if ($renewAll): ?>
-            <input type="submit" class="btn btn-default" id="renewAll" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+            <input type="submit" class="btn btn-default" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" />
           <?php endif; ?>
         </div>
       </div>
@@ -212,3 +213,5 @@
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout'])?>
 </div>
+
+<?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

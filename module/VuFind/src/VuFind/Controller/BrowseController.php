@@ -380,7 +380,7 @@ class BrowseController extends AbstractBase
     {
         $this->setCurrentAction('LCC');
         $view = $this->createViewModel();
-        list($view->filter, $view->secondaryList) = $this->getSecondaryList('lcc');
+        [$view->filter, $view->secondaryList] = $this->getSecondaryList('lcc');
         $view->secondaryParams = [
             'query_field' => 'callnumber-first',
             'facet_field' => 'callnumber-subject'
@@ -398,7 +398,7 @@ class BrowseController extends AbstractBase
     {
         $this->setCurrentAction('Dewey');
         $view = $this->createViewModel();
-        list($view->filter, $hundredsList) = $this->getSecondaryList('dewey');
+        [$view->filter, $hundredsList] = $this->getSecondaryList('dewey');
         $categoryList = [];
         foreach ($hundredsList as $dewey) {
             $categoryList[$dewey['value']] = [
@@ -455,7 +455,7 @@ class BrowseController extends AbstractBase
                 'facet_field' => $this->getCategory($currentAction)
             ];
             $view->facetPrefix = $facetPrefix && $findby == 'alphabetical';
-            list($view->filter, $view->secondaryList)
+            [$view->filter, $view->secondaryList]
                 = $this->getSecondaryList($findby);
         }
 
@@ -709,9 +709,8 @@ class BrowseController extends AbstractBase
     protected function getAlphabetList()
     {
         // Get base alphabet:
-        $chars = isset($this->config->Browse->alphabet_letters)
-            ? $this->config->Browse->alphabet_letters
-            : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $chars = $this->config->Browse->alphabet_letters
+            ?? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         // Put numbers in the front for Era since years are important:
         if ($this->getCurrentAction() == 'Era') {

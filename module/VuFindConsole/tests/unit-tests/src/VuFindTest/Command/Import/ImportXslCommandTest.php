@@ -133,9 +133,11 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockImporter($methods = [])
     {
-        return $this->getMockBuilder(Importer::class)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->getMockBuilder(Importer::class)
+            ->disableOriginalConstructor();
+        if (!empty($methods)) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 }

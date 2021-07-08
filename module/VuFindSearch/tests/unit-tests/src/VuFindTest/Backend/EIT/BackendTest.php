@@ -42,9 +42,9 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test retrieving a record.
@@ -164,7 +164,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(__NAMESPACE__ . '\ConnectorMock')
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['http://fake', $client, 'profile', 'pwd', 'dbs'])
             ->getMock();
     }

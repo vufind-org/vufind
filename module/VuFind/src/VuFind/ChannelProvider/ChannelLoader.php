@@ -183,7 +183,7 @@ class ChannelLoader
     {
         // The provider ID consists of a service name and an optional config
         // section -- break out the relevant parts:
-        list($serviceName, $configSection) = explode(':', $providerId . ':');
+        [$serviceName, $configSection] = explode(':', $providerId . ':');
 
         // Load configuration, using default value if necessary:
         if (empty($configSection)) {
@@ -226,11 +226,18 @@ class ChannelLoader
             $cache = $this->cacheManager->getCache('object', 'homeChannels');
         } else {
             $cacheKey = false;
+            $cache = null;
         }
 
         // Fetch channel data from cache, or populate cache if necessary:
         if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
-            $results = $this->performChannelSearch([], $providers, $source);
+            $searchParams = [];
+            if (isset($this->config->General->default_home_search)) {
+                $searchParams['lookfor']
+                    = $this->config->General->default_home_search;
+            }
+            $results = $this
+                ->performChannelSearch($searchParams, $providers, $source);
             $channels = $this->getChannelsFromResults($providers, $results, $token);
             if ($cacheKey) {
                 $cache->setItem($cacheKey, $channels);

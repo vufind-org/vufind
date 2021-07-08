@@ -225,8 +225,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.2.0:
-        return PHP_VERSION_ID >= 70200;
+        // We need at least PHP v7.3.0:
+        return PHP_VERSION_ID >= 70300;
     }
 
     /**
@@ -645,8 +645,7 @@ class InstallController extends AbstractBase
             $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
-        $view->core = isset($config->Index->default_core)
-            ? $config->Index->default_core : "biblio";
+        $view->core = $config->Index->default_core ?? "biblio";
         $view->configFile = $configFile;
         return $view;
     }
@@ -856,7 +855,7 @@ class InstallController extends AbstractBase
      * @param array $config Setting(s) to add to [Http] section of config.ini.
      * @param int   $try    Which config index are we trying right now?
      *
-     * @return void
+     * @return \Laminas\Http\Response
      */
     protected function testSslCertConfig($config, $try)
     {

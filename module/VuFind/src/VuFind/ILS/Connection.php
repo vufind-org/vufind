@@ -358,6 +358,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['extraHoldFields'])) {
                 $response['extraHoldFields'] = $functionConfig['extraHoldFields'];
             }
+            if (isset($functionConfig['updateFields'])) {
+                $response['updateFields'] = array_map(
+                    'trim',
+                    explode(':', $functionConfig['updateFields'])
+                );
+            }
             if (isset($functionConfig['helpText'])) {
                 $response['helpText'] = $this->getHelpText(
                     $functionConfig['helpText']
@@ -366,6 +372,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['consortium'])) {
                 $response['consortium'] = $functionConfig['consortium'];
             }
+            $response['pickUpLocationCheckLimit']
+                = intval($functionConfig['pickUpLocationCheckLimit'] ?? 0);
         } else {
             $id = $params['id'] ?? null;
             if ($this->checkCapability('getHoldLink', [$id, []])) {
@@ -938,8 +946,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             // the driver class without wasting time initializing it; if NoILS
             // failover is enabled, we have to initialize the driver object now
             // to be sure we are checking capabilities on the appropriate class.
-            $driverToCheck = $this->hasNoILSFailover()
-                ? $this->getDriver() : $this->getDriverClass();
+            $driverToCheck = $this->getDriver($this->hasNoILSFailover());
 
             // First check that the function is callable:
             if (is_callable([$driverToCheck, $method])) {

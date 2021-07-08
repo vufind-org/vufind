@@ -363,6 +363,7 @@ class GeneratorTools
         // service or a class in a plugin manager.
         $cm = $container->get('ControllerManager');
         $cpm = $container->get('ControllerPluginManager');
+        $configPath = [];
         $delegators = [];
         if ($container->has($class)) {
             $factory = $this->getFactoryFromContainer($container, $class);
@@ -569,7 +570,7 @@ class GeneratorTools
         ) {
             throw new \Exception('Unexpected factory configuration format.');
         }
-        list($factoryClass, $factoryMethod) = $parts;
+        [$factoryClass, $factoryMethod] = $parts;
         $newFactoryClass = $this->generateLocalClassName($factoryClass, $module);
         if (!class_exists($newFactoryClass)) {
             $this->createSubclassInModule($factoryClass, $module);
@@ -677,11 +678,11 @@ class GeneratorTools
      * Extend a specified class within a specified module. Return the name of
      * the new subclass.
      *
-     * @param string    $class      Name of class to create
-     * @param string    $module     Module in which to create the new class
-     * @param string    $parent     Parent class (null for no parent)
-     * @param string[]  $interfaces Interfaces for class to implement
-     * @param \Callable $callback   Callback to set up class generator
+     * @param string   $class      Name of class to create
+     * @param string   $module     Module in which to create the new class
+     * @param string   $parent     Parent class (null for no parent)
+     * @param string[] $interfaces Interfaces for class to implement
+     * @param callable $callback   Callback to set up class generator
      *
      * @return void
      * @throws \Exception
@@ -693,7 +694,7 @@ class GeneratorTools
         if (is_callable($callback)) {
             $callback($generator);
         }
-        return $this->writeClass($generator, $module);
+        $this->writeClass($generator, $module);
     }
 
     /**

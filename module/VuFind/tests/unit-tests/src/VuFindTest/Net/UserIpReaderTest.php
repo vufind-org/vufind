@@ -39,7 +39,7 @@ use VuFind\Net\UserIpReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserIpReaderTest extends \VuFindTest\Unit\TestCase
+class UserIpReaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test X-Real-IP; it should take priority over all other settings when

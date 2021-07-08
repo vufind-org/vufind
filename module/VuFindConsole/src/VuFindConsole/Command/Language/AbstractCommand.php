@@ -58,6 +58,13 @@ abstract class AbstractCommand extends Command
     protected $reader;
 
     /**
+     * Language directory
+     *
+     * @var string
+     */
+    protected $languageDir;
+
+    /**
      * Constructor
      *
      * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
@@ -155,7 +162,7 @@ abstract class AbstractCommand extends Command
      * Process a language directory.
      *
      * @param object   $dir            Directory object from dir() to process
-     * @param Callable $callback       Function to run on all .ini files in $dir
+     * @param callable $callback       Function to run on all .ini files in $dir
      * @param bool     $statusCallback Callback function to display status messages
      * (omit to suppress messages)
      *

@@ -46,7 +46,7 @@ use VuFind\ILS\Driver\PAIA;
  */
 class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     protected $validConfig = [
         'DAIA' =>
@@ -610,7 +610,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $sessionManager = new \Laminas\Session\SessionManager();
         $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
             ->setConstructorArgs([$dateConverter, $sessionManager])
-            ->setMethods(['getScope'])
+            ->onlyMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
             ->will(

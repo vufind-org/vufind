@@ -1,6 +1,7 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()->in(__DIR__ . '/../themes')
+$finder = new PhpCsFixer\Finder();
+$finder->in(__DIR__ . '/../themes')
     ->name('*.phtml');
 
 $rules = [
@@ -12,7 +13,9 @@ $rules = [
     'blank_line_after_namespace' => true,
     //'braces' => true, // disabled because we don't want to create inconsistent indentation, but useful to normalize control structure spacing
     'cast_spaces' => ['space' => 'none'],
+    'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
     'concat_space' => ['spacing' => 'one'],
+    'constant_case' => ['case' => 'lower'],
     'elseif' => true,
     'encoding' => true,
     'ereg_to_preg' => true,
@@ -22,12 +25,11 @@ $rules = [
     'indentation_type' => true,
     'is_null' => true,
     'line_ending' => true,
+    'list_syntax' => ['syntax' => 'short'],
     'lowercase_cast' => true,
-    'lowercase_constants' => true,
     'lowercase_keywords' => true,
     'magic_constant_casing' => true,
     'method_argument_space' => true,
-    'method_separation' => true,
     'native_function_casing' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_blank_lines_after_phpdoc' => true,
@@ -35,7 +37,7 @@ $rules = [
     'no_empty_comment' => true,
     'no_empty_phpdoc' => true,
     'no_empty_statement' => true,
-    'no_extra_consecutive_blank_lines' => true,
+    'no_extra_blank_lines' => true,
     'no_leading_import_slash' => true,
     'no_leading_namespace_whitespace' => true,
     'no_mixed_echo_print' => true,
@@ -53,6 +55,7 @@ $rules = [
     'non_printable_character' => true,
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
+    'pow_to_exponentiation' => true,
     'single_blank_line_at_eof' => true,
     'single_class_element_per_statement' => true,
     'single_import_per_statement' => true,
@@ -71,8 +74,8 @@ if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
 
-return PhpCsFixer\Config::create()
-    ->setCacheFile($cacheDir . '/.template.cache')
+$config = new PhpCsFixer\Config();
+return $config->setCacheFile($cacheDir . '/.template.cache')
     ->setRiskyAllowed(true)
     ->setRules($rules)
     ->setFinder($finder);
