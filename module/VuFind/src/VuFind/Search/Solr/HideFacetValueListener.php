@@ -55,7 +55,7 @@ class HideFacetValueListener
      *
      * @var array
      */
-    protected $hideAllFacetValuesExcept = [];
+    protected $showFacets = [];
 
     /**
      * List of facets to hide.
@@ -67,20 +67,20 @@ class HideFacetValueListener
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend                  Search backend
-     * @param array            $hideFacetValues          Assoc. array of field
+     * @param BackendInterface $backend         Search backend
+     * @param array            $hideFacetValues Assoc. array of field
      * name => values to exclude from display.
-     * @param array            $hideAllFacetValuesExcept Assoc. array of field
+     * @param array            $showFacetValues Assoc. array of field
      * name => values to exclusively show in display.
      */
     public function __construct(
         BackendInterface $backend,
         array $hideFacetValues,
-        array $hideAllFacetValuesExcept = []
+        array $showFacetValues = []
     ) {
         $this->backend = $backend;
         $this->hideFacets = $hideFacetValues;
-        $this->hideAllFacetValuesExcept = $hideAllFacetValuesExcept;
+        $this->showFacets = $showFacetValues;
     }
 
     /**
@@ -136,7 +136,7 @@ class HideFacetValueListener
                 $facets[$facet]->removeKeys((array)$value);
             }
         }
-        foreach ($this->hideAllFacetValuesExcept as $facet => $value) {
+        foreach ($this->showFacets as $facet => $value) {
             if (isset($facets[$facet])) {
                 $facetValues = $facets[$facet]->toArray();
                 $facetsToHide = array_diff(array_keys($facetValues), (array)$value);
