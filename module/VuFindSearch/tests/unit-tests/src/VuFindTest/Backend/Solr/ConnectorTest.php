@@ -31,10 +31,8 @@ namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
-
 use Laminas\Http\Client as HttpClient;
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
@@ -114,20 +112,6 @@ class ConnectorTest extends TestCase
     }
 
     /**
-     * Test InvalidArgumentException invalid adapter object.
-     *
-     * @return void
-     */
-    public function testSetAdapterThrowsInvalidObject()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('AdapterInterface');
-
-        $conn = $this->createConnector('single-record');
-        $conn->setAdapter($this);
-    }
-
-    /**
      * Test writing a CSV document.
      *
      * @return void
@@ -140,16 +124,15 @@ class ConnectorTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
-        $client->expects($this->once())->method('setEncType')
-            ->with($this->equalTo('text/csv'));
+        // The client will be reset before it is given the expected mime type:
+        $client->expects($this->exactly(2))->method('setEncType')
+            ->withConsecutive(['application/x-www-form-urlencoded'], ['text/csv']);
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($csvData));
         $conn = $this->getMockBuilder(Connector::class)
-            ->onlyMethods(['createClient', 'send'])
-            ->setConstructorArgs(['http://foo', $map])
+            ->onlyMethods(['send'])
+            ->setConstructorArgs(['http://foo', $map, 'id', $client])
             ->getMock();
-        $conn->expects($this->once())->method('createClient')
-            ->will($this->returnValue($client));
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument($csvData);
@@ -169,16 +152,16 @@ class ConnectorTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['setEncType', 'setRawBody'])
             ->getMock();
-        $client->expects($this->once())->method('setEncType')
-            ->with($this->equalTo('application/json'));
+        // The client will be reset before it is given the expected mime type:
+        $client->expects($this->exactly(2))->method('setEncType')->withConsecutive(
+            ['application/x-www-form-urlencoded'], ['application/json']
+        );
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($jsonData));
         $conn = $this->getMockBuilder(Connector::class)
-            ->onlyMethods(['createClient', 'send'])
-            ->setConstructorArgs(['http://foo', $map])
+            ->onlyMethods(['send'])
+            ->setConstructorArgs(['http://foo', $map, 'id', $client])
             ->getMock();
-        $conn->expects($this->once())->method('createClient')
-            ->will($this->returnValue($client));
         $conn->expects($this->once())->method('send')
             ->with($this->equalTo($client));
         $json = new \VuFindSearch\Backend\Solr\Document\RawJSONDocument($jsonData);
@@ -268,22 +251,20 @@ class ConnectorTest extends TestCase
         }
 
         $map  = new HandlerMap(['select' => ['fallback' => true]]);
-        $conn = new Connector('http://example.tld/', $map);
-        $conn->setProxy($this);
-        return $conn;
+        return new Connector('http://example.tld/', $map, 'id', $this->createClient());
     }
 
     /**
-     * Set test adapter with prepared response.
+     * Set up HTTP client using test adapter with prepared response.
      *
-     * @param HttpClient $client HTTP client to mock
-     *
-     * @return void
+     * @return HttpClient
      */
-    public function proxify(HttpClient $client)
+    protected function createClient()
     {
+        $client = new HttpClient();
         $adapter = new TestAdapter();
         $adapter->setResponse($this->response);
         $client->setAdapter($adapter);
+        return $client;
     }
 }

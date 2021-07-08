@@ -348,7 +348,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array  $patron  Patron data
      * @param array  $options Extra options
      *
-     * @throws \VuFind\Exception\ILS
+     * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.

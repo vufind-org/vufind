@@ -510,8 +510,8 @@ class AbstractBase extends AbstractActionController
      */
     public function translate($msg, $tokens = [], $default = null)
     {
-        return $this->getViewRenderer()->plugin('translate')
-            ->__invoke($msg, $tokens, $default);
+        $translate = $this->getViewRenderer()->plugin('translate');
+        return $translate($msg, $tokens, $default);
     }
 
     /**

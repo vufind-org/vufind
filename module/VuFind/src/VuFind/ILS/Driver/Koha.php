@@ -274,7 +274,7 @@ class Koha extends AbstractBase
             }
             return $holding;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -340,7 +340,7 @@ class Koha extends AbstractBase
             }
             return $fineLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -380,7 +380,7 @@ class Koha extends AbstractBase
             }
             return $holdLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -421,7 +421,7 @@ class Koha extends AbstractBase
             }
             return null;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -460,7 +460,7 @@ class Koha extends AbstractBase
             }
             return $transactionLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -501,7 +501,7 @@ class Koha extends AbstractBase
                 $blocks[] = implode(' - ', $block);
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return count($blocks) ? $blocks : false;
@@ -583,7 +583,7 @@ class Koha extends AbstractBase
                 'transactions' => $historicLoans
             ];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -687,7 +687,7 @@ class Koha extends AbstractBase
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if ("$2a$" == substr($stored_hash, 0, 4)) {
@@ -736,7 +736,7 @@ class Koha extends AbstractBase
             }
             return null;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 

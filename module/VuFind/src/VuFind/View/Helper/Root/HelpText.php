@@ -103,7 +103,7 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
     public function render($name, $context = null)
     {
         // Set up the needed context in the view:
-        $this->contextHelper->__invoke($this->getView());
+        ($this->contextHelper)($this->getView());
         $oldContext = $this->contextHelper
             ->apply($context ?? []);
 

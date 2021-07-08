@@ -219,7 +219,7 @@ EOT
                 $this->error(
                     "PDO Connection failed ($this->dbName): " . $e->getMessage()
                 );
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
         }
         return $this->lazyDb;
@@ -294,7 +294,7 @@ EOT
             try {
                 $sqlStmt = $this->executeSQL($sql);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Read results
@@ -598,7 +598,7 @@ EOT
             try {
                 $sqlStmt = $this->executeSQL($sql);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             $sqlRows = [];
@@ -852,7 +852,7 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql, [':id' => $id]);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         $raw = $processed = [];
         // Collect raw data:
@@ -1173,7 +1173,7 @@ EOT;
             try {
                 $sqlStmt = $this->executeSQL($sql);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             $sqlRows = [];
@@ -1313,7 +1313,7 @@ EOT;
             }
             return null;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1510,7 +1510,7 @@ EOT;
             }
             return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1632,7 +1632,7 @@ EOT;
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1806,7 +1806,7 @@ EOT;
             $returnList = $this->processHoldsList($holdList);
             return $returnList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1974,7 +1974,7 @@ EOT;
             }
             return $list;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -2052,7 +2052,7 @@ EOT;
             }
             return empty($patron) ? null : $patron;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -2126,7 +2126,7 @@ EOT;
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['COUNT'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $page = ($page) ? $page : 1;
@@ -2161,7 +2161,7 @@ EOT;
             }
             return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -2233,7 +2233,7 @@ EOT;
                 $list[$name] = $name;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -2266,7 +2266,7 @@ EOT;
                 $deptList[$row['DEPARTMENT_ID']] = $row['DEPARTMENT_NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $deptList;
@@ -2299,7 +2299,7 @@ EOT;
                 $instList[$row['INSTRUCTOR_ID']] = $row['NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $instList;
@@ -2332,7 +2332,7 @@ EOT;
                 $courseList[$row['COURSE_ID']] = $row['NAME'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $courseList;
@@ -2448,7 +2448,7 @@ EOT;
                 $recordList[] = $row;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $recordList;
@@ -2499,7 +2499,7 @@ EOT;
                 $recordList[] = ['id' => $row['BIB_ID']];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $recordList;
     }
@@ -2550,7 +2550,7 @@ EOT;
                 $recordList[] = ['id' => $row['BIB_ID']];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $recordList;
     }
@@ -2574,7 +2574,7 @@ EOT;
                 $list[] = $row['BIB_ID'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
