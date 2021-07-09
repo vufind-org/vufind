@@ -101,7 +101,7 @@ VuFind.register('truncate', function Truncate() {
           btnWrapperTop.hide();
         }
 
-        var onClickLessBtn = function onClickLessBtn(/*event*/) {
+        var onClickLessBtnHandler = function onClickLessBtn(/*event*/) {
           btnWrapperBtm.find('.less-btn').hide();
           if (btnWrapperTop) {
             btnWrapperTop.hide();
@@ -116,9 +116,9 @@ VuFind.register('truncate', function Truncate() {
           }
           btnWrapperBtm.find('.more-btn').focus();
         };
-        btnWrapperBtm.find('.less-btn').click(onClickLessBtn);
+        btnWrapperBtm.find('.less-btn').click(onClickLessBtnHandler);
         if (btnWrapperTop) {
-          btnWrapperTop.find('.less-btn').click(onClickLessBtn);
+          btnWrapperTop.find('.less-btn').click(onClickLessBtnHandler);
         }
 
         btnWrapperBtm.find('.more-btn').click(function onClickMoreBtn(/*event*/) {
