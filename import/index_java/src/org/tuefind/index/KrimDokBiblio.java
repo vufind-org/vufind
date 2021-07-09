@@ -12,7 +12,7 @@ public class KrimDokBiblio extends TueFindBiblio {
         return Boolean.toString(!fields.isEmpty());
     }
 
-    public String getFullTextElasticsearch(final Record record) {
+    public String getFullTextElasticsearch(final Record record) throws Exception {
         return extractFullTextFromJSON(getFullTextServerHits(record), "" /* empty to catch all text types */);
     }
 }
