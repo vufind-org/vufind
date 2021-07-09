@@ -13,6 +13,6 @@ public class KrimDokBiblio extends TueFindBiblio {
     }
 
     public String getFullTextElasticsearch(final Record record) {
-        return extractFullTextFromJSON(fulltext_server_hits, "" /* empty to catch all text types */);
+        return extractFullTextFromJSON(getFullTextServerHits(record), "" /* empty to catch all text types */);
     }
 }

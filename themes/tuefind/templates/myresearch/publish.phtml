@@ -5,34 +5,44 @@
   <!-- DC.title -->
   <div class="form-group">
     <label>title</label>
-    <input class="form-control" name="title" required placeholder="Typically, a Title will be a name by which the resource is formally known.">
+    <input class="form-control" name="title" required placeholder="Typically, a Title will be a name by which the resource is formally known."
+        <?php if (isset($this->dublinCore['DC.title'][0])) print 'value="' . $this->dublinCore['DC.title'][0] . '" disabled' ?>
+    >
   </div>
 
   <!-- DC.language -->
   <div class="form-group">
     <label>language</label>
-    <select class="form-control" name="language">
-      <option>en</option>
-      <option>de</option>
-    </select>
+    <?php if (isset($this->dublinCore['DC.language'][0])): ?>
+      <input class="form-control" name="language" value="<?=$this->dublinCore['DC.language'][0]?>" disabled>
+    <?php else: ?>
+      <select class="form-control" name="language" required>
+        <option>en</option>
+        <option>de</option>
+      </select>
+    <?php endif; ?>
   </div>
 
   <!-- DC.date -->
   <div class="form-group">
     <label>date</label>
-    <input class="form-control" type="date" name="date" value="<?=date('Y-m-d')?>">
+    <?php if (isset($this->dublinCore['DC.issued'][0])): ?>
+      <input class="form-control" name="date" value="<?=$this->dublinCore['DC.issued'][0]?>" disabled>
+    <?php else: ?>
+      <input class="form-control" type="date" name="date" value="<?=date('Y-m-d')?>" required>
+    <?php endif; ?>
   </div>
 
   <!-- DC.source -->
   <div class="form-group">
     <label>source</label>
-    <input class="form-control" name="source" placeholder="The described resource may be derived from the related resource in whole or in part. Recommended best practice is to identify the related resource by means of a string conforming to a formal identification system.">
+    <input class="form-control" name="source" placeholder="The described resource may be derived from the related resource in whole or in part. Recommended best practice is to identify the related resource by means of a string conforming to a formal identification system." required>
   </div>
 
   <!-- DC.creator -->
   <div class="form-group">
     <label>creator</label>
-    <select class="form-control" name="creator">
+    <select class="form-control" name="creator" required>
       <?php foreach ($this->userAuthorities as $userAuthority): ?>
         <?php $authorityRecord = $this->authorityRecords[$userAuthority['authority_id']]?>
         <option value="<?=$authorityRecord->getGNDNumber()?>"><?=htmlspecialchars($authorityRecord->getTitle() . ' (GND: ' .  $authorityRecord->getGNDNumber() . ')')?></option>

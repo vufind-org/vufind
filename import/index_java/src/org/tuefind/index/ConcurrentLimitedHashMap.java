@@ -8,6 +8,10 @@ import java.util.function.Function;
  * Thread-safe cache for storing finished lookups to be re-used later.
  * - use computeIfAbsent to add elements if they do not exist & return the element (either generated or taken from cache)
  * - cleanup is called automatically to remove oldest elements, according to maxSize.
+ *
+ * Performance: This solution is using a ConcurrentHashMap combined with a ConcurrentLinkedDeque,
+ *              but this is still more performant than using something like a
+ *              LinkedHashMap combined with a Collections.synchronizedMap wrapper.
  */
 public class ConcurrentLimitedHashMap<K extends Object, V extends Object> extends ConcurrentHashMap<K, V> {
 
