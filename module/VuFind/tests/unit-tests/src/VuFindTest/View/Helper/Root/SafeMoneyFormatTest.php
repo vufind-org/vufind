@@ -52,7 +52,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // store current default and set a value for consistency in testing
         $this->locale = setlocale(LC_MONETARY, 0);
@@ -67,7 +67,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         // restore current default
         setlocale(LC_MONETARY, $this->locale);
@@ -80,22 +80,22 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
      */
     public function testFormatting()
     {
-        $escaper = new \Zend\View\Helper\EscapeHtml();
-        $view = $this->createMock(\Zend\View\Renderer\PhpRenderer::class);
-        $view->expects($this->any())->method('plugin')
-            ->with($this->equalTo('escapeHtml'))
-            ->will($this->returnValue($escaper));
+        $escaper = new \Laminas\View\Helper\EscapeHtml();
+        $view = new \Laminas\View\Renderer\PhpRenderer();
+        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
+        $container->set('escapeHtml', $escaper);
+        $view->setHelperPluginManager($container);
 
         // test default settings
         $smf = new SafeMoneyFormat();
         $smf->setView($view);
-        $this->assertEquals('$3.00', $smf->__invoke(3));
-        $this->assertEquals('€3.00', $smf->__invoke(3, 'EUR'));
+        $this->assertEquals('$3.00', $smf(3));
+        $this->assertEquals('€3.00', $smf(3, 'EUR'));
 
         // test override default currency
         $smf = new SafeMoneyFormat('EUR');
         $smf->setView($view);
-        $this->assertEquals('€3.00', $smf->__invoke(3));
-        $this->assertEquals('$3.00', $smf->__invoke(3, 'USD'));
+        $this->assertEquals('€3.00', $smf(3));
+        $this->assertEquals('$3.00', $smf(3, 'USD'));
     }
 }

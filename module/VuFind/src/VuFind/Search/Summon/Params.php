@@ -112,7 +112,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
-        return parent::addFacet($parts[0], $newAlias, $ored);
+        parent::addFacet($parts[0], $newAlias, $ored);
     }
 
     /**
@@ -168,20 +168,20 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     * @param array $include List of checkbox filters to return (null for all)
      *
      * @return array
      */
-    public function getCheckboxFacets(array $whitelist = null)
+    public function getCheckboxFacets(array $include = null)
     {
         // Grab checkbox facet details using the standard method:
-        $facets = parent::getCheckboxFacets($whitelist);
+        $facets = parent::getCheckboxFacets($include);
 
         // Special case -- if we have a "holdings only" or "expand query" facet,
         // we want this to always appear, even on the "no results" screen, since
         // setting this facet actually EXPANDS rather than reduces the result set.
         foreach ($facets as $i => $facet) {
-            list($field) = explode(':', $facet['filter']);
+            [$field] = explode(':', $facet['filter']);
             if ($field == 'holdingsOnly' || $field == 'queryExpansion') {
                 $facets[$i]['alwaysVisible'] = true;
             }
@@ -221,7 +221,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
         // Get the language setting:
-        $lang = $this->getOptions()->getTranslator()->getLocale();
+        $lang = $this->getOptions()->getTranslatorLocale();
         $backendParams->set('language', substr($lang, 0, 2));
 
         if ($options->highlightEnabled()) {

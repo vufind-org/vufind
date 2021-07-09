@@ -20,16 +20,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Session_Handlers
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 namespace VuFind\Session;
+
+use Laminas\Config\Config;
 
 /**
  * Redis session handler
@@ -39,7 +41,7 @@ namespace VuFind\Session;
  * @author   Veros Kaplan <cpk-dev@mzk.cz>
  * @author   Josef Moravec <moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
 class Redis extends AbstractBase
 {
@@ -48,7 +50,7 @@ class Redis extends AbstractBase
      *
      * @var \Credis_Client
      */
-    protected $connection = false;
+    protected $connection;
 
     /**
      * Redis version
@@ -58,60 +60,45 @@ class Redis extends AbstractBase
     protected $redisVersion = 3;
 
     /**
-     * Get connection to Redis
+     * Constructor
      *
-     * @throws \Exception
-     * @return \Credis_Client
+     * @param \Credis_Client $connection Redis connection object
+     * @param Config         $config     Session configuration ([Session] section of
+     * config.ini)
      */
-    protected function getConnection()
+    public function __construct(\Credis_Client $connection, Config $config = null)
     {
-        if (!$this->connection) {
-            // Set defaults if nothing set in config file.
-            $host = $this->config->redis_host ?? 'localhost';
-            $port = $this->config->redis_port ?? 6379;
-            $timeout = $this->config->redis_connection_timeout ?? 0.5;
-            $auth = $this->config->redis_auth ?? false;
-            $redis_db = $this->config->redis_db ?? 0;
-            $this->redisVersion = (int)($this->config->redis_version ?? 3);
-            $standalone = (bool)($this->config->redis_standalone ?? true);
-
-            // Create Credis client, the connection is established lazily
-            $this->connection = new \Credis_Client(
-                $host, $port, $timeout, '', $redis_db, $auth
-            );
-            if ($standalone) {
-                $this->connection->forceStandalone();
-            }
-        }
-        return $this->connection;
+        parent::__construct($config);
+        $this->redisVersion = (int)($config->redis_version ?? 3);
+        $this->connection = $connection;
     }
 
     /**
      * Read function must return string value always to make save handler work as
      * expected. Return empty string if there is no data to read.
      *
-     * @param string $sess_id The session ID to read
+     * @param string $sessId The session ID to read
      *
      * @return string
      */
-    public function read($sess_id)
+    public function read($sessId)
     {
-        $session = $this->getConnection()->get("vufind_sessions/{$sess_id}");
+        $session = $this->connection->get("vufind_sessions/{$sessId}");
         return $session !== false ? $session : '';
     }
 
     /**
      * Write function that is called when session data is to be saved.
      *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
+     * @param string $sessId The current session ID
+     * @param string $data   The session data to write
      *
      * @return bool
      */
-    public function write($sess_id, $data)
+    protected function saveSession($sessId, $data)
     {
-        return $this->getConnection()->setex(
-            "vufind_sessions/{$sess_id}", $this->lifetime, $data
+        return $this->connection->setex(
+            "vufind_sessions/{$sessId}", $this->lifetime, $data
         );
     }
 
@@ -119,21 +106,19 @@ class Redis extends AbstractBase
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
-     * @param string $sess_id The session ID to destroy
+     * @param string $sessId The session ID to destroy
      *
      * @return bool
      */
-    public function destroy($sess_id)
+    public function destroy($sessId)
     {
         // Perform standard actions required by all session methods:
-        parent::destroy($sess_id);
+        parent::destroy($sessId);
 
         // Perform Redis-specific cleanup
-        if ($this->redisVersion >= 4) {
-            $return = $this->getConnection()->unlink("vufind_sessions/{$sess_id}");
-        } else {
-            $return = $this->getConnection()->del("vufind_sessions/{$sess_id}");
-        }
-        return ($return > 0) ? true : false;
+        $unlinkMethod = ($this->redisVersion >= 4) ? 'unlink' : 'del';
+        $return = $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
+
+        return $return > 0;
     }
 }

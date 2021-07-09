@@ -41,7 +41,7 @@ class OaiResumption extends RowGateway
     /**
      * Constructor
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
     public function __construct($adapter)
     {
@@ -58,7 +58,7 @@ class OaiResumption extends RowGateway
         $parts = explode('&', $this->params);
         $params = [];
         foreach ($parts as $part) {
-            list($key, $value) = explode('=', $part);
+            [$key, $value] = explode('=', $part);
             $key = urldecode($key);
             $value = urldecode($value);
             $params[$key] = $value;

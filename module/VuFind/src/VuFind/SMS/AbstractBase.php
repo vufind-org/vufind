@@ -41,19 +41,19 @@ abstract class AbstractBase implements SMSInterface
     /**
      * SMS configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $smsConfig;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config  SMS configuration
-     * @param array               $options Additional options
+     * @param \Laminas\Config\Config $config  SMS configuration
+     * @param array                  $options Additional options
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __construct(\Zend\Config\Config $config, $options = [])
+    public function __construct(\Laminas\Config\Config $config, $options = [])
     {
         $this->smsConfig = $config;
     }
@@ -67,8 +67,7 @@ abstract class AbstractBase implements SMSInterface
      */
     protected function filterPhoneNumber($num)
     {
-        $filter = isset($this->smsConfig->General->filter)
-            ? $this->smsConfig->General->filter : '-.() ';
+        $filter = $this->smsConfig->General->filter ?? '-.() ';
         return str_replace(str_split($filter), '', $num);
     }
 
@@ -80,7 +79,6 @@ abstract class AbstractBase implements SMSInterface
     public function getValidationType()
     {
         // Load setting from config; at present, only US is implemented in templates
-        return isset($this->smsConfig->General->validation)
-            ? $this->smsConfig->General->validation : 'US';
+        return $this->smsConfig->General->validation ?? 'US';
     }
 }

@@ -28,11 +28,11 @@
  */
 namespace VuFind\Search\Solr\V4;
 
+use Laminas\EventManager\EventInterface;
+use Laminas\Http\Response;
+
 use VuFind\Search\Solr\AbstractErrorListener;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
-use Zend\EventManager\EventInterface;
-use Zend\Http\Response;
 
 /**
  * SOLR 3.x error listener.
@@ -50,9 +50,9 @@ class ErrorListener extends AbstractErrorListener
      *
      * @var string
      */
-    const TYPE_OTHER = 'other';
-    const TYPE_JSON  = 'json';
-    const TYPE_XML   = 'xml';
+    public const TYPE_OTHER = 'other';
+    public const TYPE_JSON  = 'json';
+    public const TYPE_XML   = 'xml';
 
     /**
      * VuFindSearch.error
@@ -102,6 +102,7 @@ class ErrorListener extends AbstractErrorListener
             $reason = $body->error->msg;
             if (stristr($reason, 'org.apache.solr.search.SyntaxError')
                 || stristr($reason, 'undefined field')
+                || stristr($reason, 'invalid date')
             ) {
                 $tags[] = self::TAG_PARSER_ERROR;
             }

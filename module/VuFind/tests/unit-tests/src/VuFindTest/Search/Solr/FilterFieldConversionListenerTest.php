@@ -28,11 +28,11 @@
  */
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Search\Solr\FilterFieldConversionListener;
+use Laminas\EventManager\Event;
 
+use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for FilterFieldConversionListener.
@@ -43,7 +43,7 @@ use Zend\EventManager\Event;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class FilterFieldConversionListenerTest extends TestCase
+class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test attaching listener.
@@ -53,7 +53,7 @@ class FilterFieldConversionListenerTest extends TestCase
     public function testAttach()
     {
         $listener = new FilterFieldConversionListener(['foo' => 'bar']);
-        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
+        $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
@@ -88,7 +88,11 @@ class FilterFieldConversionListenerTest extends TestCase
 
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $event = new Event('pre', $backend, ['params' => $params]);
+        $command = new MockCommandForFilterFieldConversionListenerTest($params);
+        $event = new Event(
+            Service::EVENT_PRE, $backend,
+            ['params' => $params, 'command' => $command]
+        );
         $listener->onSearchPre($event);
 
         $fq   = $params->get('fq');
@@ -101,5 +105,14 @@ class FilterFieldConversionListenerTest extends TestCase
             '(bar:value)',
         ];
         $this->assertEquals($expected, $fq);
+    }
+}
+
+class MockCommandForFilterFieldConversionListenerTest
+    extends \VuFindSearch\Command\AbstractBase
+{
+    public function __construct(ParamBag $params)
+    {
+        parent::__construct('foo', 'foo', $params);
     }
 }

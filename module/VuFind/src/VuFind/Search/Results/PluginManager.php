@@ -55,6 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'pazpar2' => \VuFind\Search\Pazpar2\Results::class,
         'primo' => \VuFind\Search\Primo\Results::class,
         'search2' => \VuFind\Search\Search2\Results::class,
+        'search2collection' => \VuFind\Search\Search2Collection\Results::class,
         'solr' => \VuFind\Search\Solr\Results::class,
         'solrauth' => \VuFind\Search\SolrAuth\Results::class,
         'solrauthor' => \VuFind\Search\SolrAuthor\Results::class,
@@ -86,6 +87,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Primo\Results::class => ResultsFactory::class,
         \VuFind\Search\Search2\Results::class =>
             \VuFind\Search\Search2\ResultsFactory::class,
+        \VuFind\Search\Search2Collection\Results::class => ResultsFactory::class,
         \VuFind\Search\Solr\Results::class =>
             \VuFind\Search\Solr\ResultsFactory::class,
         \VuFind\Search\SolrAuth\Results::class => ResultsFactory::class,

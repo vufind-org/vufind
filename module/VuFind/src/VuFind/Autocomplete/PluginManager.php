@@ -27,7 +27,7 @@
  */
 namespace VuFind\Autocomplete;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Autocomplete handler plugin manager
@@ -56,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrcn' => SolrCN::class,
         'solrreserves' => SolrReserves::class,
         'tag' => Tag::class,
+        'solrprefix' => SolrPrefix::class,
         // for legacy 1.x compatibility
         'noautocomplete' => 'None',
         'oclcidentitiesautocomplete' => 'OCLCIdentities',
@@ -82,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrCN::class => SolrFactory::class,
         SolrReserves::class => SolrFactory::class,
         Tag::class => InvokableFactory::class,
+        SolrPrefix::class => SolrFactory::class,
     ];
 
     /**

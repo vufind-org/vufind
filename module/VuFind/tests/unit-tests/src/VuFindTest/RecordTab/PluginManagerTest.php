@@ -38,8 +38,10 @@ use VuFind\RecordTab\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PluginManagerTest extends \VuFindTest\Unit\TestCase
+class PluginManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test results.
      *
@@ -47,9 +49,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testShareByDefault()
     {
-        $pm = new PluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
-        );
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $this->assertTrue($this->getProperty($pm, 'sharedByDefault'));
     }
 
@@ -57,15 +57,13 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * Test expected interface.
      *
      * @return void
-     *
-     * @expectedException        Zend\ServiceManager\Exception\InvalidServiceException
-     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\RecordTab\TabInterface
      */
     public function testExpectedInterface()
     {
-        $pm = new PluginManager(
-            $this->createMock(\Interop\Container\ContainerInterface::class)
-        );
+        $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
+        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\RecordTab\\TabInterface');
+
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());
     }
 }

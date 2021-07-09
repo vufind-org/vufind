@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink account actions test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,19 +39,19 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
+final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -57,11 +59,12 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -146,6 +149,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that changing email is disabled by default.
      *
+     * @depends testChangePassword
+     *
      * @return void
      */
     public function testChangeEmailDisabledByDefault()
@@ -168,6 +173,8 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
 
     /**
      * Test changing an email.
+     *
+     * @depends testChangePassword
      *
      * @return void
      */
@@ -221,7 +228,7 @@ class AccountActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1']);
     }

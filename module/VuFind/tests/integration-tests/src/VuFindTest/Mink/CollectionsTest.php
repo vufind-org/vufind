@@ -37,10 +37,8 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
+class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Go to a collection page.
      *
@@ -75,7 +73,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testBasic()
     {
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Collections' => [
                     'collections' => true
@@ -86,7 +85,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
                     'link_type' => 'Top'
                 ]
             ]
-        ]);
+            ]
+        );
         $page = $this->goToCollection();
         $results = $page->findAll('css', '.result');
         $this->assertEquals(7, count($results));
@@ -99,7 +99,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testKeywordFilter()
     {
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Collections' => [
                     'collections' => true
@@ -110,7 +111,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
                     'link_type' => 'Top'
                 ]
             ]
-        ]);
+            ]
+        );
         $page = $this->goToCollection();
         $input = $this->findCss($page, '#keywordFilter_lookfor');
         $input->setValue('Subcollection 2');
@@ -129,7 +131,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
     public function testContextLinks()
     {
         // link_type => 'All'
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'config' => [
                 'Hierarchy' => [
                     'showTree' => true
@@ -143,7 +146,8 @@ class CollectionsTest extends \VuFindTest\Unit\MinkTestCase
                     'link_type' => 'All'
                 ]
             ]
-        ]);
+            ]
+        );
         $page = $this->goToCollection();
         $this->findCss($page, '.hierarchyTreeLink');
 

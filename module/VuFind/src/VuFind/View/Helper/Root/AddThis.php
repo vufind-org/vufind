@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AddThis extends \Zend\View\Helper\AbstractHelper
+class AddThis extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * AddThis key (false if disabled)

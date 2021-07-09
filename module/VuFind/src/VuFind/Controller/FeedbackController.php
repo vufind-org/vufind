@@ -13,9 +13,10 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Mail\Address;
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
-use Zend\Mail\Address;
 
 /**
  * Controller for configurable forms (feedback etc).
@@ -30,9 +31,16 @@ use Zend\Mail\Address;
 class FeedbackController extends AbstractBase
 {
     /**
+     * Feedback form class
+     *
+     * @var string
+     */
+    protected $formClass = \VuFind\Form\Form::class;
+
+    /**
      * Display Feedback home form.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return ViewModel
      */
     public function homeAction()
     {
@@ -43,7 +51,7 @@ class FeedbackController extends AbstractBase
      * Handles rendering and submit of dynamic forms.
      * Form configurations are specified in FeedbackForms.json
      *
-     * @return void
+     * @return mixed
      */
     public function formAction()
     {
@@ -54,21 +62,30 @@ class FeedbackController extends AbstractBase
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get(\VuFind\Form\Form::class);
-        $form->setFormId($formId);
+        $form = $this->serviceLocator->get($this->formClass);
+        $params = [];
+        if ($refererHeader = $this->getRequest()->getHeader('Referer')
+        ) {
+            $params['referrer'] = $refererHeader->getFieldValue();
+        }
+        $form->setFormId($formId, $params);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
         }
 
+        if (!$user && $form->showOnlyForLoggedUsers()) {
+            return $this->forceLogin();
+        }
+
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useRecaptcha
-            = $this->recaptcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha
+            = $this->captcha()->active('feedback') && $form->useCaptcha();
 
         $params = $this->params();
         $form->setData($params->fromPost());
 
-        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
@@ -77,13 +94,13 @@ class FeedbackController extends AbstractBase
             return $view;
         }
 
-        list($messageParams, $template)
+        [$messageParams, $template]
             = $form->formatEmailMessage($this->params()->fromPost());
         $emailMessage = $this->getViewRenderer()->partial(
             $template, ['fields' => $messageParams]
         );
 
-        list($senderName, $senderEmail) = $this->getSender();
+        [$senderName, $senderEmail] = $this->getSender();
 
         $replyToName = $params->fromPost(
             'name',
@@ -94,13 +111,13 @@ class FeedbackController extends AbstractBase
             $user ? $user->email : null
         );
 
-        $recipients = $form->getRecipient();
+        $recipients = $form->getRecipient($params->fromPost());
 
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
         $sendSuccess = true;
         foreach ($recipients as $recipient) {
-            list($success, $errorMsg) = $this->sendEmail(
+            [$success, $errorMsg] = $this->sendEmail(
                 $recipient['name'], $recipient['email'], $senderName, $senderEmail,
                 $replyToName, $replyToEmail, $emailSubject, $emailMessage
             );
@@ -164,7 +181,11 @@ class FeedbackController extends AbstractBase
             $mailer->send(
                 new Address($recipientEmail, $recipientName),
                 new Address($senderEmail, $senderName),
-                $emailSubject, $emailMessage, null, $replyToEmail
+                $emailSubject,
+                $emailMessage,
+                null,
+                !empty($replyToEmail)
+                    ? new Address($replyToEmail, $replyToName) : null
             );
             return [true, null];
         } catch (MailException $e) {
@@ -175,10 +196,10 @@ class FeedbackController extends AbstractBase
     /**
      * Show response after form submit.
      *
-     * @param View    $view     View
-     * @param Form    $form     Form
-     * @param boolean $success  Was email sent successfully?
-     * @param string  $errorMsg Error message (optional)
+     * @param ViewModel $view     View
+     * @param Form      $form     Form
+     * @param boolean   $success  Was email sent successfully?
+     * @param string    $errorMsg Error message (optional)
      *
      * @return array with name, email
      */

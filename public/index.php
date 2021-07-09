@@ -1,16 +1,4 @@
 <?php
-// If the XHProf profiler is enabled, set it up now:
-$xhprof = getenv('VUFIND_PROFILER_XHPROF');
-if (!empty($xhprof)) {
-    if (extension_loaded('xhprof')) {
-        xhprof_enable();
-    } elseif (extension_loaded('tideways')) {
-        tideways_enable();
-    } else {
-        $xhprof = false;
-    }
-}
-
 // Define path to application directory
 defined('APPLICATION_PATH')
     || define(
@@ -18,6 +6,13 @@ defined('APPLICATION_PATH')
         (getenv('VUFIND_APPLICATION_PATH') ? getenv('VUFIND_APPLICATION_PATH')
             : dirname(__DIR__))
     );
+
+// If the profiler is enabled, set it up now:
+$vufindProfiler = getenv('VUFIND_PROFILER_XHPROF');
+if (!empty($vufindProfiler)) {
+    include APPLICATION_PATH . '/module/VuFind/functions/profiler.php';
+    enableVuFindProfiling($vufindProfiler);
+}
 
 // Define application environment
 defined('APPLICATION_ENV')
@@ -63,23 +58,15 @@ if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
 }
 
-if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load Zend Framework autoloader.');
+if (!class_exists('Laminas\Loader\AutoloaderFactory')) {
+    throw new RuntimeException('Unable to load Laminas autoloader.');
 }
 
 // Run the application!
-Zend\Mvc\Application::init(require 'config/application.config.php')->run();
-
-// Handle final profiling details, if necessary:
-if ($xhprof) {
-    $xhprofData = extension_loaded('xhprof') ? xhprof_disable() : tideways_disable();
-    $xhprofRunId = uniqid();
-    $suffix = 'vufind';
-    $dir = ini_get('xhprof.output_dir');
-    if (empty($dir)) {
-        $dir = sys_get_temp_dir();
-    }
-    file_put_contents("$dir/$xhprofRunId.$suffix.xhprof", serialize($xhprofData));
-    $url = "$xhprof?run=$xhprofRunId&source=$suffix";
-    echo "<a href='$url'>Profiler output</a>";
+$app = Laminas\Mvc\Application::init(require 'config/application.config.php');
+if (PHP_SAPI === 'cli') {
+    return $app->getServiceManager()
+        ->get(\VuFindConsole\ConsoleRunner::class)->run();
+} else {
+    $app->run();
 }

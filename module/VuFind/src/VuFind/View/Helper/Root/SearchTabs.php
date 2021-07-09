@@ -29,11 +29,11 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Http\Request;
+use Laminas\View\Helper\Url;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager;
 use VuFind\Search\SearchTabsHelper;
-use Zend\Http\Request;
-use Zend\View\Helper\Url;
 
 /**
  * "Search tabs" view helper
@@ -45,7 +45,7 @@ use Zend\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabs extends \Zend\View\Helper\AbstractHelper
+class SearchTabs extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Search manager
@@ -289,7 +289,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
 
         // Build new URL:
         $results->getParams()->setBasicSearch($query, $targetHandler);
-        return $this->url->__invoke($options->getSearchAction())
+        return ($this->url)($options->getSearchAction())
             . $results->getUrlQuery()->getParams(false);
     }
 
@@ -332,7 +332,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         // If an advanced search is available, link there; otherwise, just go
         // to the search home:
         $results = $this->results->get($class);
-        $url = $this->url->__invoke($results->getOptions()->getSearchHomeAction())
+        $url = ($this->url)($results->getOptions()->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [
             'id' => $id,
@@ -363,8 +363,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $results = $this->results->get($class);
         $options = $results->getOptions();
         $advSearch = $options->getAdvancedSearchAction();
-        $url = $this->url
-            ->__invoke($advSearch ? $advSearch : $options->getSearchHomeAction())
+        $url = ($this->url)($advSearch ?: $options->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
         return [
             'id' => $id,

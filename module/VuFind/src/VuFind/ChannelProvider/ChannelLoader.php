@@ -27,12 +27,12 @@
  */
 namespace VuFind\ChannelProvider;
 
+use Laminas\Config\Config;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
-use Zend\Config\Config;
 
 /**
  * Channel loader
@@ -81,6 +81,13 @@ class ChannelLoader
     protected $searchRunner;
 
     /**
+     * Current locale (used for caching)
+     *
+     * @var string
+     */
+    protected $locale;
+
+    /**
      * Constructor
      *
      * @param Config         $config Channels configuration
@@ -88,15 +95,18 @@ class ChannelLoader
      * @param ChannelManager $cm     Channel manager
      * @param SearchRunner   $runner Search runner
      * @param RecordLoader   $loader Record loader
+     * @param string         $locale Current locale (used for caching)
      */
     public function __construct(Config $config, CacheManager $cache,
-        ChannelManager $cm, SearchRunner $runner, RecordLoader $loader
+        ChannelManager $cm, SearchRunner $runner, RecordLoader $loader,
+        string $locale = ''
     ) {
         $this->config = $config;
         $this->cacheManager = $cache;
         $this->channelManager = $cm;
         $this->searchRunner = $runner;
         $this->recordLoader = $loader;
+        $this->locale = $locale;
     }
 
     /**
@@ -173,7 +183,7 @@ class ChannelLoader
     {
         // The provider ID consists of a service name and an optional config
         // section -- break out the relevant parts:
-        list($serviceName, $configSection) = explode(':', $providerId . ':');
+        [$serviceName, $configSection] = explode(':', $providerId . ':');
 
         // Load configuration, using default value if necessary:
         if (empty($configSection)) {
@@ -211,16 +221,23 @@ class ChannelLoader
         // Set up the cache, if appropriate:
         if ($this->config->General->cache_home_channels ?? false) {
             $providerIds = array_map('get_class', $providers);
-            $parts = [implode(',', $providerIds), $source, $token];
+            $parts = [implode(',', $providerIds), $source, $token, $this->locale];
             $cacheKey = md5(implode('-', $parts));
             $cache = $this->cacheManager->getCache('object', 'homeChannels');
         } else {
             $cacheKey = false;
+            $cache = null;
         }
 
         // Fetch channel data from cache, or populate cache if necessary:
         if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
-            $results = $this->performChannelSearch([], $providers, $source);
+            $searchParams = [];
+            if (isset($this->config->General->default_home_search)) {
+                $searchParams['lookfor']
+                    = $this->config->General->default_home_search;
+            }
+            $results = $this
+                ->performChannelSearch($searchParams, $providers, $source);
             $channels = $this->getChannelsFromResults($providers, $results, $token);
             if ($cacheKey) {
                 $cache->setItem($cacheKey, $channels);

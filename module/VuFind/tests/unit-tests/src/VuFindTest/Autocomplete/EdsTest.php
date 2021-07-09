@@ -40,7 +40,7 @@ use VuFind\Autocomplete\Eds;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class EdsTest extends \VuFindTest\Unit\TestCase
+class EdsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a mock backend
@@ -52,7 +52,7 @@ class EdsTest extends \VuFindTest\Unit\TestCase
     protected function getMockBackend($id = 'EDS')
     {
         return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->setMethods(['autocomplete'])
+            ->onlyMethods(['autocomplete'])
             ->disableOriginalConstructor()->getMock();
     }
 

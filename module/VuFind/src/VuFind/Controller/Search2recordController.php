@@ -28,7 +28,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search2 Record Controller
@@ -60,7 +60,7 @@ class Search2recordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->serviceLocator->get(\VuFind\Config::class)
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Search2');
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;

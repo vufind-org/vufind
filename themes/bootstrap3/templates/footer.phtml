@@ -1,29 +1,35 @@
 <footer class="hidden-print">
   <div class="footer-container">
     <div class="footer-column">
-      <p><strong><?=$this->transEsc('Search Options')?></strong></p>
-      <ul>
-        <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
-        <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
-      </ul>
+      <?php $this->slot('footer-left')->start(); ?>
+        <h2><?=$this->transEsc('Search Options')?></h2>
+        <ul>
+          <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+          <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+        </ul>
+      <?=$this->slot('footer-left')->end(); ?>
     </div>
     <div class="footer-column">
-      <p><strong><?=$this->transEsc('Find More')?></strong></p>
-      <ul>
-        <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
-        <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
-        <li><a href="<?=$this->url('channels-home')?>"><?=$this->transEsc('channel_explore')?></a></li>
-        <li><a href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>
-        <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
-      </ul>
+      <?php $this->slot('footer-center')->start(); ?>
+        <h2><?=$this->transEsc('Find More')?></h2>
+        <ul>
+          <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+          <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+          <li><a href="<?=$this->url('channels-home')?>"><?=$this->transEsc('channel_explore')?></a></li>
+          <li><a href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>
+          <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
+        </ul>
+      <?=$this->slot('footer-center')->end(); ?>
     </div>
     <div class="footer-column">
-      <p><strong><?=$this->transEsc('Need Help?')?></strong></p>
-      <ul>
-        <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
-        <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
-        <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
-      </ul>
+      <?php $this->slot('footer-right')->start(); ?>
+        <h2><?=$this->transEsc('Need Help?')?></h2>
+        <ul>
+          <li><a href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
+          <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
+          <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
+        </ul>
+      <?=$this->slot('footer-right')->end(); ?>
     </div>
   </div>
   <div class="poweredby">

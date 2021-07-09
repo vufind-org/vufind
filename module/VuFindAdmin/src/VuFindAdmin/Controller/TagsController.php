@@ -54,18 +54,16 @@ class TagsController extends AbstractAdmin
      */
     protected function getParam($param)
     {
-        return (isset($this->params[$param]))
-            ? $this->params[$param]
-            : $this->params()->fromPost(
-                $param,
-                $this->params()->fromQuery($param, null)
-            );
+        return $this->params[$param] ?? $this->params()->fromPost(
+            $param,
+            $this->params()->fromQuery($param, null)
+        );
     }
 
     /**
      * Tag Details
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -78,7 +76,7 @@ class TagsController extends AbstractAdmin
     /**
      * Manage Tags
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function manageAction()
     {
@@ -99,7 +97,7 @@ class TagsController extends AbstractAdmin
     /**
      * List Tags
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function listAction()
     {
@@ -118,7 +116,7 @@ class TagsController extends AbstractAdmin
     /**
      * Delete Tags
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function deleteAction()
     {
@@ -304,7 +302,7 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique resources based on the url params
      *
-     * @return \Zend\Db\ResultSet
+     * @return \Laminas\Db\ResultSet
      */
     protected function getUniqueResources()
     {
@@ -318,7 +316,7 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique tags based on the url params
      *
-     * @return \Zend\Db\ResultSet
+     * @return \Laminas\Db\ResultSet
      */
     protected function getUniqueTags()
     {
@@ -332,7 +330,7 @@ class TagsController extends AbstractAdmin
     /**
      * Gets a list of unique users based on the url params
      *
-     * @return \Zend\Db\ResultSet
+     * @return \Laminas\Db\ResultSet
      */
     protected function getUniqueUsers()
     {
@@ -359,11 +357,11 @@ class TagsController extends AbstractAdmin
     /**
      * Get and set a list of resource tags
      *
-     * @return \Zend\Paginator\Paginator
+     * @return \Laminas\Paginator\Paginator
      */
     protected function getResourceTags()
     {
-        $currentPage = isset($this->params['page']) ? $this->params['page'] : "1";
+        $currentPage = $this->params['page'] ?? "1";
         $resourceTags = $this->getTable('ResourceTags');
         $tags = $resourceTags->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),

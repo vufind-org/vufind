@@ -58,7 +58,7 @@ class TermsTest extends TestCase
             ]
         );
 
-        $this->assertEquals('ArrayIterator', get_class($terms->getIterator()));
+        $this->assertEquals(\ArrayIterator::class, get_class($terms->getIterator()));
         $this->assertNull($terms->getFieldTerms('field2'));
         $fieldTerms = $terms->getFieldTerms('field1');
         $this->assertCount(3, $fieldTerms);

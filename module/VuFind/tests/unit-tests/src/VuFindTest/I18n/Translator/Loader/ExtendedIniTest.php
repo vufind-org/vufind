@@ -39,8 +39,10 @@ use VuFind\I18n\Translator\Loader\ExtendedIni;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExtendedIniTest extends \VuFindTest\Unit\TestCase
+class ExtendedIniTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test translations.
      *
@@ -49,8 +51,8 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     public function testTranslations()
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-            realpath(__DIR__ . '/../../../../../../fixtures/language/overrides')
+            realpath($this->getFixtureDir() . 'language/base'),
+            realpath($this->getFixtureDir() . 'language/overrides')
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);
@@ -73,7 +75,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     public function testFallback()
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
@@ -97,7 +99,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     public function testFallbackToSelf()
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
@@ -117,7 +119,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     public function testSelfAsParent()
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('self-parent', null);
@@ -138,7 +140,7 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     public function testParentChain()
     {
         $pathStack = [
-            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+            realpath($this->getFixtureDir() . 'language/base'),
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('child2', null);
@@ -157,12 +159,12 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      * Test missing path stack.
      *
      * @return void
-     *
-     * @expectedException        Zend\I18n\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Ini file 'en.ini' not found
      */
     public function testMissingPathStack()
     {
+        $this->expectException(\Laminas\I18n\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Ini file \'en.ini\' not found');
+
         $loader = new ExtendedIni();
         $loader->load('en', null);
     }

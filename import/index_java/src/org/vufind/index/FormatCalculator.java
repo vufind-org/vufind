@@ -67,9 +67,13 @@ public class FormatCalculator
                     return true;
                 }
                 break;
-            case 'j':
-            case 'r':
-                // Music recordings (j) and Physical objects (r) are not books.
+            case 'e':   // Cartographic material
+            case 'f':   // Manuscript cartographic material
+            case 'g':   // Projected medium
+            case 'j':   // Musical sound recording
+            case 'k':   // 2-D nonprojectable graphic
+            case 'r':   // 3-D artifact or naturally occurring object
+                // None of these things are books:
                 return true;
         }
         return false;
@@ -220,14 +224,16 @@ public class FormatCalculator
             // Serial
             case 's':
                 // Look in 008 to determine what type of Continuing Resource
-                switch (marc008.getData().toLowerCase().charAt(21)) {
-                    case 'n':
-                        return "Newspaper";
-                    case 'p':
-                        return "Journal";
-                    default:
-                        if (!isConferenceProceeding(record)) {
-                            return "Serial";
+                if (marc008 != null) {
+                    switch (marc008.getData().toLowerCase().charAt(21)) {
+                        case 'n':
+                            return "Newspaper";
+                        case 'p':
+                            return "Journal";
+                        default:
+                            if (!isConferenceProceeding(record)) {
+                                return "Serial";
+                            }
                         }
                 }
                 break;
@@ -321,8 +327,10 @@ public class FormatCalculator
     protected boolean isElectronic(Record record) {
         /* Example from Villanova of how to use holdings locations to detect online status;
          * You can override this method in a subclass if you wish to use this approach.
-        DataField holdingsField = (DataField) record.getVariableField("852");
-        if (holdingsField != null) {
+        List holdingsFields = record.getVariableFields("852");
+        Iterator holdingsIterator = holdingsFields.iterator();
+        while (holdingsIterator.hasNext()) {
+            DataField holdingsField = (DataField) holdingsIterator.next();
             if (holdingsField.getSubfield('b') != null) {
                 String holdingsLocation = holdingsField.getSubfield('b').getData().toLowerCase();
                 if (holdingsLocation.equals("www") || holdingsLocation.equals("e-ref")) {

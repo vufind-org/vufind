@@ -72,6 +72,11 @@ class Params extends \VuFind\Search\Base\Params
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
         $backendParams->set('filterList', $this->getFilterSettings());
+        if ($this->getOptions()->highlightEnabled()) {
+            $backendParams->set('highlight', true);
+            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
+            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
+        }
 
         return $backendParams;
     }
@@ -110,7 +115,11 @@ class Params extends \VuFind\Search\Base\Params
         if ($str == 'reference_entrys') {
             return 'Reference Entries';
         }
-        return ucwords(str_replace('_', ' ', $str));
+        return mb_convert_case(
+            preg_replace('/_/u', ' ', $str),
+            MB_CASE_TITLE,
+            'UTF-8'
+        );
     }
 
     /**

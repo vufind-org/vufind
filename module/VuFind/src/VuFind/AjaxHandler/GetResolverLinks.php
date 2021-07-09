@@ -28,13 +28,13 @@
  */
 namespace VuFind\AjaxHandler;
 
+use Laminas\Config\Config;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Resolver\Connection;
 use VuFind\Resolver\Driver\PluginManager as ResolverManager;
 use VuFind\Session\Settings as SessionSettings;
-use Zend\Config\Config;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\View\Renderer\RendererInterface;
 
 /**
  * "Get Resolver Links" AJAX handler
@@ -104,8 +104,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         $openUrl = $params->fromQuery('openurl', '');
         $searchClassId = $params->fromQuery('searchClassId', '');
 
-        $resolverType = isset($this->config->OpenURL->resolver)
-            ? $this->config->OpenURL->resolver : 'generic';
+        $resolverType = $this->config->OpenURL->resolver ?? 'generic';
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
@@ -143,7 +142,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         if (isset($this->config->OpenURL->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            list($base) = explode('?', $this->config->OpenURL->url);
+            [$base] = explode('?', $this->config->OpenURL->url);
         } else {
             $base = false;
         }

@@ -41,7 +41,7 @@ use VuFindTest\Search\TestHarness\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class FacetFormatterTest extends \VuFindTest\Unit\TestCase
+class FacetFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get fake facet data.
@@ -101,7 +101,6 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         ];
         if (!$includeOr) {
             unset($data['xyzzy']);
-            unset($data['hierarchical_xyzzy']);
         }
         return $data;
     }
@@ -158,7 +157,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
         $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new Params(new Options($configManager), $configManager);
-        $requestParams = new \Zend\StdLib\Parameters($request);
+        $requestParams = new \Laminas\Stdlib\Parameters($request);
         $params->initFromRequest($requestParams);
         $factory = new \VuFind\Search\Factory\UrlQueryHelperFactory();
         $urlQuery = $factory->fromParams($params);
@@ -183,7 +182,7 @@ class FacetFormatterTest extends \VuFindTest\Unit\TestCase
     {
         $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
         $params = new Params(new Options($configManager), $configManager);
-        $params->initFromRequest(new \Zend\Stdlib\Parameters($request));
+        $params->initFromRequest(new \Laminas\Stdlib\Parameters($request));
         $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
         $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)

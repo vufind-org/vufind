@@ -109,10 +109,7 @@ class MultiAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (!isset($this->config->MultiAuth)
-            || !isset($this->config->MultiAuth->method_order)
-            || !strlen($this->config->MultiAuth->method_order)
-        ) {
+        if (empty($this->config->MultiAuth->method_order)) {
             throw new AuthException(
                 "One or more MultiAuth parameters are missing. " .
                 "Check your config.ini!"
@@ -123,7 +120,7 @@ class MultiAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Zend\Config\Config $config Configuration to set
+     * @param \Laminas\Config\Config $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -148,7 +145,7 @@ class MultiAuth extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -174,7 +171,7 @@ class MultiAuth extends AbstractBase
     /**
      * Load credentials into the object and apply internal filter settings to them.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @return void
@@ -197,7 +194,7 @@ class MultiAuth extends AbstractBase
      * Do the actual work of authenticating the user (support method for
      * authenticate()).
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException
@@ -205,6 +202,7 @@ class MultiAuth extends AbstractBase
      */
     protected function authUser($request)
     {
+        $exception = null;
         $manager = $this->getPluginManager();
 
         // Try authentication methods until we find one that works:
@@ -228,11 +226,7 @@ class MultiAuth extends AbstractBase
         // along; or both variables are undefined, indicating that $this->methods
         // is empty and thus something is wrong!
         if (!isset($user)) {
-            if (isset($exception)) {
-                throw $exception;
-            } else {
-                throw new AuthException('authentication_error_technical');
-            }
+            throw $exception ?? new AuthException('authentication_error_technical');
         }
         return $user;
     }

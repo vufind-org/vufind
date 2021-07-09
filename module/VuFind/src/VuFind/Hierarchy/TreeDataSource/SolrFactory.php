@@ -28,6 +28,9 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Solr Hierarchy tree data source plugin factory.
@@ -38,8 +41,15 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'Solr';
+
     /**
      * Create an object
      *
@@ -52,7 +62,7 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -69,10 +79,9 @@ class SolrFactory implements \Zend\ServiceManager\Factory\FactoryInterface
           : [];
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $batchSize = isset($config->Index->cursor_batch_size)
-            ? $config->Index->cursor_batch_size : 1000;
+        $batchSize = $config->Index->cursor_batch_size ?? 1000;
         $solr = $container->get(\VuFind\Search\BackendManager::class)
-            ->get('Solr')->getConnector();
+            ->get($this->backendId)->getConnector();
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);
         return new $requestedName(

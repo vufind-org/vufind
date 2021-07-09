@@ -41,17 +41,24 @@ class Alma extends AbstractBase
     /**
      * HTTP client
      *
-     * @var \Zend\Http\Client
+     * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
+     * List of filter reasons that are ignored (displayed regardless of filtering)
+     *
+     * @var array
+     */
+    protected $ignoredFilterReasons = ['Date Filter'];
+
+    /**
      * Constructor
      *
-     * @param string            $baseUrl    Base URL for link resolver
-     * @param \Zend\Http\Client $httpClient HTTP client
+     * @param string               $baseUrl    Base URL for link resolver
+     * @param \Laminas\Http\Client $httpClient HTTP client
      */
-    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
+    public function __construct($baseUrl, \Laminas\Http\Client $httpClient)
     {
         parent::__construct($baseUrl);
         $this->httpClient = $httpClient;
@@ -95,9 +102,15 @@ class Alma extends AbstractBase
         }
 
         foreach ($xml->context_services->children() as $service) {
-            $serviceType = $this->mapServiceType(
-                (string)$service->attributes()->service_type
-            );
+            $filtered = $this->getKeyWithId($service, 'Filtered');
+            if ('true' === $filtered) {
+                $reason = $this->getKeyWithId($service, 'Filter reason');
+                if (!in_array($reason, $this->ignoredFilterReasons)) {
+                    continue;
+                }
+            }
+            $originalServiceType = (string)$service->attributes()->service_type;
+            $serviceType = $this->mapServiceType($originalServiceType);
             if (!$serviceType) {
                 continue;
             }
@@ -106,10 +119,18 @@ class Alma extends AbstractBase
                 $href = $this->getKeyWithId($service, 'url');
                 $access = '';
             } else {
-                $title = $this->getKeyWithId($service, 'package_public_name');
+                $title = $this->getKeyWithId($service, 'package_display_name');
+                if (!$title) {
+                    $title = $this->getKeyWithId($service, 'package_public_name');
+                }
                 $href = (string)$service->resolution_url;
-                $access = $this->getKeyWithId($service, 'Is_free')
-                    ? 'open' : 'limited';
+                if ('getOpenAccessFullText' === $originalServiceType
+                    || $this->getKeyWithId($service, 'Is_free')
+                ) {
+                    $access = 'open';
+                } else {
+                    $access = 'limited';
+                }
             }
             if ($coverage = $this->getKeyWithId($service, 'Availability')) {
                 $coverage = $this->cleanupText($coverage);
@@ -161,8 +182,11 @@ class Alma extends AbstractBase
     {
         $map = [
             'getFullTxt' => 'getFullTxt',
+            'getOpenAccessFullText' => 'getFullTxt',
             'getHolding' => 'getHolding',
-            'GeneralElectronicService' => 'getWebService'
+            'GeneralElectronicService' => 'getWebService',
+            'DB' => 'getFullTxt',
+            'Package' => 'getFullTxt',
         ];
         return $map[$serviceType] ?? '';
     }

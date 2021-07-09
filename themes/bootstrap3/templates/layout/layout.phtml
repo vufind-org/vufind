@@ -25,77 +25,27 @@
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
     <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
       if (!isset($this->renderingError)) {
-        // Add translation strings
-        $this->jsTranslations()->addStrings(
-          [
-            'add_tag_success' => 'add_tag_success',
-            'bulk_email_success' => 'bulk_email_success',
-            'bulk_noitems_advice' => 'bulk_noitems_advice',
-            'bulk_save_success' => 'bulk_save_success',
-            'close' => 'close',
-            'collection_empty' => 'collection_empty',
-            'error_occurred' => 'An error has occurred',
-            'go_to_list' => 'go_to_list',
-            'hold_available' => 'hold_available',
-            'libphonenumber_invalid' => 'libphonenumber_invalid',
-            'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
-            'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
-            'libphonenumber_notanumber' => 'libphonenumber_notanumber',
-            'libphonenumber_toolong' => 'libphonenumber_toolong',
-            'libphonenumber_tooshort' => 'libphonenumber_tooshort',
-            'libphonenumber_tooshortidd' => 'libphonenumber_tooshortidd',
-            'loading' => 'Loading',
-            'more' => 'more',
-            'number_thousands_separator' => [
-                'number_thousands_separator', null, ','
-            ],
-            'sms_success' => 'sms_success'
-          ]
-        );
-        // Add libphonenumber.js strings
-        $this->jsTranslations()->addStrings(
-          [
-            "Phone number invalid" => 'libphonenumber_invalid',
-            "Invalid country calling code" => 'libphonenumber_invalidcountry',
-            "Invalid region code" => 'libphonenumber_invalidregion',
-            "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
-            "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
-            "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
-            "Phone number too short after IDD" => 'libphonenumber_tooshortidd'
-          ]
-        );
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/cookies.js");
+          $this->headScript()->appendFile("vendor/js.cookie.js");
           $this->headScript()->appendFile("cart.js");
           $domain = $cart->getCookieDomain();
           if (!empty($domain)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setDomain("' . $domain . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
           $cookiePath = $cart->getCookiePath();
           if (!empty($cookiePath)) {
-            $this->headScript()->appendScript(
-              'VuFind.cart.setCookiePath("' . $cookiePath . '");'
-            );
+            $appendScripts[] = 'VuFind.cart.setCookiePath("' . $cookiePath . '");';
           }
-          $this->jsTranslations()->addStrings(
-            [
-              'addBookBag' => 'Add to Book Bag',
-              'bookbagFull' => 'bookbag_full_msg',
-              'bookbagMax' => $cart->getMaxSize(),
-              'bookbagStatusFull' => 'bookbag_full',
-              'confirmDelete' => 'confirm_delete',
-              'confirmEmpty' => 'bookbag_confirm_empty',
-              'itemsAddBag' => 'items_added_to_bookbag',
-              'itemsInBag' => 'items_already_in_bookbag',
-              'removeBookBag' => 'Remove from Book Bag',
-              'viewBookBag' => 'View Book Bag'
-            ]
-          );
+          $cookieSameSite = $cart->getCookieSameSite();
+          if (null !== $cookieSameSite) {
+            $appendScripts[] = 'VuFind.cart.setCookieSameSite("' . $cookieSameSite . '");';
+          }
         }
         $this->headScript()->prependScript(
           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
@@ -104,8 +54,7 @@
 
       // Session keep-alive
       if ($this->keepAlive()) {
-          $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->keepAlive());
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
           $this->headScript()->appendFile("keep_alive.js");
       }
 
@@ -113,28 +62,21 @@
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
         $this->headScript()->appendFile("account_ajax.js");
-        $this->jsTranslations()->addStrings(
-          [
-            'account_has_alerts' => 'account_has_alerts',
-            'Checked Out Items' => 'Checked Out Items',
-            'ill_request_available' => 'ill_request_available',
-            'renew_item_due_tooltip' => 'renew_item_due_tooltip',
-            'renew_item_overdue_tooltip' => 'renew_item_overdue_tooltip',
-            'request_in_transit' => 'request_in_transit',
-            'storage_retrieval_request_available' => 'storage_retrieval_request_available'
-          ]
-        );
       }
 
       $root = rtrim($this->url('home'), '/');
-      $translations = $this->jsTranslations()->getJSON();
+      $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
-      $setupJS = <<<JS
+      $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 JS;
-      $this->headScript()->appendScript($setupJS);
+      $this->headScript()->appendScript(implode("\n", $appendScripts));
+
+      if ($this->config()->ajaxCoversEnabled()) {
+          $this->headScript()->appendFile("covers.js");
+      }
     ?>
     <?=$this->headScript()?>
   </head>
@@ -156,7 +98,7 @@ JS;
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
     </header>
-    <nav class="breadcrumbs">
+    <nav class="breadcrumbs" aria-label="<?=$this->transEscAttr('Breadcrumbs') ?>">
       <div class="container">
         <?php if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
@@ -190,10 +132,12 @@ JS;
     </div>
     <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <button type="button" class="close" data-dismiss="modal">
+            <svg aria-label="<?=$this->transEscAttr('Close') ?>" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
           <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
         </div>
       </div>
@@ -201,8 +145,8 @@ JS;
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
-    <?php if ($this->recaptcha()->active()): ?>
-      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "https://www.google.com/recaptcha/api.js?onload=recaptchaOnLoad&render=explicit&hl=" . $this->layout()->userLang, 'SET')?>
-    <?php endif; ?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, $jsInclude, 'SET')?>
+    <?php endforeach; ?>
   </body>
 </html>

@@ -28,10 +28,13 @@
 namespace VuFind\Mailer;
 
 use Interop\Container\ContainerInterface;
-use Zend\Mail\Transport\InMemory;
-use Zend\Mail\Transport\Smtp;
-use Zend\Mail\Transport\SmtpOptions;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\Mail\Transport\InMemory;
+use Laminas\Mail\Transport\Smtp;
+use Laminas\Mail\Transport\SmtpOptions;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating Mailer objects
@@ -49,7 +52,7 @@ class Factory implements FactoryInterface
     /**
      * Build the mail transport object.
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param \Laminas\Config\Config $config Configuration
      *
      * @return InMemory|Smtp
      */
@@ -83,6 +86,10 @@ class Factory implements FactoryInterface
                 $settings['connection_config']['ssl'] = 'ssl';
             }
         }
+        if (isset($config->Mail->connection_time_limit)) {
+            $settings['connection_time_limit']
+                = $config->Mail->connection_time_limit;
+        }
         return new Smtp(new SmtpOptions($settings));
     }
 
@@ -98,7 +105,7 @@ class Factory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null

@@ -27,12 +27,12 @@
  */
 namespace VuFind\Controller\Plugin;
 
+use Laminas\Log\LoggerAwareInterface;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
-use Zend\Log\LoggerAwareInterface;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * VuFind Action Helper - Permission Checker
@@ -83,6 +83,19 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
         $this->permissionManager = $pm;
         $this->permissionDeniedManager = $pdm;
         $this->authManager = $auth;
+    }
+
+    /**
+     * Check if a permission is authorized, returning a boolean value without
+     * applying any additional behavior.
+     *
+     * @param string $permission Permission to check
+     *
+     * @return bool
+     */
+    public function isAuthorized($permission)
+    {
+        return $this->permissionManager->isAuthorized($permission);
     }
 
     /**

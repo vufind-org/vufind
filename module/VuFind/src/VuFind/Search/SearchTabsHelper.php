@@ -29,8 +29,8 @@
  */
 namespace VuFind\Search;
 
+use Laminas\Http\Request;
 use VuFind\Search\Results\PluginManager;
-use Zend\Http\Request;
 
 /**
  * "Search tabs" helper
@@ -42,7 +42,7 @@ use Zend\Http\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
+class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Search manager
@@ -160,7 +160,7 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
      */
     public function extractClassName($tabId)
     {
-        list($class) = explode(':', $tabId, 2);
+        [$class] = explode(':', $tabId, 2);
         return $class;
     }
 
@@ -224,7 +224,7 @@ class SearchTabsHelper extends \Zend\View\Helper\AbstractHelper
         $params = $results->getParams();
         $result = [];
         foreach ($filters as $filter) {
-            list($field, $value) = $params->parseFilter($filter);
+            [$field, $value] = $params->parseFilter($filter);
             $result[$field][] = $value;
         }
         return $result;

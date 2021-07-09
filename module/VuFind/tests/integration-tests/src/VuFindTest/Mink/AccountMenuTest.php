@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink account ajax menu test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,20 +39,20 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
+final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
-    use \VuFindTest\Unit\DemoDriverTestTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
+    use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -58,14 +60,16 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
         // Setup config
-        $this->changeConfigs([
+        $this->changeConfigs(
+            [
             'Demo' => $this->getDemoIniOverrides(),
             'config' => [
                 'Catalog' => ['driver' => 'Demo'],
@@ -74,7 +78,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
                     'enableDropdown' => false
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**
@@ -163,6 +168,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      * Test that the menu is absent when enableAjax is false and enableDropdown
      * is false.
      *
+     * @depends testMenuOffAjaxNoDropdown
+     *
      * @return void
      */
     public function testMenuOffNoAjaxNoDropdown()
@@ -191,6 +198,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      * Test that the menu is absent when enableAjax is false and enableDropdown
      * is true.
      *
+     * @depends testMenuOffAjaxNoDropdown
+     *
      * @return void
      */
     public function testMenuOffNoAjaxDropdown()
@@ -217,6 +226,8 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
     /**
      * Test that the menu is absent when enableAjax is true and enableDropdown
      * is true.
+     *
+     * @depends testMenuOffAjaxNoDropdown
      *
      * @return void
      */
@@ -446,7 +457,7 @@ class AccountMenuTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1']);
     }

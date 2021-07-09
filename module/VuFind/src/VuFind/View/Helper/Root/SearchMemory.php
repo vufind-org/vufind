@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\Search\Memory;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * View helper for remembering recent user searches/parameters.
@@ -116,6 +116,22 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
+     * Get the URL to edit the last search.
+     *
+     * @param string $searchClassId Search class
+     * @param string $action        Action to take
+     * @param mixed  $value         Value for action
+     *
+     * @return string
+     */
+    public function getEditLink($searchClassId, $action, $value)
+    {
+        $query = compact('searchClassId') + [$action => $value];
+        $url = $this->getView()->plugin('url');
+        return $url('search-editmemory', [], compact('query'));
+    }
+
+    /**
      * Retrieve the parameters of the last search by the search class
      *
      * @param string $searchClassId Search class
@@ -126,7 +142,7 @@ class SearchMemory extends AbstractHelper
     {
         $lastUrl = $this->memory->retrieveSearch();
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
-        $request = new \Zend\StdLib\Parameters();
+        $request = new \Laminas\Stdlib\Parameters();
         $request->fromString($queryParams);
         $paramsPlugin = $this->getView()->plugin('searchParams');
         $params = $paramsPlugin($searchClassId);

@@ -28,8 +28,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 
-use InvalidArgumentException;
-
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -41,8 +39,10 @@ use VuFind\ILS\Driver\Folio;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class FolioTest extends \VuFindTest\Unit\TestCase
+class FolioTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     protected $testConfig = [
         'API' => [
             'base_url' => 'localhost',
@@ -66,14 +66,14 @@ class FolioTest extends \VuFindTest\Unit\TestCase
      * @param array  $params  Parameters object to be sent as data
      * @param array  $headers Additional headers
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function mockMakeRequest($method = "GET", $path = "/", $params = [], $headers = [])
     {
         // Run preRequest
-        $httpHeaders = new \Zend\Http\Headers();
+        $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
-        list($httpHeaders, $params) = $this->driver->preRequest($httpHeaders, $params);
+        [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
         // Log request
         $this->testRequestLog[] = [
             'method' => $method,
@@ -83,7 +83,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         ];
         // Create response
         $testResponse = array_shift($this->testResponses);
-        $response = new \Zend\Http\Response();
+        $response = new \Laminas\Http\Response();
         $response->setStatusCode($testResponse['status'] ?? 200);
         $response->setContent($testResponse['body'] ?? '');
         $response->getHeaders()->addHeaders($testResponse['headers'] ?? []);
@@ -99,27 +99,18 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     protected function createConnector($test)
     {
         // Setup test responses
-        $file = realpath(
-            __DIR__ .
-            '/../../../../../../tests/fixtures/folio/responses/' . $test . '.json'
-        );
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to load fixture file: %s ', $file)
-            );
-        }
-        $this->testResponses = json_decode(file_get_contents($file), true);
+        $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
         // Reset log
         $this->testRequestLog = [];
         // Session factory
         $factory = function ($namespace) {
-            $manager = new \Zend\Session\SessionManager();
-            return new \Zend\Session\Container("Folio_$namespace", $manager);
+            $manager = new \Laminas\Session\SessionManager();
+            return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(\VuFind\ILS\Driver\Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
-            ->setMethods(['makeRequest'])
+            ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($this->testConfig);
@@ -135,7 +126,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
     public function testTokens()
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
-        $profile = $this->driver->getMyProfile(['username' => 'whatever']);
+        $profile = $this->driver->getMyProfile(['id' => 'whatever']);
         // Get token
         // - Right URL
         $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
@@ -182,7 +173,7 @@ class FolioTest extends \VuFindTest\Unit\TestCase
         // Request new token
         $this->assertEquals('/authn/login', $this->testRequestLog[1]['path']);
         // Move to method call
-        $this->assertEquals('/locations', $this->testRequestLog[2]['path']);
+        $this->assertEquals('/service-points', $this->testRequestLog[2]['path']);
         // - Passed correct token
         $this->assertEquals(
             'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json

@@ -27,8 +27,9 @@
  */
 namespace VuFind\Db\Row;
 
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 use VuFind\Db\Table\Resource as ResourceTable;
-use Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for tags
@@ -46,7 +47,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
     public function __construct($adapter)
     {
@@ -74,7 +75,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
                     new Expression(
                         'DISTINCT(?)', ['resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), '*'
+                    ), Select::SQL_STAR
                 ]
             );
             $select->join(

@@ -53,6 +53,13 @@ abstract class AbstractCover
     protected $supportsIssn = false;
 
     /**
+     * Does this plugin support ISMNs?
+     *
+     * @var bool
+     */
+    protected $supportsIsmn = false;
+
+    /**
      * Does this plugin support OCLC numbers?
      *
      * @var bool
@@ -67,11 +74,40 @@ abstract class AbstractCover
     protected $supportsUpc = false;
 
     /**
+     * Does this plugin support national bibliographies number?
+     *
+     * @var bool
+     */
+    protected $supportsNbn = false;
+
+    /**
+     * Does this plugin support getting cover by local id?
+     *
+     * @var bool
+     */
+    protected $supportsRecordid = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @var bool
      */
     protected $cacheAllowed = false;
+
+    /**
+     * Use direct urls as image urls. When set to true, direct urls to content cover
+     * provider will be used in interface instead internal Cover/Show urls.
+     *
+     * @var bool
+     */
+    protected $directUrls = false;
+
+    /**
+     * Are backlinks to source of cover mandatory?
+     *
+     * @var array
+     */
+    protected $mandatoryBacklinkLocations = [];
 
     /**
      * Are we allowed to cache images from this source?
@@ -81,6 +117,16 @@ abstract class AbstractCover
     public function isCacheAllowed()
     {
         return $this->cacheAllowed;
+    }
+
+    /**
+     * Use direct urls? (Or proxied urls)
+     *
+     * @return bool
+     */
+    public function useDirectUrls()
+    {
+        return $this->directUrls;
     }
 
     /**
@@ -95,8 +141,11 @@ abstract class AbstractCover
         return
             ($this->supportsIsbn && isset($ids['isbn']))
             || ($this->supportsIssn && isset($ids['issn']))
+            || ($this->supportsIsmn && isset($ids['ismn']))
             || ($this->supportsOclc && isset($ids['oclc']))
-            || ($this->supportsUpc && isset($ids['upc']));
+            || ($this->supportsUpc && isset($ids['upc']))
+            || ($this->supportsNbn && isset($ids['nbn']))
+            || ($this->supportsRecordid && isset($ids['recordid']));
     }
 
     /**
@@ -111,4 +160,33 @@ abstract class AbstractCover
      * @return string|bool
      */
     abstract public function getUrl($key, $size, $ids);
+
+    /**
+     * Get cover metadata for a particular API key and set of IDs (or empty array).
+     *
+     * @param string $key  API key
+     * @param string $size Size of image to load (small/medium/large)
+     * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object, 'issn' pointing to a string and 'oclc' pointing
+     * to an OCLC number string)
+     *
+     * @return array Array with keys: url, backlink_url, backlink_text
+     */
+    public function getMetadata(?string $key, string $size, array $ids)
+    {
+        $url = $this->getUrl($key, $size, $ids);
+        return $url ? ['url' => $url] : [];
+    }
+
+    /**
+     * Which location are mandatory for backlinks, available locations are the same
+     * as used for cover size determination, see coversize setting in [Content]
+     * section of config.ini
+     *
+     * @return array
+     */
+    public function getMandatoryBacklinkLocations(): array
+    {
+        return $this->mandatoryBacklinkLocations;
+    }
 }

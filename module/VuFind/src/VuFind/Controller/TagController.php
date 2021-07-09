@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Tag Controller

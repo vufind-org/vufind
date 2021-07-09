@@ -37,14 +37,14 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class RecommendDeferredTestCase extends TestCase
+abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a fully configured module
      *
      * @param string                      $class    class to construct
      * @param string                      $settings settings
-     * @param \Zend\StdLib\Parameters     $request  request
+     * @param \Laminas\Stdlib\Parameters  $request  request
      * @param \VuFind\Search\Solr\Results $results  results object
      *
      * @return SideFacets
@@ -56,7 +56,7 @@ abstract class RecommendDeferredTestCase extends TestCase
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters([]);
+            $request = new \Laminas\Stdlib\Parameters([]);
         }
         $mod = new $class();
         $mod->setConfig($settings);

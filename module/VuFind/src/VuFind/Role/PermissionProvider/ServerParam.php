@@ -29,7 +29,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
-use Zend\Http\PhpEnvironment\Request;
+use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * ServerParam permission provider for VuFind.
@@ -43,7 +43,7 @@ use Zend\Http\PhpEnvironment\Request;
  * @link     https://vufind.org Main Page
  */
 class ServerParam implements PermissionProviderInterface,
-    \Zend\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
 use NumberFormatter;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * Safe money format view helper
@@ -51,7 +51,7 @@ class SafeMoneyFormat extends AbstractHelper
     /**
      * Number formatter.
      *
-     * @var NumberFormatter;
+     * @var NumberFormatter
      */
     protected $formatter;
 

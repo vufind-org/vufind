@@ -1,4 +1,4 @@
-This directory contains all of VuFind's master configuration files.
+This directory contains all of VuFind's default configuration files.
 
 If you wish to customize your configuration, it is recommended that you make use
 of a local settings directory rather than editing them in place here. See this

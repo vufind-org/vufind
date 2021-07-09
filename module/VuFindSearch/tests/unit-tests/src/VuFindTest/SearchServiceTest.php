@@ -31,6 +31,7 @@ namespace VuFindTest;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
@@ -73,10 +74,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response]);
         $service->retrieve('foo', 'bar', $params);
     }
 
@@ -84,12 +83,12 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing retrieve action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
@@ -98,10 +97,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->retrieve('foo', 'bar', $params);
     }
 
@@ -109,23 +106,70 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing search action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testSearchException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('search')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->search('foo', new Query('test'));
+    }
+
+    /**
+     * Test that when a backend doesn't implement the "get IDs" feature
+     * interface, the getIds method of the search service simply proxies search.
+     * We'll test this by mimicing the testSearchException test above.
+     *
+     * @return void
+     */
+    public function testGetIdsProxyingSearchException()
+    {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
+        $service->getIds('foo', new Query('test'));
+    }
+
+    /**
+     * Test that when a backend DOES implement the "get IDs" feature
+     * interface, the appropriate method gets called.
+     * We'll test this by mimicing the testSearchException test above.
+     *
+     * @return void
+     */
+    public function testGetIdsException()
+    {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
+        // Use a special backend for this test...
+        $this->backend = $this->createMockBackend(\VuFindTest\TestClassForGetIdsInterface::class);
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('getIds')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
+        $service->getIds('foo', new Query('test'));
     }
 
     /**
@@ -136,20 +180,20 @@ class SearchServiceTest extends TestCase
     public function testRetrieveBatchInterface()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock(\VuFindTest\TestClassForRetrieveBatchInterface::class);
+        $this->backend = $this->createMockBackend(
+            \VuFindTest\TestClassForRetrieveBatchInterface::class
+        );
 
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
         $ids = ['bar', 'baz'];
-        $backend->expects($this->once(0))->method('retrieveBatch')
+        $backend->expects($this->once())->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->returnValue('response'));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo('response'));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', 'response']);
         $service->retrieveBatch('foo', $ids, $params);
 
         // Put the backend back to the default:
@@ -173,17 +217,12 @@ class SearchServiceTest extends TestCase
         $response2->expects($this->once())->method('first')
             ->will($this->returnValue($mockRecord));
         $params = new ParamBag(['x' => 'y']);
-        $backend->expects($this->at(0))->method('retrieve')
-            ->with($this->equalTo('bar'), $this->equalTo($params))
-            ->will($this->returnValue($response1));
-        $backend->expects($this->at(1))->method('retrieve')
-            ->with($this->equalTo('baz'), $this->equalTo($params))
-            ->will($this->returnValue($response2));
+        $backend->expects($this->exactly(2))->method('retrieve')
+            ->withConsecutive(['bar', $params], ['baz', $params])
+            ->willReturnOnConsecutiveCalls($response1, $response2);
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response1));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response1]);
         $service->retrieveBatch('foo', ['bar', 'baz'], $params);
     }
 
@@ -191,28 +230,26 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveBatchInterfaceException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
-        $this->backend = $this->createMock(\VuFindTest\TestClassForRetrieveBatchInterface::class);
+        $this->backend = $this->createMockBackend(\VuFindTest\TestClassForRetrieveBatchInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
         $ids = ['bar', 'baz'];
-        $backend->expects($this->once(0))->method('retrieveBatch')
+        $backend->expects($this->once())->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->retrieveBatch('foo', $ids, $params);
 
         // Put the backend back to the default:
@@ -224,12 +261,12 @@ class SearchServiceTest extends TestCase
      * RetrieveBatchInterface).
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRetrieveBatchNoInterfaceException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $params = new ParamBag(['x' => 'y']);
@@ -238,10 +275,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->retrieveBatch('foo', ['bar'], $params);
     }
 
@@ -253,7 +288,7 @@ class SearchServiceTest extends TestCase
     public function testRandomInterface()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock(\VuFindTest\TestClassForRandomInterface::class);
+        $this->backend = $this->createMockBackend(\VuFindTest\TestClassForRandomInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -270,10 +305,8 @@ class SearchServiceTest extends TestCase
                 $this->returnValue($response)
             );
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response]);
         $service->random('foo', $query, "10", $params);
 
         // Put the backend back to the default:
@@ -284,14 +317,14 @@ class SearchServiceTest extends TestCase
      * Test random (with RandomInterface) exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomInterfaceWithException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
-        $this->backend = $this->createMock(\VuFindTest\TestClassForRandomInterface::class);
+        $this->backend = $this->createMockBackend(\VuFindTest\TestClassForRandomInterface::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -307,10 +340,8 @@ class SearchServiceTest extends TestCase
             )->will($this->throwException($exception));
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, "10", $params);
 
         // Put the backend back to the default:
@@ -329,42 +360,31 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
 
         $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
+        $inputs = [[$query, "0", "0", $params]];
+        $outputs = [$responseForZero];
 
         for ($i = 1; $i < $limit + 1; $i++) {
             $response = $this->getRecordCollection();
             $response->expects($this->any())->method('first')
                 ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordInterface::class)));
-            $backend->expects($this->at($i))->method('search')
-                ->with(
-                    $this->equalTo($query),
-                    $this->anything(),
-                    $this->equalTo("1"),
-                    $this->equalTo($params)
-                )->will(
-                    $this->returnValue($response)
-                );
+            $inputs[] = [$query, $this->anything(), "1", $params];
+            $outputs[] = $response;
         }
 
+        $backend->expects($this->exactly(count($inputs)))->method('search')
+            ->withConsecutive(...$inputs)
+            ->willReturnOnConsecutiveCalls(...$outputs);
+
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->anything());
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $this->anything()]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -398,10 +418,8 @@ class SearchServiceTest extends TestCase
             ->will($this->returnValue($total));
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($responseForZero));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $responseForZero]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -417,38 +435,23 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
         $response = $this->getRecordCollection();
+        $response->expects($this->once())->method('shuffle');
 
         $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
-
         // Second search grabs all the records and calls shuffle
-        $backend->expects($this->at(1))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo($limit),
-                $this->equalTo($params)
-            )->will($this->returnValue($response));
-        $response->expects($this->once())->method('shuffle');
+        $backend->expects($this->exactly(2))->method('search')
+            ->withConsecutive([$query, "0", "0", $params], [$query, "0", $limit, $params])
+            ->willReturnOnConsecutiveCalls($responseForZero, $response);
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($responseForZero));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $responseForZero]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -456,12 +459,12 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtFirstSearch()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
@@ -472,10 +475,8 @@ class SearchServiceTest extends TestCase
         $backend->expects($this->once())->method('search')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, "10", $params);
     }
 
@@ -483,42 +484,33 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception at item retrieval search.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtItemSearch()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $limit = 10;
         $total = 20;
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
         $exception = new BackendException('test');
 
         $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
-
         // Exception at item search
-        $backend->expects($this->at(1))->method('search')
-            ->will($this->throwException($exception));
+        $backend->expects($this->exactly(2))->method('search')
+            ->withConsecutive([$query, "0", "0", $params], [$this->anything()])
+            ->willReturnOnConsecutiveCalls($responseForZero, $this->throwException($exception));
+
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, "10", $params);
     }
 
@@ -526,17 +518,19 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception with less results than limit.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceExceptionWithLessResultsThanLimit()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         $limit = 10;
         $total = 5;
         $service = $this->getService();
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
         $response = $this->getRecordCollection();
         $exception = new BackendException('test');
 
@@ -544,26 +538,14 @@ class SearchServiceTest extends TestCase
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
-        $backend->expects($this->at(0))->method('search')
-            ->with(
-                $this->equalTo($query),
-                $this->equalTo("0"),
-                $this->equalTo("0"),
-                $this->equalTo($params)
-            )->will($this->returnValue($responseForZero));
-
-        $responseForZero->expects($this->once())->method('getTotal')
-            ->will($this->returnValue($total));
-
         // Second search grabs all the records
-        $backend->expects($this->at(1))->method('search')
-            ->will($this->throwException($exception));
+        $backend->expects($this->exactly(2))->method('search')
+            ->withConsecutive([$query, "0", "0", $params], [$this->anything()])
+            ->willReturnOnConsecutiveCalls($responseForZero, $this->throwException($exception));
 
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->random('foo', $query, $limit, $params);
     }
 
@@ -575,7 +557,7 @@ class SearchServiceTest extends TestCase
     public function testSimilar()
     {
         // Use a special backend for this test...
-        $this->backend = $this->createMock(\VuFindTest\TestBackendClassForSimilar::class);
+        $this->backend = $this->createMockBackend(\VuFindTest\TestBackendClassForSimilar::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -585,10 +567,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('post'), $this->equalTo($response));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['post', $response]);
         $service->similar('foo', 'bar', $params);
 
         // Put the backend back to the default:
@@ -599,12 +579,12 @@ class SearchServiceTest extends TestCase
      * Test similar action on bad backend.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage foo does not support similar()
      */
     public function testSimilarOnNonSupportingBackend()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('foo does not support similar()');
+
         $service = $this->getService();
         $params = new ParamBag(['x' => 'y']);
         $service->similar('foo', 'bar', $params);
@@ -614,14 +594,14 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing similar action.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Backend\Exception\BackendException
-     * @expectedExceptionMessage test
      */
     public function testSimilarException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectExceptionMessage('test');
+
         // Use a special backend for this test...
-        $this->backend = $this->createMock(\VuFindTest\TestBackendClassForSimilar::class);
+        $this->backend = $this->createMockBackend(\VuFindTest\TestBackendClassForSimilar::class);
 
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -631,10 +611,8 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
-        $em->expects($this->at(0))->method('trigger')
-            ->with($this->equalTo('pre'), $this->equalTo($backend));
-        $em->expects($this->at(1))->method('trigger')
-            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $em->expects($this->exactly(2))->method('trigger')
+            ->withConsecutive(['pre', $backend], ['error', $exception]);
         $service->similar('foo', 'bar', $params);
 
         // Put the backend back to the default:
@@ -645,15 +623,15 @@ class SearchServiceTest extends TestCase
      * Test a failure to resolve.
      *
      * @return void
-     *
-     * @expectedException        VuFindSearch\Exception\RuntimeException
-     * @expectedExceptionMessage Unable to resolve backend: retrieve, junk
      */
     public function testFailedResolve()
     {
-        $mockResponse = $this->createMock(\Zend\EventManager\ResponseCollection::class);
+        $this->expectException(\VuFindSearch\Exception\RuntimeException::class);
+        $this->expectExceptionMessage('Unable to resolve backend: retrieve, junk');
+
+        $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
         $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
-        $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
+        $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = new Service();
         $em->expects($this->any())->method('triggerUntil')
             ->with(
@@ -667,6 +645,17 @@ class SearchServiceTest extends TestCase
     // Internal API
 
     /**
+     * Create a mock backend.
+     */
+    protected function createMockBackend(
+        $class = \VuFindSearch\Backend\BackendInterface::class, $identifier = 'foo'
+    ) {
+        $backend = $this->createMock($class);
+        $backend->method('getIdentifier')->will($this->returnValue($identifier));
+        return $backend;
+    }
+
+    /**
      * Get a mock backend.
      *
      * @return BackendInterface
@@ -674,7 +663,7 @@ class SearchServiceTest extends TestCase
     protected function getBackend()
     {
         if (!$this->backend) {
-            $this->backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
+            $this->backend = $this->createMockBackend();
         }
         return $this->backend;
     }
@@ -686,7 +675,7 @@ class SearchServiceTest extends TestCase
      */
     protected function getService()
     {
-        $em = $this->createMock(\Zend\EventManager\EventManagerInterface::class);
+        $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = new SearchServiceMock($this->getBackend());
         $service->setEventManager($em);
         return $service;
@@ -703,6 +692,14 @@ class SearchServiceTest extends TestCase
     {
         return $this->createMock(\VuFindSearch\Response\AbstractRecordCollection::class);
     }
+}
+
+/**
+ * Stub class to test multiple interfaces.
+ */
+abstract class TestClassForGetIdsInterface
+    implements BackendInterface, GetIdsInterface
+{
 }
 
 /**

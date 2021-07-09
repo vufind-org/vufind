@@ -39,14 +39,9 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeCompilerTest extends Unit\TestCase
+class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Path to theme fixtures
-     *
-     * @var string
-     */
-    protected $fixturePath;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * ThemeInfo object for tests
@@ -67,14 +62,15 @@ class ThemeCompilerTest extends Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
-        $this->fixturePath = realpath(__DIR__ . '/../../fixtures/themes');
-        $this->info = new ThemeInfo($this->fixturePath, 'parent');
+        $this->info = new ThemeInfo(
+            $this->getFixtureDir('VuFindTheme') . 'themes', 'parent'
+        );
         $this->targetPath = $this->info->getBaseDir() . '/compiled';
         // Give up if the target directory already exists:
         if (is_dir($this->targetPath)) {
-            return $this->markTestSkipped('compiled theme already exists.');
+            $this->markTestSkipped('compiled theme already exists.');
         }
     }
 
@@ -224,7 +220,7 @@ class ThemeCompilerTest extends Unit\TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getThemeCompiler()->removeTheme('compiled');
     }
@@ -232,7 +228,7 @@ class ThemeCompilerTest extends Unit\TestCase
     /**
      * Get a test ThemeCompiler object
      *
-     * @return ThemeInfo
+     * @return ThemeCompiler
      */
     protected function getThemeCompiler()
     {

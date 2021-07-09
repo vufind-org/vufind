@@ -40,13 +40,13 @@ use VuFind\RecordTab\TabManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TabManagerTest extends \VuFindTest\Unit\TestCase
+class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Set up a tab manager for testing.
      *
-     * @param PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param ConfigManager $configManager Config manager to use (null for default)
+     * @param  PluginManager $pluginManager Plugin manager to use (null for default)
+     * @param  ConfigManager $configManager Config manager to use (null for default)
      * @return TabManager
      */
     protected function getTabManager(PluginManager $pluginManager = null,
@@ -87,7 +87,7 @@ class TabManagerTest extends \VuFindTest\Unit\TestCase
     protected function getMockPluginManager()
     {
         $mockTab = $this->getMockBuilder(\VuFind\RecordTab\StaffViewArray::class)
-            ->disableOriginalConstructor()->setMethods(['isActive'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['isActive'])->getMock();
         $mockTab->expects($this->any())->method('isActive')
             ->will($this->returnValue(true));
         $pm = $this->getMockBuilder(\VuFind\RecordTab\PluginManager::class)
@@ -106,7 +106,7 @@ class TabManagerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockConfigManager()
     {
-        $iniConfig = new \Zend\Config\Config(
+        $iniConfig = new \Laminas\Config\Config(
             [
                 'VuFind\RecordDriver\EDS' => [
                     'tabs' => [
@@ -120,7 +120,7 @@ class TabManagerTest extends \VuFindTest\Unit\TestCase
         );
         $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()
-            ->setMethods(['has', 'get'])
+            ->onlyMethods(['has', 'get'])
             ->getMock();
         $configManager->expects($this->any())->method('has')
             ->will($this->returnValue(true));

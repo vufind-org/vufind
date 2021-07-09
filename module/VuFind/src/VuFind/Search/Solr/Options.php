@@ -71,6 +71,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $emptySearchRelevanceOverride = null;
 
     /**
+     * Whether to display record versions
+     *
+     * @var bool
+     */
+    protected $displayRecordVersions = true;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -114,6 +121,11 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
+        if (isset($searchSettings->General->display_versions)) {
+            $this->displayRecordVersions
+                = $searchSettings->General->display_versions;
+        }
+
         // Result limit:
         if (isset($searchSettings->General->result_limit)) {
             $this->resultLimit = $searchSettings->General->result_limit;
@@ -273,6 +285,16 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
+     * Return the route name for the versions search action or false if disabled.
+     *
+     * @return string|bool
+     */
+    public function getVersionsAction()
+    {
+        return $this->displayRecordVersions ? 'search-versions' : false;
+    }
+
+    /**
      * Get the relevance sort override for empty searches.
      *
      * @return string Sort field or null if not set
@@ -300,5 +322,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getHierarchicalFacetSeparators()
     {
         return $this->hierarchicalFacetSeparators;
+    }
+
+    /**
+     * Does this search backend support scheduled searching?
+     *
+     * @return bool
+     */
+    public function supportsScheduledSearch()
+    {
+        // Solr supports this!
+        return true;
     }
 }

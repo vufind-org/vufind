@@ -40,7 +40,7 @@ use VuFind\Role\PermissionProvider\ServerParam;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ServerParamTest extends \VuFindTest\Unit\TestCase
+class ServerParamTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test single option with matching string
@@ -221,8 +221,8 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
      */
     protected function checkServerParams($headers, $options, $expectedResult)
     {
-        $request = new \Zend\Http\PhpEnvironment\Request();
-        $request->setServer(new \Zend\Stdlib\Parameters($headers));
+        $request = new \Laminas\Http\PhpEnvironment\Request();
+        $request->setServer(new \Laminas\Stdlib\Parameters($headers));
         $header = new ServerParam($request);
         $result = $header->getPermissions($options);
         $this->assertEquals($result, $expectedResult);

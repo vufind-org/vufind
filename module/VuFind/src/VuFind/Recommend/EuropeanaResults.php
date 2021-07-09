@@ -28,7 +28,7 @@
  */
 namespace VuFind\Recommend;
 
-use Zend\Feed\Reader\Reader as FeedReader;
+use Laminas\Feed\Reader\Reader as FeedReader;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -43,7 +43,7 @@ use Zend\Feed\Reader\Reader as FeedReader;
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 class EuropeanaResults implements RecommendInterface,
-    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -182,13 +182,14 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -196,7 +197,7 @@ class EuropeanaResults implements RecommendInterface,
     public function init($params, $request)
     {
         // Collect the best possible search term(s):
-        $this->lookfor =  $request->get('lookfor', '');
+        $this->lookfor = $request->get('lookfor', '');
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }
@@ -233,7 +234,7 @@ class EuropeanaResults implements RecommendInterface,
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
                     'link' => $link,
-                    'enclosure' => $value->getEnclosure()['url']
+                    'enclosure' => $value->getEnclosure()['url'] ?? null
                 ];
             }
             if (count($resultsProcessed) == $this->limit) {

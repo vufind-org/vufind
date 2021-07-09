@@ -42,8 +42,10 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test retrieving a record.
      *
@@ -132,11 +134,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
-     *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsPrimoException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -149,11 +151,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieve exception handling.
      *
      * @return void
-     *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsPrimoException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
@@ -193,11 +195,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/primo/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return unserialize(file_get_contents($file));
+        return unserialize(
+            $this->getFixture("primo/response/$fixture", 'VuFindSearch')
+        );
     }
 
     /**
@@ -209,9 +209,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\Primo\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['http://fakeaddress.none', 'inst-id', $client])
             ->getMock();
     }

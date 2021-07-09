@@ -27,9 +27,10 @@
  */
 namespace VuFind\Db\Row;
 
-use Zend\Crypt\BlockCipher as BlockCipher;
-use Zend\Crypt\Symmetric\Openssl;
-use Zend\Db\Sql\Expression;
+use Laminas\Crypt\BlockCipher as BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 /**
  * Row Definition for user
@@ -41,7 +42,7 @@ use Zend\Db\Sql\Expression;
  * @link     https://vufind.org Main Site
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
-    \ZfcRbac\Identity\IdentityInterface
+    \LmcRbacMvc\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
@@ -62,14 +63,14 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     * @param \Laminas\Db\Adapter\Adapter $adapter Database adapter
      */
     public function __construct($adapter)
     {
@@ -79,11 +80,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Configuration setter
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Laminas\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    public function setConfig(\Zend\Config\Config $config)
+    public function setConfig(\Laminas\Config\Config $config)
     {
         $this->config = $config;
     }
@@ -173,7 +174,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             return isset($this->cat_pass_enc)
                 ? $this->encryptOrDecrypt($this->cat_pass_enc, false) : null;
         }
-        return isset($this->cat_password) ? $this->cat_password : null;
+        return $this->cat_password ?? null;
     }
 
     /**
@@ -185,8 +186,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         if (null === $this->encryptionEnabled) {
             $this->encryptionEnabled
-                = isset($this->config->Authentication->encrypt_ils_password)
-                ? $this->config->Authentication->encrypt_ils_password : false;
+                = $this->config->Authentication->encrypt_ils_password ?? false;
         }
         return $this->encryptionEnabled;
     }
@@ -222,9 +222,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $algo = isset($this->config->Authentication->ils_encryption_algo)
-            ? $this->config->Authentication->ils_encryption_algo
-            : 'blowfish';
+        $algo = $this->config->Authentication->ils_encryption_algo ?? 'blowfish';
         $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
@@ -266,12 +264,25 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param string $source     Filter for tags tied to a specific record source.
      * (null for no filter).
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
         return $this->getDbTable('Tags')
-            ->getForUser($this->id, $resourceId, $listId, $source);
+            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+    }
+
+    /**
+     * Get tags assigned by the user to a favorite list.
+     *
+     * @param int $listId List id
+     *
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     */
+    public function getListTags($listId)
+    {
+        return $this->getDbTable('Tags')
+            ->getForList($listId, $this->id);
     }
 
     /**
@@ -289,14 +300,25 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getTagString($resourceId = null, $listId = null, $source = null)
     {
-        $myTagList = $this->getTags($resourceId, $listId, $source);
+        return $this->formatTagString($this->getTags($resourceId, $listId, $source));
+    }
+
+    /**
+     * Same as getTagString(), but operates on a list of tags.
+     *
+     * @param array $tags Tags
+     *
+     * @return string
+     */
+    public function formatTagString($tags)
+    {
         $tagStr = '';
-        if (count($myTagList) > 0) {
-            foreach ($myTagList as $myTag) {
-                if (strstr($myTag->tag, ' ')) {
-                    $tagStr .= "\"$myTag->tag\" ";
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (strstr($tag->tag, ' ')) {
+                    $tagStr .= "\"$tag->tag\" ";
                 } else {
-                    $tagStr .= "$myTag->tag ";
+                    $tagStr .= "$tag->tag ";
                 }
             }
         }
@@ -306,7 +328,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Get all of the lists associated with this user.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function getLists()
     {
@@ -314,7 +336,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $callback = function ($select) use ($userId) {
             $select->columns(
                 [
-                    '*',
+                    Select::SQL_STAR,
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))', ['ur.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
@@ -429,13 +451,13 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Get all library cards associated with the user.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      * @throws \VuFind\Exception\LibraryCard
      */
     public function getLibraryCards()
     {
         if (!$this->libraryCardsEnabled()) {
-            return new \Zend\Db\ResultSet\ResultSet();
+            return new \Laminas\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
         return $userCard->select(['user_id' => $this->id]);
@@ -656,7 +678,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $list->delete($this, true);
         }
         $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyLinks(null, $this->id);
+        $resourceTags->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
             $comments = $this->getDbTable('Comments');
             $comments->deleteByUser($this);

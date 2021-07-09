@@ -185,6 +185,7 @@ class SideFacets extends AbstractFacets
         }
 
         // Checkbox facets:
+        $flipCheckboxes = false;
         if (substr($checkboxSection, 0, 1) == '~') {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
@@ -192,7 +193,7 @@ class SideFacets extends AbstractFacets
         $this->checkboxFacets
             = ($checkboxSection && isset($config->$checkboxSection))
             ? $config->$checkboxSection->toArray() : [];
-        if (isset($flipCheckboxes) && $flipCheckboxes) {
+        if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
 
@@ -225,13 +226,14 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -381,6 +383,7 @@ class SideFacets extends AbstractFacets
     {
         // Look for either facet-specific configuration or else a configured
         // default. If neither is found, initialize return value to 0.
+        $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
             $val = intval($this->showMoreSettings[$facetName]);
         } elseif (isset($this->showMoreSettings['*'])) {
@@ -421,7 +424,7 @@ class SideFacets extends AbstractFacets
      */
     protected function getRangeFacets($property)
     {
-        $filters = $this->results->getParams()->getFilters();
+        $filters = $this->results->getParams()->getRawFilters();
         $result = [];
         if (isset($this->$property) && is_array($this->$property)) {
             foreach ($this->$property as $current) {

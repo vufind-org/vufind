@@ -28,7 +28,10 @@
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * UserTags helper factory.
@@ -53,7 +56,7 @@ class UserTagsFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -62,6 +65,9 @@ class UserTagsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        return new $requestedName($capabilities->getTagSetting());
+        return new $requestedName(
+            $capabilities->getTagSetting(),
+            $capabilities->getListTagSetting()
+        );
     }
 }

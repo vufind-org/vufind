@@ -28,12 +28,13 @@
  */
 namespace VuFind\Search\Solr;
 
+use Laminas\EventManager\EventInterface;
+
+use Laminas\EventManager\SharedEventManagerInterface;
 use SplObjectStorage;
 
 use VuFindSearch\Backend\BackendInterface;
-use Zend\EventManager\EventInterface;
-
-use Zend\EventManager\SharedEventManagerInterface;
+use VuFindSearch\Service;
 
 /**
  * Abstract base class of SOLR error listeners.
@@ -51,7 +52,7 @@ abstract class AbstractErrorListener
      *
      * @var string
      */
-    const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
+    public const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
 
     /**
      * Backends to listen for.
@@ -106,7 +107,9 @@ abstract class AbstractErrorListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'error', [$this, 'onSearchError']);
+        $manager->attach(
+            'VuFind\Search', Service::EVENT_ERROR, [$this, 'onSearchError']
+        );
     }
 
     /**

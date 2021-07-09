@@ -27,7 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * ILS driver plugin manager
@@ -58,7 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'innovative' => Innovative::class,
         'koha' => Koha::class,
         'kohailsdi' => KohaILSDI::class,
-        'lbs4' => LBS4::class,
+        'koharest' => KohaRest::class,
         'multibackend' => MultiBackend::class,
         'newgenlib' => NewGenLib::class,
         'noils' => NoILS::class,
@@ -93,7 +93,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Innovative::class => InvokableFactory::class,
         Koha::class => DriverWithDateConverterFactory::class,
         KohaILSDI::class => DriverWithDateConverterFactory::class,
-        LBS4::class => DriverWithDateConverterFactory::class,
+        KohaRest::class => KohaRestFactory::class,
         MultiBackend::class => MultiBackendFactory::class,
         NewGenLib::class => InvokableFactory::class,
         NoILS::class => NoILSFactory::class,
@@ -107,7 +107,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
         VoyagerRestful::class => VoyagerRestfulFactory::class,
-        XCNCIP2::class => InvokableFactory::class,
+        XCNCIP2::class => DriverWithDateConverterFactory::class,
     ];
 
     /**

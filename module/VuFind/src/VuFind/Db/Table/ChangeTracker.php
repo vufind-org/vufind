@@ -27,9 +27,9 @@
  */
 namespace VuFind\Db\Table;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Expression;
 use VuFind\Db\Row\RowGateway;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for change_tracker
@@ -54,12 +54,12 @@ class ChangeTracker extends Gateway
      *
      * @param Adapter       $adapter Database adapter
      * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Zend Framework configuration
+     * @param array         $cfg     Laminas configuration
      * @param RowGateway    $rowObj  Row prototype object (null for default)
      * @param string        $table   Name of database table to interface with
      */
     public function __construct(Adapter $adapter, PluginManager $tm, $cfg,
-        RowGateway $rowObj = null, $table = 'change_tracker'
+        ?RowGateway $rowObj = null, $table = 'change_tracker'
     ) {
         parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
     }
@@ -88,14 +88,14 @@ class ChangeTracker extends Gateway
      * @param int    $limit   Retrieval limit (null for no limit)
      * @param array  $columns Columns to retrieve (null for all)
      *
-     * @return \Callable
+     * @return callable
      */
     public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
         $limit = null, $columns = null
     ) {
-        $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
-        return function ($select) use ($params) {
-            extract($params);
+        return function ($select) use ($core, $from, $until, $offset, $limit,
+            $columns
+        ) {
             if ($columns !== null) {
                 $select->columns($columns);
             }
@@ -120,7 +120,7 @@ class ChangeTracker extends Gateway
      * @param string $from  The beginning date of the range to search.
      * @param string $until The end date of the range to search.
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function retrieveDeletedCount($core, $from, $until)
     {
@@ -143,7 +143,7 @@ class ChangeTracker extends Gateway
      * @param int    $offset Record number to retrieve first.
      * @param int    $limit  Retrieval limit (null for no limit)
      *
-     * @return \Zend\Db\ResultSet\AbstractResultSet
+     * @return \Laminas\Db\ResultSet\AbstractResultSet
      */
     public function retrieveDeleted($core, $from, $until, $offset = 0,
         $limit = null
@@ -212,7 +212,7 @@ class ChangeTracker extends Gateway
     {
         $oldTz = date_default_timezone_get();
         date_default_timezone_set('UTC');
-        $date = date($this->dateFormat, null === $ts ? time() : $ts);
+        $date = date($this->dateFormat, $ts ?? time());
         date_default_timezone_set($oldTz);
         return $date;
     }

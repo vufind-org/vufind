@@ -2,7 +2,7 @@
 /**
  * Factory for Folio ILS driver.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +28,9 @@
 namespace VuFind\ILS\Driver;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for Folio ILS driver.
@@ -52,7 +55,7 @@ class FolioFactory extends DriverWithDateConverterFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -61,8 +64,8 @@ class FolioFactory extends DriverWithDateConverterFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $sessionFactory = function ($namespace) use ($container) {
-            $manager = $container->get(\Zend\Session\SessionManager::class);
-            return new \Zend\Session\Container("Folio_$namespace", $manager);
+            $manager = $container->get(\Laminas\Session\SessionManager::class);
+            return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         return parent::__invoke($container, $requestedName, [$sessionFactory]);
     }

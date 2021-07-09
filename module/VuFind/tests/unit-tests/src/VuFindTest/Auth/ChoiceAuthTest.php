@@ -27,11 +27,11 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Config\Config;
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\ChoiceAuth;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
-use Zend\Config\Config;
-use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth test class.
@@ -42,18 +42,18 @@ use Zend\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
+class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test config validation
      *
      * @return void
-     *
-     * @expectedException        \VuFind\Exception\Auth
-     * @expectedExceptionMessage One or more ChoiceAuth parameters are missing.
      */
     public function testBadConfiguration()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('One or more ChoiceAuth parameters are missing.');
+
         $ca = new ChoiceAuth($this->getSessionContainer());
         $ca->setConfig(new Config([]));
     }
@@ -62,12 +62,12 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test default getPluginManager behavior
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage Plugin manager missing.
      */
     public function testMissingPluginManager()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Plugin manager missing.');
+
         $ca = new ChoiceAuth($this->getSessionContainer());
         $ca->getPluginManager();
     }
@@ -106,7 +106,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
         $ca = $this->getChoiceAuth($pm);
         try {
             $ca->authenticate($request);
-            return $this->fail('Expected exception not thrown.');
+            $this->fail('Expected exception not thrown.');
         } catch (\VuFind\Exception\Auth $e) {
             $this->assertEquals($exception, $e);
             $this->assertEquals(false, $ca->getSelectedAuthOption());
@@ -178,12 +178,12 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test an illegal auth method
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage Illegal setting: foo
      */
     public function testIllegalMethod()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Illegal setting: foo');
+
         $request = new Request();
         $request->getQuery()->set('auth_method', 'foo');
         $ca = $this->getChoiceAuth();
@@ -207,12 +207,12 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      *
      * @param string $method Auth method to set in container (null for none).
      *
-     * @return \Zend\Session\Container
+     * @return \Laminas\Session\Container
      */
     protected function getSessionContainer($method = null)
     {
-        $mock = $this->getMockBuilder(\Zend\Session\Container::class)
-            ->setMethods(['__get', '__isset', '__set', '__unset'])
+        $mock = $this->getMockBuilder(\Laminas\Session\Container::class)
+            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
             $mock->expects($this->any())->method('__isset')->with($this->equalTo('auth_method'))->will($this->returnValue(true));
@@ -225,7 +225,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Get a ChoiceAuth object.
      *
      * @param PluginManager           $pm         Plugin manager
-     * @param \Zend\Session\Container $session    Session container
+     * @param \Laminas\Session\Container $session    Session container
      * @param string                  $strategies Strategies setting
      *
      * @return ChoiceAuth
@@ -247,13 +247,10 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockPluginManager()
     {
-        $pm = new PluginManager($this->getServiceManager());
-        $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $pm = new PluginManager($container);
+        $mockDb = $container->get(\VuFind\Auth\Database::class);
+        $mockShib = $container->get(\VuFind\Auth\Shibboleth::class);
         $pm->setService('VuFind\Auth\Database', $mockDb);
         $pm->setService('VuFind\Auth\Shibboleth', $mockShib);
         return $pm;
@@ -274,11 +271,11 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a mock request object
      *
-     * @return \Zend\Http\PhpEnvironment\Request
+     * @return \Laminas\Http\PhpEnvironment\Request
      */
     protected function getMockRequest()
     {
-        return $this->getMockBuilder(\Zend\Http\PhpEnvironment\Request::class)
+        return $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

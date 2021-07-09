@@ -36,7 +36,7 @@ public class DatabaseManager
     // Shutdown flag:
     private boolean shuttingDown = false;
 
-    private static ThreadLocal<DatabaseManager> managerCache = 
+    private static ThreadLocal<DatabaseManager> managerCache =
         new ThreadLocal<DatabaseManager>()
         {
             @Override
@@ -79,9 +79,16 @@ public class DatabaseManager
             String password = "";
             String classname = "invalid";
             String prefix = "invalid";
+            String extraParams = "";
             if (dsn.substring(0, 8).equals("mysql://")) {
                 classname = "com.mysql.jdbc.Driver";
                 prefix = "mysql";
+                String useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false) ? "true" : "false";
+                extraParams = "?useSSL=" + useSsl;
+                if (useSsl != "false") {
+                    String verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false) ? "true" : "false";
+                    extraParams += "&verifyServerCertificate=" + verifyCert;
+                }
             } else if (dsn.substring(0, 8).equals("pgsql://")) {
                 classname = "org.postgresql.Driver";
                 prefix = "postgresql";
@@ -102,9 +109,9 @@ public class DatabaseManager
             }
 
             // Connect to the database:
-            vufindDatabase = DriverManager.getConnection("jdbc:" + dsn, username, password);
+            vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
         } catch (Throwable e) {
-            dieWithError("Unable to connect to VuFind database");
+            dieWithError("Unable to connect to VuFind database; " + e.getMessage());
         }
 
         Runtime.getRuntime().addShutdownHook(new DatabaseManagerShutdownThread(this));

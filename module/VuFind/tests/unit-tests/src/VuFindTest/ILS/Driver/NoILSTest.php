@@ -38,7 +38,7 @@ use VuFind\ILS\Driver\NoILS;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NoILSTest extends \VuFindTest\Unit\TestCase
+class NoILSTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Mock record loader
@@ -59,7 +59,7 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->setConstructorArgs(

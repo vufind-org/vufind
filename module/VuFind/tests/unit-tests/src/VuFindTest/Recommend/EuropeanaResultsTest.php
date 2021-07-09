@@ -28,10 +28,9 @@
  */
 namespace VuFindTest\Recommend;
 
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use VuFind\Recommend\EuropeanaResults;
 use VuFindHttp\HttpService;
-use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
 
 /**
  * EuropeanaResults tests.
@@ -42,12 +41,14 @@ use Zend\Http\Client\Adapter\Test as TestAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EuropeanaResultsTest extends TestCase
+class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test that the module properly parses a sample response.
      *
-     * This is a bare minimum test to confirm that Zend\Feed deals with the RSS
+     * This is a bare minimum test to confirm that Laminas\Feed deals with the RSS
      * response correctly. More work should be done to confirm that URL generation
      * works appropriately, optional configuration parameters are respected, etc.
      *
@@ -59,7 +60,7 @@ class EuropeanaResultsTest extends TestCase
         $europeana->setHttpService($this->getHttpService());
         $europeana->setConfig(''); // use defaults
         $results = $this->getMockResults();
-        $query = new \Zend\StdLib\Parameters(['lookfor' => 'test']);
+        $query = new \Laminas\Stdlib\Parameters(['lookfor' => 'test']);
         $europeana->init($results->getParams(), $query);
         $europeana->process($results);
         $this->assertEquals(
@@ -110,22 +111,11 @@ class EuropeanaResultsTest extends TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $adapter->setResponse($this->loadResponse($fixture));
+            $adapter->setResponse($this->getFixture("recommend/$fixture"));
         }
         $service = new HttpService();
         $service->setDefaultAdapter($adapter);
         return $service;
-    }
-
-    /**
-     * Get a fixture response
-     *
-     * @return string
-     */
-    protected function loadResponse($file)
-    {
-        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/recommend') . '/';
-        return file_get_contents($fixturePath . $file);
     }
 
     /**

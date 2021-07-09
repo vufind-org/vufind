@@ -28,7 +28,10 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Authentication Manager factory.
@@ -53,7 +56,7 @@ class ManagerFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -69,7 +72,7 @@ class ManagerFactory implements FactoryInterface
             // the configuration if necessary.
             $catalog = $container->get(\VuFind\ILS\Connection::class);
             if ($catalog->loginIsHidden()) {
-                $config = new \Zend\Config\Config($config->toArray(), true);
+                $config = new \Laminas\Config\Config($config->toArray(), true);
                 $config->Authentication->hideLogin = true;
                 $config->setReadOnly();
             }
@@ -83,7 +86,7 @@ class ManagerFactory implements FactoryInterface
         // Load remaining dependencies:
         $userTable = $container->get(\VuFind\Db\Table\PluginManager::class)
             ->get('user');
-        $sessionManager = $container->get(\Zend\Session\SessionManager::class);
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
         $csrf = $container->get(\VuFind\Validator\Csrf::class);

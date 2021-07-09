@@ -48,7 +48,7 @@
         </select>
       </label>
       <label for="taglistsubmit">
-        <input type="submit" id="taglistsubmit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
+        <input type="submit" id="taglistsubmit" value="<?=$this->transEscAttr('Filter')?>" class="btn btn-primary">
         <?php if((isset($this->params['user_id']) && null !== $this->params['user_id']) || (isset($this->params['tag_id']) && null !== $this->params['tag_id']) || (isset($this->params['resource_id']) && null !== $this->params['resource_id'])):?>
           <a href="<?= $this->url('admin/tags', ['action' => 'List']); ?>"><?=$this->translate('clear_tag_filter')?></a>
         <?php endif;?>
@@ -58,9 +58,9 @@
 
   <?php if(count($this->results) > 0):?>
     <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
-      <input type="hidden" name="user_id" value="<?=isset($this->params['user_id']) ? $this->params['user_id'] : '' ?>" />
-      <input type="hidden" name="tag_id" value="<?=isset($this->params['tag_id']) ? $this->params['tag_id'] : '' ?>" />
-      <input type="hidden" name="resource_id" value="<?=isset($this->params['resource_id']) ? $this->params['resource_id'] : '' ?>" />
+      <input type="hidden" name="user_id" value="<?=$this->params['user_id'] ?? '' ?>" />
+      <input type="hidden" name="tag_id" value="<?=$this->params['tag_id'] ?? '' ?>" />
+      <input type="hidden" name="resource_id" value="<?=$this->params['resource_id'] ?? '' ?>" />
       <input type="hidden" name="origin" value="list" />
 
       <table class="table table-striped">
@@ -85,9 +85,9 @@
         <?php endforeach;?>
       </table>
 
-      <input type="submit" name="deleteSelected" value="<?=$this->transEsc('delete_selected')?>" class="btn btn-default">
-      <input type="submit" name="deletePage" value="<?=$this->transEsc('delete_page')?>" class="btn btn-default">
-      <input type="submit" name="deleteFilter" value="<?=$this->transEsc('delete_all')?>" class="btn btn-danger">
+      <input type="submit" name="deleteSelected" value="<?=$this->transEscAttr('delete_selected')?>" class="btn btn-default">
+      <input type="submit" name="deletePage" value="<?=$this->transEscAttr('delete_page')?>" class="btn btn-default">
+      <input type="submit" name="deleteFilter" value="<?=$this->transEscAttr('delete_all')?>" class="btn btn-danger">
 
     </form>
     <?=$this->paginationControl($this->results, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>

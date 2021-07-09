@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Favorites;
 
+use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Db\Table\UserList as ListTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -34,8 +36,6 @@ use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
-use ZfcRbac\Service\AuthorizationServiceAwareInterface;
-use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Search Favorites Results
@@ -78,6 +78,13 @@ class Results extends BaseResults
      * @var ListTable
      */
     protected $listTable;
+
+    /**
+     * Facet list
+     *
+     * @var array
+     */
+    protected $facets;
 
     /**
      * Constructor
@@ -132,7 +139,7 @@ class Results extends BaseResults
                 switch ($field) {
                 case 'tags':
                     if ($this->list) {
-                        $tags = $this->list->getTags();
+                        $tags = $this->list->getResourceTags();
                     } else {
                         $tags = $this->user ? $this->user->getTags() : [];
                     }
@@ -222,7 +229,7 @@ class Results extends BaseResults
      */
     protected function getTagFilters()
     {
-        $filters = $this->getParams()->getFilters();
+        $filters = $this->getParams()->getRawFilters();
         return $filters['tags'] ?? [];
     }
 
@@ -238,7 +245,7 @@ class Results extends BaseResults
         if ($this->list === false) {
             // Check the filters for a list ID, and load the corresponding object
             // if one is found:
-            $filters = $this->getParams()->getFilters();
+            $filters = $this->getParams()->getRawFilters();
             $listId = $filters['lists'][0] ?? null;
             $this->list = (null === $listId)
                 ? null : $this->listTable->getExisting($listId);

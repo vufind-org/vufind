@@ -38,16 +38,21 @@ use VuFind\Cookie\Container;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ContainerTest extends \VuFindTest\Unit\TestCase
+class ContainerTest extends \PHPUnit\Framework\TestCase
 {
-    protected $ns;
+    /**
+     * Cookie container
+     *
+     * @var Container
+     */
+    protected $container;
 
     /**
      * Setup method: establish Container.
      *
      * @return void
      */
-    public function setup()
+    public function setUp(): void
     {
         $this->container = new Container('test');
     }
@@ -57,7 +62,7 @@ class ContainerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         foreach ($this->container->getAllValues() as $k => $v) {
             unset($this->container->$k);

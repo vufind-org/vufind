@@ -27,9 +27,9 @@
  */
 namespace VuFind\Controller;
 
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Query\Query;
-use Zend\Config\Config;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Collections Controller
@@ -45,7 +45,7 @@ class CollectionsController extends AbstractBase
     /**
      * VuFind configuration
      *
-     * @param \Zend\Config\Config
+     * @param \Laminas\Config\Config
      */
     protected $config;
 
@@ -85,8 +85,7 @@ class CollectionsController extends AbstractBase
      */
     public function homeAction()
     {
-        $browseType = (isset($this->config->Collections->browseType))
-            ? $this->config->Collections->browseType : 'Index';
+        $browseType = $this->config->Collections->browseType ?? 'Index';
         return ($browseType == 'Alphabetic')
             ? $this->showBrowseAlphabetic() : $this->showBrowseIndex();
     }
@@ -98,8 +97,7 @@ class CollectionsController extends AbstractBase
      */
     protected function getBrowseDelimiter()
     {
-        return isset($this->config->Collections->browseDelimiter)
-            ? $this->config->Collections->browseDelimiter : '{{{_ID_}}}';
+        return $this->config->Collections->browseDelimiter ?? '{{{_ID_}}}';
     }
 
     /**
@@ -187,9 +185,9 @@ class CollectionsController extends AbstractBase
 
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result as $rkey => $collection) {
-            list($name, $id) = explode($delimiter, $collection['value'], 2);
+            [$name, $id] = explode($delimiter, $collection['value'], 2);
             $result[$rkey]['displayText'] = $name;
-            $result[$rkey]['value'] =  $id;
+            $result[$rkey]['value'] = $id;
         }
 
         // Sort the $results and get the position of the from string once sorted
@@ -322,8 +320,7 @@ class CollectionsController extends AbstractBase
      */
     protected function getBrowseLimit()
     {
-        return isset($this->config->Collections->browseLimit)
-            ? $this->config->Collections->browseLimit : 20;
+        return $this->config->Collections->browseLimit ?? 20;
     }
 
     /**

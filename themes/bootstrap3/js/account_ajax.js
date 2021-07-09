@@ -5,6 +5,7 @@ VuFind.register('account', function Account() {
   var MISSING = -2 * Math.PI; // no data available
   var INACTIVE = -3 * Math.PI; // status element missing
   var _statuses = {};
+  var _pendingNotifications = {};
 
   // Account Icons
   var ICON_LEVELS = {
@@ -31,9 +32,9 @@ VuFind.register('account', function Account() {
 
   // Clearing save forces AJAX update next page load
   var clearCache = function clearCache(name) {
-    if (typeof name === "undefined") {
+    if (typeof name === "undefined" || name === '') {
       for (var sub in _submodules) {
-        if (_submodules.hasOwnProperty(sub)) {
+        if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
           clearCache(sub);
         }
       }
@@ -49,13 +50,17 @@ VuFind.register('account', function Account() {
   var _render = function _render() {
     var accountStatus = ICON_LEVELS.NONE;
     for (var sub in _submodules) {
-      if (_submodules.hasOwnProperty(sub)) {
+      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
+        var status = _getStatus(sub);
+        if (status === INACTIVE) {
+          continue;
+        }
         var $element = $(_submodules[sub].selector);
-        if (!$element) {
+        if ($element.length === 0) {
+          // This could happen if the DOM is changed dynamically
           _statuses[sub] = INACTIVE;
           continue;
         }
-        var status = _getStatus(sub);
         if (status === MISSING) {
           $element.addClass('hidden');
         } else {
@@ -120,13 +125,28 @@ VuFind.register('account', function Account() {
     }
   };
 
+  var notify = function notify(module, status) {
+    if (Object.prototype.hasOwnProperty.call(_submodules, module) && typeof _submodules[module].updateNeeded !== 'undefined') {
+      if (_submodules[module].updateNeeded(_getStatus(module), status)) {
+        clearCache(module);
+        _load(module);
+      }
+    } else {
+      // We currently support only a single pending notification for each module
+      _pendingNotifications[module] = status;
+    }
+  };
+
   var init = function init() {
     // Update information when certain actions are performed
-    $("[data-clear-account-cache]").submit(function dataClearCache() {
+    $("form[data-clear-account-cache]").submit(function dataClearCacheForm() {
       clearCache($(this).attr("data-clear-account-cache"));
     });
-    $("#library_card").change(function clearChangeLibraryCard() {
-      clearCache(/* all */);
+    $("a[data-clear-account-cache]").click(function dataClearCacheLink() {
+      clearCache($(this).attr("data-clear-account-cache"));
+    });
+    $("select[data-clear-account-cache]").change(function dataClearCacheSelect() {
+      clearCache($(this).attr("data-clear-account-cache"));
     });
   };
 
@@ -142,11 +162,17 @@ VuFind.register('account', function Account() {
     } else {
       _statuses[name] = INACTIVE;
     }
+    if (typeof _pendingNotifications[name] !== 'undefined' && _pendingNotifications[name] !== null) {
+      var status = _pendingNotifications[name];
+      _pendingNotifications[name] = null;
+      notify(name, status);
+    }
   };
 
   return {
     init: init,
     clearCache: clearCache,
+    notify: notify,
     // if user is logged out, clear cache instead of register
     register: userIsLoggedIn ? register : clearCache
   };
@@ -164,6 +190,9 @@ $(document).ready(function registerAccountAjax() {
       }
       $element.html('<span class="badge overdue">' + status.display + '</span>');
       return ICON_LEVELS.DANGER;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return status.total !== currentStatus.value;
     }
   });
 
@@ -174,19 +203,22 @@ $(document).ready(function registerAccountAjax() {
       var html = '';
       var level = ICON_LEVELS.NONE;
       if (status.ok > 0) {
-        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('Checked Out Items') + '">' + status.ok + '</span>';
+        html += '<span class="badge ok" data-toggle="tooltip" title="' + VuFind.translate('account_normal_checkouts') + '">' + status.ok + '</span>';
       }
       if (status.warn > 0) {
-        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('renew_item_due_tooltip') + '">' + status.warn + '</span>';
+        html += '<span class="badge warn" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_due') + '">' + status.warn + '</span>';
         level = ICON_LEVELS.WARNING;
       }
       if (status.overdue > 0) {
-        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('renew_item_overdue_tooltip') + '">' + status.overdue + '</span>';
+        html += '<span class="badge overdue" data-toggle="tooltip" title="' + VuFind.translate('account_checkouts_overdue') + '">' + status.overdue + '</span>';
         level = ICON_LEVELS.DANGER;
       }
       $element.html(html);
       $('[data-toggle="tooltip"]', $element).tooltip();
       return level;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return status.ok !== currentStatus.ok || status.warn !== currentStatus.warn || status.overdue !== currentStatus.overdue;
     }
   });
 
@@ -196,15 +228,18 @@ $(document).ready(function registerAccountAjax() {
     render: function render($element, status, ICON_LEVELS) {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('hold_available') + '"></i>');
+        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '"></i>');
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
-        $element.html('<i class="fa fa-clock-o text-warning" data-toggle="tooltip" title="' + VuFind.translate('request_in_transit') + '"></i>');
+        $element.html('<i class="fa fa-clock-o text-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '"></i>');
       } else {
         $element.addClass("holds-status hidden");
       }
       $('[data-toggle="tooltip"]', $element).tooltip();
       return level;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
     }
   });
 
@@ -214,15 +249,18 @@ $(document).ready(function registerAccountAjax() {
     render: function render($element, status, ICON_LEVELS) {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('ill_request_available') + '"></i>');
+        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '"></i>');
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
-        $element.html('<i class="fa fa-clock-o text-warning" data-toggle="tooltip" title="' + VuFind.translate('request_in_transit') + '"></i>');
+        $element.html('<i class="fa fa-clock-o text-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '"></i>');
       } else {
         $element.addClass("holds-status hidden");
       }
       $('[data-toggle="tooltip"]', $element).tooltip();
       return level;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
     }
   });
 
@@ -232,15 +270,18 @@ $(document).ready(function registerAccountAjax() {
     render: function render($element, status, ICON_LEVELS) {
       var level = ICON_LEVELS.NONE;
       if (status.available > 0) {
-        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('storage_retrieval_request_available') + '"></i>');
+        $element.html('<i class="fa fa-bell text-success" data-toggle="tooltip" title="' + VuFind.translate('account_requests_available') + '"></i>');
         level = ICON_LEVELS.GOOD;
       } else if (status.in_transit > 0) {
-        $element.html('<i class="fa fa-clock-o text-warning" data-toggle="tooltip" title="' + VuFind.translate('request_in_transit') + '"></i>');
+        $element.html('<i class="fa fa-clock-o text-warning" data-toggle="tooltip" title="' + VuFind.translate('account_requests_in_transit') + '"></i>');
       } else {
         $element.addClass("holds-status hidden");
       }
       $('[data-toggle="tooltip"]', $element).tooltip();
       return level;
+    },
+    updateNeeded: function updateNeeded(currentStatus, status) {
+      return status.available !== currentStatus.available || status.in_transit !== currentStatus.in_transit;
     }
   });
 

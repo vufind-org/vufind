@@ -27,7 +27,8 @@
  */
 namespace VuFind\Content\Covers;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\Content\ObalkyKnihContentFactory;
 
 /**
  * Covers content loader plugin manager
@@ -46,7 +47,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'amazon' => Amazon::class,
+        Amazon::class => Deprecated::class,
+        'amazon' => Deprecated::class,
         'booksite' => Booksite::class,
         'buchhandel' => Buchhandel::class,
         'browzine' => BrowZine::class,
@@ -54,7 +56,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'google' => Google::class,
         'librarything' => LibraryThing::class,
         'localfile' => LocalFile::class,
+        'obalkyknih' => ObalkyKnih::class,
         'openlibrary' => OpenLibrary::class,
+        'orb' => Orb::class,
         'summon' => Summon::class,
         'syndetics' => Syndetics::class,
     ];
@@ -70,10 +74,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         BrowZine::class => BrowZineFactory::class,
         Buchhandel::class => BuchhandelFactory::class,
         ContentCafe::class => ContentCafeFactory::class,
+        Deprecated::class => InvokableFactory::class,
         Google::class => InvokableFactory::class,
         LibraryThing::class => InvokableFactory::class,
         LocalFile::class => InvokableFactory::class,
+        ObalkyKnih::class => ObalkyKnihContentFactory::class,
         OpenLibrary::class => InvokableFactory::class,
+        Orb::class => OrbFactory::class,
         Summon::class => InvokableFactory::class,
         Syndetics::class => SyndeticsFactory::class,
     ];

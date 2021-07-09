@@ -73,11 +73,11 @@ class Mailer extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config  SMS configuration
-     * @param array               $options Additional options: defaultFrom (optional)
-     * and mailer (must be a \VuFind\Mailer\Mailer object)
+     * @param \Laminas\Config\Config $config  SMS configuration
+     * @param array                  $options Additional options: defaultFrom
+     * (optional) and mailer (must be a \VuFind\Mailer\Mailer object)
      */
-    public function __construct(\Zend\Config\Config $config, $options = [])
+    public function __construct(\Laminas\Config\Config $config, $options = [])
     {
         // Set up parent object first:
         parent::__construct($config, $options);
@@ -87,7 +87,7 @@ class Mailer extends AbstractBase
         if (isset($config->Carriers) && count($config->Carriers) > 0) {
             $this->carriers = [];
             foreach ($config->Carriers as $id => $settings) {
-                list($domain, $name) = explode(':', $settings, 2);
+                [$domain, $name] = explode(':', $settings, 2);
                 $this->carriers[$id] = ['name' => $name, 'domain' => $domain];
             }
         }

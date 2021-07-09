@@ -33,9 +33,9 @@
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
+use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -223,7 +223,7 @@ class DAIA extends AbstractBase implements
      */
     public function getConfig($function)
     {
-        return isset($this->config[$function]) ? $this->config[$function] : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -470,10 +470,9 @@ class DAIA extends AbstractBase implements
                 $params, $this->daiaTimeout, $http_headers
             );
         } catch (\Exception $e) {
-            throw new ILSException(
-                'HTTP request exited with Exception ' . $e->getMessage() .
-                ' for record: ' . $id
-            );
+            $msg = 'HTTP request exited with Exception ' . $e->getMessage() .
+                ' for record: ' . $id;
+            $this->throwAsIlsException($e, $msg);
         }
 
         if (!$result->isSuccess()) {
@@ -493,7 +492,7 @@ class DAIA extends AbstractBase implements
                         $this->contentTypesResponse[$this->daiaResponseFormat]
                     )
                 );
-                list($responseMediaType) = array_pad(
+                [$responseMediaType] = array_pad(
                     explode(
                         ';',
                         $result->getHeaders()->get('Content-type')->getFieldValue(),
@@ -595,7 +594,7 @@ class DAIA extends AbstractBase implements
             try {
                 $docs = $this->convertDaiaXmlToJson($daiaResponse);
             } catch (\Exception $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
         } elseif ($this->daiaResponseFormat == 'json') {
             $docs = json_decode($daiaResponse, true);
@@ -732,6 +731,7 @@ class DAIA extends AbstractBase implements
      */
     protected function parseDaiaArray($id, $daiaArray)
     {
+        $result = [];
         $doc_id = null;
         $doc_href = null;
         if (isset($daiaArray['id'])) {
@@ -797,6 +797,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemStatus($item)
     {
+        $return = [];
         $availability = false;
         $duedate = null;
         $serviceLink = '';

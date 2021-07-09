@@ -28,7 +28,11 @@
 namespace VuFind\Service;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * ReCaptcha factory.
@@ -53,7 +57,7 @@ class ReCaptchaFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -61,24 +65,39 @@ class ReCaptchaFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        $siteKey = isset($config->Captcha->siteKey)
-            ? $config->Captcha->siteKey
-            : (isset($config->Captcha->publicKey)
-                ? $config->Captcha->publicKey
-                : '');
-        $secretKey = isset($config->Captcha->secretKey)
-            ? $config->Captcha->secretKey
-            : (isset($config->Captcha->privateKey)
-                ? $config->Captcha->privateKey
-                : '');
+
+        $legacySettingsMap = [
+            'publicKey' => 'recaptcha_siteKey',
+            'siteKey' => 'recaptcha_siteKey',
+            'privateKey' => 'recaptcha_secretKey',
+            'secretKey' => 'recaptcha_secretKey',
+            'theme' => 'recaptcha_theme',
+        ];
+
+        $recaptchaConfig = $config->Captcha->toArray();
+        foreach ($legacySettingsMap as $old => $new) {
+            if (isset($recaptchaConfig[$old])) {
+                error_log(
+                    'Deprecated ' . $old . ' setting found in config.ini - '
+                    . 'please use ' . $new . ' instead.'
+                );
+                if (!isset($recaptchaConfig[$new])) {
+                    $recaptchaConfig[$new] = $recaptchaConfig[$old];
+                }
+            }
+        }
+
+        $siteKey = $recaptchaConfig['recaptcha_siteKey'] ?? '';
+        $secretKey = $recaptchaConfig['recaptcha_secretKey'] ?? '';
         $httpClient = $container->get(\VuFindHttp\HttpService::class)
             ->createClient();
-        $translator = $container->get(\Zend\Mvc\I18n\Translator::class);
-        $rcOptions = ['lang' => $translator->getLocale()];
-        if (isset($config->Captcha->theme)) {
-            $rcOptions['theme'] = $config->Captcha->theme;
+        $language = $container->get(LocaleSettings::class)->getUserLocale();
+        $rcOptions = ['lang' => $language];
+        if (isset($recaptchaConfig['recaptcha_theme'])) {
+            $rcOptions['theme'] = $recaptchaConfig['recaptcha_theme'];
         }
         return new $requestedName(
             $siteKey, $secretKey, ['ssl' => true], $rcOptions, null, $httpClient

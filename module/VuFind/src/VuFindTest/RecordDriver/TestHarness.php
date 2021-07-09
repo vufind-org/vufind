@@ -50,7 +50,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
     {
         if (substr($method, 0, 3) == 'get') {
             $index = substr($method, 3);
-            return isset($this->fields[$index]) ? $this->fields[$index] : null;
+            return $this->fields[$index] ?? null;
         } elseif (substr($method, 0, 3) == 'set') {
             $index = substr($method, 3);
             $this->fields[$index] = $params[0];
@@ -77,5 +77,20 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
     public function getUniqueID()
     {
         return $this->__call('getUniqueID', []);
+    }
+
+    /**
+     * Return the source backend identifier.
+     *
+     * @return string
+     */
+    public function getSourceIdentifier()
+    {
+        // For consistency with other methods, allow SourceIdentifier to be
+        // overridden via rawData (but also allow the "normal" method as a
+        // fallback):
+        return isset($this->fields['SourceIdentifier'])
+            ? $this->__call('getSourceIdentifier', $this->sourceIdentifier)
+            : parent::getSourceIdentifier();
     }
 }

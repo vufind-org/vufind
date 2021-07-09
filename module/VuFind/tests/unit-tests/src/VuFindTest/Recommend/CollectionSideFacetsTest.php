@@ -38,8 +38,10 @@ use VuFind\Recommend\CollectionSideFacets;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
+class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\SolrSearchObjectTrait;
+
     /**
      * Test "getResults"
      *
@@ -47,7 +49,7 @@ class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testKeywordFilter()
     {
-        $results = $this->getMockResults();
+        $results = $this->getSolrResults($this->getMockParams());
         $results->getParams()->expects($this->once())->method('getDisplayQuery')->will($this->returnValue('foo'));
         $csf = $this->getSideFacets(null, $results, '::facets:true');
         $this->assertEquals('foo', $csf->getKeywordFilter());
@@ -60,29 +62,22 @@ class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
      * @param \VuFind\Config\PluginManager                $configLoader config loader
      * @param \VuFind\Search\Solr\Results                 $results      results object
      * @param string                                      $settings     settings
-     * @param \Zend\StdLib\Parameters                     $request      request
+     * @param \Laminas\Stdlib\Parameters                     $request      request
      * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper (true to build default, null to omit)
      *
      * @return SideFacets
      */
     protected function getSideFacets($configLoader = null, $results = null, $settings = '', $request = null, $facetHelper = true)
     {
-        if (null === $configLoader) {
-            $configLoader = $this->getMockConfigLoader();
-        }
-        if (null === $results) {
-            $results = $this->getMockResults();
-        }
-        if (true === $facetHelper) {
-            $facetHelper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
-        }
-        if (null === $request) {
-            $request = new \Zend\StdLib\Parameters([]);
-        }
-        $sf = new CollectionSideFacets($configLoader, $facetHelper);
+        $sf = new CollectionSideFacets(
+            $configLoader ?? $this->getMockConfigLoader(),
+            $facetHelper ? new \VuFind\Search\Solr\HierarchicalFacetHelper() : false
+        );
         $sf->setConfig($settings);
-        $sf->init($results->getParams(), $request);
-        $sf->process($results);
+        $sf->init(
+            $results->getParams(), $request ?? new \Laminas\Stdlib\Parameters([])
+        );
+        $sf->process($results ?? $this->getSolrResults());
         return $sf;
     }
 
@@ -99,27 +94,8 @@ class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
         $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->disableOriginalConstructor()->getMock();
         $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Zend\Config\Config($config)));
+            ->will($this->returnValue(new \Laminas\Config\Config($config)));
         return $loader;
-    }
-
-    /**
-     * Get a mock results object.
-     *
-     * @param \VuFind\Search\Solr\Params $params Params to include in container.
-     *
-     * @return \VuFind\Search\Solr\Results
-     */
-    protected function getMockResults($params = null)
-    {
-        if (null === $params) {
-            $params = $this->getMockParams();
-        }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
-        return $results;
     }
 
     /**

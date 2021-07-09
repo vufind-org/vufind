@@ -27,7 +27,7 @@
  */
 namespace VuFind\Config;
 
-use Zend\ServiceManager\AbstractPluginManager as Base;
+use Laminas\ServiceManager\AbstractPluginManager as Base;
 
 /**
  * VuFind Config Manager
@@ -64,7 +64,6 @@ class PluginManager extends Base
      *
      * @param mixed $plugin Plugin to validate
      *
-     * @throws ServiceManagerRuntimeException if invalid
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -79,13 +78,13 @@ class PluginManager extends Base
      *
      * @param string $id Service identifier
      *
-     * @return \Zend\Config\Config
+     * @return \Laminas\Config\Config
      */
     public function reload($id)
     {
         $oldOverrideSetting = $this->getAllowOverride();
         $this->setAllowOverride(true);
-        $this->setService($id, $this->create($id));
+        $this->setService($id, $this->build($id));
         $this->setAllowOverride($oldOverrideSetting);
         return $this->get($id);
     }

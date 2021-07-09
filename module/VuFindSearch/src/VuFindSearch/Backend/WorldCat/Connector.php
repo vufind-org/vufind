@@ -58,11 +58,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     /**
      * Constructor
      *
-     * @param string            $wsKey   Web services key
-     * @param \Zend\Http\Client $client  An HTTP client object
-     * @param array             $options Additional config settings
+     * @param string               $wsKey   Web services key
+     * @param \Laminas\Http\Client $client  An HTTP client object
+     * @param array                $options Additional config settings
      */
-    public function __construct($wsKey, \Zend\Http\Client $client,
+    public function __construct($wsKey, \Laminas\Http\Client $client,
         array $options = []
     ) {
         parent::__construct(
@@ -91,7 +91,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}"
             . "?wskey={$this->wskey}&servicelevel=full&frbrGrouping=$grouping";
         if (isset($this->options['latLon'])) {
-            list($lat, $lon) = explode(',', $this->options['latLon']);
+            [$lat, $lon] = explode(',', $this->options['latLon']);
             $uri .= '&lat=' . urlencode($lat) . '&lon=' . urlencode($lon);
         }
         $this->client->setUri($uri);

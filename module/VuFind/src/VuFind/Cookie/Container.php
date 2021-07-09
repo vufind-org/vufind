@@ -1,7 +1,7 @@
 <?php
 /**
  * Class for treating a set of cookies as an object (inspired by
- * \Zend\Session\Container).
+ * \Laminas\Session\Container).
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\Cookie;
 
 /**
  * Class for treating a set of cookies as an object (inspired by
- * \Zend\Session\Container).
+ * \Laminas\Session\Container).
  *
  * @category VuFind
  * @package  Cookie
@@ -63,8 +63,7 @@ class Container
     public function __construct($groupName, CookieManager $manager = null)
     {
         $this->groupName = $groupName;
-        $this->manager = (null === $manager)
-            ? new CookieManager($_COOKIE) : $manager;
+        $this->manager = $manager ?? new CookieManager($_COOKIE);
     }
 
     /**

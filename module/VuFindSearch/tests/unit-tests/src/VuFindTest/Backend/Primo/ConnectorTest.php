@@ -30,11 +30,11 @@ namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
 
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
+
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Connector;
-
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for Primo connector.
@@ -47,6 +47,8 @@ use Zend\Http\Client as HttpClient;
  */
 class ConnectorTest extends TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test default timeout value
      *
@@ -124,12 +126,12 @@ class ConnectorTest extends TestCase
      * status.
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage Unauthorized access
      */
     public function testErrorInSuccessfulResponse()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unauthorized access');
+
         $conn = $this->createConnector('error-with-success-http');
         $terms = [
             ['index' => 'Title', 'lookfor' => 'dummy query'],
@@ -150,11 +152,7 @@ class ConnectorTest extends TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(sprintf('%s/primo/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
-            }
-            $response = file_get_contents($file);
+            $response = $this->getFixture("primo/response/$fixture", 'VuFindSearch');
             $adapter->setResponse($response);
         }
         $client = new HttpClient();

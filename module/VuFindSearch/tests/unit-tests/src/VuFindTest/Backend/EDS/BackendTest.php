@@ -41,8 +41,11 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test performing an autocomplete
      *
@@ -208,11 +211,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function loadResponse($fixture)
     {
-        $file = realpath(sprintf('%s/eds/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return unserialize(file_get_contents($file));
+        return unserialize(
+            $this->getFixture('eds/response/' . $fixture, 'VuFindSearch')
+        );
     }
 
     /**
@@ -224,9 +225,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
-        return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Zend2::class)
-            ->setMethods($mock)
+        $client = $this->createMock(\Laminas\Http\Client::class);
+        return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Connector::class)
+            ->onlyMethods($mock)
             ->setConstructorArgs([[], $client])
             ->getMock();
     }
@@ -234,10 +235,10 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     /**
      * Return backend
      *
-     * @param \VuFindSearch\Backend\EDS\Zend2                         $connector Connector
+     * @param \VuFindSearch\Backend\EDS\Connector                     $connector Connector
      * @param \VuFindSearch\Response\RecordCollectionFactoryInterface $factory   Record collection factory
-     * @param \Zend\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
-     * @param \Zend\Session\Container                                 $container Session container
+     * @param \Laminas\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
+     * @param \Laminas\Session\Container                                 $container Session container
      * @param array                                                   $settings  Additional settings
      * @param array                                                   $mock      Methods to mock (or null for a real object)
      */
@@ -247,18 +248,18 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         }
         if (null === $cache) {
-            $cache = $this->createMock(\Zend\Cache\Storage\Adapter\Filesystem::class);
+            $cache = $this->createMock(\Laminas\Cache\Storage\Adapter\Filesystem::class);
         }
         if (null === $container) {
-            $container = $this->getMockBuilder(\Zend\Session\Container::class)
+            $container = $this->getMockBuilder(\Laminas\Session\Container::class)
                 ->disableOriginalConstructor()->getMock();
         }
         if (null === $mock) {
-            return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
+            return new Backend($connector, $factory, $cache, $container, new \Laminas\Config\Config($settings));
         } else {
-            $params = [$connector, $factory, $cache, $container, new \Zend\Config\Config($settings)];
+            $params = [$connector, $factory, $cache, $container, new \Laminas\Config\Config($settings)];
             return $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs($params)
                 ->getMock();
         }

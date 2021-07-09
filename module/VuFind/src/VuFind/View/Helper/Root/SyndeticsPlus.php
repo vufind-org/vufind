@@ -36,19 +36,19 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SyndeticsPlus extends \Zend\View\Helper\AbstractHelper
+class SyndeticsPlus extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Syndetics configuration
      *
-     * \Zend\Config\Config
+     * \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Syndetics configuration (should contain
+     * @param \Laminas\Config\Config $config Syndetics configuration (should contain
      * 'plus' boolean value (true if Syndetics Plus is enabled) and 'plus_id' string
      * value (Syndetics Plus user ID).  If these values are absent, SyndeticsPlus
      * will be disabled.
@@ -65,8 +65,7 @@ class SyndeticsPlus extends \Zend\View\Helper\AbstractHelper
      */
     public function isActive()
     {
-        return isset($this->config->plus)
-            ? $this->config->plus : false;
+        return $this->config->plus ?? false;
     }
 
     /**

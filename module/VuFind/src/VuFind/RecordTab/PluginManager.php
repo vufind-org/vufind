@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordTab;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Record tab plugin manager
@@ -58,12 +58,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'map' => Map::class,
         'preview' => Preview::class,
         'reviews' => Reviews::class,
+        'search2collectionlist' => Search2CollectionList::class,
         'similaritemscarousel' => SimilarItemsCarousel::class,
         'staffviewarray' => StaffViewArray::class,
         'staffviewmarc' => StaffViewMARC::class,
         'staffviewoverdrive' => StaffViewOverdrive::class,
         'toc' => TOC::class,
         'usercomments' => UserComments::class,
+        'versions' => Versions::class,
     ];
 
     /**
@@ -84,12 +86,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Map::class => MapFactory::class,
         Preview::class => PreviewFactory::class,
         Reviews::class => ReviewsFactory::class,
+        Search2CollectionList::class => CollectionListFactory::class,
         SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
         StaffViewArray::class => InvokableFactory::class,
         StaffViewMARC::class => InvokableFactory::class,
         StaffViewOverdrive::class => InvokableFactory::class,
         TOC::class => TOCFactory::class,
         UserComments::class => UserCommentsFactory::class,
+        Versions::class => VersionsFactory::class,
     ];
 
     /**
@@ -105,7 +109,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
-        $this->addInitializer('ZfcRbac\Initializer\AuthorizationServiceInitializer');
+        $this->addInitializer(
+            \LmcRbacMvc\Initializer\AuthorizationServiceInitializer::class
+        );
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

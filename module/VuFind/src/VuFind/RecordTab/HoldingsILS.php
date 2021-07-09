@@ -90,14 +90,15 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
-     * Support method used by template -- extract all unique call numbers from
+     * Support method used in getUniqueCallNumbers for templates when full
+     * details are not supported -- extract all unique call numbers from
      * an array of items.
      *
      * @param array $items Items to search through.
      *
      * @return array
      */
-    public function getUniqueCallNumbers($items)
+    protected function getSimpleUniqueCallNumbers($items)
     {
         $callNos = [];
         foreach ($items as $item) {
@@ -107,6 +108,48 @@ class HoldingsILS extends AbstractBase
         }
         sort($callNos);
         return array_unique($callNos);
+    }
+
+    /**
+     * Support method used by template -- extract all unique call numbers from
+     * an array of items.
+     *
+     * @param array $items       Items to search through.
+     * @param bool  $fullDetails Whether or not to return the full details about
+     *                           call numbers or only the simple legacy format.
+     *
+     * @return array
+     */
+    public function getUniqueCallNumbers($items, $fullDetails=false)
+    {
+        if (!$fullDetails) {
+            return $this->getSimpleUniqueCallNumbers($items);
+        }
+
+        $callNos = [];
+        foreach ($items as $item) {
+            if (strlen($item['callnumber'] ?? '') > 0) {
+                $prefix = $item['callnumber_prefix'] ?? '';
+                $callnumber = $item['callnumber'];
+                $display = $prefix ? $prefix . ' ' . $callnumber : $callnumber;
+                $callNos[] = compact('callnumber', 'display', 'prefix');
+            }
+        }
+
+        $unique = [];
+        foreach ($callNos as $no) {
+            $unique[$no['display']] = $no;
+        }
+        $callNosUnique = array_values($unique);
+
+        uasort(
+            $callNosUnique,
+            function ($a, $b) {
+                return $a['display'] <=> $b['display'];
+            }
+        );
+
+        return $callNosUnique;
     }
 
     /**
@@ -137,7 +180,7 @@ class HoldingsILS extends AbstractBase
      * @param int $page           Currently selected page of the items paginator
      * @param int $itemLimit      Max. no of items per page
      *
-     * @return \Zend\Paginator\Paginator
+     * @return \Laminas\Paginator\Paginator
      */
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
@@ -147,8 +190,8 @@ class HoldingsILS extends AbstractBase
         }
 
         // Create the paginator
-        $nullAdapter = new \Zend\Paginator\Adapter\NullFill($totalItemCount);
-        $paginator = new \Zend\Paginator\Paginator($nullAdapter);
+        $nullAdapter = new \Laminas\Paginator\Adapter\NullFill($totalItemCount);
+        $paginator = new \Laminas\Paginator\Paginator($nullAdapter);
 
         // Some settings for the paginator
         $paginator

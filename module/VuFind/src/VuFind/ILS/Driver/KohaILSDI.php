@@ -46,7 +46,7 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -120,6 +120,32 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     protected $validatePasswords;
 
     /**
+     * Authorised values category for location, defaults to 'LOC'
+     *
+     * @var string
+     */
+    protected $locationAuthorisedValuesCategory;
+
+    /**
+     * Default terms for block types, can be overridden by configuration
+     *
+     * @var array
+     */
+    protected $blockTerms = [
+        'SUSPENSION' => 'Account Suspended',
+        'OVERDUES' => 'Account Blocked (Overdue Items)',
+        'MANUAL' => 'Account Blocked',
+        'DISCHARGE' => 'Account Blocked for Discharge',
+    ];
+
+    /**
+     * Display comments for patron debarments, see KohaILSDI.ini
+     *
+     * @var array
+     */
+    protected $showBlockComments;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -145,26 +171,21 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         // Base for API address
-        $this->host = isset($this->config['Catalog']['host']) ?
-            $this->config['Catalog']['host'] : "localhost";
+        $this->host = $this->config['Catalog']['host'] ?? "localhost";
 
         // Storing the base URL of ILS
-        $this->ilsBaseUrl = isset($this->config['Catalog']['url'])
-            ? $this->config['Catalog']['url'] : "";
+        $this->ilsBaseUrl = $this->config['Catalog']['url'] ?? "";
 
         // Default location defined in 'KohaILSDI.ini'
         $this->defaultLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation'] : null;
+            = $this->config['Holds']['defaultPickUpLocation'] ?? null;
 
         $this->pickupEnableBranchcodes
-            = isset($this->config['Holds']['pickupLocations'])
-            ? $this->config['Holds']['pickupLocations'] : [];
+            = $this->config['Holds']['pickupLocations'] ?? [];
 
         // Locations that should default to available, defined in 'KohaILSDI.ini'
         $this->availableLocationsDefault
-            = isset($this->config['Other']['availableLocations'])
-            ? $this->config['Other']['availableLocations'] : [];
+            = $this->config['Other']['availableLocations'] ?? [];
 
         // If we are using SAML/Shibboleth for authentication for both ourselves
         // and Koha then we can't validate the patrons passwords against Koha as
@@ -176,23 +197,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         // The Authorised Values Category use for locations should default to 'LOC'
         $this->locationAuthorisedValuesCategory
-            = isset($this->config['Catalog']['locationAuthorisedValuesCategory'])
-            ? $this->config['Catalog']['locationAuthorisedValuesCategory']
-            : 'LOC';
+            = $this->config['Catalog']['locationAuthorisedValuesCategory'] ?? 'LOC';
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
         $this->debug("ILS URL: " . $this->ilsBaseUrl);
         $this->debug("Locations: " . $this->locations);
         $this->debug("Default Location: " . $this->defaultLocation);
-
-        // Set our default terms for block types
-        $this->blockTerms = [
-            'SUSPENSION' => 'Account Suspended',
-            'OVERDUES' => 'Account Blocked (Overdue Items)',
-            'MANUAL' => 'Account Blocked',
-            'DISCHARGE' => 'Account Blocked for Discharge',
-        ];
 
         // Now override the default with any defined in the `KohaILSDI.ini` config
         // file
@@ -265,7 +276,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $this->debug('Connected to DB');
@@ -331,7 +342,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param string $contents string to be checked
      * @param string $default  value to return if $contents is ""
      *
-     * @return $contents or $default
+     * @return string
      */
     protected function getField($contents, $default = "Unknown")
     {
@@ -374,7 +385,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $client->send();
         } catch (\Exception $e) {
             $this->debug("Result is invalid.");
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -439,7 +450,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $client->send();
         } catch (\Exception $e) {
             $this->debug("Result is invalid.");
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -459,7 +470,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
         $end = microtime(true);
         $time2 = $end - $start;
-        echo "\t$time1 - $time2";
+        $this->debug("Request times: $time1 - $time2");
         return $result;
     }
 
@@ -482,7 +493,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "Y-m-d", $display_date
         );
 
-        $checkTime =  $this->dateConverter->convertFromDisplayDate(
+        $checkTime = $this->dateConverter->convertFromDisplayDate(
             "U", $display_date
         );
         if (!is_numeric($checkTime)) {
@@ -523,9 +534,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => 'checkout desc'
             ];
         }
-        return isset($this->config[$function])
-            ? $this->config[$function]
-            : false;
+        return $this->config[$function] ?? false;
     }
 
     /**
@@ -537,10 +546,12 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.    May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array An array of associative arrays with locationID and
@@ -571,7 +582,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         $this->pickupEnableBranchcodes = $sqlSt->fetch();
                     } catch (PDOException $e) {
                         $this->debug('Connection failed: ' . $e->getMessage());
-                        throw new ILSException($e->getMessage());
+                        $this->throwAsIlsException($e);
                     }
                 } elseif (!empty($holdDetails['level'])
                     && $holdDetails['level'] == 'title'
@@ -589,7 +600,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         }
                     } catch (PDOException $e) {
                         $this->debug('Connection failed: ' . $e->getMessage());
-                        throw new ILSException($e->getMessage());
+                        $this->throwAsIlsException($e);
                     }
                 }
             }
@@ -606,7 +617,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->locations = $sqlSt->fetchAll();
             } catch (PDOException $e) {
                 $this->debug('Connection failed: ' . $e->getMessage());
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
         }
         return $this->locations;
@@ -845,7 +856,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtHoldings->execute([':id' => $id]);
         } catch (PDOException $e) {
             $this->debug('Connection failed: ' . $e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $this->debug("Rows count: " . $itemSqlStmt->rowCount());
@@ -1032,7 +1043,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
-            $items[] =  [
+            $items[] = [
                 'id' => $rowItem['id']
             ];
             $rescount++;
@@ -1173,7 +1184,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
             return $transactionLst;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1267,11 +1278,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * an item ID. This function returns the item id as a string. This
      * value is then used by the CancelHolds function.
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reserve_id'];
     }
@@ -1391,7 +1405,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $blocks[] = implode(' - ', $block);
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return count($blocks) ? $blocks : false;
@@ -1476,7 +1490,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 'transactions' => $historicLoans
             ];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1494,7 +1508,6 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getMyTransactions($patron)
     {
-        echo "<!--";
         $id = $patron['id'];
         $transactionLst = [];
         $start = microtime(true);
@@ -1502,7 +1515,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             "GetPatronInfo&patron_id=$id" . "&show_contact=0&show_loans=1"
         );
         $end = microtime(true);
-        $requestTimes[] = $end - $start;
+        $requestTimes = [$end - $start];
 
         $this->debug("ID: " . $rsp->{'borrowernumber'});
 
@@ -1535,9 +1548,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
         }
         foreach ($requestTimes as $time) {
-            echo "\n$time\n";
+            $this->debug("Request time: $time");
         }
-        echo "-->";
         return $transactionLst;
     }
 
@@ -1580,7 +1592,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($details as $renewItem) {
             $rsp = $this->makeRequest($request_prefix . $renewItem);
             if ($rsp->{'success'} != '0') {
-                list($date, $time)
+                [$date, $time]
                     = explode(" ", $this->getField($rsp->{'date_due'}));
                 $retVal['details'][$renewItem] = [
                     "success"  => true,
@@ -1636,7 +1648,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $result[] = ['issue' => $rowItem["date and enumeration"]];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $result;
     }
@@ -1716,7 +1728,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $result[] = $rowItem["biblionumber"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $result;
     }
@@ -1745,7 +1757,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $deptList[$rowItem["abv"]] = $rowItem["DEPARTMENT"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $deptList;
     }
@@ -1775,7 +1787,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $instList[$rowItem["borrowernumber"]] = $rowItem["name"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $instList;
     }
@@ -1804,7 +1816,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $courseList[$rowItem["course_id"]] = $rowItem["course"];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $courseList;
     }
@@ -1869,7 +1881,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $result[] = $rowItem;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         return $result;
     }
@@ -1956,7 +1968,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $stmt->execute(
                 [ $newPassword_hashed, $detail['patron']['id'] ]
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [ 'success' => false, 'status' => $e->getMessage() ];
         }
         return [

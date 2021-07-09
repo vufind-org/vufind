@@ -39,7 +39,7 @@ use VuFind\Role\PermissionProvider\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DynamicRoleProviderTest extends \VuFindTest\Unit\TestCase
+class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that configurations get processed correctly
@@ -101,7 +101,7 @@ class DynamicRoleProviderTest extends \VuFindTest\Unit\TestCase
      */
     protected function getFakePluginManager()
     {
-        $pm = new PluginManager($this->getServiceManager());
+        $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         foreach (['a', 'b', 'c'] as $name) {
             $pm->setService($name, $this->createMock(\VuFind\Role\PermissionProvider\PermissionProviderInterface::class));
         }

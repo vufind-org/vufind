@@ -39,7 +39,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class KeepAlive extends \Zend\View\Helper\AbstractHelper
+class KeepAlive extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Keep-alive interval in seconds or 0 if disabled

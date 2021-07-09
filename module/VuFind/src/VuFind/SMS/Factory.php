@@ -28,7 +28,7 @@
 namespace VuFind\SMS;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for instantiating SMS objects
@@ -63,8 +63,7 @@ class Factory implements FactoryInterface
         $smsConfig = $configManager->get('sms');
 
         // Determine SMS type:
-        $type = isset($smsConfig->General->smsType)
-            ? $smsConfig->General->smsType : 'Mailer';
+        $type = $smsConfig->General->smsType ?? 'Mailer';
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {

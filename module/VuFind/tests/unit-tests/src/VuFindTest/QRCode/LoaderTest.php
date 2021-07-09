@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\QRCode;
 
+use Laminas\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
-use Zend\Config\Config;
 
 /**
  * QR Code Loader Test Class
@@ -40,7 +40,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoaderTest extends \VuFindTest\Unit\TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Theme to use for testing purposes.
@@ -53,12 +53,12 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Could not load default fail image.');
+
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));
@@ -86,9 +86,9 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * @param ThemeInfo  $theme  Theme info object (null to create default)
      * @param array|bool $mock   Array of functions to mock, or false for real object
      *
-     * @return void
+     * @return Loader
      */
-    protected function getLoader($config = [], $theme = null, $mock = false)
+    protected function getLoader($config = [], $theme = null, $mock = false): Loader
     {
         $config = new Config($config);
         if (null === $theme) {
@@ -96,7 +96,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
         }
         if ($mock) {
             return $this->getMockBuilder(\VuFind\QRCode\Loader::class)
-                ->setMethods($mock)
+                ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $theme])
                 ->getMock();
         }

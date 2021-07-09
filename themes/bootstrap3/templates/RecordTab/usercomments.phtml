@@ -14,12 +14,13 @@
   <?php if($user): ?>
     <div class="text-form">
       <textarea name="comment" class="form-control" rows="3" required></textarea>
-      <?php if ($this->tab->isRecaptchaActive()): ?>
-        <?=$this->recaptcha()->html(true, false) ?>
+      <?php if ($this->tab->isCaptchaActive()): ?>
+        <?=$this->captcha()->html(true, false) ?>
       <?php endif; ?>
-      <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
+      <input class="btn btn-primary" data-loading-text="<?=$this->transEscAttr('Submitting') ?>..." type="submit" value="<?=$this->transEscAttr("Add your comment")?>"/>
     </div>
   <?php else: ?>
-    <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary" data-lightbox title="Login"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
+    <?php $singleSignOn = $this->auth()->getManager()->getSessionInitiator($this->serverUrl(true)); ?>
+    <a href="<?=$this->url('myresearch-userlogin') ?>" class="btn btn-primary"<?php if (!$singleSignOn): ?> data-lightbox<?php endif; ?> title="<?=$this->transEscAttr('Login')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <?=$this->transEsc("You must be logged in first") ?></a>
   <?php endif; ?>
 </form>
