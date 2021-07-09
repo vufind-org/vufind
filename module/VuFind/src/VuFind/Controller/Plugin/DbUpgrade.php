@@ -211,15 +211,15 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
-     * Check whether the actual table collation matches the expected table
-     * collation; return false if there is no problem, the name of the desired
+     * Check whether the actual table charset and collation match the expected
+     * ones; return false if there is no problem, the desired character set and
      * collation otherwise.
      *
      * @param array $table Information about a table (from getTableStatus())
      *
      * @return bool|string
      */
-    protected function getCollationProblemsForTable($table)
+    protected function getCharsetAndCollationProblemsForTable($table)
     {
         if (!isset($this->dbCommands[$table['Name']][0])) {
             return false;
@@ -227,31 +227,58 @@ class DbUpgrade extends AbstractPlugin
         // For now, we'll only detect problems in utf8-encoded tables; if the
         // user has a Latin1 database, they probably have more complex issues to
         // work through anyway.
-        preg_match_all(
-            '/CHARSET=utf8 COLLATE (\w+)/', $this->dbCommands[$table['Name']][0],
+        $match = preg_match(
+            '/CHARSET[\s=]+(utf8(mb4)?)/',
+            $this->dbCommands[$table['Name']][0],
             $matches
         );
-        if (isset($matches[1][0])
-            && strtolower($matches[1][0]) != strtolower($table['Collation'])
+        if (!$match) {
+            $match = preg_match(
+                '/CHARACTER SET[\s=]+(utf8(mb4)?)/',
+                $this->dbCommands[$table['Name']][0],
+                $matches
+            );
+        }
+        if (!$match) {
+            return false;
+        }
+        $charset = $matches[1];
+        // Check collation:
+        $match = preg_match(
+            '/COLLATE[\s=]+(\w+)/',
+            $this->dbCommands[$table['Name']][0],
+            $matches
+        );
+        if (!$match) {
+            return false;
+        }
+        $collation = $matches[1];
+        // The table definition does not include character set, but collation must
+        // begin with the character set name, so take it from there
+        // (See https://dev.mysql.com/doc/refman/8.0/en/show-table-status.html for
+        // more information):
+        [$tableCharset] = explode('_', $table['Collation']);
+        if (strcasecmp($collation, $table['Collation']) !== 0
+            || strcasecmp($charset, $tableCharset) !== 0
         ) {
-            return $matches[1][0];
+            return compact('charset', 'collation');
         }
         return false;
     }
 
     /**
-     * Get information on incorrectly collated tables/columns. Return value is
-     * associative array of table name => correct collation value.
+     * Get information on character set and collation problems. Return value is an
+     * associative array of table name => correct character set and collation values.
      *
      * @throws \Exception
      * @return array
      */
-    public function getCollationProblems()
+    public function getCharsetAndCollationProblems()
     {
         // Load details:
         $retVal = [];
         foreach ($this->getTableStatus() as $current) {
-            if ($problem = $this->getCollationProblemsForTable($current)) {
+            if ($problem = $this->getCharsetAndCollationProblemsForTable($current)) {
                 $retVal[$current['Name']] = $problem;
             }
         }
@@ -259,22 +286,23 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
-     * Fix collation problems based on the output of getCollationProblems().
+     * Fix character set and collation problems based on the output of
+     * getCharsetAndCollationProblems().
      *
-     * @param array $tables Output of getCollationProblems()
+     * @param array $tables Output of getCharsetAndCollationProblems()
      * @param bool  $logsql Should we return the SQL as a string rather than
      * execute it?
      *
      * @throws \Exception
      * @return string       SQL if $logsql is true, empty string otherwise
      */
-    public function fixCollationProblems($tables, $logsql = false)
+    public function fixCharsetAndCollationProblems($tables, $logsql = false)
     {
         $sqlcommands = '';
-        foreach ($tables as $table => $newCollation) {
-            // Adjust default table collation:
-            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET utf8 "
-                . "COLLATE $newCollation;";
+        foreach ($tables as $table => $newSettings) {
+            // Adjust table character set and collation:
+            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET"
+                . " {$newSettings['charset']} COLLATE {$newSettings['collation']};";
             $sqlcommands .= $this->query($sql, $logsql);
         }
         return $sqlcommands;
@@ -312,7 +340,7 @@ class DbUpgrade extends AbstractPlugin
      */
     public function fixEncodingProblems($tables, $logsql = false)
     {
-        $newCollation = "utf8_general_ci";
+        $newCollation = "utf8mb4_unicode_ci";
         $sqlcommands = '';
 
         // Database conversion routines inspired by:
@@ -359,8 +387,9 @@ class DbUpgrade extends AbstractPlugin
                 $sqlcommands .= $this->query($sql, $logsql);
             }
 
-            // Adjust default table collation:
-            $sql = "ALTER TABLE `$table` DEFAULT COLLATE $newCollation;";
+            // Adjust default table character set and collation:
+            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET utf8mb4 "
+                . "COLLATE $newCollation;";
             $sqlcommands .= $this->query($sql, $logsql);
         }
         return $sqlcommands;
@@ -784,6 +813,17 @@ class DbUpgrade extends AbstractPlugin
      */
     protected function defaultMatches($currentDefault, $sql)
     {
+        // Normalize current default:
+        if ($currentDefault && strtoupper($currentDefault) === 'NULL') {
+            $currentDefault = null;
+        }
+        if (null !== $currentDefault) {
+            $currentDefault = trim($currentDefault, "'");
+            if (strtoupper($currentDefault) === 'CURRENT_TIMESTAMP()') {
+                $currentDefault = 'CURRENT_TIMESTAMP';
+            }
+        }
+
         preg_match("/.* DEFAULT (.*)$/", $sql, $matches);
         $expectedDefault = $matches[1] ?? null;
         if (null !== $expectedDefault) {
@@ -831,6 +871,33 @@ class DbUpgrade extends AbstractPlugin
         }
 
         return $type == $expectedType;
+    }
+
+    /**
+     * Parse keys from a "create table" statement
+     *
+     * @param string $createSql Create table statement
+     *
+     * @return array
+     */
+    protected function parseKeysFromCreateTable(string $createSql): array
+    {
+        $keys = [];
+        // Parse key names etc. out of the CREATE TABLE SQL, which will always be
+        // the first entry in the array; we assume the standard mysqldump
+        // formatting is used here.
+        preg_match_all(
+            '/^\s*KEY `([^`]+)` \((.+)\),?$/m',
+            $createSql, $keyMatches
+        );
+        foreach (array_keys($keyMatches[0]) as $i) {
+            $name = $keyMatches[1][$i];
+            $definition = $keyMatches[2][$i];
+
+            // Fix trailing whitespace:
+            $keys[$name] = trim($definition);
+        }
+        return $keys;
     }
 
     /**
@@ -1018,6 +1085,82 @@ class DbUpgrade extends AbstractPlugin
                         "ALTER TABLE $table ADD {$constraint['sql']}", $logsql
                     );
                 }
+            }
+        }
+        return $sqlcommands;
+    }
+
+    /**
+     * Get a list of modified keys in the database tables (associative array,
+     * key = table name, value = array of modified key definitions).
+     *
+     * @param array $missingTables List of missing tables
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getModifiedKeys(array $missingTables = []): array
+    {
+        $modified = [];
+        foreach ($this->dbCommands as $table => $sql) {
+            // Skip missing tables if we're logging
+            if (in_array($table, $missingTables)) {
+                continue;
+            }
+
+            $expectedKeys = $this->parseKeysFromCreateTable($sql[0]);
+
+            $result = $this->getAdapter()->query(
+                "SHOW CREATE TABLE $table",
+                DbAdapter::QUERY_MODE_EXECUTE
+            )->current();
+            $resultArray = $result ? $result->getArrayCopy() : [''];
+            $actualCreateSQL = end($resultArray);
+            $actualKeys = $this->parseKeysFromCreateTable($actualCreateSQL);
+
+            // Create lists of keys to drop and add:
+            $add = [];
+            // Should we want to drop any keys not found in our database definition
+            // so that it would be possible to e.g. drop columns if necessary, the
+            // following line could be used:
+            //$drop = array_diff(array_keys($actualKeys), array_keys($expectedKeys));
+            $drop = [];
+            foreach ($expectedKeys as $name => $definition) {
+                if (!isset($actualKeys[$name])) {
+                    $add[$name] = $definition;
+                } elseif ($actualKeys[$name] !== $definition) {
+                    $drop[] = $name;
+                    $add[$name] = $definition;
+                }
+            }
+            if ($add || $drop) {
+                $modified[$table] = compact('add', 'drop');
+            }
+        }
+        return $modified;
+    }
+
+    /**
+     * Update keys based on the output of getModifiedKeys().
+     *
+     * @param array $tables Output of getModifiedKeys()
+     * @param bool  $logsql Should we return the SQL as a string rather than
+     * execute it?
+     *
+     * @throws \Exception
+     * @return string       SQL if $logsql is true, empty string otherwise
+     */
+    public function updateModifiedKeys($tables, $logsql = false)
+    {
+        $sqlcommands = '';
+        foreach ($tables as $table => $newSettings) {
+            foreach ($newSettings['drop'] as $key) {
+                $sql = "ALTER TABLE `$table` DROP KEY `$key`";
+                $sqlcommands .= $this->query($sql, $logsql);
+            }
+            foreach ($newSettings['add'] as $keyName => $keyDefinition) {
+                $sql = "ALTER TABLE `$table` ADD KEY `$keyName` ($keyDefinition)";
+                $sqlcommands .= $this->query($sql, $logsql);
             }
         }
         return $sqlcommands;
