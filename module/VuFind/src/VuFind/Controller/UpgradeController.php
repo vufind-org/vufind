@@ -474,15 +474,33 @@ class UpgradeController extends AbstractBase
                 }
                 $sql .= $this->dbUpgrade()
                     ->fixEncodingProblems($encProblems, $this->logsql);
-                $this->setDbEncodingConfiguration('utf8');
+                $this->setDbEncodingConfiguration('utf8mb4');
             } else {
                 // User has requested that we skip encoding conversion:
                 $this->setDbEncodingConfiguration('latin1');
             }
         }
 
-        // Check for collation problems.
-        $colProblems = $this->dbUpgrade()->getCollationProblems();
+        // Check for modified keys.
+        $modifiedKeys = $this->dbUpgrade()->getModifiedKeys($mT);
+        if (!empty($modifiedKeys)) {
+            // Only manipulate DB if we're not in logging mode:
+            if (!$this->logsql) {
+                if (!$this->hasDatabaseRootCredentials()) {
+                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                }
+                $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Modified key(s) in table(s): "
+                    . implode(', ', array_keys($modifiedKeys))
+                );
+            }
+            $sql .= $this->dbUpgrade()
+                ->updateModifiedKeys($modifiedKeys, $this->logsql);
+        }
+
+        // Check for character set and collation problems.
+        $colProblems = $this->dbUpgrade()->getCharsetAndCollationProblems();
         if (!empty($colProblems)) {
             if (!$this->logsql) {
                 if (!$this->hasDatabaseRootCredentials()) {
@@ -491,7 +509,7 @@ class UpgradeController extends AbstractBase
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
             }
             $sql .= $this->dbUpgrade()
-                ->fixCollationProblems($colProblems, $this->logsql);
+                ->fixCharsetAndCollationProblems($colProblems, $this->logsql);
             $this->session->warnings->append(
                 "Modified collation(s) in table(s): "
                 . implode(', ', array_keys($colProblems))
@@ -822,7 +840,7 @@ class UpgradeController extends AbstractBase
     public function getsourceversionAction()
     {
         // Process form submission:
-        $version = $this->params()->fromPost('sourceversion');
+        $version = floatval($this->params()->fromPost('sourceversion'));
         if (!empty($version)) {
             $this->cookie->newVersion = Version::getBuildVersion();
             if (floor($version) < 2) {
