@@ -3,6 +3,7 @@
 namespace TueFind\View\Helper\TueFind;
 
 use \TueFind\RecordDriver\SolrAuthMarc as AuthorityRecordDriver;
+use \TueFind\RecordDriver\SolrMarc as TitleRecordDriver;
 
 /**
  * View Helper for TueFind, containing functions related to authority data + schema.org
@@ -12,6 +13,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+    protected $dbTableManager;
+
     protected $recordLoader;
 
     protected $searchService;
@@ -20,8 +23,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function __construct(\VuFindSearch\Service $searchService,
                                 \Laminas\View\HelperPluginManager $viewHelperManager,
-                                \VuFind\Record\Loader $recordLoader)
+                                \VuFind\Record\Loader $recordLoader,
+                                \VuFind\Db\Table\PluginManager $dbTableManager)
     {
+        $this->dbTableManager = $dbTableManager;
         $this->recordLoader = $recordLoader;
         $this->searchService = $searchService;
         $this->viewHelperManager = $viewHelperManager;
@@ -222,6 +227,19 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                  $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
+    }
+
+    public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
+    {
+        $userAuthorities = $this->dbTableManager->get('user_authority')->getByUserId($user->id);
+        $userAuthorityIds = [];
+        foreach ($userAuthorities as $userAuthority) {
+            $userAuthorityIds[] = $userAuthority->authority_id;
+        }
+
+        $recordAuthorIds = array_merge($titleRecord->getPrimaryAuthorsIds(), $titleRecord->getSecondaryAuthorsIds(), $titleRecord->getCorporateAuthorsIds());
+        $matchingAuthorIds = array_intersect($userAuthorityIds, $recordAuthorIds);
+        return count($matchingAuthorIds) > 0;
     }
 
     public function recordExists($authorityId)

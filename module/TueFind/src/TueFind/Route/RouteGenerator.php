@@ -1,7 +1,8 @@
 <?php
-namespace IxTheo\Route;
 
-class RouteGenerator extends \TueFind\Route\RouteGenerator
+namespace TueFind\Route;
+
+class RouteGenerator extends \VuFind\Route\RouteGenerator
 {
     /**
      * Constructor
@@ -13,8 +14,7 @@ class RouteGenerator extends \TueFind\Route\RouteGenerator
     {
         parent::__construct($nonTabRecordActions);
         if (null === $nonTabRecordActions) {
-            $this->nonTabRecordActions[] = 'PDASubscribe';
-            $this->nonTabRecordActions[] = 'Subscribe';
+            $this->nonTabRecordActions[] = 'Publish';
         }
     }
 }

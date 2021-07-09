@@ -28,4 +28,14 @@ class RecordController extends \VuFind\Controller\RecordController {
             $this->params()->fromRoute('tab', $this->getDefaultTab())
         );
     }
+
+    public function publishAction()
+    {
+        $user = $this->getUser();
+        if (!$user)
+            return $this->forceLogin();
+
+        $this->loadRecord();
+        return $this->createViewModel(['driver' => $this->driver, 'user' => $user]);
+    }
 }
