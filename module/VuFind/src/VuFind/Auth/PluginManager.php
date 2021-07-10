@@ -56,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ldap' => LDAP::class,
         'multiauth' => MultiAuth::class,
         'multiils' => MultiILS::class,
+        'openidconnect' => OpenIDConnect::class,
         'shibboleth' => Shibboleth::class,
         'sip2' => SIP2::class,
         // for legacy 1.x compatibility
@@ -79,6 +80,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         LDAP::class => InvokableFactory::class,
         MultiAuth::class => MultiAuthFactory::class,
         MultiILS::class => ILSFactory::class,
+        OpenIDConnect::class => OpenIDConnectFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
         SIP2::class => InvokableFactory::class,
     ];
