@@ -29,7 +29,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\Content\PageLocator;
+use VuFind\ContentBlock\TemplateBased;
 
 /**
  * Content View Helper to resolve translated pages.
@@ -44,11 +44,11 @@ use VuFind\Content\PageLocator;
 class Content extends AbstractHelper
 {
     /**
-     * PageLocator instance to resolve translated pages.
+     * TemplateBased instance to resolve translated pages.
      *
-     * @var PageLocator
+     * @var TemplateBased
      */
-    protected $pageLocator;
+    protected $templateBasedBlock;
 
     /**
      * Context View Helper instance to resolve translated pages.
@@ -60,13 +60,13 @@ class Content extends AbstractHelper
     /**
      * Constructor
      *
-     * @param PageLocator $pageLocator   Page locator
-     * @param Context     $contextHelper Context view helper
+     * @param TemplateBased $block         TemplateBased ContentBlock
+     * @param Context       $contextHelper Context view helper
      */
-    public function __construct(PageLocator $pageLocator,
+    public function __construct(TemplateBased $block,
         Context $contextHelper
     ) {
-        $this->pageLocator = $pageLocator;
+        $this->templateBasedBlock = $block;
         $this->contextHelper = $contextHelper;
     }
 
@@ -89,11 +89,11 @@ class Content extends AbstractHelper
             $pathPrefix .= '/';
         }
         $pathPrefix = 'templates/' . $pathPrefix;
-        $pageDetails = $this->pageLocator->determineTemplateAndRenderer(
+        $pageDetails = $this->templateBasedBlock->getContext(
             $pathPrefix, $pageName, $pattern
         );
         return $this->contextHelper->renderInContext(
-            $pageDetails['relativePath'], $context
+            'ContentBlock/TemplateBased.phtml', $context + $pageDetails
         );
     }
 }

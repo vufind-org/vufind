@@ -61,8 +61,11 @@ class ContentFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $templateBasedBlock = $container
+            ->get(\VuFind\ContentBlock\PluginManager::class)
+            ->get(\VuFind\ContentBlock\TemplateBased::class);
         return new $requestedName(
-            $container->get(\VuFind\Content\PageLocator::class),
+            $templateBasedBlock,
             $container->get('ViewHelperManager')->get('context'),
         );
     }
