@@ -1,3 +1,4 @@
 <?=$this->layout()->content?>
 <?=$this->piwik(['lightbox' => true])?>
+<?=$this->matomo(['context' => $this->layoutContext ?? 'lightbox'])?>
 <?=$this->googleanalytics($this->serverUrl(true))?>

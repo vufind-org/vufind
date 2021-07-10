@@ -306,6 +306,7 @@ class AbstractRecord extends AbstractBase
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
+        $this->layout()->setVariable('layoutContext', 'tabs');
         return $this->showTab(
             $this->params()->fromPost('tab', $this->getDefaultTab()), true
         );
