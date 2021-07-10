@@ -12,13 +12,15 @@ jobs:
     strategy:
       matrix:
         php-version: ['7.3', '7.4', '8.0']
+        # We run most tests on all platforms, but we only run Javascript-related tests in 8.0,
+        # since the results should be the same on all platforms, so we don't need to repeat them.
         include:
           - php-version: 7.3
-            phing_tasks: "phpunitfast"
+            phing_tasks: "phpunitfast phpcs-console php-cs-fixer-dryrun phpstan-console"
           - php-version: 7.4
-            phing_tasks: "eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
+            phing_tasks: "phpunitfast phpcs-console php-cs-fixer-dryrun phpstan-console"
           - php-version: 8.0
-            phing_tasks: "phpunitfast"
+            phing_tasks: "eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
 
     steps:
       - name: Setup PHP
@@ -26,6 +28,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: intl, xsl
+          tools: composer:2.0.13
 
       - name: Setup node
         uses: actions/setup-node@v2

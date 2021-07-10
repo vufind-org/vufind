@@ -30,6 +30,7 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
+use VuFindSearch\Service;
 
 /**
  * Listener to convert one field to another in filters (for legacy purposes).
@@ -70,7 +71,9 @@ class FilterFieldConversionListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -82,7 +85,7 @@ class FilterFieldConversionListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        $params = $event->getParam('params');
+        $params = $event->getParam('command')->getSearchParameters();
         $fq = $params->get('fq');
         if (is_array($fq) && !empty($fq)) {
             // regex lookahead to ignore strings inside quotes:

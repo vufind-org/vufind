@@ -27,7 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\RecordDriver\Feature;
 
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already

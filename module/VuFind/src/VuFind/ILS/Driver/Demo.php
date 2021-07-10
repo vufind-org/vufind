@@ -298,6 +298,21 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate a fake call number prefix sometimes.
+     *
+     * @return string
+     */
+    protected function getFakeCallNumPrefix()
+    {
+        $codes = "0123456789";
+        $prefix = substr(str_shuffle($codes), 1, rand(0, 1));
+        if (!empty($prefix)) {
+            return 'Prefix: ' . $prefix;
+        }
+        return '';
+    }
+
+    /**
      * Get a random ID from the Solr index.
      *
      * @return string
@@ -416,6 +431,7 @@ class Demo extends AbstractBase
             'locationhref' => $locationhref,
             'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
+            'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
             'addLink'      => $patron ? true : false,
@@ -519,8 +535,11 @@ class Demo extends AbstractBase
                 $pos = rand() % 5;
                 if ($pos > 1) {
                     $currentItem['position'] = $pos;
+                    $currentItem['available'] = false;
+                    $currentItem['in_transit'] = (rand() % 2) === 1;
                 } else {
                     $currentItem['available'] = true;
+                    $currentItem['in_transit'] = false;
                     if (rand() % 3 != 1) {
                         $lastDate = strtotime('now + 3 days');
                         $currentItem['last_pickup_date'] = $this->dateConverter
@@ -529,6 +548,9 @@ class Demo extends AbstractBase
                 }
                 $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
+                if (!$currentItem['available'] && !$currentItem['in_transit']) {
+                    $currentItem['updateDetails'] = $currentItem['reqnum'];
+                }
             } else {
                 $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
@@ -1309,10 +1331,12 @@ class Demo extends AbstractBase
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
@@ -1322,7 +1346,7 @@ class Demo extends AbstractBase
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        return [
+        $result = [
             [
                 'locationID' => 'A',
                 'locationDisplay' => 'Campus A'
@@ -1336,6 +1360,13 @@ class Demo extends AbstractBase
                 'locationDisplay' => 'Campus C'
             ]
         ];
+        if (($holdDetails['reqnum'] ?? '') == 1) {
+            $result[] = [
+                'locationID' => 'D',
+                'locationDisplay' => 'Campus D'
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -1656,10 +1687,13 @@ class Demo extends AbstractBase
     /**
      * Get Cancel Hold Details
      *
-     * In order to cancel a hold, Voyager requires the patron details an item ID
-     * and a recall ID. This function returns the item id and recall id as a string
-     * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.
+     * Get required data for canceling a hold. This value is relayed to the
+     * cancelHolds function when the user attempts to cancel holds. Returning an
+     * empty string means that the hold is not cancelable.
+     *
+     * N.B. This must return same information as the updateDetails field of each
+     * hold returned by getMyHolds since it is used as the identifier also for
+     * updates when both functions are available.
      *
      * @param array $hold   An array of hold data
      * @param array $patron Patron information from patronLogin
@@ -1672,6 +1706,56 @@ class Demo extends AbstractBase
     {
         return empty($hold['available']) && empty($hold['in_transit'])
             ? $hold['reqnum'] : '';
+    }
+
+    /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    ): array {
+        $results = [];
+        $session = $this->getSession($patron['id']);
+        foreach ($session->holds as &$currentHold) {
+            if (!isset($currentHold['updateDetails'])
+                || !in_array($currentHold['updateDetails'], $holdsDetails)
+            ) {
+                continue;
+            }
+            if ($this->isFailing(__METHOD__, 25)) {
+                $results[$currentHold['reqnum']]['success'] = false;
+                $results[$currentHold['reqnum']]['status']
+                    = 'Simulated error; try again and it will work eventually.';
+                continue;
+            }
+            if (array_key_exists('frozen', $fields)) {
+                if ($fields['frozen']) {
+                    $currentHold['frozen'] = true;
+                    if (isset($fields['frozenThrough'])) {
+                        $currentHold['frozenThrough'] = $this->dateConverter
+                            ->convertToDisplayDate('U', $fields['frozenThroughTS']);
+                    } else {
+                        $currentHold['frozenThrough'] = '';
+                    }
+                } else {
+                    $currentHold['frozen'] = false;
+                    $currentHold['frozenThrough'] = '';
+                }
+            }
+            if (isset($fields['pickUpLocation'])) {
+                $currentHold['location'] = $fields['pickUpLocation'];
+            }
+            $results[$currentHold['reqnum']]['success'] = true;
+        }
+
+        return $results;
     }
 
     /**
@@ -1908,7 +1992,7 @@ class Demo extends AbstractBase
         if ($holdDetails['startDateTS']) {
             // Suspend until the previous day:
             $frozen = true;
-            $frozenUntil = $this->dateConverter->convertToDisplayDate(
+            $frozenThrough = $this->dateConverter->convertToDisplayDate(
                 'U',
                 \DateTime::createFromFormat(
                     'U',
@@ -1917,7 +2001,7 @@ class Demo extends AbstractBase
             );
         } else {
             $frozen = false;
-            $frozenUntil = '';
+            $frozenThrough = '';
         }
         $session->holds->append(
             [
@@ -1934,7 +2018,8 @@ class Demo extends AbstractBase
                 'processed' => '',
                 'requestGroup' => $requestGroup,
                 'frozen'   => $frozen,
-                'frozen_until' => $frozenUntil
+                'frozenThrough' => $frozenThrough,
+                'updateDetails' => sprintf('%06d', $nextId)
             ]
         );
 

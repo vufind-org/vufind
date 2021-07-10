@@ -100,7 +100,8 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $href = $link->getAttribute('href');
         $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
-        $this->assertStringContainsString($link->getText(), $href);
+        $hrefCallnum = explode('&from=', $href)[1];
+        $this->assertStringEndsWith($hrefCallnum, $link->getText());
     }
 
     protected function setupMultipleCallnumbers()
@@ -140,10 +141,10 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         // Single callnumbers (Sample)
         $this->changeConfigs(
             [
-            'config' => [
-                'Catalog' => ['driver' => 'Sample'],
-                'Item_Status' => ['callnumber_handler' => $type]
-            ]
+                'config' => [
+                    'Catalog' => ['driver' => 'Sample'],
+                    'Item_Status' => ['callnumber_handler' => $type]
+                ]
             ]
         );
         $this->getMinkSession()->reload();
@@ -193,11 +194,6 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFirstAndMsg()
     {
-        $this->changeConfigs(
-            [
-            'config' => ['Item_Status' => ['show_full_status' => false]]
-            ]
-        );
         $this->validateSetting('first');
     }
 

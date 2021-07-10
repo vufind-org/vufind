@@ -89,13 +89,13 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
         // test default settings
         $smf = new SafeMoneyFormat();
         $smf->setView($view);
-        $this->assertEquals('$3.00', $smf->__invoke(3));
-        $this->assertEquals('€3.00', $smf->__invoke(3, 'EUR'));
+        $this->assertEquals('$3.00', $smf(3));
+        $this->assertEquals('€3.00', $smf(3, 'EUR'));
 
         // test override default currency
         $smf = new SafeMoneyFormat('EUR');
         $smf->setView($view);
-        $this->assertEquals('€3.00', $smf->__invoke(3));
-        $this->assertEquals('$3.00', $smf->__invoke(3, 'USD'));
+        $this->assertEquals('€3.00', $smf(3));
+        $this->assertEquals('$3.00', $smf(3, 'USD'));
     }
 }

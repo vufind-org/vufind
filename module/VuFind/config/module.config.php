@@ -159,7 +159,7 @@ $config = [
             'VuFind\Controller\Search2collectionController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\HelpController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\HierarchyController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\HoldsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\HoldsController' => 'VuFind\Controller\HoldsControllerFactory',
             'VuFind\Controller\IndexController' => 'VuFind\Controller\IndexControllerFactory',
             'VuFind\Controller\InstallController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\LibGuidesController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -448,9 +448,6 @@ $config = [
             'Laminas\Http\PhpEnvironment\RemoteAddress' => 'VuFind\Http\PhpEnvironment\RemoteAddressFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
         ],
-        'invokables' => [
-            'VuFind\ILS\OAuth2Service',
-        ],
         'delegators' => [
             'Laminas\I18n\Translator\TranslatorInterface' => [
                 'VuFind\I18n\Translator\TranslatorFactory',
@@ -546,9 +543,6 @@ $config = [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_path_stack'      => [],
-        'whoops_no_catch' => [
-            'VuFind\Exception\RecordMissing',
-        ],
     ],
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Laminas components).
@@ -615,6 +609,12 @@ $config = [
             'urlshortener' => [ /* see VuFind\UrlShortener\PluginManager for defaults */ ],
         ],
     ],
+    // Whoops configuration:
+    'whoops' => [
+        'ignored_exceptions' => [
+            'VuFind\Exception\RecordMissing',
+        ],
+    ],
     // Authorization configuration:
     'lmc_rbac' => [
         'identity_provider' => 'VuFind\Auth\Manager',
@@ -673,7 +673,7 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
-    'Holds/List',
+    'Holds/Edit', 'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/FixSSLCerts', 'Install/Home',

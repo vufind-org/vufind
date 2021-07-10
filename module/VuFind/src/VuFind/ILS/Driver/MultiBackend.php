@@ -49,6 +49,11 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     }
 
     /**
+     * ID fields in holds
+     */
+    const HOLD_ID_FIELDS = ['id', 'item_id', 'cat_username'];
+
+    /**
      * The array of configured driver names.
      *
      * @var string[]
@@ -631,7 +636,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver) {
             $holds = $driver->getMyHolds($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes(
-                $holds, $source, ['id', 'item_id', 'cat_username']
+                $holds, $source, self::HOLD_ID_FIELDS
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -740,21 +745,26 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $source = $this->getSource($patron['cat_username']);
+        $source = $this->getSource(
+            $patron['cat_username'] ?? $holdDetails['id'] ?? $holdDetails['item_id']
+            ?? ''
+        );
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($holdDetails) {
-                if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
+            if ($id = ($holdDetails['id'] ?? $holdDetails['item_id'] ?? '')) {
+                if (!$this->driverSupportsSource($source, $id)) {
                     // Return empty array since the sources don't match
                     return [];
                 }
@@ -762,7 +772,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             $locations = $driver->getPickUpLocations(
                 $this->stripIdPrefixes($patron, $source),
                 $this->stripIdPrefixes(
-                    $holdDetails, $source, ['id', 'cat_username', 'item_id']
+                    $holdDetails, $source, self::HOLD_ID_FIELDS
                 )
             );
             return $this->addIdPrefixes($locations, $source);
@@ -957,10 +967,35 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if ($driver) {
             $hold = $this->stripIdPrefixes(
-                $hold, $source, ['id', 'item_id', 'cat_username']
+                $hold, $source, self::HOLD_ID_FIELDS
             );
             return $driver->getCancelHoldDetails(
                 $hold,
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(array $holdsDetails, array $fields, array $patron)
+    {
+        $source = $this->getSource($patron['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->UpdateHolds(
+                $holdsDetails,
+                $fields,
                 $this->stripIdPrefixes($patron, $source)
             );
         }

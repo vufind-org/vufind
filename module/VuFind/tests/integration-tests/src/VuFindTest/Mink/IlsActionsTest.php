@@ -212,14 +212,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function cancelProcedure(Element $page, string $type): void
     {
-        // Test empty selection
+        // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-        $this->clickButtonGroupLink($page, 'Yes');
-        $this->snooze();
-        $this->assertEquals(
-            'No ' . $type . ' were selected',
-            $this->findCss($page, '.alert.alert-danger')->getText()
-        );
+        $this->assertNull($page->find('css', '.btn-group.open'));
 
         // Test "cancel all" button -- first make sure item is there before
         // cancel is pushed:
@@ -363,6 +358,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
+        $this->snooze();
         $this->illRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -416,6 +412,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
+        $this->snooze();
         $this->storageRetrievalRequestProcedure($page);
 
         // Confirm that no cancel buttons appear, since they are not configured:

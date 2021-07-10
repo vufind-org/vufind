@@ -327,8 +327,10 @@ public class FormatCalculator
     protected boolean isElectronic(Record record) {
         /* Example from Villanova of how to use holdings locations to detect online status;
          * You can override this method in a subclass if you wish to use this approach.
-        DataField holdingsField = (DataField) record.getVariableField("852");
-        if (holdingsField != null) {
+        List holdingsFields = record.getVariableFields("852");
+        Iterator holdingsIterator = holdingsFields.iterator();
+        while (holdingsIterator.hasNext()) {
+            DataField holdingsField = (DataField) holdingsIterator.next();
             if (holdingsField.getSubfield('b') != null) {
                 String holdingsLocation = holdingsField.getSubfield('b').getData().toLowerCase();
                 if (holdingsLocation.equals("www") || holdingsLocation.equals("e-ref")) {
