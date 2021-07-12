@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -150,5 +153,44 @@ public class TueFindAuth extends TueFind {
         if (record.getVariableFields("155").size() > 0)
             return "genre";
         return null;
+    }
+
+    protected Set<String> getExternalReferenceTypesFrom024(final Record record, Map<String, String> typesToMatch) {
+        final Set<String> referenceTypes = new TreeSet<>();
+
+        for (final VariableField variableField : record.getVariableFields("024")) {
+            final DataField field = (DataField) variableField;
+            if (field.getIndicator1() != '7')
+                continue;
+
+            final Subfield subfield_2 = field.getSubfield('2');
+            if (subfield_2 == null)
+                continue;
+
+            String type = subfield_2.getData();
+            if (typesToMatch.containsKey(type)) {
+                referenceTypes.add(typesToMatch.get(type));
+            }
+        }
+        return referenceTypes;
+    }
+
+    public Set<String> getExternalReferences(final Record record) {
+        Map<String, String> typesToMatch = new TreeMap<>();
+        typesToMatch.put("isni", "ISNI");
+        typesToMatch.put("orcid", "ORCID");
+        typesToMatch.put("viaf", "VIAF");
+        typesToMatch.put("wikidata", "Wikidata");
+        final Set<String> externalReferences = getExternalReferenceTypesFrom024(record, typesToMatch);
+
+        String gndNumber = getFirstSubfieldValueWithPrefix(record, "035a","(DE-588)");
+        if (gndNumber != null)
+            externalReferences.add("GND");
+
+        for (final String beaconId : getSubfieldValuesMatchlingList(record, "BEAa")) {
+            externalReferences.add(beaconId);
+        }
+
+        return externalReferences;
     }
 }

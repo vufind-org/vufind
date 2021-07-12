@@ -126,6 +126,15 @@ public class TueFind extends SolrIndexerMixin {
         return getSubfieldsMatchingList(record, subfieldList, null);
     }
 
+    protected List<String> getSubfieldValuesMatchlingList(final Record record, final String subfieldList) {
+        List<Subfield> subfields = getSubfieldsMatchingList(record, subfieldList);
+        List<String> values = new ArrayList<>();
+        for (final Subfield subfield : subfields) {
+            values.add(subfield.getData());
+        }
+        return values;
+    }
+
     protected Subfield getFirstSubfieldWithPrefix(final Record record, final String subfieldList, final String prefix) {
         SubfieldMatcher matcher = new SubfieldMatcher() {
             public boolean matched(final Subfield subfield) {
