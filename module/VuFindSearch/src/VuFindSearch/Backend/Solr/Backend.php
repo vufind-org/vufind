@@ -35,6 +35,7 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\GetIdsInterface;
+use VuFindSearch\Feature\QueryAnalysisInterface;
 use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -43,7 +44,7 @@ use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 
-use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Response\RecordCollectionInterface;
@@ -59,8 +60,10 @@ use VuFindSearch\Response\RecordCollectionInterface;
  */
 class Backend extends AbstractBackend
     implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface, WorkExpressionsInterface
+    GetIdsInterface, WorkExpressionsInterface, QueryAnalysisInterface
 {
+    use QueryTokenizerTrait;
+
     /**
      * Limit for records per query in a batch retrieval.
      *
@@ -386,6 +389,23 @@ class Backend extends AbstractBackend
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Get search terms.
+     *
+     * @param QueryInterface $query  Query object
+     * @param ParamBag|null  $params Search backend parameters
+     *
+     * @return array Tokenized search terms without any search syntax
+     */
+    public function getSearchTerms(QueryInterface $query, ParamBag $params = null)
+    {
+        return $this->tokenize(
+            $this->getQueryBuilder()->getLuceneHelper()->extractSearchTerms(
+                $query->getAllTerms()
+            )
+        );
     }
 
     /**
