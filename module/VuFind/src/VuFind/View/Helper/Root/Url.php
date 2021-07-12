@@ -101,6 +101,6 @@ class Url extends \Laminas\View\Helper\Url
             'query' => array_merge($requestQuery, $params),
             'normalize_path' => false, // fix for VUFIND-1392
         ];
-        return $this->__invoke(null, [], $options, $reuseMatchedParams);
+        return ($this)(null, [], $options, $reuseMatchedParams);
     }
 }

@@ -64,6 +64,12 @@ class ResultsFactory implements FactoryInterface
     ) {
         // Replace trailing "Results" with "Params" to get the params service:
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
+        // Replace leading namespace with "VuFind" if service is not available:
+        $paramsServiceAvailable = $container
+            ->get(\VuFind\Search\Params\PluginManager::class)->has($paramsService);
+        if (!$paramsServiceAvailable) {
+            $paramsService = preg_replace('/^[^\\\]+/', 'VuFind', $paramsService);
+        }
         $params = $container->get(\VuFind\Search\Params\PluginManager::class)
             ->get($paramsService);
         $searchService = $container->get(\VuFindSearch\Service::class);

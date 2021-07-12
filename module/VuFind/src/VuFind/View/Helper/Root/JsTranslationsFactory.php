@@ -65,6 +65,9 @@ class JsTranslationsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $helpers = $container->get('ViewHelperManager');
-        return new $requestedName($helpers->get('transEsc'));
+        return new $requestedName(
+            $helpers->get('translate'),
+            $helpers->get('transEsc')
+        );
     }
 }

@@ -61,7 +61,8 @@ class ManagerFactory implements FactoryInterface
         $options = 'cli' !== PHP_SAPI ? [
             'cookie_httponly' => $cookieManager->isHttpOnly(),
             'cookie_path' => $cookieManager->getPath(),
-            'cookie_secure' => $cookieManager->isSecure()
+            'cookie_secure' => $cookieManager->isSecure(),
+            'cookie_samesite' => $cookieManager->getSameSite(),
         ] : [];
 
         $domain = $cookieManager->getDomain();

@@ -31,6 +31,7 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 use VuFind\Crypt\HMAC;
+use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
 
 /**
@@ -66,15 +67,25 @@ abstract class AbstractRequestBase extends AbstractPlugin
     protected $hmac;
 
     /**
+     * Date converter
+     *
+     * @var DateConverter
+     */
+    protected $dateConverter;
+
+    /**
      * Constructor
      *
      * @param HMAC           $hmac           HMAC generator
      * @param SessionManager $sessionManager Session manager
+     * @param DateConverter  $dateConverter  Date converter
      */
-    public function __construct(HMAC $hmac, SessionManager $sessionManager)
-    {
+    public function __construct(HMAC $hmac, SessionManager $sessionManager,
+        DateConverter $dateConverter
+    ) {
         $this->hmac = $hmac;
         $this->sessionManager = $sessionManager;
+        $this->dateConverter = $dateConverter;
     }
 
     /**
@@ -119,6 +130,16 @@ abstract class AbstractRequestBase extends AbstractPlugin
         $existingArray = $this->getSession()->validIds;
         $existingArray[] = $id;
         $this->getSession()->validIds = $existingArray;
+    }
+
+    /**
+     * Get remembered valid IDs
+     *
+     * @return array
+     */
+    public function getValidIds(): array
+    {
+        return $this->getSession()->validIds ?? [];
     }
 
     /**
@@ -228,7 +249,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
             return true;
         }
 
-        // Check the valid pickup locations for a match against user input:
+        // Check the valid request groups for a match against user input:
         return $this->validateRequestGroup(
             $gatheredDetails['requestGroupId'], $requestGroups
         );

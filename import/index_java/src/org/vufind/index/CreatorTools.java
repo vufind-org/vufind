@@ -152,23 +152,6 @@ public class CreatorTools
     }
 
     /**
-     * Parse a SolrMarc fieldspec into a map of tag name to set of subfield strings
-     * (note that we need to map to a set rather than a single string, because the
-     * same tag may repeat with different subfields to extract different sections
-     * of the same field into distinct values).
-     *
-     * @param tagList The field specification to parse
-     * @return HashMap
-     * @deprecated
-     */
-    @Deprecated protected HashMap<String, Set<String>> getParsedTagList(String tagList)
-    {
-        // Thin wrapper around FieldSpecTools.getParsedTagList() for backward
-        // compatibility; this will be removed in VuFind 8.0.
-        return FieldSpecTools.getParsedTagList(tagList);
-    }
-
-    /**
      * Filter values retrieved using tagList to include only those whose relator
      * values are acceptable. Used for separating different types of authors.
      *

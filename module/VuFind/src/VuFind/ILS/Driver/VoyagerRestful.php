@@ -673,10 +673,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -722,7 +724,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             try {
                 $sqlStmt = $this->executeSQL($sql, $params);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Read results
@@ -979,7 +981,7 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $results = [];
@@ -1660,7 +1662,7 @@ EOT;
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1722,7 +1724,7 @@ EOT;
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1796,7 +1798,7 @@ EOT;
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1954,7 +1956,7 @@ EOT;
                 throw new DateException('Result should be numeric');
             }
         } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.');
+            $this->throwAsIlsException($e, 'Problem parsing required by date.');
         }
 
         if (time() > $checkTime) {

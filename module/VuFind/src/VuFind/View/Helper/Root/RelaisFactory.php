@@ -67,7 +67,7 @@ class RelaisFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $urlHelper = $container->get('ViewHelperManager')->get('url');
-        $loginUrl = $urlHelper->__invoke('relais-login');
+        $loginUrl = $urlHelper('relais-login');
         return new $requestedName($config->Relais ?? null, $loginUrl);
     }
 }

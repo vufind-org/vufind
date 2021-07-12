@@ -1,5 +1,5 @@
 /*global VuFind */
-/*exported setUpHoldRequestForm */
+/*exported setUpHoldRequestForm, setupHoldEditForm */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function requestGroupChange() {
     var $emptyOption = $("#pickUpLocation option[value='']");
@@ -40,4 +40,15 @@ function setUpHoldRequestForm(recordId) {
       });
   });
   $('#requestGroupId').change();
+}
+
+function setupHoldEditForm() {
+  $('#frozen').on('change', function updateFrozen() {
+    var $frozenThrough = $('#frozen_through');
+    if ($(this).val() === '1') {
+      $frozenThrough.removeAttr('disabled');
+    } else {
+      $frozenThrough.val('').attr('disabled', 'disabled');
+    }
+  }).trigger('change');
 }
