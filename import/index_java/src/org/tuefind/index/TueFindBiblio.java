@@ -41,6 +41,7 @@ import org.solrmarc.tools.Utils;
 import org.solrmarc.driver.Boot;
 import org.vufind.index.DatabaseManager;
 import java.sql.*;
+import static java.util.stream.Collectors.joining;
 
 public class TueFindBiblio extends TueFind {
     public final static String UNASSIGNED_STRING = "[Unassigned]";
@@ -1708,7 +1709,7 @@ public class TueFindBiblio extends TueFind {
                                             final Predicate<DataField> includeFieldPredicate)
     {
         // Part 1: Get raw topics either from cache or from record
-        final String cacheKey = record.getControlNumber() + fieldSpec;
+        final String cacheKey = record.getControlNumber() + fieldSpec + separators.entrySet().stream().map(e -> e.getKey()+"="+e.getValue()).collect(joining(":"));
         Collection<Collection<Topic>> subcollector = collectedTopicsCache.computeIfAbsent(cacheKey, s -> {
             Collection<Collection<Topic>> cachedSubcollector = new ArrayList<>();
 
