@@ -23,6 +23,7 @@
  * @package  ILS_Drivers
  * @author   Alex Sassmannshausen <alex.sassmannshausen@ptfs-europe.com>
  * @author   Tom Misilo <misilot@fit.edu>
+ * @author   Josef Moravec <josef.moravec@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -42,6 +43,7 @@ use VuFind\Exception\ILS as ILSException;
  * @package  ILS_Drivers
  * @author   Alex Sassmannshausen <alex.sassmannshausen@ptfs-europe.com>
  * @author   Tom Misilo <misilot@fit.edu>
+ * @author   Josef Moravec <josef.moravec@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
@@ -479,31 +481,17 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * Turns a display date into a date format expected by Koha.
      *
-     * @param string $display_date Date to be converted
+     * @param ?string $display_date Date to be converted
      *
      * @throws ILSException
-     * @return string $koha_date
+     * @return ?string $koha_date
      */
-    protected function toKohaDate($display_date)
+    protected function toKohaDate(?string $display_date): ?string
     {
-        $koha_date = "";
-
-        // Convert last interest date from format to Koha format
-        $koha_date = $this->dateConverter->convertFromDisplayDate(
-            "Y-m-d", $display_date
-        );
-
-        $checkTime = $this->dateConverter->convertFromDisplayDate(
-            "U", $display_date
-        );
-        if (!is_numeric($checkTime)) {
-            throw new DateException('Result should be numeric');
-        }
-
-        if (time() > $checkTime) {
-            // Hold Date is in the past
-            throw new DateException('hold_date_past');
-        }
+        // Convert last interest date from display format to Koha format
+        $koha_date = !empty($display_date)
+            ? $this->dateConverter->convertFromDisplayDate("Y-m-d", $display_date)
+            : null;
         return $koha_date;
     }
 
@@ -682,17 +670,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             && !empty($holdDetails['level']) ? $holdDetails['level'] : "item";
 
         try {
-            //$needed_before_date = $this->toKohaDate($holdDetails['requiredBy']);
-            $dateObject = \DateTime::createFromFormat(
-                "j. n. Y", $holdDetails['requiredBy']
+            $needed_before_date = $this->toKohaDate(
+                $holdDetails['requiredBy'] ?? null
             );
-            if (is_object($dateObject)) {
-                $needed_before_date = $dateObject->format("Y-m-d");
-            }
         } catch (\Exception $e) {
             return [
                 "success" => false,
-                "sysMessage" => "It seems you entered an invalid expiration date."
+                "sysMessage" => "hold_date_invalid"
             ];
         }
 
@@ -724,14 +708,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         if ($level == "title") {
             $rqString = "HoldTitle&patron_id=$patron_id&bib_id=$bib_id"
                 . "&request_location=$request_location"
-                . "&pickup_location=$pickup_location"
-                . "&pickup_expiry_date=$needed_before_date";
+                . "&pickup_location=$pickup_location";
         } else {
             $rqString = "HoldItem&patron_id=$patron_id&bib_id=$bib_id"
                 . "&item_id=$item_id"
-                . "&pickup_location=$pickup_location"
-                . "&needed_before_date=$needed_before_date"
-                . "&pickup_expiry_date=$needed_before_date";
+                . "&pickup_location=$pickup_location";
+        }
+        if (!empty($needed_before_date)) {
+            $rqString .= "&pickup_expiry_date=$needed_before_date"
+                . "&needed_before_date=$needed_before_date";
         }
 
         $rsp = $this->makeRequest($rqString);
