@@ -975,7 +975,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $branchSqlStmt->execute([':branch' => $rowItem["TRANSFERTO"]]);
                 $rowTo = $branchSqlStmt->fetch();
                 $transferto = $rowTo ? $rowTo["BNAME"] : $rowItem["TRANSFERTO"];
-                $status = "Na cest? z $transferfrom do $transferto";
+                $status = "In transit between library locations";
                 $available = false;
                 $onTransfer = true;
             }
