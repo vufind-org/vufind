@@ -834,7 +834,9 @@ class DAIA extends AbstractBase implements
                 }
 
                 // use limitation element for status string
-                if (isset($available['limitation'])) {
+                if (isset($available['limitation'])
+                    && in_array($available['service'], ['loan', 'presentation'])
+                ) {
                     $item_notes = array_merge(
                         $item_notes,
                         $this->getItemLimitationContent($available['limitation'])
@@ -874,7 +876,9 @@ class DAIA extends AbstractBase implements
                     }
 
                     // use limitation element for status string
-                    if (isset($unavailable['limitation'])) {
+                    if (isset($unavailable['limitation'])
+                        && in_array($unavailable['service'], ['loan', 'presentation'])
+                    ) {
                         $item_notes = array_merge(
                             $item_notes,
                             $this->getItemLimitationContent(
