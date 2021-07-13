@@ -714,13 +714,18 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 . "&item_id=$item_id"
                 . "&pickup_location=$pickup_location";
         }
-        if (!empty($needed_before_date)) {
-            $rqString .= "&pickup_expiry_date=$needed_before_date"
-                . "&needed_before_date=$needed_before_date";
+        $dateString = empty($needed_before_date)
+            ? '' : "&expiry_date=$needed_before_date";
+
+        $rsp = $this->makeRequest($rqString . $dateString);
+
+        if ($rsp->{'code'} == "IllegalParameter" && $dateString != '') {
+            // In older versions of Koha, the date parameters were named differently
+            // and even never implemented, so if we got IllegalParameter, we know
+            // the Koha version is before 20.05 and could retry without expiry_date
+            // parameter. See https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
+            $rsp = $this->makeRequest($rqString);
         }
-
-        $rsp = $this->makeRequest($rqString);
-
         //TODO - test this new functionality
         /*
         if ( $level == "title" ) {
