@@ -816,7 +816,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             i.enumchron AS ENUMCHRON,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
-            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
+            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON,
+            i.stocknumber as STOCKNUMBER
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
@@ -985,8 +986,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? '' : (string)$duedate_formatted,
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
-                'number'       => (null == $rowItem['COPYNO'])
-                    ? '' : $rowItem['COPYNO'],
+                'number'       =>
+                    $rowItem['COPYNO'] ?? $rowItem['STOCKNUMBER'] ?? '',
                 'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
