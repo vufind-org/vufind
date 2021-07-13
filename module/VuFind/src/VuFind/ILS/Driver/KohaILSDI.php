@@ -970,7 +970,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $branchSqlStmt->execute([':branch' => $branch]);
                 $row = $branchSqlStmt->fetch();
                 if ($row) {
-                    $loc = $row['BNAME'] . ' - ' - $loc;
+                    $loc = $row['BNAME'] . ' - ' . $loc;
                 }
             }
 
