@@ -782,6 +782,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("Code: " . $rsp->{'code'});
 
         if ($rsp->{'code'} != "") {
+            $this->debug("Error Message: " . $rsp->{'message'});
             return [
                 "success"    => false,
                 "sysMessage" => $this->getField($rsp->{'code'})
@@ -1395,6 +1396,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
             return $profile;
         } else {
+            $this->debug("Error Message: " . $rsp->{'message'});
             return null;
         }
     }
