@@ -68,7 +68,8 @@ class IconFactory implements FactoryInterface
         }
 
         return new $requestedName(
-            $container->get(\VuFindTheme\ThemeInfo::class)
+            $container->get(\VuFindTheme\ThemeInfo::class),
+            $container->get(\VuFind\Cache\Manager::class),
         );
     }
 }

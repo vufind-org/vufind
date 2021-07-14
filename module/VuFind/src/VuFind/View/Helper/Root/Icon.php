@@ -29,6 +29,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Cache\StorageInterface;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -64,15 +66,23 @@ class Icon extends AbstractHelper
     protected $iconMap;
 
     /**
+     * Cache for icons
+     *
+     * @var StorageInterface
+     */
+    protected $cache;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme info helper
      */
-    public function __construct(ThemeInfo $themeInfo)
+    public function __construct(ThemeInfo $themeInfo, CacheManager $cacheManager)
     {
         $this->config = $themeInfo->getMergedConfig('icons', true);
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->iconMap = $this->config['aliases'] ?? [];
+        $this->cache = $cacheManager->getCache('object', 'iconHelper');
     }
 
     /**
@@ -120,6 +130,20 @@ class Icon extends AbstractHelper
     }
 
     /**
+     * Create a unique key for icon names and extra attributes
+     *
+     * @return string
+     */
+    protected function cacheKey(string $name, $extra = []): string
+    {
+        if (empty($extra)) {
+            return $name;
+        }
+        ksort($extra);
+        return $name . '+' . md5(json_encode($extra));
+    }
+
+    /**
      * Returns inline HTML for icon
      *
      * @param string $name  Which icon?
@@ -129,23 +153,32 @@ class Icon extends AbstractHelper
      */
     public function __invoke(string $name, $extra = []): string
     {
-        [$icon, $set, $template] = $this->mapIcon($name);
+        $cacheKey = $this->cacheKey($name, $extra);
+        $cached = $this->cache->getItem($cacheKey);
 
-        // Compile attitional HTML attributes
-        $escAttr = $this->getView()->plugin('escapeHtmlAttr');
-        $attrs = $this->compileAttrs($extra, $escAttr);
+        if ($cached == null) {
+            [$icon, $set, $template] = $this->mapIcon($name);
 
-        // Surface set config and add icon and attrs
-        return $this->getView()->render(
-            'Helpers/icons/' . $template,
-            array_merge(
-                $this->config['sets'][$set] ?? [],
-                [
-                    'icon' => $escAttr($icon),
-                    'attrs' => $attrs,
-                    'extra' => $extra
-                ]
-            )
-        );
+            // Compile attitional HTML attributes
+            $escAttr = $this->getView()->plugin('escapeHtmlAttr');
+            $attrs = $this->compileAttrs($extra, $escAttr);
+
+            // Surface set config and add icon and attrs
+            $cached = $this->getView()->render(
+                'Helpers/icons/' . $template,
+                array_merge(
+                    $this->config['sets'][$set] ?? [],
+                    [
+                        'icon' => $escAttr($icon),
+                        'attrs' => $attrs,
+                        'extra' => $extra
+                    ]
+                )
+            );
+
+            $this->cache->setItem($cacheKey, $cached);
+        }
+
+        return $cached;
     }
 }
