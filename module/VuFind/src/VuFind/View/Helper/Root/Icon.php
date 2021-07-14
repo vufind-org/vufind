@@ -86,8 +86,8 @@ class Icon extends AbstractHelper
     }
 
     /**
-     * Map icon to set. Add prefix, return with set and template
-     * Broken out for easier customization
+     * Map icon to set. Add prefix, return with set and template.
+     * Broken out for easier customization.
      *
      * @param string $name Which icon?
      *
@@ -112,8 +112,8 @@ class Icon extends AbstractHelper
     }
 
     /**
-     * Reduce extra parameters to one attribute string
-     * Broken out for easier customization
+     * Reduce extra parameters to one attribute string.
+     * Broken out for easier customization.
      *
      * @param array          $extra   Just extra HTML attributes for now
      * @param EscapeHtmlAttr $escAttr EscapeHtmlAttr view helper
@@ -159,7 +159,7 @@ class Icon extends AbstractHelper
         if ($cached == null) {
             [$icon, $set, $template] = $this->mapIcon($name);
 
-            // Compile attitional HTML attributes
+            // Compile additional HTML attributes
             $escAttr = $this->getView()->plugin('escapeHtmlAttr');
             $attrs = $this->compileAttrs($extra, $escAttr);
 
