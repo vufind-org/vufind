@@ -82,6 +82,7 @@
           <?php endif; ?>
         </tbody>
       </table>
+      <p><a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>">Show related authors</a></p>
       <?=$this->context($this)->renderInContext('Related/AuthorityTitles', ['driver' => $this->driver])?>
     </div>
     <?php if ($this->driver->getType() == 'person' && !in_array('Familie', $this->driver->getPersonalTitles())): ?>
