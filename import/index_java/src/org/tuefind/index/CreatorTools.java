@@ -164,9 +164,23 @@ public class CreatorTools extends org.vufind.index.CreatorTools
 
         List<String> result = new LinkedList<String>();
         for (final String idsString : idsStrings) {
+            boolean idFound = false;
             for (final String id : idsString.split(" ")) {
-                if (id.startsWith(prefix))
+                if (id.startsWith(prefix)) {
+                    idFound = true;
                     result.add(id.substring(prefix.length()));
+                    break;
+                }
+            }
+            if (!idFound) {
+                // We need to return an empty string if no id is found
+                // to keep it in sync with other author fields like e.g.
+                // "author", "author2" and "author_corporate".
+                //
+                // This will only work if the tagList contains additional subfield
+                // like e.g. "abcd", even if they do not contain an ID with a prefix
+                // because otherwise getAuthorsFilteredByRelator will just skip them.
+                result.add("");
             }
         }
         return result;
