@@ -117,7 +117,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Should validate passwords against Koha system?
      *
-     * @var boolean
+     * @var bool
      */
     protected $validatePasswords;
 
@@ -146,6 +146,20 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * @var array
      */
     protected $showBlockComments;
+
+    /**
+     * Should we show permanent location (or current)
+     *
+     * @var bool
+     */
+    protected $showPermanentLocation;
+
+    /**
+     * Should we show homebranchinstead of holdingbranch
+     *
+     * @var bool
+     */
+    protected $showHomebranch;
 
     /**
      * Constructor
@@ -200,6 +214,11 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         // The Authorised Values Category use for locations should default to 'LOC'
         $this->locationAuthorisedValuesCategory
             = $this->config['Catalog']['locationAuthorisedValuesCategory'] ?? 'LOC';
+
+        $this->showPermanentLocation
+            = $this->config['Catalog']['showPermanentLocation'] ?? false;
+
+        $this->showHomebranch = $this->config['Catalog']['showHomebranch'] ?? false;
 
         $this->debug("Config Summary:");
         $this->debug("DB Host: " . $this->host);
@@ -753,6 +772,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $this->debug("Code: " . $rsp->{'code'});
 
         if ($rsp->{'code'} != "") {
+            $this->debug("Error Message: " . $rsp->{'message'});
             return [
                 "success"    => false,
                 "sysMessage" => $this->getField($rsp->{'code'})
@@ -797,22 +817,28 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $available = true;
         $duedate = $status = '';
         $loc = '';
+        $locationField = $this->showPermanentLocation
+            ? 'permanent_location' : 'location';
 
         $sql = "select i.itemnumber as ITEMNO, i.location,
-            COALESCE(av.lib_opac,av.lib,av.authorised_value,i.location) AS LOCATION,
+            COALESCE(av.lib_opac,av.lib,av.authorised_value,i.$locationField)
+                AS LOCATION,
             i.holdingbranch as HLDBRNCH, i.homebranch as HOMEBRANCH,
             i.reserves as RESERVES, i.itemcallnumber as CALLNO, i.barcode as BARCODE,
             i.copynumber as COPYNO, i.notforloan as NOTFORLOAN,
             i.enumchron AS ENUMCHRON,
             i.itemnotes as PUBLICNOTES, b.frameworkcode as DOCTYPE,
             t.frombranch as TRANSFERFROM, t.tobranch as TRANSFERTO,
-            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON
+            i.itemlost as ITEMLOST, i.itemlost_on AS LOSTON,
+            i.stocknumber as STOCKNUMBER
             from items i join biblio b on i.biblionumber = b.biblionumber
             left outer join
                 (SELECT itemnumber, frombranch, tobranch from branchtransfers
                 where datearrived IS NULL) as t USING (itemnumber)
-            left join authorised_values as av on i.location = av.authorised_value
-            where i.biblionumber = :id AND av.category = :av_category
+            left join authorised_values as av
+                on i.$locationField = av.authorised_value
+            where i.biblionumber = :id
+                AND (av.category = :av_category OR av.category IS NULL)
             order by i.itemnumber DESC";
         $sqlReserves = "select count(*) as RESERVESCOUNT from reserves "
             . "WHERE biblionumber = :id AND found IS NULL";
@@ -860,31 +886,38 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmtWaitingReserve->execute([':item_id' => $inum]);
             $waitingReserveRow = $sqlStmtWaitingReserve->fetch();
             $waitingReserve = $waitingReserveRow["WAITING"];
-            $sql = "select date_due as DUEDATE from issues where itemnumber = :inum";
-            switch ($rowItem['NOTFORLOAN']) {
-            case 0:
-                // If the item is available for loan, then check its current
-                // status
-                $issueSqlStmt = $this->db->prepare($sql);
-                $issueSqlStmt->execute([':inum' => $inum]);
-                $rowIssue = $issueSqlStmt->fetch();
-                if ($rowIssue) {
-                    $available = false;
-                    $status = 'Checked out';
-                    $duedate = $rowIssue['DUEDATE'];
-                } else {
-                    $available = true;
-                    $status = 'Available';
-                    // No due date for an available item
-                    $duedate = '';
-                }
-                break;
-            case 1: // The item is not available for loan
-            default:
+            if ($rowItem['LOCATION'] == 'PROC') {
                 $available = false;
-                $status = 'Not for loan';
+                $status = 'In processing';
                 $duedate = '';
-                break;
+            } else {
+                $sql = "select date_due as DUEDATE from issues
+                    where itemnumber = :inum";
+                switch ($rowItem['NOTFORLOAN']) {
+                case 0:
+                    // If the item is available for loan, then check its current
+                    // status
+                    $issueSqlStmt = $this->db->prepare($sql);
+                    $issueSqlStmt->execute([':inum' => $inum]);
+                    $rowIssue = $issueSqlStmt->fetch();
+                    if ($rowIssue) {
+                        $available = false;
+                        $status = 'Checked out';
+                        $duedate = $rowIssue['DUEDATE'];
+                    } else {
+                        $available = true;
+                        $status = 'Available';
+                        // No due date for an available item
+                        $duedate = '';
+                    }
+                    break;
+                case 1: // The item is not available for loan
+                default:
+                    $available = false;
+                    $status = 'Not for loan';
+                    $duedate = '';
+                    break;
+                }
             }
             /*
              * If the Item is in any of locations defined by
@@ -907,26 +940,28 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
 
             $duedate_formatted = $this->displayDate($duedate);
 
-            //Retrieving the full branch name
-            if ($rowItem['HLDBRNCH'] == null) {
-                if ($rowItem['HOMEBRANCH'] == null) {
-                    $loc = "Unknown";
-                } else {
-                    $loc = $rowItem['LOCATION'];
-                }
+            if ($rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null) {
+                $loc = "Unknown";
             } else {
                 $loc = $rowItem['LOCATION'];
             }
 
+            if ($this->showHomebranch) {
+                $branch = $rowItem['HOMEBRANCH'] ?? $rowItem['HLDBRNCH'] ?? '';
+            } else {
+                $branch = $rowItem['HLDBRNCH'] ?? $rowItem['HOMEBRANCH'] ?? '';
+            }
+
+            //Retrieving the full branch name
             if ($loc != "Unknown") {
                 $sqlBranch = "select branchname as BNAME
                               from branches
                               where branchcode = :branch";
                 $branchSqlStmt = $this->db->prepare($sqlBranch);
-                $branchSqlStmt->execute([':branch' => $loc]);
+                $branchSqlStmt->execute([':branch' => $branch]);
                 $row = $branchSqlStmt->fetch();
                 if ($row) {
-                    $loc = $row['BNAME'];
+                    $loc = $row['BNAME'] . ' - ' . $loc;
                 }
             }
 
@@ -941,7 +976,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $branchSqlStmt->execute([':branch' => $rowItem["TRANSFERTO"]]);
                 $rowTo = $branchSqlStmt->fetch();
                 $transferto = $rowTo ? $rowTo["BNAME"] : $rowItem["TRANSFERTO"];
-                $status = "Na cest? z $transferfrom do $transferto";
+                $status = "In transit between library locations";
                 $available = false;
                 $onTransfer = true;
             }
@@ -975,8 +1010,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? '' : (string)$duedate_formatted,
                 'barcode'      => (null == $rowItem['BARCODE'])
                     ? 'Unknown' : $rowItem['BARCODE'],
-                'number'       => (null == $rowItem['COPYNO'])
-                    ? '' : $rowItem['COPYNO'],
+                'number'       =>
+                    $rowItem['COPYNO'] ?? $rowItem['STOCKNUMBER'] ?? '',
                 'enumchron'    => $rowItem['ENUMCHRON'] ?? null,
                 'requests_placed' => $reservesCount ? $reservesCount : 0,
                 'frameworkcode' => $rowItem['DOCTYPE'],
@@ -1351,6 +1386,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             ];
             return $profile;
         } else {
+            $this->debug("Error Message: " . $rsp->{'message'});
             return null;
         }
     }
