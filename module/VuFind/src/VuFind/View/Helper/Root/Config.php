@@ -88,4 +88,26 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->get('config')->Content->ajaxcovers ?? false;
     }
+
+    /**
+     * Should we limit the number of items displayed on the full record?
+     *
+     * @return int
+     */
+    public function itemLimit()
+    {
+        $limit = $this->get('config')->Site->itemLimit;
+        return $limit ? (int)$limit : PHP_INT_MAX;
+    }
+
+    /**
+     * Should we limit the number of subjects displayed on the full record?
+     *
+     * @return int
+     */
+    public function subjectLimit()
+    {
+        $limit = $this->get('config')->Site->subjectLimit;
+        return $limit ? (int)$limit : PHP_INT_MAX;
+    }
 }

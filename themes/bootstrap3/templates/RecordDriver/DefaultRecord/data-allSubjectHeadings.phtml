@@ -1,11 +1,15 @@
-<?php foreach ($data as $field): ?>
-  <div class="subject-line" property="keywords">
-    <?php $subject = ''; ?>
-    <?php if(count($field) == 1) $field = explode('--', $field[0]); ?>
-    <?php $i = 0; foreach ($field as $subfield): ?>
-      <?=($i++ == 0) ? '' : ' &gt; '?>
-      <?php $subject = trim($subject . ' ' . $subfield); ?>
-      <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
-    <?php endforeach; ?>
-  </div>
-<?php endforeach; ?>
+<?php $maxSubjectsLimit = $this->config()->subjectLimit(); ?>
+<?php $truncateDiv = '<div class="truncate-subjects" data-rows="%s" data-more-label="%s" data-less-label="%s" data-btn-size="%s" data-top-toggle="%s">'; ?>
+<?=sprintf($truncateDiv, $maxSubjectsLimit, $this->transEsc('show_more_subjects'), $this->transEsc('show_less_subjects'), 'btn-xs', '30');?>
+  <?php foreach ($data as $field): ?>
+    <div class="subject-line" property="keywords">
+      <?php $subject = ''; ?>
+      <?php if(count($field) == 1) $field = explode('--', $field[0]); ?>
+      <?php $i = 0; foreach ($field as $subfield): ?>
+        <?=($i++ == 0) ? '' : ' &gt; '?>
+        <?php $subject = trim($subject . ' ' . $subfield); ?>
+        <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" rel="nofollow"><?=trim($this->escapeHtml($subfield))?></a>
+      <?php endforeach; ?>
+    </div>
+  <?php endforeach; ?>
+</div>
