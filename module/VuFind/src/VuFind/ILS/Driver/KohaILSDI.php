@@ -117,7 +117,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Should validate passwords against Koha system?
      *
-     * @var boolean
+     * @var bool
      */
     protected $validatePasswords;
 
@@ -150,14 +150,14 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Should we show permanent location (or current)
      *
-     * @var boolean
+     * @var bool
      */
     protected $showPermanentLocation;
 
     /**
      * Should we show homebranchinstead of holdingbranch
      *
-     * @var boolean
+     * @var bool
      */
     protected $showHomebranch;
 
