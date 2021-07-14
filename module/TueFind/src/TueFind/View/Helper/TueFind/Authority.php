@@ -3,6 +3,7 @@
 namespace TueFind\View\Helper\TueFind;
 
 use \TueFind\RecordDriver\SolrAuthMarc as AuthorityRecordDriver;
+use \TueFind\RecordDriver\SolrMarc as TitleRecordDriver;
 
 /**
  * View Helper for TueFind, containing functions related to authority data + schema.org
@@ -12,6 +13,8 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
+    protected $dbTableManager;
+
     protected $recordLoader;
 
     protected $searchService;
@@ -20,8 +23,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
 
     public function __construct(\VuFindSearch\Service $searchService,
                                 \Laminas\View\HelperPluginManager $viewHelperManager,
-                                \VuFind\Record\Loader $recordLoader)
+                                \VuFind\Record\Loader $recordLoader,
+                                \VuFind\Db\Table\PluginManager $dbTableManager)
     {
+        $this->dbTableManager = $dbTableManager;
         $this->recordLoader = $recordLoader;
         $this->searchService = $searchService;
         $this->viewHelperManager = $viewHelperManager;
@@ -210,23 +215,60 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get titles of this authority to show in a preview box
      */
-    public function getTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    public function getNewestTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
     {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
-        $queryString = 'author_id:"' . $driver->getUniqueId() . '"';
-        $queryString .= ' OR author2_id:"' . $driver->getUniqueId() . '"';
-        $queryString .= ' OR author_corporate_id:"' . $driver->getUniqueId() . '"';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($queryString, 'AllFields'),
+                                                 new \VuFindSearch\Query\Query($this->getTitlesQueryParams($driver), 'AllFields'),
                                                  $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
     }
 
+    protected function getTitlesQueryParams(AuthorityRecordDriver &$driver): string
+    {
+        $queryString = 'author_id:"' . $driver->getUniqueId() . '"';
+        $queryString .= ' OR author2_id:"' . $driver->getUniqueId() . '"';
+        $queryString .= ' OR author_corporate_id:"' . $driver->getUniqueId() . '"';
+        $queryString .= ' OR author:"' . $driver->getTitle() . '"';
+        $queryString .= ' OR author2:"' . $driver->getTitle() . '"';
+        $queryString .= ' OR author_corporate:"' . $driver->getTitle() . '"';
+        return $queryString;
+    }
+
+    /**
+     * Get URL to search result with all titles for this authority record.
+     * Moved here because it needs to be the same in several locations, e.g.:
+     * - authority page
+     * - biblio result-list
+     * - biblio core (data-authors)
+     */
+    public function getTitlesUrl(AuthorityRecordDriver &$driver): string
+    {
+        $urlHelper = $this->viewHelperManager->get('url');
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesQueryParams($driver)]]);
+    }
+
+    public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
+    {
+        $userAuthorities = $this->dbTableManager->get('user_authority')->getByUserId($user->id);
+        $userAuthorityIds = [];
+        foreach ($userAuthorities as $userAuthority) {
+            $userAuthorityIds[] = $userAuthority->authority_id;
+        }
+
+        $recordAuthorIds = array_merge($titleRecord->getPrimaryAuthorsIds(), $titleRecord->getSecondaryAuthorsIds(), $titleRecord->getCorporateAuthorsIds());
+        $matchingAuthorIds = array_intersect($userAuthorityIds, $recordAuthorIds);
+        return count($matchingAuthorIds) > 0;
+    }
+
     public function recordExists($authorityId)
     {
         $loadResult = $this->recordLoader->load($authorityId, 'SolrAuth', /* $tolerate_missing=*/ true);
-        return !($loadResult instanceof \VuFind\RecordDriver\Missing);
+        if ($loadResult instanceof \VuFind\RecordDriver\Missing)
+            return false;
+
+        return $loadResult;
     }
 }

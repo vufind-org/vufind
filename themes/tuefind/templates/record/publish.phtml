@@ -1,0 +1,9 @@
+<?php if (!$this->authority()->userHasRightsOnRecord($this->user, $this->driver)): ?>
+  <p>You do not have access rights on this record!</p>
+<?php else: ?>
+  <p>
+    You are registered as one of the authors of this record.<br>
+    Would you like to upload a publication?
+  </p>
+  <p><a href="<?=$this->url('myresearch-publish', ['record_id' => $this->driver->getUniqueId()])?>">click here</a></p>
+<?php endif; ?>

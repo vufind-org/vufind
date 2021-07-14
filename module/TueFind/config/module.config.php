@@ -271,7 +271,7 @@ $recordRoutes = [];
 $dynamicRoutes = [];
 $staticRoutes = ['AdminFrontend/ShowAdmins', 'AdminFrontend/ShowUserAuthorities', 'MyResearch/Newsletter', 'MyResearch/Publications', 'MyResearch/RssFeedSettings', 'MyResearch/RssFeedPreview', 'RssFeed/Full'];
 
-$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator = new \TueFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
 $routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
