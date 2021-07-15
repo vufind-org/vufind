@@ -232,12 +232,14 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                                                      new \VuFindSearch\Query\Query($this->getTitlesQueryParams($driver), 'AllFields'),
                                                      0, 9999);
 
+        $referenceAuthorName = $driver->getTitle();
+
         $relatedAuthors = [];
         foreach ($titleRecords as $titleRecord) {
             $titleAuthors = $titleRecord->getDeduplicatedAuthors();
             foreach ($titleAuthors as $category => $categoryAuthors) {
                 foreach ($categoryAuthors as $titleAuthorName => $titleAuthorDetails) {
-                    if ($titleAuthorName == $driver->getTitle())
+                    if ($titleAuthorName == $referenceAuthorName)
                         continue;
 
                     $titleAuthorId = $titleAuthorDetails['id'][0] ?? null;
