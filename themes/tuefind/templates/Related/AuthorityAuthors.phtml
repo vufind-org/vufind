@@ -19,7 +19,7 @@
   </ul>
   <?php if (count($response) > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>">Show all related authors</a>
+      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>">Show all related authors (<?=count($response)?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>
