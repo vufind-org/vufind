@@ -38,7 +38,7 @@
                 <?=$this->highlight(rtrim($summAuthor, ','))?> <?=$this->tuefind()->formatRoles($summAuthorProperties['role'] ?? [])?>
                 <?php $authorityId = $summAuthorProperties['id'][0] ?? '';?>
                 <?php if ($authorityId && $authorityDriver = $this->authority()->recordExists($authorityId)): ?>
-                  <a href="<?=$this->record($authorityDriver)->getLink('titles', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
+                  <a href="<?=$this->record($authorityDriver)->getLink('titles-from', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>
                   <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
                 <?php else: ?>
                   <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><i class="fa fa-book" aria-hidden="true" title="Show more titles for this author"></i></a>

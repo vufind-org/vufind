@@ -82,7 +82,8 @@
           <?php endif; ?>
         </tbody>
       </table>
-      <?=$this->context($this)->renderInContext('Related/AuthorityTitles', ['driver' => $this->driver])?>
+      <?=$this->context($this)->renderInContext('Related/AuthorityTitlesFrom', ['driver' => $this->driver])?>
+      <?=$this->context($this)->renderInContext('Related/AuthorityTitlesAbout', ['driver' => $this->driver])?>
       <?=$this->context($this)->renderInContext('Related/AuthorityAuthors', ['driver' => $this->driver])?>
     </div>
     <?php if ($this->driver->getType() == 'person' && !in_array('Familie', $this->driver->getPersonalTitles())): ?>

@@ -212,15 +212,23 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         }
     }
 
-    /**
-     * Get titles of this authority to show in a preview box
-     */
-    public function getNewestTitles(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    public function getNewestTitlesAbout(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
     {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesQueryParams($driver), 'AllFields'),
+                                                 new \VuFindSearch\Query\Query('topic_all:"' . $driver->getTitle() . '"', 'AllFields'),
+                                                 $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
+
+        return $response;
+    }
+
+    public function getNewestTitlesFrom(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    {
+        // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
+        $identifier = 'Solr';
+        $response = $this->searchService->search($identifier,
+                                                 new \VuFindSearch\Query\Query($this->getTitlesFromQueryParams($driver), 'AllFields'),
                                                  $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
@@ -229,7 +237,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     public function getRelatedAuthors(AuthorityRecordDriver &$driver): array
     {
         $titleRecords = $this->searchService->search('Solr',
-                                                     new \VuFindSearch\Query\Query($this->getTitlesQueryParams($driver), 'AllFields'),
+                                                     new \VuFindSearch\Query\Query($this->getTitlesFromQueryParams($driver), 'AllFields'),
                                                      0, 9999);
 
         $referenceAuthorName = $driver->getTitle();
@@ -271,12 +279,22 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     {
         $parts = [];
         foreach ($authors as $author) {
-            $parts[] = '(' . $this->getTitlesQueryParams($author) . ')';
+            $parts[] = '(' . $this->getTitlesFromQueryParams($author) . ')';
         }
         return implode(' AND ', $parts);
     }
 
-    protected function getTitlesQueryParams(&$author): string
+    protected function getTitlesAboutQueryParams(&$author): string
+    {
+        if ($author instanceof AuthorityRecordDriver) {
+            $queryString = 'topic_all:"' . $author->getTitle() . '"';
+        } else {
+            $queryString = 'topic_all:"' . $author . '"';
+        }
+        return $queryString;
+    }
+
+    protected function getTitlesFromQueryParams(&$author): string
     {
         if ($author instanceof AuthorityRecordDriver) {
             $queryString = 'author_id:"' . $author->getUniqueId() . '"';
@@ -293,6 +311,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $queryString;
     }
 
+    public function getTitlesAboutUrl(AuthorityRecordDriver &$driver): string
+    {
+        $urlHelper = $this->viewHelperManager->get('url');
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesAboutQueryParams($driver)]]);
+    }
+
     /**
      * Get URL to search result with all titles for this authority record.
      * Moved here because it needs to be the same in several locations, e.g.:
@@ -300,10 +324,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      * - biblio result-list
      * - biblio core (data-authors)
      */
-    public function getTitlesUrl(AuthorityRecordDriver &$driver): string
+    public function getTitlesFromUrl(AuthorityRecordDriver &$driver): string
     {
         $urlHelper = $this->viewHelperManager->get('url');
-        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesQueryParams($driver)]]);
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesFromQueryParams($driver)]]);
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
