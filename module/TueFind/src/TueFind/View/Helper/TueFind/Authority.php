@@ -226,14 +226,70 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    protected function getTitlesQueryParams(AuthorityRecordDriver &$driver): string
+    public function getRelatedAuthors(AuthorityRecordDriver &$driver): array
     {
-        $queryString = 'author_id:"' . $driver->getUniqueId() . '"';
-        $queryString .= ' OR author2_id:"' . $driver->getUniqueId() . '"';
-        $queryString .= ' OR author_corporate_id:"' . $driver->getUniqueId() . '"';
-        $queryString .= ' OR author:"' . $driver->getTitle() . '"';
-        $queryString .= ' OR author2:"' . $driver->getTitle() . '"';
-        $queryString .= ' OR author_corporate:"' . $driver->getTitle() . '"';
+        $titleRecords = $this->searchService->search('Solr',
+                                                     new \VuFindSearch\Query\Query($this->getTitlesQueryParams($driver), 'AllFields'),
+                                                     0, 9999);
+
+        $referenceAuthorName = $driver->getTitle();
+
+        $relatedAuthors = [];
+        foreach ($titleRecords as $titleRecord) {
+            $titleAuthors = $titleRecord->getDeduplicatedAuthors();
+            foreach ($titleAuthors as $category => $categoryAuthors) {
+                foreach ($categoryAuthors as $titleAuthorName => $titleAuthorDetails) {
+                    if ($titleAuthorName == $referenceAuthorName)
+                        continue;
+
+                    $titleAuthorId = $titleAuthorDetails['id'][0] ?? null;
+                    if ($titleAuthorId && $titleAuthorId == $driver->getUniqueID())
+                        continue;
+
+                    if (!isset($relatedAuthors[$titleAuthorName]))
+                        $relatedAuthors[$titleAuthorName] = ['count' => 1];
+                    else
+                        ++$relatedAuthors[$titleAuthorName]['count'];
+                    if (isset($titleAuthorId))
+                        $relatedAuthors[$titleAuthorName]['id'] = $titleAuthorId;
+                }
+            }
+        }
+
+        uasort($relatedAuthors, function($a, $b) {
+            return $b['count'] - $a['count'];
+        });
+        return $relatedAuthors;
+    }
+
+    /**
+     * Call this number with a variable number of arguments,
+     * each containing either an author name/heading or an authority record driver.
+     * ("..." == PHP splat operator)
+     */
+    public function getRelatedJointQueryParams(...$authors): string
+    {
+        $parts = [];
+        foreach ($authors as $author) {
+            $parts[] = '(' . $this->getTitlesQueryParams($author) . ')';
+        }
+        return implode(' AND ', $parts);
+    }
+
+    protected function getTitlesQueryParams(&$author): string
+    {
+        if ($author instanceof AuthorityRecordDriver) {
+            $queryString = 'author_id:"' . $author->getUniqueId() . '"';
+            $queryString .= ' OR author2_id:"' . $author->getUniqueId() . '"';
+            $queryString .= ' OR author_corporate_id:"' . $author->getUniqueId() . '"';
+            $queryString .= ' OR author:"' . $author->getTitle() . '"';
+            $queryString .= ' OR author2:"' . $author->getTitle() . '"';
+            $queryString .= ' OR author_corporate:"' . $author->getTitle() . '"';
+        } else {
+            $queryString = 'author:"' . $author . '"';
+            $queryString .= ' OR author2:"' . $author . '"';
+            $queryString .= ' OR author_corporate:"' . $author . '"';
+        }
         return $queryString;
     }
 
