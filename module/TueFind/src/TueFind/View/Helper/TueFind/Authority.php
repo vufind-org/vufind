@@ -250,8 +250,6 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
                         ++$relatedAuthors[$titleAuthorName]['count'];
                     if (isset($titleAuthorId))
                         $relatedAuthors[$titleAuthorName]['id'] = $titleAuthorId;
-
-                    $relatedAuthors[$titleAuthorName]['title'] = $titleRecord->getUniqueId();
                 }
             }
         }
