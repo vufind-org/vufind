@@ -460,6 +460,9 @@ class Generator
             $this->countPerPage,
             $params
         );
+        // TueFind: This undefined variable problem will be fixed in 7.1.1,
+        // see https://github.com/vufind-org/vufind/commit/d0ff922bcf7e2832c7dd8fb4181cc027c539a100
+        $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);
         }
