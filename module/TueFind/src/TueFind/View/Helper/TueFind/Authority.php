@@ -223,12 +223,12 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $response;
     }
 
-    public function getNewestTitlesFrom(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
+    public function getNewestTitlesBy(AuthorityRecordDriver &$driver, $offset=0, $limit=10)
     {
         // We use 'Solr' as identifier here, because the RecordDriver's identifier would be "SolrAuth"
         $identifier = 'Solr';
         $response = $this->searchService->search($identifier,
-                                                 new \VuFindSearch\Query\Query($this->getTitlesFromQueryParams($driver), 'AllFields'),
+                                                 new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
                                                  $offset, $limit, new \VuFindSearch\ParamBag(['sort' => 'publishDate DESC']));
 
         return $response;
@@ -237,7 +237,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     public function getRelatedAuthors(AuthorityRecordDriver &$driver): array
     {
         $titleRecords = $this->searchService->search('Solr',
-                                                     new \VuFindSearch\Query\Query($this->getTitlesFromQueryParams($driver), 'AllFields'),
+                                                     new \VuFindSearch\Query\Query($this->getTitlesByQueryParams($driver), 'AllFields'),
                                                      0, 9999);
 
         $referenceAuthorName = $driver->getTitle();
@@ -279,7 +279,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
     {
         $parts = [];
         foreach ($authors as $author) {
-            $parts[] = '(' . $this->getTitlesFromQueryParams($author) . ')';
+            $parts[] = '(' . $this->getTitlesByQueryParams($author) . ')';
         }
         return implode(' AND ', $parts);
     }
@@ -294,7 +294,7 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
         return $queryString;
     }
 
-    protected function getTitlesFromQueryParams(&$author): string
+    protected function getTitlesByQueryParams(&$author): string
     {
         if ($author instanceof AuthorityRecordDriver) {
             $queryString = 'author_id:"' . $author->getUniqueId() . '"';
@@ -324,10 +324,10 @@ class Authority extends \Laminas\View\Helper\AbstractHelper
      * - biblio result-list
      * - biblio core (data-authors)
      */
-    public function getTitlesFromUrl(AuthorityRecordDriver &$driver): string
+    public function getTitlesByUrl(AuthorityRecordDriver &$driver): string
     {
         $urlHelper = $this->viewHelperManager->get('url');
-        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesFromQueryParams($driver)]]);
+        return $urlHelper('search-results', [], ['query' => ['lookfor' => $this->getTitlesByQueryParams($driver)]]);
     }
 
     public function userHasRightsOnRecord(\VuFind\Db\Row\User $user, TitleRecordDriver &$titleRecord): bool
