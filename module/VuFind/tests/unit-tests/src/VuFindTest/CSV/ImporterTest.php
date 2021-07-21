@@ -43,11 +43,11 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Test importer functionality.
+     * Test importer functionality (in test mode).
      *
      * @return void
      */
-    public function testImport(): void
+    public function testImportInTestMode(): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $fixtureDir = $this->getFixtureDir() . 'csv/';
@@ -58,5 +58,37 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         );
         $expected = file_get_contents($fixtureDir . 'test.json');
         $this->assertJsonStringEqualsJsonString($expected, $result);
+    }
+
+    /**
+     * Test importer functionality (in non-test mode).
+     *
+     * @return void
+     */
+    public function testImportInLiveMode(): void
+    {
+        $fixtureDir = $this->getFixtureDir() . 'csv/';
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
+            ->disableOriginalConstructor()->getMock();
+        $mockWriter->expects($this->once())->method('save')->with(
+            $this->equalTo('Solr'),
+            $this->callback(function ($doc) use ($fixtureDir) {
+                $expected = file_get_contents($fixtureDir . 'test.json');
+                $this->assertJsonStringEqualsJsonString(
+                    $expected, $doc->getContent()
+                );
+                // If we got past the assertion, we can report success!
+                return true;
+            }),
+            $this->equalTo('update')
+        );
+        $container->set(\VuFind\Solr\Writer::class, $mockWriter);
+        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
+        $importer = new Importer($container, compact('configBaseDir'));
+        $result = $importer->save(
+            $fixtureDir . 'test.csv', 'test.ini', 'Solr', false
+        );
+        $this->assertEquals('', $result); // no output in non-test mode
     }
 }
