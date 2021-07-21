@@ -28,6 +28,7 @@
 namespace VuFindTest\CSV;
 
 use VuFind\CSV\Importer;
+use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 /**
  * CSV Importer Test Class
@@ -125,6 +126,33 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         $importer = new Importer($container, compact('configBaseDir'));
         $result = $importer->save(
             $fixtureDir . 'test.csv', 'test.ini', 'Solr', false
+        );
+        $this->assertEquals('', $result); // no output in non-test mode
+    }
+
+    /**
+     * Test importer functionality (with small batch size set).
+     *
+     * @return void
+     */
+    public function testImportInSmallBatches(): void
+    {
+        $fixtureDir = $this->getFixtureDir() . 'csv/';
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
+            ->disableOriginalConstructor()->getMock();
+        $mockWriter->expects($this->exactly(3))->method('save')->with(
+            $this->equalTo('Solr'),
+            $this->callback(function ($doc) {
+                return $doc instanceof RawJSONDocument;
+            }),
+            $this->equalTo('update')
+        );
+        $container->set(\VuFind\Solr\Writer::class, $mockWriter);
+        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
+        $importer = new Importer($container, compact('configBaseDir'));
+        $result = $importer->save(
+            $fixtureDir . 'test.csv', 'test-small-batch.ini', 'Solr', false
         );
         $this->assertEquals('', $result); // no output in non-test mode
     }
