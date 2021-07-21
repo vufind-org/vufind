@@ -29,6 +29,7 @@ namespace VuFindTest\CSV;
 
 use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
+use VuFindTest\Container\MockContainer;
 
 /**
  * CSV Importer Test Class
@@ -44,21 +45,72 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Location of fixture files.
+     *
+     * @var string
+     */
+    protected $csvFixtureDir;
+
+    /**
+     * Mock container for use by tests.
+     *
+     * @var MockContainer
+     */
+    protected $container;
+
+    /**
+     * Setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->csvFixtureDir = $this->getFixtureDir() . 'csv/';
+        $this->container = new MockContainer($this);
+    }
+
+    /**
+     * Get an Importer configured for testing.
+     *
+     * @return Importer
+     */
+    protected function getImporter(): Importer
+    {
+        $configBaseDir = implode(
+            '/', array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
+        );
+        return new Importer($this->container, compact('configBaseDir'));
+    }
+
+    /**
+     * Run a test in test mode.
+     *
+     * @param array $options Options to override.
+     *
+     * @return void
+     */
+    protected function runTestModeTest($options = []): void
+    {
+        $importer = $this->getImporter();
+        $result = $importer->save(
+            $this->csvFixtureDir . ($options['csv'] ?? 'test.csv'),
+            $options['ini'] ?? 'test.ini',
+            'Solr',
+            true
+        );
+        $expectedFile = $options['expected'] ?? 'test.json';
+        $expected = file_get_contents($this->csvFixtureDir . $expectedFile);
+        $this->assertJsonStringEqualsJsonString($expected, $result);
+    }
+
+    /**
      * Test importer functionality (in test mode).
      *
      * @return void
      */
     public function testImportInTestMode(): void
     {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
-        $result = $importer->save(
-            $fixtureDir . 'test.csv', 'test.ini', 'Solr', true
-        );
-        $expected = file_get_contents($fixtureDir . 'test.json');
-        $this->assertJsonStringEqualsJsonString($expected, $result);
+        $this->runTestModeTest();
     }
 
     /**
@@ -68,15 +120,11 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testSkipHeader(): void
     {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
-        $result = $importer->save(
-            $fixtureDir . 'test.csv', 'test-skip-header.ini', 'Solr', true
+        $this->runTestModeTest(
+            [
+                'ini' => 'test-skip-header.ini',
+            ]
         );
-        $expected = file_get_contents($fixtureDir . 'test.json');
-        $this->assertJsonStringEqualsJsonString($expected, $result);
     }
 
     /**
@@ -86,15 +134,12 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testNoHeader(): void
     {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
-        $result = $importer->save(
-            $fixtureDir . 'test.csv', 'test-no-header.ini', 'Solr', true
+        $this->runTestModeTest(
+            [
+                'ini' => 'test-no-header.ini',
+                'expected' => 'test-no-header.json',
+            ]
         );
-        $expected = file_get_contents($fixtureDir . 'test-no-header.json');
-        $this->assertJsonStringEqualsJsonString($expected, $result);
     }
 
     /**
@@ -104,33 +149,28 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testAdvancedCallbacks(): void
     {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
-        $result = $importer->save(
-            $fixtureDir . 'test.csv', 'test-callbacks.ini', 'Solr', true
+        $this->runTestModeTest(
+            [
+                'ini' => 'test-callbacks.ini',
+                'expected' => 'test-callbacks.json',
+            ]
         );
-        $expected = file_get_contents($fixtureDir . 'test-callbacks.json');
-        $this->assertJsonStringEqualsJsonString($expected, $result);
     }
 
     /**
-     * Test importer functionality with non-default encoding (in test mode).
+     * Test importer functionality with non-default ISO-8859-1 encoding (in test
+     * mode).
      *
      * @return void
      */
     public function testImportIsoEncoding(): void
     {
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
-        $result = $importer->save(
-            $fixtureDir . 'test-iso.csv', 'test-iso.ini', 'Solr', true
+        $this->runTestModeTest(
+            [
+                'csv' => 'test-iso.csv',
+                'ini' => 'test-iso.ini',
+            ]
         );
-        $expected = file_get_contents($fixtureDir . 'test.json');
-        $this->assertJsonStringEqualsJsonString($expected, $result);
     }
 
     /**
@@ -143,12 +183,9 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage(
             'Malformed UTF-8 characters, possibly incorrectly encoded'
         );
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
+        $importer = $this->getImporter();
         $importer->save(
-            $fixtureDir . 'test-iso.csv', 'test.ini', 'Solr', true
+            $this->csvFixtureDir . 'test-iso.csv', 'test.ini', 'Solr', true
         );
     }
 
@@ -159,14 +196,12 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInLiveMode(): void
     {
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $container = new \VuFindTest\Container\MockContainer($this);
         $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
             ->disableOriginalConstructor()->getMock();
         $mockWriter->expects($this->once())->method('save')->with(
             $this->equalTo('Solr'),
-            $this->callback(function ($doc) use ($fixtureDir) {
-                $expected = file_get_contents($fixtureDir . 'test.json');
+            $this->callback(function ($doc) {
+                $expected = file_get_contents($this->csvFixtureDir . 'test.json');
                 $this->assertJsonStringEqualsJsonString(
                     $expected, $doc->getContent()
                 );
@@ -175,11 +210,10 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             }),
             $this->equalTo('update')
         );
-        $container->set(\VuFind\Solr\Writer::class, $mockWriter);
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
+        $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
+        $importer = $this->getImporter();
         $result = $importer->save(
-            $fixtureDir . 'test.csv', 'test.ini', 'Solr', false
+            $this->csvFixtureDir . 'test.csv', 'test.ini', 'Solr', false
         );
         $this->assertEquals('', $result); // no output in non-test mode
     }
@@ -191,8 +225,6 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInSmallBatches(): void
     {
-        $fixtureDir = $this->getFixtureDir() . 'csv/';
-        $container = new \VuFindTest\Container\MockContainer($this);
         $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
             ->disableOriginalConstructor()->getMock();
         $mockWriter->expects($this->exactly(3))->method('save')->with(
@@ -202,11 +234,10 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             }),
             $this->equalTo('update')
         );
-        $container->set(\VuFind\Solr\Writer::class, $mockWriter);
-        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
-        $importer = new Importer($container, compact('configBaseDir'));
+        $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
+        $importer = $this->getImporter();
         $result = $importer->save(
-            $fixtureDir . 'test.csv', 'test-small-batch.ini', 'Solr', false
+            $this->csvFixtureDir . 'test.csv', 'test-small-batch.ini', 'Solr', false
         );
         $this->assertEquals('', $result); // no output in non-test mode
     }
