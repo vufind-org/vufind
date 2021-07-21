@@ -134,7 +134,7 @@ class Icon extends AbstractHelper
     {
         $attrs = '';
         foreach ($extra as $key => $val) {
-            $attrs .= ' ' . $key . '="' . $this->esc($val) . '"';
+            $attrs .= ' ' . $key . '="' . ($this->esc)($val) . '"';
         }
         return $attrs;
     }
@@ -181,7 +181,7 @@ class Icon extends AbstractHelper
                 array_merge(
                     $this->config['sets'][$set] ?? [],
                     [
-                        'icon' => $this->esc($icon),
+                        'icon' => ($this->esc)($icon),
                         'attrs' => $attrs,
                         'extra' => $extra
                     ]
