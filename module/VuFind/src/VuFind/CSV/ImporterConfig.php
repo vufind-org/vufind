@@ -174,6 +174,25 @@ class ImporterConfig
     }
 
     /**
+     * Get a list of fields with callbacks that have not already been processed.
+     *
+     * @param string[] $processed List of fields that have already been processed.
+     *
+     * @return string[]
+     */
+    public function getOutstandingCallbacks(array $processed): array
+    {
+        // Get a list of fields that have not already been processed, and then
+        // filter out any that lack a callback configuration.
+        return array_filter(
+            array_diff($this->getAllFields(), $processed),
+            function ($field) {
+                return isset($this->getField($field)['callback']);
+            }
+        );
+    }
+
+    /**
      * Initialize a field array with any fixed values configured here.
      *
      * @return array

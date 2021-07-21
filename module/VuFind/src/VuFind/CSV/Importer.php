@@ -345,7 +345,11 @@ class Importer
      */
     protected function collectValuesFromLine(array $line, ImporterConfig $config
     ): array {
+        // First get all hard-coded values...
         $fieldValues = $config->getFixedFieldValues();
+
+        // Now add values mapped directly from the CSV columns...
+        $allMappedFields = [];
         foreach ($line as $column => $value) {
             $columnConfig = $config->getColumn($column);
             $values = isset($columnConfig['delimiter'])
@@ -353,6 +357,7 @@ class Importer
                 : (array)$value;
             if (isset($columnConfig['field'])) {
                 $fieldList = (array)$columnConfig['field'];
+                $allMappedFields = array_merge($allMappedFields, $fieldList);
                 foreach ($fieldList as $field) {
                     $fieldConfig = $config->getField($field);
                     $processed = $this->processValues(
@@ -364,6 +369,19 @@ class Importer
                 }
             }
         }
+
+        // Finally, add any values derived from other fields...
+        $remainingFields = $config->getOutstandingCallbacks($allMappedFields);
+        foreach ($remainingFields as $field) {
+            $fieldConfig = $config->getField($field);
+            $processed = $this->processValues(
+                (array)($fieldConfig['callbackSeed'] ?? []),
+                $fieldConfig,
+                $fieldValues
+            );
+            $fieldValues[$field] = array_merge($fieldValues[$field], $processed);
+        }
+
         return $fieldValues;
     }
 }

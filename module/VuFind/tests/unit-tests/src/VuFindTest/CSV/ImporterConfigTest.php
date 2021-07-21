@@ -135,4 +135,23 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
             $config->getFixedFieldValues()
         );
     }
+
+    /**
+     * Test getOutstandingCallbacks.
+     *
+     * @return void
+     */
+    public function testGetOutstandingCallbacks(): void
+    {
+        $config = new ImporterConfig();
+        $config->configureField('foo', ['callback' => 'fooCallback']);
+        $config->configureField('bar', ['callback' => 'barCallback']);
+        $config->configureField('baz', []);
+        // If foo has already been called, bar is the only other value with
+        // callbacks, so that is the only value returned.
+        $this->assertEquals(
+            ['bar'],
+            array_values($config->getOutstandingCallbacks(['foo']))
+        );
+    }
 }
