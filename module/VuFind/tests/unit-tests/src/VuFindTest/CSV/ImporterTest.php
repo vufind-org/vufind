@@ -61,6 +61,24 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test importer functionality with non-default encoding (in test mode).
+     *
+     * @return void
+     */
+    public function testImportIsoEncoding(): void
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $fixtureDir = $this->getFixtureDir() . 'csv/';
+        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
+        $importer = new Importer($container, compact('configBaseDir'));
+        $result = $importer->save(
+            $fixtureDir . 'test-iso.csv', 'test-iso.ini', 'Solr', true
+        );
+        $expected = file_get_contents($fixtureDir . 'test.json');
+        $this->assertJsonStringEqualsJsonString($expected, $result);
+    }
+
+    /**
      * Test importer functionality (in non-test mode).
      *
      * @return void
