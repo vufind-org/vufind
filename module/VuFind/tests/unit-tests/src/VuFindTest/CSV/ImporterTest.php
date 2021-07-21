@@ -62,6 +62,42 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test skipping the header row in the CSV
+     *
+     * @return void
+     */
+    public function testSkipHeader(): void
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $fixtureDir = $this->getFixtureDir() . 'csv/';
+        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
+        $importer = new Importer($container, compact('configBaseDir'));
+        $result = $importer->save(
+            $fixtureDir . 'test.csv', 'test-skip-header.ini', 'Solr', true
+        );
+        $expected = file_get_contents($fixtureDir . 'test.json');
+        $this->assertJsonStringEqualsJsonString($expected, $result);
+    }
+
+    /**
+     * Test importing a CSV with no header row.
+     *
+     * @return void
+     */
+    public function testNoHeader(): void
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $fixtureDir = $this->getFixtureDir() . 'csv/';
+        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
+        $importer = new Importer($container, compact('configBaseDir'));
+        $result = $importer->save(
+            $fixtureDir . 'test.csv', 'test-no-header.ini', 'Solr', true
+        );
+        $expected = file_get_contents($fixtureDir . 'test-no-header.json');
+        $this->assertJsonStringEqualsJsonString($expected, $result);
+    }
+
+    /**
      * Test importer functionality with non-default encoding (in test mode).
      *
      * @return void
