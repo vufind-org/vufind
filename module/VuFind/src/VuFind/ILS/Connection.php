@@ -358,6 +358,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['extraHoldFields'])) {
                 $response['extraHoldFields'] = $functionConfig['extraHoldFields'];
             }
+            if (isset($functionConfig['updateFields'])) {
+                $response['updateFields'] = array_map(
+                    'trim',
+                    explode(':', $functionConfig['updateFields'])
+                );
+            }
             if (isset($functionConfig['helpText'])) {
                 $response['helpText'] = $this->getHelpText(
                     $functionConfig['helpText']
@@ -366,6 +372,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (isset($functionConfig['consortium'])) {
                 $response['consortium'] = $functionConfig['consortium'];
             }
+            $response['pickUpLocationCheckLimit']
+                = intval($functionConfig['pickUpLocationCheckLimit'] ?? 0);
         } else {
             $id = $params['id'] ?? null;
             if ($this->checkCapability('getHoldLink', [$id, []])) {

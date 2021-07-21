@@ -90,10 +90,12 @@ trait MockContainerTrait
      */
     public function createMock($id, $methods = [])
     {
-        return $this->test->getMockBuilder($id)
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
+        $builder = $this->test->getMockBuilder($id)
+            ->disableOriginalConstructor();
+        if ($methods) {
+            $builder->onlyMethods($methods);
+        }
+        return $builder->getMock();
     }
 
     /**

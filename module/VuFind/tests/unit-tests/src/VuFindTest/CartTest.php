@@ -55,7 +55,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->setMethods([])
+            ->onlyMethods(['loadBatch'])
             ->setConstructorArgs(
                 [
                 $this->createMock(\VuFindSearch\Service::class),
@@ -78,7 +78,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
         $domain = null, $secure = false, $httpOnly = false
     ) {
         return $this->getMockBuilder(\VuFind\Cookie\CookieManager::class)
-            ->setMethods(['set'])
+            ->onlyMethods(['set'])
             ->setConstructorArgs([$cookies, $path, $domain, $secure, $httpOnly])
             ->getMock();
     }

@@ -91,7 +91,7 @@ class RecordLinkTest extends \PHPUnit\Framework\TestCase
     protected function getUrl()
     {
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->setMethods(['getQuery'])->getMock();
+            ->onlyMethods(['getQuery'])->getMock();
         $request->expects($this->any())->method('getQuery')
             ->will($this->returnValue(new \Laminas\Stdlib\Parameters()));
 

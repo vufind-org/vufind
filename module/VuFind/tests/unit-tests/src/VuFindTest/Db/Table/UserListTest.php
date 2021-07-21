@@ -49,11 +49,11 @@ class UserListTest extends \PHPUnit\Framework\TestCase
     protected function getMockTable()
     {
         $table = $this->getMockBuilder(UserList::class)
-            ->setMethods(['createRow'])
+            ->onlyMethods(['createRow'])
             ->disableOriginalConstructor()->getMock();
         $rowCallback = function (): \VuFind\Db\Row\UserList {
             return $this->getMockBuilder(\VuFind\Db\Row\UserList::class)
-                ->setMethods(null)
+                ->onlyMethods([])
                 ->disableOriginalConstructor()->getMock();
         };
         $table->expects($this->any())->method('createRow')
@@ -69,7 +69,7 @@ class UserListTest extends \PHPUnit\Framework\TestCase
     protected function getMockUser()
     {
         $user = $this->getMockBuilder(User::class)
-            ->setMethods(null)
+            ->onlyMethods([])
             ->disableOriginalConstructor()->getMock();
         $user->id = '1234';
         return $user;

@@ -355,7 +355,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['message'] == 'message';
         };
         $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+            ->onlyMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -397,7 +397,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['message'] == 'message';
         };
         $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->setMethods(['partial'])->getMock();
+            ->onlyMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));

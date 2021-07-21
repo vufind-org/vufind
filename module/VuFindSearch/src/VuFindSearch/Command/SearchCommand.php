@@ -1,11 +1,12 @@
 <?php
 
 /**
- * SOLR delete document class.
+ * Perform a search and return record collection command.
  *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,33 +24,43 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-namespace VuFindSearch\Backend\Solr\Document;
+namespace VuFindSearch\Command;
+
+use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\QueryInterface;
 
 /**
- * SOLR delete document class.
+ * Perform a search and return record collection command.
  *
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-abstract class AbstractDocument
+class SearchCommand extends CallMethodCommand
 {
     /**
-     * Return serialized JSON representation.
+     * SearchCommand constructor.
      *
-     * @return string
+     * @param string         $backend Search backend identifier
+     * @param QueryInterface $query   Search query
+     * @param int            $offset  Search offset
+     * @param int            $limit   Search limit
+     * @param ?ParamBag      $params  Search backend parameters
      */
-    abstract public function asJSON();
-
-    /**
-     * Return serialized XML representation.
-     *
-     * @return string
-     */
-    abstract public function asXML();
+    public function __construct(string $backend, QueryInterface $query,
+        int $offset = 0, int $limit = 20, ?ParamBag $params = null
+    ) {
+        parent::__construct(
+            $backend, BackendInterface::class, 'search', [$query, $offset, $limit],
+            $params
+        );
+    }
 }

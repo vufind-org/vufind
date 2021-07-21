@@ -115,7 +115,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 [
                     'heading' => ['Matematica', 'Periodici.'],
                     'type' => '',
-                    'source' => ''
+                    'source' => '',
+                    'id' => ''
                 ],
             ],
             $record->getAllSubjectHeadings(true)

@@ -52,7 +52,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
 Server Context:
 Array
 (
-    [REMOTE_ADDR] => 1.2.3.4
+    [REMOTE_ADDR] => 5.6.7.8
     [HTTP_USER_AGENT] => Fake browser
     [HTTP_HOST] => localhost:80
     [REQUEST_URI] => /foo/bar
@@ -78,16 +78,27 @@ CONTEXT;
                 && false !== strpos($a[5], 'function =')
                 && count($a) == 5;
         };
+        $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getUserIp'])
+            ->getMock();
+        $mockIpReader->expects($this->once())->method('getUserIp')
+            ->will($this->returnValue('1.2.3.4'));
         $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)
-            ->setMethods(['log'])
+            ->setConstructorArgs([$mockIpReader])
+            ->onlyMethods(['log'])
             ->getMock();
         $logger->expects($this->once())->method('log')->with($this->equalTo(Logger::CRIT), $this->callback($callback));
         try {
             throw new \Exception('test');
         } catch (\Exception $e) {
+            // Note that we use a different REMOTE_ADDR in the request than
+            // in the mock IP reader above, to confirm that the IP reader is
+            // being used instead of the request; this ensures that proxies
+            // are handled correctly, etc.
             $fakeServer = new \Laminas\Stdlib\Parameters(
                 [
-                    'REMOTE_ADDR' => '1.2.3.4',
+                    'REMOTE_ADDR' => '5.6.7.8',
                     'HTTP_USER_AGENT' => 'Fake browser',
                     'HTTP_HOST' => 'localhost:80',
                     'REQUEST_URI' => '/foo/bar'

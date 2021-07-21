@@ -35,6 +35,7 @@ use VuFindSearch\Backend\Solr\Connector;
 
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for multiindex listener.
@@ -127,6 +128,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
         $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
         $connector      = new Connector('http://example.org/', $handlermap);
         $this->backend  = new Backend($connector);
+        $this->backend->setIdentifier('foo');
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);
     }
 
@@ -143,7 +145,11 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                 'shards' => [self::$shards['b'], self::$shards['c']],
             ]
         );
-        $event    = new Event('pre', $this->backend, ['params' => $params]);
+        $command  = new MockCommandForMultiIndexListenerTest($params);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend,
+            ['params' => $params, 'command' => $command]
+        );
         $this->listener->onSearchPre($event);
 
         $facets   = $params->get('facet.field');
@@ -163,9 +169,10 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                 'shards' => [self::$shards['b'], self::$shards['c']],
             ]
         );
+        $command  = new MockCommandForMultiIndexListenerTest($params, 'retrieve');
         $event    = new Event(
-            'pre', $this->backend,
-            ['params' => $params, 'context' => 'retrieve']
+            Service::EVENT_PRE, $this->backend,
+            ['params' => $params, 'context' => 'retrieve', 'command' => $command]
         );
         $this->listener->onSearchPre($event);
 
@@ -255,5 +262,14 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
             ['test' => ['QueryFields' => [], 'FilterQuery' => 'format:Book']],
             $specs
         );
+    }
+}
+
+class MockCommandForMultiIndexListenerTest
+    extends \VuFindSearch\Command\AbstractBase
+{
+    public function __construct(ParamBag $params, $context = 'foo')
+    {
+        parent::__construct('foo', $context, $params);
     }
 }

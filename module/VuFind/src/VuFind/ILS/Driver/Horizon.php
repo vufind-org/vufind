@@ -100,8 +100,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException(
-                'ILS Configuration problem : ' . $e->getMessage()
+            $this->throwAsIlsException(
+                $e, 'ILS Configuration problem : ' . $e->getMessage()
             );
         }
     }
@@ -361,7 +361,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             return $holding;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -487,7 +487,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             return $status;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -557,7 +557,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             throw new ILSException('Unable to login patron ' . $username);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -717,7 +717,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             return $holdList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -815,7 +815,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             return $fineList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -868,7 +868,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             );
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1006,7 +1006,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             return $transList;
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1086,7 +1086,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 return $retVal;
             } catch (\Exception $e) {
                 $this->logError($e->getMessage());
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
         } else {
             return ['count' => 0, 'results' => []];
@@ -1114,7 +1114,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         /* The Horizon database version is made up of 4 numbers separated by periods.
@@ -1165,7 +1165,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
