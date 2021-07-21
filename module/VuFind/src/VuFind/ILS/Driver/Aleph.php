@@ -484,6 +484,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      */
     protected $addressMappings = null;
 
+    /**
      * ISO 3166-1 alpha-2 to ISO 3166-1 alpha-3 mapping for
      * translation in REST DLF API.
      *
