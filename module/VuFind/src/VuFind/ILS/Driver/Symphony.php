@@ -1210,7 +1210,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             return $profile;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1271,7 +1271,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
             return $transList;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1328,7 +1328,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         } catch (SoapFault $e) {
             return null;
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1378,7 +1378,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             return $fineList;
         } catch (SoapFault | \Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 

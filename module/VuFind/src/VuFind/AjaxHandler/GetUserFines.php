@@ -90,7 +90,7 @@ class GetUserFines extends AbstractIlsAndUserAction
             $sum += $fine['balance'];
         }
         $value = $sum / 100;
-        $display = $this->safeMoneyFormat->__invoke($sum / 100);
+        $display = ($this->safeMoneyFormat)($sum / 100);
         return $this->formatResponse(compact('value', 'display'));
     }
 }

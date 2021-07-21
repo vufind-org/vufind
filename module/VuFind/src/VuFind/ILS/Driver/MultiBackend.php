@@ -757,11 +757,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $source = $this->getSource($patron['cat_username'] ?? $holdDetails['id']);
+        $source = $this->getSource(
+            $patron['cat_username'] ?? $holdDetails['id'] ?? $holdDetails['item_id']
+            ?? ''
+        );
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($holdDetails) {
-                if (!$this->driverSupportsSource($source, $holdDetails['id'])) {
+            if ($id = ($holdDetails['id'] ?? $holdDetails['item_id'] ?? '')) {
+                if (!$this->driverSupportsSource($source, $id)) {
                     // Return empty array since the sources don't match
                     return [];
                 }

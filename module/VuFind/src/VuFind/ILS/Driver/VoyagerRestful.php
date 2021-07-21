@@ -724,7 +724,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             try {
                 $sqlStmt = $this->executeSQL($sql, $params);
             } catch (PDOException $e) {
-                throw new ILSException($e->getMessage());
+                $this->throwAsIlsException($e);
             }
 
             // Read results
@@ -981,7 +981,7 @@ EOT;
         try {
             $sqlStmt = $this->executeSQL($sql);
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         $results = [];
@@ -1662,7 +1662,7 @@ EOT;
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1724,7 +1724,7 @@ EOT;
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1798,7 +1798,7 @@ EOT;
             $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             return $sqlRow['CNT'] > 0;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -1956,7 +1956,7 @@ EOT;
                 throw new DateException('Result should be numeric');
             }
         } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.');
+            $this->throwAsIlsException($e, 'Problem parsing required by date.');
         }
 
         if (time() > $checkTime) {

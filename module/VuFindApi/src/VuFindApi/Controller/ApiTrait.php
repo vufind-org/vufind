@@ -100,8 +100,11 @@ trait ApiTrait
         $request = $this->getRequest();
         $this->jsonpCallback
             = $request->getQuery('callback', $request->getPost('callback', null));
-        $this->jsonPrettyPrint = $request->getQuery(
-            'prettyPrint', $request->getPost('prettyPrint', false)
+        $this->jsonPrettyPrint = filter_var(
+            $request->getQuery(
+                'prettyPrint', $request->getPost('prettyPrint', false)
+            ),
+            FILTER_VALIDATE_BOOLEAN
         );
         $this->outputMode = empty($this->jsonpCallback) ? 'json' : 'jsonp';
     }
