@@ -82,7 +82,9 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param ThemeInfo $themeInfo Theme info helper
+     * @param ThemeInfo      $themeInfo    Theme info helper
+     * @param CacheManager   $cacheManager Cache manager instance
+     * @param EscapeHtmlAttr $escAttr      EscapeHtmlAttr view helper
      */
     public function __construct(
         ThemeInfo $themeInfo, CacheManager $cacheManager, EscapeHtmlAttr $escAttr
@@ -98,7 +100,7 @@ class Icon extends AbstractHelper
      * Map icon to set. Add prefix, return with set and template.
      * Broken out for easier customization.
      *
-     * @param string $name Which icon?
+     * @param string $name Icon name or key from theme.config.php
      *
      * @return array
      */
@@ -124,8 +126,7 @@ class Icon extends AbstractHelper
      * Reduce extra parameters to one attribute string.
      * Broken out for easier customization.
      *
-     * @param array          $extra   Just extra HTML attributes for now
-     * @param EscapeHtmlAttr $escAttr EscapeHtmlAttr view helper
+     * @param array $extra Extra HTML attributes for the HTML tag
      *
      * @return string
      */
@@ -140,6 +141,9 @@ class Icon extends AbstractHelper
 
     /**
      * Create a unique key for icon names and extra attributes
+     *
+     * @param string $name  Icon name or key from theme.config.php
+     * @param array  $extra Extra HTML attributes for the HTML tag
      *
      * @return string
      */
