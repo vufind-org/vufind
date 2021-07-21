@@ -29,6 +29,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\Helper\HeadLink;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Cache\StorageInterface;
 use VuFindTheme\ThemeInfo;
@@ -80,20 +81,37 @@ class Icon extends AbstractHelper
     protected $esc;
 
     /**
+     * HeadLink helper
+     *
+     * @var HeadLink
+     */
+    protected $headLink;
+
+    /**
+     * Prevent extra work by only appending the stylesheet once
+     *
+     * @var boolean
+     */
+    protected $styleAppended = false;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo      $themeInfo    Theme info helper
      * @param CacheManager   $cacheManager Cache manager instance
      * @param EscapeHtmlAttr $escAttr      EscapeHtmlAttr view helper
+     * @param HeadLink       $headLink     For stylesheet appending
      */
     public function __construct(
-        ThemeInfo $themeInfo, CacheManager $cacheManager, EscapeHtmlAttr $escAttr
+        ThemeInfo $themeInfo, CacheManager $cacheManager,
+        EscapeHtmlAttr $escAttr, HeadLink $headLink
     ) {
         $this->config = $themeInfo->getMergedConfig('icons', true);
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->iconMap = $this->config['aliases'] ?? [];
         $this->cache = $cacheManager->getCache('object', 'iconHelper');
         $this->esc = $escAttr;
+        $this->headLink = $headLink;
     }
 
     /**
@@ -166,6 +184,11 @@ class Icon extends AbstractHelper
      */
     public function __invoke(string $name, $extra = []): string
     {
+        if (!$this->styleAppended) {
+            $this->headLink->appendStylesheet('icon-helper.css');
+            $this->styleAppended = true;
+        }
+
         $cacheKey = $this->cacheKey($name, $extra);
         $cached = $this->cache->getItem($cacheKey);
 

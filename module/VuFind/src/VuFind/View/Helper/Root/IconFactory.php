@@ -71,6 +71,7 @@ class IconFactory implements FactoryInterface
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get(\VuFind\Cache\Manager::class),
             $container->get('ViewHelperManager')->get('escapeHtmlAttr'),
+            $container->get('ViewHelperManager')->get('headLink'),
         );
     }
 }

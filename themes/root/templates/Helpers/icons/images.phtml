@@ -1,5 +1,4 @@
 <?php
-    $this->headLink()->appendStylesheet('icon-helper.css');
     $folder = $this->src ?? '';
 ?>
 <img class="icon--img" src="<?=$this->imageLink($folder . '/' . $this->icon) ?>" aria-hidden="true"<?=$this->attrs ?>/>
