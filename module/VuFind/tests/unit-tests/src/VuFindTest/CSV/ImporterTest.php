@@ -174,6 +174,21 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test importer functionality with multiline CSV values (in test mode).
+     *
+     * @return void
+     */
+    public function testMultilineValues(): void
+    {
+        $this->runTestModeTest(
+            [
+                'csv' => 'test-multiline.csv',
+                'ini' => 'test-multiline.ini',
+            ]
+        );
+    }
+
+    /**
      * Test behavior when the actual encoding and configured encoding are mismatched.
      *
      * @return void
