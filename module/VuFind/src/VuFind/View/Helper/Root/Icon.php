@@ -73,16 +73,25 @@ class Icon extends AbstractHelper
     protected $cache;
 
     /**
+     * Escape helper
+     *
+     * @var EscapeHtmlAttr
+     */
+    protected $esc;
+
+    /**
      * Constructor
      *
      * @param ThemeInfo $themeInfo Theme info helper
      */
-    public function __construct(ThemeInfo $themeInfo, CacheManager $cacheManager)
-    {
+    public function __construct(
+        ThemeInfo $themeInfo, CacheManager $cacheManager, EscapeHtmlAttr $escAttr
+    ) {
         $this->config = $themeInfo->getMergedConfig('icons', true);
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->iconMap = $this->config['aliases'] ?? [];
         $this->cache = $cacheManager->getCache('object', 'iconHelper');
+        $this->esc = $escAttr;
     }
 
     /**
@@ -120,11 +129,11 @@ class Icon extends AbstractHelper
      *
      * @return string
      */
-    protected function compileAttrs(array $extra, EscapeHtmlAttr $escAttr): string
+    protected function compileAttrs(array $extra): string
     {
         $attrs = '';
         foreach ($extra as $key => $val) {
-            $attrs .= ' ' . $key . '="' . $escAttr($val) . '"';
+            $attrs .= ' ' . $key . '="' . $this->esc($val) . '"';
         }
         return $attrs;
     }
@@ -160,8 +169,7 @@ class Icon extends AbstractHelper
             [$icon, $set, $template] = $this->mapIcon($name);
 
             // Compile additional HTML attributes
-            $escAttr = $this->getView()->plugin('escapeHtmlAttr');
-            $attrs = $this->compileAttrs($extra, $escAttr);
+            $attrs = $this->compileAttrs($extra);
 
             // Surface set config and add icon and attrs
             $cached = $this->getView()->render(
@@ -169,7 +177,7 @@ class Icon extends AbstractHelper
                 array_merge(
                     $this->config['sets'][$set] ?? [],
                     [
-                        'icon' => $escAttr($icon),
+                        'icon' => $this->esc($icon),
                         'attrs' => $attrs,
                         'extra' => $extra
                     ]
