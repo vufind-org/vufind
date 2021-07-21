@@ -24,9 +24,10 @@
   }
 }
 // Comma-separate formatting
-.result .record .format::after,
-.record .format:last-child::after { content: ""; }
 .record .format::after { content: ", "; }
+.record .format.badge::after,
+.record .result-formats .format::after,
+.record .format:last-child::after { content: ""; }
 .record-previews { margin-top: .5rem; }
 
 /* ------ Nav ------ */
