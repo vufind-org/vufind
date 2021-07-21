@@ -79,6 +79,25 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test behavior when the actual encoding and configured encoding are mismatched.
+     *
+     * @return void
+     */
+    public function testEncodingMismatch(): void
+    {
+        $this->expectExceptionMessage(
+            'Malformed UTF-8 characters, possibly incorrectly encoded'
+        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $fixtureDir = $this->getFixtureDir() . 'csv/';
+        $configBaseDir = implode('/', array_slice(explode('/', realpath($fixtureDir)), -5));
+        $importer = new Importer($container, compact('configBaseDir'));
+        $importer->save(
+            $fixtureDir . 'test-iso.csv', 'test.ini', 'Solr', true
+        );
+    }
+
+    /**
      * Test importer functionality (in non-test mode).
      *
      * @return void

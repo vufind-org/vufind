@@ -146,6 +146,9 @@ class Importer
         // for real Solr writing):
         $flags = $testMode ? JSON_PRETTY_PRINT : 0;
         $json = json_encode($data, $flags);
+        if ($json === false) {
+            throw new \Exception(json_last_error_msg(), json_last_error());
+        }
 
         // Save the results (or just return them, if in test mode):
         if ($testMode) {
