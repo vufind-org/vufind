@@ -163,8 +163,22 @@ public class CreatorTools
      */
     protected String fixTrailingPunctuation(String name)
     {
-        System.out.println(name);
-        System.out.println(untrimmedAbbreviations);
+        // First, apply regular expressions:
+        for (String regex : punctuationRegEx) {
+            name = name.replaceAll(regex, "");
+        }
+
+        // Strip periods, except when they follow an initial or abbreviation:
+        // TODO
+
+        // Remove trailing close characters with no corresponding open characters:
+        for (String pair : punctuationPairs) {
+            String left = pair.substring(0, 1);
+            String right = pair.substring(1);
+            if (name.endsWith(right) && !name.contains(left)) {
+                name = name.substring(0, name.length() - 1);
+            }
+        }
         return name;
     }
 

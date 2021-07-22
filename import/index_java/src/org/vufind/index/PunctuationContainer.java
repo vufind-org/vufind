@@ -45,7 +45,7 @@ public class PunctuationContainer
     {
         // Populate set if empty:
         if (punctuationRegEx.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationRegExToStrip");
+            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
             punctuationRegEx = new LinkedHashSet<String>(all.values());
         }
         return punctuationRegEx;
@@ -55,7 +55,7 @@ public class PunctuationContainer
     {
         // Populate set if empty:
         if (punctuationPairs.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationMatchedChars");
+            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationMatchedChars");
             punctuationPairs = new LinkedHashSet<String>(all.values());
         }
         return punctuationPairs;
@@ -65,7 +65,7 @@ public class PunctuationContainer
     {
         // Populate set if empty:
         if (untrimmedAbbreviations.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getConfigSection("author-classification.ini", "PunctuationUntrimmedAbbreviations");
+            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationUntrimmedAbbreviations");
             untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
         }
         return untrimmedAbbreviations;
