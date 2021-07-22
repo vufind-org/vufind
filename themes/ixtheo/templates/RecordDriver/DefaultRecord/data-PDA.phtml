@@ -5,10 +5,10 @@
 <?php $isbn = count($isbns) ? $isbns[0] : 0; ?>
 <div style="color:grey" id="pda_place_holder"><?=$this->transEsc("Loading")?>...</div>
 <?php
-  $ajaxUrl = $this->url('home') . 'pdaproxy/load?isbn=' + $isbn;
+  $ajaxUrl = $this->url('home') . 'pdaproxy/load?isbn=' . $isbn;
   $pdaSubscribeUrl = $this->recordLink()->getActionUrl($this->driver, 'PDASubscribe');
   $pdaSubscribeText = $this->transEsc("Go to PDA Order");
   $jsParams = [$isbn, $ajaxUrl, $pdaSubscribeUrl, $pdaSubscribeText];
-  $jsSnippet = "IxTheo.GetPDAInformation('" . implode("','", $jsParams) . "');'";
+  $jsSnippet = "IxTheo.GetPDAInformation('" . implode("','", $jsParams) . "');";
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
