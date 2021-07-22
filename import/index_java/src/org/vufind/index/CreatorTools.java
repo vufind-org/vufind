@@ -170,7 +170,7 @@ public class CreatorTools
 
         // Strip periods, except when they follow an initial or abbreviation:
         int nameLength = name.length();
-        if (name.endsWith(".") && nameLength > 3 && name.substring(nameLength - 3, nameLength - 2) != " ") {
+        if (name.endsWith(".") && nameLength > 3 && !name.substring(nameLength - 3, nameLength - 2).startsWith(" ")) {
             int p = name.lastIndexOf(" ");
             String lastWord = (p > 0) ? name.substring(p + 1) : name;
             if (!untrimmedAbbreviations.contains(lastWord.toLowerCase())) {
