@@ -83,10 +83,8 @@
             <?php endif; ?>
         </div>
         <div style="color:grey" id="<?= $jop_place_holder_id ?>"><?= $this->transEsc("Loading") ?>...</div>
-        <script>
-            TueFind.GetJOPInformation('<?= $jop_place_holder_id ?>', '<?= $jop_icons_id ?>',
-                    '<?= $url_ajax_proxy ?>', '<?= $url_html ?>', '<?= $part_img ?>',
-                    '<?= $this->transEsc("Available online") ?>', '<?= $this->transEsc("Check Availability") ?>');
-        </script>
+        <?php $jsParams = [$jop_place_holder_id, $jop_icons_id, $url_ajax_proxy, $url_html, $part_img, $this->transEsc('Available online'), $this->transEsc('Check Availability')]; ?>
+        <?php $jsSnippet = 'TueFind.GetJOPInformation(\'' . implode("', '", $jsParams) . '\');'; ?>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
     <?php endif; ?>
 <?php endforeach; ?>

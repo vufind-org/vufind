@@ -19,9 +19,8 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item virtual-keyboard-greek"><?=$this->transEsc('Greek')?></a></li>
                         <li><a class="dropdown-item virtual-keyboard-hebrew"><?=$this->transEsc('Hebrew')?></a></li>
-                        <script>$(triggerVirtualKeyboard('<?=$this->transEsc("Accept") . ':' . $this->transEsc("Accept")?>',
-                                                         '<?=$this->transEsc("Enter") . ':' . $this->transEsc("Enter")?>'));
-                        </script>
+                        <?php $virtualKeyboardSnippet = '$(triggerVirtualKeyboard(\'' . $this->transEsc("Accept") . ':' . $this->transEsc("Accept") . '\', \'' . $this->transEsc("Enter") . ':' . $this->transEsc("Enter") . '\'));'; ?>
+                        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $virtualKeyboardSnippet, 'SET')?>
                     </ul>
                 </li>
             </ul>
@@ -79,8 +78,8 @@
                         <div class="ix-slick-slider-item-title">Workshop 2.-3.12.19</div>
                     </div>
                 </div>
-
-                <script>
+<?php
+$jsSnippet = <<< 'EOD'
                     $(document).ready(function(){
                         $('.slick-slider-single-item').slick({
                             dots: true,
@@ -91,7 +90,9 @@
                             arrows: true
                         });
                     });
-                </script>
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
             </div>
             <div class="col-md-6">
                 <div class="cw-text-center">
@@ -250,7 +251,8 @@
         </div>
     </div>
 
-    <script>
+<?php
+$jsSnippet = <<< 'EOD'
         var guidesSlider = new Swiper('.cw-guides-slider', {
         slidesPerView: 5,
         spaceBetween: 15,
@@ -276,7 +278,9 @@
             dynamicBullets: true
         },
     });
-    </script>
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
 </section>
 
 <section class="cw-py-7 cw-position-relative cw-dark-overlay">

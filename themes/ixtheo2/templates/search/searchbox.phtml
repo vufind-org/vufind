@@ -44,9 +44,7 @@
     <!--  Begin section searchbar -->
     <section class="section-home">
         <div class="panel-home">
-            <script>
-                TueFind2.ChangeSearchboxHeight();
-            </script>
+            <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind2.ChangeSearchboxHeight();', 'SET')?>
 
             <div class="searchbox col-12 mx-auto">
 
@@ -193,8 +191,7 @@
                               ]
                             );?>
                         </form>
-
-                        <script type="text/javascript">$(".searchForm_lookfor:visible").focus()</script>
+                        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(".searchForm_lookfor:visible").focus();', 'SET')?>
 
                         <?php if ($advSearch): ?>
                             <?=$this->context($this)->renderInContext('search/searchbox/pills.phtml', ['searchId' => $this->searchId,

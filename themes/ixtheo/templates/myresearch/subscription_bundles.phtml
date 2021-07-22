@@ -17,9 +17,8 @@
     </div>
     <div id="<?=$bundle_id_normalized?>" class="panel-collapse collapse">
       <div class="panel-body">
-         <script type="text/javascript">
-          $("#<?=$bundle_id_normalized?>").on("show.bs.collapse", IxTheo.GetSubscriptionBundleItems('<?=$bundle_id?>'));
-        </script>
+        <?php $jsSnippet = '$("#' . $bundle_id_normalized . '").on("show.bs.collapse", IxTheo.GetSubscriptionBundleItems(\'' . $bundle_id . '\'));'; ?>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
       </div>
     </div>
   </div>

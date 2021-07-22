@@ -4,35 +4,40 @@
 <?php $isbns = $this->driver->tryMethod('getISBNs'); ?>
 <?php $isbn = count($isbns) ? $isbns[0] : 0; ?>
 <div style="color:grey" id="pda_place_holder"><?=$this->transEsc("Loading")?>...</div>
-<script type="text/javascript" language="javascript">
+<?php
+$ajaxUrlPrefix = $this->url('home') . 'pdaproxy/load?isbn=';
+$pdaSubscribeUrl = $this->recordLink()->getActionUrl($this->driver, 'PDASubscribe');
+$pdaSubscribeText = $this->transEsc("Go to PDA Order");
+$jsSnippet = <<<EOD
     // Suppress entire field if no isbn is present
-    var isbn = "<?=$isbn?>";
+    var isbn = "$isbn";
     if (isbn == "0") {
-      $("#pda_row").remove();
+      \$("#pda_row").remove();
     }
     // Try to determine status
-    $.ajax({
+    \$.ajax({
       type: "GET",
-      url: "<?=$this->url('home')?>pdaproxy/load?isbn="+isbn,
+      url: "$ajaxUrlPrefix"+isbn,
       dataType: "json",
       success: function(json) {
-        $(document).ready(function() {
+        \$(document).ready(function() {
            var received_isbn = json['isbn'];
            var pda_status = json['pda_status'];
-           $("#pda_place_holder").each(function() {
+           \$("#pda_place_holder").each(function() {
               if ((received_isbn == isbn) && (pda_status == "OFFER_PDA")) {
-                $(this).replaceWith('<a href=' + '<?=$this->recordLink()->getActionUrl($this->driver, 'PDASubscribe')?>' + '>'
-                                               + '<?=$this->transEsc("Go to PDA Order")?>' + '</a>');
+                \$(this).replaceWith('<a href="$pdaSubscribeUrl">$pdaSubscribeText</a>');
               }
               else
-                $("#pda_row").remove();
+                \$("#pda_row").remove();
            });
         });
       }, // end success
       error: function (xhr, ajaxOptions, thrownError) {
-          $("#pda_place_holder").each(function() {
-            $(this).replaceWith('Invalid server response!!!!!');
+          \$("#pda_place_holder").each(function() {
+            \$(this).replaceWith('Invalid server response!!!!!');
           })
       }
    }); // end ajax
-</script>
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
