@@ -499,6 +499,24 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Choose a call number and callnumber prefix.
+     *
+     * @param string $hCallNumP Holding-level call number prefix
+     * @param string $hCallNum  Holding-level call number
+     * @param string $iCallNumP Item-level call number prefix
+     * @param string $iCallNum  Item-level call number
+     *
+     * @return array with call number and call number prefix.
+     */
+    protected function chooseCallNumber($hCallNumP, $hCallNum, $iCallNumP, $iCallNum)
+    {
+        if (empty($iCallNum)) {
+            return ['callnumber_prefix' => $hCallNumP, 'callnumber' => $hCallNum];
+        }
+        return ['callnumber_prefix' => $iCallNumP, 'callnumber' => $iCallNum];
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -551,6 +569,8 @@ class Folio extends AbstractAPI implements
                 $textFormatter,
                 $holding->holdingsStatementsForIndexes ?? []
             );
+            $holdingCallNumber = $holding->callNumber ?? '';
+            $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
             foreach ($this->getPagedResults(
                 'items', '/item-storage/items', $query
             ) as $item) {
@@ -561,7 +581,13 @@ class Folio extends AbstractAPI implements
                 $locationData = $this->getLocationData($locationId);
                 $locationName = $locationData['name'];
                 $locationCode = $locationData['code'];
-                $items[] = [
+                $callNumberData = $this->chooseCallNumber(
+                    $holdingCallNumberPrefix,
+                    $holdingCallNumber,
+                    $item->itemLevelCallNumberPrefix ?? '',
+                    $item->itemLevelCallNumber ?? ''
+                );
+                $items[] = $callNumberData + [
                     'id' => $bibId,
                     'item_id' => $item->id,
                     'holding_id' => $holding->id,
@@ -575,7 +601,6 @@ class Folio extends AbstractAPI implements
                     'issues' => $holdingsStatements,
                     'supplements' => $holdingsSupplements,
                     'indexes' => $holdingsIndexes,
-                    'callnumber' => $holding->callNumber ?? '',
                     'location' => $locationName,
                     'location_code' => $locationCode,
                     'reserve' => 'TODO',
@@ -1054,7 +1079,7 @@ class Folio extends AbstractAPI implements
                 $holdDetails['requiredBy']
             );
         } catch (Exception $e) {
-            throw new ILSException('hold_date_invalid');
+            $this->throwAsIlsException($e, 'hold_date_invalid');
         }
         $requestBody = [
             'itemId' => $holdDetails['item_id'],
@@ -1085,7 +1110,7 @@ class Folio extends AbstractAPI implements
                     'status' => $json->errors[0]->message
                 ];
             } catch (Exception $e) {
-                throw new ILSException($response->getBody());
+                $this->throwAsIlsException($e, $response->getBody());
             }
         }
         return $result;

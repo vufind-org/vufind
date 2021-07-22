@@ -713,7 +713,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             }
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
         if (!$result->isSuccess()) {
             throw new ILSException('HTTP error');
@@ -1603,7 +1603,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             if (strpos($ex->getMessage(), 'Error in Verification') !== false) {
                 return null;
             }
-            throw new ILSException($ex->getMessage());
+            $this->throwAsIlsException($ex);
         }
         $patron = [];
         $name = $xml->z303->{'z303-name'};

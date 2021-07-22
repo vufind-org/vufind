@@ -77,8 +77,8 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
         // The linkify helper expects HTML-escaped input, because after linkify
         // has been applied, we can no longer escape unlinked portions of the text
         // without messing up the link HTML:
-        $html = $escaper->__invoke($text);
-        $this->assertEquals($expected, $this->getHelper()->__invoke($html));
+        $html = $escaper($text);
+        $this->assertEquals($expected, ($this->getHelper())($html));
     }
 
     /**

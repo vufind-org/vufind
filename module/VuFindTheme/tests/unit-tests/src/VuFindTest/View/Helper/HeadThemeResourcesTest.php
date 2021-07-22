@@ -52,7 +52,7 @@ class HeadThemeResourcesTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new HeadThemeResources($this->getResourceContainer());
         $helper->setView($this->getMockView());
-        $helper->__invoke();
+        $helper();
     }
 
     /**

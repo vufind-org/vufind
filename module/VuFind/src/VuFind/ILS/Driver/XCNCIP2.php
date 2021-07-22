@@ -397,7 +397,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $result = $client->send();
         } catch (\Exception $e) {
             $this->logError('Error in NCIP communication: ' . $e->getMessage());
-            throw new ILSException('Problem with NCIP API');
+            $this->throwAsIlsException($e, 'Problem with NCIP API');
         }
 
         // If we get a 401, we need to renew the access token and try again
@@ -408,7 +408,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $result = $client->send();
             } catch (\Exception $e) {
                 $this->logError('Error in NCIP communication: ' . $e->getMessage());
-                throw new ILSException('Problem with NCIP API');
+                $this->throwAsIlsException($e, 'Problem with NCIP API');
             }
         }
 
@@ -451,7 +451,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $this->tokenBasicAuth
             );
         } catch (AuthTokenException $exception) {
-            throw new ILSException(
+            $this->throwAsIlsException(
+                $exception,
                 'Problem with NCIP API authorization: ' . $exception->getMessage()
             );
         }
@@ -2142,20 +2143,28 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Create Lookup Item Request
      *
-     * @param string $itemId Item identifier
-     * @param string $idType Item identifier type
+     * @param string  $itemId       Item identifier
+     * @param ?string $idType       Item identifier type
+     * @param array   $desiredParts Needed data, available options are:
+     * 'Bibliographic Description', 'Circulation Status', 'Electronic Resource',
+     * 'Hold Queue Length', 'Date Due', 'Item Description',
+     * 'Item Use Restriction Type', 'Location', 'Physical Condition',
+     * 'Security Marker', 'Sensitization Flag'
      *
      * @return string XML document
      */
-    protected function getLookupItemRequest($itemId, $idType = null)
-    {
+    protected function getLookupItemRequest(string $itemId, ?string $idType = null,
+        array $desiredParts = ['Bibliographic Description']
+    ): string {
         $agency = $this->determineToAgencyId();
         $ret = $this->getNCIPMessageStart() .
             '<ns1:LookupItem>' .
             $this->getInitiationHeaderXml($agency) .
-            $this->getItemIdXml($agency, $itemId, $idType) .
-            $this->element('ItemElementType', 'Bibliographic Description') .
-        '</ns1:LookupItem></ns1:NCIPMessage>';
+            $this->getItemIdXml($agency, $itemId, $idType);
+        foreach ($desiredParts as $current) {
+            $ret .= $this->element('ItemElementType', $current);
+        }
+        $ret .= '</ns1:LookupItem></ns1:NCIPMessage>';
         return $ret;
     }
 
