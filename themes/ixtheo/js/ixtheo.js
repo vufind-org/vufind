@@ -14,6 +14,37 @@ var IxTheo = {
         bundle_div.html(entry_list);
     },
 
+    GetPDAInformation: function(isbn, ajaxUrl, pdaSubscribeUrl, pdaSubscribeText) {
+        // Suppress entire field if no isbn is present
+        if (isbn == "0") {
+            $("#pda_row").remove();
+        }
+        // Try to determine status
+        $.ajax({
+            type: "GET",
+            url: ajaxUrl + isbn,
+            dataType: "json",
+            success: function(json) {
+                $(document).ready(function() {
+                    var received_isbn = json['isbn'];
+                    var pda_status = json['pda_status'];
+                    $("#pda_place_holder").each(function() {
+                        if ((received_isbn == isbn) && (pda_status == "OFFER_PDA")) {
+                            $(this).replaceWith('<a href="' + pdaSubscribeUrl + '">' + pdaSubscribeText + '</a>');
+                        }
+                        else
+                            $("#pda_row").remove();
+                    });
+                });
+            }, // end success
+            error: function (xhr, ajaxOptions, thrownError) {
+                $("#pda_place_holder").each(function() {
+                    $(this).replaceWith('Invalid server response!!!!!');
+                })
+            }
+        }); // end ajax
+    },
+
     GetSubscriptionBundleItems: function(bundle_id) {
         $.ajax({
             url: VuFind.path + '/AJAX/JSON',
