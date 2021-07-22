@@ -1141,19 +1141,6 @@ public class TueFindBiblio extends TueFind {
         return map935b(record, phys_code_to_full_name_map);
     }
 
-    // Removes any non-letters from "original_role".
-    protected static String cleanRole(final String original_role) {
-        final StringBuilder canonised_role = new StringBuilder();
-        for (final char ch : original_role.toCharArray()) {
-            if (Character.isLetter(ch))
-                canonised_role.append(ch);
-        }
-
-        return canonised_role.toString();
-    }
-
-    protected static final char[] author2SubfieldCodes = new char[] { 'a', 'b', 'c', 'd' };
-
     protected boolean isHonoree(final List<Subfield> subfieldFields4) {
         for (final Subfield subfield4 : subfieldFields4) {
             if (subfield4.getData().equals("hnr"))
@@ -1161,56 +1148,6 @@ public class TueFindBiblio extends TueFind {
         }
 
         return false;
-    }
-
-
-    protected boolean isInFactPrimaryAuthor(final List<Subfield> subfieldFields4) {
-        for (final Subfield subfield4 : subfieldFields4) {
-            if (subfield4.getData().equals("aut"))
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param record
-     *            the record
-     */
-    public Set<String> getAuthors2AndRoles(final Record record) {
-        final Set<String> results = new TreeSet<>();
-        for (final VariableField variableField : record.getVariableFields("700")) {
-            final DataField dataField = (DataField) variableField;
-
-            final StringBuilder author2 = new StringBuilder();
-            for (char subfieldCode : author2SubfieldCodes) {
-                final Subfield subfieldField = dataField.getSubfield(subfieldCode);
-                if (subfieldField != null)
-                    author2.append(author2.length() == 0 ?
-                                   subfieldField.getData() : " " + subfieldField.getData());
-            }
-
-            if (author2.length() == 0)
-                continue;
-
-            final List<Subfield> _4Subfields = dataField.getSubfields('4');
-            if (isHonoree(_4Subfields) || isInFactPrimaryAuthor(_4Subfields))
-                continue;
-
-            final StringBuilder author2AndRoles = new StringBuilder();
-            author2AndRoles.append(author2.toString().replace("$", ""));
-            if (_4Subfields == null || _4Subfields.isEmpty())
-                author2AndRoles.append('$');
-            else {
-                for (final Subfield _4Subfield : _4Subfields) {
-                    author2AndRoles.append('$');
-                    author2AndRoles.append(cleanRole(_4Subfield.getData()));
-                }
-            }
-            results.add(author2AndRoles.toString());
-        }
-
-        return results;
     }
 
     protected Set<String> addHonourees(final Record record, final Set<String> values, String lang) {

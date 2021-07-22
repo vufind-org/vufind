@@ -9,17 +9,19 @@
       <li class="list-group-item">
         <?=$authorTitle?>
         <?php if (($authorityId = $authorDetails['id'] ?? null) && ($authorityDriver = $this->authority()->recordExists($authorityId))): ?>
-          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorityDriver))?>"><i class="fa fa-book" aria-hidden="true" title="Show joint titles for this author"></i></a>
-          <a href="<?=$this->record($this->driver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
+          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorityDriver))?>"><i class="fa fa-link" aria-hidden="true" title="Show joint titles for this author"></i></a>
+          <a href="<?=$this->record($authorityDriver)->getLink('titles-by', $authorityDriver)?>"><i class="fa fa-book" aria-hidden="true" title="Show all titles for this author"></i></a>
+          <a href="<?=$this->record($authorityDriver)->getLink('authority', $authorityId)?>"><i class="fa fa-user-circle" aria-hidden="true" title="Show more details for this author"></i></a>
         <?php else: ?>
-          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorTitle))?>"><i class="fa fa-book" aria-hidden="true" title="Show joint titles for this author"></i></a>
+          <a href="<?=$this->url('search-results')?>?lookfor=<?=urlencode($this->authority()->getRelatedJointQueryParams($this->driver, $authorTitle))?>"><i class="fa fa-link" aria-hidden="true" title="Show joint titles for this author"></i></a>
+          <a href="<?=$this->record($this->driver)->getLink('author', $authorTitle)?>"><i class="fa fa-book" aria-hidden="true" title="Show all titles for this author"></i></a>
         <?php endif; ?>
       </li>
     <?php endforeach; ?>
   </ul>
   <?php if (count($response) > $previewLimit): ?>
     <p>
-      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>">Show all related authors</a>
+      <a href="<?=$this->url('author-search')?>?lookfor=<?=urlencode($this->driver->getTitle())?>">Show all related authors (<?=count($response)?>)</a>
     </p>
   <?php endif; ?>
 <?php endif; ?>

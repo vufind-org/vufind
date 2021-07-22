@@ -7,6 +7,7 @@
     <field name="isni" type="string" indexed="true" stored="true"/>
     <field name="orcid" type="string" indexed="true" stored="true"/>
     <field name="place" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="subsystem" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="type" type="string" indexed="true" stored="true"/>
     <field name="viaf" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="wikidata" type="string" indexed="true" stored="true"/>
