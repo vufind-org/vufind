@@ -45,6 +45,9 @@ public class CreatorTools
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = RelatorContainer.instance().getSynonymLookup();
     private Set<String> knownRelators = RelatorContainer.instance().getKnownRelators();
+    private Set<String> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
+    private Set<String> punctuationPairs = PunctuationContainer.instance().getPunctuationPairs();
+    private Set<String> untrimmedAbbreviations = PunctuationContainer.instance().getUntrimmedAbbreviations();
 
     /**
      * Extract all valid relator terms from a list of subfields using a whitelist.
@@ -152,6 +155,20 @@ public class CreatorTools
     }
 
     /**
+     * Fix trailing punctuation on a name string.
+     *
+     * @param name Name to fix
+     *
+     * @return Stripped name
+     */
+    protected String fixTrailingPunctuation(String name)
+    {
+        System.out.println(name);
+        System.out.println(untrimmedAbbreviations);
+        return name;
+    }
+
+    /**
      * Filter values retrieved using tagList to include only those whose relator
      * values are acceptable. Used for separating different types of authors.
      *
@@ -192,7 +209,7 @@ public class CreatorTools
                         // fixed.
                         //String current = authorField.getSubfieldsAsString(subfields);
                         if (null != current) {
-                            result.add(current);
+                            result.add(fixTrailingPunctuation(current));
                             if (firstOnly) {
                                 return result;
                             }
