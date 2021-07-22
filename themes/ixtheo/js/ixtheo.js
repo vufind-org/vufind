@@ -53,11 +53,10 @@ var IxTheo = {
                 bundle_id: bundle_id
             },
             dataType: 'json',
-            success: function displaySubscriptionItems(json) {
+            success: function displaySubscriptionItems(items) {
                 $(document).ready(function () {
-                    var data = $.parseJSON(json.data)
-                    if (data.items.length > 0)
-                        IxTheo.ConvertToListEntries(bundle_id, data.items);
+                    if (items.length > 0)
+                        IxTheo.ConvertToListEntries(bundle_id, items);
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {
