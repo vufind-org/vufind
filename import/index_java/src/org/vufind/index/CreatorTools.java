@@ -169,14 +169,22 @@ public class CreatorTools
         }
 
         // Strip periods, except when they follow an initial or abbreviation:
-        // TODO
+        int nameLength = name.length();
+        if (name.endsWith(".") && nameLength > 3 && name.substring(nameLength - 3, nameLength - 2) != " ") {
+            int p = name.lastIndexOf(" ");
+            String lastWord = (p > 0) ? name.substring(p + 1) : name;
+            if (!untrimmedAbbreviations.contains(lastWord.toLowerCase())) {
+                name = name.substring(0, nameLength - 1);
+                nameLength--;
+            }
+        }
 
         // Remove trailing close characters with no corresponding open characters:
         for (String pair : punctuationPairs) {
             String left = pair.substring(0, 1);
             String right = pair.substring(1);
             if (name.endsWith(right) && !name.contains(left)) {
-                name = name.substring(0, name.length() - 1);
+                name = name.substring(0, nameLength - 1);
             }
         }
         return name;
