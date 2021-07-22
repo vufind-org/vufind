@@ -4,7 +4,7 @@
 <?php $this->headMeta()->prependHttpEquiv('refresh', $this->redirectDelay . '; URL=' . $this->redirectTarget); ?>
 <?php
 $jsSnippet = <<<EOD
-  setInterval(function()
+  setInterval(function() {
     let field = document.getElementById("redirectDelay");
     if (field.innerHTML > 0)
       --field.innerHTML;
