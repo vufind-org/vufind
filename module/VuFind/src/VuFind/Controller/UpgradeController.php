@@ -507,13 +507,13 @@ class UpgradeController extends AbstractBase
                     return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                $this->session->warnings->append(
+                    "Modified character set(s)/collation(s) in table(s): "
+                    . implode(', ', array_keys($colProblems))
+                );
             }
             $sql .= $this->dbUpgrade()
                 ->fixCharsetAndCollationProblems($colProblems, $this->logsql);
-            $this->session->warnings->append(
-                "Modified collation(s) in table(s): "
-                . implode(', ', array_keys($colProblems))
-            );
         }
 
         // Don't keep DB credentials in session longer than necessary:
@@ -970,9 +970,11 @@ class UpgradeController extends AbstractBase
                 );
             }
 
-            $this->session->warnings->append(
-                'Added hash value(s) to ' . count($results) . ' short links.'
-            );
+            if (count($results) > 0) {
+                $this->session->warnings->append(
+                    'Added hash value(s) to ' . count($results) . ' short links.'
+                );
+            }
         } catch (Exception $e) {
             $this->session->warnings->append(
                 'Could not fix hashes in table shortlinks - maybe column ' .
