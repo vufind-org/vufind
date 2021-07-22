@@ -228,21 +228,14 @@ class DbUpgrade extends AbstractPlugin
         // user has a Latin1 database, they probably have more complex issues to
         // work through anyway.
         $match = preg_match(
-            '/CHARSET[\s=]+(utf8(mb4)?)/',
+            '/(CHARSET|CHARACTER SET)[\s=]+(utf8(mb4)?)/',
             $this->dbCommands[$table['Name']][0],
             $matches
         );
         if (!$match) {
-            $match = preg_match(
-                '/CHARACTER SET[\s=]+(utf8(mb4)?)/',
-                $this->dbCommands[$table['Name']][0],
-                $matches
-            );
-        }
-        if (!$match) {
             return false;
         }
-        $charset = $matches[1];
+        $charset = $matches[2];
         // Check collation:
         $match = preg_match(
             '/COLLATE[\s=]+(\w+)/',
