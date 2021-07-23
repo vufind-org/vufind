@@ -30,6 +30,8 @@ namespace VuFindTest\Mink;
 /**
  * Mink record actions test class.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -37,19 +39,19 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
+final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\UserCreationTrait;
 
     /**
      * Standard setup method.
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -57,11 +59,12 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -123,7 +126,6 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         // Create new account
         $this->makeAccount($page, 'username1');
         // Make sure page updated for login
-        // $page = $this->gotoRecord();
         $this->clickCss($page, '.record-tabs .usercomments');
         $this->snooze();
         $this->assertEquals(// Can Comment?
@@ -136,6 +138,73 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
         $this->assertNull($page->find('css', '.comment'));
         // Add comment
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->findCss($page, '.comment');
+        // Remove comment
+        $this->clickCss($page, '.comment .delete');
+        $this->snooze(); // wait for UI update
+        $this->assertNull($page->find('css', '.comment'));
+        // Logout
+        $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test adding comments on records (with Captcha enabled).
+     *
+     * @return void
+     */
+    public function testAddCommentWithCaptcha()
+    {
+        // Set up configs:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Captcha' => ['types' => ['demo'], 'forms' => '*']
+                ]
+            ]
+        );
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Click add comment without logging in
+        // TODO Rewrite for comment and login coming
+        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->snooze();
+        $this->findCss($page, '.comment-form');
+        $this->assertEquals(// Can Comment?
+            'You must be logged in first',
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
+        );
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->findCss($page, '.modal.in'); // Lightbox open
+        $this->findCss($page, '.modal [name="username"]');
+        // Log in to existing account
+        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->submitLoginForm($page);
+        // Make sure page updated for login
+        $this->clickCss($page, '.record-tabs .usercomments');
+        $this->snooze();
+        $this->assertEquals(// Can Comment?
+            'Add your comment',
+            $this->findCss($page, 'form.comment-form .btn.btn-primary')->getValue()
+        );
+        // "Add" empty comment
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->assertNull($page->find('css', '.comment'));
+        // Add comment without CAPTCHA
+        $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->snooze();
+        $this->assertEquals(
+            'CAPTCHA not passed',
+            $this->findCss($page, '.modal-body .alert-danger')->getText()
+        );
+        $this->clickCss($page, '.modal-body button');
+        // Now fix the CAPTCHA
+        $this->findCss($page, 'form.comment-form [name="demo_captcha"]')
+            ->setValue('demo');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         $this->snooze();
         $this->findCss($page, '.comment');
@@ -428,6 +497,28 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
     }
 
     /**
+     * Test record view print button.
+     */
+    public function testPrint(): void
+    {
+        // Go to a record view (manually search so we can access $session)
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')->setValue('Dewey');
+        $this->findCss($page, '.btn.btn-primary')->click();
+        $this->clickCss($page, '.result a.title');
+
+        // Click Print
+        $this->clickCss($page, '.print-record');
+        $this->snooze();
+
+        // Make sure we're printing
+        [, $params] = explode('?', $session->getCurrentUrl());
+        $this->assertEquals('print=1', $params);
+    }
+
+    /**
      * Retry cleanup method in case of failure during testAddTag.
      *
      * @return void
@@ -452,7 +543,7 @@ class RecordActionsTest extends \VuFindTest\Unit\MinkTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['username1', 'username2', 'emailmaniac']);
     }

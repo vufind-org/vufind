@@ -27,12 +27,14 @@
  */
 namespace VuFindTest\Auth;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Auth\ILS;
 use VuFind\Db\Table\User;
-use Zend\Stdlib\Parameters;
 
 /**
  * ILS authentication test class.
+ *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
  * @category VuFind
  * @package  Tests
@@ -40,18 +42,19 @@ use Zend\Stdlib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSTest extends \VuFindTest\Unit\DbTestCase
+final class ILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\UserCreationTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
      * Standard setup method.
      *
-     * @return mixed
+     * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        return static::failIfUsersExist();
+        static::failIfUsersExist();
     }
 
     /**
@@ -59,11 +62,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -75,11 +79,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \VuFind\ILS\Driver\Sample
      */
-    protected function getMockDriver($type = 'Sample', $methods = [])
+    protected function getMockDriver($type = 'Sample', $methods = ['patronLogin'])
     {
         return $this->getMockBuilder('VuFind\ILS\Driver\\' . $type)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -99,22 +103,20 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         }
         $authenticator = $this->getMockILSAuthenticator($patron);
         $driverManager = new \VuFind\ILS\Driver\PluginManager(
-            $this->getServiceManager()
+            new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
         $mockConfigReader = $this->createMock(\VuFind\Config\PluginManager::class);
         $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Zend\Config\Config([])));
+            ->will($this->returnValue(new \Laminas\Config\Config([])));
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
-                new \Zend\Config\Config(['driver' => 'Sample']),
+                new \Laminas\Config\Config(['driver' => 'Sample']),
                 $driverManager, $mockConfigReader
             ),
             $authenticator
         );
-        $auth->setDbTableManager(
-            $this->getServiceManager()->get(\VuFind\Db\Table\PluginManager::class)
-        );
+        $auth->setDbTableManager($this->getLiveTableManager());
         $auth->getCatalog()->setDriver($driver);
         return $auth;
     }
@@ -135,15 +137,15 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Zend\Http\Request
+     * @return \Laminas\Http\Request
      */
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
         ];
-        $request = new \Zend\Http\Request();
-        $request->setPost(new \Zend\Stdlib\Parameters($post));
+        $request = new \Laminas\Http\Request();
+        $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
@@ -151,11 +153,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank username.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankUsername()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['username' => '']);
         $this->getAuth()->authenticate($request);
     }
@@ -164,11 +166,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with blank password.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testLoginWithBlankPassword()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         $request = $this->getLoginRequest(['password' => '']);
         $this->getAuth()->authenticate($request);
     }
@@ -177,11 +179,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test login with technical error.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\Auth
      */
     public function testBadLoginResponse()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+
         // VuFind requires the ILS driver to return a value in cat_username
         // by default -- if that is missing, we should fail.
         $response = [];
@@ -216,12 +218,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test failure caused by missing cat_id.
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Auth
-     * @expectedExceptionMessage authentication_error_technical
      */
     public function testLoginWithMissingCatId()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
+
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
             'email' => 'user@test.com'
@@ -234,7 +236,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Zend\Config\Config($config));
+        $auth->setConfig(new \Laminas\Config\Config($config));
         $auth->authenticate($this->getLoginRequest());
     }
 
@@ -242,12 +244,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test updating a user's password with mismatched new password values.
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Auth
-     * @expectedExceptionMessage Password cannot be blank
      */
     public function testUpdateUserPasswordWithEmptyValue()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Password cannot be blank');
+
         $patron = ['cat_username' => 'testuser'];
         $request = $this->getLoginRequest(
             [
@@ -263,12 +265,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test updating a user's password with mismatched new password values.
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Auth
-     * @expectedExceptionMessage authentication_error_technical
      */
     public function testUpdateUserPasswordWithoutLoggedInUser()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('authentication_error_technical');
+
         $request = $this->getLoginRequest(
             [
                 'oldpwd' => 'foo',
@@ -283,12 +285,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      * Test updating a user's password with mismatched new password values.
      *
      * @return void
-     *
-     * @expectedException        VuFind\Exception\Auth
-     * @expectedExceptionMessage Passwords do not match
      */
     public function testUpdateUserPasswordWithMismatch()
     {
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $this->expectExceptionMessage('Passwords do not match');
+
         $request = $this->getLoginRequest(
             [
                 'oldpwd' => 'foo',
@@ -343,7 +345,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         $patron = ['cat_username' => 'testuser', 'cat_id' => '1234'];
         $auth = $this->getAuth($driver, $patron);
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Zend\Config\Config($config));
+        $auth->setConfig(new \Laminas\Config\Config($config));
         $user = $auth->updatePassword($request);
         $this->assertEquals('1234', $user->username);
         $this->assertEquals('newpass', $user->getCatPassword());
@@ -354,7 +356,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::removeUsers(['1234', 'testuser']);
     }
@@ -370,7 +372,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
     {
         $mock = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
             ->disableOriginalConstructor()
-            ->setMethods(['storedCatalogLogin'])
+            ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
         $mock->expects($this->any())->method('storedCatalogLogin')
             ->will($this->returnValue($patron));

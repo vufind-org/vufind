@@ -28,7 +28,10 @@
 namespace VuFindApi\Controller;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for ApiController.
@@ -53,7 +56,7 @@ class ApiControllerFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -63,6 +66,8 @@ class ApiControllerFactory implements FactoryInterface
         }
         $controller = new $requestedName($container);
         $controller->addApi($container->get('ControllerManager')->get('SearchApi'));
+        $controller->addApi($container->get('ControllerManager')->get('Search2Api'));
+        $controller->addApi($container->get('ControllerManager')->get('WebApi'));
         return $controller;
     }
 }

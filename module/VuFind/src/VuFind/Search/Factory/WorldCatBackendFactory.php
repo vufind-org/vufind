@@ -30,12 +30,12 @@ namespace VuFind\Search\Factory;
 
 use Interop\Container\ContainerInterface;
 
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use VuFindSearch\Backend\WorldCat\Backend;
 use VuFindSearch\Backend\WorldCat\Connector;
 use VuFindSearch\Backend\WorldCat\QueryBuilder;
-use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
-use Zend\ServiceManager\Factory\FactoryInterface;
+use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 
 /**
  * Factory for WorldCat backends.
@@ -51,7 +51,7 @@ class WorldCatBackendFactory implements FactoryInterface
     /**
      * Logger.
      *
-     * @var \Zend\Log\LoggerInterface
+     * @var \Laminas\Log\LoggerInterface
      */
     protected $logger;
 
@@ -65,14 +65,14 @@ class WorldCatBackendFactory implements FactoryInterface
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
     /**
      * WorldCat configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $wcConfig;
 
@@ -125,8 +125,7 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
-        $wsKey = isset($this->config->WorldCat->apiKey)
-            ? $this->config->WorldCat->apiKey : null;
+        $wsKey = $this->config->WorldCat->apiKey ?? null;
         $connectorOptions = isset($this->wcConfig->Connector)
             ? $this->wcConfig->Connector->toArray() : [];
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
@@ -143,8 +142,7 @@ class WorldCatBackendFactory implements FactoryInterface
      */
     protected function createQueryBuilder()
     {
-        $exclude = isset($this->config->WorldCat->OCLCCode)
-            ? $this->config->WorldCat->OCLCCode : null;
+        $exclude = $this->config->WorldCat->OCLCCode ?? null;
         return new QueryBuilder($exclude);
     }
 

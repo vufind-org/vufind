@@ -40,8 +40,10 @@ use VuFind\View\Helper\Root\Permission;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
+class PermissionTest  extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Sample configuration with varios config options.
      *
@@ -80,13 +82,15 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testMessageDisplay()
     {
-        $mockPmdMessage = $this->getMockPmd([
+        $mockPmdMessage = $this->getMockPmd(
+            [
                 'deniedTemplateBehavior' => [
                     'action' => 'showMessage',
                     'value' => 'dl_translatable_test',
                     'params' => [],
                 ],
-            ]);
+            ]
+        );
 
         $helper = new Permission($this->getMockPm(false), $mockPmdMessage);
         $helper->setView($this->getMockView());
@@ -99,11 +103,11 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      * Test the template display
      *
      * @return void
-     *
-     * @expectedException Zend\View\Exception\RuntimeException
      */
     public function testTemplateDisplay()
     {
+        $this->expectException(\Laminas\View\Exception\RuntimeException::class);
+
         // Template does not exist, expect an exception, though
         $mockPmd = $this->getMockPmd(
             [
@@ -128,13 +132,15 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testExistingTemplateDisplay()
     {
-        $mockPmd = $this->getMockPmd([
+        $mockPmd = $this->getMockPmd(
+            [
                 'deniedTemplateBehavior' => [
                     'action' => 'showTemplate',
                     'value' => 'ajax/status-available.phtml',
                     'params' => [],
                 ],
-            ]);
+            ]
+        );
 
         $helper = new Permission($this->getMockPm(false), $mockPmd);
         $helper->setView($this->getMockView());
@@ -196,11 +202,11 @@ class PermissionTest  extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Return a view object populated for these test cases.
      *
-     * @return \Zend\View\Renderer\PhpRenderer
+     * @return \Laminas\View\Renderer\PhpRenderer
      */
     protected function getMockView()
     {
-        $escapehtml = new \Zend\View\Helper\EscapeHtml();
+        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();
         $transEsc = new \VuFind\View\Helper\Root\TransEsc();
         $context = new \VuFind\View\Helper\Root\Context();

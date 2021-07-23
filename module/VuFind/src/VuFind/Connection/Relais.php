@@ -27,8 +27,8 @@
  */
 namespace VuFind\Connection;
 
-use Zend\Config\Config;
-use Zend\Http\Client;
+use Laminas\Config\Config;
+use Laminas\Http\Client;
 
 /**
  * Relais connection class.
@@ -39,7 +39,7 @@ use Zend\Http\Client;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Relais implements \Zend\Log\LoggerAwareInterface
+class Relais implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -90,7 +90,7 @@ class Relais implements \Zend\Log\LoggerAwareInterface
      * @param string $oclc   OCLC number to look up
      * @param string $patron Patron ID (null to use default from config)
      *
-     * @return type
+     * @return array
      */
     protected function getOclcRequestData($oclc, $patron)
     {
@@ -122,7 +122,7 @@ class Relais implements \Zend\Log\LoggerAwareInterface
             ->setMethod('POST');
         $requestBody = json_encode($data + $this->getDefaultData());
         $this->debug('Posting ' . $requestBody . ' to ' . $uri);
-        $this->client->setRawBody($requestBody, 'application/json');
+        $this->client->setRawBody($requestBody);
         $this->client->getRequest()->getHeaders()
             ->addHeaderLine('Content-Type: application/json');
         $response = $this->client->send();

@@ -57,7 +57,7 @@ trait AjaxResponseTrait
     /**
      * AJAX Handler plugin manager
      *
-     * @var PluginManager;
+     * @var PluginManager
      */
     protected $ajaxManager = null;
 
@@ -75,6 +75,7 @@ trait AjaxResponseTrait
     {
         switch ($type) {
         case 'application/javascript':
+        case 'application/json':
             $output = ['data' => $data];
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
@@ -97,7 +98,7 @@ trait AjaxResponseTrait
      * @param mixed  $data     The response data
      * @param int    $httpCode A custom HTTP Status Code
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      * @throws \Exception
      */
     protected function getAjaxResponse($type, $data, $httpCode = null)
@@ -120,7 +121,7 @@ trait AjaxResponseTrait
      * @param string     $type Content type to output
      * @param \Exception $e    Exception to output.
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     protected function getExceptionResponse($type, \Exception $e)
     {
@@ -139,9 +140,9 @@ trait AjaxResponseTrait
      * @param string $method AJAX method to call
      * @param string $type   Content type to output
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
-    protected function callAjaxMethod($method, $type = 'application/javascript')
+    protected function callAjaxMethod($method, $type = 'application/json')
     {
         // Check the AJAX handler plugin manager for the method.
         if (!$this->ajaxManager) {

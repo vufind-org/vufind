@@ -30,10 +30,10 @@ namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\ILS\Driver\DAIA;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
-use Zend\Http\Response as HttpResponse;
+use VuFind\ILS\Driver\DAIA;
 
 /**
  * ILS driver test
@@ -46,6 +46,8 @@ use Zend\Http\Response as HttpResponse;
  */
 class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     protected $testResult = [
         0 =>
             [
@@ -141,7 +143,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = $this->createConnector();
     }
@@ -209,17 +211,9 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/daia/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("daia/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
         $service = new \VuFindHttp\HttpService();

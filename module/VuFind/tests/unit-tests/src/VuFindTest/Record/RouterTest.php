@@ -28,10 +28,9 @@
  */
 namespace VuFindTest\Record;
 
+use Laminas\Config\Config;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Config\Config;
 
 /**
  * Record router tests.
@@ -42,7 +41,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RouterTest extends TestCase
+class RouterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test routing with driver object.

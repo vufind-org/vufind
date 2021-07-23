@@ -27,9 +27,9 @@
  */
 namespace VuFindTheme;
 
-use Zend\Mvc\View\Http\InjectTemplateListener as ZendInjectTemplateListener;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
+use Laminas\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Module definition for the VuFind theme system.
@@ -50,7 +50,7 @@ class Module
     public function getAutoloaderConfig()
     {
         return [
-            'Zend\Loader\StandardAutoloader' => [
+            'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ],
@@ -67,7 +67,7 @@ class Module
     {
         return [
             'aliases' => [
-                ZendInjectTemplateListener::class => InjectTemplateListener::class,
+                ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
                 InjectTemplateListener::class => InjectTemplateListenerFactory::class,
@@ -97,16 +97,26 @@ class Module
                     View\Helper\PipelineInjectorFactory::class,
                 View\Helper\HeadScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
+                View\Helper\ParentTemplate::class =>
+                    View\Helper\ParentTemplateFactory::class,
                 View\Helper\InlineScript::class =>
                     View\Helper\PipelineInjectorFactory::class,
+                View\Helper\Slot::class =>
+                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\TemplatePath::class =>
+                    View\Helper\TemplatePathFactory::class,
             ],
             'aliases' => [
                 'headThemeResources' => View\Helper\HeadThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
-                \Zend\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
-                \Zend\View\Helper\HeadScript::class => View\Helper\HeadScript::class,
-                \Zend\View\Helper\InlineScript::class =>
+                \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
+                \Laminas\View\Helper\HeadScript::class =>
+                    View\Helper\HeadScript::class,
+                \Laminas\View\Helper\InlineScript::class =>
                     View\Helper\InlineScript::class,
+                'parentTemplate' => View\Helper\ParentTemplate::class,
+                'slot' => View\Helper\Slot::class,
+                'templatePath' => View\Helper\TemplatePath::class,
             ],
         ];
     }

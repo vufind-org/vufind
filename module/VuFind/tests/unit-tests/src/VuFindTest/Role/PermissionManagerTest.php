@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Oliver Goldschmidt <@o.goldschmidt@tuhh.de>
+ * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -34,11 +34,11 @@ use VuFind\Role\PermissionManager;
  *
  * @category VuFind
  * @package  Tests
- * @author   Oliver Goldschmidt <@o.goldschmidt@tuhh.de>
+ * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PermissionManagerTest extends \VuFindTest\Unit\TestCase
+class PermissionManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Sample configuration with varios config options.
@@ -103,7 +103,7 @@ class PermissionManagerTest extends \VuFindTest\Unit\TestCase
     public function testGrantedPermission()
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
@@ -121,7 +121,7 @@ class PermissionManagerTest extends \VuFindTest\Unit\TestCase
     public function testDeniedPermission()
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->getMockBuilder(\ZfcRbac\Service\AuthorizationService::class)
+        $mockAuth = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')

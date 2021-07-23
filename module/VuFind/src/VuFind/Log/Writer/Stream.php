@@ -28,7 +28,7 @@
 namespace VuFind\Log\Writer;
 
 /**
- * This class extends the Zend Logging towards streams
+ * This class extends the Laminas Logging towards streams
  *
  * @category VuFind
  * @package  Error_Logging
@@ -36,7 +36,7 @@ namespace VuFind\Log\Writer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Stream extends \Zend\Log\Writer\Stream
+class Stream extends \Laminas\Log\Writer\Stream
 {
     use VerbosityTrait;
 
@@ -46,11 +46,11 @@ class Stream extends \Zend\Log\Writer\Stream
      * @param array $event event data
      *
      * @return void
-     * @throws \Zend\Log\Exception\RuntimeException
+     * @throws \Laminas\Log\Exception\RuntimeException
      */
     protected function doWrite(array $event)
     {
         // Apply verbosity, Call parent method:
-        return parent::doWrite($this->applyVerbosity($event));
+        parent::doWrite($this->applyVerbosity($event));
     }
 }

@@ -44,6 +44,12 @@ bibliographyNotes:
   type: array
   items:
     type: string
+buildings:
+  vufind.method: getBuildings
+  description: Buildings where the record is held
+  type: array
+  items:
+    type: string
 callNumbers:
   vufind.method: getCallNumbers
   description: Call numbers

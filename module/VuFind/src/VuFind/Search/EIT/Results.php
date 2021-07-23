@@ -43,6 +43,13 @@ namespace VuFind\Search\EIT;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
+     * Search backend identifier.
+     *
+     * @var string
+     */
+    protected $backendId = 'EIT';
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -55,7 +62,7 @@ class Results extends \VuFind\Search\Base\Results
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
-            ->search('EIT', $query, $offset, $limit, $params);
+            ->search($this->backendId, $query, $offset, $limit, $params);
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();

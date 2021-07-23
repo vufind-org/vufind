@@ -37,10 +37,8 @@ namespace VuFindTest\Mink;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-class JumpToRecordTest extends \VuFindTest\Unit\MinkTestCase
+class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 {
-    use \VuFindTest\Unit\AutoRetryTrait;
-
     /**
      * Test that we can jump to the first record in a single-record result set.
      *
@@ -56,7 +54,7 @@ class JumpToRecordTest extends \VuFindTest\Unit\MinkTestCase
 
         $this->assertEquals(
             'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
-            trim($this->findCss($page, 'h3')->getText())
+            trim($this->findCss($page, 'h1')->getText())
         );
     }
 

@@ -27,8 +27,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Flash message view helper
@@ -47,6 +47,13 @@ class Flashmessages extends AbstractHelper
      * @var FlashMessenger
      */
     protected $fm;
+
+    /**
+     * Flash messenger namespaces
+     *
+     * @var string[]
+     */
+    protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
 
     /**
      * Constructor
@@ -78,13 +85,13 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        $namespaces = ['error', 'info', 'success'];
-        foreach ($namespaces as $ns) {
+        foreach ($this->namespaces as $ns) {
             $messages = array_merge(
                 $this->fm->getMessages($ns), $this->fm->getCurrentMessages($ns)
             );
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
-                $html .= '<div class="' . $this->getClassForNamespace($ns) . '"';
+                $html .= '<div role="alert" class="'
+                    . $this->getClassForNamespace($ns) . '"';
                 if (isset($msg['dataset'])) {
                     foreach ($msg['dataset'] as $attr => $value) {
                         $html .= ' data-' . $attr . '="'

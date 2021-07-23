@@ -175,27 +175,23 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
      */
     public function setConfig($settings)
     {
-        $basemapOptions = $this->basemapOptions;
         $mapSelectionOptions = $this->mapSelectionOptions;
         $this->defaultCoordinates = explode(
             ',',
             $mapSelectionOptions['default_coordinates']
         );
         $this->height = $mapSelectionOptions['height'];
-        $this->basemapUrl = $basemapOptions['basemap_url'];
-        $this->basemapAttribution = $basemapOptions['basemap_attribution'];
     }
 
     /**
-     * Init
-     *
-     * Called at the end of the Search Params objects' initFromRequest() method.
+     * Called before the Search Results object performs its main search
+     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
      * be needed.
      *
      * @param \VuFind\Search\Solr\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -218,7 +214,7 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     public function process($results)
     {
         $reorder_coords = [];
-        $filters = $results->getParams()->getFilters();
+        $filters = $results->getParams()->getRawFilters();
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
@@ -334,7 +330,8 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         $result = [];
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
-        if (strpos($params->get('fq')[0], $this->geoField) !== false) {
+        $filters = $params->get('fq');
+        if (!empty($filters) && strpos($filters[0], $this->geoField) !== false) {
             $params->mergeWith($this->queryBuilder->build($this->searchQuery));
             $params->set('fl', 'id, ' . $this->geoField . ', title');
             $params->set('wt', 'json');

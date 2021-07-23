@@ -27,9 +27,9 @@
  */
 namespace VuFind\I18n\Translator\Loader;
 
-use Zend\I18n\Exception\InvalidArgumentException;
-use Zend\I18n\Translator\Loader\FileLoaderInterface;
-use Zend\I18n\Translator\TextDomain;
+use Laminas\I18n\Exception\InvalidArgumentException;
+use Laminas\I18n\Translator\Loader\FileLoaderInterface;
+use Laminas\I18n\Translator\TextDomain;
 
 /**
  * Handles the language loading and language file parsing
@@ -85,11 +85,8 @@ class ExtendedIni implements FileLoaderInterface
         ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;
-        $this->fallbackLocales = $fallbackLocales;
-        if (!empty($this->fallbackLocales) && !is_array($this->fallbackLocales)) {
-            $this->fallbackLocales = [$this->fallbackLocales];
-        }
-        $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
+        $this->fallbackLocales = $fallbackLocales ? (array)$fallbackLocales : [];
+        $this->reader = $reader ?? new ExtendedIniReader();
     }
 
     /**
@@ -123,12 +120,10 @@ class ExtendedIni implements FileLoaderInterface
         $data = $this->loadLanguageLocale($locale, $filename);
 
         // Load fallback data, if any:
-        if (!empty($this->fallbackLocales)) {
-            foreach ($this->fallbackLocales as $fallbackLocale) {
-                $newData = $this->loadLanguageLocale($fallbackLocale, $filename);
-                $newData->merge($data);
-                $data = $newData;
-            }
+        foreach ($this->fallbackLocales as $fallbackLocale) {
+            $newData = $this->loadLanguageLocale($fallbackLocale, $filename);
+            $newData->merge($data);
+            $data = $newData;
         }
 
         return $data;

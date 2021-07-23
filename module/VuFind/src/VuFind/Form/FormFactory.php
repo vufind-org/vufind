@@ -28,7 +28,10 @@
 namespace VuFind\Form;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Factory for configurable forms.
@@ -53,7 +56,7 @@ class FormFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -65,9 +68,10 @@ class FormFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config')->toArray();
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $viewHelperManager = $container->get('ViewHelperManager');
 
         return new $requestedName(
-            $yamlReader, $config['Feedback'] ?? null
+            $yamlReader, $viewHelperManager, $config['Feedback'] ?? null
         );
     }
 }

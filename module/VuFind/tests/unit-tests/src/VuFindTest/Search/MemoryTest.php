@@ -28,9 +28,8 @@
  */
 namespace VuFindTest\Search;
 
+use Laminas\Session\Container;
 use VuFind\Search\Memory;
-use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Session\Container;
 
 /**
  * Memory unit tests.
@@ -41,7 +40,7 @@ use Zend\Session\Container;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MemoryTest extends TestCase
+class MemoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test basic memory.

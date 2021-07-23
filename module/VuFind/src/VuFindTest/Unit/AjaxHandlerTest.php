@@ -27,9 +27,9 @@
  */
 namespace VuFindTest\Unit;
 
-use Zend\Http\Request;
-use Zend\Mvc\Controller\Plugin\Params;
-use Zend\Stdlib\Parameters;
+use Laminas\Http\Request;
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\Stdlib\Parameters;
 
 /**
  * Base class for AjaxHandler tests.
@@ -40,8 +40,25 @@ use Zend\Stdlib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AjaxHandlerTest extends MockContainerTest
+abstract class AjaxHandlerTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Mock container
+     *
+     * @var \VuFindTest\Container\MockContainer
+     */
+    protected $container;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->container = new \VuFindTest\Container\MockContainer($this);
+    }
+
     /**
      * Create mock user object.
      *
@@ -84,7 +101,7 @@ abstract class AjaxHandlerTest extends MockContainerTest
         $request->setQuery(new Parameters($get));
         $request->setPost(new Parameters($post));
         $controller = $this->container->createMock(
-            'Zend\Mvc\Controller\AbstractActionController', ['getRequest']
+            'Laminas\Mvc\Controller\AbstractActionController', ['getRequest']
         );
         $controller->expects($this->any())->method('getRequest')
             ->will($this->returnValue($request));

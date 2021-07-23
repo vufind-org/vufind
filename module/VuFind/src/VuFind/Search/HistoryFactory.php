@@ -28,7 +28,10 @@
 namespace VuFind\Search;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Search history factory.
@@ -53,7 +56,7 @@ class HistoryFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -65,7 +68,9 @@ class HistoryFactory implements FactoryInterface
             ->get('Search');
         $resultsManager = $container
             ->get(\VuFind\Search\Results\PluginManager::class);
-        $sessionId = $container->get(\Zend\Session\SessionManager::class)->getId();
-        return new $requestedName($searchTable, $sessionId, $resultsManager);
+        $sessionId = $container->get(\Laminas\Session\SessionManager::class)
+            ->getId();
+        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        return new $requestedName($searchTable, $sessionId, $resultsManager, $cfg);
     }
 }

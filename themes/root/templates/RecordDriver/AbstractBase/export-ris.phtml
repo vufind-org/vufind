@@ -1,6 +1,6 @@
 <?php
 // TODO: fold this logic into record driver methods at some point:
-$marc = $this->driver->tryMethod('getMarcRecord');
+$marc = $this->driver->tryMethod('getMarcReader');
 if (is_object($marc)) {
     $marcPhdField = $marc->getField('502');
     $marcProceedingsField = $marc->getField('711');
@@ -155,6 +155,10 @@ if (is_array($notes)) {
 
 foreach ($this->record($this->driver)->getUrlList() as $url) {
     echo 'UR  - ' . "$url\r\n";
+}
+
+if ($doi = $this->driver->tryMethod('getCleanDOI')) {
+    echo "DO  - $doi\r\n";
 }
 
 // End of Record:

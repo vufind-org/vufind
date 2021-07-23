@@ -8,7 +8,7 @@ function getGoogleOptions() {
   var opts_temp = $('[class*="googlePreviewSpan"]').attr("class").split('__')[1].split(';');
   var options = {};
   for (var key in opts_temp) {
-    if (opts_temp.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(opts_temp, key)) {
       var arr = opts_temp[key].split(':');
       options[arr[0]] = arr[1].split(',');
     }
@@ -85,7 +85,7 @@ function processOLBookInfo(booksInfo) {
 
 function processHTBookInfo(booksInfo) {
   for (var b in booksInfo) {
-    if (booksInfo.hasOwnProperty(b)) {
+    if (Object.prototype.hasOwnProperty.call(booksInfo, b)) {
       var bibkey = b.replace(/:/, '').toUpperCase();
       var $link = $('.previewHT.' + bibkey);
       var items = booksInfo[b].items;

@@ -28,6 +28,8 @@
  */
 namespace VuFind\Search;
 
+use Laminas\Config\Config;
+
 /**
  * VuFind Search History Helper
  *
@@ -62,17 +64,27 @@ class History
     protected $resultsManager;
 
     /**
+     * VuFind configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $config;
+
+    /**
      * History constructor
      *
      * @param \VuFind\Db\Table\Search              $searchTable    Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
+     * @param \Laminas\Config\Config               $config         Configuration
      */
-    public function __construct($searchTable, $sessionId, $resultsManager)
-    {
+    public function __construct($searchTable, $sessionId, $resultsManager,
+        \Laminas\Config\Config $config = null
+    ) {
         $this->searchTable = $searchTable;
         $this->sessionId = $sessionId;
         $this->resultsManager = $resultsManager;
+        $this->config = $config;
     }
 
     /**
@@ -100,7 +112,7 @@ class History
         $searchHistory = $this->searchTable->getSearches($this->sessionId, $userId);
 
         // Loop through and sort the history
-        $saved = $unsaved = [];
+        $saved = $schedule = $unsaved = [];
         foreach ($searchHistory as $current) {
             $search = $current->getSearchObject()->deminify($this->resultsManager);
             if ($current->saved == 1) {
@@ -108,8 +120,34 @@ class History
             } else {
                 $unsaved[] = $search;
             }
+            if ($search->getOptions()->supportsScheduledSearch()) {
+                $schedule[$search->getSearchId()] = $current->notification_frequency;
+            }
         }
 
-        return compact('saved', 'unsaved');
+        return compact('saved', 'schedule', 'unsaved');
+    }
+
+    /**
+     * Get a list of scheduling options (empty list if scheduling disabled).
+     *
+     * @return array
+     */
+    public function getScheduleOptions()
+    {
+        // If scheduled searches are disabled, return no options:
+        if (!($this->config->Account->schedule_searches ?? false)) {
+            return [];
+        }
+        // If custom frequencies are not provided, return defaults:
+        if (!isset($this->config->Account->scheduled_search_frequencies)) {
+            return [
+                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'
+            ];
+        }
+        // If we have a setting, make sure it is properly formatted as an array:
+        return $this->config->Account->scheduled_search_frequencies instanceof Config
+            ? $this->config->Account->scheduled_search_frequencies->toArray()
+            : (array)$this->config->Account->scheduled_search_frequencies;
     }
 }

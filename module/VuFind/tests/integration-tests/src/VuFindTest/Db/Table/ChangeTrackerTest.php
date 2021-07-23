@@ -32,24 +32,30 @@ use VuFind\Db\Table\ChangeTracker;
 /**
  * ChangeTracker Test Class
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
+final class ChangeTrackerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
+
     /**
      * Standard setup method.
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Give up if we're not running in CI:
         if (!$this->continuousIntegrationRunning()) {
-            return $this->markTestSkipped('Continuous integration not running.');
+            $this->markTestSkipped('Continuous integration not running.');
+            return;
         }
     }
 
@@ -61,7 +67,7 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
     public function testChangeTracker()
     {
         $core = 'testCore';
-        $tracker = $this->getTable('ChangeTracker');
+        $tracker = $this->getTable(ChangeTracker::class);
 
         // Create a new row:
         $tracker->index($core, 'test1', 1326833170);

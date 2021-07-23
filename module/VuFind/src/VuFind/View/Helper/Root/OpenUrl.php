@@ -38,7 +38,7 @@ use VuFind\Resolver\Driver\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class OpenUrl extends \Zend\View\Helper\AbstractHelper
+class OpenUrl extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Context helper
@@ -50,7 +50,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * VuFind OpenURL configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -85,10 +85,10 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context             $context       Context helper
-     * @param array               $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager       $pluginManager Resolver plugin manager
-     * @param \Zend\Config\Config $config        VuFind OpenURL config
+     * @param Context                $context       Context helper
+     * @param array                  $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager          $pluginManager Resolver plugin manager
+     * @param \Laminas\Config\Config $config        VuFind OpenURL config
      */
     public function __construct(Context $context, $openUrlRules,
         PluginManager $pluginManager, $config = null
@@ -175,15 +175,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         if (null !== $this->config && isset($this->config->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            list($base) = explode('?', $this->config->url);
+            [$base] = explode('?', $this->config->url);
         } else {
             $base = false;
         }
 
         $embed = (isset($this->config->embed) && !empty($this->config->embed));
 
-        $embedAutoLoad = isset($this->config->embed_auto_load)
-            ? $this->config->embed_auto_load : false;
+        $embedAutoLoad = $this->config->embed_auto_load ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
         if (!($embedAutoLoad === "1" || $embedAutoLoad === "0")
@@ -204,8 +203,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // instantiate the resolver plugin to get a proper resolver link
-        $resolver = isset($this->config->resolver)
-            ? $this->config->resolver : 'other';
+        $resolver = $this->config->resolver ?? 'other';
         $openurl = $this->recordDriver->getOpenUrl();
         if ($this->resolverPluginManager->has($resolver)) {
             $resolverObj = new \VuFind\Resolver\Connection(
@@ -235,9 +233,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
-        return $this->context->__invoke($this->getView())->renderInContext(
-            'Helpers/openurl.phtml', $params
-        );
+        return ($this->context)($this->getView())
+            ->renderInContext('Helpers/openurl.phtml', $params);
     }
 
     /**

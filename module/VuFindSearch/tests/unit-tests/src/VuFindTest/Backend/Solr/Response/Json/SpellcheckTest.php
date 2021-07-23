@@ -53,7 +53,8 @@ class SpellcheckTest extends TestCase
             [
                 ['this is a phrase', []],
                 ['foo', []],
-                ['foobar', []]
+                ['foobar', []],
+                ['1842', []],   // test numeric handling (can cause problems)
             ],
             'fake query'
         );
@@ -61,13 +62,27 @@ class SpellcheckTest extends TestCase
             [
                 ['is a', []],
                 ['bar', []],
-                ['foo bar', []]
+                ['foo bar', []],
+                ['1842', []],
+                ['1843', []]
             ],
             'fake query'
         );
         $s1->mergeWith($s2);
-        $this->assertCount(5, $s1);
+        $this->assertCount(7, $s1);
         $this->assertEquals($s2, $s1->getSecondary());
+        $this->assertEquals(
+            [
+                'this is a phrase' => [],
+                'foobar' => [],
+                'foo' => [],
+                'bar' => [],
+                'foo bar' => [],
+                '1842' => [],
+                '1843' => [],
+            ],
+            iterator_to_array($s1->getIterator())
+        );
     }
 
     /**

@@ -68,8 +68,7 @@ class PaginationHelper
         if (isset($functionConfig['default_sort'])) {
             return $functionConfig['default_sort'];
         }
-        reset($functionConfig['sort']);
-        return key($functionConfig['sort']);
+        return array_key_first($functionConfig['sort']);
     }
 
     /**
@@ -122,12 +121,15 @@ class PaginationHelper
             $ilsPaging = false;
         }
         // Collect ILS call params
-        $ilsParams = ['sort' => $this->validateSort($functionConfig, $sort)];
+        $ilsParams = [];
+        if ($sort = $this->validateSort($functionConfig, $sort)) {
+            $ilsParams['sort'] = $sort;
+        }
         if ($ilsPaging) {
             $ilsParams['page'] = $page >= 1 ? $page : 1;
             $ilsParams['limit'] = $limit;
         }
-        $sortList = $this->getSortList($functionConfig, $ilsParams['sort']);
+        $sortList = $this->getSortList($functionConfig, $sort);
         return compact('page', 'limit', 'ilsPaging', 'ilsParams', 'sortList');
     }
 
@@ -139,7 +141,7 @@ class PaginationHelper
      * @param int   $count       Result count
      * @param array $records     Result records
      *
-     * @return false|\Zend\Paginator\Paginator
+     * @return false|\Laminas\Paginator\Paginator
      */
     public function getPaginator($pageOptions, $count, $records)
     {
@@ -149,13 +151,13 @@ class PaginationHelper
             throw new \VuFind\Exception\BadRequest('Page number out of range.');
         }
         if ($pageOptions['ilsPaging'] && $limit < $count) {
-            $adapter = new \Zend\Paginator\Adapter\NullFill($count);
+            $adapter = new \Laminas\Paginator\Adapter\NullFill($count);
         } elseif ($limit > 0 && $limit < $count) {
-            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($records);
+            $adapter = new \Laminas\Paginator\Adapter\ArrayAdapter($records);
         } else {
             return false;
         }
-        $paginator = new \Zend\Paginator\Paginator($adapter);
+        $paginator = new \Laminas\Paginator\Paginator($adapter);
         $paginator->setItemCountPerPage($limit);
         $paginator->setCurrentPageNumber($page);
         return $paginator;

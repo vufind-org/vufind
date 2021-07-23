@@ -28,6 +28,9 @@
 namespace VuFind\Search\EDS;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for EDS search options objects.
@@ -52,7 +55,7 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -60,15 +63,9 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $session = new \Zend\Session\Container(
-            'EBSCO', $container->get(\Zend\Session\SessionManager::class)
-        );
-        // No API info in session? Re-establish connection:
-        if (!isset($session->info)) {
-            $backend = $container->get(\VuFind\Search\BackendManager::class)
-                ->get('EDS');
-            $backend->getSessionToken();
-        }
-        return parent::__invoke($container, $requestedName, [$session->info]);
+        $backend = $container->get(\VuFind\Search\BackendManager::class)
+            ->get('EDS');
+        $extra = [$backend->getInfo()];
+        return parent::__invoke($container, $requestedName, $extra);
     }
 }

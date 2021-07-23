@@ -28,15 +28,16 @@
  */
 namespace VuFind\Search;
 
+use Laminas\EventManager\EventInterface;
+
+use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+
 use SplObjectStorage;
 
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
-
-use Zend\EventManager\EventInterface;
-
-use Zend\EventManager\SharedEventManagerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Service;
 
 /**
  * Manager for search backends.
@@ -141,7 +142,7 @@ class BackendManager
      */
     public function onResolve(EventInterface $e)
     {
-        $name = $e->getParam('backend');
+        $name = $e->getParam('command')->getTargetBackendName();
         if ($name && $this->has($name)) {
             return $this->get($name);
         }
@@ -159,7 +160,7 @@ class BackendManager
     {
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
-            $events->attach('VuFind\Search', 'resolve', $listener);
+            $events->attach('VuFind\Search', Service::EVENT_RESOLVE, $listener);
             $this->listeners->attach($events, $listener);
         }
     }

@@ -3,21 +3,24 @@
   $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
   $hierarchyTreeList = $this->tab->getTreeList();
   $activeTree = $this->tab->getActiveTree();
+  $translations = $this->jsTranslations()->getJSONFromArray(
+    [
+      'showTree' => 'hierarchy_show_tree',
+      'hideTree' => 'hierarchy_hide_tree'
+    ]
+  );
 
   $this->inlineScript(
-     \Zend\View\Helper\HeadScript::SCRIPT,
+     \Laminas\View\Helper\HeadScript::SCRIPT,
      "var hierarchySettings = {\n"
      . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
      . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
      . "};\n"
-     . "VuFind.addTranslations({\n"
-     . "    'showTree': '" . $this->transEsc('hierarchy_show_tree') . "',\n"
-     . "    'hideTree': '" . $this->transEsc('hierarchy_hide_tree') . "'}\n"
-     . ");\n",
+     . "VuFind.addTranslations($translations);\n",
      'SET'
   );
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
   echo $this->inlineScript();
 ?>
 <?php if (count($hierarchyTreeList) > 1): ?>
@@ -40,7 +43,7 @@
           <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
           <option value="Title"><?=$this->transEsc('Title')?></option>
         </select>
-        <input type="submit" class="btn btn-default" value="<?=$this->transEsc('Search') ?>"/>
+        <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Search') ?>"/>
         <i id="treeSearchLoadingImg" class="fa fa-spinner fa-spin hidden" aria-hidden="true"></i>
       </div>
       <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->translate('nohit_heading')?></div>
@@ -50,7 +53,8 @@
     <div id="hierarchyTree" class="hierarchy-tree">
       <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
       <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />
-      <input type="hidden" value="<?=isset($this->treeContext) ? $this->treeContext : 'Record'?>" class="hiddenContext" />
+      <input type="hidden" value="<?=$this->escapeHtml($this->driver->getSourceIdentifier())?>" class="hiddenHierarchySource" />
+      <input type="hidden" value="<?=$this->treeContext ?? 'Record'?>" class="hiddenContext" />
       <?php if ($this->layout()->getTemplate() != 'layout/lightbox'): ?>
         <noscript>
           <?php if ($this->config()->nonJavascriptSupportEnabled()): ?>

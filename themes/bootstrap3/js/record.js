@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, grecaptcha, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback */
 
 /**
@@ -90,17 +90,11 @@ function registerAjaxCommentRecord(_context) {
     var id = form.id.value;
     var recordSource = form.source.value;
     var url = VuFind.path + '/AJAX/JSON?' + $.param({ method: 'commentRecord' });
-    var data = {
-      comment: form.comment.value,
-      id: id,
-      source: recordSource
-    };
-    if (typeof grecaptcha !== 'undefined') {
-      var recaptcha = $(form).find('.g-recaptcha');
-      if (recaptcha.length > 0) {
-        data['g-recaptcha-response'] = grecaptcha.getResponse(recaptcha.data('captchaId'));
-      }
-    }
+    var data = {};
+    $(form).find("input,textarea").each(function appendCaptchaData() {
+      var input = $(this);
+      data[input.attr('name')] = input.val();
+    });
     $.ajax({
       type: 'POST',
       url: url,
@@ -167,6 +161,10 @@ function registerTabEvents() {
   handleAjaxTabLinks();
 
   VuFind.lightbox.bind('.tab-pane.active');
+
+  if (typeof VuFind.openurl !== 'undefined') {
+    VuFind.openurl.init($('.tab-pane.active'));
+  }
 }
 
 function removeHashFromLocation() {
@@ -279,7 +277,7 @@ function backgroundLoadTab(tabid) {
   return ajaxLoadTab(newTab, tabid, false);
 }
 
-function applyRecordTabHash() {
+function applyRecordTabHash(scrollToTabs) {
   var activeTab = $('.record-tabs li.active').attr('data-tab');
   var $initiallyActiveTab = $('.record-tabs li.initiallyActive a');
   var newTab = typeof window.location.hash !== 'undefined'
@@ -289,13 +287,31 @@ function applyRecordTabHash() {
   if (newTab.length <= 1 || newTab === '#tabnav') {
     $initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    $('.' + newTab.substr(1) + ' a').click();
+    var $tabLink = $('.record-tabs .' + newTab.substr(1) + ' a');
+    if ($tabLink.length > 0) {
+      $tabLink.click();
+      if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
+        $('html, body').animate({
+          scrollTop: $('.record-tabs').offset().top
+        }, 500);
+      }
+    }
   }
 }
 
 $(window).on('hashchange', applyRecordTabHash);
 
+function removeCheckRouteParam() {
+  if (window.location.search.indexOf('checkRoute=1') >= 0) {
+    var newHref = window.location.href.replace('?checkRoute=1&', '?').replace(/[?&]checkRoute=1/, '');
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', newHref);
+    }
+  }
+}
+
 function recordDocReady() {
+  removeCheckRouteParam();
   $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
@@ -340,5 +356,5 @@ function recordDocReady() {
   });
 
   registerTabEvents();
-  applyRecordTabHash();
+  applyRecordTabHash(false);
 }

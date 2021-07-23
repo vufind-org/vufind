@@ -28,7 +28,10 @@
 namespace VuFind\Connection;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * WorldCat utils factory.
@@ -53,7 +56,7 @@ class WorldCatUtilsFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -66,7 +69,7 @@ class WorldCatUtilsFactory implements FactoryInterface
         $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         $ip = $container->get('Request')->getServer()->get('SERVER_ADDR');
         return new $requestedName(
-            isset($config->WorldCat) ? $config->WorldCat : null,
+            $config->WorldCat ?? null,
             $client, true, $ip
         );
     }

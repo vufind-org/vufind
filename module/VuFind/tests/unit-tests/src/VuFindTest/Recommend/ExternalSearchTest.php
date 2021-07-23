@@ -38,7 +38,7 @@ use VuFind\Recommend\ExternalSearch;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExternalSearchTest extends \VuFindTest\Unit\TestCase
+class ExternalSearchTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Run a test scenario
@@ -54,7 +54,7 @@ class ExternalSearchTest extends \VuFindTest\Unit\TestCase
     {
         $rec = new ExternalSearch();
         $rec->setConfig($label . ':' . $template);
-        $params = new \Zend\StdLib\Parameters();
+        $params = new \Laminas\Stdlib\Parameters();
         $params->set('lookfor', $lookfor);
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),

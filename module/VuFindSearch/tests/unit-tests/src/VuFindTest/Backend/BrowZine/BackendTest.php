@@ -28,14 +28,13 @@
  */
 namespace VuFindTest\Backend\BrowZine;
 
-use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for BrowZine backend.
@@ -46,18 +45,20 @@ use Zend\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test retrieving a record (not supported).
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage retrieve() not supported by BrowZine.
      */
     public function testRetrieve()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('retrieve() not supported by BrowZine.');
+
         $conn = $this->getConnector();
         $back = new Backend($conn, $this->getRCFactory());
         $back->retrieve('foo');
@@ -141,24 +142,6 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     /// Internal API
 
     /**
-     * Load a response as fixture.
-     *
-     * @param string $fixture Fixture file
-     *
-     * @return mixed
-     *
-     * @throws InvalidArgumentException Fixture files does not exist
-     */
-    protected function loadResponse($fixture)
-    {
-        $file = realpath(sprintf('%s/browzine/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return file_get_contents($file);
-    }
-
-    /**
      * Return connector.
      *
      * @param string $fixture HTTP response fixture to load (optional)
@@ -169,7 +152,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $adapter->setResponse($this->loadResponse($fixture));
+            $adapter->setResponse(
+                $this->getFixture('browzine/response/' . $fixture, 'VuFindSearch')
+            );
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
@@ -185,9 +170,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\BrowZine\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs([$client, 'faketoken', 'fakeid'])
             ->getMock();
     }

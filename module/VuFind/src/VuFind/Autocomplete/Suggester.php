@@ -27,6 +27,7 @@
  */
 namespace VuFind\Autocomplete;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
@@ -82,11 +83,9 @@ class Suggester
      * This logic is present in the factory class so that it can be easily shared
      * by multiple AJAX handlers.
      *
-     * @param \Zend\Stdlib\Parameters $request    The user request
-     * @param string                  $typeParam  Request parameter containing search
-     * type
-     * @param string                  $queryParam Request parameter containing query
-     * string
+     * @param Parameters $request    The user request
+     * @param string     $typeParam  Request parameter containing search type
+     * @param string     $queryParam Request parameter containing query string
      *
      * @return array
      */
@@ -101,8 +100,8 @@ class Suggester
         // If we're using a combined search box, we need to override the searcher
         // and type settings.
         if (substr($type, 0, 7) == 'VuFind:') {
-            list(, $tmp) = explode(':', $type, 2);
-            list($searcher, $type) = explode('|', $tmp, 2);
+            [, $tmp] = explode(':', $type, 2);
+            [$searcher, $type] = explode('|', $tmp, 2);
         }
 
         // get Autocomplete_Type config
@@ -125,7 +124,7 @@ class Suggester
             if (strpos($module, ':') === false) {
                 $module .= ':'; // force colon to avoid warning in explode below
             }
-            list($name, $params) = explode(':', $module, 2);
+            [$name, $params] = explode(':', $module, 2);
             $handler = $this->pluginManager->get($name);
             $handler->setConfig($params);
         } else {

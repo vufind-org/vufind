@@ -56,12 +56,12 @@ class NoneTest extends \PHPUnit\Framework\TestCase
      * Test that resolve is not supported.
      *
      * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage UrlShortener None is unable to resolve shortlinks.
      */
     public function testNoResolution()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('UrlShortener None is unable to resolve shortlinks.');
+
         $none = new None();
         $none->resolve('foo');
     }

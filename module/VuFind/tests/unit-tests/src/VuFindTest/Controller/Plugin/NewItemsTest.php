@@ -28,9 +28,8 @@
  */
 namespace VuFindTest\Controller\Plugin;
 
+use Laminas\Config\Config;
 use VuFind\Controller\Plugin\NewItems;
-use VuFindTest\Unit\TestCase as TestCase;
-use Zend\Config\Config;
 
 /**
  * New items controller plugin tests.
@@ -41,7 +40,7 @@ use Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NewItemsTest extends TestCase
+class NewItemsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test ILS bib ID retrieval.
@@ -50,7 +49,7 @@ class NewItemsTest extends TestCase
      */
     public function testGetBibIDsFromCatalog()
     {
-        $flash = $this->createMock(\Zend\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
+        $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
@@ -66,7 +65,7 @@ class NewItemsTest extends TestCase
      */
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
-        $flash = $this->createMock(\Zend\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
+        $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
         $config = new Config(['result_pages' => 10]);
@@ -85,7 +84,7 @@ class NewItemsTest extends TestCase
     public function testGetFundList()
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
-            ->setMethods(['checkCapability', 'getFunds'])
+            ->onlyMethods(['checkCapability', 'getFunds'])
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('checkCapability')
@@ -207,10 +206,10 @@ class NewItemsTest extends TestCase
      *
      * @return \VuFind\ILS\Connection
      */
-    protected function getMockCatalog()
+    protected function getMockCatalog(): \VuFind\ILS\Connection
     {
         $catalog = $this->getMockBuilder(__NAMESPACE__ . '\MockILSConnection')
-            ->setMethods(['getNewItems'])
+            ->onlyMethods(['getNewItems'])
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('getNewItems')

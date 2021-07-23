@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Doi extends \Zend\View\Helper\AbstractHelper
+class Doi extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * Context helper
@@ -48,7 +48,7 @@ class Doi extends \Zend\View\Helper\AbstractHelper
     /**
      * VuFind OpenURL configuration
      *
-     * @var \Zend\Config\Config
+     * @var \Laminas\Config\Config
      */
     protected $config;
 
@@ -69,8 +69,8 @@ class Doi extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Context             $context Context helper
-     * @param \Zend\Config\Config $config  VuFind OpenURL config
+     * @param Context                $context Context helper
+     * @param \Laminas\Config\Config $config  VuFind OpenURL config
      */
     public function __construct(Context $context, $config = null)
     {
@@ -109,9 +109,8 @@ class Doi extends \Zend\View\Helper\AbstractHelper
         $params = compact('doi');
 
         // Render the subtemplate:
-        return $this->context->__invoke($this->getView())->renderInContext(
-            'Helpers/doi.phtml', $params
-        );
+        return ($this->context)($this->getView())
+            ->renderInContext('Helpers/doi.phtml', $params);
     }
 
     /**

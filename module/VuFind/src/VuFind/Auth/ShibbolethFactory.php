@@ -28,6 +28,11 @@
 namespace VuFind\Auth;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
+use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
 /**
  * Factory for Shibboleth authentication module.
@@ -38,8 +43,10 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShibbolethFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
+    public const SHIBBOLETH_CONFIG_FILE_NAME = "shibboleth";
+
     /**
      * Create an object
      *
@@ -52,7 +59,7 @@ class ShibbolethFactory implements \Zend\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -60,8 +67,35 @@ class ShibbolethFactory implements \Zend\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $loader = $this->getConfigurationLoader($container);
+        $request = $container->get('Request');
         return new $requestedName(
-            $container->get(\Zend\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class),
+            $loader, $request
         );
+    }
+
+    /**
+     * Return configuration loader for shibboleth
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return configuration loader
+     */
+    public function getConfigurationLoader(ContainerInterface $container)
+    {
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
+        $override = $config->Shibboleth->allow_configuration_override ?? false;
+        $loader = null;
+        if ($override) {
+            $shibConfig = $container->get('VuFind\Config')->get(
+                self::SHIBBOLETH_CONFIG_FILE_NAME
+            );
+            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
+        } else {
+            $loader = new SingleIdPConfigurationLoader($config);
+        }
+        return $loader;
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Abstract Driver for API-based ILS drivers
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -27,12 +27,13 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\BadRequest as BadRequest;
-use VuFind\Exception\Forbidden as Forbidden;
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Exception\BadConfig;
+use VuFind\Exception\BadRequest;
+use VuFind\Exception\Forbidden;
 use VuFind\Exception\ILS as ILSException;
-use VuFind\Exception\RecordMissing as RecordMissing;
+use VuFind\Exception\RecordMissing;
 use VuFindHttp\HttpServiceAwareInterface;
-use Zend\Log\LoggerAwareInterface;
 
 /**
  * Abstract Driver for API-based ILS drivers
@@ -54,12 +55,12 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Allow default corrections to all requests
      *
-     * @param \Zend\Http\Headers $headers the request headers
-     * @param array              $params  the parameters object
+     * @param \Laminas\Http\Headers $headers the request headers
+     * @param array                 $params  the parameters object
      *
      * @return array
      */
-    protected function preRequest(\Zend\Http\Headers $headers, $params)
+    protected function preRequest(\Laminas\Http\Headers $headers, $params)
     {
         return [$headers, $params];
     }
@@ -67,10 +68,11 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
     /**
      * Function that obscures and logs debug data
      *
-     * @param string             $method      Request method GET/POST/PUT/DELETE/etc
-     * @param string             $path        Request URL
-     * @param array              $params      Request parameters
-     * @param \Zend\Http\Headers $req_headers Headers object
+     * @param string                $method      Request method
+     * (GET/POST/PUT/DELETE/etc.)
+     * @param string                $path        Request URL
+     * @param array                 $params      Request parameters
+     * @param \Laminas\Http\Headers $req_headers Headers object
      *
      * @return void
      */
@@ -98,7 +100,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * @param array  $params  Parameters object to be sent as data
      * @param array  $headers Additional headers
      *
-     * @return \Zend\Http\Response
+     * @return \Laminas\Http\Response
      */
     public function makeRequest($method = "GET", $path = "/", $params = [],
         $headers = []
@@ -112,7 +114,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         // Add default headers and parameters
         $req_headers = $client->getRequest()->getHeaders();
         $req_headers->addHeaders($headers);
-        list($req_headers, $params) = $this->preRequest($req_headers, $params);
+        [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
             $this->debugRequest($method, $path, $params, $req_headers);
@@ -149,7 +151,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
      * @param array $config Configuration array (usually loaded from a VuFind .ini
      * file whose name corresponds with the driver class name).
      *
-     * @throws ILSException if base url excluded
+     * @throws BadConfig if base url excluded
      * @return void
      */
     public function setConfig($config)
@@ -157,7 +159,7 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         parent::setConfig($config);
         // Base URL required for API drivers
         if (!isset($config['API']['base_url'])) {
-            throw new ILSException('API Driver configured without base url.');
+            throw new BadConfig('API Driver configured without base url.');
         }
     }
 }

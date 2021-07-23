@@ -27,7 +27,7 @@
  */
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Hierarchy tree data formatter plugin manager

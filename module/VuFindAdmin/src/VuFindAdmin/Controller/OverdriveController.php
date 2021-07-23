@@ -54,18 +54,16 @@ class OverdriveController extends AbstractAdmin
      */
     protected function getParam($param)
     {
-        return (isset($this->params[$param]))
-            ? $this->params[$param]
-            : $this->params()->fromPost(
-                $param,
-                $this->params()->fromQuery($param, null)
-            );
+        return $this->params[$param] ?? $this->params()->fromPost(
+            $param,
+            $this->params()->fromQuery($param, null)
+        );
     }
 
     /**
      * Tag Details
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function homeAction()
     {

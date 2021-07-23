@@ -28,15 +28,14 @@
  */
 namespace VuFindTest\Backend\LibGuides;
 
-use InvalidArgumentException;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client as HttpClient;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Unit tests for LibGuides backend.
@@ -47,18 +46,20 @@ use Zend\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test retrieving a record (not supported).
      *
      * @return void
-     *
-     * @expectedException        \Exception
-     * @expectedExceptionMessage retrieve() not supported by LibGuides.
      */
     public function testRetrieve()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('retrieve() not supported by LibGuides.');
+
         $conn = $this->getConnector();
         $back = new Backend($conn, $this->getRCFactory());
         $back->retrieve('foo');
@@ -143,11 +144,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
-     *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsLibGuidesException()
     {
+        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -183,38 +184,19 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $conn = $this->getConnectorMock(['query']);
         $expectedParams0 = ['search' => 'baz'];
-        $conn->expects($this->at(0))
-            ->method('query')
-            ->with($this->equalTo($expectedParams0), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $expectedParams1 = ['search' => 'fallback'];
-        $conn->expects($this->at(1))
+        $conn->expects($this->exactly(2))
             ->method('query')
-            ->with($this->equalTo($expectedParams1), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->withConsecutive([$expectedParams0, 0, 10], [$expectedParams1, 0, 10])
+            ->willReturnOnConsecutiveCalls(
+                ['recordCount' => 0, 'documents' => []],
+                ['recordCount' => 0, 'documents' => []]
+            );
         $back = new Backend($conn, null, 'fallback');
         $back->search(new Query('baz'), 0, 10);
     }
 
     /// Internal API
-
-    /**
-     * Load a response as fixture.
-     *
-     * @param string $fixture Fixture file
-     *
-     * @return mixed
-     *
-     * @throws InvalidArgumentException Fixture files does not exist
-     */
-    protected function loadResponse($fixture)
-    {
-        $file = realpath(sprintf('%s/libguides/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
-        }
-        return file_get_contents($file);
-    }
 
     /**
      * Return connector.
@@ -227,7 +209,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $adapter->setResponse($this->loadResponse($fixture));
+            $adapter->setResponse(
+                $this->getFixture("libguides/response/$fixture", 'VuFindSearch')
+            );
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
@@ -243,9 +227,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getConnectorMock(array $mock = [])
     {
-        $client = $this->createMock(\Zend\Http\Client::class);
+        $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\LibGuides\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['fakeid', $client])
             ->getMock();
     }

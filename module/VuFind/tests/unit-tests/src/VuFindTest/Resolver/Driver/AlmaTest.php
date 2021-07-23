@@ -32,10 +32,10 @@ namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\Resolver\Driver\Alma;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
-use Zend\Http\Response as HttpResponse;
+use VuFind\Resolver\Driver\Alma;
 
 /**
  * Alma resolver driver test
@@ -48,8 +48,10 @@ use Zend\Http\Response as HttpResponse;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AlmaTest extends \VuFindTest\Unit\TestCase
+class AlmaTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     /**
      * Test-Config
      *
@@ -82,60 +84,85 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
 
         $testResult = [
-            0 => [
+            [
+                'title' => 'Unpaywall',
+                'coverage' => '',
+                'access' => 'open',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=1',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
                 'title' => 'Ebook override',
                 'coverage' => 'Available from 2019',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861830000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            1 => [
+            [
                 'title' => 'ebrary Academic Complete Subscription UKI Edition',
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861800000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            2 => [
+            [
                 'title' => 'ebrary Science & Technology Subscription',
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861790000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            3 => [
+            [
                 'title' => 'EBSCOhost Academic eBook Collection (North America)',
                 'coverage' => '',
                 'access' => 'open',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861770000561&institutionId=561&customerId=550',
+                'notes' => 'notessssssssssss SERVICE LEVEL PUBLIC NOTE',
+                'authentication' => 'collection level auth SERVICE LEVEL AUTHE NOTE',
                 'service_type' => 'getFullTxt',
             ],
-            4 => [
+            [
                 'title' => 'EBSCOhost eBook Community College Collection',
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861780000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getHolding',
             ],
-            5 => [
+            [
                 'title' => 'Elsevier ScienceDirect Books',
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861820000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            6 => [
+            [
                 'title' => 'Request Assistance for this Resource!',
                 'coverage' => '',
                 'access' => '',
                 'href' => 'https://www.google.com/search?Testingrft.oclcnum=437189463&q=Fundamental+Data+Compression&rft.archive=9942811800561',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getWebService',
             ],
-            7 => [
+            [
                 'title' => 'ProQuest Safari Tech Books Online',
                 'coverage' => '',
                 'access' => 'limited',
                 'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=5687861810000561&institutionId=561&customerId=550',
+                'notes' => '',
+                'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
         ];
@@ -156,22 +183,14 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/resolver/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("resolver/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
         $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
 
-        $client = new \Zend\Http\Client();
+        $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
         $conn = new Alma($this->openUrlConfig['OpenURL']['url'], $client);

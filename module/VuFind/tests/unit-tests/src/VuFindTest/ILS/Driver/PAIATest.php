@@ -30,10 +30,10 @@ namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
 
-use VuFind\ILS\Driver\PAIA;
-use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Client\Adapter\Test as TestAdapter;
+use Laminas\Http\Response as HttpResponse;
 
-use Zend\Http\Response as HttpResponse;
+use VuFind\ILS\Driver\PAIA;
 
 /**
  * ILS driver test
@@ -46,6 +46,8 @@ use Zend\Http\Response as HttpResponse;
  */
 class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
     protected $validConfig = [
         'DAIA' =>
             [
@@ -135,9 +137,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '05-23-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => 'Zend framework in action / Allen, Rob (2009)',
+                'title' => 'Test framework in action / Allen, Rob (2009)',
                 'feeid' => null,
-                'about' => 'Zend framework in action / Allen, Rob (2009)',
+                'about' => 'Test framework in action / Allen, Rob (2009)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28323471'
             ],
         2 =>
@@ -318,7 +320,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'canWrite' => true
     ];
 
-    /******************* Test cases ***************/
+    /*******************
+     * Test cases
+     ***************/
     /*
      ok changePassword
      ok checkRequestIsValid
@@ -339,7 +343,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->driver = $this->createConnector();
     }
@@ -560,17 +564,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(
-                __DIR__ .
-                '/../../../../../../tests/fixtures/paia/response/' . $fixture
+            $responseObj = HttpResponse::fromString(
+                $this->getFixture("paia/response/$fixture")
             );
-            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(
-                    sprintf('Unable to load fixture file: %s ', $file)
-                );
-            }
-            $response = file_get_contents($file);
-            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
         $service = new \VuFindHttp\HttpService();
@@ -592,7 +588,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $service = $this->getHttpService($fixture);
         $conn = new PAIA(
             new \VuFind\Date\Converter(),
-            new \Zend\Session\SessionManager()
+            new \Laminas\Session\SessionManager()
         );
         $conn->setHttpService($service);
         return $conn;
@@ -611,19 +607,23 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $service = $this->getHttpService($fixture);
         $dateConverter = new \VuFind\Date\Converter();
-        $sessionManager = new \Zend\Session\SessionManager();
+        $sessionManager = new \Laminas\Session\SessionManager();
         $conn = $this->getMockBuilder(\VuFind\ILS\Driver\PAIA::class)
             ->setConstructorArgs([$dateConverter, $sessionManager])
-            ->setMethods(['getScope'])
+            ->onlyMethods(['getScope'])
             ->getMock();
         $conn->expects($this->any())->method('getScope')
-            ->will($this->returnValue([
-                'write_items',
-                'change_password',
-                'read_fees',
-                'read_items',
-                'read_patron'
-            ]));
+            ->will(
+                $this->returnValue(
+                    [
+                    'write_items',
+                    'change_password',
+                    'read_fees',
+                    'read_items',
+                    'read_patron'
+                    ]
+                )
+            );
         $conn->setHttpService($service);
         $conn->setConfig($this->validConfig);
         $conn->init();

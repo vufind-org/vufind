@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HelpText extends \Zend\View\Helper\AbstractHelper
+class HelpText extends \Laminas\View\Helper\AbstractHelper
 {
     /**
      * The current language
@@ -103,9 +103,9 @@ class HelpText extends \Zend\View\Helper\AbstractHelper
     public function render($name, $context = null)
     {
         // Set up the needed context in the view:
-        $this->contextHelper->__invoke($this->getView());
+        ($this->contextHelper)($this->getView());
         $oldContext = $this->contextHelper
-            ->apply(null === $context ? [] : $context);
+            ->apply($context ?? []);
 
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.

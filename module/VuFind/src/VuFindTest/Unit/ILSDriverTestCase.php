@@ -37,7 +37,7 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-abstract class ILSDriverTestCase extends TestCase
+abstract class ILSDriverTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * ILS driver
@@ -50,11 +50,11 @@ abstract class ILSDriverTestCase extends TestCase
      * Test that driver complains about missing configuration.
      *
      * @return void
-     *
-     * @expectedException VuFind\Exception\ILS
      */
     public function testMissingConfiguration()
     {
+        $this->expectException(\VuFind\Exception\ILS::class);
+
         $this->driver->init();
     }
 }

@@ -8,15 +8,14 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/font-awesome/font-awesome";
 <#SCSS */
 
-@import "vendor/bootstrap-accessibility/bootstrap-accessibility";
-@import "vendor/a11y";
-
+@import "components/accessibility";
 @import "components/variables";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
+@import "components/devtools";
 @import "components/form";
 @import "components/icons";
 @import "components/js-tree";
@@ -45,6 +44,10 @@ html { font-size: 14px; } // Root font size from Bootstrap, allows consistent us
 a,
 label { cursor: pointer; }
 .alert.alert-info a { text-decoration: underline; }
+.alert-default {
+    border-color: @well-border;
+    background-color: @well-bg;
+}
 
 // Improve contrast
 .btn.disabled:active,
@@ -227,18 +230,6 @@ footer {
   white-space: pre;
 }
 
-/* ------ Facets ------ */
-.date-fields {
-  display: flex;
-
-  .date-from { padding-right: .25rem; }
-  .date-to   { padding-left:  .25rem; }
-}
-@media (min-width: 768px) {
-  .author-facets { display: flex; }
-  .author-list { flex: 0 1 100%; }
-}
-
 /* ------ MyResearch ------ */
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu a {
@@ -246,6 +237,9 @@ footer {
   padding: 10px 15px;
   &:hover,
   &:focus { background-color: @nav-link-hover-bg; }
+  &.user-list-link i {
+    margin-left: 0.5rem;
+  }
 }
 .myresearch-menu .flex { display: flex; }
 .myresearch-menu a:hover {

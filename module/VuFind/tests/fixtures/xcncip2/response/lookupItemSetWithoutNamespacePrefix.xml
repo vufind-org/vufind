@@ -1,0 +1,173 @@
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+<?xml version="1.0" encoding="utf-8" ?>
+<NCIPMessage xmlns="http://www.niso.org/2008/ncip" version="http://www.niso.org/schemas/ncip/v2_0/imp1/xsd/ncip_v2_0.xsd">
+   <LookupItemSetResponse>
+      <BibInformation>
+         <BibliographicId>
+            <BibliographicRecordId>
+               <BibliographicRecordIdentifier>MZK01000000421</BibliographicRecordIdentifier>
+               <AgencyId Scheme="http://www.niso.org/ncip/v1_0/schemes/agencyidtype/agencyidtype.scm">MZK</AgencyId>
+            </BibliographicRecordId>
+         </BibliographicId>
+         <HoldingsSet>
+            <BibliographicDescription>
+               <Author>Malinová, Libuše</Author>
+               <BibliographicItemId>
+                  <BibliographicItemIdentifier>80-900870-1-9</BibliographicItemIdentifier>
+                  <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">ISBN</BibliographicItemIdentifierCode>
+               </BibliographicItemId>
+               <Publisher>EPA,</Publisher>
+               <Title>Anglicko-český a česko-anglický elektrotechnický a elektronický slovník / Sest. aut. kol. pod</Title>
+               <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+            </BibliographicDescription>
+            <ItemInformation>
+               <ItemId>
+                  <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                  <ItemIdentifierValue>MZK01000000421-MZK50000000421000010</ItemIdentifierValue>
+               </ItemId>
+               <ItemOptionalFields>
+                  <BibliographicDescription>
+                     <BibliographicItemId>
+                        <BibliographicItemIdentifier>2610002885</BibliographicItemIdentifier>
+                        <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">Legal Deposit Number</BibliographicItemIdentifierCode>
+                     </BibliographicItemId>
+                  </BibliographicDescription>
+                  <ItemUseRestrictionType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">In Library Use Only</ItemUseRestrictionType>
+                  <CirculationStatus Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available on shelf</CirculationStatus>
+                  <HoldQueueLength>0</HoldQueueLength>
+                  <ItemDescription>
+                     <CallNumber>621.3 ANG</CallNumber>
+                     <NumberOfPieces>1</NumberOfPieces>
+                  </ItemDescription>
+               </ItemOptionalFields>
+            </ItemInformation>
+         </HoldingsSet>
+      </BibInformation>
+      <BibInformation>
+         <BibliographicId>
+            <BibliographicItemId>
+               <BibliographicItemIdentifier>MZK01000062021</BibliographicItemIdentifier>
+               <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">Accession Number</BibliographicItemIdentifierCode>
+            </BibliographicItemId>
+         </BibliographicId>
+         <HoldingsSet>
+            <BibliographicDescription>
+               <Author>Brammer, Lawrence M.</Author>
+               <BibliographicItemId>
+                  <BibliographicItemIdentifier>0-13-914622-9</BibliographicItemIdentifier>
+                  <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">ISBN</BibliographicItemIdentifierCode>
+               </BibliographicItemId>
+               <Publisher>Prentice-Hall,</Publisher>
+               <Title>Therapeutic psychology : fundamentals of counseling and psychotherapy / Lawrence M. Brammer, Everett</Title>
+               <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+            </BibliographicDescription>
+            <ItemInformation>
+               <ItemId>
+                  <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                  <ItemIdentifierValue>MZK01000062021-MZK50000062021000010</ItemIdentifierValue>
+               </ItemId>
+               <ItemOptionalFields>
+                  <BibliographicDescription>
+                     <BibliographicItemId>
+                        <BibliographicItemIdentifier>3119972468</BibliographicItemIdentifier>
+                        <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">Legal Deposit Number</BibliographicItemIdentifierCode>
+                     </BibliographicItemId>
+                  </BibliographicDescription>
+                  <ItemUseRestrictionType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">Limited Circulation, Normal Loan Period</ItemUseRestrictionType>
+                  <CirculationStatus Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available On Shelf</CirculationStatus>
+                  <HoldQueueLength>0</HoldQueueLength>
+                  <ItemDescription>
+                     <CallNumber>PK-0083.568</CallNumber>
+                     <NumberOfPieces>1</NumberOfPieces>
+                  </ItemDescription>
+               </ItemOptionalFields>
+            </ItemInformation>
+         </HoldingsSet>
+      </BibInformation>
+      <BibInformation>
+         <BibliographicId>
+            <BibliographicRecordId>
+               <BibliographicRecordIdentifier>MZK01000000425</BibliographicRecordIdentifier>
+               <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">Accession Number</BibliographicRecordIdentifierCode>
+            </BibliographicRecordId>
+         </BibliographicId>
+         <HoldingsSet>
+            <Location>
+               <LocationType Scheme="http://www.niso.org/ncip/;1_0/imp1/schemes/locationtype/locationtype.scm">Permanent Location</LocationType>
+               <LocationName>
+                  <LocationNameInstance>
+                     <LocationNameLevel>1</LocationNameLevel>
+                     <LocationNameValue>Some holding location</LocationNameValue>
+                  </LocationNameInstance>
+               </LocationName>
+            </Location>
+            <BibliographicDescription>
+               <Author>Elman, Jiří</Author>
+               <BibliographicItemId>
+                  <BibliographicItemIdentifier>80-85605-77-5</BibliographicItemIdentifier>
+                  <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">ISBN</BibliographicItemIdentifierCode>
+               </BibliographicItemId>
+               <Publisher>Victoria Publishing,</Publisher>
+               <Title>Anglicko-český ekonomický slovník : Ekonomie, právo, výpočetní technika. [2.] M-Z / ..., Kam</Title>
+               <MediumType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/mediumtype/mediumtype.scm">Book</MediumType>
+            </BibliographicDescription>
+            <ItemInformation>
+               <ItemId>
+                  <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                  <ItemIdentifierValue>MZK01000000425-MZK50000000425000020</ItemIdentifierValue>
+               </ItemId>
+               <ItemOptionalFields>
+                  <BibliographicDescription>
+                     <BibliographicItemId>
+                        <BibliographicItemIdentifier>2610007443</BibliographicItemIdentifier>
+                        <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">Legal Deposit Number</BibliographicItemIdentifierCode>
+                     </BibliographicItemId>
+                  </BibliographicDescription>
+                  <ItemUseRestrictionType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">In Library Use Only</ItemUseRestrictionType>
+                  <CirculationStatus Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available On Shelf</CirculationStatus>
+                  <HoldQueueLength>0</HoldQueueLength>
+                  <ItemDescription>
+                     <CallNumber>2-0997.767,2</CallNumber>
+                     <NumberOfPieces>2</NumberOfPieces>
+                  </ItemDescription>
+               </ItemOptionalFields>
+            </ItemInformation>
+            <ItemInformation>
+               <ItemId>
+                  <ItemIdentifierType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/visibleitemidentifiertype/visibleitemidentifiertype.scm">Accession Number</ItemIdentifierType>
+                  <ItemIdentifierValue>MZK01000000425-MZK50000000425000030</ItemIdentifierValue>
+               </ItemId>
+               <ItemOptionalFields>
+                  <BibliographicDescription>
+                     <BibliographicItemId>
+                        <BibliographicItemIdentifier>2610008987</BibliographicItemIdentifier>
+                        <BibliographicItemIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicitemidentifiercode/bibliographicitemidentifiercode.scm">Legal Deposit Number</BibliographicItemIdentifierCode>
+                     </BibliographicItemId>
+                  </BibliographicDescription>
+                  <ItemUseRestrictionType Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/itemuserestrictiontype/itemuserestrictiontype.scm">Limited Circulation, Normal Loan Period</ItemUseRestrictionType>
+                  <CirculationStatus Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/circulationstatus/circulationstatus.scm">Available On Shelf</CirculationStatus>
+                  <HoldQueueLength>0</HoldQueueLength>
+                  <ItemDescription>
+                     <NumberOfPieces>2</NumberOfPieces>
+                  </ItemDescription>
+               </ItemOptionalFields>
+            </ItemInformation>
+         </HoldingsSet>
+      </BibInformation>
+      <BibInformation>
+         <BibliographicId>
+            <BibliographicRecordId>
+               <BibliographicRecordIdentifier>MZK01000062052</BibliographicRecordIdentifier>
+               <BibliographicRecordIdentifierCode Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes/bibliographicrecordidentifiercode/bibliographicrecordidentifiercode.scm">Accession Number</BibliographicRecordIdentifierCode>
+            </BibliographicRecordId>
+         </BibliographicId>
+         <Problem>
+            <ProblemType Scheme="http://www.niso.org/ncip/v1_0/schemes/processingerrortype/lookupitemprocessingerror.scm">Unknown Item</ProblemType>
+            <ProblemValue>Item MZK01000062052, you are searching for, does not exists.</ProblemValue>
+         </Problem>
+      </BibInformation>
+   </LookupItemSetResponse>
+</NCIPMessage>

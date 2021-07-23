@@ -28,6 +28,9 @@
 namespace VuFind\Db\Table;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Generic table gateway factory.
@@ -38,7 +41,7 @@ use Interop\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GatewayFactory implements \Zend\ServiceManager\Factory\FactoryInterface
+class GatewayFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Return row prototype object (null if unavailable)
@@ -68,12 +71,12 @@ class GatewayFactory implements \Zend\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
     ) {
-        $adapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+        $adapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
         $tm = $container->get(\VuFind\Db\Table\PluginManager::class);
         $config = $container->get('config');
         $rowPrototype = $this->getRowPrototype($container, $requestedName);

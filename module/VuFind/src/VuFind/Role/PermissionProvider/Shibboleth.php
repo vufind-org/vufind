@@ -29,8 +29,8 @@
  */
 namespace VuFind\Role\PermissionProvider;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth as ShibbolethAuth;
-use Zend\Http\PhpEnvironment\Request;
 
 /**
  * Shibboleth permission provider for VuFind.
@@ -62,16 +62,15 @@ class Shibboleth extends ServerParam
     /**
      * Constructor
      *
-     * @param Request             $request Request object
-     * @param \Zend\Config\Config $config  VuFind configuration
+     * @param Request                $request Request object
+     * @param \Laminas\Config\Config $config  VuFind configuration
      */
     public function __construct(Request $request, $config)
     {
         parent::__construct($request);
 
-        $this->idpServerParam = isset($config->Shibboleth->idpserverparam)
-            ? $config->Shibboleth->idpserverparam
-            : ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
+        $this->idpServerParam = $config->Shibboleth->idpserverparam
+            ?? ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
 
         $this->aliases = ['idpentityid' => $this->idpServerParam];
         $this->serverParamDelimiter = ';';

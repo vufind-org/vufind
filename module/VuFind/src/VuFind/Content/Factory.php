@@ -28,6 +28,9 @@
 namespace VuFind\Content;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for instantiating content loaders
@@ -40,7 +43,7 @@ use Interop\Container\ContainerInterface;
  *
  * @codeCoverageIgnore
  */
-class Factory implements \Zend\ServiceManager\Factory\FactoryInterface
+class Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Get the configuration setting name to get content provider settings.
@@ -84,7 +87,7 @@ class Factory implements \Zend\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

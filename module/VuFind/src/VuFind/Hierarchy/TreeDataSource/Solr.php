@@ -81,6 +81,13 @@ class Solr extends AbstractBase
     protected $batchSize = 1000;
 
     /**
+     * Hierarchy cache file prefix.
+     *
+     * @var string
+     */
+    protected $cachePrefix = null;
+
+    /**
      * Constructor.
      *
      * @param Connector        $connector Solr connector
@@ -118,6 +125,49 @@ class Solr extends AbstractBase
     }
 
     /**
+     * Get default search parameters shared by cursorMark and legacy methods.
+     *
+     * @param string $q Search query
+     *
+     * @return array
+     */
+    protected function getDefaultSearchParams(string $q): array
+    {
+        return [
+            'q'  => [$q],
+            'fq' => $this->filters,
+            'hl' => ['false'],
+            'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
+                . 'is_hierarchy_id,hierarchy_sequence,title_in_hierarchy'],
+            'wt' => ['json'],
+            'json.nl' => ['arrarr'],
+        ];
+    }
+
+    /**
+     * Search Solr using legacy, non-cursorMark method (sometimes needed for
+     * backward compatibility, but usually disabled).
+     *
+     * @param string $q    Search query
+     * @param int    $rows Max rows to retrieve
+     *
+     * @return array
+     */
+    protected function searchSolrLegacy(string $q, int $rows): array
+    {
+        $params = new ParamBag(
+            $this->getDefaultSearchParams($q) +
+            [
+                'rows' => [$rows], // Integer max
+                'start' => [0]
+            ]
+        );
+        $response = $this->solrConnector->search($params);
+        $json = json_decode($response);
+        return $json->response->docs ?? [];
+    }
+
+    /**
      * Search Solr.
      *
      * @param string $q    Search query
@@ -128,20 +178,18 @@ class Solr extends AbstractBase
      */
     protected function searchSolr($q, $rows = 1073741823)
     {
+        // Use legacy method if configured to do so:
+        if ($this->batchSize <= 0) {
+            return $this->searchSolrLegacy($q, $rows);
+        }
+
+        // By default, use cursorMark method:
         $prevCursorMark = '';
         $cursorMark = '*';
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
             $params = new ParamBag(
-                [
-                    'q'  => [$q],
-                    'fq' => $this->filters,
-                    'hl' => ['false'],
-                    'spellcheck' => ['false'],
-                    'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
-                        . 'is_hierarchy_id,hierarchy_sequence,title_in_hierarchy'],
-                    'wt' => ['json'],
-                    'json.nl' => ['arrarr'],
+                $this->getDefaultSearchParams($q) + [
                     'rows' => [min([$this->batchSize, $rows])],
                     // Start is always 0 when using cursorMark
                     'start' => [0],
@@ -192,8 +240,7 @@ class Solr extends AbstractBase
         }
         $map = [$id => []];
         foreach ($records as $current) {
-            $parents = isset($current->hierarchy_parent_id)
-                ? $current->hierarchy_parent_id : [];
+            $parents = $current->hierarchy_parent_id ?? [];
             foreach ($parents as $parentId) {
                 if ($current->id === $parentId) {
                     // Ignore circular reference
@@ -265,7 +312,9 @@ class Solr extends AbstractBase
         $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
-            ? $this->cacheDir . '/' . sprintf($cacheTemplate, urlencode($id))
+            ? $this->cacheDir . '/'
+              . ($this->cachePrefix ? "{$this->cachePrefix}_" : '')
+              . sprintf($cacheTemplate, urlencode($id))
             : false;
 
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;

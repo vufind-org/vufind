@@ -284,7 +284,7 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -308,7 +308,7 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -339,7 +339,7 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -348,7 +348,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = $request->get('limit')) != $defaultLimit) {
+        if (($limit = intval($request->get('limit'))) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -376,7 +376,7 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -392,7 +392,7 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -409,7 +409,7 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
@@ -488,7 +488,7 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -519,7 +519,7 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -548,7 +548,7 @@ class Params
     /**
      * Get the value for which results view to use
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return string
@@ -702,8 +702,7 @@ class Params
      */
     public function getView()
     {
-        return null === $this->view
-            ? $this->getOptions()->getDefaultView() : $this->view;
+        return $this->view ?? $this->getOptions()->getDefaultView();
     }
 
     /**
@@ -806,7 +805,7 @@ class Params
     public function hasFilter($filter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
 
         // Check all of the relevant fields for matches:
         foreach ($this->getAliasesForFacetField($field) as $current) {
@@ -832,7 +831,7 @@ class Params
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
             // Extract field and value from filter string:
-            list($field, $value) = $this->parseFilter($newFilter);
+            [$field, $value] = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
     }
@@ -867,7 +866,7 @@ class Params
     public function removeFilter($oldFilter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($oldFilter);
+        [$field, $value] = $this->parseFilter($oldFilter);
 
         // Make sure the field exists
         if (isset($this->filterList[$field])) {
@@ -956,7 +955,7 @@ class Params
     {
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
-        list($fieldName) = explode(':', $filter);
+        [$fieldName] = explode(':', $filter);
         $this->checkboxFacets[$fieldName][$filter]
             = ['desc' => $desc, 'filter' => $filter];
     }
@@ -983,9 +982,8 @@ class Params
         if (isset($this->facetConfig[$field])) {
             return $this->facetConfig[$field];
         }
-        return isset($this->extraFacetLabels[$field])
-            ? $this->extraFacetLabels[$field]
-            : ($default ?: 'unrecognized_facet_label');
+        return $this->extraFacetLabels[$field]
+            ?? ($default ?: 'unrecognized_facet_label');
     }
 
     /**
@@ -1013,7 +1011,7 @@ class Params
      *
      * @return array
      */
-    public function getFilters()
+    public function getRawFilters()
     {
         return $this->filterList;
     }
@@ -1036,7 +1034,7 @@ class Params
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
-            list($operator, $field) = $this->parseOperatorAndFieldName($field);
+            [$operator, $field] = $this->parseOperatorAndFieldName($field);
             $translate = in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
@@ -1128,7 +1126,7 @@ class Params
         $list = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $current) {
-                list($field, $value) = $this->parseFilter($current['filter']);
+                [$field, $value] = $this->parseFilter($current['filter']);
                 if (!isset($list[$field])) {
                     $list[$field] = [];
                 }
@@ -1141,20 +1139,20 @@ class Params
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $whitelist Whitelist of checkbox filters to return (null for all)
+     * @param array $include List of checkbox filters to return (null for all)
      *
      * @return array
      */
-    public function getCheckboxFacets(array $whitelist = null)
+    public function getCheckboxFacets(array $include = null)
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
         foreach ($this->checkboxFacets as $facets) {
             foreach ($facets as $facet) {
-                // If the current filter is not on the whitelist, skip it (but
-                // accept everything if the whitelist is empty).
-                if (!empty($whitelist) && !in_array($facet['filter'], $whitelist)) {
+                // If the current filter is not on the include list, skip it (but
+                // accept everything if the include list is empty).
+                if (!empty($include) && !in_array($facet['filter'], $include)) {
                     continue;
                 }
                 $facet['selected'] = $this->hasFilter($facet['filter']);
@@ -1171,7 +1169,7 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1219,7 +1217,7 @@ class Params
     {
         // Make sure date is valid; default to wildcard otherwise:
         $date = SolrUtils::sanitizeDate($date);
-        return $date === null ? '*' : $date;
+        return $date ?? '*';
     }
 
     /**
@@ -1275,13 +1273,13 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request         Parameter object representing
-     * user request.
-     * @param string                  $requestParam    Name of parameter containing
-     * names of range filter fields.
-     * @param Callable                $valueFilter     Optional callback to process
-     * values in the range.
-     * @param Callable                $filterGenerator Optional callback to create
+     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * representing user request.
+     * @param string                     $requestParam    Name of parameter
+     * containing names of range filter fields.
+     * @param callable                   $valueFilter     Optional callback to
+     * process values in the range.
+     * @param callable                   $filterGenerator Optional callback to create
      * a filter query from the range values.
      *
      * @return void
@@ -1379,14 +1377,14 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
     protected function initDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'daterange', [$this, 'formatYearForDateRange'],
             [$this, 'buildDateRangeFilter']
         );
@@ -1397,14 +1395,14 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
     protected function initFullDateFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'fulldaterange', [$this, 'formatDateForFullDateRange'],
             [$this, 'buildFullDateRangeFilter']
         );
@@ -1415,14 +1413,14 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
     protected function initNumericRangeFilters($request)
     {
-        return $this->initGenericRangeFilters(
+        $this->initGenericRangeFilters(
             $request, 'numericrange', [$this, 'formatValueForNumericRange'],
             [$this, 'buildNumericRangeFilter']
         );
@@ -1431,7 +1429,7 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1471,7 +1469,7 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
      *
      * @return void
@@ -1506,7 +1504,7 @@ class Params
     public function hasHiddenFilter($filter)
     {
         // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
+        [$field, $value] = $this->parseFilter($filter);
 
         if (isset($this->hiddenFilters[$field])
             && in_array($value, $this->hiddenFilters[$field])
@@ -1529,7 +1527,7 @@ class Params
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasHiddenFilter($newFilter)) {
             // Extract field and value from filter string:
-            list($field, $value) = $this->parseFilter($newFilter);
+            [$field, $value] = $this->parseFilter($newFilter);
             if (!empty($field) && '' !== $value) {
                 $this->hiddenFilters[$field][] = $value;
             }
@@ -1720,7 +1718,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return VuFindSearch\Query\AbstractQuery
+     * @return \VuFindSearch\Query\AbstractQuery
      */
     public function getQuery()
     {
@@ -1786,11 +1784,19 @@ class Params
     ) {
         $config = $this->configLoader
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (empty($config->$facetList)) {
-            return false;
+        $retVal = false;
+        // If the section is in reverse order, the tilde will flag this:
+        if (substr($facetList, 0, 1) == '~') {
+            foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
+        } else {
+            foreach ($config->$facetList ?? [] as $key => $value) {
+                $this->addCheckboxFacet($key, $value);
+                $retVal = true;
+            }
         }
-        foreach ($config->$facetList as $key => $value) {
-            $this->addCheckboxFacet($key, $value);
-        }
+        return $retVal;
     }
 }

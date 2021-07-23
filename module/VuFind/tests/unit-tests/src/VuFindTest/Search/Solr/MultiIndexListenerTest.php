@@ -28,14 +28,14 @@
  */
 namespace VuFindTest\Search\Solr;
 
+use Laminas\EventManager\Event;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\HandlerMap;
 
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
-use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for multiindex listener.
@@ -46,8 +46,10 @@ use Zend\EventManager\Event;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class MultiIndexListenerTest extends TestCase
+class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Specs used for stripping tests.
      *
@@ -121,11 +123,12 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    protected function setup()
+    protected function setUp(): void
     {
         $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
         $connector      = new Connector('http://example.org/', $handlermap);
         $this->backend  = new Backend($connector);
+        $this->backend->setIdentifier('foo');
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);
     }
 
@@ -142,7 +145,11 @@ class MultiIndexListenerTest extends TestCase
                 'shards' => [self::$shards['b'], self::$shards['c']],
             ]
         );
-        $event    = new Event('pre', $this->backend, ['params' => $params]);
+        $command  = new MockCommandForMultiIndexListenerTest($params);
+        $event    = new Event(
+            Service::EVENT_PRE, $this->backend,
+            ['params' => $params, 'command' => $command]
+        );
         $this->listener->onSearchPre($event);
 
         $facets   = $params->get('facet.field');
@@ -162,9 +169,10 @@ class MultiIndexListenerTest extends TestCase
                 'shards' => [self::$shards['b'], self::$shards['c']],
             ]
         );
+        $command  = new MockCommandForMultiIndexListenerTest($params, 'retrieve');
         $event    = new Event(
-            'pre', $this->backend,
-            ['params' => $params, 'context' => 'retrieve']
+            Service::EVENT_PRE, $this->backend,
+            ['params' => $params, 'context' => 'retrieve', 'command' => $command]
         );
         $this->listener->onSearchPre($event);
 
@@ -182,7 +190,7 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testAttach()
     {
-        $mock = $this->createMock(\Zend\EventManager\SharedEventManagerInterface::class);
+        $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
@@ -254,5 +262,14 @@ class MultiIndexListenerTest extends TestCase
             ['test' => ['QueryFields' => [], 'FilterQuery' => 'format:Book']],
             $specs
         );
+    }
+}
+
+class MockCommandForMultiIndexListenerTest
+    extends \VuFindSearch\Command\AbstractBase
+{
+    public function __construct(ParamBag $params, $context = 'foo')
+    {
+        parent::__construct('foo', $context, $params);
     }
 }
