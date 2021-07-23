@@ -112,7 +112,7 @@
         ?>
         <!-- onload didn't work, so we use a separate script snippet -->
         <div class="tf-wikidata-image" data-url="<?=htmlspecialchars($imgUrl)?>"></div>
-        <script>TueFind.GetImagesFromWikidata();</script>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'TueFind.GetImagesFromWikidata();', 'SET')?>
       </div>
     <?php endif; ?>
   </div>

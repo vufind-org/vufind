@@ -1,4 +1,5 @@
-<script>
+<?php
+$jsSnippet = <<<EOD
 $(function () {
     $('#mltmore').css('cursor', 'pointer');
     $('#mltmore').click(function () {
@@ -8,7 +9,9 @@ $(function () {
         }
     });
 });
-</script>
+EOD;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
 <style>
 #mlt li:nth-child(n+6) {
     display:none;
