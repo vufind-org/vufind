@@ -190,6 +190,10 @@ public class TueFindAuth extends TueFind {
         for (final String beaconId : getSubfieldValuesMatchlingList(record, "BEAa")) {
             externalReferences.add(beaconId);
         }
+        
+        String wikipediaUrl = getFirstSubfieldValueWithPrefix(record, "670a","Wikipedia");
+        if (wikipediaUrl != null)
+            externalReferences.add("Wikipedia");
 
         return externalReferences;
     }
