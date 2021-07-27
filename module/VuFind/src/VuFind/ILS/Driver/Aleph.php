@@ -592,7 +592,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $this->addressMappings[$key] = $val;
             }
         }
-      
+
         if (isset($this->config['Languages'])) {
             foreach ($this->config['Languages'] as $locale => $lang) {
                 $this->languages[$locale] = $lang;
@@ -1575,7 +1575,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $address = $xml->xpath('//address-information')[0];
         foreach ($this->addressMappings as $key => $value) {
             if (!empty($value)) {
-                $profile[$key] = (string) $address->{$value};
+                $profile[$key] = (string)$address->{$value};
             }
         }
         $fullName = $profile['fullname'];
@@ -1584,7 +1584,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
             $profile['firstname'] = "";
         } else {
             [$profile['lastname'], $profile['firstname']]
-                = explode(",",  $fullName);
+                = explode(",", $fullName);
         }
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
