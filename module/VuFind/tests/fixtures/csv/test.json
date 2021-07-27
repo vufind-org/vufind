@@ -1,0 +1,73 @@
+[
+    {
+        "id": [
+            "1"
+        ],
+        "title": [
+            "first"
+        ],
+        "author": [
+            "Bob",
+            "Fred"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "2"
+        ],
+        "title": [
+            "second"
+        ],
+        "author": [
+            "Jane"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "3"
+        ],
+        "title": [
+            "third"
+        ],
+        "author": [
+            "     Kevin"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "4"
+        ],
+        "title": [
+            "The Fourth"
+        ],
+        "author": [
+            "Tom"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    },
+    {
+        "id": [
+            "5"
+        ],
+        "title": [
+            "fiveyfivey"
+        ],
+        "author": [
+            "Pet\u00e9"
+        ],
+        "institution": [
+            "HardCoded"
+        ]
+    }
+]

@@ -737,7 +737,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->snooze();
         // Check for confirmation message
         $this->assertEquals(
-            'Your favorite(s) were deleted.',
+            'Your saved item(s) were deleted.',
             $this->findCss($page, '.modal .alert-success')->getText()
         );
         $this->clickCss($page, '.modal .close');
