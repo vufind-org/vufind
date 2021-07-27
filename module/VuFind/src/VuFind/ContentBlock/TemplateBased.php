@@ -80,7 +80,7 @@ class TemplateBased implements ContentBlockInterface
      *
      * @param string $pathPrefix Subdirectory where the template should be located
      * @param string $page       Template name (defaults to config value if unset)
-     * @param string $pattern    Filesystem pattern
+     * @param string $pattern    Filesystem pattern (see PageLocator)
      *
      * @return array
      */

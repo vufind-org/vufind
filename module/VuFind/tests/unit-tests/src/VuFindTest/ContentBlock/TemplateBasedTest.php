@@ -68,6 +68,37 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test basic functionality of .phtml content block, with overrides sent to
+     * the getContext method.
+     *
+     * @return void
+     */
+    public function testBasicPhtmlFunctionalityWithContextOverrides()
+    {
+        $details = [
+            'renderer' => 'phtml',
+            'page' => 'bar',
+            'path' => '/path/to/customBasePath/bar.phtml',
+            'relativePath' => 'customBasePath/bar.phtml',
+        ];
+        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $locator->expects($this->once())->method('determineTemplateAndRenderer')
+            ->with(
+                $this->equalTo('templates/customBasePath/'),
+                $this->equalTo('bar'),
+                $this->equalTo('%pathPrefix%/%pageName%')
+            )->will($this->returnValue($details));
+        $block = new \VuFind\ContentBlock\TemplateBased($locator);
+        $block->setConfig('foo');
+        $this->assertEquals(
+            ['template' => 'customBasePath/bar.phtml', 'pageLocatorDetails' => $details],
+            $block->getContext('templates/customBasePath/', 'bar', '%pathPrefix%/%pageName%')
+        );
+    }
+
+    /**
      * Test functionality of .phtml content block w/ i18n.
      *
      * @return void
