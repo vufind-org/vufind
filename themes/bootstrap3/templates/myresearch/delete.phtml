@@ -9,12 +9,12 @@
     <?php endif; ?>
 
     <ul class="record-list">
-    <?php foreach ($this->records as $favorite): ?>
-      <li>
-        <strong><?=$this->transEsc('Title') ?>:</strong>
-        <?=$this->escapeHtml($favorite->getBreadcrumb())?>
-      </li>
-    <?php endforeach; ?>
+      <?php foreach ($this->records as $favorite): ?>
+        <li>
+          <strong><?=$this->transEsc('Title') ?>:</strong>
+          <?=$this->escapeHtml($favorite->getBreadcrumb())?>
+        </li>
+      <?php endforeach; ?>
     </ul>
     <br />
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Delete')?>"/>
