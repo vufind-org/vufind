@@ -1282,9 +1282,14 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     $holddate = $this->parseDate($holddate);
                 }
                 $delete = ($delete[0] == "Y");
+                // Secondary, Aleph-specific identifier that may be useful for
+                // local customizations
+                $adm_id = (string)$z30->{'z30-doc-number'};
+                
                 $holdList[] = [
                     'type' => $type,
                     'item_id' => $item_id,
+                    'adm_id'   => $adm_id,
                     'location' => $location,
                     'title' => $title,
                     'author' => $author,
