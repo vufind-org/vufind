@@ -1285,7 +1285,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 // Secondary, Aleph-specific identifier that may be useful for
                 // local customizations
                 $adm_id = (string)$z30->{'z30-doc-number'};
-                
+
                 $holdList[] = [
                     'type' => $type,
                     'item_id' => $item_id,
