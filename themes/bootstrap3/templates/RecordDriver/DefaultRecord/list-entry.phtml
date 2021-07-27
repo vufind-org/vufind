@@ -206,10 +206,10 @@
       <?=$thumbnail ?>
     <?php endif; ?>
   </div>
-<?php
-$escId = $this->escapeJs($id);
-$escSource = $this->escapeJs($source);
-$script = <<<JS
+  <?php
+    $escId = $this->escapeJs($id);
+    $escSource = $this->escapeJs($source);
+    $script = <<<JS
 $('#confirm_delete_item_${escId}').click(function(e) {
     e.preventDefault();
     $.post('${deleteUrl}', {
@@ -223,6 +223,6 @@ $('#confirm_delete_item_${escId}').click(function(e) {
         );
 });
 JS;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
 </li>
