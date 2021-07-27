@@ -68,6 +68,6 @@ class Markdown extends AbstractHelper
      */
     public function __invoke(string $markdown)
     {
-        return $this->converter->convertToHtml($markdown);
+        return (string)$this->converter->convertToHtml($markdown);
     }
 }

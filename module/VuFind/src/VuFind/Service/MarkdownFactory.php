@@ -33,7 +33,8 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use League\CommonMark\Environment;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
 
 /**
@@ -53,6 +54,7 @@ class MarkdownFactory implements FactoryInterface
      * @var string[]
      */
     protected static $configKeys = [
+        'DefaultAttributes' => 'default_attributes',
         'ExternalLink' => 'external_link',
         'Footnote' => 'footnote',
         'HeadingPermalink' => 'heading_permalink',
@@ -114,7 +116,8 @@ class MarkdownFactory implements FactoryInterface
             ],
         ];
 
-        $environment = Environment::createCommonMarkEnvironment();
+        $environment = new Environment($config);
+        $environment->addExtension(new CommonMarkCoreExtension());
         $extensions = isset($mainConfig->extensions)
             ? array_map('trim', explode(',', $mainConfig->extensions))
             : self::$defaultExtensions;
