@@ -33,7 +33,7 @@
                     <xsl:value-of select="identifier"/>
                 </field>
 
-                <!-- RECORDTYPE -->
+                <!-- RECORD FORMAT -->
                 <field name="record_format">ojs</field>
 
                 <!-- FULLRECORD -->
