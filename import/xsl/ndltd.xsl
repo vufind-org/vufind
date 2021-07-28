@@ -44,7 +44,7 @@
 
                         <!-- ALLFIELDS -->
                         <field name="allfields">
-                            <xsl:value-of select="normalize-space(string(oai_dc:dc))"/>
+                            <xsl:value-of select="normalize-space(string(.))"/>
                         </field>
 
                         <!-- INSTITUTION -->
