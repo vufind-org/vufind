@@ -19,6 +19,7 @@ package org.vufind.index;
  */
 
 import java.util.LinkedHashSet;
+import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,16 +38,19 @@ public class PunctuationContainer
             }
         };
 
-    private Set<String> punctuationRegEx = new LinkedHashSet<String>();
+    private Set<Pattern> punctuationRegEx = new LinkedHashSet<Pattern>();
     private Set<String> punctuationPairs = new LinkedHashSet<String>();
     private Set<String> untrimmedAbbreviations = new LinkedHashSet<String>();
 
-    public Set<String> getPunctuationRegEx()
+    public Set<Pattern> getPunctuationRegEx()
     {
         // Populate set if empty:
         if (punctuationRegEx.size() == 0) {
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
-            punctuationRegEx = new LinkedHashSet<String>(all.values());
+            punctuationRegEx = new LinkedHashSet<Pattern>();
+            for (String pattern : all.values()) {
+                punctuationRegEx.add(Pattern.compile(pattern));
+            }
         }
         return punctuationRegEx;
     }

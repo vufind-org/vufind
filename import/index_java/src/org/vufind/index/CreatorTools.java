@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,7 +46,7 @@ public class CreatorTools
 
     private ConcurrentHashMap<String, String> relatorSynonymLookup = RelatorContainer.instance().getSynonymLookup();
     private Set<String> knownRelators = RelatorContainer.instance().getKnownRelators();
-    private Set<String> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
+    private Set<Pattern> punctuationRegEx = PunctuationContainer.instance().getPunctuationRegEx();
     private Set<String> punctuationPairs = PunctuationContainer.instance().getPunctuationPairs();
     private Set<String> untrimmedAbbreviations = PunctuationContainer.instance().getUntrimmedAbbreviations();
 
@@ -164,8 +165,8 @@ public class CreatorTools
     protected String fixTrailingPunctuation(String name)
     {
         // First, apply regular expressions:
-        for (String regex : punctuationRegEx) {
-            name = name.replaceAll(regex, "");
+        for (Pattern regex : punctuationRegEx) {
+            name = regex.matcher(name).replaceAll("");
         }
 
         // Strip periods, except when they follow an initial or abbreviation:
