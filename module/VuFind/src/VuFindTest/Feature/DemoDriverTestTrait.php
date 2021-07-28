@@ -124,6 +124,7 @@ trait DemoDriverTestTrait
             'addLink'      => true,
             'addStorageRetrievalRequestLink' => 'check',
             'addILLRequestLink' => 'check',
+            "__electronic__" => false,
         ];
     }
 }
