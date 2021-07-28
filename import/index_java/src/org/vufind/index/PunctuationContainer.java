@@ -49,7 +49,7 @@ public class PunctuationContainer
             Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
             punctuationRegEx = new LinkedHashSet<Pattern>();
             for (String pattern : all.values()) {
-                punctuationRegEx.add(Pattern.compile(pattern));
+                punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
             }
         }
         return punctuationRegEx;
