@@ -880,15 +880,16 @@ class DbUpgrade extends AbstractPlugin
         // the first entry in the array; we assume the standard mysqldump
         // formatting is used here.
         preg_match_all(
-            '/^\s*KEY `([^`]+)` \((.+)\),?$/m',
+            '/^\s*(UNIQUE\s+)?KEY `([^`]+)` \((.+)\),?$/m',
             $createSql, $keyMatches
         );
         foreach (array_keys($keyMatches[0]) as $i) {
-            $name = $keyMatches[1][$i];
-            $definition = $keyMatches[2][$i];
-
+            $unique = !empty($keyMatches[1][$i]);
+            $name = $keyMatches[2][$i];
             // Fix trailing whitespace:
-            $keys[$name] = trim($definition);
+            $definition = trim($keyMatches[3][$i]);
+
+            $keys[$name] = compact('unique', 'definition');
         }
         return $keys;
     }
@@ -1118,12 +1119,14 @@ class DbUpgrade extends AbstractPlugin
             // following line could be used:
             //$drop = array_diff(array_keys($actualKeys), array_keys($expectedKeys));
             $drop = [];
-            foreach ($expectedKeys as $name => $definition) {
+            foreach ($expectedKeys as $name => $expected) {
                 if (!isset($actualKeys[$name])) {
-                    $add[$name] = $definition;
-                } elseif ($actualKeys[$name] !== $definition) {
+                    $add[$name] = $expected;
+                } elseif ($actualKeys[$name]['unique'] !== $expected['unique']
+                    || $actualKeys[$name]['definition'] !== $expected['definition']
+                ) {
                     $drop[] = $name;
-                    $add[$name] = $definition;
+                    $add[$name] = $expected;
                 }
             }
             if ($add || $drop) {
@@ -1151,8 +1154,10 @@ class DbUpgrade extends AbstractPlugin
                 $sql = "ALTER TABLE `$table` DROP KEY `$key`";
                 $sqlcommands .= $this->query($sql, $logsql);
             }
-            foreach ($newSettings['add'] as $keyName => $keyDefinition) {
-                $sql = "ALTER TABLE `$table` ADD KEY `$keyName` ($keyDefinition)";
+            foreach ($newSettings['add'] as $keyName => $keyDetails) {
+                $sql = "ALTER TABLE `$table` ADD "
+                    . ($keyDetails['unique'] ? 'UNIQUE ' : '')
+                    . "KEY `$keyName` ({$keyDetails['definition']})";
                 $sqlcommands .= $this->query($sql, $logsql);
             }
         }
