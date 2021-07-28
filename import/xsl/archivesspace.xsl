@@ -41,7 +41,7 @@
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!
                 <field name="fullrecord">
-                    <xsl:copy-of select="php:function('VuFind::xmlAsText', oai_dc:dc)"/>
+                    <xsl:copy-of select="php:function('VuFind::xmlAsText', .)"/>
                 </field>
                   -->
 
