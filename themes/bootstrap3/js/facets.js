@@ -353,20 +353,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 });
 
 function registerMoreLessFacetsEventHandlers() {
-  $('.more-facets, .less-facets').off('click');
-  $('.more-facets').click(function moreFacets() {
-    var id = 'narrowGroupHidden-' + $(this).data('title');
-    $('.' + id).removeClass('hidden');
-    $('#more-' + id).addClass('hidden');
-    return false;
-  });
-
-  $('.less-facets').click(function lessFacets() {
-    var id = 'narrowGroupHidden-' + $(this).data('title');
-    $('.' + id).addClass('hidden');
-    $('#more-' + id).removeClass('hidden');
-    return false;
-  });
+  VuFind.truncate.initTruncate('.truncate-facets');
 }
 
 VuFind.listen('VuFind.sidefacets.loaded', registerMoreLessFacetsEventHandlers);
