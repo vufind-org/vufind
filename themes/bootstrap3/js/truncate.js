@@ -1,29 +1,36 @@
 /* global VuFind */
 
 VuFind.register('truncate', function Truncate() {
+  function getSetting(settings, key, defaultVal = null) {
+    // A lot of the code below would be easier if we could use nullish coalescing
+    // (the ?? operator), but due to browser support concerns, this is safer:
+    return (typeof settings[key] === 'undefined') ? defaultVal : settings[key];
+  }
+
   function initTruncate(_container, _element, _fill) {
     var zeroHeightContainers = [];
 
     $(_container).not('.truncate-done').each(function truncate() {
       var container = $(this);
+      var settings = container.data('truncate');
 
       var element = typeof _element !== 'undefined'
         ? container.find(_element)
-        : container.data('element')
-          ? container.find(container.data('element'))
+        : (typeof settings.element !== 'undefined')
+          ? container.find(settings.element)
           : false;
       var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
-      var rowCount = typeof container.data('rows') !== 'undefined' ? container.data('rows') : 3;
+      var rowCount = getSetting(settings, 'rows', 3);
       var moreLabel, lessLabel;
-      moreLabel = lessLabel = container.data('label');
-      if (typeof moreLabel === 'undefined') {
-        moreLabel = container.data('more-label') ? container.data('more-label') : VuFind.translate('show_more');
-        lessLabel = container.data('less-label') ? container.data('less-label') : VuFind.translate('show_less');
+      moreLabel = lessLabel = getSetting(settings, 'label');
+      if (moreLabel === null) {
+        moreLabel = getSetting(settings, 'more-label', VuFind.translate('show_more'));
+        lessLabel = getSetting(settings, 'less-label', VuFind.translate('show_less'));
       }
-      var btnClass = container.data('btn-class') ? ' ' + container.data('btn-class') : '';
-      var topToggle = container.data('top-toggle') || Infinity;
-      var inPlaceToggle = (element && container.data('in-place-toggle'))
-        ? container.data('in-place-toggle')
+      var btnClass = getSetting(settings, 'btn-class') ? ' ' + settings['btn-class'] : '';
+      var topToggle = getSetting(settings, 'top-toggle', Infinity);
+      var inPlaceToggle = (element && getSetting(settings, 'in-place-toggle'))
+        ? settings['in-place-toggle']
         : false;
 
       var parent, elementName, elementClass, numRows, shouldTruncate, truncatedHeight;

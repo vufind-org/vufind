@@ -78,8 +78,15 @@
     <?=$locationText?>
   <?php endif; ?>
 </h3>
-<?php $maxItemsLimit = $this->config()->itemLimit(); ?>
-<table class="table table-striped truncate-field" data-rows="<?=$maxItemsLimit?>" data-more-label="<?=$this->transEsc('show_more_items')?>" data-less-label="<?=$this->transEsc('show_less_items')?>" data-in-place-toggle="true">
+<?php
+  $truncateSettings = [
+    'rows' => $this->config()->itemLimit(),
+    'more-label' => $this->transEsc('show_more_items'),
+    'less-label' => $this->transEsc('show_less_items'),
+    'in-place-toggle' => 'true',
+  ];
+?>
+<table class="table table-striped truncate-field" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
   <tr>
