@@ -1,10 +1,10 @@
 <?php
 /**
- * HelpText helper factory.
+ * Content helper factory.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,28 +21,25 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
- * HelpText helper factory.
+ * Content helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HelpTextFactory implements FactoryInterface
+class ContentFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -56,7 +53,7 @@ class HelpTextFactory implements FactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
+     * @throws ContainerException if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -64,8 +61,12 @@ class HelpTextFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $templateBasedBlock = $container
+            ->get(\VuFind\ContentBlock\PluginManager::class)
+            ->get(\VuFind\ContentBlock\TemplateBased::class);
         return new $requestedName(
-            $container->get('ViewHelperManager')->get('content')
+            $templateBasedBlock,
+            $container->get('ViewHelperManager')->get('context'),
         );
     }
 }
