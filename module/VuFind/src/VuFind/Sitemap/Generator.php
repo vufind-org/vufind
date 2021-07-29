@@ -28,11 +28,6 @@
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
-use VuFind\Search\BackendManager;
-use VuFindSearch\Backend\Solr\Backend;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-use VuFindSearch\ParamBag;
-use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -46,13 +41,6 @@ use VuFindSearch\Service as SearchService;
  */
 class Generator
 {
-    /**
-     * Search backend manager.
-     *
-     * @var BackendManager
-     */
-    protected $backendManager;
-
     /**
      * Search service.
      *
@@ -161,18 +149,16 @@ class Generator
     /**
      * Constructor
      *
-     * @param BackendManager $bm      Search backend manaver
-     * @param SearchService  $ss      Search manager
-     * @param string         $baseUrl VuFind base URL
-     * @param Config         $config  Sitemap configuration settings
-     * @param array          $locales Enabled locales
-     * @param PluginManager  $pm      Generator plugin manager
+     * @param SearchService $ss      Search manager
+     * @param string        $baseUrl VuFind base URL
+     * @param Config        $config  Sitemap configuration settings
+     * @param array         $locales Enabled locales
+     * @param PluginManager $pm      Generator plugin manager
      */
-    public function __construct(BackendManager $bm, SearchService $ss, $baseUrl,
+    public function __construct(SearchService $ss, $baseUrl,
         Config $config, array $locales, PluginManager $pm
     ) {
         // Save incoming parameters:
-        $this->backendManager = $bm;
         $this->searchService = $ss;
         $this->baseUrl = $baseUrl;
         $this->config = $config;
@@ -231,7 +217,7 @@ class Generator
      *
      * @return void
      */
-    protected function verboseMsg($msg)
+    public function verboseMsg($msg)
     {
         if (is_callable($this->verbose)) {
             call_user_func($this->verbose, $msg);
@@ -311,13 +297,21 @@ class Generator
 
         // Loop through all backends
         foreach ($this->backendSettings as $current) {
-            $backend = $this->backendManager->get($current['id']);
-            if (!($backend instanceof Backend)) {
-                throw new \Exception('Unsupported backend: ' . get_class($backend));
-            }
             $recordUrl = $this->baseUrl . $current['url'];
-            $currentPage = $this
-                ->generateForBackend($backend, $recordUrl, $currentPage);
+            $context = compact('recordUrl', 'currentPage') + [
+                'generator' => $this,
+                'countPerPage' => $this->countPerPage,
+                'retrievalMode' => $this->retrievalMode,
+                'languages' => $this->languages,
+            ];
+            $commandClass = $this->retrievalMode === 'terms'
+                ? Command\GenerateSitemapWithTermsCommand::class
+                : Command\GenerateSitemapWithCursorMarkCommand::class;
+            $command = new $commandClass(
+                $current['id'], $context, $this->searchService
+            );
+            $this->searchService->invoke($command);
+            $currentPage = $command->getResult();
         }
 
         // Set-up Sitemap Index
@@ -412,193 +406,6 @@ class Generator
     }
 
     /**
-     * Generate sitemap files for a single search backend.
-     *
-     * @param Backend $backend     Search backend
-     * @param string  $recordUrl   Base URL for record links
-     * @param int     $currentPage Sitemap page number to start generating
-     *
-     * @return int                 Next sitemap page number to generate
-     */
-    protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
-    {
-        $this->verboseMsg(
-            'Adding records from ' . $backend->getIdentifier()
-            . " with record base url $recordUrl"
-        );
-
-        // Starting offset varies depending on retrieval mode:
-        $currentOffset = ($this->retrievalMode === 'terms') ? '' : '*';
-        $recordCount = 0;
-
-        $this->setupBackend($backend);
-
-        while (true) {
-            // Get IDs and break out of the loop if we've run out:
-            $result = $this->getIdsFromBackend($backend, $currentOffset);
-            if (empty($result['ids'])) {
-                break;
-            }
-            $currentOffset = $result['nextOffset'];
-
-            // Write the current entry:
-            $smf = $this->getNewSitemap();
-            foreach ($result['ids'] as $item) {
-                $loc = htmlspecialchars($recordUrl . urlencode($item));
-                if (strpos($loc, 'http') === false) {
-                    $loc = 'http://' . $loc;
-                }
-                if ($this->languages) {
-                    $smf->addUrl(
-                        [
-                            'url' => $loc,
-                            'languages' => $this->languages
-                        ]
-                    );
-                } else {
-                    $smf->addUrl($loc);
-                }
-            }
-            $filename = $this->getFilenameForPage($currentPage);
-            if (false === $smf->write($filename)) {
-                throw new \Exception("Problem writing $filename.");
-            }
-
-            // Update total record count:
-            $recordCount += count($result['ids']);
-
-            $this->verboseMsg("Page $currentPage, $recordCount processed");
-
-            // Update counter:
-            $currentPage++;
-        }
-        return $currentPage;
-    }
-
-    /**
-     * Set up the backend.
-     *
-     * @param Backend $backend Search backend
-     *
-     * @return void
-     */
-    protected function setupBackend(Backend $backend)
-    {
-        $method = $this->retrievalMode == 'terms'
-            ? 'setupBackendUsingTerms' : 'setupBackendUsingCursorMark';
-        return $this->$method($backend);
-    }
-
-    /**
-     * Set up the backend.
-     *
-     * @param Backend $backend Search backend
-     *
-     * @return void
-     */
-    protected function setupBackendUsingTerms(Backend $backend)
-    {
-    }
-
-    /**
-     * Set up the backend.
-     *
-     * @param Backend $backend Search backend
-     *
-     * @return void
-     */
-    protected function setupBackendUsingCursorMark(Backend $backend)
-    {
-        // Set up the record factory. We use a very simple factory since performance
-        // is important and we only need the identifier.
-        $recordFactory = function ($data) {
-            return new \VuFindSearch\Response\SimpleRecord($data);
-        };
-        $collectionFactory = new RecordCollectionFactory($recordFactory);
-        $backend->setRecordCollectionFactory($collectionFactory);
-    }
-
-    /**
-     * Retrieve a batch of IDs.
-     *
-     * @param Backend $backend       Search backend
-     * @param string  $currentOffset String representing progress through set
-     *
-     * @return array
-     */
-    protected function getIdsFromBackend(Backend $backend, $currentOffset)
-    {
-        $method = $this->retrievalMode == 'terms'
-            ? 'getIdsFromBackendUsingTerms' : 'getIdsFromBackendUsingCursorMark';
-        return $this->$method($backend, $currentOffset);
-    }
-
-    /**
-     * Retrieve a batch of IDs using the terms component.
-     *
-     * @param Backend $backend  Search backend
-     * @param string  $lastTerm Last term retrieved
-     *
-     * @return array
-     */
-    protected function getIdsFromBackendUsingTerms(Backend $backend, $lastTerm)
-    {
-        $key = $backend->getConnector()->getUniqueKey();
-        $info = $backend->terms($key, $lastTerm, $this->countPerPage)
-            ->getFieldTerms($key);
-        $ids = null === $info ? [] : array_keys($info->toArray());
-        $nextOffset = empty($ids) ? null : $ids[count($ids) - 1];
-        return compact('ids', 'nextOffset');
-    }
-
-    /**
-     * Retrieve a batch of IDs using a cursorMark.
-     *
-     * @param Backend $backend    Search backend
-     * @param string  $cursorMark cursorMark
-     *
-     * @return array
-     */
-    protected function getIdsFromBackendUsingCursorMark(Backend $backend, $cursorMark
-    ) {
-        // If the previous cursor mark matches the current one, we're finished!
-        static $prevCursorMark = '';
-        if ($cursorMark === $prevCursorMark) {
-            return ['ids' => [], 'cursorMark' => $cursorMark];
-        }
-        $prevCursorMark = $cursorMark;
-
-        $connector = $backend->getConnector();
-        $key = $connector->getUniqueKey();
-        $params = new ParamBag(
-            [
-                'q' => '*:*',
-                'rows' => $this->countPerPage,
-                'start' => 0, // Always 0 when using a cursorMark
-                'wt' => 'json',
-                'sort' => $key . ' asc',
-                // Override any default timeAllowed since it cannot be used with
-                // cursorMark
-                'timeAllowed' => -1,
-                'cursorMark' => $cursorMark
-            ]
-        );
-        $results = $this->searchService->getIds(
-            $backend->getIdentifier(),
-            new Query('*:*'),
-            0,
-            $this->countPerPage,
-            $params
-        );
-        $ids = [];
-        foreach ($results->getRecords() as $doc) {
-            $ids[] = $doc->get($key);
-        }
-        $nextOffset = $results->getCursorMark();
-        return compact('ids', 'nextOffset');
-    }
-
-    /**
      * Write a sitemap index if requested.
      *
      * @param int   $totalPages         Total number of sitemap pages generated.
@@ -667,7 +474,7 @@ class Generator
      *
      * @return Sitemap
      */
-    protected function getNewSitemap()
+    public function getNewSitemap()
     {
         return new Sitemap($this->frequency);
     }
@@ -680,7 +487,7 @@ class Generator
      *
      * @return string
      */
-    protected function getFilenameForPage($page, $includePath = true)
+    public function getFilenameForPage($page, $includePath = true)
     {
         return ($includePath ? $this->fileLocation . '/' : '')
             . $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';
