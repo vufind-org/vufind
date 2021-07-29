@@ -46,6 +46,13 @@ abstract class AbstractGenerateSitemapCommand
     extends \VuFindSearch\Command\AbstractBase
 {
     /**
+     * Search service
+     *
+     * @var Service
+     */
+    protected $searchService;
+
+    /**
      * CallMethodCommand constructor.
      *
      * @param string  $backend       Search backend identifier

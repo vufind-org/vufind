@@ -38,7 +38,7 @@ use VuFindSearch\Backend\Solr\Backend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GenerateSitemapWithCursorMarkCommand extends AbstractGenerateSitemapCommand
+class GenerateSitemapWithTermsCommand extends AbstractGenerateSitemapCommand
 {
     /**
      * Get the initial offset to seed the search process
