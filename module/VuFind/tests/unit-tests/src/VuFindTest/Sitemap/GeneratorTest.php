@@ -28,7 +28,6 @@
 namespace VuFindTest\Sitemap;
 
 use Laminas\Config\Config;
-use VuFind\Search\BackendManager;
 use VuFind\Sitemap\Generator;
 use VuFind\Sitemap\PluginManager;
 use VuFindSearch\Service as SearchService;
