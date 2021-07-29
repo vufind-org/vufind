@@ -47,6 +47,7 @@ class Facets extends AbstractChannelProvider
    implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Facet fields to use (field name => description).
      *

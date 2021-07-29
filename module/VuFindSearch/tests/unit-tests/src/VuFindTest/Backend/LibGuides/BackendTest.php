@@ -46,9 +46,9 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class BackendTest extends \VuFindTest\Unit\TestCase
+class BackendTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test retrieving a record (not supported).
@@ -184,15 +184,14 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $conn = $this->getConnectorMock(['query']);
         $expectedParams0 = ['search' => 'baz'];
-        $conn->expects($this->at(0))
-            ->method('query')
-            ->with($this->equalTo($expectedParams0), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $expectedParams1 = ['search' => 'fallback'];
-        $conn->expects($this->at(1))
+        $conn->expects($this->exactly(2))
             ->method('query')
-            ->with($this->equalTo($expectedParams1), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->withConsecutive([$expectedParams0, 0, 10], [$expectedParams1, 0, 10])
+            ->willReturnOnConsecutiveCalls(
+                ['recordCount' => 0, 'documents' => []],
+                ['recordCount' => 0, 'documents' => []]
+            );
         $back = new Backend($conn, null, 'fallback');
         $back->search(new Query('baz'), 0, 10);
     }
@@ -230,7 +229,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         return $this->getMockBuilder(\VuFindSearch\Backend\LibGuides\Connector::class)
-            ->setMethods($mock)
+            ->onlyMethods($mock)
             ->setConstructorArgs(['fakeid', $client])
             ->getMock();
     }

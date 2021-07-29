@@ -41,7 +41,7 @@ class VuFindGeo
     /**
      * Method for logging errors (overrideable for testing purposes)
      *
-     * @var \Callable
+     * @var callable
      */
     public static $logMethod = 'error_log';
 
@@ -71,7 +71,7 @@ class VuFindGeo
         foreach ($parts as $part) {
             $chunks = array_map('trim', explode('=', $part, 2));
             if (count($chunks) == 2) {
-                list($key, $value) = $chunks;
+                [$key, $value] = $chunks;
                 $parsed[$key] = $value;
             }
         }

@@ -38,9 +38,9 @@ use VuFindTheme\View\Helper\TemplatePath;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TemplatePathTest extends \VuFindTest\Unit\TestCase
+class TemplatePathTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Path to theme fixtures
@@ -94,7 +94,7 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
         $helper = $this->getHelper();
         $this->assertEquals(
             "{$this->fixturePath}/parent/templates/everything.phtml",
-            $helper->__invoke('everything.phtml', 'parent')
+            $helper('everything.phtml', 'parent')
         );
     }
 
@@ -109,7 +109,7 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
         $this->expectExceptionMessage('emplate not found in missing: file.phtml');
 
         $helper = $this->getHelper();
-        $helper->__invoke('file.phtml', 'missing');
+        $helper('file.phtml', 'missing');
     }
 
     /**
@@ -123,6 +123,6 @@ class TemplatePathTest extends \VuFindTest\Unit\TestCase
         $this->expectExceptionMessage('emplate not found in parent: missing.phtml');
 
         $helper = $this->getHelper();
-        $helper->__invoke('missing.phtml', 'parent');
+        $helper('missing.phtml', 'parent');
     }
 }

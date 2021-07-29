@@ -38,8 +38,10 @@ use VuFind\View\Helper\Root\Citation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
+class CitationTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Sample citations -- each element of this array contains three elements --
      * the raw input data and the expected apa/mla output citations.
@@ -58,9 +60,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby'],
                 'PublicationDates' => ['1958']
             ],
-            'apa' => 'Shafer, K. N. (1958). <span style="font-style:italic;">Medical-surgical nursing</span>. St. Louis: Mosby.',
-            'mla' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. St. Louis: Mosby, 1958.',
-            'chicago' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. St. Louis: Mosby, 1958.',
+            'apa' => 'Shafer, K. N. (1958). <i>Medical-surgical nursing</i>. Mosby.',
+            'mla' => 'Shafer, Kathleen Newton. <i>Medical-surgical Nursing</i>. Mosby, 1958.',
+            'chicago' => 'Shafer, Kathleen Newton. <i>Medical-surgical Nursing</i>. St. Louis: Mosby, 1958.',
         ],
         [
             'raw' => [
@@ -72,22 +74,23 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Assessment and management of clinical problems</i> (7th ed.). Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
-        [  // subtitle embedded in title
+        [  // subtitle embedded in title, with multi-word uncapped phrase, quoted word, and DOI added
             'raw' => [
                 'SecondaryAuthors' => ['Lewis, S.M.'],
-                'Title' => 'Medical-surgical nursing: assessment and management of clinical problems.',
+                'Title' => 'Even if you "test" Medical-surgical nursing: assessment and management of clinical problems on top of crazy capitalization.',
                 'Edition' => '7th ed. /',
                 'PlacesOfPublication' => ['St. Louis, Mo.'],
                 'Publishers' => ['Mosby Elsevier'],
-                'PublicationDates' => ['2007']
+                'PublicationDates' => ['2007'],
+                'CleanDOI' => 'myDOI',
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <i>Even if you &quot;test&quot; Medical-surgical nursing: Assessment and management of clinical problems on top of crazy capitalization</i> (7th ed.). Mosby Elsevier. https://doi.org/myDOI',
+            'mla' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M. <i>Even if You &quot;Test&quot; Medical-surgical Nursing: Assessment and Management of Clinical Problems on top of Crazy Capitalization</i>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007. https://dx.doi.org/myDOI.',
         ],
         [
             'raw' => [
@@ -99,9 +102,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span>. St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. St. Louis, Mo: Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Assessment and management of clinical problems</i>. Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M. <i>Medical-surgical Nursing: Assessment and Management of Clinical Problems</i>. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
             'raw' => [
@@ -113,9 +116,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S. (2007). <i>Medical-surgical nursing: Why?</i> (7th ed.). Mosby Elsevier.',
+            'mla' => 'Lewis, S.M. <i>Medical-surgical Nursing: Why?</i> 7th ed. Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M. <i>Medical-surgical Nursing: Why?</i> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
             'raw' => [
@@ -127,9 +130,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Mosby Elsevier'],
                 'PublicationDates' => ['2007']
             ],
-            'apa' => 'Lewis, S., IV. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> St. Louis, Mo: Mosby Elsevier.',
-            'mla' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> St. Louis, Mo: Mosby Elsevier, 2007.',
-            'chicago' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> St. Louis, Mo: Mosby Elsevier, 2007.',
+            'apa' => 'Lewis, S., IV. (2007). <i>Medical-surgical nursing: Why?</i> Mosby Elsevier.',
+            'mla' => 'Lewis, S.M., IV. <i>Medical-surgical Nursing: Why?</i> Mosby Elsevier, 2007.',
+            'chicago' => 'Lewis, S.M., IV. <i>Medical-surgical Nursing: Why?</i> St. Louis, Mo: Mosby Elsevier, 2007.',
         ],
         [
             'raw' => [
@@ -141,9 +144,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Holmes & Meier,'],
                 'PublicationDates' => ['1980.']
             ],
-            'apa' => 'Burch, P. H., Jr. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
-            'chicago' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
+            'apa' => 'Burch, P. H., Jr. (1980). <i>The New Deal to the Carter administration</i>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr. <i>The New Deal to the Carter Administration</i>. Holmes &amp; Meier, 1980.',
+            'chicago' => 'Burch, Philip H., Jr. <i>The New Deal to the Carter Administration</i>. New York: Holmes &amp; Meier, 1980.',
         ],
         [
             'raw' => [
@@ -155,9 +158,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => ['Holmes & Meier,'],
                 'PublicationDates' => ['1980.']
             ],
-            'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
-            'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
+            'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <i>The New Deal to the Carter administration</i>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr., et al. <i>The New Deal to the Carter Administration</i>. Holmes &amp; Meier, 1980.',
+            'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <i>The New Deal to the Carter Administration</i>. New York: Holmes &amp; Meier, 1980.',
         ],
         [
             'raw' => [
@@ -169,9 +172,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'Publishers' => '',
                 'PublicationDates' => ''
             ],
-            'apa' => 'Burch, P. H., Jr., Coauthor, F., Fakeperson, T., III, Mob, W., &amp; Manypeople, L. <span style="font-style:italic;">The New Deal to the Carter administration</span>.',
-            'mla' => 'Burch, Philip H., Jr., et al. <span style="font-style:italic;">The New Deal to the Carter Administration</span>.',
-            'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, Third Fakeperson, III, Writing Mob, and Letsmakeup Manypeople. <span style="font-style:italic;">The New Deal to the Carter Administration</span>.',
+            'apa' => 'Burch, P. H., Jr., Coauthor, F., Fakeperson, T., III, Mob, W., &amp; Manypeople, L. <i>The New Deal to the Carter administration</i>.',
+            'mla' => 'Burch, Philip H., Jr., et al. <i>The New Deal to the Carter Administration</i>.',
+            'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, Third Fakeperson, III, Writing Mob, and Letsmakeup Manypeople. <i>The New Deal to the Carter Administration</i>.',
         ],
         [
             'raw' => [
@@ -182,9 +185,24 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'PlacesOfPublication' => ['New York'],
                 'Publishers' => ['Holmes & Meier']
             ],
-            'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
-            'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
-            'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
+            'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <i>The New Deal to the Carter administration</i>. Holmes &amp; Meier.',
+            'mla' => 'Burch, Philip H., Jr., et al. <i>The New Deal to the Carter Administration</i>. Holmes &amp; Meier.',
+            'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <i>The New Deal to the Carter Administration</i>. New York: Holmes &amp; Meier.',
+        ],
+        [  // eight authors, with a blend of formatting and extra punctuation/malformed dates
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person.', 'Person Two', 'Three, Person', 'Person Four.', 'Five, Person, 1900-1950', 'Six, Person 1910-1963', 'Person Seven', 'Person Eight 1900-1999'],
+                'ShortTitle' => 'Test Article',
+                'ContainerTitle' => 'Test Journal',
+                'ContainerVolume' => 1,
+                'ContainerIssue' => 7,
+                'PublicationDates' => ['1999'],
+                'ContainerStartPage' => 19,
+                'ContainerEndPage' => 21
+            ],
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
         [  // eight authors
             'raw' => [
@@ -197,9 +215,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
         [  // seven authors
             'raw' => [
@@ -212,9 +230,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, and Person Seven. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, and Person Seven. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
         [  // six authors
             'raw' => [
@@ -227,13 +245,13 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
-        [  // two authors
+        [  // three authors, including one with a random trailing comma
             'raw' => [
-                'SecondaryAuthors' => ['One, Person', 'Two, Person'],
+                'SecondaryAuthors' => ['One, Person,', 'Two, Person', 'Three, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
@@ -242,9 +260,40 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., &amp; Three, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, Person Two, and Person Three. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
+        ],
+        [  // two authors with birth dates in different formats, single-page article
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person, b. 1960', 'Two, Person, 1970-'],
+                'ShortTitle' => 'Test Article',
+                'ContainerTitle' => 'Test Journal',
+                'ContainerVolume' => 1,
+                'ContainerIssue' => 7,
+                'PublicationDates' => ['1999'],
+                'ContainerStartPage' => 19,
+                'ContainerEndPage' => 19
+            ],
+            'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19.',
+            'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, p. 19.',
+            'chicago' => 'One, Person, and Person Two. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19.',
+        ],
+        [  // two authors with no comma in first author's name (test no comma before and)
+            // and parenthetical note on second author (test it is removed)
+            'raw' => [
+                'SecondaryAuthors' => ['IBM', 'Two, Person (Director), 1970-'],
+                'ShortTitle' => 'Test Article',
+                'ContainerTitle' => 'Test Journal',
+                'ContainerVolume' => 1,
+                'ContainerIssue' => 7,
+                'PublicationDates' => ['1999'],
+                'ContainerStartPage' => 19,
+                'ContainerEndPage' => 19
+            ],
+            'apa' => 'IBM &amp; Two, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19.',
+            'mla' => 'IBM and Person Two. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, p. 19.',
+            'chicago' => 'IBM and Person Two. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19.',
         ],
         [  // one author
             'raw' => [
@@ -257,13 +306,13 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
         [  // eight authors in "first name first" format.
             'raw' => [
-                'SecondaryAuthors' => ['Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'],
+                'SecondaryAuthors' => ['Person One b. 1960', 'Person Two 1869-', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
@@ -272,9 +321,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
         [  // ten authors in "first name first" format.
             'raw' => [
@@ -287,9 +336,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ],
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
-            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21.',
+            'mla' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person, et al. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21.',
         ],
         [  // DOI
             'raw' => [
@@ -303,9 +352,9 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21,
                 'CleanDOI' => 'testDOI'
             ],
-            'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21. doi:testDOI',
-            'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
-            'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
+            'apa' => 'One, P. (1999). Test Article. <i>Test Journal, 1</i>(7), 19-21. https://doi.org/testDOI',
+            'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21.',
+            'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://dx.doi.org/testDOI.',
         ]
         // @codingStandardsIgnoreEnd
     ];
@@ -322,7 +371,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
             $driver->setRawData($current['raw']);
-            $cb = $citation->__invoke($driver);
+            $cb = $citation($driver);
 
             // Normalize whitespace:
             $apa = trim(preg_replace("/\s+/", " ", $cb->getCitation('APA')));

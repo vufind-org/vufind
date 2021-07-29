@@ -41,8 +41,10 @@ use VuFind\View\Helper\Root\ProxyUrl;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LinkifyTest extends \VuFindTest\Unit\ViewHelperTestCase
+class LinkifyTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Get view helper to test.
      *
@@ -75,8 +77,8 @@ class LinkifyTest extends \VuFindTest\Unit\ViewHelperTestCase
         // The linkify helper expects HTML-escaped input, because after linkify
         // has been applied, we can no longer escape unlinked portions of the text
         // without messing up the link HTML:
-        $html = $escaper->__invoke($text);
-        $this->assertEquals($expected, $this->getHelper()->__invoke($html));
+        $html = $escaper($text);
+        $this->assertEquals($expected, ($this->getHelper())($html));
     }
 
     /**

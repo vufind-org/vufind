@@ -28,6 +28,9 @@
 namespace VuFind\AjaxHandler;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for GetSideFacets AJAX handler.
@@ -53,7 +56,7 @@ class GetSideFacetsFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -66,7 +69,7 @@ class GetSideFacetsFactory
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Recommend\PluginManager::class),
-            $container->get(\VuFind\SearchRunner::class),
+            $container->get(\VuFind\Search\SearchRunner::class),
             $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('facets'),
             $container->get('ViewRenderer')

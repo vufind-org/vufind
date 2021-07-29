@@ -80,6 +80,13 @@ class Results extends BaseResults
     protected $listTable;
 
     /**
+     * Facet list
+     *
+     * @var array
+     */
+    protected $facets;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -132,7 +139,7 @@ class Results extends BaseResults
                 switch ($field) {
                 case 'tags':
                     if ($this->list) {
-                        $tags = $this->list->getTags();
+                        $tags = $this->list->getResourceTags();
                     } else {
                         $tags = $this->user ? $this->user->getTags() : [];
                     }

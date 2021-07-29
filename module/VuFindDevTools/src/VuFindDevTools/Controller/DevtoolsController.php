@@ -28,6 +28,7 @@
  */
 namespace VuFindDevTools\Controller;
 
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
@@ -115,7 +116,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         // Test languages with no local overrides and no fallback:
         $loader = new ExtendedIni([APPLICATION_PATH . '/languages']);
-        $helper = new LanguageHelper($loader, $this->getConfig());
+        $langs = $this->serviceLocator->get(LocaleSettings::class)
+            ->getEnabledLocales();
+        $helper = new LanguageHelper($loader, $langs);
         return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
     }
 }

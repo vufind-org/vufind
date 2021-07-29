@@ -40,8 +40,10 @@ use VuFind\View\Helper\Root\Markdown;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MarkdownTest extends \VuFindTest\Unit\ViewHelperTestCase
+class MarkdownTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Get view helper to test.
      *
@@ -71,6 +73,6 @@ class MarkdownTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         $markdown = "# Main heading\n## Second heading";
         $html = "<h1>Main heading</h1>\n<h2>Second heading</h2>\n";
-        $this->assertEquals($html, $this->getHelper()->__invoke($markdown));
+        $this->assertEquals($html, ($this->getHelper())($markdown));
     }
 }

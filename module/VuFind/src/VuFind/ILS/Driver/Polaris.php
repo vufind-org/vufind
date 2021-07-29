@@ -72,6 +72,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $ws_api_key;
 
     /**
+     * Default pick up location
+     *
+     * @var string
+     */
+    protected $defaultPickUpLocation;
+
+    /**
      * Web services requesting organization ID
      *
      * @var string
@@ -100,8 +107,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $this->ws_api_key = $this->config['PAPI']['ws_api_key'];
         $this->ws_requestingorgid    = $this->config['PAPI']['ws_requestingorgid'];
         $this->defaultPickUpLocation
-            = isset($this->config['Holds']['defaultPickUpLocation'])
-            ? $this->config['Holds']['defaultPickUpLocation'] : null;
+            = $this->config['Holds']['defaultPickUpLocation'] ?? null;
     }
 
     /**
@@ -120,7 +126,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function makeRequest($api_query, $http_method = "GET",
         $patronpassword = "", $json = false
     ) {
-
         // auth has to be in GMT, otherwise use config-level TZ
         $site_config_TZ = date_default_timezone_get();
         date_default_timezone_set('GMT');
@@ -146,6 +151,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $client = $this->httpService->createClient($url);
 
             // Attach JSON if necessary
+            $json_data = null;
             if ($json !== false) {
                 $json_data = json_encode($json);
                 $client->setRawBody($json_data);
@@ -160,7 +166,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $client->setMethod($http_method);
             $result = $client->send();
         } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         if (!$result->isSuccess()) {
@@ -449,10 +455,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.    May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array             An array of associative arrays with locationID
@@ -462,6 +470,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
+        $locations = [];
         if (isset($this->ws_pickUpLocations)) {
             // hardcoded pickup locations in the .ini file? or...
             foreach ($this->ws_pickUpLocations as $code => $library) {
@@ -825,12 +834,15 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Get Cancel Hold Details
      *
-     * @param array $holdDetails An array of item data
+     * @param array $holdDetails A single hold array from getMyHolds
+     * @param array $patron      Patron information from patronLogin
      *
      * @return string Data for use in a form field (just request id is all Polaris
      * needs)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getCancelHoldDetails($holdDetails)
+    public function getCancelHoldDetails($holdDetails, $patron = [])
     {
         return $holdDetails['reqnum'];
     }
@@ -872,6 +884,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $page_offset = $pages;
         }
 
+        $checkouts = [];
         while ($page_offset <= $pages) {
             $response = $this->makeRequest(
                 "patron/{$patron['cat_username']}/readinghistory?rowsperpage="

@@ -119,7 +119,7 @@ FROM config.copy_status ccs
     INNER JOIN asset.copy ac ON ac.status = ccs.id
     INNER JOIN asset.call_number acn ON acn.id = ac.call_number
     INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
-WHERE 
+WHERE
     acn.record = ? AND
     NOT ac.deleted
 HERE;
@@ -131,7 +131,7 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
@@ -194,7 +194,7 @@ HERE;
      * @param array  $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -220,7 +220,7 @@ FROM config.copy_status ccs
     FULL JOIN action.circulation circ ON (
         ac.id = circ.target_copy AND circ.checkin_time IS NULL
     )
-WHERE 
+WHERE
     acn.record = ? AND
     NOT ac.deleted
 HERE;
@@ -231,7 +231,7 @@ HERE;
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // Build Holdings Array
@@ -348,7 +348,7 @@ HERE;
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -360,7 +360,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -393,7 +393,7 @@ HERE;
             }
             return $transList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -404,7 +404,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -450,7 +450,7 @@ HERE;
             }
             return $fineList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -461,7 +461,7 @@ HERE;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException;
+     * @throws VuFind\Date\DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -510,7 +510,7 @@ HERE;
             }
             return $holdList;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -566,7 +566,7 @@ HERE;
                 return null;
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -606,7 +606,7 @@ HERE;
         $sqlStmt = $this->db->prepare($sql);
         $sqlStmt->execute();
     } catch (PDOException $e) {
-        throw new ILSException($e->getMessage());
+        $this->throwAsIlsException($e);
     }
     */
     //}
@@ -671,7 +671,7 @@ HERE;
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['count'];
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         // TODO: implement paging support
@@ -692,7 +692,7 @@ HERE;
             }
             return $items;
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
     }
 
@@ -718,7 +718,7 @@ HERE;
                 $list[] = $row['name'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;
@@ -746,7 +746,7 @@ HERE;
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+            $this->throwAsIlsException($e);
         }
 
         return $list;

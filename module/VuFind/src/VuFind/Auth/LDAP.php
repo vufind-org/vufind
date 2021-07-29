@@ -75,7 +75,7 @@ class LDAP extends AbstractBase
     protected function getSetting($name)
     {
         $config = $this->getConfig();
-        $value = isset($config->LDAP->$name) ? $config->LDAP->$name : '';
+        $value = $config->LDAP->$name ?? '';
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
@@ -294,7 +294,7 @@ class LDAP extends AbstractBase
                         }
 
                         if ($field != "cat_password") {
-                            $user->$field = ($value === null) ? '' : $value;
+                            $user->$field = $value ?? '';
                         } else {
                             $catPassword = $value;
                         }

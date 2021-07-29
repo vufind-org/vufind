@@ -37,7 +37,7 @@ namespace VuFindTest\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SocialstatsControllerTest extends \VuFindTest\Unit\TestCase
+class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test language mappings.
@@ -47,21 +47,23 @@ class SocialstatsControllerTest extends \VuFindTest\Unit\TestCase
     public function testHome()
     {
         // Create mocks to simulate database lookups:
-        $c = $this->getMockBuilder(\VuFindAdmin\Controller\SocialstatsController::class)
-            ->setMethods(['getTable'])->disableOriginalConstructor()->getMock();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $tables = new \VuFindTest\Container\MockContainer($this);
+        $container->set(\VuFind\Db\Table\PluginManager::class, $tables);
+        $c = new \VuFindAdmin\Controller\SocialstatsController($container);
         $comments = $this->getMockBuilder(\VuFind\Db\Table\Comments::class)
-            ->disableOriginalConstructor()->setMethods(['getStatistics'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
         $comments->expects($this->once())->method('getStatistics')->will($this->returnValue('comments-data'));
-        $c->expects($this->at(0))->method('getTable')->with($this->equalTo('comments'))->will($this->returnValue($comments));
+        $tables->set('comments', $comments);
         $userresource = $this->getMockBuilder(\VuFind\Db\Table\UserResource::class)
-            ->setMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
+            ->onlyMethods(['getStatistics'])->disableOriginalConstructor()->getMock();
         $userresource->expects($this->once())->method('getStatistics')->will($this->returnValue('userresource-data'));
-        $c->expects($this->at(1))->method('getTable')->with($this->equalTo('userresource'))->will($this->returnValue($userresource));
+        $tables->set('userresource', $userresource);
         $resourcetags = $this->getMockBuilder(\VuFind\Db\Table\ResourceTags::class)
-            ->disableOriginalConstructor()->setMethods(['getStatistics'])
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])
             ->getMock();
         $resourcetags->expects($this->once())->method('getStatistics')->will($this->returnValue('resourcetags-data'));
-        $c->expects($this->at(2))->method('getTable')->with($this->equalTo('resourcetags'))->will($this->returnValue($resourcetags));
+        $tables->set('resourcetags', $resourcetags);
 
         // Confirm properly-constructed view object:
         $view = $c->homeAction();

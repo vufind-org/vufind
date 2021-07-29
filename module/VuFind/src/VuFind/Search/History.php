@@ -28,6 +28,8 @@
  */
 namespace VuFind\Search;
 
+use Laminas\Config\Config;
+
 /**
  * VuFind Search History Helper
  *
@@ -133,10 +135,19 @@ class History
      */
     public function getScheduleOptions()
     {
+        // If scheduled searches are disabled, return no options:
         if (!($this->config->Account->schedule_searches ?? false)) {
             return [];
         }
-        return $this->config->Account->scheduled_search_frequencies
-            ?? [0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'];
+        // If custom frequencies are not provided, return defaults:
+        if (!isset($this->config->Account->scheduled_search_frequencies)) {
+            return [
+                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'
+            ];
+        }
+        // If we have a setting, make sure it is properly formatted as an array:
+        return $this->config->Account->scheduled_search_frequencies instanceof Config
+            ? $this->config->Account->scheduled_search_frequencies->toArray()
+            : (array)$this->config->Account->scheduled_search_frequencies;
     }
 }

@@ -42,9 +42,10 @@ use VuFind\RecordDriver\Response\PublicationDetails;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DefaultRecordTest extends \VuFindTest\Unit\TestCase
+class DefaultRecordTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test getPublicationDates for a record.
@@ -250,7 +251,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetPhysicalDescriptions()
     {
-        $physical[0] = "296 p. : ill. ; 24 cm.";
+        $physical = ["296 p. : ill. ; 24 cm."];
         $this->assertEquals($physical, $this->getDriver()->getPhysicalDescriptions());
     }
 
@@ -414,7 +415,7 @@ class DefaultRecordTest extends \VuFindTest\Unit\TestCase
             ['bar ,     APA,MLA', ['APA', 'MLA']],
         ];
         foreach ($tests as $current) {
-            list($input, $output) = $current;
+            [$input, $output] = $current;
             $cfg = new Config(['Record' => ['citation_formats' => $input]]);
             $this->assertEquals(
                 $output,

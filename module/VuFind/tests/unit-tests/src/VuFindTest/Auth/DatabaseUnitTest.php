@@ -40,7 +40,7 @@ use VuFind\Auth\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
+class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test validation of empty create request.
@@ -212,7 +212,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
         $methods[] = 'getResultSetPrototype';
         $mock = $this->getMockBuilder(\VuFind\Db\Table\User::class)
             ->disableOriginalConstructor()
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
         $mock->expects($this->any())->method('getResultSetPrototype')
             ->will(
@@ -236,7 +236,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     {
         $post = new Parameters($post);
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->setMethods(['getPost'])->getMock();
+            ->onlyMethods(['getPost'])->getMock();
         $request->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
         return $request;
@@ -252,7 +252,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getDatabase($table)
     {
         $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
-            ->disableOriginalConstructor()->setMethods(['get'])->getMock();
+            ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));

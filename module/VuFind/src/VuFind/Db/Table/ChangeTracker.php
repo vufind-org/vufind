@@ -88,14 +88,14 @@ class ChangeTracker extends Gateway
      * @param int    $limit   Retrieval limit (null for no limit)
      * @param array  $columns Columns to retrieve (null for all)
      *
-     * @return \Callable
+     * @return callable
      */
     public function getRetrieveDeletedCallback($core, $from, $until, $offset = 0,
         $limit = null, $columns = null
     ) {
-        $params = compact('core', 'from', 'until', 'offset', 'limit', 'columns');
-        return function ($select) use ($params) {
-            extract($params);
+        return function ($select) use ($core, $from, $until, $offset, $limit,
+            $columns
+        ) {
             if ($columns !== null) {
                 $select->columns($columns);
             }
@@ -212,7 +212,7 @@ class ChangeTracker extends Gateway
     {
         $oldTz = date_default_timezone_get();
         date_default_timezone_set('UTC');
-        $date = date($this->dateFormat, null === $ts ? time() : $ts);
+        $date = date($this->dateFormat, $ts ?? time());
         date_default_timezone_set($oldTz);
         return $date;
     }

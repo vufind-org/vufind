@@ -315,8 +315,7 @@ class Holds
         $holdings = [];
         $any_available = false;
 
-        $holds_override = isset($this->config->Catalog->allow_holds_override)
-            ? $this->config->Catalog->allow_holds_override : false;
+        $holds_override = $this->config->Catalog->allow_holds_override ?? false;
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
@@ -507,6 +506,7 @@ class Holds
         $HMACkey = $this->hmac->generate($HMACKeys, $details);
 
         // Add Params
+        $queryString = [];
         foreach ($details as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
@@ -536,8 +536,8 @@ class Holds
     protected function getHoldingsGroupKey($copy)
     {
         // Group by holdings id and location unless configured otherwise
-        $grouping = isset($this->config->Catalog->holdings_grouping)
-            ? $this->config->Catalog->holdings_grouping : 'holdings_id,location';
+        $grouping = $this->config->Catalog->holdings_grouping
+            ?? 'holdings_id,location';
 
         $groupKey = "";
 

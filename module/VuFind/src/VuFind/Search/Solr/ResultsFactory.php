@@ -28,6 +28,9 @@
 namespace VuFind\Search\Solr;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * Factory for Solr search results objects.
@@ -52,7 +55,7 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName,
         array $options = null
@@ -61,7 +64,10 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $solr->setSpellingProcessor(
-            new \VuFind\Search\Solr\SpellingProcessor($config->Spelling ?? null)
+            new \VuFind\Search\Solr\SpellingProcessor(
+                $config->Spelling ?? null,
+                $solr->getOptions()->getSpellingNormalizer()
+            )
         );
         $solr->setHierarchicalFacetHelper(
             $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class)

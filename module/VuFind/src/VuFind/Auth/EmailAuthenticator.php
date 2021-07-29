@@ -29,7 +29,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\DB\Table\AuthHash as AuthHashTable;
+use VuFind\Db\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -151,9 +151,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $template = 'Email/login-link.phtml'
     ) {
         // Make sure we've waited long enough
-        $recoveryInterval = isset($this->config->Authentication->recover_interval)
-            ? $this->config->Authentication->recover_interval
-            : 60;
+        $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
         $sessionId = $this->sessionManager->getId();
 
         if (($row = $this->authHashTable->getLatestBySessionId($sessionId))

@@ -44,7 +44,7 @@ use VuFind\I18n\TranslatableString;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TranslatableStringTest extends \VuFindTest\Unit\TestCase
+class TranslatableStringTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test standalone behavior.

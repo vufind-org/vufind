@@ -27,7 +27,7 @@
  */
 namespace VuFindConsole;
 
-use Laminas\ServiceManager\ServiceManager;
+use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 
 /**
@@ -51,16 +51,16 @@ class ConsoleRunner
     /**
      * Plugin manager (to retrieve commands)
      *
-     * @var ServiceManager
+     * @var ContainerInterface
      */
     protected $pluginManager;
 
     /**
      * Constructor
      *
-     * @param ServiceManager $pm Plugin manager (to retrieve commands)
+     * @param ContainerInterface $pm Plugin manager (to retrieve commands)
      */
-    public function __construct(ServiceManager $pm)
+    public function __construct(ContainerInterface $pm)
     {
         $this->pluginManager = $pm;
     }

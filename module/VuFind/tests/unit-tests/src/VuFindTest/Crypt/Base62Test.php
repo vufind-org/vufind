@@ -38,7 +38,7 @@ use VuFind\Crypt\Base62;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class Base62Test extends \VuFindTest\Unit\TestCase
+class Base62Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test encoding.

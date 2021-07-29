@@ -48,9 +48,9 @@ use VuFind\Resolver\Driver\Alma;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AlmaTest extends \VuFindTest\Unit\TestCase
+class AlmaTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Unit\FixtureTrait;
+    use \VuFindTest\Feature\FixtureTrait;
 
     /**
      * Test-Config
@@ -84,7 +84,16 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
 
         $testResult = [
-            0 => [
+            [
+                'title' => 'Unpaywall',
+                'coverage' => '',
+                'access' => 'open',
+                'href' => 'https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=1',
+                'notes' => '',
+                'authentication' => '',
+                'service_type' => 'getFullTxt',
+            ],
+            [
                 'title' => 'Ebook override',
                 'coverage' => 'Available from 2019',
                 'access' => 'limited',
@@ -93,7 +102,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            1 => [
+            [
                 'title' => 'ebrary Academic Complete Subscription UKI Edition',
                 'coverage' => '',
                 'access' => 'limited',
@@ -102,7 +111,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            2 => [
+            [
                 'title' => 'ebrary Science & Technology Subscription',
                 'coverage' => '',
                 'access' => 'limited',
@@ -111,7 +120,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            3 => [
+            [
                 'title' => 'EBSCOhost Academic eBook Collection (North America)',
                 'coverage' => '',
                 'access' => 'open',
@@ -120,7 +129,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => 'collection level auth SERVICE LEVEL AUTHE NOTE',
                 'service_type' => 'getFullTxt',
             ],
-            4 => [
+            [
                 'title' => 'EBSCOhost eBook Community College Collection',
                 'coverage' => '',
                 'access' => 'limited',
@@ -129,7 +138,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => '',
                 'service_type' => 'getHolding',
             ],
-            5 => [
+            [
                 'title' => 'Elsevier ScienceDirect Books',
                 'coverage' => '',
                 'access' => 'limited',
@@ -138,7 +147,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => '',
                 'service_type' => 'getFullTxt',
             ],
-            6 => [
+            [
                 'title' => 'Request Assistance for this Resource!',
                 'coverage' => '',
                 'access' => '',
@@ -147,7 +156,7 @@ class AlmaTest extends \VuFindTest\Unit\TestCase
                 'authentication' => '',
                 'service_type' => 'getWebService',
             ],
-            7 => [
+            [
                 'title' => 'ProQuest Safari Tech Books Online',
                 'coverage' => '',
                 'access' => 'limited',

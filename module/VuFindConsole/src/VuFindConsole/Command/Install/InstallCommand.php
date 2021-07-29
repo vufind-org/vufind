@@ -44,9 +44,9 @@ use Symfony\Component\Console\Question\Question;
  */
 class InstallCommand extends Command
 {
-    const MULTISITE_NONE = 0;
-    const MULTISITE_DIR_BASED = 1;
-    const MULTISITE_HOST_BASED = 2;
+    public const MULTISITE_NONE = 0;
+    public const MULTISITE_DIR_BASED = 1;
+    public const MULTISITE_HOST_BASED = 2;
 
     /**
      * The name of the command (the part after "public/index.php")
@@ -271,9 +271,10 @@ class InstallCommand extends Command
         if ($allowEmpty && empty($basePath)) {
             return true;
         }
-        return preg_match('/^\/\w*$/', $basePath)
+        return preg_match('/^\/[\w_-]*$/', $basePath)
             ? true
-            : 'Error: Base path must be alphanumeric and start with a slash.';
+            : 'Error: Base path must start with a slash and contain only'
+                . ' alphanumeric characters, dash or underscore.';
     }
 
     /**
@@ -306,7 +307,7 @@ class InstallCommand extends Command
      *
      * @param string $dir Path to attempt to initialize
      *
-     * @return void
+     * @return bool|string
      */
     protected function initializeOverrideDir($dir)
     {
@@ -928,5 +929,6 @@ class InstallCommand extends Command
 
         // Report success:
         $this->displaySuccessMessage($output);
+        return 0;
     }
 }
