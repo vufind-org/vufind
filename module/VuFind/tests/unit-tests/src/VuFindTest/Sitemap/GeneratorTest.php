@@ -79,8 +79,6 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         string $baseUrl = 'http://foo'
     ) {
         return new Generator(
-            $objects[BackendManager::class]
-                ?? $this->container->get(BackendManager::class),
             $objects[SearchService::class]
                 ?? $this->container->get(SearchService::class),
             $baseUrl,
