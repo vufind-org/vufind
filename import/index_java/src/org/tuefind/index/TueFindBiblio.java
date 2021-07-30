@@ -68,6 +68,7 @@ public class TueFindBiblio extends TueFind {
     protected final static Pattern BRACKET_DIRECTIVE_PATTERN = Pattern.compile("\\[(.)(.)\\]");
     protected final static Pattern PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN = Pattern.compile("\\(" + ISIL_K10PLUS + "\\)(.*)");
     protected final static Pattern SUPERIOR_PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN = PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN;
+    protected final static Pattern DIFFERENT_CALCULATION_OF_TIME_PATTERN =  Pattern.compile(".*?\\[(.*?)\\=\\s*(\\d+)\\s*\\].*", Pattern.UNICODE_CHARACTER_CLASS);
 
     // use static instance for better performance
     protected static CreatorTools creatorTools = new CreatorTools();
@@ -2721,8 +2722,7 @@ public class TueFindBiblio extends TueFind {
     public String getCleanAndNormalizedDate(final String dateString) {
         // We have to normalize dates that follow a different calculation of
         // time, e.g. works with hindu time
-        final String DIFFERENT_CALCULATION_OF_TIME_REGEX = ".*?\\[(.*?)\\=\\s*(\\d+)\\s*\\].*";
-        Matcher differentCalcOfTimeMatcher = Pattern.compile(DIFFERENT_CALCULATION_OF_TIME_REGEX, Pattern.UNICODE_CHARACTER_CLASS).matcher(dateString);
+        Matcher differentCalcOfTimeMatcher = DIFFERENT_CALCULATION_OF_TIME_PATTERN.matcher(dateString);
         return differentCalcOfTimeMatcher.find() ? differentCalcOfTimeMatcher.group(2) : DataUtil.cleanDate(dateString);
 
     }
