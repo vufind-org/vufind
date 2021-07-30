@@ -58,13 +58,13 @@ public class TueFindBiblio extends TueFind {
     protected final static String ISIL_PREFIX_K10PLUS = "(" + ISIL_K10PLUS + ")";
     protected final static String ES_FULLTEXT_PROPERTIES_FILE = "es_fulltext.properties";
 
-    protected final static Pattern PAGE_RANGE_PATTERN1 = Pattern.compile("\\s*(\\d+)\\s*-\\s*(\\d+)$");
-    protected final static Pattern PAGE_RANGE_PATTERN2 = Pattern.compile("\\s*\\[(\\d+)\\]\\s*-\\s*(\\d+)$");
-    protected final static Pattern PAGE_RANGE_PATTERN3 = Pattern.compile("\\s*(\\d+)\\s*ff");
+    protected final static Pattern PAGE_RANGE_PATTERN1 = Pattern.compile("\\s*(\\d+)\\s*-\\s*(\\d+)$", Pattern.UNICODE_CHARACTER_CLASS);
+    protected final static Pattern PAGE_RANGE_PATTERN2 = Pattern.compile("\\s*\\[(\\d+)\\]\\s*-\\s*(\\d+)$", Pattern.UNICODE_CHARACTER_CLASS);
+    protected final static Pattern PAGE_RANGE_PATTERN3 = Pattern.compile("\\s*(\\d+)\\s*ff", Pattern.UNICODE_CHARACTER_CLASS);
     protected final static Pattern PAGE_MATCH_PATTERN = Pattern.compile("^\\[?(\\d+)\\]?([-–](\\d+))?$");
     protected final static Pattern VALID_FOUR_DIGIT_YEAR_PATTERN = Pattern.compile("\\d{4}");
     protected final static Pattern VALID_YEAR_RANGE_PATTERN = Pattern.compile("^\\d*u*$");
-    protected final static Pattern VOLUME_PATTERN = Pattern.compile("^\\s*(\\d+)$");
+    protected final static Pattern VOLUME_PATTERN = Pattern.compile("^\\s*(\\d+)$", Pattern.UNICODE_CHARACTER_CLASS);
     protected final static Pattern BRACKET_DIRECTIVE_PATTERN = Pattern.compile("\\[(.)(.)\\]");
     protected final static Pattern PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN = Pattern.compile("\\(" + ISIL_K10PLUS + "\\)(.*)");
     protected final static Pattern SUPERIOR_PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN = PPN_WITH_K10PLUS_ISIL_PREFIX_PATTERN;
@@ -1261,7 +1261,7 @@ public class TueFindBiblio extends TueFind {
     }
 
 
-    protected final static Pattern NUMBER_END_PATTERN = Pattern.compile("([^\\d\\s<>]+)(\\s*<?\\d+(-\\d+)>?$)");
+    protected final static Pattern NUMBER_END_PATTERN = Pattern.compile("([^\\d\\s<>]+)(\\s*<?\\d+(-\\d+)>?$)", Pattern.UNICODE_CHARACTER_CLASS);
 
     /**
      * Translate a single term to given language if a translation is found
@@ -2722,7 +2722,7 @@ public class TueFindBiblio extends TueFind {
         // We have to normalize dates that follow a different calculation of
         // time, e.g. works with hindu time
         final String DIFFERENT_CALCULATION_OF_TIME_REGEX = ".*?\\[(.*?)\\=\\s*(\\d+)\\s*\\].*";
-        Matcher differentCalcOfTimeMatcher = Pattern.compile(DIFFERENT_CALCULATION_OF_TIME_REGEX).matcher(dateString);
+        Matcher differentCalcOfTimeMatcher = Pattern.compile(DIFFERENT_CALCULATION_OF_TIME_REGEX, Pattern.UNICODE_CHARACTER_CLASS).matcher(dateString);
         return differentCalcOfTimeMatcher.find() ? differentCalcOfTimeMatcher.group(2) : DataUtil.cleanDate(dateString);
 
     }
