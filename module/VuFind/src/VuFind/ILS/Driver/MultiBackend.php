@@ -993,7 +993,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            return $driver->UpdateHolds(
+            return $driver->updateHolds(
                 $holdsDetails,
                 $fields,
                 $this->stripIdPrefixes($patron, $source)
