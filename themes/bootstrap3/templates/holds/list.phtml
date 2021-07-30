@@ -195,7 +195,7 @@
             <?php if (isset($ilsDetails['cancel_link'])): ?>
               <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
             <?php endif; ?>
-            <?php if (isset($ilsDetails['updateDetails'])): ?>
+            <?php if (!empty($ilsDetails['updateDetails'])): ?>
               <p><a class="hold-edit" href="<?=$this->escapeHtmlAttr($this->url('holds-edit', [], ['query' => ['selectedIDS[]' => $ilsDetails['updateDetails']]])) ?>" data-lightbox><?=$this->transEsc('Edit') ?></a></p>
             <?php endif; ?>
 
