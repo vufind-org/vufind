@@ -171,7 +171,8 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
-     * Support method for getCharsetAndCollationProblemsForTable() -- get column details
+     * Support method for getCharsetAndCollationProblemsForTable() -- get column
+     * details
      *
      * @param string $table     Table to check
      * @param string $collation The desired collation
@@ -179,8 +180,9 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    protected function getCharsetAndCollationProblemsForTableColumns($table, $collation)
-    {
+    protected function getCharsetAndCollationProblemsForTableColumns(
+        $table, $collation
+    ) {
         // Get column summary:
         $sql = "SHOW FULL COLUMNS FROM `{$table}`";
         $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
