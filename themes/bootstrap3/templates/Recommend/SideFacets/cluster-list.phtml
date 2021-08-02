@@ -6,6 +6,7 @@
 <?php
   $truncateSettings = [
     'rows' => $this->facets_before_more,
+    'btn-class' => 'facet',
     'more-label' => $this->transEsc('more') . ' ...',
     'less-label' => $this->transEsc('less') . ' ...',
   ];
@@ -45,7 +46,7 @@
         $moreUrl .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
       }
     ?>
-    <a class="facet narrow-toggle <?=$moreClass ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+    <a class="facet narrow-toggle <?=$moreClass ?? '' ?>" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
       <span class="text"><?=$this->transEsc('see all')?> ...</span>
     </a>
   <?php endif; ?>
