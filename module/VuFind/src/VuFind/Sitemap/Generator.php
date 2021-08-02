@@ -281,6 +281,19 @@ class Generator
     }
 
     /**
+     * Get the class name of the command object for generating sitemaps through the
+     * search service.
+     *
+     * @return string
+     */
+    protected function getGenerateCommandClass(): string
+    {
+        return $this->retrievalMode === 'terms'
+            ? Command\GenerateSitemapWithTermsCommand::class
+            : Command\GenerateSitemapWithCursorMarkCommand::class;
+    }
+
+    /**
      * Generate the sitemaps based on settings established by the constructor.
      *
      * @return void
@@ -292,8 +305,9 @@ class Generator
 
         $additionalSitemaps = $this->generateWithPlugins();
 
-        // Initialize variable
+        // Initialize variables for use within the loop below:
         $currentPage = 1;
+        $commandClass = $this->getGenerateCommandClass();
 
         // Loop through all backends
         foreach ($this->backendSettings as $current) {
@@ -304,9 +318,6 @@ class Generator
                 'retrievalMode' => $this->retrievalMode,
                 'languages' => $this->languages,
             ];
-            $commandClass = $this->retrievalMode === 'terms'
-                ? Command\GenerateSitemapWithTermsCommand::class
-                : Command\GenerateSitemapWithCursorMarkCommand::class;
             $command = new $commandClass(
                 $current['id'], $context, $this->searchService
             );
