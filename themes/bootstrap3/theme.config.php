@@ -62,41 +62,4 @@ return [
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
     ],
-    'icons' => [
-        'defaultSet' => 'FontAwesome',
-        'sets' => [
-            /**
-             * Define icon sets here.
-             *
-             * All sets need:
-             * - 'template': which template the icon renders with
-             * - 'src': the location of the relevant resource (font, css, images)
-             * - 'prefix': prefix to place before each icon name for convenience
-             *             (ie. fa fa- for FontAwesome, default "")
-             */
-            'FontAwesome' => [
-                'template' => 'font',
-                'prefix' => 'fa fa-',
-                'src' => 'vendor/font-awesome.min.css',
-            ],
-            'Remix' => [
-                'template' => 'svg-sprite',
-                'prefix' => 'ri-',
-                'src' => 'remixicon.symbol.svg',
-            ],
-        ],
-        'aliases' => [
-            /**
-             * Icons can be assigned or overriden here
-             *
-             * Format: 'icon' => [set:]icon
-             *
-             * Icons assigned without set will use the defaultSet (above)
-             */
-            'favorites' => 'Remix:star-fill',
-            'my-account' => 'user-circle',
-            'search' => 'Remix:search-line',
-            'sign-out' => 'door-close',
-        ]
-    ]
 ];
