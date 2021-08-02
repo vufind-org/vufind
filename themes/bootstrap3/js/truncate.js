@@ -1,18 +1,22 @@
 /* global VuFind */
 
 VuFind.register('truncate', function Truncate() {
-  function getSetting(settings, key, defaultVal = null) {
-    // A lot of the code below would be easier if we could use nullish coalescing
-    // (the ?? operator), but due to browser support concerns, this is safer:
-    return (typeof settings[key] === 'undefined') ? defaultVal : settings[key];
-  }
+  const defaultSettings = {
+    'btn-class': '',
+    'in-place-toggle': false,
+    'label': null,
+    'less-label': VuFind.translate('show_less'),
+    'more-label': VuFind.translate('show_more'),
+    'rows': 3,
+    'top-toggle': Infinity,
+  };
 
   function initTruncate(_container, _element, _fill) {
     var zeroHeightContainers = [];
 
     $(_container).not('.truncate-done').each(function truncate() {
       var container = $(this);
-      var settings = container.data('truncate');
+      var settings = Object.assign({}, defaultSettings, container.data('truncate'));
 
       var element = typeof _element !== 'undefined'
         ? container.find(_element)
@@ -20,16 +24,16 @@ VuFind.register('truncate', function Truncate() {
           ? container.find(settings.element)
           : false;
       var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
-      var rowCount = getSetting(settings, 'rows', 3);
+      var rowCount = settings['rows'];
       var moreLabel, lessLabel;
-      moreLabel = lessLabel = getSetting(settings, 'label');
+      moreLabel = lessLabel = settings['label'];
       if (moreLabel === null) {
-        moreLabel = getSetting(settings, 'more-label', VuFind.translate('show_more'));
-        lessLabel = getSetting(settings, 'less-label', VuFind.translate('show_less'));
+        moreLabel = settings['more-label'];
+        lessLabel = settings['less-label'];
       }
-      var btnClass = getSetting(settings, 'btn-class') ? ' ' + settings['btn-class'] : '';
-      var topToggle = getSetting(settings, 'top-toggle', Infinity);
-      var inPlaceToggle = (element && getSetting(settings, 'in-place-toggle'))
+      var btnClass = settings['btn-class'] ? ' ' + settings['btn-class'] : '';
+      var topToggle = settings['top-toggle'];
+      var inPlaceToggle = (element && settings['in-place-toggle'])
         ? settings['in-place-toggle']
         : false;
 
