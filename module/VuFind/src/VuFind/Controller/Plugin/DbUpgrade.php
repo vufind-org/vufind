@@ -821,8 +821,8 @@ class DbUpgrade extends AbstractPlugin
         foreach (array_keys($keyMatches[0]) as $i) {
             $unique = !empty($keyMatches[1][$i]);
             $name = $keyMatches[2][$i];
-            // Fix trailing whitespace:
-            $definition = trim($keyMatches[3][$i]);
+            // Normalize trailing whitespace and spaces after commas:
+            $definition = preg_replace('/,\s+`/', ',`', trim($keyMatches[3][$i]));
 
             $keys[$name] = compact('unique', 'definition');
         }

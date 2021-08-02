@@ -321,7 +321,7 @@ CREATE TABLE `record` (
   `data` longtext DEFAULT NULL,
   `updated` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `record_id_source` (`record_id`(140), `source`(50))
+  UNIQUE KEY `record_id_source` (`record_id`(140), `source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -340,7 +340,7 @@ CREATE TABLE `auth_hash` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `session_id` (`session_id`),
-  UNIQUE KEY `hash_type` (`hash`(140), `type`(50)),
+  UNIQUE KEY `hash_type` (`hash`(140), `type`),
   KEY `created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
