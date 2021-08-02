@@ -307,7 +307,7 @@ class DbUpgrade extends AbstractPlugin
                     $currentDefault = '';
                 }
 
-                // Change back to appropriate character data with fixed encoding:
+                // Change column to appropriate character encoding:
                 $sql = "ALTER TABLE `$table` MODIFY `$column` " . $details['Type']
                     . " COLLATE " . $newSettings['collation']
                     . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
