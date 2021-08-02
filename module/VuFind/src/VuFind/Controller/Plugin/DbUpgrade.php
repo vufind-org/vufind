@@ -171,14 +171,15 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
-     * Support method for getEncodingProblems() -- get column details
+     * Support method for getCharsetAndCollationProblemsForTable() -- get column details
      *
-     * @param string $table Table to check
+     * @param string $table     Table to check
+     * @param string $collation The desired collation
      *
      * @throws \Exception
      * @return array
      */
-    protected function getEncodingProblemsForTable($table)
+    protected function getCharsetAndCollationProblemsForTableColumns($table, $collation)
     {
         // Get column summary:
         $sql = "SHOW FULL COLUMNS FROM `{$table}`";
@@ -187,7 +188,9 @@ class DbUpgrade extends AbstractPlugin
         // Load details:
         $retVal = [];
         foreach ($results as $current) {
-            if (strtolower(substr($current->Collation, 0, 6)) == 'latin1') {
+            if (!empty($current->Collation)
+                && strtolower($current->Collation) !== strtolower($collation)
+            ) {
                 $retVal[$current->Field] = (array)$current;
             }
         }
@@ -224,9 +227,6 @@ class DbUpgrade extends AbstractPlugin
         if (!isset($this->dbCommands[$table['Name']][0])) {
             return false;
         }
-        // For now, we'll only detect problems in utf8-encoded tables; if the
-        // user has a Latin1 database, they probably have more complex issues to
-        // work through anyway.
         $match = preg_match(
             '/(CHARSET|CHARACTER SET)[\s=]+(utf8(mb4)?)/',
             $this->dbCommands[$table['Name']][0],
@@ -251,10 +251,14 @@ class DbUpgrade extends AbstractPlugin
         // (See https://dev.mysql.com/doc/refman/8.0/en/show-table-status.html for
         // more information):
         [$tableCharset] = explode('_', $table['Collation']);
+        $problemColumns = $this->getCharsetAndCollationProblemsForTableColumns(
+            $table['Name'], $collation
+        );
         if (strcasecmp($collation, $table['Collation']) !== 0
             || strcasecmp($charset, $tableCharset) !== 0
+            || !empty($problemColumns)
         ) {
-            return compact('charset', 'collation');
+            return compact('charset', 'collation', 'problemColumns');
         }
         return false;
     }
@@ -293,68 +297,7 @@ class DbUpgrade extends AbstractPlugin
     {
         $sqlcommands = '';
         foreach ($tables as $table => $newSettings) {
-            // Adjust table character set and collation:
-            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET"
-                . " {$newSettings['charset']} COLLATE {$newSettings['collation']};";
-            $sqlcommands .= $this->query($sql, $logsql);
-        }
-        return $sqlcommands;
-    }
-
-    /**
-     * Get information on incorrectly encoded tables/columns.
-     *
-     * @throws \Exception
-     * @return array
-     */
-    public function getEncodingProblems()
-    {
-        // Load details:
-        $retVal = [];
-        foreach ($this->getTableStatus() as $current) {
-            if (strtolower(substr($current['Collation'], 0, 6)) == 'latin1') {
-                $retVal[$current['Name']]
-                    = $this->getEncodingProblemsForTable($current['Name']);
-            }
-        }
-
-        return $retVal;
-    }
-
-    /**
-     * Fix encoding problems based on the output of getEncodingProblems().
-     *
-     * @param array $tables Output of getEncodingProblems()
-     * @param bool  $logsql Should we return the SQL as a string rather than
-     * execute it?
-     *
-     * @throws \Exception
-     * @return string       SQL if $logsql is true, empty string otherwise
-     */
-    public function fixEncodingProblems($tables, $logsql = false)
-    {
-        $newCollation = "utf8mb4_unicode_ci";
-        $sqlcommands = '';
-
-        // Database conversion routines inspired by:
-        //     https://github.com/nicjansma/mysql-convert-latin1-to-utf8
-        foreach ($tables as $table => $columns) {
-            foreach ($columns as $column => $details) {
-                $oldType = $details['Type'];
-                $parts = explode('(', $oldType);
-                switch ($parts[0]) {
-                case 'char':
-                    $newType = 'binary(' . $parts[1];
-                    break;
-                case 'text':
-                    $newType = 'blob';
-                    break;
-                case 'varchar':
-                    $newType = 'varbinary(' . $parts[1];
-                    break;
-                default:
-                    throw new \Exception('Unexpected column type: ' . $parts[0]);
-                }
+            foreach ($newSettings['problemColumns'] as $column => $details) {
                 // Set up default:
                 if (null !== $details['Default']) {
                     $safeDefault = $this->getAdapter()->getPlatform()
@@ -364,25 +307,17 @@ class DbUpgrade extends AbstractPlugin
                     $currentDefault = '';
                 }
 
-                // Change to binary equivalent:
-                $sql = "ALTER TABLE `$table` MODIFY `$column` $newType"
-                    . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
-                    . $currentDefault
-                    . ";";
-                $sqlcommands .= $this->query($sql, $logsql);
-
                 // Change back to appropriate character data with fixed encoding:
-                $sql = "ALTER TABLE `$table` MODIFY `$column` $oldType"
-                    . " COLLATE $newCollation"
+                $sql = "ALTER TABLE `$table` MODIFY `$column` " . $details['Type']
+                    . " COLLATE " . $newSettings['collation']
                     . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
                     . $currentDefault
                     . ";";
                 $sqlcommands .= $this->query($sql, $logsql);
             }
-
-            // Adjust default table character set and collation:
-            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET utf8mb4 "
-                . "COLLATE $newCollation;";
+            // Adjust table character set and collation:
+            $sql = "ALTER TABLE `$table` CONVERT TO CHARACTER SET"
+                . " {$newSettings['charset']} COLLATE {$newSettings['collation']};";
             $sqlcommands .= $this->query($sql, $logsql);
         }
         return $sqlcommands;
