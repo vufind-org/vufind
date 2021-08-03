@@ -280,14 +280,13 @@ var TueFind = {
     },
 
     CheckWildcards : function(event) {
-        
         // Case 1: ItemFulltextSearch
         if (event.type == 'submit' && event.target.id == 'ItemFulltextSearchForm')
             return this.WildcardHandler($("#searchForm_fulltext").val());
         // Case 2: The submit button was pressed
         // Case 3: The tab nav was chosen
         else if ((event.type == 'submit' && this.GetSearchboxSearchContext() == 'search2') ||
-                 (event.type == 'click' && event.view.location.href.match('/Search2/')) ) {
+                 (event.type == 'click' && event.explicitOriginalTarget.href.match('/Search2/')) ) {
                  return this.WildcardHandler($("#searchForm_lookfor").val());
         }
         return true;
@@ -310,15 +309,6 @@ $(document).ready(function () {
     } else if (window.location.pathname.match(/\/Alphabrowse/i)) {
         TueFind.SetFocus('#alphaBrowseForm_from');
     }
-    
-    $(".tuefind-event-resetsearchhandlers").click(function(){
-        TueFind.ResetSearchHandlers(); 
-        return TueFind.CheckWildcards(event);
-    })
-    
-    $('.tuefind-event-searchForm-on-submit').submit(function(){
-        return TueFind.CheckWildcards(event);
-    })
 
     TueFind.AddContentAnchors();
     TueFind.AdjustSearchHandlers();
