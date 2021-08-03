@@ -79,7 +79,8 @@
                     </div>
                 </div>
 
-                <script>
+                <?php
+                  $jsSnippet = <<< 'EOD'
                     $(document).ready(function(){
                         $('.slick-slider-single-item').slick({
                             dots: true,
@@ -90,7 +91,9 @@
                             arrows: true
                         });
                     });
-                </script>
+EOD;
+              ?>
+              <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
             </div>
             <div class="col-md-6">
                 <div class="cw-text-center">
