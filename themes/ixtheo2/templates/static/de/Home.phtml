@@ -269,33 +269,36 @@ EOD;
         </div>
     </div>
 
-    <script>
+    <?php
+      $jsSnippet = <<< 'EOD'
         var guidesSlider = new Swiper('.cw-guides-slider', {
-        slidesPerView: 5,
-        spaceBetween: 15,
-        /*loop: true,*/
-        roundLengths: true,
-        breakpoints: {
-            1200: {
-                slidesPerView: 4
+            slidesPerView: 5,
+            spaceBetween: 15,
+            /*loop: true,*/
+            roundLengths: true,
+            breakpoints: {
+                1200: {
+                    slidesPerView: 4
+                },
+                991: {
+                    slidesPerView: 3
+                },
+                768: {
+                    slidesPerView: 2
+                },
+                400: {
+                    slidesPerView: 1
+                }
             },
-            991: {
-                slidesPerView: 3
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true
             },
-            768: {
-                slidesPerView: 2
-            },
-            400: {
-                slidesPerView: 1
-            }
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-            dynamicBullets: true
-        },
-    });
-    </script>
+        });
+EOD;
+      ?>
+      <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsSnippet, 'SET')?>
 </section>
 
 <section class="cw-py-7 cw-position-relative cw-dark-overlay">
