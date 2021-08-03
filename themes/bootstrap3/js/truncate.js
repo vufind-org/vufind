@@ -9,6 +9,8 @@ VuFind.register('truncate', function Truncate() {
     'more-label': VuFind.translate('show_more'),
     'rows': 3,
     'top-toggle': Infinity,
+    'wrapper-class': '', // '' will glean from element, false or null will exclude a class
+    'wrapper-tagname': null, // falsey values will glean from element
   };
 
   function initTruncate(_container, _element, _fill) {
@@ -37,15 +39,22 @@ VuFind.register('truncate', function Truncate() {
         ? settings['in-place-toggle']
         : false;
 
-      var parent, elementName, elementClass, numRows, shouldTruncate, truncatedHeight;
+      var parent, numRows, shouldTruncate, truncatedHeight;
+      var wrapperClass = settings['wrapper-class'];
+      var wrapperTagName = settings['wrapper-tagname'];
 
       if (element) {
         // Element-based truncation
         parent = element.parent();
-        elementName = element.length && element.prop('tagName').toLowerCase();
-        elementClass = element.length ? ' ' + element.prop('class') : '';
         numRows = container.find(element).length || 0;
         shouldTruncate = rowCount < numRows;
+
+        if (wrapperClass == '') {
+          wrapperClass = element.length ? ' ' + element.prop('class') : '';
+        }
+        if (!wrapperTagName) {
+          wrapperTagName = element.length && element.prop('tagName').toLowerCase();
+        }
 
         if (shouldTruncate) {
           element.each(function hideRows(i) {
@@ -61,8 +70,6 @@ VuFind.register('truncate', function Truncate() {
       } else {
         // Height-based truncation
         parent = container;
-        elementName = 'div';
-        elementClass = '';
         var rowHeight;
         if (container.children().length > 0) {
           // Use first child as the height element if available
@@ -87,7 +94,9 @@ VuFind.register('truncate', function Truncate() {
       if (shouldTruncate) {
         var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button>';
         var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
-        var btnWrapper = $('<' + elementName + ' class="more-less-btn-wrapper' + elementClass + '"></' + elementName + '>');
+
+        wrapperTagName = wrapperTagName || 'div';
+        var btnWrapper = $('<' + wrapperTagName + ' class="more-less-btn-wrapper' + (wrapperClass || '') + '"></' + wrapperTagName + '>');
         var btnWrapperBtm = btnWrapper.clone().append(fill(btnMore + btnLess));
         var btnWrapperTop = (numRows > topToggle) ? btnWrapper.clone().append(fill(btnLess)) : false;
 
