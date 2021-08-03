@@ -49,8 +49,8 @@ VuFind.register('truncate', function Truncate() {
         numRows = container.find(element).length || 0;
         shouldTruncate = rowCount < numRows;
 
-        if (wrapperClass == '') {
-          wrapperClass = element.length ? ' ' + element.prop('class') : '';
+        if (wrapperClass === '') {
+          wrapperClass = element.length ? element.prop('class') : '';
         }
         if (!wrapperTagName) {
           wrapperTagName = element.length && element.prop('tagName').toLowerCase();
@@ -95,8 +95,9 @@ VuFind.register('truncate', function Truncate() {
         var btnMore = '<button type="button" class="btn more-btn' + btnClass + '">' + moreLabel + ' <i class="fa fa-arrow-down" aria-hidden="true"></i></button>';
         var btnLess = '<button type="button" class="btn less-btn' + btnClass + '">' + lessLabel + ' <i class="fa fa-arrow-up" aria-hidden="true"></i></button>';
 
+        wrapperClass = wrapperClass ? ' ' + wrapperClass : '';
         wrapperTagName = wrapperTagName || 'div';
-        var btnWrapper = $('<' + wrapperTagName + ' class="more-less-btn-wrapper' + (wrapperClass || '') + '"></' + wrapperTagName + '>');
+        var btnWrapper = $('<' + wrapperTagName + ' class="more-less-btn-wrapper' + wrapperClass + '"></' + wrapperTagName + '>');
         var btnWrapperBtm = btnWrapper.clone().append(fill(btnMore + btnLess));
         var btnWrapperTop = (numRows > topToggle) ? btnWrapper.clone().append(fill(btnLess)) : false;
 
