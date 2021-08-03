@@ -66,12 +66,16 @@ class IconFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-
+        $config = $container->get(\VuFindTheme\ThemeInfo::class)
+            ->getMergedConfig('icons', true);
+        $cache = $$container->get(\VuFind\Cache\Manager::class)
+            ->getCache('object', 'iconHelper');
+        $helpers = $container->get('ViewHelperManager');
         return new $requestedName(
-            $container->get(\VuFindTheme\ThemeInfo::class),
-            $container->get(\VuFind\Cache\Manager::class),
-            $container->get('ViewHelperManager')->get('escapeHtmlAttr'),
-            $container->get('ViewHelperManager')->get('headLink'),
+            $config,
+            $cache,
+            $helpers->get('escapeHtmlAttr'),
+            $helpers->get('headLink')
         );
     }
 }

@@ -27,12 +27,10 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
 use Laminas\View\Helper\HeadLink;
-use VuFind\Cache\Manager as CacheManager;
-use VuFind\Cache\StorageInterface;
-use VuFindTheme\ThemeInfo;
 
 /**
  * Icon view helper
@@ -97,19 +95,19 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param ThemeInfo      $themeInfo    Theme info helper
-     * @param CacheManager   $cacheManager Cache manager instance
-     * @param EscapeHtmlAttr $escAttr      EscapeHtmlAttr view helper
-     * @param HeadLink       $headLink     For stylesheet appending
+     * @param array            $config   Icon configuration
+     * @param StorageInterface $cache    Cache instance
+     * @param EscapeHtmlAttr   $escAttr  EscapeHtmlAttr view helper
+     * @param HeadLink         $headLink For stylesheet appending
      */
     public function __construct(
-        ThemeInfo $themeInfo, CacheManager $cacheManager,
+        array $config, StorageInterface $cache,
         EscapeHtmlAttr $escAttr, HeadLink $headLink
     ) {
-        $this->config = $themeInfo->getMergedConfig('icons', true);
+        $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->iconMap = $this->config['aliases'] ?? [];
-        $this->cache = $cacheManager->getCache('object', 'iconHelper');
+        $this->cache = $cache;
         $this->esc = $escAttr;
         $this->headLink = $headLink;
     }
