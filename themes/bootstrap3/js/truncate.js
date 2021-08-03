@@ -24,9 +24,9 @@ VuFind.register('truncate', function Truncate() {
           ? container.find(settings.element)
           : false;
       var fill = typeof _fill === 'undefined' ? function fill(m) { return m; } : _fill;
-      var rowCount = settings['rows'];
+      var rowCount = settings.rows;
       var moreLabel, lessLabel;
-      moreLabel = lessLabel = settings['label'];
+      moreLabel = lessLabel = settings.label;
       if (moreLabel === null) {
         moreLabel = settings['more-label'];
         lessLabel = settings['less-label'];
