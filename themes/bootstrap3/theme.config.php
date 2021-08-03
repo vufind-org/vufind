@@ -61,5 +61,5 @@ return [
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search'
         ]
-    ],
+    ]
 ];
