@@ -96,7 +96,7 @@ class ImageFactory implements FactoryInterface
 
         return new $requestedName(
             new \Laminas\Captcha\Image($imageOptions),
-            $container->get('ViewHelperManager')->get('url')->__invoke('home')
+            ($container->get('ViewHelperManager')->get('url'))('home')
                 . '/cache/'
         );
     }

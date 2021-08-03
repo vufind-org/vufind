@@ -162,7 +162,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
         $this->assertEquals('parent', $ti->findContainingTheme('parent.txt'));
         $this->assertEquals($this->fixturePath . '/parent/parent.txt', $ti->findContainingTheme('parent.txt', true));
-        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt'];
+        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt', 'relativePath' => 'parent.txt'];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
 

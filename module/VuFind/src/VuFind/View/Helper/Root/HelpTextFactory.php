@@ -32,7 +32,6 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * HelpText helper factory.
@@ -65,8 +64,8 @@ class HelpTextFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $lang = $container->get(LocaleSettings::class)->getUserLocale();
-        $helpers = $container->get('ViewHelperManager');
-        return new $requestedName($helpers->get('context'), $lang);
+        return new $requestedName(
+            $container->get('ViewHelperManager')->get('content')
+        );
     }
 }

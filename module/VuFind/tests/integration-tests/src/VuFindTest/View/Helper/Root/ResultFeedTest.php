@@ -129,7 +129,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
-        $feed = $helper->__invoke($results, '/test/path');
+        $feed = $helper($results, '/test/path');
         $this->assertTrue(is_object($feed));
         $rss = $feed->export('rss');
 

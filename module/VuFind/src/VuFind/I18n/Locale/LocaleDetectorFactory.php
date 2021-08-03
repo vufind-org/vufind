@@ -35,7 +35,6 @@ use Laminas\EventManager\EventInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
-use SlmLocale\Locale\Detector;
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\CookieStrategy;
 use SlmLocale\Strategy\QueryStrategy;

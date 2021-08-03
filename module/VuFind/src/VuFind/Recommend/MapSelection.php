@@ -28,6 +28,8 @@
  */
 namespace VuFind\Recommend;
 
+use VuFindSearch\Backend\Solr\Backend;
+
 /**
  * MapSelection Recommendations Module
  *
@@ -114,46 +116,46 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
     protected $bboxSearchCoords = [];
 
     /**
-     * Solr search loader
+     * Solr search backend
      *
-     * @var \VuFind\Search\BackendManager
+     * @var Backend
      */
     protected $solr;
 
     /**
      * Query Builder object
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\Backend\Solr\QueryBuilder
      */
     protected $queryBuilder;
 
     /**
      * Solr connector Object
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\Backend\Solr\Connector
      */
     protected $solrConnector;
 
     /**
      * Query Object
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\Query\QueryInterface
      */
     protected $searchQuery;
 
     /**
      * Backend Parameters / Search Filters
      *
-     * @var \VuFind\Search\BackendManager
+     * @var \VuFindSearch\ParamBag
      */
     protected $searchFilters;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\BackendManager $solr                Search interface
-     * @param array                         $basemapOptions      Basemap Options
-     * @param array                         $mapSelectionOptions Map Options
+     * @param Backend $solr                Search interface
+     * @param array   $basemapOptions      Basemap Options
+     * @param array   $mapSelectionOptions Map Options
      */
     public function __construct($solr, $basemapOptions, $mapSelectionOptions)
     {

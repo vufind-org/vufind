@@ -68,9 +68,35 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $bm = $this->getBackendManagerWithMockSolr();
         $commit = new \VuFindSearch\Backend\Solr\Document\CommitDocument();
         $connector = $bm->get('Solr')->getConnector();
-        $connector->expects($this->once())->method('write')->with($this->equalTo($commit));
+        $connector->expects($this->once())->method('write')
+            ->with(
+                $this->equalTo($commit),
+                $this->equalTo('update'),
+                $this->equalTo(null)
+            );
         $writer = new Writer($bm, $this->getMockChangeTracker());
         $writer->save('Solr', $commit);
+    }
+
+    /**
+     * Test save with non-default parameters
+     *
+     * @return void
+     */
+    public function testSaveWithNonDefaults()
+    {
+        $bm = $this->getBackendManagerWithMockSolr();
+        $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument('a,b,c');
+        $params = new \VuFindSearch\ParamBag(['foo' => 'bar']);
+        $connector = $bm->get('Solr')->getConnector();
+        $connector->expects($this->once())->method('write')
+            ->with(
+                $this->equalTo($csv),
+                $this->equalTo('customUpdateHandler'),
+                $this->equalTo($params)
+            );
+        $writer = new Writer($bm, $this->getMockChangeTracker());
+        $writer->save('Solr', $csv, 'customUpdateHandler', $params);
     }
 
     /**
@@ -99,7 +125,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
         $callback = function ($i): bool {
-            return trim($i->asXML()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
+            return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><query>*:*</query></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));
         $writer = new Writer($bm, $this->getMockChangeTracker());
@@ -116,7 +142,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $bm = $this->getBackendManagerWithMockSolr();
         $connector = $bm->get('Solr')->getConnector();
         $callback = function ($i): bool {
-            return trim($i->asXML()) == "<?xml version=\"1.0\"?>\n<delete><id>foo</id><id>bar</id></delete>";
+            return trim($i->getContent()) == "<?xml version=\"1.0\"?>\n<delete><id>foo</id><id>bar</id></delete>";
         };
         $connector->expects($this->once())->method('write')->with($this->callback($callback));
         $ct = $this->getMockChangeTracker();
@@ -140,7 +166,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockConnector = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
+            ->onlyMethods(['getUrl', 'getTimeout', 'setTimeout', 'write'])
             ->getMock();
         $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
         $mockConnector->expects($this->any())->method('getTimeout')->will($this->returnValue(30));
@@ -158,7 +184,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     {
         return $this->getMockBuilder(\VuFind\Db\Table\ChangeTracker::class)
             ->disableOriginalConstructor()
-            ->setMethods(['markDeleted'])
+            ->onlyMethods(['markDeleted'])
             ->getMock();
     }
 }

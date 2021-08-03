@@ -348,7 +348,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = $request->get('limit')) != $defaultLimit) {
+        if (($limit = intval($request->get('limit'))) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in

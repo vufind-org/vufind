@@ -24,7 +24,7 @@
     </a>
   <?php endif; ?>
   <?php if ($ilsOnline && $this->ils()->checkCapability('getMyHolds', $capabilityParams)): ?>
-    <a href="<?=$this->url('myresearch-holds')?>" class="flex<?=$this->active == 'holds' ? ' active' : ''?>">
+    <a href="<?=$this->url('holds-list')?>" class="flex<?=$this->active == 'holds' ? ' active' : ''?>">
       <span class="flex-col"><i class="fa fa-fw fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Holds and Recalls')?></span>
       <span class="holds-status status hidden"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></span>
     </a>
@@ -83,9 +83,14 @@
       <i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Your Favorites')?>
     </a>
     <?php $lists = $user->getLists() ?>
+    <?php
+      // Use a variable so that we can output this nicely without whitespace that would get underlined:
+      $publicInd = '<i class="fa fa-globe" title="' . $this->transEscAttr('public_list_indicator') . '">'
+        . '</i> <span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
+    ?>
     <?php foreach ($lists as $list): ?>
-      <a href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
-        <?=$this->escapeHtml($list['title'])?>
+      <a class="user-list-link" href="<?=$this->url('userList', ['id' => $list['id']])?>"<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
+        <?=$this->escapeHtml($list['title'])?><?=$list['public'] ? $publicInd : ''?>
         <span class="badge"><?=$list->cnt ?></span>
       </a>
     <?php endforeach; ?>

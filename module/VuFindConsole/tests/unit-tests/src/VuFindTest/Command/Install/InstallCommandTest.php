@@ -188,7 +188,7 @@ EXPECTED;
         array $methods = ['buildDirs', 'getInput', 'writeFileToDisk']
     ) {
         return $this->getMockBuilder(InstallCommand::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
     }
 }

@@ -63,7 +63,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
             ],
             'fullRecord' => ['vufind.method' => 'Formatter::getFullRecord'],
             'rawData' => ['vufind.method' => 'Formatter::getRawData'],
-            'buildings' => ['vufind.method' => 'getBuilding'],
+            'buildings' => ['vufind.method' => 'getBuildings'],
             'recordPage' => ['vufind.method' => 'Formatter::getRecordPage'],
             'subjectsExtended' => [
                 'vufind.method' => 'Formatter::getExtendedSubjectHeadings'
@@ -118,7 +118,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
                 'DedupData' => [['id' => 'bar']],
                 'fullrecord' => 'xyzzy',
                 'spelling' => 's',
-                'Building' => ['foo', new TranslatableString('bar', 'xyzzy')],
+                'Buildings' => ['foo', new TranslatableString('bar', 'xyzzy')],
                 'AllSubjectHeadings' => [['heading' => 'subject']],
                 'DeduplicatedAuthors' => [
                     'primary' => ['Ms. A' => ['role' => ['Editor']]],
@@ -149,7 +149,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
-        $expectedRaw['Building'] = [
+        $expectedRaw['Buildings'] = [
             'foo', ['value' => 'bar', 'translated' => 'xyzzy']
         ];
         $expected = [

@@ -14,15 +14,16 @@
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
-  if ($cover):
+?>
+<li class="result<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
+  <?php if ($cover):
     ob_start(); ?>
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?=$cover ?>
     </div>
     <?php $thumbnail = ob_get_contents(); ?>
-  <?php ob_end_clean(); ?>
-<?php endif; ?>
-<div class="result<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
+    <?php ob_end_clean(); ?>
+  <?php endif; ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId"/>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource"/>
   <?=$this->record($this->driver)->getCheckbox()?>
@@ -37,6 +38,11 @@
           <?php if (!$missing): ?><a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><?php endif; ?>
             <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
           <?php if (!$missing): ?></a><?php endif; ?>
+          <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
+            <div class="title-alt">
+              <?=$this->escapeHtml($altTitle)?>
+            </div>
+          <?php endforeach; ?>
         </div>
 
         <div class="resultItemLine2">
@@ -200,11 +206,10 @@
       <?=$thumbnail ?>
     <?php endif; ?>
   </div>
-</div>
-<?php
-$escId = $this->escapeJs($id);
-$escSource = $this->escapeJs($source);
-$script = <<<JS
+  <?php
+    $escId = $this->escapeJs($id);
+    $escSource = $this->escapeJs($source);
+    $script = <<<JS
 $('#confirm_delete_item_${escId}').click(function(e) {
     e.preventDefault();
     $.post('${deleteUrl}', {
@@ -218,5 +223,6 @@ $('#confirm_delete_item_${escId}').click(function(e) {
         );
 });
 JS;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
+  ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
+</li>

@@ -811,9 +811,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d', $entry['pickupByDate']
                 ) : '';
+            $inTransit = $entry['status']['code'] === 't';
+            $requestId = $this->extractId($entry['id']);
+            $updateDetails = ($available || $inTransit) ? '' : $requestId;
             $holds[] = [
                 'id' => $this->formatBibId($bibId),
-                'requestId' => $this->extractId($entry['id']),
+                'reqnum' => $requestId,
                 'item_id' => $itemId ? $itemId : $this->extractId($entry['id']),
                 // note that $entry['pickupLocation']['name'] may contain misleading
                 // text, so we instead use the code here:
@@ -824,30 +827,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
-                'in_transit' => $entry['status']['code'] == 't',
+                'in_transit' => $inTransit,
                 'volume' => $volume,
                 'publication_year' => $publicationYear,
                 'title' => $title,
-                'frozen' => !empty($entry['frozen'])
+                'frozen' => !empty($entry['frozen']),
+                'cancel_details' => $updateDetails,
+                'updateDetails' => $updateDetails,
             ];
         }
         return $holds;
-    }
-
-    /**
-     * Get Cancel Hold Details
-     *
-     * Get required data for canceling a hold. This value is used by relayed to the
-     * cancelHolds function when the user attempts to cancel a hold.
-     *
-     * @param array $holdDetails An array of hold data
-     *
-     * @return string Data for use in a form field
-     */
-    public function getCancelHoldDetails($holdDetails)
-    {
-        return $holdDetails['available'] || $holdDetails['in_transit'] ? ''
-            : $holdDetails['requestId'];
     }
 
     /**
@@ -896,6 +885,53 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
+     * Update holds
+     *
+     * This is responsible for changing the status of hold requests
+     *
+     * @param array $holdsDetails The details identifying the holds
+     * @param array $fields       An associative array of fields to be updated
+     * @param array $patron       Patron array
+     *
+     * @return array Associative array of the results
+     */
+    public function updateHolds(array $holdsDetails, array $fields, array $patron
+    ): array {
+        $results = [];
+        foreach ($holdsDetails as $requestId) {
+            $updateFields = [];
+            if (isset($fields['frozen'])) {
+                $updateFields['freeze'] = $fields['frozen'];
+            }
+            if (isset($fields['pickUpLocation'])) {
+                $updateFields['pickupLocation'] = $fields['pickUpLocation'];
+            }
+
+            $result = $this->makeRequest(
+                [$this->apiBase, 'patrons', 'holds', $requestId],
+                json_encode($updateFields),
+                'PUT',
+                $patron
+            );
+
+            if (!empty($result['code'])) {
+                $results[$requestId] = [
+                    'success' => false,
+                    'status' => $this->formatErrorMessage(
+                        $result['description'] ?? $result['name']
+                    )
+                ];
+            } else {
+                $results[$requestId] = [
+                    'success' => true
+                ];
+            }
+        }
+
+        return $results;
+    }
+
+    /**
      * Get Pick Up Locations
      *
      * This is responsible for gettting a list of valid library locations for
@@ -904,10 +940,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     * in the context of placing or editing a hold.  When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data.  When
+     * editing a hold it contains all the hold information returned by getMyHolds.
+     * May be used to limit the pickup options or may be ignored.  The driver must
+     * not add new options to the return array based on this data or other areas of
+     * VuFind may behave incorrectly.
      *
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
@@ -2582,6 +2620,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected function getItemsWithBibsForTransactions(array $transactions,
         array $patron
     ): array {
+        if (!$transactions) {
+            return [];
+        }
         // Fetch items
         $itemIds = [];
         foreach ($transactions as $transaction) {

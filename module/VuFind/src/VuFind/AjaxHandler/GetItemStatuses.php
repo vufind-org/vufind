@@ -231,6 +231,20 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Create a delimited version of the call number to allow the Javascript code
+     * to handle the prefix appropriately.
+     *
+     * @param string $prefix     Callnumber prefix or empty string.
+     * @param string $callnumber Main call number.
+     *
+     * @return string
+     */
+    protected function formatCallNo($prefix, $callnumber)
+    {
+        return !empty($prefix) ? $prefix . '::::' . $callnumber : $callnumber;
+    }
+
+    /**
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
@@ -265,7 +279,11 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $use_unknown_status = true;
             }
             // Store call number/location info:
-            $callNumbers[] = $info['callnumber'];
+            $callNumbers[] = $this->formatCallNo(
+                $info['callnumber_prefix'],
+                $info['callnumber']
+            );
+
             $locations[] = $info['location'];
             // Store all available services
             if (isset($info['services'])) {
@@ -343,7 +361,10 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
                 $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
-            $locations[$info['location']]['callnumbers'][] = $info['callnumber'];
+            $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
+                $info['callnumber_prefix'],
+                $info['callnumber']
+            );
         }
 
         // Build list split out by location:

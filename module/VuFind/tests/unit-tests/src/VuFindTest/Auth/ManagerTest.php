@@ -506,7 +506,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
 
         // Fake the session inside the manager:
         $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->setMethods(['__get', '__isset', '__set', '__unset'])
+            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
         $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));

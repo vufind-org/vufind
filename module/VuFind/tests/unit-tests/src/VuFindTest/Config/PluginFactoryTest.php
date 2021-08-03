@@ -134,9 +134,8 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfig($name)
     {
-        return $this->factory->__invoke(
-            new \VuFindTest\Container\MockContainer($this), $name
-        );
+        $container = new \VuFindTest\Container\MockContainer($this);
+        return ($this->factory)($container, $name);
     }
 
     /**
