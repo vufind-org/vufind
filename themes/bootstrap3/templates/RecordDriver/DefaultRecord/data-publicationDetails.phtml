@@ -4,7 +4,11 @@
     <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
   <?php endif; ?>
   <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
-    <span property="name"><?=$this->escapeHtml($pubName)?></span>
+    <span property="name">
+      <a href="<?=$this->url('search-results', [], ['query' => ['type' => 'Publisher', 'lookfor' => $pubName]])?>">
+        <?=$this->escapeHtml($pubName)?>
+      </a>
+    </span>
   <?php endif; ?>
   </span>
   <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
