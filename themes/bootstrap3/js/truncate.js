@@ -83,7 +83,7 @@ VuFind.register('truncate', function Truncate() {
           rowHeight = parseFloat(container.css('line-height').replace('px', ''));
         }
         numRows = Math.ceil(container.height() / rowHeight);
-        shouldTruncate = rowCount + 1 < numRows;
+        shouldTruncate = rowCount < numRows;
 
         if (shouldTruncate) {
           truncatedHeight = rowCount * rowHeight;
